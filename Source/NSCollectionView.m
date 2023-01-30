@@ -67,43 +67,16 @@ APPKIT_DECLARE NSString* NSCollectionViewLayoutKey                   = @"NSColle
 
 APPKIT_DECLARE NSCollectionViewSupplementaryElementKind GSNoSupplementaryElement  = @"GSNoSupplementaryElement"; // private
 
+/* 
+ * Private helper macro to check, if the method given via the selector sel 
+ * has been overridden in the current subclass.
+ */
+#define OVERRIDDEN(sel) ([self methodForSelector: @selector(sel)] != [[_collectionViewLayout class] instanceMethodForSelector: @selector(sel)])
+
 /*
  * Class variables
  */
 static NSString *_placeholderItem = nil;
-
-@interface NSObject (CollectionViewInternalPrivate)
-
-/**
- * This method is used to determine if the receiver overrides the
- * given selector.
- */
-- (BOOL) overridesSelector: (SEL)s;
-
-@end
-
-@implementation NSObject (CollectionViewInternalPrivate)
-
-- (BOOL) overridesSelector: (SEL)s
-{
-  Class osc = [self superclass];
-  BOOL overriden = NO;
-
-  while (osc != nil)
-    {
-      overriden = ([self methodForSelector: s] != [osc instanceMethodForSelector: s]);
-      if (overriden)
-	{
-	  break;
-	}
-
-      osc = [osc superclass];
-    }
-
-  return overriden;
-}
-
-@end
 
 @interface NSCollectionView (CollectionViewInternalPrivate)
 
@@ -1798,7 +1771,7 @@ static NSString *_placeholderItem = nil;
     }
 
   // Get the size proposed by the layout...
-  if (_collectionViewLayout != nil && [_collectionViewLayout overridesSelector: @selector(collectionViewContentSize)])
+  if (_collectionViewLayout != nil && OVERRIDDEN(collectionViewContentSize))
     {
       ps = [_collectionViewLayout collectionViewContentSize];
     }
