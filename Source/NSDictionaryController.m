@@ -41,16 +41,13 @@
 {
   if (self == [NSDictionaryController class])
     {
-      
       [self exposeBinding: NSContentDictionaryBinding];
-      //[self exposeBinding: NSIncludedKeysBinding];
+      [self exposeBinding: NSIncludedKeysBinding];
       [self exposeBinding: NSExcludedKeysBinding];
       [self exposeBinding: NSInitialKeyBinding];
       [self exposeBinding: NSInitialValueBinding];
-      /*
-      [self setKeys: [NSArray arrayWithObjects: NSContentDictionaryBinding, nil] // NSContentBinding, NSContentObjectBinding, nil] 
+      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil] 
             triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
-      */
     }
 }
 
@@ -129,9 +126,9 @@
   ASSIGN(_localizedKeyTable, keyTable);
 }
 
-- (NSArray *) _buildArray
+- (NSArray *) _buildArray: (NSDictionary *)content
 {
-  NSArray *allKeys = [_contentDictionary allKeys];
+  NSArray *allKeys = [content allKeys];
   NSMutableArray *result = [NSMutableArray arrayWithCapacity: [allKeys count]];
 
   FOR_IN(id, k, allKeys)
@@ -141,7 +138,7 @@
 
       if ([_includedKeys containsObject: k])
 	{
-	  id v = [_contentDictionary objectForKey: k];
+	  id v = [[self content] objectForKey: k];
 
 	  [kvp setKey: k];
 	  [kvp setValue: v];
@@ -159,18 +156,9 @@
   return result;
 }
 
-- (NSDictionary *) contentDictionary
+- (void) setContent: (id)content
 {
-  return _contentDictionary;
-}
-
-- (void) setContentDictionary: (NSDictionary *)dict
-{
-  NSArray *array = nil;
-  
-  ASSIGN(_contentDictionary, dict);
-  array = [self _buildArray];
-  [self arrangeObjects: array];
+  [super setContent: [self _buildArray: content]];
 }
 
 - (void) observeValueForKeyPath: (NSString*)aPath
@@ -183,6 +171,46 @@
               @" create an instance overriding this",
               NSStringFromSelector(_cmd), NSStringFromClass([self class])];
   return;
+}
+
+- (void) bind: (NSString *)binding 
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding isEqual: NSContentDictionaryBinding])
+    {
+      GSKeyValueBinding *kvb;
+
+      [self unbind: binding];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content" 
+                                              withName: binding
+                                              toObject: anObject
+                                           withKeyPath: keyPath
+                                               options: options
+                                            fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
+    }
+  else
+    {
+      [super bind: binding 
+         toObject: anObject 
+      withKeyPath: keyPath 
+          options: options];
+    }
+}
+
+- (Class) valueClassForBinding: (NSString *)binding
+{
+  if ([binding isEqual: NSContentDictionaryBinding])
+    {
+      return [NSDictionary class];
+    }
+  else
+    {
+      return [super valueClassForBinding: binding];
+    }
 }
 
 @end
@@ -246,46 +274,6 @@
 - (void) setExplicitlyIncluded: (BOOL)flag
 {
   _explicitlyIncluded = flag;
-}
-
-- (void) bind: (NSString *)binding 
-     toObject: (id)anObject
-  withKeyPath: (NSString *)keyPath
-      options: (NSDictionary *)options
-{
-  if ([binding isEqual: NSContentDictionaryBinding])
-    {
-      GSKeyValueBinding *kvb;
-
-      [self unbind: binding];
-      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content" 
-                                              withName: binding
-                                              toObject: anObject
-                                           withKeyPath: keyPath
-                                               options: options
-                                            fromObject: self];
-      // The binding will be retained in the binding table
-      RELEASE(kvb);
-    }
-  else
-    {
-      [super bind: binding 
-         toObject: anObject 
-      withKeyPath: keyPath 
-          options: options];
-    }
-}
-
-- (Class) valueClassForBinding: (NSString *)binding
-{
-  if ([binding isEqual: NSContentDictionaryBinding])
-    {
-      return [NSDictionary class];
-    }
-  else
-    {
-      return [super valueClassForBinding: binding];
-    }
 }
 
 @end

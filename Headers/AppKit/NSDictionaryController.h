@@ -62,6 +62,7 @@
  */
 - (BOOL) isExplicitlyIncluded; 
 - (void) setExplicitlyIncluded: (BOOL)flag;
+
 @end
 
 #endif
@@ -82,8 +83,6 @@ extern "C" {
   NSDictionary *_localizedKeyDictionary;
   NSString *_localizedKeyTable;
   NSUInteger _count;
-
-  NSDictionary *_contentDictionary;
 }
 
 /**
@@ -136,4 +135,3 @@ extern "C" {
 #endif	/* GS_API_MACOSX */
 
 #endif	/* _NSDictionaryController_h_GNUSTEP_GUI_INCLUDE */
-
