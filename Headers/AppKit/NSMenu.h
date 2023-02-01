@@ -436,9 +436,14 @@ APPKIT_EXPORT_CLASS
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+// Provided for source compatibility with GNUstep-specific code.
+// This method is just an alternate name for popUpMenuPositioningItem:atLocation:inView:
 - (void) popUpMenuPositionItem: (NSMenuItem *)item
                     atLocation: (NSPoint) point
                         inView: (NSView *) view;
+- (void) popUpMenuPositioningItem: (NSMenuItem *)item
+                       atLocation: (NSPoint) point
+                           inView: (NSView *) view;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
