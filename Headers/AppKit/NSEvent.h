@@ -183,7 +183,17 @@ enum {
   NSCommandKeyMask = 16 << 16,
   NSNumericPadKeyMask = 32 << 16,
   NSHelpKeyMask = 64 << 16,
-  NSFunctionKeyMask = 128 << 16
+  NSFunctionKeyMask = 128 << 16,
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+  NSEventModifierFlagCapsLock = NSAlphaShiftKeyMask,
+  NSEventModifierFlagShift = NSShiftKeyMask,
+  NSEventModifierFlagControl = NSControlKeyMask,
+  NSEventModifierFlagOption = NSAlternateKeyMask,
+  NSEventModifierFlagCommand = NSCommandKeyMask,
+  NSEventModifierFlagNumericPad = NSNumericPadKeyMask,
+  NSEventModifierFlagFunction = NSFunctionKeyMask,
+  NSEventModifierFlagDeviceIndependentFlagsMask = NSDeviceIndependentModifierFlagsMask,
+#endif
 };
 typedef NSUInteger NSEventModifierFlags;
 
