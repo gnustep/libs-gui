@@ -39,6 +39,7 @@
 #import <AppKit/NSUserInterfaceLayout.h>
 #import <AppKit/NSLayoutConstraint.h>
 
+@class NSAppearance;
 @class NSArray;
 @class NSAttributedString;
 @class NSData;
@@ -129,7 +130,7 @@ extern const CGFloat NSViewNoInstrinsicMetric;
 extern const CGFloat NSViewNoIntrinsicMetric;
 
 APPKIT_EXPORT_CLASS
-@interface NSView : NSResponder
+@interface NSView : NSResponder <NSAppearanceCustomization>
 {
   NSRect _frame;
   NSRect _bounds;
@@ -195,6 +196,7 @@ PACKAGE_SCOPE
   NSFocusRingType _focusRingType;
   NSRect _autoresizingFrameError;
   NSShadow *_shadow;
+  NSAppearance* _appearance;
 }
 
 /*
