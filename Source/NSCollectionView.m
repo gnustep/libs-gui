@@ -1759,11 +1759,6 @@ static NSString *_placeholderItem = nil;
   _indexPathsToItems = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
 }
 
-- (void) _setFrameWithoutTile: (NSRect)f
-{
-  _frame = f;
-}
-
 - (void) _updateParentViewFrame
 {
   NSEnumerator *oe = [_itemsToAttributes objectEnumerator];
@@ -1792,7 +1787,7 @@ static NSString *_placeholderItem = nil;
     }
 
   cf.size = ps;
-  [self _setFrameWithoutTile: cf];
+  _frame = cf;
 }
 
 - (void) reloadData
