@@ -250,10 +250,10 @@ APPKIT_EXPORT_CLASS
   finalLayoutAttributesForDisappearingDecorationElementOfKind: (NSCollectionViewDecorationElementKind)elementKind
                                                    atIndexPath: (NSIndexPath *)decorationIndexPath;
 
-- (NSSet *)indexPathsToDeleteForSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind;
-- (NSSet *)indexPathsToDeleteForDecorationViewOfKind: (NSCollectionViewDecorationElementKind)elementKind;
-- (NSSet *)indexPathsToInsertForSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind;
-- (NSSet *)indexPathsToInsertForDecorationViewOfKind: (NSCollectionViewDecorationElementKind)elementKind;
+- (NSSet *) indexPathsToDeleteForSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind;
+- (NSSet *) indexPathsToDeleteForDecorationViewOfKind: (NSCollectionViewDecorationElementKind)elementKind;
+- (NSSet *) indexPathsToInsertForSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind;
+- (NSSet *) indexPathsToInsertForDecorationViewOfKind: (NSCollectionViewDecorationElementKind)elementKind;
 
 @end
 
