@@ -132,7 +132,7 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 
 - (NSView *) collectionView: (NSCollectionView *)collectionView
              viewForSupplementaryElementOfKind: (NSCollectionViewSupplementaryElementKind)kind
-                atIndexPath:(NSIndexPath *)indexPath;
+                atIndexPath: (NSIndexPath *)indexPath;
 @end
 #endif
 
@@ -144,14 +144,14 @@ typedef NSString *NSUserInterfaceItemIdentifier;
 /**
  * Load the items listed in indexPaths in collectionView before they are displayed
  */
-- (void)collectionView:(NSCollectionView *)collectionView prefetchItemsAtIndexPaths:(NSArray *)indexPaths;
+- (void)collectionView: (NSCollectionView *)collectionView prefetchItemsAtIndexPaths: (NSArray *)indexPaths;
 #if GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
 #endif
 /**
  * Cancel the prefetch request for the listed indexPaths.
  */ 
-- (void)collectionView:(NSCollectionView *)collectionView cancelPrefetchingForItemsAtIndexPaths:(NSArray *)indexPaths;
+- (void)collectionView: (NSCollectionView *)collectionView cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths;
 @end
 #endif
 
@@ -312,7 +312,7 @@ typedef NSString *NSUserInterfaceItemIdentifier;
       forItemsAtIndexes: (NSIndexSet *)indexes;
 
 /**
- * Allows application to specify the screenPoint at which a dragging session will end
+ * Allows application to specify the screenPoint at which a dragging session did end
  */
 - (void) collectionView: (NSCollectionView *)collectionView
         draggingSession: (NSDraggingSession *)session
@@ -565,7 +565,7 @@ APPKIT_EXPORT_CLASS
 
 - (void)registerClass: (Class)viewClass 
         forSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)kind 
-       withIdentifier:(NSUserInterfaceItemIdentifier)identifier;
+       withIdentifier: (NSUserInterfaceItemIdentifier)identifier;
 
 - (void) registerNib: (NSNib *)nib 
          forSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)kind 

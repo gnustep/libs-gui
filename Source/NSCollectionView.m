@@ -1593,7 +1593,7 @@ static NSString *_placeholderItem = nil;
 
 - (void) registerClass: (Class)viewClass 
          forSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)kind 
-         withIdentifier:(NSUserInterfaceItemIdentifier)identifier
+         withIdentifier: (NSUserInterfaceItemIdentifier)identifier
 {
   NSMapTable *t = nil;
 
