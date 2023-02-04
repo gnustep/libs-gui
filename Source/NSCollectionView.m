@@ -583,6 +583,11 @@ static NSString *_placeholderItem = nil;
         }
     }
   END_FOR_IN(indexPaths);
+
+  if ([_delegate respondsToSelector: @selector(collectionView:didSelectItemsAtIndexPaths:)])
+    {
+      [_delegate collectionView: self didSelectItemsAtIndexPaths: indexPaths];
+    }
 }
 
 - (NSIndexSet *) selectionIndexes
