@@ -554,7 +554,7 @@ static NSString *_placeholderItem = nil;
       return;
     }
   else
-    {
+    {      
       ASSIGN(_selectionIndexPaths, indexPaths);
     }
 
@@ -1930,35 +1930,47 @@ static NSString *_placeholderItem = nil;
 
 - (IBAction) selectAll: (id)sender
 {
-  NSEnumerator *en = [_itemsToIndexPaths keyEnumerator];
-  id obj = nil;
+  NSMutableSet *paths = [NSMutableSet setWithCapacity: [_itemsToIndexPaths count]];
 
-  while ((obj = [en nextObject]) != nil)
+  FOR_IN(NSCollectionViewItem*, obj, _itemsToIndexPaths)
     {
       if ([obj respondsToSelector: @selector(setSelected:)])
         {
+	  NSIndexPath *p = [_itemsToIndexPaths objectForKey: obj];
+
           [obj setSelected: YES];
+	  [paths addObject: p];
         }
     }
+  END_FOR_IN(_itemsToIndexPaths);
+
+  [self setSelectionIndexPaths: paths];
 }
 
 - (IBAction) deselectAll: (id)sender
 {
-  NSEnumerator *en = [_itemsToIndexPaths keyEnumerator];
-  id obj = nil;
+  NSMutableSet *paths = [NSMutableSet setWithCapacity: [_itemsToIndexPaths count]];
 
-  while ((obj = [en nextObject]) != nil)
+  FOR_IN(NSCollectionViewItem*, obj, _itemsToIndexPaths)
     {
       if ([obj respondsToSelector: @selector(setSelected:)])
         {
+	  NSIndexPath *p = [_itemsToIndexPaths objectForKey: obj];
+
           [obj setSelected: NO];
+	  [paths addObject: p];
         }
     }  
+  END_FOR_IN(_itemsToIndexPaths);
+  
+  [self deselectItemsAtIndexPaths: paths];
 }
 
 - (void) selectItemsAtIndexPaths: (NSSet *)indexPaths 
                   scrollPosition: (NSCollectionViewScrollPosition)scrollPosition
 {
+  NSMutableSet *paths = [NSMutableSet setWithCapacity: [_itemsToIndexPaths count]];
+  
   FOR_IN (NSIndexPath*, p, indexPaths)
     {
       id item = [_indexPathsToItems objectForKey: p];
@@ -1966,13 +1978,18 @@ static NSString *_placeholderItem = nil;
       if ([item respondsToSelector: @selector(setSelected:)])
         {
           [item setSelected: YES];
+	  [paths addObject: p];
         }
     }
   END_FOR_IN(indexPaths);
+
+  [self setSelectionIndexPaths: paths];
 }
 
 - (void) deselectItemsAtIndexPaths: (NSSet *)indexPaths
 {
+  NSMutableSet *newSelection = [NSMutableSet setWithSet: _selectionIndexPaths];
+  
   FOR_IN (NSIndexPath*, p, indexPaths)
     {
       id item = [_indexPathsToItems objectForKey: p];
@@ -1980,9 +1997,12 @@ static NSString *_placeholderItem = nil;
       if ([item respondsToSelector: @selector(setSelected:)])
         {
           [item setSelected: NO];
+	  [newSelection removeObject: p];
         }
     }
   END_FOR_IN(indexPaths);
+
+  [self setSelectionIndexPaths: newSelection];
 }
 
 /* Getting Layout Information */
