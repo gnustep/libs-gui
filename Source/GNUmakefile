@@ -54,6 +54,7 @@ NSAppearance.m \
 NSApplication.m \
 NSArrayController.m \
 NSAttributedString.m \
+NSAutoresizingMaskLayoutConstraint.m \
 NSBezierPath.m \
 NSBitmapImageRep.m \
 NSBitmapImageRep+GIF.m \
