@@ -265,7 +265,6 @@ static NSString *_placeholderItem = nil;
 
   // Managing items.
   DESTROY(_visibleItems);
-  DESTROY(_indexPathsForVisibleItems);
   DESTROY(_visibleSupplementaryViews);
   DESTROY(_indexPathsForSupplementaryElementsOfKind);
   DESTROY(_itemsToAttributes);
@@ -297,7 +296,6 @@ static NSString *_placeholderItem = nil;
   
   // Managing items.
   _visibleItems = [[NSMutableArray alloc] init];
-  _indexPathsForVisibleItems = [[NSMutableSet alloc] init];
   _visibleSupplementaryViews = [[NSMutableDictionary alloc] init];
   _indexPathsForSupplementaryElementsOfKind = [[NSMutableSet alloc] init];
   _itemsToAttributes = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
@@ -1469,7 +1467,16 @@ static NSString *_placeholderItem = nil;
 
 - (NSSet *) indexPathsForVisibleItems
 {
-  return _indexPathsForVisibleItems;
+  NSMutableSet *result = [NSMutableSet setWithCapacity: [_visibleItems count]];
+
+  FOR_IN(NSCollectionViewItem*, item, _visibleItems)
+    {
+      NSIndexPath *p = [_itemsToIndexPaths objectForKey: item];
+      [result addObject: p];
+    }
+  END_FOR_IN(_visibleItems);
+  
+  return [NSSet setWithSet: result]; // return immutable copy
 }
 
 - (NSArray *) visibleSupplementaryViewsOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
@@ -1549,15 +1556,15 @@ static NSString *_placeholderItem = nil;
       item = nil;
       NSLog(@"Could not load model %@", nib);
     }
+  else
+    {
+      // Add to maps...
+      [_itemsToIndexPaths setObject: indexPath
+			     forKey: item];
+      [_indexPathsToItems setObject: item
+			     forKey: indexPath];
+    }
   
-  RELEASE(nib);
-  
-  // Add to maps...
-  [_itemsToIndexPaths setObject: indexPath
-			 forKey: item];
-  [_indexPathsToItems setObject: item
-			 forKey: indexPath];
-
   return item;
 }
 
@@ -1638,6 +1645,7 @@ static NSString *_placeholderItem = nil;
   NSString *clsName = NSStringFromClass(cls);
   NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
                                         bundle: [NSBundle bundleForClass: cls]];
+  AUTORELEASE(nib);
   return nib;
 }
 
@@ -1685,7 +1693,6 @@ static NSString *_placeholderItem = nil;
       RELEASE(tv);
       
       [_visibleItems addObject: item];
-      [_indexPathsForVisibleItems addObject: path];
       if (_collectionViewLayout)
         {
           NSCollectionViewLayoutAttributes *attrs =
@@ -1729,7 +1736,6 @@ static NSString *_placeholderItem = nil;
 {
   // Remove objects from set/dict/maps
   [_visibleItems removeAllObjects];
-  [_indexPathsForVisibleItems removeAllObjects];
   [_itemsToIndexPaths removeAllObjects];
   [_indexPathsToItems removeAllObjects];
   [_itemsToAttributes removeAllObjects];

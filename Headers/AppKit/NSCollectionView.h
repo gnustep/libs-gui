@@ -431,7 +431,6 @@ APPKIT_EXPORT_CLASS
 
   // Managing items
   NSMutableArray *_visibleItems;
-  NSMutableSet *_indexPathsForVisibleItems;
   NSMutableDictionary *_visibleSupplementaryViews;
   NSMutableSet *_indexPathsForSupplementaryElementsOfKind;
 
