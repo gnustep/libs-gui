@@ -876,12 +876,12 @@ static NSString *_placeholderItem = nil;
           
           if ([aCoder containsValueForKey: NSCollectionViewMaxNumberOfRowsKey])
             {
-              _maxNumberOfRows = [aCoder decodeInt64ForKey: NSCollectionViewMaxNumberOfRowsKey];
+              _maxNumberOfRows = [aCoder decodeIntForKey: NSCollectionViewMaxNumberOfRowsKey];
             }
           
           if ([aCoder containsValueForKey: NSCollectionViewMaxNumberOfColumnsKey])
             {
-              _maxNumberOfColumns = [aCoder decodeInt64ForKey: NSCollectionViewMaxNumberOfColumnsKey];
+              _maxNumberOfColumns = [aCoder decodeIntForKey: NSCollectionViewMaxNumberOfColumnsKey];
             }
           
           //_verticalMargin = [aCoder decodeFloatForKey: NSCollectionViewVerticalMarginKey];
@@ -942,10 +942,10 @@ static NSString *_placeholderItem = nil;
           [aCoder encodeSize: _maxItemSize forKey: NSCollectionViewMaxItemSizeKey];
         }
       
-      [aCoder encodeInt64: _maxNumberOfRows 
-                   forKey: NSCollectionViewMaxNumberOfRowsKey];
-      [aCoder encodeInt64: _maxNumberOfColumns 
-                   forKey: NSCollectionViewMaxNumberOfColumnsKey];
+      [aCoder encodeInt: _maxNumberOfRows 
+		 forKey: NSCollectionViewMaxNumberOfRowsKey];
+      [aCoder encodeInt: _maxNumberOfColumns 
+		 forKey: NSCollectionViewMaxNumberOfColumnsKey];
       
       [aCoder encodeBool: _isSelectable 
                   forKey: NSCollectionViewSelectableKey];
