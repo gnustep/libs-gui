@@ -1491,7 +1491,7 @@ static NSString *_placeholderItem = nil;
 
 - (NSSet *) indexPathsForVisibleSupplementaryElementsOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
 {
-  return nil;
+  return [self indexPathForItem: [self visibleSupplementaryViewsOfKind: elementKind]];
 }
 
 - (NSIndexPath *) indexPathForItem: (NSCollectionViewItem *)item
