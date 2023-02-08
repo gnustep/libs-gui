@@ -43,8 +43,6 @@
 #import "AppKit/NSBrowserCell.h"
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSCell.h"
-#import "AppKit/NSCollectionView.h"
-#import "AppKit/NSCollectionViewLayout.h"
 #import "AppKit/NSClipView.h"
 #import "AppKit/NSFormCell.h"
 #import "AppKit/NSGridView.h"
@@ -327,7 +325,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"middleViews", @"NSStackViewMiddleContainer",
                                            @"endViews", @"NSStackViewEndContainer",
 					   @"collectionViewLayout", @"NSCollectionViewLayout",
-                                         // @"primaryBackgroundColor", @"NSBackgroundColors",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
