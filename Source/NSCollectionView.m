@@ -1481,7 +1481,7 @@ static NSString *_placeholderItem = nil;
     }
   END_FOR_IN(_visibleItems);
   
-  return [NSSet setWithSet: result]; // return immutable copy
+  return [NSSet setWithSet: result];
 }
 
 - (NSArray *) visibleSupplementaryViewsOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
@@ -1491,7 +1491,17 @@ static NSString *_placeholderItem = nil;
 
 - (NSSet *) indexPathsForVisibleSupplementaryElementsOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
 {
-  return [self indexPathForItem: [self visibleSupplementaryViewsOfKind: elementKind]];
+  NSArray *views = [self visibleSupplementaryViewsOfKind: elementKind];
+  NSMutableSet *indxs = [NSMutableSet setWithCapacity: [views count]];
+  
+  FOR_IN(id, item, views)
+    {
+      NSIndexPath *p = [self indexPathForItem: item];
+      [indxs addObject: p];
+    }
+  END_FOR_IN(views);
+
+  return [NSSet setWithSet: indxs];
 }
 
 - (NSIndexPath *) indexPathForItem: (NSCollectionViewItem *)item
