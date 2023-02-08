@@ -28,8 +28,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#import "Foundation/NSKeyedArchiver.h"
-
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSIndexSet.h>
 #import <Foundation/NSSet.h>
