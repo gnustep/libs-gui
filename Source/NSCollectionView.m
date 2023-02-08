@@ -71,7 +71,7 @@ APPKIT_DECLARE NSCollectionViewSupplementaryElementKind GSNoSupplementaryElement
  * Private helper macro to check, if the method given via the selector sel 
  * has been overridden in the current subclass.
  */
-#define OVERRIDDEN(sel) ([self methodForSelector: @selector(sel)] != [[_collectionViewLayout class] instanceMethodForSelector: @selector(sel)])
+#define OVERRIDDEN(sel) ([_collectionViewLayout methodForSelector: @selector(sel)] != [[_collectionViewLayout class] instanceMethodForSelector: @selector(sel)])
 
 /*
  * Class variables
@@ -771,7 +771,7 @@ static NSString *_placeholderItem = nil;
       [self reloadData];
       return;
     }
-  
+
   if (!_items)
     return;
   
@@ -798,16 +798,16 @@ static NSString *_placeholderItem = nil;
   
   if (remaining > 0 && itemSize.width < _maxItemSize.width)
     {
-      itemSize.width = MIN(_maxItemSize.width, itemSize.width + 
+      itemSize.width = MIN(_maxItemSize.width, itemSize.width +
                            floor(remaining / _numberOfColumns));
     }
   
-  if (_maxNumberOfColumns == 1 && itemSize.width < 
+  if (_maxNumberOfColumns == 1 && itemSize.width <
       _maxItemSize.width && itemSize.width < width)
     {
       itemSize.width = MIN(_maxItemSize.width, width);
     }
-  
+
   if (!NSEqualSizes(_itemSize, itemSize))
     {
       _itemSize = itemSize;
@@ -820,7 +820,7 @@ static NSString *_placeholderItem = nil;
     {
       count = MIN(count, _maxNumberOfColumns * _maxNumberOfRows);
     }
-  
+
   _horizontalMargin = floor((width - _numberOfColumns * itemSize.width) / 
                             (_numberOfColumns + 1));
   CGFloat y = -itemSize.height;
