@@ -263,4 +263,9 @@
   return attrs;
 }
 
+- (NSSize) collectionViewContentSize
+{
+  return [_collectionView frame].size;
+}
+
 @end

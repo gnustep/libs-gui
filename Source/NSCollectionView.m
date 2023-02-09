@@ -69,7 +69,7 @@ APPKIT_DECLARE NSCollectionViewSupplementaryElementKind GSNoSupplementaryElement
  * Private helper macro to check, if the method given via the selector sel 
  * has been overridden in the current subclass.
  */
-#define OVERRIDDEN(sel) ([_collectionViewLayout methodForSelector: @selector(sel)] != [[_collectionViewLayout class] instanceMethodForSelector: @selector(sel)])
+#define OVERRIDDEN(sel) ([_collectionViewLayout methodForSelector: @selector(sel)] != [[NSCollectionViewLayout class] instanceMethodForSelector: @selector(sel)])
 
 /*
  * Class variables
