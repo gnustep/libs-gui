@@ -249,9 +249,41 @@ static NSString *_placeholderItem = nil;
   return self;
 }
 
+- (void) _updateSelectionIndexPaths
+{
+  NSMutableSet *indexPathsSet = [NSMutableSet set];
+  NSUInteger currentIndex = [_selectionIndexes firstIndex];
+
+  while (currentIndex != NSNotFound)
+    {
+      [indexPathsSet addObject: [NSIndexPath indexPathForRow: currentIndex
+						   inSection: 0]];
+      currentIndex = [_selectionIndexes indexGreaterThanIndex: currentIndex];
+    }
+
+  ASSIGN(_selectionIndexPaths, indexPathsSet);
+}
+
+- (void) _updateSelectionIndexes
+{
+  NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+
+  FOR_IN(NSIndexPath*, indexPath, _selectionIndexPaths)
+    {
+      if ([indexPath section] != 0)
+	{
+	  GSOnceMLog(@"Warning - NSCollectionView: section is !=0 when converting from selectionIndexPaths to selectionIndexes");
+	}
+      
+      [indexSet addIndex: [indexPath item]];
+    }
+  END_FOR_IN(indexPathSet);
+
+  ASSIGN(_selectionIndexes, indexSet);
+}
+
 - (void) dealloc
 {
-  //[[NSNotificationCenter defaultCenter] removeObserver: self];
   DESTROY (_content);
 
   // FIXME: Not clear if we should destroy the top-level item "itemPrototype" loaded in the nib file.
@@ -586,6 +618,8 @@ static NSString *_placeholderItem = nil;
     {
       [_delegate collectionView: self didSelectItemsAtIndexPaths: indexPaths];
     }
+
+  [self _updateSelectionIndexes];
 }
 
 - (NSIndexSet *) selectionIndexes
@@ -626,6 +660,8 @@ static NSString *_placeholderItem = nil;
           [item setSelected: YES];
         }
     }
+
+  [self _updateSelectionIndexPaths];
 }
 
 - (NSCollectionViewLayout *) collectionViewLayout
@@ -920,6 +956,17 @@ static NSString *_placeholderItem = nil;
               [self setCollectionViewLayout: [aCoder decodeObject]];
             }
         }
+
+      if (NSEqualSizes(_minItemSize, NSZeroSize))
+	{
+	  _minItemSize = NSMakeSize(10.0, 10.0);
+	}
+      
+
+      if (NSEqualSizes(_maxItemSize, NSZeroSize))
+	{
+	  _maxItemSize = NSMakeSize(100.0, 100.0);
+	}
     }
     
   return self;
@@ -1479,7 +1526,7 @@ static NSString *_placeholderItem = nil;
     }
   END_FOR_IN(_visibleItems);
   
-  return [NSSet setWithSet: result];
+  return [result copy];
 }
 
 - (NSArray *) visibleSupplementaryViewsOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
@@ -1499,7 +1546,7 @@ static NSString *_placeholderItem = nil;
     }
   END_FOR_IN(views);
 
-  return [NSSet setWithSet: indxs];
+  return [indxs copy];
 }
 
 - (NSIndexPath *) indexPathForItem: (NSCollectionViewItem *)item
