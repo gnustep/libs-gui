@@ -25,10 +25,10 @@
 
 @implementation NSAutoresizingMaskLayoutConstraint
 
-NSUInteger minXAttribute = 32;
-NSUInteger minYAttribute = 33;
-NSUInteger maxXAttribute = 36;
-NSUInteger maxYAttribute = 37;
+static NSUInteger minXAttribute = 32;
+static NSUInteger minYAttribute = 33;
+static NSUInteger maxXAttribute = 36;
+static NSUInteger maxYAttribute = 37;
 
 + (NSArray *)constraintsWithAutoresizingMask:
                  (NSAutoresizingMaskOptions) autoresizingMask
@@ -68,6 +68,9 @@ NSUInteger maxYAttribute = 37;
                                           bounds: bounds];
 
   NSMutableArray *constraints = [NSMutableArray arrayWithCapacity:4];
+
+  // The order of constraints was determined from MacOS behaviour.
+  // For the majority of users it will not matter, but we should assume that users have coupled to the ordering.
   if ((autoresizingMask & NSViewMinXMargin)
       && (autoresizingMask & NSViewMaxXMargin))
     {
