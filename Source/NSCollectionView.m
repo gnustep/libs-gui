@@ -277,7 +277,7 @@ static NSString *_placeholderItem = nil;
       
       [indexSet addIndex: [indexPath item]];
     }
-  END_FOR_IN(indexPathSet);
+  END_FOR_IN(_selectionIndexPaths);
 
   ASSIGN(_selectionIndexes, indexSet);
 }
