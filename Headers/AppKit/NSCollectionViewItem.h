@@ -31,18 +31,18 @@
 #import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSArray.h>
-
-#import <AppKit/NSCollectionView.h>
-#import <AppKit/NSDragging.h>
-#import <AppKit/NSImageView.h>
-#import <AppKit/NSNibDeclarations.h>
-#import <AppKit/NSTextField.h>
-#import <AppKit/NSView.h>
 #import <AppKit/NSViewController.h>
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
+#if	defined(__cplusplus)
+extern "C" {
+#endif
+
+@class NSImageView, NSTextField;
+  
 APPKIT_EXPORT_CLASS
-@interface NSCollectionViewItem : NSViewController
+@interface NSCollectionViewItem : NSViewController <NSCopying>
 {
   IBOutlet NSTextField *textField;
   IBOutlet NSImageView *imageView;
@@ -63,4 +63,6 @@ APPKIT_EXPORT_CLASS
 
 @end
 
-#endif /* _GNUstep_H_NSCollectionView */
+#endif /* OS_API_MACOSX */
+
+#endif /* _GNUstep_H_NSCollectionViewItem */

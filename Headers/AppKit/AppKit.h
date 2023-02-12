@@ -67,7 +67,10 @@
 #import <AppKit/NSCIImageRep.h>
 #import <AppKit/NSClipView.h>
 #import <AppKit/NSCollectionView.h>
+#import <AppKit/NSCollectionViewFlowLayout.h>
+#import <AppKit/NSCollectionViewGridLayout.h>
 #import <AppKit/NSCollectionViewItem.h>
+#import <AppKit/NSCollectionViewLayout.h>
 #import <AppKit/NSColor.h>
 #import <AppKit/NSColorList.h>
 #import <AppKit/NSColorPanel.h>

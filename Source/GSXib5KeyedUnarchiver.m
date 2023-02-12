@@ -47,10 +47,12 @@
 #import "AppKit/NSFormCell.h"
 #import "AppKit/NSGridView.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSLayoutConstraint.h"
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSNib.h"
+#import "AppKit/NSPageController.h"
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSPathCell.h"
 #import "AppKit/NSPopUpButton.h"
@@ -66,8 +68,6 @@
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSToolbarItem.h"
 #import "AppKit/NSView.h"
-#import "AppKit/NSLayoutConstraint.h"
-#import "AppKit/NSPageController.h"
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
@@ -324,6 +324,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"beginningViews", @"NSStackViewBeginningContainer",  // NSStackView
                                            @"middleViews", @"NSStackViewMiddleContainer",
                                            @"endViews", @"NSStackViewEndContainer",
+					   @"collectionViewLayout", @"NSCollectionViewLayout",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -3318,6 +3319,10 @@ didStartElement: (NSString*)elementName
           // New xib stores values as attributes...
           object = [currentElement attributeForKey: key];
         }
+      else if ([@"NSCollectionViewBackgroundColor" isEqualToString: key])
+        {
+          object = [self decodeObjectForKey: @"primaryBackgroundColor"];
+        }
       else if (([@"NSSearchButtonCell" isEqualToString: key]) ||
                ([@"NSCancelButtonCell" isEqualToString: key]))
         {
@@ -3538,6 +3543,10 @@ didStartElement: (NSString*)elementName
       if ([XmlKeyMapTable objectForKey: key])
         {
           hasValue = [self containsValueForKey: [XmlKeyMapTable objectForKey: key]];
+        }
+      else if ([@"NSBackgroundColors" isEqualToString: key])
+        {
+          hasValue = [currentElement elementForKey: @"primaryBackgroundColor"] != nil;
         }
       else if (([@"NSIntercellSpacingHeight" isEqualToString: key]) ||
                ([@"NSIntercellSpacingWidth" isEqualToString: key]))

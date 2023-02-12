@@ -88,6 +88,9 @@ APPKIT_EXPORT_CLASS
 
 - (NSString *)nibName;
 - (NSBundle *)nibBundle;
+
+- (void) viewWillLoad;
+- (void) viewDidLoad;
 @end
 
 #endif // OS_API_VERSION

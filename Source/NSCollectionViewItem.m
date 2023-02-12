@@ -34,6 +34,7 @@
 #import "AppKit/NSImageView.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTextField.h"
+#import "AppKit/NSDragging.h"
 
 @implementation NSCollectionViewItem
 
@@ -196,6 +197,11 @@
   [self copyBindingsTo: newItem from: [self view] onto: [newItem view]];
  
   return RETAIN(newItem);
+}
+
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"%@ - selected = %@, representedObject = %@", [super description], _isSelected ? @"YES" : @"NO", [self representedObject]]; 
 }
 
 @end

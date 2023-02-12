@@ -776,7 +776,6 @@ static Class textFieldCellClass;
   self = [super initWithCoder: aDecoder];
   if ([aDecoder allowsKeyedCoding])
     {
-      // do nothing for now...
     }
   else
     {
