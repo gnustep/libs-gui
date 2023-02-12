@@ -1,3 +1,22 @@
+2023-02-12 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSCollectionView.m: Implementation of methods
+	to support selection by indexPaths and use of NSCollectionViewLayout
+	* Source/NSCollectionViewLayout.m: Implementation of
+	NSCollectionViewLayout class to support custom collection view
+	layouts.
+	* Source/NSCollectionViewGridLayout.m: Implementation of the
+	Grid layout.
+	* Source/NSCollectionViewFlowLayout.m: Implementation of the
+	flow layout.
+	* Source/NSCollectionViewItem.m: Minor changes to support
+	new functionality.
+	* Headers/AppKit/NSCollectionView.h: Add new methods.
+	* Headers/AppKit/NSCollectionViewLayout.h:
+	* Headers/AppKit/NSCollectionViewGridLayout:
+	* Headers/AppKit/NSCollectionViewFlowLayout: Add new classes.
+
+
 2023-01-03 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSDrawer.m: Open drawer on the opposite edge if needed when
