@@ -2015,7 +2015,6 @@ static NSString *_placeholderItem = nil;
     {
       NSIndexPath *p = [_itemsToIndexPaths objectForKey: obj];
 
-      [obj setSelected: NO];
       [paths addObject: p];
     }
   END_FOR_IN(_itemsToIndexPaths);
@@ -2032,7 +2031,6 @@ static NSString *_placeholderItem = nil;
     {
       id item = [_indexPathsToItems objectForKey: p];
 
-      [item setSelected: YES];
       [paths addObject: p];
     }
   END_FOR_IN(indexPaths);
@@ -2048,7 +2046,6 @@ static NSString *_placeholderItem = nil;
     {
       id item = [_indexPathsToItems objectForKey: p];
 
-      [item setSelected: NO];
       [newSelection removeObject: p];
     }
   END_FOR_IN(indexPaths);
