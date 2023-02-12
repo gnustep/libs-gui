@@ -2029,8 +2029,6 @@ static NSString *_placeholderItem = nil;
 
   FOR_IN (NSIndexPath*, p, indexPaths)
     {
-      id item = [_indexPathsToItems objectForKey: p];
-
       [paths addObject: p];
     }
   END_FOR_IN(indexPaths);
@@ -2044,8 +2042,6 @@ static NSString *_placeholderItem = nil;
 
   FOR_IN (NSIndexPath*, p, indexPaths)
     {
-      id item = [_indexPathsToItems objectForKey: p];
-
       [newSelection removeObject: p];
     }
   END_FOR_IN(indexPaths);
