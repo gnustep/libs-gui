@@ -1998,13 +1998,9 @@ static NSString *_placeholderItem = nil;
 
   FOR_IN(NSCollectionViewItem*, obj, _itemsToIndexPaths)
     {
-      if ([obj respondsToSelector: @selector(setSelected:)])
-	{
-	  NSIndexPath *p = [_itemsToIndexPaths objectForKey: obj];
+      NSIndexPath *p = [_itemsToIndexPaths objectForKey: obj];
 
-	  [obj setSelected: YES];
-	  [paths addObject: p];
-	}
+      [paths addObject: p];
     }
   END_FOR_IN(_itemsToIndexPaths);
 
@@ -2017,13 +2013,10 @@ static NSString *_placeholderItem = nil;
 
   FOR_IN(NSCollectionViewItem*, obj, _itemsToIndexPaths)
     {
-      if ([obj respondsToSelector: @selector(setSelected:)])
-	{
-	  NSIndexPath *p = [_itemsToIndexPaths objectForKey: obj];
+      NSIndexPath *p = [_itemsToIndexPaths objectForKey: obj];
 
-	  [obj setSelected: NO];
-	  [paths addObject: p];
-	}
+      [obj setSelected: NO];
+      [paths addObject: p];
     }
   END_FOR_IN(_itemsToIndexPaths);
 
@@ -2039,11 +2032,8 @@ static NSString *_placeholderItem = nil;
     {
       id item = [_indexPathsToItems objectForKey: p];
 
-      if ([item respondsToSelector: @selector(setSelected:)])
-	{
-	  [item setSelected: YES];
-	  [paths addObject: p];
-	}
+      [item setSelected: YES];
+      [paths addObject: p];
     }
   END_FOR_IN(indexPaths);
 
@@ -2058,11 +2048,8 @@ static NSString *_placeholderItem = nil;
     {
       id item = [_indexPathsToItems objectForKey: p];
 
-      if ([item respondsToSelector: @selector(setSelected:)])
-	{
-	  [item setSelected: NO];
-	  [newSelection removeObject: p];
-	}
+      [item setSelected: NO];
+      [newSelection removeObject: p];
     }
   END_FOR_IN(indexPaths);
 
