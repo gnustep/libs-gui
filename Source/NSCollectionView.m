@@ -119,7 +119,6 @@ static NSString *_placeholderItem = nil;
 - (void) _selectWithEvent: (NSEvent *)theEvent 
                 indexPath: (NSIndexPath *)indexPath;
 
-
 - (void) _updateSelectionIndexPaths;
 - (void) _updateSelectionIndexes;
 
