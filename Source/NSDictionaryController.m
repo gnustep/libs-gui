@@ -1,21 +1,21 @@
 /* Implementation of class NSDictionaryController
    Copyright (C) 2021 Free Software Foundation, Inc.
-   
+
    By: Gregory John Casamento
    Date: 16-10-2021
 
    This file is part of the GNUstep Library.
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
-   
+
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -43,11 +43,11 @@
     {
       [self exposeBinding: NSContentDictionaryBinding];
       [self exposeBinding: NSIncludedKeysBinding];
-      [self exposeBinding: NSExcludedKeysBinding];
-      [self exposeBinding: NSInitialKeyBinding];
-      [self exposeBinding: NSInitialValueBinding];
-      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil] 
-            triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
+      //[self exposeBinding: NSExcludedKeysBinding];
+      //[self exposeBinding: NSInitialKeyBinding];
+      //[self exposeBinding: NSInitialValueBinding];
+      //[self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
+      //    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }
 }
 
@@ -131,25 +131,22 @@
   NSArray *allKeys = [content allKeys];
   NSMutableArray *result = [NSMutableArray arrayWithCapacity: [allKeys count]];
 
+  NSLog(@"includedKeys = %@", _includedKeys);
   FOR_IN(id, k, allKeys)
     {
       NSDictionaryControllerKeyValuePair *kvp =
 	AUTORELEASE([[NSDictionaryControllerKeyValuePair alloc] init]);
+      id v = [[self content] objectForKey: k];
 
-      if ([_includedKeys containsObject: k])
+      [kvp setKey: k];
+      [kvp setValue: v];
+
+      if (![_excludedKeys containsObject: k])
 	{
-	  id v = [[self content] objectForKey: k];
-
-	  [kvp setKey: k];
-	  [kvp setValue: v];
-
-	  if (![_excludedKeys containsObject: k])
-	    {
-	      [kvp setExplicitlyIncluded: NO];
-	    }
-
-	  [result addObject: kvp];
+	  [kvp setExplicitlyIncluded: NO];
 	}
+
+      [result addObject: kvp];
     }
   END_FOR_IN(allKeys);
 
@@ -164,16 +161,16 @@
 - (void) observeValueForKeyPath: (NSString*)aPath
 		       ofObject: (id)anObject
 			 change: (NSDictionary*)aChange
-		        context: (void*)aContext
+			context: (void*)aContext
 {
   [NSException raise: NSInvalidArgumentException
-              format: @"-%@ cannot be sent to %@ ..."
-              @" create an instance overriding this",
-              NSStringFromSelector(_cmd), NSStringFromClass([self class])];
+	      format: @"-%@ cannot be sent to %@ ..."
+	      @" create an instance overriding this",
+	      NSStringFromSelector(_cmd), NSStringFromClass([self class])];
   return;
 }
 
-- (void) bind: (NSString *)binding 
+- (void) bind: (NSString *)binding
      toObject: (id)anObject
   withKeyPath: (NSString *)keyPath
       options: (NSDictionary *)options
@@ -183,21 +180,21 @@
       GSKeyValueBinding *kvb;
 
       [self unbind: binding];
-      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content" 
-                                              withName: binding
-                                              toObject: anObject
-                                           withKeyPath: keyPath
-                                               options: options
-                                            fromObject: self];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content"
+					      withName: binding
+					      toObject: anObject
+					   withKeyPath: keyPath
+					       options: options
+					    fromObject: self];
       // The binding will be retained in the binding table
       RELEASE(kvb);
     }
   else
     {
-      [super bind: binding 
-         toObject: anObject 
-      withKeyPath: keyPath 
-          options: options];
+      [super bind: binding
+	 toObject: anObject
+      withKeyPath: keyPath
+	  options: options];
     }
 }
 
