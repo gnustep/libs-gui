@@ -112,6 +112,7 @@ enum {
   NSViewHeightSizable	= 16,	// view's height can stretch
   NSViewMaxYMargin	= 32 	// top margin between views can stretch
 };
+typedef NSUInteger NSAutoresizingMaskOptions;
 
 /*
  * constants defining if and how a view (or cell) should draw a focus ring
