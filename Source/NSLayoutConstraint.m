@@ -32,6 +32,8 @@
 #import "AppKit/NSLayoutConstraint.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSApplication.h"
+#import "NSAutoresizingMaskLayoutConstraint.h" 
+#import "GSFastEnumeration.h"
 #import "GSAutoLayoutVFLParser.h"
 
 static NSMutableArray *activeConstraints = nil;
@@ -609,6 +611,119 @@ static NSMutableArray *activeConstraints = nil;
         }
     }
   */
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedCompatibility)
+
+NSString static const *translatesAutoresizingMaskKey
+    = @"NSConstraintBasedCompatibility.translatesAutoresizingMaskKey";
+
+- (void) setTranslatesAutoresizingMaskIntoConstraints: (BOOL)translate
+{
+  NSValue *value = [NSValue valueWithBytes: &translate objCType: @encode (BOOL)];
+  objc_setAssociatedObject(self, &translatesAutoresizingMaskKey, value,
+                            OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL) translatesAutoresizingMaskIntoConstraints
+{
+  NSValue *value
+      = objc_getAssociatedObject(self, &translatesAutoresizingMaskKey);
+  if (value == nil)
+    {
+      return YES;
+    }
+
+  BOOL translate;
+  [value getValue:&translate];
+
+  return translate;
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedLayoutCoreMethods)
+
+NSString static const *needsUpdateConstraintsKey
+    = @"NSConstraintBasedLayoutCoreMethods.needsUpdateConstraintsKey";
+
+- (void) updateConstraintsForSubtreeIfNeeded
+{
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    [subview updateConstraintsForSubtreeIfNeeded];
+  END_FOR_IN (subviews);
+
+  if ([self needsUpdateConstraints])
+    {
+      [self updateConstraints];
+    }
+}
+
+- (void) updateConstraints
+{
+  if ([self translatesAutoresizingMaskIntoConstraints] &&
+      [self superview] != nil)
+    {
+      NSArray *autoresizingConstraints = [NSAutoresizingMaskLayoutConstraint
+          constraintsWithAutoresizingMask: [self autoresizingMask]
+                                  subitem: self
+                                    frame: [self frame]
+                                superitem: [self superview]
+                                   bounds: [[self superview] bounds]];
+      [self addConstraints:autoresizingConstraints];
+    }
+  [self _setNeedsUpdateConstraints:NO];
+}
+
+- (void)_setNeedsUpdateConstraints: (BOOL) needsUpdateConstraints
+{
+  NSValue *value = [NSValue valueWithBytes: &needsUpdateConstraints
+                                  objCType: @encode (BOOL)];
+  objc_setAssociatedObject (self, &needsUpdateConstraintsKey, value,
+                            OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void) setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints
+{
+  if (!needsUpdateConstraints)
+    {
+      return;
+    }
+  [self _setNeedsUpdateConstraints:YES];
+}
+
+- (BOOL) needsUpdateConstraints
+{
+  NSValue *needsUpdateConstraintsValue
+      = objc_getAssociatedObject (self, &needsUpdateConstraintsKey);
+  if (needsUpdateConstraintsValue == nil)
+    {
+      return YES;
+    }
+
+  BOOL needsUpdateConstraints;
+  [needsUpdateConstraintsValue getValue:&needsUpdateConstraints];
+
+  return needsUpdateConstraints;
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedLayoutInstallingConstraints)
+
+- (void) addConstraint: (NSLayoutConstraint *)constraint
+{
+  // FIXME: Implement adding constraint to layout engine
+}
+
+- (void) addConstraints: (NSArray*)constraints
+{
+  FOR_IN (NSLayoutConstraint*, constraint, constraints)
+    [self addConstraint: constraint];
+  END_FOR_IN (constraints);
 }
 
 @end

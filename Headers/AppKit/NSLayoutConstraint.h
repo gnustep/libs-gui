@@ -29,8 +29,9 @@
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSLayoutAnchor.h>
+#import <AppKit/NSView.h>
 
-@class NSControl, NSView, NSAnimation, NSArray, NSMutableArray, NSDictionary;
+@class NSControl, NSAnimation, NSArray, NSMutableArray, NSDictionary;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -163,6 +164,40 @@ APPKIT_EXPORT_CLASS
 - (NSLayoutPriority) priority;
 - (void) setPriority: (NSLayoutPriority)priority;
 #endif
+
+@end
+
+@interface NSView (NSConstraintBasedCompatibility)
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property BOOL translatesAutoresizingMaskIntoConstraints;
+#else
+- (BOOL) translatesAutoresizingMaskIntoConstraints;
+- (void) setTranslatesAutoresizingMaskIntoConstraints: (BOOL)translatesAutoresizingMaskIntoConstraints;
+#endif
+
+@end
+
+@interface NSView (NSConstraintBasedLayoutCoreMethods)
+
+- (void) updateConstraints;
+
+- (void) updateConstraintsForSubtreeIfNeeded;
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property BOOL needsUpdateConstraints;
+#else
+- (BOOL) needsUpdateConstraints;
+- (void) setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints;
+#endif
+
+@end
+
+@interface NSView (NSConstraintBasedLayoutInstallingConstraints)
+
+- (void) addConstraint: (NSLayoutConstraint *)constraint;
+
+- (void) addConstraints: (NSArray*)constraints;
 
 @end
 

@@ -179,6 +179,7 @@ PACKAGE_SCOPE
   BOOL _renew_gstate;
   BOOL _is_hidden;
   BOOL _in_live_resize;
+  BOOL _needsLayout;
 
   NSUInteger _autoresizingMask;
   NSFocusRingType _focusRingType;
@@ -638,6 +639,22 @@ PACKAGE_SCOPE
 #else
 - (NSUserInterfaceLayoutDirection) userInterfaceLayoutDirection;
 - (void) setUserInterfaceLayoutDirection: (NSUserInterfaceLayoutDirection)dir;
+#endif
+#endif
+
+/**
+* Layout
+*/
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (void) layoutSubtreeIfNeeded;
+- (void) layout;
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property (nonatomic) BOOL needsLayout;
+#else
+-(BOOL) needsLayout;
+-(void) setNeedsLayout: (BOOL)needsLayout;
 #endif
 #endif
 

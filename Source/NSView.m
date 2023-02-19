@@ -62,6 +62,7 @@
 #import "AppKit/NSFont.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSLayoutConstraint.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSPrintInfo.h"
@@ -76,6 +77,7 @@
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GSToolTips.h"
 #import "GSBindingHelpers.h"
+#import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
 #import "NSViewPrivate.h"
 
@@ -5127,6 +5129,49 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 {
   // FIXME: implement this
   return;
+}
+
+/**
+* Layout 
+*/
+
+- (void) layout
+{
+  // FIXME: Implement asking layout engine for the alignment rect of each subview and set the alignment rect of each sub view
+}
+
+- (void) layoutSubtreeIfNeeded
+{
+  [self updateConstraintsForSubtreeIfNeeded];
+  [self _layoutViewAndSubViews];
+}
+
+- (void) _layoutViewAndSubViews
+{
+  if (_needsLayout)
+    {
+      [self layout];
+      _needsLayout = NO;
+    }
+
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    [subview _layoutViewAndSubViews];
+  END_FOR_IN (subviews);
+}
+
+- (void) setNeedsLayout: (BOOL) needsLayout
+{
+  if (!needsLayout)
+    {
+      return;
+    }
+  _needsLayout = needsLayout;
+}
+
+- (BOOL) needsLayout
+{
+  return _needsLayout;
 }
 
 @end
