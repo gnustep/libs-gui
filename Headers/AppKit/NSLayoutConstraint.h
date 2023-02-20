@@ -167,29 +167,11 @@ APPKIT_EXPORT_CLASS
 
 @end
 
-@interface NSView (NSConstraintBasedCompatibility)
-
-#if GS_HAS_DECLARED_PROPERTIES
-@property BOOL translatesAutoresizingMaskIntoConstraints;
-#else
-- (BOOL) translatesAutoresizingMaskIntoConstraints;
-- (void) setTranslatesAutoresizingMaskIntoConstraints: (BOOL)translatesAutoresizingMaskIntoConstraints;
-#endif
-
-@end
-
 @interface NSView (NSConstraintBasedLayoutCoreMethods)
 
 - (void) updateConstraints;
 
 - (void) updateConstraintsForSubtreeIfNeeded;
-
-#if GS_HAS_DECLARED_PROPERTIES
-@property BOOL needsUpdateConstraints;
-#else
-- (BOOL) needsUpdateConstraints;
-- (void) setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints;
-#endif
 
 @end
 

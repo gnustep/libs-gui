@@ -632,6 +632,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   //_previousKeyView = 0;
 
   _alphaValue = 1.0;
+
+  _needsUpdateConstraints = YES;
+  _translatesAutoresizingMaskIntoConstraints = YES;
   
   return self;
 }
@@ -5172,6 +5175,41 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 - (BOOL) needsLayout
 {
   return _needsLayout;
+}
+
+- (void) setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints
+{
+  // Calling setNeedsUpdateConstraints with NO should not have an effect
+  if (!needsUpdateConstraints)
+    {
+      return;
+    }
+
+  _needsUpdateConstraints = YES;
+}
+
+- (BOOL) needsUpdateConstraints
+{
+  return _needsUpdateConstraints;
+}
+
+- (void) setTranslatesAutoresizingMaskIntoConstraints: (BOOL)translate
+{
+  _translatesAutoresizingMaskIntoConstraints = translate;
+}
+
+- (BOOL) translatesAutoresizingMaskIntoConstraints
+{
+  return _translatesAutoresizingMaskIntoConstraints;
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedLayoutCorePrivateMethods)
+// This private setter allows the updateConstraints method to toggle needsUpdateConstraints
+- (void) _setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints
+{
+  _needsUpdateConstraints = needsUpdateConstraints;
 }
 
 @end

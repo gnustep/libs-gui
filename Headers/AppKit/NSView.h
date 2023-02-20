@@ -180,6 +180,8 @@ PACKAGE_SCOPE
   BOOL _is_hidden;
   BOOL _in_live_resize;
   BOOL _needsLayout;
+  BOOL _needsUpdateConstraints;
+  BOOL _translatesAutoresizingMaskIntoConstraints;
 
   NSUInteger _autoresizingMask;
   NSFocusRingType _focusRingType;
@@ -655,6 +657,20 @@ PACKAGE_SCOPE
 #else
 -(BOOL) needsLayout;
 -(void) setNeedsLayout: (BOOL)needsLayout;
+#endif
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property (nonatomic) BOOL needsUpdateConstraints;
+#else
+- (BOOL) needsUpdateConstraints;
+- (void) setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints;
+#endif
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property BOOL translatesAutoresizingMaskIntoConstraints;
+#else
+- (BOOL) translatesAutoresizingMaskIntoConstraints;
+- (void) setTranslatesAutoresizingMaskIntoConstraints: (BOOL)translatesAutoresizingMaskIntoConstraints;
 #endif
 #endif
 

@@ -38,4 +38,10 @@
 - (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx;
 @end
 
+@interface NSView (NSConstraintBasedLayoutCorePrivateMethods)
+
+- (void) _setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints;
+
+@end
+
 #endif // _GNUstep_H_NSViewPrivate
