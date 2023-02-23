@@ -589,6 +589,9 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
       f = _acflags.avoids_empty_selection;
       [coder encodeValueOfObjCType: @encode(BOOL)
                                 at: &f];
+      f = _acflags.preserves_selection;
+      [coder encodeValueOfObjCType: @encode(BOOL)
+                                at: &f];
       f = _acflags.selects_inserted_objects;
       [coder encodeValueOfObjCType: @encode(BOOL)
                                 at: &f];
@@ -642,6 +645,9 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
       [coder decodeValueOfObjCType: @encode(BOOL)
                                 at: &f];
       _acflags.avoids_empty_selection = f;
+      [coder decodeValueOfObjCType: @encode(BOOL)
+                                at: &f];
+      _acflags.preserves_selection = f;
       [coder decodeValueOfObjCType: @encode(BOOL)
                                 at: &f];
       _acflags.selects_inserted_objects = f;
