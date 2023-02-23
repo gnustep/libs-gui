@@ -21,8 +21,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -79,7 +79,7 @@
   NSArray *result = [_array objectsAtIndexes: indexes];
 
   return AUTORELEASE([[GSObservableArray alloc]
-                                initWithArray: result]);
+				initWithArray: result]);
 }
 
 - (id) valueForKey: (NSString*)key
@@ -93,7 +93,7 @@
       // object until this gets fixed.
       //return AUTORELEASE([[GSObservableArray alloc]
       return ([[GSObservableArray alloc]
-                                initWithArray: result]);
+				initWithArray: result]);
     }
 
   return result;
@@ -104,7 +104,7 @@
   NSArray * result = [_array arrayByAddingObject: anObject];
 
   return AUTORELEASE([[GSObservableArray alloc]
-                                initWithArray: result]);
+				initWithArray: result]);
 }
 
 - (NSArray*) arrayByAddingObjectsFromArray: (NSArray*)anotherArray
@@ -112,7 +112,7 @@
   NSArray * result = [_array arrayByAddingObjectsFromArray: anotherArray];
 
   return AUTORELEASE([[GSObservableArray alloc]
-                                initWithArray: result]);
+				initWithArray: result]);
 }
 
 - (void) addObserver: (NSObject*)anObserver
@@ -124,9 +124,9 @@
 
   [self addObserver: anObserver
  toObjectsAtIndexes: indexes
-         forKeyPath: aPath
-            options: options
-            context: aContext];
+	 forKeyPath: aPath
+	    options: options
+	    context: aContext];
 }
 
 - (void) removeObserver: (NSObject*)anObserver forKeyPath: (NSString*)aPath
@@ -135,7 +135,7 @@
 
   [self removeObserver: anObserver
   fromObjectsAtIndexes: indexes
-            forKeyPath: aPath];
+	    forKeyPath: aPath];
 }
 
 @end
@@ -147,8 +147,8 @@
   if (self == [NSArrayController class])
     {
       [self exposeBinding: NSContentArrayBinding];
-      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil] 
-            triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
+      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
+	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }
 }
 
@@ -188,7 +188,7 @@
     {
       [self rearrangeObjects];
     }
-  else 
+  else
     {
       DESTROY(_arranged_objects);
     }
@@ -207,7 +207,7 @@
     {
       [self rearrangeObjects];
     }
-  else 
+  else
     {
       DESTROY(_arranged_objects);
     }
@@ -227,7 +227,7 @@
     {
       [self rearrangeObjects];
     }
-  else 
+  else
     {
       DESTROY(_arranged_objects);
     }
@@ -243,7 +243,7 @@
     {
       [self rearrangeObjects];
     }
-  else 
+  else
     {
       DESTROY(_arranged_objects);
     }
@@ -279,7 +279,7 @@
     NSUInteger index = [_arranged_objects indexOfObject: obj];
     if (NSNotFound != index)
       {
-        [tmp addIndex: index];
+	[tmp addIndex: index];
       }
   }
   END_FOR_IN(enumerator)
@@ -307,8 +307,8 @@
 
 - (BOOL) setSelectionIndex: (NSUInteger)idx
 {
-  return [self setSelectionIndexes: 
-                 [NSIndexSet indexSetWithIndex: idx]];
+  return [self setSelectionIndexes:
+		 [NSIndexSet indexSetWithIndex: idx]];
 }
 
 - (BOOL) setSelectionIndexes: (NSIndexSet*)idx
@@ -369,16 +369,16 @@
 {
   NSUInteger cur = [self selectionIndex];
 
-  [self setSelectionIndexes: 
-          [NSIndexSet indexSetWithIndex: cur + 1]];
+  [self setSelectionIndexes:
+	  [NSIndexSet indexSetWithIndex: cur + 1]];
 }
 
 - (void) selectPrevious: (id)sender
 {
   NSUInteger cur = [self selectionIndex];
 
-  [self setSelectionIndexes: 
-          [NSIndexSet indexSetWithIndex: cur - 1]];
+  [self setSelectionIndexes:
+	  [NSIndexSet indexSetWithIndex: cur - 1]];
 }
 
 - (NSArray*) selectedObjects
@@ -483,7 +483,7 @@
   [self willChangeValueForKey: @"arrangedObjects"];
   DESTROY(_arranged_objects);
   _arranged_objects = [[GSObservableArray alloc]
-                          initWithArray: [self arrangeObjects: _content]];
+			  initWithArray: [self arrangeObjects: _content]];
   [self didChangeValueForKey: @"arrangedObjects"];
 }
 
@@ -507,14 +507,14 @@
   return _filter_predicate;
 }
 
-- (void) insertObject: (id)obj 
+- (void) insertObject: (id)obj
 atArrangedObjectIndex: (NSUInteger)idx
 {
   // FIXME
   [self addObject: obj];
 }
 
-- (void) insertObjects: (NSArray*)obj 
+- (void) insertObjects: (NSArray*)obj
 atArrangedObjectIndexes: (NSIndexSet*)idx
 {
   // FIXME
@@ -531,7 +531,7 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
   [self removeObjects: [_arranged_objects objectsAtIndexes: idx]];
 }
 
-- (void) bind: (NSString *)binding 
+- (void) bind: (NSString *)binding
      toObject: (id)anObject
   withKeyPath: (NSString *)keyPath
       options: (NSDictionary *)options
@@ -541,21 +541,21 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
       GSKeyValueBinding *kvb;
 
       [self unbind: binding];
-      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content" 
-                                              withName: binding
-                                              toObject: anObject
-                                           withKeyPath: keyPath
-                                               options: options
-                                            fromObject: self];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content"
+					      withName: binding
+					      toObject: anObject
+					   withKeyPath: keyPath
+					       options: options
+					    fromObject: self];
       // The binding will be retained in the binding table
       RELEASE(kvb);
     }
   else
     {
-      [super bind: binding 
-         toObject: anObject 
-      withKeyPath: keyPath 
-          options: options];
+      [super bind: binding
+	 toObject: anObject
+      withKeyPath: keyPath
+	  options: options];
     }
 }
 
@@ -572,40 +572,44 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
 }
 
 - (void) encodeWithCoder: (NSCoder *)coder
-{ 
+{
   [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
-      [coder encodeBool: [self avoidsEmptySelection] forKey: @"NSAvoidsEmptySelection"];
-      [coder encodeBool: [self preservesSelection] forKey: @"NSPreservesSelection"];
-      [coder encodeBool: [self selectsInsertedObjects] forKey: @"NSSelectsInsertedObjects"];
-      [coder encodeBool: [self clearsFilterPredicateOnInsertion] forKey:
-               @"NSClearsFilterPredicateOnInsertion"];
-      [coder encodeBool: [self automaticallyRearrangesObjects] forKey: @"NSAutomaticallyRearrangesObjects"];
+      [coder encodeBool: [self avoidsEmptySelection]
+		 forKey: @"NSAvoidsEmptySelection"];
+      [coder encodeBool: [self preservesSelection]
+		 forKey: @"NSPreservesSelection"];
+      [coder encodeBool: [self selectsInsertedObjects]
+		 forKey: @"NSSelectsInsertedObjects"];
+      [coder encodeBool: [self clearsFilterPredicateOnInsertion]
+		 forKey: @"NSClearsFilterPredicateOnInsertion"];
+      [coder encodeBool: [self automaticallyRearrangesObjects]
+		 forKey: @"NSAutomaticallyRearrangesObjects"];
     }
   else
     {
       BOOL f;
       f = _acflags.avoids_empty_selection;
       [coder encodeValueOfObjCType: @encode(BOOL)
-                                at: &f];
+				at: &f];
       f = _acflags.preserves_selection;
       [coder encodeValueOfObjCType: @encode(BOOL)
-                                at: &f];
+				at: &f];
       f = _acflags.selects_inserted_objects;
       [coder encodeValueOfObjCType: @encode(BOOL)
-                                at: &f];
+				at: &f];
       f = _acflags.clears_filter_predicate_on_insertion;
       [coder encodeValueOfObjCType: @encode(BOOL)
-                                at: &f];
+				at: &f];
       f = _acflags.automatically_rearranges_objects;
       [coder encodeValueOfObjCType: @encode(BOOL)
-                                at: &f];
+				at: &f];
     }
 }
 
 - (id) initWithCoder: (NSCoder *)coder
-{ 
+{
   if ((self = [super initWithCoder: coder]) == nil)
     {
       return nil;
@@ -614,52 +618,52 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSAvoidsEmptySelection"])
-        {
-          [self setAvoidsEmptySelection: 
-                [coder decodeBoolForKey: @"NSAvoidsEmptySelection"]];
-        }
+	{
+	  [self setAvoidsEmptySelection:
+		[coder decodeBoolForKey: @"NSAvoidsEmptySelection"]];
+	}
       if ([coder containsValueForKey: @"NSPreservesSelection"])
-        {
-          [self setPreservesSelection: 
-                [coder decodeBoolForKey: @"NSPreservesSelection"]];
-        }
+	{
+	  [self setPreservesSelection:
+		[coder decodeBoolForKey: @"NSPreservesSelection"]];
+	}
       if ([coder containsValueForKey: @"NSSelectsInsertedObjects"])
-        {
-          [self setSelectsInsertedObjects: 
-                [coder decodeBoolForKey: @"NSSelectsInsertedObjects"]];
-        }
+	{
+	  [self setSelectsInsertedObjects:
+		[coder decodeBoolForKey: @"NSSelectsInsertedObjects"]];
+	}
       if ([coder containsValueForKey: @"NSClearsFilterPredicateOnInsertion"])
-        {
-          [self setClearsFilterPredicateOnInsertion: 
-                [coder decodeBoolForKey: @"NSClearsFilterPredicateOnInsertion"]];
-        }
+	{
+	  [self setClearsFilterPredicateOnInsertion:
+		[coder decodeBoolForKey: @"NSClearsFilterPredicateOnInsertion"]];
+	}
       if ([coder containsValueForKey: @"NSAutomaticallyRearrangesObjects"])
-        {
-          [self setAutomaticallyRearrangesObjects: 
-                [coder decodeBoolForKey: @"NSAutomaticallyRearrangesObjects"]];
-        }
+	{
+	  [self setAutomaticallyRearrangesObjects:
+		[coder decodeBoolForKey: @"NSAutomaticallyRearrangesObjects"]];
+	}
     }
   else
     {
       BOOL f;
       [coder decodeValueOfObjCType: @encode(BOOL)
-                                at: &f];
+				at: &f];
       _acflags.avoids_empty_selection = f;
       [coder decodeValueOfObjCType: @encode(BOOL)
-                                at: &f];
+				at: &f];
       _acflags.preserves_selection = f;
       [coder decodeValueOfObjCType: @encode(BOOL)
-                                at: &f];
+				at: &f];
       _acflags.selects_inserted_objects = f;
       [coder decodeValueOfObjCType: @encode(BOOL)
-                                at: &f];
+				at: &f];
       _acflags.clears_filter_predicate_on_insertion = f;
       [coder decodeValueOfObjCType: @encode(BOOL)
-                                at: &f];
+				at: &f];
       _acflags.automatically_rearranges_objects = f;
     }
 
-  return self; 
+  return self;
 }
 
 @end
