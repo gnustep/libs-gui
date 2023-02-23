@@ -642,7 +642,7 @@ static NSMutableArray *activeConstraints = nil;
                                     frame: [self frame]
                                 superitem: [self superview]
                                    bounds: [[self superview] bounds]];
-      [self addConstraints:autoresizingConstraints];
+      [self addConstraints: autoresizingConstraints];
     }
 
   [self _setNeedsUpdateConstraints: NO];
