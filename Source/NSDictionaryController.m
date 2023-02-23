@@ -22,12 +22,12 @@
    Boston, MA 02110 USA.
 */
 
-#import <Foundation/NSString.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
-#import <Foundation/NSKeyValueObserving.h>
-#import <Foundation/NSIndexSet.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSIndexSet.h>
+#import <Foundation/NSKeyValueObserving.h>
+#import <Foundation/NSString.h>
 
 #import "AppKit/NSDictionaryController.h"
 #import "AppKit/NSKeyValueBinding.h"
@@ -43,27 +43,27 @@
     {
       [self exposeBinding: NSContentDictionaryBinding];
       [self exposeBinding: NSIncludedKeysBinding];
-      //[self exposeBinding: NSExcludedKeysBinding];
-      //[self exposeBinding: NSInitialKeyBinding];
-      //[self exposeBinding: NSInitialValueBinding];
-      //[self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
-      //    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
+      [self exposeBinding: NSExcludedKeysBinding];
+      [self exposeBinding: NSInitialKeyBinding];
+      [self exposeBinding: NSInitialValueBinding];
+      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
+	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }
 }
 
 - (NSDictionaryControllerKeyValuePair *) newObject
 {
-  NSDictionaryControllerKeyValuePair *o = [[NSDictionaryControllerKeyValuePair alloc] init];
+  NSDictionaryControllerKeyValuePair *kvp = [[NSDictionaryControllerKeyValuePair alloc] init];
   NSString *k = [NSString stringWithFormat: @"%@%lu", _initialKey, _count];
   NSString *v = [NSString stringWithFormat: @"%@%lu", _initialValue, _count];
 
-  [o setKey: k];
-  [o setValue: v];
+  [kvp setKey: k];
+  [kvp setValue: v];
 
   _count++;
-  AUTORELEASE(o);
+  AUTORELEASE(kvp);
 
-  return o;
+  return kvp;
 }
 
 - (NSString *) initialKey
@@ -197,7 +197,7 @@
 	  options: options];
     }
 }
-
+/*
 - (Class) valueClassForBinding: (NSString *)binding
 {
   if ([binding isEqual: NSContentDictionaryBinding])
@@ -209,7 +209,7 @@
       return [super valueClassForBinding: binding];
     }
 }
-
+*/
 @end
 
 @implementation NSDictionaryControllerKeyValuePair
