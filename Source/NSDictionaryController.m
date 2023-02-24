@@ -133,7 +133,7 @@
 
   if (_count > 0)
     {
-      [NSString stringWithFormat: @"%@%lu", _initialKey, _count];
+      k = [NSString stringWithFormat: @"%@%lu", _initialKey, _count];
     }
   else
     {
