@@ -27,6 +27,7 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSIndexSet.h>
 #import <Foundation/NSKeyValueObserving.h>
+#import <Foundation/NSPropertyList.h>
 #import <Foundation/NSString.h>
 
 #import "AppKit/NSDictionaryController.h"
@@ -34,6 +35,59 @@
 
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
+
+@interface NSDictionary (Private_DictionaryToStrings)
+
+- (NSString *) _stringsFromDictionary;
+
+@end
+
+@implementation NSDictionary (Private_DictionaryToStrings)
+
+- (NSString *) _stringsFromDictionary
+{
+  NSEnumerator *en = [self keyEnumerator];
+  NSString *k = nil;
+  NSString *result = @"";
+
+  while ((k = [en nextObject]) != nil)
+    {
+      NSString *v = [self objectForKey: k];
+      result = [result stringByAppendingString:
+			 [NSString stringWithFormat: @"\"%@\" = \"%@\";\n", k, v]];
+    }
+
+  return result;
+}
+
+@end
+
+@interface NSString (Private_StringsToDictionary)
+
+- (NSDictionary *) _dictionaryFromStrings;
+
+@end
+
+@implementation NSString (Private_StringsToDictionary)
+
+- (NSDictionary *) _dictionaryFromStrings
+{
+  NSError *error = nil;
+  NSDictionary *dictionary =
+    [NSPropertyListSerialization
+      propertyListWithData: [self dataUsingEncoding: NSUTF8StringEncoding]
+		   options: NSPropertyListImmutable
+		    format: NULL
+		     error: &error];
+  if (error != nil)
+    {
+      NSLog(@"Error reading strings file: %@", error);
+    }
+
+  return dictionary;
+}
+
+@end
 
 @implementation NSDictionaryController
 
@@ -49,6 +103,27 @@
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
 	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }
+}
+
+- (void) _setup
+{
+  _includedKeys = [[NSArray alloc] init];
+  _excludedKeys = [[NSArray alloc] init];
+  _initialKey = @"key";
+  _initialValue = @"value";
+  _count = 0;
+}
+
+- (instancetype) initWithContent: (id)content
+{
+  self = [super initWithContent: content];
+
+  if (self != nil)
+    {
+      [self _setup];
+    }
+
+  return self;
 }
 
 - (NSDictionaryControllerKeyValuePair *) newObject
@@ -113,6 +188,8 @@
 
 - (void) setLocalizedKeyDictionary: (NSDictionary *)dict
 {
+  NSString *strings = [dict _stringsFromDictionary];
+  ASSIGN(_localizedKeyTable, strings);
   ASSIGNCOPY(_localizedKeyDictionary, dict);
 }
 
@@ -123,12 +200,14 @@
 
 - (void) setLocalizedKeyTable: (NSString *)keyTable
 {
+  NSDictionary *dictionary = [keyTable _dictionaryFromStrings];
+  ASSIGN(_localizedKeyDictionary, dictionary);
   ASSIGNCOPY(_localizedKeyTable, keyTable);
 }
 
 - (NSArray *) _buildArray: (NSDictionary *)content
 {
-  NSArray *allKeys = [[content allKeys] sortedArrayUsingSelector: @selector(compare:)];
+  NSArray *allKeys = [content keysSortedByValueUsingSelector: @selector(compare:)];
   NSMutableArray *result = [NSMutableArray arrayWithCapacity: [allKeys count]];
 
   FOR_IN(id, k, allKeys)
@@ -136,17 +215,22 @@
       NSDictionaryControllerKeyValuePair *kvp =
 	AUTORELEASE([[NSDictionaryControllerKeyValuePair alloc] init]);
       id v = [content objectForKey: k];
-      NSString *newKey = [_localizedKeyTable objectForKey: k];
+      NSString *localizedKey = [_localizedKeyDictionary objectForKey: k];
 
-      if (newKey == nil)
-	{
-	  newKey = k;
-	}
-
-      [kvp setKey: newKey];
+      [kvp setLocalizedKey: localizedKey];
+      [kvp setKey: k];
       [kvp setValue: v];
 
       if (![_excludedKeys containsObject: k])
+	{
+	  [kvp setExplicitlyIncluded: NO];
+	}
+
+      if ([_includedKeys containsObject: k])
+	{
+	  [kvp setExplicitlyIncluded: YES];
+	}
+      else
 	{
 	  [kvp setExplicitlyIncluded: NO];
 	}
@@ -274,6 +358,18 @@
     {
       return nil;
     }
+}
+
+- (instancetype) initWithCoder: (NSCoder *)coder
+{
+  self = [super initWithCoder: coder];
+
+  if (self != nil)
+    {
+      [self _setup];
+    }
+
+  return self;
 }
 
 @end
