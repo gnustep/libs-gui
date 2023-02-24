@@ -129,11 +129,19 @@
 - (NSDictionaryControllerKeyValuePair *) newObject
 {
   NSDictionaryControllerKeyValuePair *kvp = [[NSDictionaryControllerKeyValuePair alloc] init];
-  NSString *k = [NSString stringWithFormat: @"%@%lu", _initialKey, _count];
-  NSString *v = [NSString stringWithFormat: @"%@%lu", _initialValue, _count];
+  NSString *k = nil;
 
+  if (_count > 0)
+    {
+      [NSString stringWithFormat: @"%@%lu", _initialKey, _count];
+    }
+  else
+    {
+      k = [_initialKey copy];
+    }
+  
   [kvp setKey: k];
-  [kvp setValue: v];
+  [kvp setValue: _initialValue];
 
   _count++;
   AUTORELEASE(kvp);
