@@ -79,6 +79,7 @@
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
+#import "GSAutoLayoutEngine.h"
 #import "NSViewPrivate.h"
 
 /*
@@ -635,7 +636,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   _needsUpdateConstraints = YES;
   _translatesAutoresizingMaskIntoConstraints = YES;
-  
+  _layoutEngine = nil;
+
   return self;
 }
 
@@ -768,6 +770,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self unregisterDraggedTypes];
   [self releaseGState];
 
+  if (_layoutEngine && !_super_view)
+    {
+      RELEASE(_layoutEngine);
+    }
+
   [super dealloc];
 }
 
@@ -825,6 +832,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       index += 1;
     }
+
+  [aView _setLayoutEngine: [self _layoutEngine]];
 
   [aView _viewWillMoveToWindow: _window];
   [aView _viewWillMoveToSuperview: self];
@@ -5140,27 +5149,23 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (void) layout
 {
-  // FIXME: Implement asking layout engine for the alignment rect of each subview and set the alignment rect of each sub view
+  if (![self _layoutEngine])
+    {
+      return;
+    }
+
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    NSRect subviewAlignmentRect =
+        [[self _layoutEngine] alignmentRectForView: subview];
+    [subview setFrame: subviewAlignmentRect];
+  END_FOR_IN (subviews);
 }
 
 - (void) layoutSubtreeIfNeeded
 {
   [self updateConstraintsForSubtreeIfNeeded];
   [self _layoutViewAndSubViews];
-}
-
-- (void) _layoutViewAndSubViews
-{
-  if (_needsLayout)
-    {
-      [self layout];
-      _needsLayout = NO;
-    }
-
-  NSArray *subviews = [self subviews];
-  FOR_IN (NSView *, subview, subviews)
-    [subview _layoutViewAndSubViews];
-  END_FOR_IN (subviews);
 }
 
 - (void) setNeedsLayout: (BOOL) needsLayout
@@ -5210,6 +5215,35 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 - (void) _setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints
 {
   _needsUpdateConstraints = needsUpdateConstraints;
+}
+
+- (void) _layoutViewAndSubViews
+{
+  if (_needsLayout)
+    {
+      [self layout];
+      _needsLayout = NO;
+    }
+
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    [subview _layoutViewAndSubViews];
+  END_FOR_IN (subviews);
+}
+
+- (GSAutoLayoutEngine*) _layoutEngine
+{  
+  return _layoutEngine;
+}
+
+- (void) _setLayoutEngine: (GSAutoLayoutEngine *)engine
+{
+  _layoutEngine = engine;
+
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    [subview _setLayoutEngine: engine];
+  END_FOR_IN (subviews);
 }
 
 @end

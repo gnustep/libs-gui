@@ -53,6 +53,7 @@
 @class NSScrollView;
 @class NSView;
 @class NSWindow;
+@class GSAutoLayoutEngine;
 
 typedef NSInteger NSTrackingRectTag;
 typedef NSInteger NSToolTipTag;
@@ -186,6 +187,7 @@ PACKAGE_SCOPE
   NSUInteger _autoresizingMask;
   NSFocusRingType _focusRingType;
   NSRect _autoresizingFrameError;
+  GSAutoLayoutEngine *_layoutEngine;
 }
 
 /*
