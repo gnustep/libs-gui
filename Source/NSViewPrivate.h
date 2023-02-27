@@ -46,8 +46,6 @@
 
 - (GSAutoLayoutEngine*) _layoutEngine;
 
-- (void) _setLayoutEngine: (GSAutoLayoutEngine*)engine;
-
 @end
 
 #endif // _GNUstep_H_NSViewPrivate

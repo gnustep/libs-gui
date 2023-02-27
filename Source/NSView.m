@@ -81,6 +81,7 @@
 #import "GSGuiPrivate.h"
 #import "GSAutoLayoutEngine.h"
 #import "NSViewPrivate.h"
+#import "NSWindowPrivate.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...
@@ -636,7 +637,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   _needsUpdateConstraints = YES;
   _translatesAutoresizingMaskIntoConstraints = YES;
-  _layoutEngine = nil;
 
   return self;
 }
@@ -770,11 +770,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self unregisterDraggedTypes];
   [self releaseGState];
 
-  if (_layoutEngine && !_super_view)
-    {
-      RELEASE(_layoutEngine);
-    }
-
   [super dealloc];
 }
 
@@ -832,8 +827,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       index += 1;
     }
-
-  [aView _setLayoutEngine: [self _layoutEngine]];
 
   [aView _viewWillMoveToWindow: _window];
   [aView _viewWillMoveToSuperview: self];
@@ -5149,7 +5142,8 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (void) layout
 {
-  if (![self _layoutEngine])
+  GSAutoLayoutEngine *engine = [self _layoutEngine];
+  if (!engine)
     {
       return;
     }
@@ -5157,7 +5151,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   NSArray *subviews = [self subviews];
   FOR_IN (NSView *, subview, subviews)
     NSRect subviewAlignmentRect =
-        [[self _layoutEngine] alignmentRectForView: subview];
+        [engine alignmentRectForView: subview];
     [subview setFrame: subviewAlignmentRect];
   END_FOR_IN (subviews);
 }
@@ -5232,18 +5226,13 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 }
 
 - (GSAutoLayoutEngine*) _layoutEngine
-{  
-  return _layoutEngine;
-}
-
-- (void) _setLayoutEngine: (GSAutoLayoutEngine *)engine
 {
-  _layoutEngine = engine;
+  if (!([self window] && [[self window] _layoutEngine]))
+    {
+      return nil;
+    }
 
-  NSArray *subviews = [self subviews];
-  FOR_IN (NSView *, subview, subviews)
-    [subview _setLayoutEngine: engine];
-  END_FOR_IN (subviews);
+  return [[self window] _layoutEngine];
 }
 
 @end

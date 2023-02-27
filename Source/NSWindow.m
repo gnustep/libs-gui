@@ -91,6 +91,7 @@
 #import "GSIconManager.h"
 #import "NSToolbarFrameworkPrivate.h"
 #import "NSViewPrivate.h"
+#import "NSWindowPrivate.h"
 
 #define GSI_ARRAY_TYPES 0
 #define GSI_ARRAY_TYPE NSWindow *
@@ -923,6 +924,8 @@ many times.
   DESTROY(_lastDragView);
   DESTROY(_screen);
 
+  TEST_RELEASE(_layoutEngine);
+
   /*
    * FIXME This should not be necessary - the views should have removed
    * their drag types, so we should already have been removed.
@@ -1124,6 +1127,8 @@ many times.
 
   _f.cursor_rects_enabled = YES;
   _f.cursor_rects_valid = NO;
+
+  _layoutEngine = nil;
 
   /* Create the window view */
   cframe.origin = NSZeroPoint;
@@ -6154,6 +6159,20 @@ current key view.<br />
       [_inactive removeObject: window];
     }
 }
+@end
+
+@implementation NSWindow (NSConstraintBasedLayoutCorePrivateMethods)
+
+- (GSAutoLayoutEngine*) _layoutEngine
+{
+  return _layoutEngine;
+}
+
+- (void) _setLayoutEngine: (GSAutoLayoutEngine*)layoutEngine
+{
+  _layoutEngine = layoutEngine;
+}
+
 @end
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)

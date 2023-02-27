@@ -187,7 +187,6 @@ PACKAGE_SCOPE
   NSUInteger _autoresizingMask;
   NSFocusRingType _focusRingType;
   NSRect _autoresizingFrameError;
-  GSAutoLayoutEngine *_layoutEngine;
 }
 
 /*

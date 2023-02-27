@@ -31,6 +31,7 @@
 #import "AppKit/NSAnimation.h"
 #import "AppKit/NSLayoutConstraint.h"
 #import "NSViewPrivate.h"
+#import "NSWindowPrivate.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSApplication.h"
 #import "NSAutoresizingMaskLayoutConstraint.h" 
@@ -653,23 +654,25 @@ static NSMutableArray *activeConstraints = nil;
 
 @implementation NSView (NSConstraintBasedLayoutInstallingConstraints)
 
-- (void) _bootstrapAutoLayout
+- (GSAutoLayoutEngine*) _getOrCreateLayoutEngine
 {
-  if ([self window])
+  if (![self window])
+    {
+      return nil;
+    }
+  if (![[self window] _layoutEngine])
     {
       [[self window] _bootstrapAutoLayout];
     }
-  else
-    {
-      [self _initializeLayoutEngine];
-    }
-}
+
+  return [[self window] _layoutEngine];
+ }
 
 - (void) addConstraint: (NSLayoutConstraint *)constraint
 {
-  if (![self _layoutEngine])
+  if (![self _getOrCreateLayoutEngine])
     {
-      [self _bootstrapAutoLayout];
+      return;
     }
 
   [[self _layoutEngine] addConstraint: constraint];
@@ -677,9 +680,9 @@ static NSMutableArray *activeConstraints = nil;
 
 - (void) addConstraints: (NSArray*)constraints
 {
-  if (![self _layoutEngine])
+  if (![self _getOrCreateLayoutEngine])
     {
-      [self _bootstrapAutoLayout];
+      return;
     }
 
   [[self _layoutEngine] addConstraints: constraints];
@@ -716,11 +719,6 @@ static NSMutableArray *activeConstraints = nil;
   return [engine constraintsForView: self];
 }
 
-- (void) _initializeLayoutEngine
-{
-  [self _setLayoutEngine: [[GSAutoLayoutEngine alloc] init]];
-}
-
 @end
 
 @implementation NSWindow (NSConstraintBasedLayoutCoreMethods)
@@ -738,7 +736,7 @@ static NSMutableArray *activeConstraints = nil;
 
 - (void) _bootstrapAutoLayout
 {
-  [[[self contentView] superview] _initializeLayoutEngine];
+  [self _setLayoutEngine: [[GSAutoLayoutEngine alloc] init]];
 }
 
 @end 

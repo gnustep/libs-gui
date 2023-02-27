@@ -65,6 +65,7 @@
 @class NSViewController;
 
 @class GSWindowDecorationView;
+@class GSAutoLayoutEngine;
 
 /*
  * Window levels are taken from MacOS-X
@@ -240,6 +241,7 @@ APPKIT_EXPORT_CLASS
   id            _firstResponder;
   id            _futureFirstResponder;
   NSView        *_initialFirstResponder;
+  GSAutoLayoutEngine *_layoutEngine;
 PACKAGE_SCOPE
   id            _delegate;
 @protected
