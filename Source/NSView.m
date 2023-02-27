@@ -5227,7 +5227,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (GSAutoLayoutEngine*) _layoutEngine
 {
-  if (!([self window] && [[self window] _layoutEngine]))
+  if (![self window])
     {
       return nil;
     }
