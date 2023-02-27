@@ -3568,6 +3568,11 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
   return NO;
 }
 
+- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+{
+  return YES;
+}
+
 - (void) mouseDown: (NSEvent *)theEvent
 {
   NSPoint initialLocation = [theEvent locationInWindow];
