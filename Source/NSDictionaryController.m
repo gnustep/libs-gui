@@ -174,7 +174,7 @@
 
 - (void) _setup
 {
-  _contentDictionary = [[NSDictionary alloc] init];
+  _contentDictionary = [[NSMutableDictionary alloc] init];
   _includedKeys = [[NSArray alloc] init];
   _excludedKeys = [[NSArray alloc] init];
   _initialKey = @"key";
@@ -196,12 +196,58 @@
 
 - (void) dealloc
 {
-  RELEASE(_contentDicrionary);
+  RELEASE(_contentDictionary);
   RELEASE(_includedKeys);
   RELEASE(_excludedKeys);
   RELEASE(_initialKey);
   RELEASE(_initialValue);
   [super dealloc];
+}
+
+- (void) addObject: (id)obj
+{
+  NSString *k = [obj key];
+  NSString *v = [obj value];
+
+  [super addObject: obj];
+  [_contentDictionary setObject: v
+			 forKey: k];
+}
+
+- (void) addObjects: (NSArray *)array
+{
+  [super addObjects: array];
+
+  FOR_IN(NSDictionaryControllerKeyValuePair*, kvp, array)
+    {
+      NSString *k = [kvp key];
+      NSString *v = [kvp value];
+
+      [_contentDictionary setObject: v
+			     forKey: k];
+    }
+  END_FOR_IN(array);
+}
+
+- (void) removeObject: (id)obj
+{
+  NSString *k = [obj key];
+
+  [super removeObject: obj];
+  [_contentDictionary removeObjectForKey: k];
+}
+
+- (void) removeObjects: (NSArray *)array
+{
+  [super addObjects: array];
+
+  FOR_IN(NSDictionaryControllerKeyValuePair*, kvp, array)
+    {
+      NSString *k = [kvp key];
+
+      [_contentDictionary removeObjectForKey: k];
+    }
+  END_FOR_IN(array);
 }
 
 - (NSDictionaryControllerKeyValuePair *) newObject
@@ -265,8 +311,10 @@
 
 - (void) setExcludedKeys: (NSArray *)excludedKeys
 {
+  [self willChangeValueForKey: NSContentBinding];
   ASSIGNCOPY(_excludedKeys, excludedKeys);
-  [self rearrangeObjects];
+  [self setContent: _contentDictionary];
+  [self didChangeValueForKey: NSContentBinding];
 }
 
 - (NSDictionary *) localizedKeyDictionary
@@ -297,14 +345,8 @@
 
 - (void) setContent: (id)content
 {
+  ASSIGN(_contentDictionary, content);
   [super setContent: [self _buildArray: content]];
-}
-
-- (NSArray *) arrangeObjects: (NSArray *)obj
-{
-  NSArray *array = [self _buildArray: obj];
-  NSArray *result = [super arrangeObjects: obj];
-  return result;
 }
 
 - (void) observeValueForKeyPath: (NSString*)aPath

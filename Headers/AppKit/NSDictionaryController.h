@@ -78,7 +78,7 @@ extern "C" {
 APPKIT_EXPORT_CLASS
 @interface NSDictionaryController : NSArrayController
 {
-  NSDictionary *_contentDictionary;
+  NSMutableDictionary *_contentDictionary;
   NSString *_initialKey;
   id _initialValue;
   NSArray *_includedKeys;
