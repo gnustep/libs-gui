@@ -36,13 +36,14 @@
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
 
-@interface NSDictionary (Private_DictionaryToStrings)
+// Private methods for NSString and NSDictionary...
+@interface NSDictionary (GSPrivate_DictionaryToStrings)
 
 - (NSString *) _stringsFromDictionary;
 
 @end
 
-@implementation NSDictionary (Private_DictionaryToStrings)
+@implementation NSDictionary (GSPrivate_DictionaryToStrings)
 
 - (NSString *) _stringsFromDictionary
 {
@@ -62,13 +63,13 @@
 
 @end
 
-@interface NSString (Private_StringsToDictionary)
+@interface NSString (GSPrivate_StringsToDictionary)
 
 - (NSDictionary *) _dictionaryFromStrings;
 
 @end
 
-@implementation NSString (Private_StringsToDictionary)
+@implementation NSString (GSPrivate_StringsToDictionary)
 
 - (NSDictionary *) _dictionaryFromStrings
 {
@@ -89,6 +90,71 @@
 
 @end
 
+@interface NSDictionaryController (GSPrivate_BuildArray)
+
+- (NSArray *) _buildArray: (NSDictionary *)content;
+- (NSDictionary *) _rebuildDictionary;
+
+@end
+
+@implementation NSDictionaryController (GSPrivate_BuildArray)
+
+- (NSArray *) _buildArray: (NSDictionary *)content
+{
+  NSArray *allKeys = [content keysSortedByValueUsingSelector: @selector(compare:)];
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [allKeys count]];
+
+  FOR_IN(id, k, allKeys)
+    {
+      NSDictionaryControllerKeyValuePair *kvp =
+	AUTORELEASE([[NSDictionaryControllerKeyValuePair alloc] init]);
+      id v = [content objectForKey: k];
+      NSString *localizedKey = [_localizedKeyDictionary objectForKey: k];
+
+      [kvp setLocalizedKey: localizedKey];
+      [kvp setKey: k];
+      [kvp setValue: v];
+
+      if (![_excludedKeys containsObject: k])
+	{
+	  [kvp setExplicitlyIncluded: NO];
+	}
+
+      if ([_includedKeys containsObject: k])
+	{
+	  [kvp setExplicitlyIncluded: YES];
+	}
+      else
+	{
+	  [kvp setExplicitlyIncluded: NO];
+	}
+
+      [result addObject: kvp];
+    }
+  END_FOR_IN(allKeys);
+
+  return result;
+}
+
+- (NSDictionary *) _rebuildDictionary
+{
+  NSMutableDictionary *result = [NSMutableDictionary dictionary];
+
+  FOR_IN(NSDictionaryControllerKeyValuePair*, kvp, _content)
+    {
+      NSString *k = [kvp key];
+      NSString *v = [kvp value];
+
+      [result setObject: v forKey: k];
+    }
+  END_FOR_IN(_content);
+
+  return [result copy];
+}
+
+@end
+
+// NSDictionary class implementation...
 @implementation NSDictionaryController
 
 + (void) initialize
@@ -100,13 +166,15 @@
       [self exposeBinding: NSExcludedKeysBinding];
       [self exposeBinding: NSInitialKeyBinding];
       [self exposeBinding: NSInitialValueBinding];
-      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
+      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding,
+			      NSExcludedKeysBinding, NSIncludedKeysBinding, nil]
 	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }
 }
 
 - (void) _setup
 {
+  _contentDictionary = [[NSDictionary alloc] init];
   _includedKeys = [[NSArray alloc] init];
   _excludedKeys = [[NSArray alloc] init];
   _initialKey = @"key";
@@ -124,6 +192,16 @@
     }
 
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_contentDicrionary);
+  RELEASE(_includedKeys);
+  RELEASE(_excludedKeys);
+  RELEASE(_initialKey);
+  RELEASE(_initialValue);
+  [super dealloc];
 }
 
 - (NSDictionaryControllerKeyValuePair *) newObject
@@ -177,6 +255,7 @@
 - (void) setIncludedKeys: (NSArray *)includedKeys
 {
   ASSIGNCOPY(_includedKeys, includedKeys);
+  [self rearrangeObjects];
 }
 
 - (NSArray *) excludedKeys
@@ -187,6 +266,7 @@
 - (void) setExcludedKeys: (NSArray *)excludedKeys
 {
   ASSIGNCOPY(_excludedKeys, excludedKeys);
+  [self rearrangeObjects];
 }
 
 - (NSDictionary *) localizedKeyDictionary
@@ -199,6 +279,7 @@
   NSString *strings = [dict _stringsFromDictionary];
   ASSIGN(_localizedKeyTable, strings);
   ASSIGNCOPY(_localizedKeyDictionary, dict);
+  [self rearrangeObjects];
 }
 
 - (NSString *) localizedKeyTable
@@ -211,48 +292,19 @@
   NSDictionary *dictionary = [keyTable _dictionaryFromStrings];
   ASSIGN(_localizedKeyDictionary, dictionary);
   ASSIGNCOPY(_localizedKeyTable, keyTable);
-}
-
-- (NSArray *) _buildArray: (NSDictionary *)content
-{
-  NSArray *allKeys = [content keysSortedByValueUsingSelector: @selector(compare:)];
-  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [allKeys count]];
-
-  FOR_IN(id, k, allKeys)
-    {
-      NSDictionaryControllerKeyValuePair *kvp =
-	AUTORELEASE([[NSDictionaryControllerKeyValuePair alloc] init]);
-      id v = [content objectForKey: k];
-      NSString *localizedKey = [_localizedKeyDictionary objectForKey: k];
-
-      [kvp setLocalizedKey: localizedKey];
-      [kvp setKey: k];
-      [kvp setValue: v];
-
-      if (![_excludedKeys containsObject: k])
-	{
-	  [kvp setExplicitlyIncluded: NO];
-	}
-
-      if ([_includedKeys containsObject: k])
-	{
-	  [kvp setExplicitlyIncluded: YES];
-	}
-      else
-	{
-	  [kvp setExplicitlyIncluded: NO];
-	}
-
-      [result addObject: kvp];
-    }
-  END_FOR_IN(allKeys);
-
-  return result;
+  [self rearrangeObjects];
 }
 
 - (void) setContent: (id)content
 {
   [super setContent: [self _buildArray: content]];
+}
+
+- (NSArray *) arrangeObjects: (NSArray *)obj
+{
+  NSArray *array = [self _buildArray: obj];
+  NSArray *result = [super arrangeObjects: obj];
+  return result;
 }
 
 - (void) observeValueForKeyPath: (NSString*)aPath
@@ -286,68 +338,7 @@
       // The binding will be retained in the binding table
       RELEASE(kvb);
     }
-  else if ([binding isEqual: NSIncludedKeysBinding])
-    {
-      GSKeyValueBinding *kvb;
-
-      [self unbind: binding];
-      /*
-      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content"
-					      withName: binding
-					      toObject: anObject
-					   withKeyPath: keyPath
-					       options: options
-					    fromObject: self];
-      // The binding will be retained in the binding table
-      RELEASE(kvb); */
-    }
-  else if ([binding isEqual: NSExcludedKeysBinding])
-    {
-      GSKeyValueBinding *kvb;
-
-      [self unbind: binding];
-      /*
-      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content"
-					      withName: binding
-					      toObject: anObject
-					   withKeyPath: keyPath
-					       options: options
-					    fromObject: self];
-      // The binding will be retained in the binding table
-      RELEASE(kvb); */
-    }
-  else if ([binding isEqual: NSInitialValueBinding])
-    {
-      GSKeyValueBinding *kvb;
-
-      [self unbind: binding];
-      /*
-      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content"
-					      withName: binding
-					      toObject: anObject
-					   withKeyPath: keyPath
-					       options: options
-					    fromObject: self];
-      // The binding will be retained in the binding table
-      RELEASE(kvb); */
-    }
-  else if ([binding isEqual: NSInitialKeyBinding])
-    {
-      GSKeyValueBinding *kvb;
-
-      [self unbind: binding];
-      /*
-      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content"
-					      withName: binding
-					      toObject: anObject
-					   withKeyPath: keyPath
-					       options: options
-					    fromObject: self];
-      // The binding will be retained in the binding table
-      RELEASE(kvb); */
-    }
   else
-
     {
       [super bind: binding
 	 toObject: anObject

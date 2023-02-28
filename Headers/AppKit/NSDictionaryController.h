@@ -29,6 +29,7 @@
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
 
+APPKIT_EXPORT_CLASS
 @interface NSDictionaryControllerKeyValuePair : NSObject
 {
   NSString *_key;
@@ -74,8 +75,10 @@
 extern "C" {
 #endif
 
+APPKIT_EXPORT_CLASS
 @interface NSDictionaryController : NSArrayController
 {
+  NSDictionary *_contentDictionary;
   NSString *_initialKey;
   id _initialValue;
   NSArray *_includedKeys;
@@ -121,9 +124,20 @@ extern "C" {
  * Returns a copy of the localized key dictionary.
  */
 - (NSDictionary *) localizedKeyDictionary;
+
+/**
+ * Sets the localized key dictionary.
+ */
 - (void) setLocalizedKeyDictionary: (NSDictionary *)dict;
-  
+
+/** 
+ * Returns the keyTable which is the dictionary in strings format.
+ */  
 - (NSString *) localizedKeyTable;
+
+/**
+ * Sets the localized keyTable in strings format.
+ */
 - (void) setLocalizedKeyTable: (NSString *)keyTable;
 
 @end
