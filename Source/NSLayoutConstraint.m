@@ -736,7 +736,9 @@ static NSMutableArray *activeConstraints = nil;
 
 - (void) _bootstrapAutoLayout
 {
-  [self _setLayoutEngine: [[GSAutoLayoutEngine alloc] init]];
+  GSAutoLayoutEngine *layoutEngine = [[GSAutoLayoutEngine alloc] init];
+  [self _setLayoutEngine: layoutEngine];
+  AUTORELEASE(layoutEngine);
 }
 
 @end 

@@ -1128,8 +1128,6 @@ many times.
   _f.cursor_rects_enabled = YES;
   _f.cursor_rects_valid = NO;
 
-  _layoutEngine = nil;
-
   /* Create the window view */
   cframe.origin = NSZeroPoint;
   cframe.size = _frame.size;
@@ -6170,7 +6168,7 @@ current key view.<br />
 
 - (void) _setLayoutEngine: (GSAutoLayoutEngine*)layoutEngine
 {
-  _layoutEngine = layoutEngine;
+  ASSIGN(_layoutEngine, layoutEngine);
 }
 
 @end
