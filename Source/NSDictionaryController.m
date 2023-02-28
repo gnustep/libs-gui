@@ -222,7 +222,7 @@
 
 - (void) removeObjects: (NSArray *)array
 {
-  [super addObjects: array];
+  [super removeObjects: array];
 
   FOR_IN(NSDictionaryControllerKeyValuePair*, kvp, array)
     {
