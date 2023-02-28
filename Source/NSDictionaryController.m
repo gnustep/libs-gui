@@ -202,7 +202,7 @@
   FOR_IN(NSDictionaryControllerKeyValuePair*, kvp, array)
     {
       NSString *k = [kvp key];
-      NSString *v = [kvp value];
+      id v = [kvp value];
 
       [_contentDictionary setObject: v
 			     forKey: k];
@@ -422,17 +422,26 @@
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE(_key);
+  RELEASE(_value);
+  RELEASE(_localizedKey);
+
+  [super dealloc];
+}
+
 /**
  * Returns a copy of the key
  */
 - (NSString *) key
 {
-  return [_key copy];
+  return _key;
 }
 
 - (void) setKey: (NSString *)key
 {
-  ASSIGN(_key, key);
+  ASSIGNCOPY(_key, key);
 }
 
 /**
@@ -440,22 +449,22 @@
  */
 - (id) value
 {
-  return [_value copy];
+  return _value;
 }
 
 - (void) setValue: (id)value
 {
-  ASSIGN(_value, value);
+  ASSIGNCOPY(_value, value);
 }
 
 - (NSString *) localizedKey
 {
-  return [_localizedKey copy];
+  return _localizedKey;
 }
 
 - (void) setLocalizedKey: (NSString *)localizedKey
 {
-  ASSIGN(_localizedKey, localizedKey);
+  ASSIGNCOPY(_localizedKey, localizedKey);
 }
 
 - (BOOL) isExplicitlyIncluded
