@@ -93,7 +93,6 @@
 @interface NSDictionaryController (GSPrivate_BuildArray)
 
 - (NSArray *) _buildArray: (NSDictionary *)content;
-- (NSDictionary *) _rebuildDictionary;
 
 @end
 
@@ -115,12 +114,12 @@
       [kvp setKey: k];
       [kvp setValue: v];
       [kvp setExplicitlyIncluded: NO];
-      
+
       if ([_excludedKeys containsObject: k])
 	{
 	  continue; // skip if excluded...
 	}
-      
+
       if ([_includedKeys containsObject: k])
 	{
 	  [kvp setExplicitlyIncluded: YES];
@@ -131,22 +130,6 @@
   END_FOR_IN(allKeys);
 
   return result;
-}
-
-- (NSDictionary *) _rebuildDictionary
-{
-  NSMutableDictionary *result = [NSMutableDictionary dictionary];
-
-  FOR_IN(NSDictionaryControllerKeyValuePair*, kvp, _content)
-    {
-      NSString *k = [kvp key];
-      NSString *v = [kvp value];
-
-      [result setObject: v forKey: k];
-    }
-  END_FOR_IN(_content);
-
-  return [result copy];
 }
 
 @end
@@ -209,6 +192,7 @@
   [super addObject: obj];
   [_contentDictionary setObject: v
 			 forKey: k];
+  [self rearrangeObjects];
 }
 
 - (void) addObjects: (NSArray *)array
@@ -224,6 +208,7 @@
 			     forKey: k];
     }
   END_FOR_IN(array);
+  [self rearrangeObjects];
 }
 
 - (void) removeObject: (id)obj
@@ -232,6 +217,7 @@
 
   [super removeObject: obj];
   [_contentDictionary removeObjectForKey: k];
+  [self rearrangeObjects];
 }
 
 - (void) removeObjects: (NSArray *)array
@@ -245,6 +231,7 @@
       [_contentDictionary removeObjectForKey: k];
     }
   END_FOR_IN(array);
+  [self rearrangeObjects];
 }
 
 - (NSDictionaryControllerKeyValuePair *) newObject
@@ -260,7 +247,7 @@
     {
       k = [_initialKey copy];
     }
-  
+
   [kvp setKey: k];
   [kvp setValue: _initialValue];
 
@@ -268,6 +255,16 @@
   AUTORELEASE(kvp);
 
   return kvp;
+}
+
+- (void) rearrangeObjects
+{
+  [self willChangeValueForKey: NSContentBinding];
+  DESTROY(_arranged_objects);
+  _arranged_objects = [[GSObservableArray alloc]
+			initWithArray: [self arrangeObjects:
+					       [self _buildArray: _contentDictionary]]];
+  [self didChangeValueForKey: NSContentBinding];
 }
 
 - (NSString *) initialKey
@@ -308,13 +305,8 @@
 
 - (void) setExcludedKeys: (NSArray *)excludedKeys
 {
-  [self willChangeValueForKey: NSContentBinding];
   ASSIGNCOPY(_excludedKeys, excludedKeys);
-  DESTROY(_arranged_objects);
-  _arranged_objects = [[GSObservableArray alloc]
-			initWithArray: [self arrangeObjects:
-					       [self _buildArray: _contentDictionary]]];
-  [self didChangeValueForKey: NSContentBinding];
+  [self rearrangeObjects];
 }
 
 - (NSDictionary *) localizedKeyDictionary

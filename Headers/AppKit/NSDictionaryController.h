@@ -1,21 +1,21 @@
 /* Definition of class NSDictionaryController
    Copyright (C) 2021 Free Software Foundation, Inc.
-   
+
    By: Gregory John Casamento
    Date: 16-10-2021
 
    This file is part of the GNUstep Library.
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
-   
+
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -61,7 +61,7 @@ APPKIT_EXPORT_CLASS
 /**
  * Is this key value pair included in the underlying dictionary.
  */
-- (BOOL) isExplicitlyIncluded; 
+- (BOOL) isExplicitlyIncluded;
 - (void) setExplicitlyIncluded: (BOOL)flag;
 
 @end
@@ -112,7 +112,7 @@ APPKIT_EXPORT_CLASS
  */
 - (NSArray *) includedKeys;
 - (void) setIncludedKeys: (NSArray *)includedKeys;
-  
+
 /**
  * Returns a copy of the included keys.  Included keys are always represented by a
  * key value pair whether or not they are included in the underlying dictionary.
@@ -130,9 +130,9 @@ APPKIT_EXPORT_CLASS
  */
 - (void) setLocalizedKeyDictionary: (NSDictionary *)dict;
 
-/** 
+/**
  * Returns the keyTable which is the dictionary in strings format.
- */  
+ */
 - (NSString *) localizedKeyTable;
 
 /**
