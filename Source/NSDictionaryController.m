@@ -114,19 +114,16 @@
       [kvp setLocalizedKey: localizedKey];
       [kvp setKey: k];
       [kvp setValue: v];
-
-      if (![_excludedKeys containsObject: k])
+      [kvp setExplicitlyIncluded: NO];
+      
+      if ([_excludedKeys containsObject: k])
 	{
-	  [kvp setExplicitlyIncluded: NO];
+	  continue; // skip if excluded...
 	}
-
+      
       if ([_includedKeys containsObject: k])
 	{
 	  [kvp setExplicitlyIncluded: YES];
-	}
-      else
-	{
-	  [kvp setExplicitlyIncluded: NO];
 	}
 
       [result addObject: kvp];
@@ -313,7 +310,10 @@
 {
   [self willChangeValueForKey: NSContentBinding];
   ASSIGNCOPY(_excludedKeys, excludedKeys);
-  [self setContent: _contentDictionary];
+  DESTROY(_arranged_objects);
+  _arranged_objects = [[GSObservableArray alloc]
+			initWithArray: [self arrangeObjects:
+					       [self _buildArray: _contentDictionary]]];
   [self didChangeValueForKey: NSContentBinding];
 }
 
