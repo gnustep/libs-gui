@@ -56,7 +56,7 @@ APPKIT_EXPORT_CLASS
 - (BOOL) addSelectionIndexPaths: (NSArray*)indexPaths;
 - (BOOL) alwaysUsesMultipleValuesMarker;
 - (BOOL) avoidsEmptySelection;
-- (BOOL) canAddChid;
+- (BOOL) canAddChild;
 - (BOOL) canInsert;
 - (BOOL) canInsertChild;
 - (BOOL) preservesSelection; 
@@ -64,7 +64,6 @@ APPKIT_EXPORT_CLASS
 - (BOOL) setSelectionIndexPath: (NSIndexPath*)indexPath;
 - (BOOL) setSelectionIndexPaths: (NSArray*)indexPaths;
 - (id) arrangedObjects;
-- (id) content;
 - (NSArray*) selectedObjects;
 - (NSIndexPath*) selectionIndexPath;
 - (NSArray*) selectionIndexPaths;
@@ -86,7 +85,6 @@ APPKIT_EXPORT_CLASS
 - (void) setAlwaysUsesMultipleValuesMarker: (BOOL)flag;
 - (void) setAvoidsEmptySelection: (BOOL)flag;
 - (void) setChildrenKeyPath: (NSString*)path;
-- (void) setContent: (id)content;
 - (void) setCountKeyPath: (NSString*)path;
 - (void) setLeafPathKey: (NSString*)key;
 - (void) setPreservesSelection: (BOOL)flag;

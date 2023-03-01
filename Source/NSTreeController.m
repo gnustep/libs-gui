@@ -1,32 +1,4 @@
-/* 
-   NSTreeController.h
-
-   The tree controller class.
-
-   Copyright (C) 2012 Free Software Foundation, Inc.
-
-   Author:  Gregory Casamento <greg.casamento@gmail.com>
-   Date: 2012
-   
-   This file is part of the GNUstep GUI Library.
-
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
-   Boston, MA 02110-1301, USA.
-*/ 
-/* 
+ /* 
    NSTreeController.h
 
    The tree controller class.
@@ -83,7 +55,7 @@
   [super dealloc];
 }
 
-- (BOOL) addSelectionIndexPaths: (NSArray*)indexPaths
+- (BOOL) addSelectionIndexPaths: (NSArray *)indexPaths
 {
   // FIXME
   return NO;
@@ -99,7 +71,7 @@
   return _avoidsEmptySelection;
 }
 
-- (BOOL) canAddChid
+- (BOOL) canAddChild
 {
   // FIXME
   return NO;
@@ -127,13 +99,13 @@
   return _selectsInsertedObjects;
 }
 
-- (BOOL) setSelectionIndexPath: (NSIndexPath*)indexPath
+- (BOOL) setSelectionIndexPath: (NSIndexPath *)indexPath
 {
   // FIXME
   return NO;
 }
 
-- (BOOL) setSelectionIndexPaths: (NSArray*)indexPaths
+- (BOOL) setSelectionIndexPaths: (NSArray *)indexPaths
 {
   // FIXME
   return NO;
@@ -145,13 +117,7 @@
   return nil;
 }
 
-- (id) content
-{
-  // FIXME
-  return [super content];
-}
-
-- (NSArray*) selectedObjects
+- (NSArray *) selectedObjects
 {
   // FIXME
   return [super selectedObjects];
