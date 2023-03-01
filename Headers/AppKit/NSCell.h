@@ -171,7 +171,9 @@ enum {
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 enum {
   NSBackgroundStyleLight = 0,
+  NSBackgroundStyleNormal = 0,
   NSBackgroundStyleDark = 1,
+  NSBackgroundStyleEmphasized = 1,
   NSBackgroundStyleRaised = 2,
   NSBackgroundStyleLowered = 3
 };
