@@ -89,6 +89,7 @@
 #import "GSGuiPrivate.h"
 #import "GSToolTips.h"
 #import "GSIconManager.h"
+#import "GSAutoLayoutEngine.h"
 #import "NSToolbarFrameworkPrivate.h"
 #import "NSViewPrivate.h"
 #import "NSWindowPrivate.h"

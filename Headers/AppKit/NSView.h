@@ -53,7 +53,6 @@
 @class NSScrollView;
 @class NSView;
 @class NSWindow;
-@class GSAutoLayoutEngine;
 
 typedef NSInteger NSTrackingRectTag;
 typedef NSInteger NSToolTipTag;
