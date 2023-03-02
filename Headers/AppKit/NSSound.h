@@ -30,6 +30,7 @@
 
 #ifndef _GNUstep_H_NSSound
 #define _GNUstep_H_NSSound
+#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSBundle.h>
