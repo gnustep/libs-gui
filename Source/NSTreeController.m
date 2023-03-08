@@ -37,6 +37,7 @@
 
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTreeController.h"
+#import "AppKit/NSTreeNode.h"
 
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
@@ -78,7 +79,6 @@
 
   self = [self initWithContent: array];
   RELEASE(array);
-  
   return self;
 }
 
