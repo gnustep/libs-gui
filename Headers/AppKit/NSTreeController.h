@@ -86,7 +86,7 @@ APPKIT_EXPORT_CLASS
 - (void) setAvoidsEmptySelection: (BOOL)flag;
 - (void) setChildrenKeyPath: (NSString*)path;
 - (void) setCountKeyPath: (NSString*)path;
-- (void) setLeafPathKey: (NSString*)key;
+- (void) setLeafKeyPath: (NSString*)key;
 - (void) setPreservesSelection: (BOOL)flag;
 - (void) setSelectsInsertedObjects: (BOOL)flag;
 - (void) setSortDescriptors: (NSArray*)descriptors;
