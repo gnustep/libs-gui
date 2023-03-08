@@ -1,5 +1,5 @@
- /* 
-   NSTreeController.h
+ /*
+   NSTreeController.m
 
    The tree controller class.
 
@@ -7,7 +7,7 @@
 
    Author:  Gregory Casamento <greg.casamento@gmail.com>
    Date: 2012
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -22,27 +22,46 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSIndexPath.h>
+#import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSSortDescriptor.h>
 
-#import <AppKit/NSTreeController.h>
-#import <AppKit/NSTreeNode.h>
+#import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSTreeController.h"
+#import "AppKit/NSTreeNode.h"
+
+#import "GSBindingHelpers.h"
+#import "GSFastEnumeration.h"
 
 @implementation NSTreeController
+
++ (void) initialize
+{
+  if (self == [NSTreeController class])
+    {
+      [self exposeBinding: NSContentArrayBinding];
+      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
+	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
+    }
+}
 
 - (id) initWithContent: (id)content
 {
   if ((self = [super initWithContent: content]) != nil)
     {
+      _childrenKeyPath = nil;
+      _countKeyPath = nil;
+      _leafKeyPath = nil;
+      _sortDescriptors = nil;
     }
-  
+
   return self;
 }
 
@@ -238,7 +257,7 @@
   ASSIGN(_countKeyPath, path);
 }
 
-- (void) setLeafPathKey: (NSString*)key
+- (void) setLeafKeyPath: (NSString*)key
 {
   ASSIGN(_leafKeyPath, key);
 }
