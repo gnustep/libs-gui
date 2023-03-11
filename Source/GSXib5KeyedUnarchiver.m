@@ -91,28 +91,28 @@ static NSString *ApplicationClass = nil;
   if (self != nil)
     {
       if ([coder allowsKeyedCoding])
-        {
-          // If we've not set the general application class yet...
-          if (_className && (ApplicationClass == nil) &&
-              ([NSClassFromString(_className) isKindOfClass: [NSApplication class]]))
-            {
-              ASSIGNCOPY(ApplicationClass, _className);
-            }
-          
-          _userLabel = [coder decodeObjectForKey: @"userLabel"];
-          
-          // Override this one type...
-          if (_userLabel)
-            {
-              if ([@"Application" isEqualToString: _userLabel])
-                {
-                  if (ApplicationClass == nil)
-                    ASSIGN(_className, @"NSApplication");
-                  else
-                    ASSIGN(_className, ApplicationClass);
-                }
-            }
-        }
+	{
+	  // If we've not set the general application class yet...
+	  if (_className && (ApplicationClass == nil) &&
+	      ([NSClassFromString(_className) isKindOfClass: [NSApplication class]]))
+	    {
+	      ASSIGNCOPY(ApplicationClass, _className);
+	    }
+
+	  _userLabel = [coder decodeObjectForKey: @"userLabel"];
+
+	  // Override this one type...
+	  if (_userLabel)
+	    {
+	      if ([@"Application" isEqualToString: _userLabel])
+		{
+		  if (ApplicationClass == nil)
+		    ASSIGN(_className, @"NSApplication");
+		  else
+		    ASSIGN(_className, ApplicationClass);
+		}
+	    }
+	}
     }
 
   return self;
@@ -139,27 +139,27 @@ static NSString *ApplicationClass = nil;
   if (self)
     {
       if ([coder allowsKeyedCoding])
-        {
-          [self setTypeIdentifier: [coder decodeObjectForKey: @"type"]];
+	{
+	  [self setTypeIdentifier: [coder decodeObjectForKey: @"type"]];
 
-          // Decode value properly...
-          if ([@"boolean" isEqualToString: typeIdentifier])
-            [self setValue: [NSNumber numberWithBool: ([@"YES" isEqualToString: value] ? YES : NO)]];
-          else if ([@"image" isEqualToString: typeIdentifier])
-            [self setValue: [NSImage imageNamed: value]];
-          else if ([@"number" isEqualToString: typeIdentifier])
-            [self setValue: [coder decodeObjectForKey: @"value"]];
-          else if ([@"point" isEqualToString: typeIdentifier])
-            [self setValue: [coder decodeObjectForKey: @"value"]];
-          else if ([@"size" isEqualToString: typeIdentifier])
-            [self setValue: [coder decodeObjectForKey: @"size"]];
-          else if ([@"rect" isEqualToString: typeIdentifier])
-            [self setValue: [coder decodeObjectForKey: @"value"]];
-          else if ([@"nil" isEqualToString: typeIdentifier])
-            [self setValue: nil];
-          else
-            NSWarnMLog(@"type: %@ value: %@ (%@)", typeIdentifier, value, [value class]);
-        }
+	  // Decode value properly...
+	  if ([@"boolean" isEqualToString: typeIdentifier])
+	    [self setValue: [NSNumber numberWithBool: ([@"YES" isEqualToString: value] ? YES : NO)]];
+	  else if ([@"image" isEqualToString: typeIdentifier])
+	    [self setValue: [NSImage imageNamed: value]];
+	  else if ([@"number" isEqualToString: typeIdentifier])
+	    [self setValue: [coder decodeObjectForKey: @"value"]];
+	  else if ([@"point" isEqualToString: typeIdentifier])
+	    [self setValue: [coder decodeObjectForKey: @"value"]];
+	  else if ([@"size" isEqualToString: typeIdentifier])
+	    [self setValue: [coder decodeObjectForKey: @"size"]];
+	  else if ([@"rect" isEqualToString: typeIdentifier])
+	    [self setValue: [coder decodeObjectForKey: @"value"]];
+	  else if ([@"nil" isEqualToString: typeIdentifier])
+	    [self setValue: nil];
+	  else
+	    NSWarnMLog(@"type: %@ value: %@ (%@)", typeIdentifier, value, [value class]);
+	}
     }
 
   return self;
@@ -188,276 +188,279 @@ static NSArray      *XmlBoolDefaultYes  = nil;
     {
       // Only check one since we're going to load all once...
       if (XmlTagToObjectClassMap == nil)
-        {
-          // These define XML tags (i.e. <objects ...) that should be allocated as the
-          // associated class...
-          XmlTagToObjectClassMap =
-            [NSDictionary dictionaryWithObjectsAndKeys:
-                            @"NSMutableArray", @"objects",
-                            @"NSMutableArray", @"items",
-                            @"NSMutableArray", @"tabViewItems",
-                            @"NSMutableArray", @"connections",
-                            @"NSMutableArray", @"subviews",
-                            @"NSMutableArray", @"tableColumns",
-                            @"NSMutableArray", @"cells",
-                            @"NSMutableArray", @"column",
-                            @"NSMutableArray", @"tabStops",
-                            @"NSMutableArray", @"userDefinedRuntimeAttributes",
-                            @"NSMutableArray", @"resources",
-                            @"NSMutableArray", @"segments",
-                            @"NSMutableArray", @"objectValues",
-                            @"NSMutableArray", @"prototypeCellViews",
-                            @"NSMutableArray", @"allowedToolbarItems",
-                            @"NSMutableArray", @"defaultToolbarItems",
-                            @"NSMutableArray", @"rowTemplates",
-                            @"NSMutableArray", @"constraints",
-                            @"NSMutableArray", @"rows",
-                            @"NSMutableArray", @"columns",
-                            @"NSMutableArray", @"gridCells",
-                            @"NSSegmentItem", @"segment",
-                            @"NSCell", @"customCell",
-                            @"NSCustomObject5", @"customObject",
-                            @"IBOutletConnection", @"outlet",
-                            @"IBActionConnection", @"action",
-                            @"NSNibBindingConnector", @"binding",
-                            @"NSWindowTemplate", @"window",
-                            @"NSView", @"tableCellView",
-                            @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
-                            @"NSURL", @"url",
-                            @"NSLayoutConstraint", @"constraint",
-                            @"NSPageController", @"pagecontroller", // inconsistent capitalization
-                            @"NSStackViewContainer", @"beginningViews",
-                            @"NSStackViewContainer", @"middleViews",
-                            @"NSStackViewContainer", @"endViews",
-                            nil];
-          RETAIN(XmlTagToObjectClassMap);
+	{
+	  // These define XML tags (i.e. <objects ...) that should be allocated as the
+	  // associated class...
+	  XmlTagToObjectClassMap =
+	    [NSDictionary dictionaryWithObjectsAndKeys:
+			    @"NSMutableArray", @"objects",
+			    @"NSMutableArray", @"items",
+			    @"NSMutableArray", @"tabViewItems",
+			    @"NSMutableArray", @"connections",
+			    @"NSMutableArray", @"subviews",
+			    @"NSMutableArray", @"tableColumns",
+			    @"NSMutableArray", @"cells",
+			    @"NSMutableArray", @"column",
+			    @"NSMutableArray", @"tabStops",
+			    @"NSMutableArray", @"userDefinedRuntimeAttributes",
+			    @"NSMutableArray", @"resources",
+			    @"NSMutableArray", @"segments",
+			    @"NSMutableArray", @"objectValues",
+			    @"NSMutableArray", @"prototypeCellViews",
+			    @"NSMutableArray", @"allowedToolbarItems",
+			    @"NSMutableArray", @"defaultToolbarItems",
+			    @"NSMutableArray", @"rowTemplates",
+			    @"NSMutableArray", @"constraints",
+			    @"NSMutableArray", @"rows",
+			    @"NSMutableArray", @"columns",
+			    @"NSMutableArray", @"gridCells",
+			    @"NSSegmentItem", @"segment",
+			    @"NSCell", @"customCell",
+			    @"NSCustomObject5", @"customObject",
+			    @"IBOutletConnection", @"outlet",
+			    @"IBActionConnection", @"action",
+			    @"NSNibBindingConnector", @"binding",
+			    @"NSWindowTemplate", @"window",
+			    @"NSView", @"tableCellView",
+			    @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
+			    @"NSURL", @"url",
+			    @"NSLayoutConstraint", @"constraint",
+			    @"NSPageController", @"pagecontroller", // inconsistent capitalization
+			    @"NSStackViewContainer", @"beginningViews",
+			    @"NSStackViewContainer", @"middleViews",
+			    @"NSStackViewContainer", @"endViews",
+			    nil];
+	  RETAIN(XmlTagToObjectClassMap);
 
-          XmlTagsNotStacked = [NSArray arrayWithObject: @"document"];
-          RETAIN(XmlTagsNotStacked);
+	  XmlTagsNotStacked = [NSArray arrayWithObject: @"document"];
+	  RETAIN(XmlTagsNotStacked);
 
-          XmlTagsToSkip = [NSArray arrayWithObject: @"dependencies"];
-          RETAIN(XmlTagsToSkip);
+	  XmlTagsToSkip = [NSArray arrayWithObject: @"dependencies"];
+	  RETAIN(XmlTagsToSkip);
 
-          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
-          RETAIN(ClassNamePrefixes);
+	  ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
+	  RETAIN(ClassNamePrefixes);
 
-          XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",
-                                            @"selectedItem", @"firstItem", @"secondItem",
-                                            @"row", @"column", nil];
-          RETAIN(XmlReferenceAttributes);
+	  XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",
+					    @"selectedItem", @"firstItem", @"secondItem",
+					    @"row", @"column", nil];
+	  RETAIN(XmlReferenceAttributes);
 
-          XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
-          RETAIN(XmlConnectionRecordTags);
+	  XmlConnectionRecordTags = [NSArray arrayWithObjects: @"action", @"outlet", @"binding", nil];
+	  RETAIN(XmlConnectionRecordTags);
 
-          XmlConstraintRecordTags = [NSArray arrayWithObject: @"constraint"];
-          RETAIN(XmlConstraintRecordTags);
-          
-          // These cross-reference from the OLD key to the NEW key that can be referenced and its value
-          // or object returned verbatim.  If an OLD XIB key does not exist and contains the 'NS' prefix
-          // the key processing will strip the 'NS' prefix, make the first letter lowercase then check
-          // whether that key exists and use its presence during 'containsValueForKey:' processing, and
-          // use its value for 'decodeXxxForKey:' processing.  So, the keys here should ONLY be those
-          // that cannot be generated autoamatically by this processing.
-          // (i.e. NSIsSeparator->isSeparatorItem, NSWindowStyleMask->styleMask, etc)
-          // Note, that unless the associated cross referenced key contains an attribute that matches the
-          // original OLD key type you will need to potentially add a decoding method, and if so, the
-          // 'XmlKeyToDecoderSelectorMap' variable below should contain the key to its associated decoding
-          // method for cross referencing...
-          XmlKeyMapTable = [NSDictionary dictionaryWithObjectsAndKeys:
-                                           @"isSeparatorItem", @"NSIsSeparator",
-                                           @"customClass", @"NSClassName",
-                                           @"catalog", @"NSCatalogName",
-                                           @"name" , @"NSColorName",
-                                           @"pullsDown", @"NSPullDown",
-                                           @"prototype", @"NSProtoCell",
-                                           @"metaFont", @"IBIsSystemFont",
-                                           @"defaultColumnWidth", @"NSPreferedColumnWidth",
-                                           @"borderColor", @"NSBorderColor2",
-                                           @"fillColor", @"NSFillColor2",
-                                           @"horizontalScroller", @"NSHScroller",
-                                           @"verticalScroller", @"NSVScroller",
-                                           @"keyEquivalent", @"NSKeyEquiv",
-                                           @"keyEquivalentModifierMask", @"NSKeyEquivModMask",
-                                           @"contentViewMargins", @"NSOffsets",
-                                           @"contentView", @"NSWindowView",
-                                           @"customClass", @"NSWindowClass",
-                                           @"contentRect", @"NSWindowRect",
-                                           @"insertionPointColor", @"NSInsertionColor",
-                                           @"vertical", @"NSIsVertical",
-                                           @"initialItem", @"NSSelectedTabViewItem",
-                                           @"allowsExpansionToolTips", @"NSControlAllowsExpansionToolTips",
-                                           @"segments", @"NSSegmentImages",
-                                           @"editable", @"NSIsEditable",
-                                           @"objectValues", @"NSPopUpListData",
-                                           @"maxNumberOfRows", @"NSMaxNumberOfGridRows",
-                                           @"maxNumberOfColumns", @"NSMaxNumberOfGridColumns",
-                                           @"sortKey", @"NSKey",
-                                           @"name", @"NSBinding",
-                                           @"items", @"NSMenuItems",
-                                           @"implicitIdentifier", @"NSToolbarIdentifier",
-                                           @"allowedToolbarItems", @"NSToolbarIBAllowedItems",
-                                           @"defaultToolbarItems", @"NSToolbarIBDefaultItems",
-                                           @"implicitItemIdentifier", @"NSToolbarItemIdentifier",
-                                           @"bordered", @"NSIsBordered",
-                                           @"altersStateOfSelectedItem", @"NSAltersState",
-                                           @"string", @"NS.relative",
-                                           @"canPropagateSelectedChildViewControllerTitle",
-                                                   @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle",
-                                           @"rowAlignment", @"NSGrid_alignment",  // NSGridView
-                                           @"rowSpacing", @"NSGrid_rowSpacing",
-                                           @"columnSpacing", @"NSGrid_columnSpacing",
-                                           @"hidden", @"NSGrid_hidden",
-                                           @"leadingPadding", @"NSGrid_leadingPadding",
-                                           @"bottomPadding", @"NSGrid_bottomPadding",
-                                           @"trailingPadding", @"NSGrid_trailingPadding",
-                                           @"topPadding", @"NSGrid_topPadding",
-                                           @"width", @"NSGrid_width",
-                                           @"height", @"NSGrid_height",
-                                           @"xPlacement", @"NSGrid_xPlacement",
-                                           @"yPlacement", @"NSGrid_yPlacement",
-                                           @"rows", @"NSGrid_rows",
-                                           @"columns", @"NSGrid_columns",
-                                           @"gridCells", @"NSGrid_cells",
-                                           @"contentView", @"NSGrid_content",
-                                           @"row", @"NSGrid_owningRow",
-                                           @"column", @"NSGrid_owningColumn",
-                                           @"beginningViews", @"NSStackViewBeginningContainer",  // NSStackView
-                                           @"middleViews", @"NSStackViewMiddleContainer",
-                                           @"endViews", @"NSStackViewEndContainer",
-					   @"collectionViewLayout", @"NSCollectionViewLayout",
-                                           nil];
-          RETAIN(XmlKeyMapTable);
+	  XmlConstraintRecordTags = [NSArray arrayWithObject: @"constraint"];
+	  RETAIN(XmlConstraintRecordTags);
 
-          // These define keys that are always "CONTAINED" since they typically are a combination of key values
-          // stored as separate and/or multiple attributed values that may be combined as in the case of flags
-          // and masks.  There are some that have NO direct cross reference (i.e. NSSupport, NSBGColor, etc)
-          // Each of the ones listed here will MOST PROBABLY have an entry in the 'XmlKeyToDecoderSelectorMap'
-          // below that provides a cross referenced to an asociated decoding method...
-          // If there is an easy way to check whether an existing OLD XIB key is contained within the XIB 5
-          // version the 'containsValueForKey:' method in this file should be modified and the key omitted from this
-          // list (i.e. NSIntercellSpacingWidth, NSIntercellSpacingHeight, etc)...
-          XmlKeysDefined = [NSArray arrayWithObjects: @"NSWindowBacking", @"NSWTFlags",
-                                    @"NSvFlags", @"NSBGColor",
-                                    @"NSSize",
-                                    @"NSHScroller", @"NSVScroller", @"NSsFlags", @"NSsFlags2",
-                                    @"NSColumnAutoresizingStyle", @"NSTvFlags", @"NScvFlags",
-                                    @"NSSupport", @"NSName",
-                                    @"NSMenuItem",
-                                    @"NSDocView",
-                                    @"NSSliderType",
-                                    @"NSCellPrototype", @"NSBrFlags", @"NSNumberOfVisibleColumns",
-                                    @"NSWhite", @"NSRGB", @"NSCYMK",
-                                    @"NSCellFlags", @"NSCellFlags2",
-                                    @"NSButtonFlags", @"NSButtonFlags2",
-                                    @"NSUsesItemFromMenu",
-                                    @"NSNormalImage", @"NSAlternateImage",
-                                    @"NSBorderType", @"NSBoxType", @"NSTitlePosition",
-                                    @"NSTitleCell", @"NSOffsets",
-                                    @"NSMatrixFlags", @"NSNumCols", @"NSNumRows",
-                                    @"NSSharedData", @"NSFlags", @"NSTVFlags",
-                                    @"NSDefaultParagraphStyle",
-                                    @"NSpiFlags", @"NSStackViewContainerNonDroppedViews",
-                                    nil];
-          RETAIN(XmlKeysDefined);
+	  // These cross-reference from the OLD key to the NEW key that can be referenced and its value
+	  // or object returned verbatim.  If an OLD XIB key does not exist and contains the 'NS' prefix
+	  // the key processing will strip the 'NS' prefix, make the first letter lowercase then check
+	  // whether that key exists and use its presence during 'containsValueForKey:' processing, and
+	  // use its value for 'decodeXxxForKey:' processing.  So, the keys here should ONLY be those
+	  // that cannot be generated autoamatically by this processing.
+	  // (i.e. NSIsSeparator->isSeparatorItem, NSWindowStyleMask->styleMask, etc)
+	  // Note, that unless the associated cross referenced key contains an attribute that matches the
+	  // original OLD key type you will need to potentially add a decoding method, and if so, the
+	  // 'XmlKeyToDecoderSelectorMap' variable below should contain the key to its associated decoding
+	  // method for cross referencing...
+	  XmlKeyMapTable = [NSDictionary dictionaryWithObjectsAndKeys:
+					   @"isSeparatorItem", @"NSIsSeparator",
+					   @"customClass", @"NSClassName",
+					   @"catalog", @"NSCatalogName",
+					   @"name" , @"NSColorName",
+					   @"pullsDown", @"NSPullDown",
+					   @"prototype", @"NSProtoCell",
+					   @"metaFont", @"IBIsSystemFont",
+					   @"defaultColumnWidth", @"NSPreferedColumnWidth",
+					   @"borderColor", @"NSBorderColor2",
+					   @"fillColor", @"NSFillColor2",
+					   @"horizontalScroller", @"NSHScroller",
+					   @"verticalScroller", @"NSVScroller",
+					   @"keyEquivalent", @"NSKeyEquiv",
+					   @"keyEquivalentModifierMask", @"NSKeyEquivModMask",
+					   @"contentViewMargins", @"NSOffsets",
+					   @"contentView", @"NSWindowView",
+					   @"customClass", @"NSWindowClass",
+					   @"contentRect", @"NSWindowRect",
+					   @"insertionPointColor", @"NSInsertionColor",
+					   @"vertical", @"NSIsVertical",
+					   @"initialItem", @"NSSelectedTabViewItem",
+					   @"allowsExpansionToolTips", @"NSControlAllowsExpansionToolTips",
+					   @"segments", @"NSSegmentImages",
+					   @"editable", @"NSIsEditable",
+					   @"objectValues", @"NSPopUpListData",
+					   @"maxNumberOfRows", @"NSMaxNumberOfGridRows",
+					   @"maxNumberOfColumns", @"NSMaxNumberOfGridColumns",
+					   @"sortKey", @"NSKey",
+					   @"name", @"NSBinding",
+					   @"items", @"NSMenuItems",
+					   @"implicitIdentifier", @"NSToolbarIdentifier",
+					   @"allowedToolbarItems", @"NSToolbarIBAllowedItems",
+					   @"defaultToolbarItems", @"NSToolbarIBDefaultItems",
+					   @"implicitItemIdentifier", @"NSToolbarItemIdentifier",
+					   @"bordered", @"NSIsBordered",
+					   @"altersStateOfSelectedItem", @"NSAltersState",
+					   @"string", @"NS.relative",
+					   @"canPropagateSelectedChildViewControllerTitle",
+						   @"NSTabViewControllerCanPropagateSelectedChildViewControllerTitle",
+					   @"rowAlignment", @"NSGrid_alignment",  // NSGridView
+					   @"rowSpacing", @"NSGrid_rowSpacing",
+					   @"columnSpacing", @"NSGrid_columnSpacing",
+					   @"hidden", @"NSGrid_hidden",
+					   @"leadingPadding", @"NSGrid_leadingPadding",
+					   @"bottomPadding", @"NSGrid_bottomPadding",
+					   @"trailingPadding", @"NSGrid_trailingPadding",
+					   @"topPadding", @"NSGrid_topPadding",
+					   @"width", @"NSGrid_width",
+					   @"height", @"NSGrid_height",
+					   @"xPlacement", @"NSGrid_xPlacement",
+					   @"yPlacement", @"NSGrid_yPlacement",
+					   @"rows", @"NSGrid_rows",
+					   @"columns", @"NSGrid_columns",
+					   @"gridCells", @"NSGrid_cells",
+					   @"contentView", @"NSGrid_content",
+					   @"row", @"NSGrid_owningRow",
+					   @"column", @"NSGrid_owningColumn",
+					   @"beginningViews", @"NSStackViewBeginningContainer",  // NSStackView
+					   @"middleViews", @"NSStackViewMiddleContainer",
+					   @"endViews", @"NSStackViewEndContainer",
+					   @"collectionViewLayout", @"NSCollectionViewLayout", // NSCollectionView
+					   @"childrenKeyPath", @"NSTreeContentChildrenKey", // NSTreeController
+					   @"countKeyPath", @"NSTreeContentCountKey",
+					   @"leafKeyPath", @"NSTreeContentLeafKey",
+					   nil];
+	  RETAIN(XmlKeyMapTable);
 
-          // These define XML tags (i.e. '<autoresizingMask ...') to an associated decode method...
-          XmlTagToDecoderSelectorMap =
-            [NSDictionary dictionaryWithObjectsAndKeys:
-                     @"decodeTableColumnResizingMaskForElement:", @"tableColumnResizingMask",
-                     @"decodeWindowStyleMaskForElement:", @"windowStyleMask",
-                     @"decodeTableViewGridLinesForElement:", @"tableViewGridLines",
-                     nil];
-          RETAIN(XmlTagToDecoderSelectorMap);
+	  // These define keys that are always "CONTAINED" since they typically are a combination of key values
+	  // stored as separate and/or multiple attributed values that may be combined as in the case of flags
+	  // and masks.  There are some that have NO direct cross reference (i.e. NSSupport, NSBGColor, etc)
+	  // Each of the ones listed here will MOST PROBABLY have an entry in the 'XmlKeyToDecoderSelectorMap'
+	  // below that provides a cross referenced to an asociated decoding method...
+	  // If there is an easy way to check whether an existing OLD XIB key is contained within the XIB 5
+	  // version the 'containsValueForKey:' method in this file should be modified and the key omitted from this
+	  // list (i.e. NSIntercellSpacingWidth, NSIntercellSpacingHeight, etc)...
+	  XmlKeysDefined = [NSArray arrayWithObjects: @"NSWindowBacking", @"NSWTFlags",
+				    @"NSvFlags", @"NSBGColor",
+				    @"NSSize",
+				    @"NSHScroller", @"NSVScroller", @"NSsFlags", @"NSsFlags2",
+				    @"NSColumnAutoresizingStyle", @"NSTvFlags", @"NScvFlags",
+				    @"NSSupport", @"NSName",
+				    @"NSMenuItem",
+				    @"NSDocView",
+				    @"NSSliderType",
+				    @"NSCellPrototype", @"NSBrFlags", @"NSNumberOfVisibleColumns",
+				    @"NSWhite", @"NSRGB", @"NSCYMK",
+				    @"NSCellFlags", @"NSCellFlags2",
+				    @"NSButtonFlags", @"NSButtonFlags2",
+				    @"NSUsesItemFromMenu",
+				    @"NSNormalImage", @"NSAlternateImage",
+				    @"NSBorderType", @"NSBoxType", @"NSTitlePosition",
+				    @"NSTitleCell", @"NSOffsets",
+				    @"NSMatrixFlags", @"NSNumCols", @"NSNumRows",
+				    @"NSSharedData", @"NSFlags", @"NSTVFlags",
+				    @"NSDefaultParagraphStyle",
+				    @"NSpiFlags", @"NSStackViewContainerNonDroppedViews",
+				    nil];
+	  RETAIN(XmlKeysDefined);
 
-          // These define XML attribute keys (i.e. '<object key="name" key="name" ...') to an associated decode method...
-          // The associated decode method may process MULTIPLE keyed attributes as in such cases as
-          // decoding the integer flag masks...
-          XmlKeyToDecoderSelectorMap =
-            [NSDictionary dictionaryWithObjectsAndKeys:
-               @"decodeStackViewNonDroppedViewsForElement:", @"NSStackViewContainerNonDroppedViews",
-               @"decodeDistributionForElement:", @"NSStackViewdistribution",
-               @"decodeOrientationForElement:", @"NSStackViewOrientation",
-               @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
-               @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
-               @"decodeRowAlignmentForElement:", @"NSGrid_alignment",
-               @"decodeIntercellSpacingHeightForElement:", @"NSIntercellSpacingHeight",
-               @"decodeIntercellSpacingWidthForElement:", @"NSIntercellSpacingWidth",
-               @"decodeColumnAutoresizingStyleForElement:", @"NSColumnAutoresizingStyle",
-               @"decodeNameForElement:", @"NSName",
-               @"decodeSliderCellTypeForElement:", @"NSSliderType",
-               @"decodeColumnResizingTypeForElement:", @"NSColumnResizingType",
-               @"decodeNumberOfVisibleColumnsForElement:", @"NSNumberOfVisibleColumns",
-               @"decodeSliderCellTickMarkPositionForElement:", @"NSTickMarkPosition",
-               @"decodeCellsForElement:", @"NSCells",
-               @"decodeNumberOfColumnsInMatrixForElement:", @"NSNumCols",
-               @"decodeNumberOfRowsInMatrixForElement:", @"NSNumRows",
-               @"decodeNoAutoenablesItemsForElement:", @"NSNoAutoenable",
-               @"decodeUsesItemFromMenuForElement:", @"NSUsesItemFromMenu",
-               @"decodeSelectedIndexForElement:", @"NSSelectedIndex",
-               @"decodePreferredEdgeForElement:", @"NSPreferredEdge",
-               @"decodeArrowPositionForElement:", @"NSArrowPosition",
-               @"decodeCellPrototypeForElement:", @"NSCellPrototype",
-               @"decodeTitleCellForElement:", @"NSTitleCell",
-               @"decodeBorderTypeForElement:", @"NSBorderType",
-               @"decodeBoxTypeForElement:", @"NSBoxType",
-               @"decodeTitlePositionForElement:", @"NSTitlePosition",
-               @"decodeModifierMaskForElement:", @"keyEquivalentModifierMask",
-               @"decodeMenuItemStateForElement:", @"NSState",
-               @"decodeCellForElement:", @"NSCell",
-               @"decodeFontSizeForElement:", @"NSSize",
-               @"decodeProgressIndicatorFlagsForElement:", @"NSpiFlags",
-               @"decodeTextViewSharedDataFlagsForElement:", @"NSFlags",
-               @"decodeSharedDataForElement:", @"NSSharedData",
-               @"decodeDefaultParagraphStyleForElement:", @"NSDefaultParagraphStyle",
-               @"decodeTextViewFlagsForElement:", @"NSTVFlags",
-               @"decodeMatrixFlagsForElement:", @"NSMatrixFlags",
-               @"decodeScrollClassFlagsForElement:", @"NSsFlags",
-               @"decodeScrollerFlags2ForElement:", @"NSsFlags2",
-               @"decodeScrollViewHeaderClipViewForElement:", @"NSHeaderClipView",
-               @"decodeBackgroundColorForElement:", @"NSBGColor",
-               @"decodeBrowserFlagsForElement:", @"NSBrFlags",
-               @"decodeClipViewFlagsForElement:", @"NScvFlags",
-               @"decodeTViewFlagsForElement:", @"NSTvFlags",
-               @"decodeViewFlagsForElement:", @"NSvFlags",
-               @"decodeCellContentsForElement:", @"NSContents",
-               @"decodeCellAlternateContentsForElement:", @"NSAlternateContents",
-               @"decodeCellFlags1ForElement:", @"NSCellFlags",
-               @"decodeCellFlags2ForElement:", @"NSCellFlags2",
-               @"decodeButtonFlags1ForElement:", @"NSButtonFlags",
-               @"decodeButtonFlags2ForElement:", @"NSButtonFlags2",
-               @"decodeCellNormalImageForElement:", @"NSNormalImage",
-               @"decodeCellAlternateImageForElement:", @"NSAlternateImage",
-               @"decodeWindowTemplateFlagsForElement:", @"NSWTFlags",
-               @"decodeWindowBackingStoreForElement:", @"NSWindowBacking",
-               @"decodeClipViewDocumentViewForElement:", @"NSDocView",
-               @"decodeColorWhiteForElement:", @"NSWhite",
-               @"decodeColorRGBForElement:", @"NSRGB",
-               @"decodeColorSpaceForElement:", @"NSColorSpace",
-               @"decodeColorCYMKForElement:", @"NSCYMK",
-               @"decodeSegmentItemImageForElement:", @"NSSegmentItemImage",
-               @"decodeBackgroundColorsForElement:", @"NSBackgroundColors",
-               @"decodeDividerStyleForElement:", @"NSDividerStyle",
-               @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
-               @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
-               @"decodeControlContentsForElement:", @"NSControlContents",
-               @"decodePathStyle:", @"NSPathStyle",
-               @"decodeFirstAttribute:", @"NSFirstAttribute",
-               @"decodeSecondAttribute:", @"NSSecondAttribute",
-               @"decodeRelation:", @"NSRelation",
-               @"decodeTransitionStyle:", @"NSTransitionStyle",
-                 nil];
-          RETAIN(XmlKeyToDecoderSelectorMap);
+	  // These define XML tags (i.e. '<autoresizingMask ...') to an associated decode method...
+	  XmlTagToDecoderSelectorMap =
+	    [NSDictionary dictionaryWithObjectsAndKeys:
+		     @"decodeTableColumnResizingMaskForElement:", @"tableColumnResizingMask",
+		     @"decodeWindowStyleMaskForElement:", @"windowStyleMask",
+		     @"decodeTableViewGridLinesForElement:", @"tableViewGridLines",
+		     nil];
+	  RETAIN(XmlTagToDecoderSelectorMap);
 
-          // boolean fields that should be treated as YES when missing.
-          XmlBoolDefaultYes = [[NSArray alloc] initWithObjects:
-                                               @"altersStateOfSelectedItem",
-                                               @"bordered",
-                                               @"prefersToBeShown",
-                                               @"editable",
-                                               @"enabled",
-                                               @"canPropagateSelectedChildViewControllerTitle",
-                                               nil];
-        }
+	  // These define XML attribute keys (i.e. '<object key="name" key="name" ...') to an associated decode method...
+	  // The associated decode method may process MULTIPLE keyed attributes as in such cases as
+	  // decoding the integer flag masks...
+	  XmlKeyToDecoderSelectorMap =
+	    [NSDictionary dictionaryWithObjectsAndKeys:
+	       @"decodeStackViewNonDroppedViewsForElement:", @"NSStackViewContainerNonDroppedViews",
+	       @"decodeDistributionForElement:", @"NSStackViewdistribution",
+	       @"decodeOrientationForElement:", @"NSStackViewOrientation",
+	       @"decodeXPlacementForElement:", @"NSGrid_xPlacement",
+	       @"decodeYPlacementForElement:", @"NSGrid_yPlacement",
+	       @"decodeRowAlignmentForElement:", @"NSGrid_alignment",
+	       @"decodeIntercellSpacingHeightForElement:", @"NSIntercellSpacingHeight",
+	       @"decodeIntercellSpacingWidthForElement:", @"NSIntercellSpacingWidth",
+	       @"decodeColumnAutoresizingStyleForElement:", @"NSColumnAutoresizingStyle",
+	       @"decodeNameForElement:", @"NSName",
+	       @"decodeSliderCellTypeForElement:", @"NSSliderType",
+	       @"decodeColumnResizingTypeForElement:", @"NSColumnResizingType",
+	       @"decodeNumberOfVisibleColumnsForElement:", @"NSNumberOfVisibleColumns",
+	       @"decodeSliderCellTickMarkPositionForElement:", @"NSTickMarkPosition",
+	       @"decodeCellsForElement:", @"NSCells",
+	       @"decodeNumberOfColumnsInMatrixForElement:", @"NSNumCols",
+	       @"decodeNumberOfRowsInMatrixForElement:", @"NSNumRows",
+	       @"decodeNoAutoenablesItemsForElement:", @"NSNoAutoenable",
+	       @"decodeUsesItemFromMenuForElement:", @"NSUsesItemFromMenu",
+	       @"decodeSelectedIndexForElement:", @"NSSelectedIndex",
+	       @"decodePreferredEdgeForElement:", @"NSPreferredEdge",
+	       @"decodeArrowPositionForElement:", @"NSArrowPosition",
+	       @"decodeCellPrototypeForElement:", @"NSCellPrototype",
+	       @"decodeTitleCellForElement:", @"NSTitleCell",
+	       @"decodeBorderTypeForElement:", @"NSBorderType",
+	       @"decodeBoxTypeForElement:", @"NSBoxType",
+	       @"decodeTitlePositionForElement:", @"NSTitlePosition",
+	       @"decodeModifierMaskForElement:", @"keyEquivalentModifierMask",
+	       @"decodeMenuItemStateForElement:", @"NSState",
+	       @"decodeCellForElement:", @"NSCell",
+	       @"decodeFontSizeForElement:", @"NSSize",
+	       @"decodeProgressIndicatorFlagsForElement:", @"NSpiFlags",
+	       @"decodeTextViewSharedDataFlagsForElement:", @"NSFlags",
+	       @"decodeSharedDataForElement:", @"NSSharedData",
+	       @"decodeDefaultParagraphStyleForElement:", @"NSDefaultParagraphStyle",
+	       @"decodeTextViewFlagsForElement:", @"NSTVFlags",
+	       @"decodeMatrixFlagsForElement:", @"NSMatrixFlags",
+	       @"decodeScrollClassFlagsForElement:", @"NSsFlags",
+	       @"decodeScrollerFlags2ForElement:", @"NSsFlags2",
+	       @"decodeScrollViewHeaderClipViewForElement:", @"NSHeaderClipView",
+	       @"decodeBackgroundColorForElement:", @"NSBGColor",
+	       @"decodeBrowserFlagsForElement:", @"NSBrFlags",
+	       @"decodeClipViewFlagsForElement:", @"NScvFlags",
+	       @"decodeTViewFlagsForElement:", @"NSTvFlags",
+	       @"decodeViewFlagsForElement:", @"NSvFlags",
+	       @"decodeCellContentsForElement:", @"NSContents",
+	       @"decodeCellAlternateContentsForElement:", @"NSAlternateContents",
+	       @"decodeCellFlags1ForElement:", @"NSCellFlags",
+	       @"decodeCellFlags2ForElement:", @"NSCellFlags2",
+	       @"decodeButtonFlags1ForElement:", @"NSButtonFlags",
+	       @"decodeButtonFlags2ForElement:", @"NSButtonFlags2",
+	       @"decodeCellNormalImageForElement:", @"NSNormalImage",
+	       @"decodeCellAlternateImageForElement:", @"NSAlternateImage",
+	       @"decodeWindowTemplateFlagsForElement:", @"NSWTFlags",
+	       @"decodeWindowBackingStoreForElement:", @"NSWindowBacking",
+	       @"decodeClipViewDocumentViewForElement:", @"NSDocView",
+	       @"decodeColorWhiteForElement:", @"NSWhite",
+	       @"decodeColorRGBForElement:", @"NSRGB",
+	       @"decodeColorSpaceForElement:", @"NSColorSpace",
+	       @"decodeColorCYMKForElement:", @"NSCYMK",
+	       @"decodeSegmentItemImageForElement:", @"NSSegmentItemImage",
+	       @"decodeBackgroundColorsForElement:", @"NSBackgroundColors",
+	       @"decodeDividerStyleForElement:", @"NSDividerStyle",
+	       @"decodeToolbarIdentifiedItemsForElement:", @"NSToolbarIBIdentifiedItems",
+	       @"decodeToolbarImageForElement:", @"NSToolbarItemImage",
+	       @"decodeControlContentsForElement:", @"NSControlContents",
+	       @"decodePathStyle:", @"NSPathStyle",
+	       @"decodeFirstAttribute:", @"NSFirstAttribute",
+	       @"decodeSecondAttribute:", @"NSSecondAttribute",
+	       @"decodeRelation:", @"NSRelation",
+	       @"decodeTransitionStyle:", @"NSTransitionStyle",
+		 nil];
+	  RETAIN(XmlKeyToDecoderSelectorMap);
+
+	  // boolean fields that should be treated as YES when missing.
+	  XmlBoolDefaultYes = [[NSArray alloc] initWithObjects:
+					       @"altersStateOfSelectedItem",
+					       @"bordered",
+					       @"prefersToBeShown",
+					       @"editable",
+					       @"enabled",
+					       @"canPropagateSelectedChildViewControllerTitle",
+					       nil];
+	}
     }
 }
 
@@ -470,19 +473,19 @@ static NSArray      *XmlBoolDefaultYes  = nil;
       NSEnumerator *iter       = [ClassNamePrefixes objectEnumerator];
       NSString     *prefix     = nil;
       NSString     *baseString = [[[xibTag substringToIndex: 1] capitalizedString]
-                                   stringByAppendingString: [xibTag substringFromIndex: 1]];
+				   stringByAppendingString: [xibTag substringFromIndex: 1]];
 
       // Try to generate a default name from tag...
       while ((prefix = [iter nextObject]))
-        {
-          NSString *theClassName = [NSString stringWithFormat: @"%@%@", prefix, baseString];
+	{
+	  NSString *theClassName = [NSString stringWithFormat: @"%@%@", prefix, baseString];
 
-          if (NSClassFromString(theClassName))
-            {
-              className = theClassName;
-              break;
-            }
-        }
+	  if (NSClassFromString(theClassName))
+	    {
+	      className = theClassName;
+	      break;
+	    }
+	}
     }
 
   return className;
@@ -494,10 +497,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 }
 
 - (NSString*) alternateName: (NSString*)name
-                 startIndex: (NSInteger)start
+		 startIndex: (NSInteger)start
 {
   return [[[name substringWithRange: NSMakeRange(start, 1)] lowercaseString]
-                      stringByAppendingString: [name substringFromIndex: start + 1]];
+		      stringByAppendingString: [name substringFromIndex: start + 1]];
 }
 
 /*
@@ -522,10 +525,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 - (GSXibElement*) createReference: (NSString *)oid
 {
   GSXibElement *element = [[GSXibElement alloc] initWithType: @"reference"
-                                               andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                              @"object", @"key",
-                                                                            oid, @"ref",
-                                                                            nil]];
+					       andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+									      @"object", @"key",
+									    oid, @"ref",
+									    nil]];
   return AUTORELEASE(element);
 }
 
@@ -538,7 +541,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   GSXibElement *parent = [stack objectAtIndex: [stack count] - 1];
   NSString     *parentId = [parent attributeForKey: @"id"];
   NSString     *objKey = [@"action" isEqualToString: [element attributeForKey: @"key"]] ?
-                             @"destination" : @"source";
+			     @"destination" : @"source";
 
   if (parentId == nil)
     {
@@ -555,26 +558,26 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   if ([element attributeForKey: @"target"])
     {
       [element setElement: [self createReference: [element attributeForKey: @"target"]]
-                   forKey: @"target"];
+		   forKey: @"target"];
     }
   if ([element attributeForKey: @"source"])
     {
       [element setElement: [self createReference: [element attributeForKey: @"source"]]
-                   forKey: @"source"];
+		   forKey: @"source"];
     }
   if ([element attributeForKey: @"destination"])
     {
       [element setElement: [self createReference: [element attributeForKey: @"destination"]]
-                   forKey: @"destination"];
+		   forKey: @"destination"];
     }
 
   // Build a connection record
   connectionRecord = [[GSXibElement alloc] initWithType: @"object"
-                                          andAttributes:
-                                             [NSDictionary dictionaryWithObjectsAndKeys:
-                                                             @"IBConnectionRecord", @"class",
-                                                           [[NSUUID UUID] UUIDString], @"id",
-                                                           nil]];
+					  andAttributes:
+					     [NSDictionary dictionaryWithObjectsAndKeys:
+							     @"IBConnectionRecord", @"class",
+							   [[NSUUID UUID] UUIDString], @"id",
+							   nil]];
   [connectionRecord setElement: element forKey: @"connection"];
 
   // Add the connection record element that includes this element...
@@ -586,19 +589,19 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 {
   // Mimic the old IBObjectRecord instance...
   NSDictionary  *attributes   = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                @"IBObjectRecord", @"class",
-                                              [[NSUUID UUID] UUIDString], @"id",
-                                              nil];
+						@"IBObjectRecord", @"class",
+					      [[NSUUID UUID] UUIDString], @"id",
+					      nil];
   GSXibElement *objectRecord = [[GSXibElement alloc] initWithType: @"object"
-                                                    andAttributes: attributes];
+						    andAttributes: attributes];
   GSXibElement *parent       = [[GSXibElement alloc] initWithType: @"nil"
-                                                    andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                   @"parent", @"key",
-                                                                                 nil]];
+						    andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+										   @"parent", @"key",
+										 nil]];
   GSXibElement *children     = [[GSXibElement alloc] initWithType: @"nil"
-                                                    andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                   @"children", @"key",
-                                                                                 nil]];
+						    andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+										   @"children", @"key",
+										 nil]];
   GSXibElement *reference    = [self createReference: [element attributeForKey: @"id"]];
 
   [objectRecord setElement: element forKey: @"object"];
@@ -625,23 +628,23 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   if (objectRecord == nil)
     {
       objectRecord                  = [[GSXibElement alloc] initWithType: @"dictionary"
-                                                            andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                           @"NSMutableDictionary", @"class",
-                                                                                         refID, @"id",
-                                                                                         nil]];
+							    andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+											   @"NSMutableDictionary", @"class",
+											 refID, @"id",
+											 nil]];
       GSXibElement *stringRecord   = [[GSXibElement alloc] initWithType: @"string"
-                                                            andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                           @"NS.key.0", @"key",
-                                                                                         nil]];
+							    andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+											   @"NS.key.0", @"key",
+											 nil]];
       GSXibElement *placeholderRec = [[GSXibElement alloc] initWithType: @"object"
-                                                            andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                           @"IBUserDefinedRuntimeAttributesPlaceholder", @"class",
-                                                                                         @"IBUserDefinedRuntimeAttributesPlaceholderName", @"key",
-                                                                                         nil]];
+							    andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+											   @"IBUserDefinedRuntimeAttributesPlaceholder", @"class",
+											 @"IBUserDefinedRuntimeAttributesPlaceholderName", @"key",
+											 nil]];
       GSXibElement *placeStringRec = [[GSXibElement alloc] initWithType: @"string"
-                                                            andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                           @"name", @"key",
-                                                                            nil]];
+							    andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+											   @"name", @"key",
+									    nil]];
       GSXibElement *referenceRec   = [self createReference: [element attributeForKey: @"id"]];
 
       // Setup placeholder record...
@@ -685,18 +688,18 @@ static NSArray      *XmlBoolDefaultYes  = nil;
       [theParser setDelegate: self];
 
       NS_DURING
-        {
-          // Parse the XML data
-          [theParser parse];
+	{
+	  // Parse the XML data
+	  [theParser parse];
 
-          // Decode optional resources
-          _resources = RETAIN([self decodeObjectForKey: @"resources"]);
-        }
+	  // Decode optional resources
+	  _resources = RETAIN([self decodeObjectForKey: @"resources"]);
+	}
       NS_HANDLER
-        {
-          NSLog(@"Exception occurred while parsing Xib: %@", [localException reason]);
-          DESTROY(self);
-        }
+	{
+	  NSLog(@"Exception occurred while parsing Xib: %@", [localException reason]);
+	  DESTROY(self);
+	}
       NS_ENDHANDLER
 
       DESTROY(theParser);
@@ -713,28 +716,28 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 
   // Create our object(s)...
   _orderedObjects      = [[GSXibElement alloc] initWithType: @"array"
-                                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                             @"orderedObjects", @"key",
-                                                                           nil]];
+					      andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+									     @"orderedObjects", @"key",
+									   nil]];
   _objectRecords       = [[GSXibElement alloc] initWithType: @"object"
-                                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                             @"IBMutableOrderedSet", @"class",
-                                                                           @"objectRecords", @"key",
-                                                                           nil]];
+					      andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+									     @"IBMutableOrderedSet", @"class",
+									   @"objectRecords", @"key",
+									   nil]];
   _connectionRecords   = [[GSXibElement alloc] initWithType: @"array"
-                                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                             @"connectionRecords", @"key",
-                                                                           nil]];
+					      andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+									     @"connectionRecords", @"key",
+									   nil]];
   _flattenedProperties = [[GSXibElement alloc] initWithType: @"dictionary"
-                                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                             @"NSMutableDictionary", @"class",
-                                                                           @"flattenedProperties", @"key",
-                                                                           nil]];
+					      andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+									     @"NSMutableDictionary", @"class",
+									   @"flattenedProperties", @"key",
+									   nil]];
   _runtimeAttributes   = [[GSXibElement alloc] initWithType: @"dictionary"
-                                              andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                             @"NSMutableDictionary", @"class",
-                                                                           @"connectionRecords", @"key",
-                                                                           nil]];
+					      andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+									     @"NSMutableDictionary", @"class",
+									   @"connectionRecords", @"key",
+									   nil]];
 
   // objectRecords...
   [_objectRecords setElement: _orderedObjects forKey: @"orderedObjects"];
@@ -742,10 +745,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   // We will imitate the old XIB loading using an IBObjectContainer
   // stored with key "IBDocument.Objects"...
   _IBObjectContainer = [[GSXibElement alloc] initWithType: @"object"
-                                             andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                            @"IBObjectContainer", @"class",
-                                                                          @"IBDocument.Objects", @"key",
-                                                                          nil]];
+					     andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+									    @"IBObjectContainer", @"class",
+									  @"IBDocument.Objects", @"key",
+									  nil]];
 
   // Create the linked set of XIB elements...
   [_IBObjectContainer setElement: _connectionRecords forKey: @"connectionRecords"];
@@ -783,125 +786,125 @@ didStartElement: (NSString*)elementName
       // If we are in IB we don't want to handle custom classes since they are
       // not linked into the application.
       if ([NSClassSwapper isInInterfaceBuilder] == NO)
-        {
-          if (([@"window" isEqualToString: elementName] == NO) &&
-              ([@"customView" isEqualToString: elementName] == NO) &&
-              ([@"customObject" isEqualToString: elementName] == NO))
-            {
-              className = [attributes objectForKey: @"customClass"];
-            }
-        }
+	{
+	  if (([@"window" isEqualToString: elementName] == NO) &&
+	      ([@"customView" isEqualToString: elementName] == NO) &&
+	      ([@"customObject" isEqualToString: elementName] == NO))
+	    {
+	      className = [attributes objectForKey: @"customClass"];
+	    }
+	}
       else
-        {
-          customClassName = [attributes objectForKey: @"customClass"];
-        }
+	{
+	  customClassName = [attributes objectForKey: @"customClass"];
+	}
 
       if (nil == className)
-        {
-          className = [[self class] classNameForXibTag: elementName];
-        }
+	{
+	  className = [[self class] classNameForXibTag: elementName];
+	}
 
       if (nil != className)
-        {
-          if ([NSClassFromString(className) isSubclassOfClass: [NSArray class]])
-            elementType = @"array";
-          else if (([@"string" isEqualToString: elementName] == NO) &&
-                   ([@"dictionary" isEqualToString: elementName] == NO))
-            elementType = @"object";
-        }
+	{
+	  if ([NSClassFromString(className) isSubclassOfClass: [NSArray class]])
+	    elementType = @"array";
+	  else if (([@"string" isEqualToString: elementName] == NO) &&
+		   ([@"dictionary" isEqualToString: elementName] == NO))
+	    elementType = @"object";
+	}
 
       // Add the necessary attribute(s)...
       if (className)
-        {
-          [attributes setObject: className forKey: @"class"];
-        }
+	{
+	  [attributes setObject: className forKey: @"class"];
+	}
 
       // If we are in IB/Gorm, record the id, custom class name, and parent class name so that
       // they can be edited.
       if ([NSClassSwapper isInInterfaceBuilder] == YES)
-        {
-          NSString *ref = [attributeDict objectForKey: @"id"];
-          [self createCustomClassRecordForId: ref
-                             withParentClass: className
-                              forCustomClass: customClassName];
-        }
-      
+	{
+	  NSString *ref = [attributeDict objectForKey: @"id"];
+	  [self createCustomClassRecordForId: ref
+			     withParentClass: className
+			      forCustomClass: customClassName];
+	}
+
       if ([attributes objectForKey: @"key"] == nil)
-        {
-          // Special cases to allow current initWithCoder methods to obtain objects..._IBObjectContainer
-          if ([@"objects" isEqualToString: elementName])
-            {
-              [attributes setObject: @"IBDocument.RootObjects" forKey: @"key"];
-            }
-          else
-            {
-              [attributes setObject: elementName forKey: @"key"];
-            }
-        }
+	{
+	  // Special cases to allow current initWithCoder methods to obtain objects..._IBObjectContainer
+	  if ([@"objects" isEqualToString: elementName])
+	    {
+	      [attributes setObject: @"IBDocument.RootObjects" forKey: @"key"];
+	    }
+	  else
+	    {
+	      [attributes setObject: elementName forKey: @"key"];
+	    }
+	}
 
       if ([[attributes objectForKey: @"userLabel"] isEqualToString: @"Application"] &&
-          (([attributes objectForKey: @"customClass"] == nil) ||
-           ([NSClassFromString([attributes objectForKey: @"customClass"]) isSubclassOfClass: [NSApplication class]] == NO)))
-          {
-            [attributes setObject: @"NSApplication" forKey: @"customClass"];
-          }
+	  (([attributes objectForKey: @"customClass"] == nil) ||
+	   ([NSClassFromString([attributes objectForKey: @"customClass"]) isSubclassOfClass: [NSApplication class]] == NO)))
+	  {
+	    [attributes setObject: @"NSApplication" forKey: @"customClass"];
+	  }
 
       // Generate the XIB element object...
       GSXibElement *element;
 
       if ([attributes objectForKey: @"reference"])
-        {
-          element = RETAIN([self createReference: [attributes objectForKey: @"reference"]]);
-        }
+	{
+	  element = RETAIN([self createReference: [attributes objectForKey: @"reference"]]);
+	}
       else
-        {
-          element = [[GSXibElement alloc] initWithType: elementType
-                                         andAttributes: attributes];
-        }
+	{
+	  element = [[GSXibElement alloc] initWithType: elementType
+					 andAttributes: attributes];
+	}
 
 
       if ([@"array" isEqualToString: [currentElement type]])
-        {
-          // For arrays...
-          [currentElement addElement: element];
+	{
+	  // For arrays...
+	  [currentElement addElement: element];
 
-          if ([XmlConnectionRecordTags containsObject: elementName])
-            {
-              // Need to store element for making the connections...
-              [self addConnection: element];
-            }
-          else if ([XmlConstraintRecordTags containsObject: elementName])
-            {
-              [self objectForXib: element]; // decode the constraint...
-            }
-        }
+	  if ([XmlConnectionRecordTags containsObject: elementName])
+	    {
+	      // Need to store element for making the connections...
+	      [self addConnection: element];
+	    }
+	  else if ([XmlConstraintRecordTags containsObject: elementName])
+	    {
+	      [self objectForXib: element]; // decode the constraint...
+	    }
+	}
       else
-        {
-          NSString *key = [attributes objectForKey: @"key"];
+	{
+	  NSString *key = [attributes objectForKey: @"key"];
 
-          // For elements...
-          [currentElement setElement: element forKey: key];
+	  // For elements...
+	  [currentElement setElement: element forKey: key];
 
-          // If top level document add our generated connection records...
-          if ([@"document" isEqualToString: elementName])
-            {
-              [element setElement: _IBObjectContainer forKey: @"IBDocument.Objects"];
-            }
-        }
+	  // If top level document add our generated connection records...
+	  if ([@"document" isEqualToString: elementName])
+	    {
+	      [element setElement: _IBObjectContainer forKey: @"IBDocument.Objects"];
+	    }
+	}
 
       // Reference(s)...
       NSString      *ref     = [attributes objectForKey: @"id"];
 
       if (ref != nil)
-        {
-          [objects setObject: element forKey: ref];
-        }
+	{
+	  [objects setObject: element forKey: ref];
+	}
 
       if ([XmlTagsNotStacked containsObject: elementName] == NO)
-        {
-          // Push element onto stack...
-          [stack addObject: currentElement];
-        }
+	{
+	  // Push element onto stack...
+	  [stack addObject: currentElement];
+	}
 
       // Set as current element being processed...
       currentElement = element;
@@ -919,11 +922,11 @@ didStartElement: (NSString*)elementName
   if ([XmlTagsToSkip containsObject: elementName] == NO)
     {
       if ([XmlTagsNotStacked containsObject: elementName] == NO)
-        {
-          // Pop element...
-          currentElement = [stack lastObject];
-          [stack removeLastObject];
-        }
+	{
+	  // Pop element...
+	  currentElement = [stack lastObject];
+	  [stack removeLastObject];
+	}
     }
 }
 
@@ -935,9 +938,9 @@ didStartElement: (NSString*)elementName
   while ((resource = [iter nextObject]))
     {
       if ([[resource name] isEqual: name])
-        {
-          return resource;
-        }
+	{
+	  return resource;
+	}
     }
 
   return nil;
@@ -993,7 +996,7 @@ didStartElement: (NSString*)elementName
       mask.flags.autoresizesSubviews = YES;
 
       if ([attributes objectForKey: @"autoresizesSubviews"])
-        mask.flags.autoresizesSubviews = [[attributes objectForKey: @"autoresizesSubviews"] boolValue];
+	mask.flags.autoresizesSubviews = [[attributes objectForKey: @"autoresizesSubviews"] boolValue];
 
       // Return value...
       object = [NSNumber numberWithUnsignedInt: mask.value];
@@ -1041,21 +1044,21 @@ didStartElement: (NSString*)elementName
 
     mask.flags.isHiddenOnDeactivate =  [[attributes objectForKey: @"hidesOnDeactivate"] boolValue];
     mask.flags.isNotReleasedOnClose = !([attributes objectForKey: @"releasedWhenClosed"] ?
-                                        [[attributes objectForKey: @"releasedWhenClosed"] boolValue] : YES);
+					[[attributes objectForKey: @"releasedWhenClosed"] boolValue] : YES);
     mask.flags.isDeferred           =  ([attributes objectForKey: @"deferred"] ?
-                                        [[attributes objectForKey: @"deferred"] boolValue] : YES);
+					[[attributes objectForKey: @"deferred"] boolValue] : YES);
     mask.flags.isOneShot            =  ([attributes objectForKey: @"oneShot"] ?
-                                        [[attributes objectForKey: @"oneShot"] boolValue] : YES);
+					[[attributes objectForKey: @"oneShot"] boolValue] : YES);
 
     mask.flags.isVisible            =  ([attributes objectForKey: @"visibleAtLaunch"] ?
-                                        [[attributes objectForKey: @"visibleAtLaunch"] boolValue] : YES);
+					[[attributes objectForKey: @"visibleAtLaunch"] boolValue] : YES);
     mask.flags.wantsToBeColor       =  0; // ???;
     mask.flags.dynamicDepthLimit    =  0; // ???;
     mask.flags.autoPositionMask     =  winPosMask;
     mask.flags.savePosition         =  [attributes objectForKey: @"frameAutosaveName"] != nil;
     mask.flags.style                =  0; // ???
     mask.flags.isNotShadowed        = !([attributes objectForKey: @"hasShadow"] ?
-                                        [[attributes objectForKey: @"hasShadow"] boolValue] : YES);
+					[[attributes objectForKey: @"hasShadow"] boolValue] : YES);
     mask.flags.autorecalculatesKeyViewLoop = (autorecalculatesKeyViewLoop ? [autorecalculatesKeyViewLoop boolValue] : YES);
 
     // File GSNibLoading.m: 422. In -[NSWindowTemplate initWithCoder:] _flags: 0xf0781400 style: 147 backing: 2
@@ -1063,8 +1066,8 @@ didStartElement: (NSString*)elementName
 
 #if 0 // FIXME:
     mask.flags.allowsToolTipsWhenApplicationIsInactive = ([attributes objectForKey: @"allowsToolTipsWhenApplicationIsInactive"] ?
-                                                          [[attributes objectForKey: @"allowsToolTipsWhenApplicationIsInactive"] boolValue] :
-                                                          YES);
+							  [[attributes objectForKey: @"allowsToolTipsWhenApplicationIsInactive"] boolValue] :
+							  YES);
 #endif
 
     return [NSNumber numberWithUnsignedInteger: mask.value];
@@ -1081,11 +1084,11 @@ didStartElement: (NSString*)elementName
   if (backingType)
     {
       if ([@"retained" isEqualToString: backingType])
-        value = NSBackingStoreRetained;
+	value = NSBackingStoreRetained;
       else if ([@"nonretained" isEqualToString: backingType])
-        value = NSBackingStoreNonretained;
+	value = NSBackingStoreNonretained;
       else
-        NSWarnMLog(@"unknown backing store type: %@", backingType);
+	NSWarnMLog(@"unknown backing store type: %@", backingType);
     }
 
   return [NSNumber numberWithUnsignedInteger: value];
@@ -1100,23 +1103,23 @@ didStartElement: (NSString*)elementName
       NSUInteger mask = 0;
 
       if ([[attributes objectForKey: @"titled"] boolValue])
-        mask |= NSTitledWindowMask;
+	mask |= NSTitledWindowMask;
       if ([[attributes objectForKey: @"closable"] boolValue])
-        mask |= NSClosableWindowMask;
+	mask |= NSClosableWindowMask;
       if ([[attributes objectForKey: @"miniaturizable"] boolValue])
-        mask |= NSMiniaturizableWindowMask;
+	mask |= NSMiniaturizableWindowMask;
       if ([[attributes objectForKey: @"resizable"] boolValue])
-        mask |= NSResizableWindowMask;
+	mask |= NSResizableWindowMask;
       if ([[attributes objectForKey: @"texturedBackground"] boolValue])
-        mask |= NSTexturedBackgroundWindowMask;
+	mask |= NSTexturedBackgroundWindowMask;
       if ([[attributes objectForKey: @"unifiedTitleAndToolbar"] boolValue])
-        mask |= NSUnifiedTitleAndToolbarWindowMask;
+	mask |= NSUnifiedTitleAndToolbarWindowMask;
       if ([[attributes objectForKey: @"fullSizeContentView"] boolValue])
-        mask |= NSWindowStyleMaskFullSizeContentView;
+	mask |= NSWindowStyleMaskFullSizeContentView;
       if ([[attributes objectForKey: @"utility"] boolValue])
-        mask |= NSWindowStyleMaskUtilityWindow;
+	mask |= NSWindowStyleMaskUtilityWindow;
       if ([[attributes objectForKey: @"nonactivatingPanel"] boolValue])
-        mask |= NSWindowStyleMaskNonactivatingPanel;
+	mask |= NSWindowStyleMaskNonactivatingPanel;
 
       return [NSNumber numberWithUnsignedInteger: mask];
     }
@@ -1224,10 +1227,10 @@ didStartElement: (NSString*)elementName
   for (row = 0; row < numRows; ++row)
     {
       for (col = 0; col < numCols; ++col)
-        {
-          // Add the row/column object...
-          [object addObject: [[columns objectAtIndex: col] objectAtIndex: row]];
-        }
+	{
+	  // Add the row/column object...
+	  [object addObject: [[columns objectAtIndex: col] objectAtIndex: row]];
+	}
     }
 
   return object;
@@ -1243,17 +1246,17 @@ didStartElement: (NSString*)elementName
       object = [element attributeForKey: @"systemMenu"];
 
       if ([@"main" isEqualToString: object])
-        object = @"_NSMainMenu";
+	object = @"_NSMainMenu";
       else if ([@"apple" isEqualToString: object])
-        object = @"_NSAppleMenu";
+	object = @"_NSAppleMenu";
       else if ([@"window" isEqualToString: object])
-        object = @"_NSWindowsMenu";
+	object = @"_NSWindowsMenu";
       else if ([@"services" isEqualToString: object])
-        object = @"_NSServicesMenu";
+	object = @"_NSServicesMenu";
       else if ([@"recentDocuments" isEqualToString: object])
-        object = @"_NSRecentDocumentsMenu";
+	object = @"_NSRecentDocumentsMenu";
       else if ([@"font" isEqualToString: object])
-        object = @"_NSFontMenu";
+	object = @"_NSFontMenu";
     }
   else if ([element attributeForKey: @"name"])
     {
@@ -1336,7 +1339,7 @@ didStartElement: (NSString*)elementName
 
       // IF no font...
       if (font == nil) // default to system-11...
-        font = [NSFont systemFontOfSize: 11];
+	font = [NSFont systemFontOfSize: 11];
 
       [object setAlignment: NSCenterTextAlignment];
       [object setBordered: NO];
@@ -1356,13 +1359,13 @@ didStartElement: (NSString*)elementName
   if (borderType)
     {
       if ([@"bezel" isEqualToString: borderType])
-        value = NSBezelBorder;
+	value = NSBezelBorder;
       else if ([@"line" isEqualToString: borderType])
-        value = NSLineBorder;
+	value = NSLineBorder;
       else if ([@"none" isEqualToString: borderType])
-        value = NSNoBorder;
+	value = NSNoBorder;
       else
-        NSWarnMLog(@"unknown border type: %@", borderType);
+	NSWarnMLog(@"unknown border type: %@", borderType);
     }
 
   return [NSNumber numberWithUnsignedInteger: value];
@@ -1377,16 +1380,16 @@ didStartElement: (NSString*)elementName
   if (attributes == nil)
     {
       if (([element elementForKey: @"keyEquivalent"]) &&
-          ([[element elementForKey: @"keyEquivalent"] attributeForKey: @"base64-UTF8"]))
+	  ([[element elementForKey: @"keyEquivalent"] attributeForKey: @"base64-UTF8"]))
       {
-        object = [NSNumber numberWithUnsignedInt: 0];
+	object = [NSNumber numberWithUnsignedInt: 0];
       }
     else
       {
-        // Seems that Apple decided to omit this attribute IF certain default keys alone
-        // are applied.  If this key is present WITH NO setting then the following is
-        // used for the modifier mask...
-        object = [NSNumber numberWithUnsignedInt: NSCommandKeyMask];
+	// Seems that Apple decided to omit this attribute IF certain default keys alone
+	// are applied.  If this key is present WITH NO setting then the following is
+	// used for the modifier mask...
+	object = [NSNumber numberWithUnsignedInt: NSCommandKeyMask];
       }
     }
   else
@@ -1396,37 +1399,37 @@ didStartElement: (NSString*)elementName
       NSUInteger mask = 0;
 
       if ([[attributes objectForKey: @"option"] boolValue])
-        {
-          mask |= NSAlternateKeyMask;
-        }
+	{
+	  mask |= NSAlternateKeyMask;
+	}
       if ([[attributes objectForKey: @"alternate"] boolValue])
-        {
-          mask |= NSAlternateKeyMask;
-        }
+	{
+	  mask |= NSAlternateKeyMask;
+	}
       if ([[attributes objectForKey: @"command"] boolValue])
-        {
-          mask |= NSCommandKeyMask;
-        }
+	{
+	  mask |= NSCommandKeyMask;
+	}
       if ([[attributes objectForKey: @"control"] boolValue])
-        {
-          mask |= NSControlKeyMask;
-        }
+	{
+	  mask |= NSControlKeyMask;
+	}
       if ([[attributes objectForKey: @"shift"] boolValue])
-        {
-          mask |= NSShiftKeyMask;
-        }
+	{
+	  mask |= NSShiftKeyMask;
+	}
       if ([[attributes objectForKey: @"numeric"] boolValue])
-        {
-          mask |= NSNumericPadKeyMask;
-        }
+	{
+	  mask |= NSNumericPadKeyMask;
+	}
       if ([[attributes objectForKey: @"help"] boolValue])
-        {
-          mask |= NSHelpKeyMask;
-        }
+	{
+	  mask |= NSHelpKeyMask;
+	}
       if ([[attributes objectForKey: @"function"] boolValue])
-        {
-          mask |= NSFunctionKeyMask;
-        }
+	{
+	  mask |= NSFunctionKeyMask;
+	}
 
       object = [NSNumber numberWithUnsignedInt: mask];
     }
@@ -1466,21 +1469,21 @@ didStartElement: (NSString*)elementName
   if (titlePosition)
     {
       if ([@"noTitle" isEqualToString: titlePosition])
-        value = NSNoTitle;
+	value = NSNoTitle;
       else if ([@"aboveTop" isEqualToString: titlePosition])
-        value = NSAboveTop;
+	value = NSAboveTop;
       else if ([@"belowTop" isEqualToString: titlePosition])
-        value = NSBelowTop;
+	value = NSBelowTop;
       else if ([@"aboveBottom" isEqualToString: titlePosition])
-        value = NSAboveTop;
+	value = NSAboveTop;
       else if ([@"atBottom" isEqualToString: titlePosition])
-        value = NSAtBottom;
+	value = NSAtBottom;
       else if ([@"belowBottom" isEqualToString: titlePosition])
-        value = NSBelowBottom;
+	value = NSBelowBottom;
       else if ([@"atTop" isEqualToString: titlePosition])
-        value = NSAtTop;
+	value = NSAtTop;
       else
-        NSWarnMLog(@"unknown title position: %@", titlePosition);
+	NSWarnMLog(@"unknown title position: %@", titlePosition);
     }
 
   return [NSNumber numberWithUnsignedInteger: value];
@@ -1500,27 +1503,27 @@ didStartElement: (NSString*)elementName
 
       // FIXME: We should try to get the corresponding user default value here
       if ([metaFont containsString: @"mini"])
-        size = [NSFont systemFontSizeForControlSize: NSMiniControlSize];
+	size = [NSFont systemFontSizeForControlSize: NSMiniControlSize];
       else if ([metaFont containsString: @"small"])
-        size = [NSFont smallSystemFontSize];
+	size = [NSFont smallSystemFontSize];
       else if ([metaFont containsString: @"message"])
-        size = 10;
+	size = 10;
       else if ([metaFont containsString: @"medium"])
-        size = 11;
+	size = 11;
       else if ([metaFont containsString: @"menu"])
-        size = 12;
+	size = 12;
       else if ([metaFont containsString: @"celltitle"])
-        size = 12;
+	size = 12;
       else if ([metaFont containsString: @"controlcontent"])
-        size = 12;
+	size = 12;
       else if ([metaFont containsString: @"label"])
-        size = [NSFont labelFontSize];
+	size = [NSFont labelFontSize];
       else if ([metaFont containsString: @"system"])
-        size = [NSFont systemFontSize];
+	size = [NSFont systemFontSize];
       else if ([metaFont containsString: @"toolTip"])
-        size = [NSFont smallSystemFontSize];
+	size = [NSFont smallSystemFontSize];
       else if (metaFont)
-        NSWarnMLog(@"unknown meta font value: %@", metaFont);
+	NSWarnMLog(@"unknown meta font value: %@", metaFont);
     }
 
   return [NSNumber numberWithFloat: size];
@@ -1547,13 +1550,13 @@ didStartElement: (NSString*)elementName
   if (dividerStyle)
     {
       if ([@"thin" isEqualToString: dividerStyle])
-        style = NSSplitViewDividerStyleThin;
+	style = NSSplitViewDividerStyleThin;
       else if ([@"paneSplitter" isEqualToString: dividerStyle])
-        style = NSSplitViewDividerStylePaneSplitter;
+	style = NSSplitViewDividerStylePaneSplitter;
       else if ([@"thick" isEqualToString: dividerStyle])
-        style = NSSplitViewDividerStyleThick;
+	style = NSSplitViewDividerStyleThick;
       else
-        NSWarnMLog(@"unknown divider style: %@", dividerStyle);
+	NSWarnMLog(@"unknown divider style: %@", dividerStyle);
     }
 
   return [NSNumber numberWithInteger: style];
@@ -1693,19 +1696,19 @@ didStartElement: (NSString*)elementName
   if (lineBreakMode)
     {
       if ([@"clipping" isEqualToString: lineBreakMode])
-        value = NSLineBreakByClipping;
+	value = NSLineBreakByClipping;
       else if ([@"charWrapping" isEqualToString: lineBreakMode])
-        value = NSLineBreakByCharWrapping;
+	value = NSLineBreakByCharWrapping;
       else if ([@"wordWrapping" isEqualToString: lineBreakMode])
-        value = NSLineBreakByWordWrapping;
+	value = NSLineBreakByWordWrapping;
       else if ([@"truncatingHead" isEqualToString: lineBreakMode])
-        value = NSLineBreakByTruncatingHead;
+	value = NSLineBreakByTruncatingHead;
       else if ([@"truncatingMiddle" isEqualToString: lineBreakMode])
-        value = NSLineBreakByTruncatingMiddle;
+	value = NSLineBreakByTruncatingMiddle;
       else if ([@"truncatingTail" isEqualToString: lineBreakMode])
-        value = NSLineBreakByTruncatingTail;
+	value = NSLineBreakByTruncatingTail;
       else
-        NSWarnMLog(@"unknown line break mode: %@", lineBreakMode);
+	NSWarnMLog(@"unknown line break mode: %@", lineBreakMode);
     }
 
   return value;
@@ -1758,46 +1761,46 @@ didStartElement: (NSString*)elementName
 
       // Put most common first???
       if ([@"catalog" isEqualToString: colorSpace])
-        {
-          value = 6;
-        }
+	{
+	  value = 6;
+	}
       else if ([@"calibratedRGB" isEqualToString: colorSpace])
-        {
-          value = 1;
-        }
+	{
+	  value = 1;
+	}
       else if ([@"deviceRGB" isEqualToString: colorSpace])
-        {
-          value = 2;
-        }
+	{
+	  value = 2;
+	}
       else if ([@"calibratedWhite" isEqualToString: colorSpace])
-        {
-          value = 3;
-        }
+	{
+	  value = 3;
+	}
       else if ([@"deviceWhite" isEqualToString: colorSpace])
-        {
-          value = 4;
-        }
+	{
+	  value = 4;
+	}
       else if ([@"custom" isEqualToString: colorSpace])
       {
-        NSString *customSpace = [attributes objectForKey: @"customColorSpace"];
+	NSString *customSpace = [attributes objectForKey: @"customColorSpace"];
 
-        if ([@"genericCMYKColorSpace" isEqualToString: customSpace])
-          {
-            value = 5;
-          }
-        else if ([@"sRGB" isEqualToString: customSpace])
-          {
-            value = 2;
-          }
-        else if (customSpace)
-          {
-            NSLog(@"%s:unknown custom color space: %@", __PRETTY_FUNCTION__, customSpace);
-          }
+	if ([@"genericCMYKColorSpace" isEqualToString: customSpace])
+	  {
+	    value = 5;
+	  }
+	else if ([@"sRGB" isEqualToString: customSpace])
+	  {
+	    value = 2;
+	  }
+	else if (customSpace)
+	  {
+	    NSLog(@"%s:unknown custom color space: %@", __PRETTY_FUNCTION__, customSpace);
+	  }
       }
       else
-        {
-          NSLog(@"%s:unknown color space: %@", __PRETTY_FUNCTION__, colorSpace);
-        }
+	{
+	  NSLog(@"%s:unknown color space: %@", __PRETTY_FUNCTION__, colorSpace);
+	}
 
       return [NSNumber numberWithUnsignedInteger: value];
     }
@@ -2088,9 +2091,9 @@ didStartElement: (NSString*)elementName
       NSUInteger mask = NSTableColumnNoResizing;
 
       if ([[attributes objectForKey: @"resizeWithTable"] boolValue])
-        mask |= NSTableColumnAutoresizingMask;
+	mask |= NSTableColumnAutoresizingMask;
       if ([[attributes objectForKey: @"userResizable"] boolValue])
-        mask |= NSTableColumnUserResizingMask;
+	mask |= NSTableColumnUserResizingMask;
 
       return [NSNumber numberWithUnsignedInteger: mask];
     }
@@ -2252,15 +2255,15 @@ didStartElement: (NSString*)elementName
 
       // copiesOnScroll - defaults to ON...
       if ([attributes objectForKey: @"copiesOnScroll"] == nil)
-        mask |= (1 << 1);
+	mask |= (1 << 1);
       else
-        mask |= ([[attributes objectForKey: @"copiesOnScroll"] boolValue] ? (1 << 1) : 0);
+	mask |= ([[attributes objectForKey: @"copiesOnScroll"] boolValue] ? (1 << 1) : 0);
 
       // drawsBackground - defaults to ON...
       if ([attributes objectForKey: @"drawsBackground"] == nil)
-        mask |= (1 << 2);
+	mask |= (1 << 2);
       else
-        mask |= ([[attributes objectForKey: @"drawsBackground"] boolValue] ? (1 << 2) : 0);
+	mask |= ([[attributes objectForKey: @"drawsBackground"] boolValue] ? (1 << 2) : 0);
 
 
       // Return value...
@@ -2291,30 +2294,30 @@ didStartElement: (NSString*)elementName
     {
       // Try the title attribute first as it is the more common encoding...
       if ([element attributeForKey: @"title"])
-        {
-          object = [element attributeForKey: @"title"];
-        }
+	{
+	  object = [element attributeForKey: @"title"];
+	}
       else if ([element elementForKey: @"title"])
-        {
-          // If the attribute does not exist check for a title element encoded
-          // the old way via <string>TITLE</string>...
-          object = [self decodeObjectForKey: @"title"];
-        }
+	{
+	  // If the attribute does not exist check for a title element encoded
+	  // the old way via <string>TITLE</string>...
+	  object = [self decodeObjectForKey: @"title"];
+	}
       else if ([element attributeForKey: @"image"])
-        {
-          object = [NSImage imageNamed: [element attributeForKey: @"image"]];
-        }
+	{
+	  object = [NSImage imageNamed: [element attributeForKey: @"image"]];
+	}
 
 #if 0
       // If a font is encoded then change the title to an attributed
       // string and set the font on it...
       if ([object isKindOfClass: [NSString class]] && [element elementForKey: @"font"])
-        {
-          NSFont       *font        = [self decodeObjectForKey: @"font"];
-          NSDictionary *attributes  = [NSDictionary dictionaryWithObject: font forKey: NSFontAttributeName];
-          object                    = [[NSAttributedString alloc] initWithString: object attributes: attributes];
-          AUTORELEASE(object);
-        }
+	{
+	  NSFont       *font        = [self decodeObjectForKey: @"font"];
+	  NSDictionary *attributes  = [NSDictionary dictionaryWithObject: font forKey: NSFontAttributeName];
+	  object                    = [[NSAttributedString alloc] initWithString: object attributes: attributes];
+	  AUTORELEASE(object);
+	}
 #endif
     }
 
@@ -2329,13 +2332,13 @@ didStartElement: (NSString*)elementName
   if ([class isSubclassOfClass: [NSCell class]])
     {
       if ([element attributeForKey: @"alternateTitle"])
-        {
-          object = [element attributeForKey: @"alternateTitle"];
-        }
+	{
+	  object = [element attributeForKey: @"alternateTitle"];
+	}
       else if ([element attributeForKey: @"alternateImage"])
-        {
-          object = [NSImage imageNamed: [element attributeForKey: @"alternateImage"]];
-        }
+	{
+	  object = [NSImage imageNamed: [element attributeForKey: @"alternateImage"]];
+	}
     }
 
   return object;
@@ -2350,17 +2353,17 @@ didStartElement: (NSString*)elementName
   if (refstate)
     {
       if ([@"on" isEqualToString: refstate])
-        {
-          state = NSOnState;
-        }
+	{
+	  state = NSOnState;
+	}
       else if ([@"mixed" isEqualToString: refstate])
-        {
-          state = NSMixedState;
-        }
+	{
+	  state = NSMixedState;
+	}
       else
-        {
-          NSWarnMLog(@"unknown state: %@", refstate);
-        }
+	{
+	  NSWarnMLog(@"unknown state: %@", refstate);
+	}
     }
 
   return state;
@@ -2385,9 +2388,9 @@ didStartElement: (NSString*)elementName
       mask.flags.state                    = [self decodeStateForElement: element];
       mask.flags.highlighted              = [[attributes objectForKey: @"highlighted"] boolValue];
       mask.flags.disabled                 = ([attributes objectForKey: @"enabled"] ?
-                                             [[attributes objectForKey: @"enabled"] boolValue] == NO : NO);
+					     [[attributes objectForKey: @"enabled"] boolValue] == NO : NO);
       mask.flags.editable                 = ([attributes objectForKey: @"editable"] ?
-                                             [[attributes objectForKey: @"editable"] boolValue] : YES);
+					     [[attributes objectForKey: @"editable"] boolValue] : YES);
       mask.flags.vCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
       mask.flags.hCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
       mask.flags.bordered                 = [[borderStyle lowercaseString] containsString: @"border"];
@@ -2415,15 +2418,15 @@ didStartElement: (NSString*)elementName
       mask.flags.showsFirstResponder      = NO;
 
       if (imageName)
-        mask.flags.type = NSImageCellType;
+	mask.flags.type = NSImageCellType;
       else
-        mask.flags.type = NSTextCellType;
+	mask.flags.type = NSTextCellType;
 
       mask.flags.focusRingType = NSFocusRingTypeDefault;
       if ([@"exterior" isEqualToString: focusRingType])
-        mask.flags.focusRingType = NSFocusRingTypeExterior;
+	mask.flags.focusRingType = NSFocusRingTypeExterior;
       else if ([@"none" isEqualToString: focusRingType])
-        mask.flags.focusRingType = NSFocusRingTypeNone;
+	mask.flags.focusRingType = NSFocusRingTypeNone;
 
       // Return mask...
       value = [NSNumber numberWithUnsignedInteger: mask.value];
@@ -2460,25 +2463,25 @@ didStartElement: (NSString*)elementName
       // Alignment
       mask.flags.alignment = NSNaturalTextAlignment;
       if ([@"left" isEqualToString: alignment])
-        mask.flags.alignment = NSLeftTextAlignment;
+	mask.flags.alignment = NSLeftTextAlignment;
       else if ([@"center" isEqualToString: alignment])
-        mask.flags.alignment = NSCenterTextAlignment;
+	mask.flags.alignment = NSCenterTextAlignment;
       else if ([@"right" isEqualToString: alignment])
-        mask.flags.alignment = NSRightTextAlignment;
+	mask.flags.alignment = NSRightTextAlignment;
       else if ([@"justified" isEqualToString: alignment])
-        mask.flags.alignment = NSJustifiedTextAlignment;
+	mask.flags.alignment = NSJustifiedTextAlignment;
       else if (alignment)
-        NSWarnMLog(@"unknown text alignment: %@", alignment);
+	NSWarnMLog(@"unknown text alignment: %@", alignment);
 
       // Control size...
       if ([@"small" isEqualToString: controlSize])
-        mask.flags.controlSize = NSSmallControlSize;
+	mask.flags.controlSize = NSSmallControlSize;
       else if ([@"mini" isEqualToString: controlSize])
-        mask.flags.controlSize = NSMiniControlSize;
+	mask.flags.controlSize = NSMiniControlSize;
       else if ([@"regular" isEqualToString: controlSize])
-        mask.flags.controlSize = NSRegularControlSize;
+	mask.flags.controlSize = NSRegularControlSize;
       else if (controlSize)
-        NSWarnMLog(@"unknown control size: %@", controlSize);
+	NSWarnMLog(@"unknown control size: %@", controlSize);
 
       value = [NSNumber numberWithUnsignedInteger: mask.value];
     }
@@ -2494,26 +2497,26 @@ didStartElement: (NSString*)elementName
   if ([class isSubclassOfClass: [NSCell class]])
     {
       if ([element attributeForKey: @"image"])
-        {
-          object = [NSImage imageNamed: [element attributeForKey: @"image"]];
-        }
+	{
+	  object = [NSImage imageNamed: [element attributeForKey: @"image"]];
+	}
       else
-        {
-          NSString *type = [element attributeForKey: @"type"];
+	{
+	  NSString *type = [element attributeForKey: @"type"];
 
-          if ([@"radio" isEqualToString: type])
-            {
-              object = [NSImage imageNamed: @"NSRadioButton"];
-            }
-          else if ([@"check" isEqualToString: type])
-            {
-              object = [NSImage imageNamed: @"NSSwitch"];
-            }
-          else if ([@"disclosure" isEqualToString: type])
-            {
-              object = [NSImage imageNamed: @"NSDropDownIndicatorTemplate"];
-            }
-        }
+	  if ([@"radio" isEqualToString: type])
+	    {
+	      object = [NSImage imageNamed: @"NSRadioButton"];
+	    }
+	  else if ([@"check" isEqualToString: type])
+	    {
+	      object = [NSImage imageNamed: @"NSSwitch"];
+	    }
+	  else if ([@"disclosure" isEqualToString: type])
+	    {
+	      object = [NSImage imageNamed: @"NSDropDownIndicatorTemplate"];
+	    }
+	}
     }
 
   return object;
@@ -2527,26 +2530,26 @@ didStartElement: (NSString*)elementName
   if ([class isSubclassOfClass: [NSCell class]])
     {
       if ([element attributeForKey: @"alternateImage"])
-        {
-          object = [NSImage imageNamed: [element attributeForKey: @"alternateImage"]];
-        }
+	{
+	  object = [NSImage imageNamed: [element attributeForKey: @"alternateImage"]];
+	}
       else
-        {
-          NSString *type = [element attributeForKey: @"type"];
+	{
+	  NSString *type = [element attributeForKey: @"type"];
 
-          if ([@"radio" isEqualToString: type])
-            {
-              object = [NSImage imageNamed: @"NSRadioButton"];
-            }
-          else if ([@"check" isEqualToString: type])
-            {
-              object = [NSImage imageNamed: @"NSSwitch"];
-            }
-          else if ([@"disclosure" isEqualToString: type])
-            {
-              object = [NSImage imageNamed: @"NSDropDownIndicatorTemplate-reversed"];
-            }
-        }
+	  if ([@"radio" isEqualToString: type])
+	    {
+	      object = [NSImage imageNamed: @"NSRadioButton"];
+	    }
+	  else if ([@"check" isEqualToString: type])
+	    {
+	      object = [NSImage imageNamed: @"NSSwitch"];
+	    }
+	  else if ([@"disclosure" isEqualToString: type])
+	    {
+	      object = [NSImage imageNamed: @"NSDropDownIndicatorTemplate-reversed"];
+	    }
+	}
     }
 
   return object;
@@ -2633,68 +2636,68 @@ didStartElement: (NSString*)elementName
       NSString                *imageScaling = [attributes objectForKey:@"imageScaling"];
 
       if (bezelStyle)
-        {
-          uint32_t flag = NSRegularSquareBezelStyle; // Default if not specified...
+	{
+	  uint32_t flag = NSRegularSquareBezelStyle; // Default if not specified...
 
-          if ([@"rounded" isEqualToString: bezelStyle])
-            flag = NSRoundedBezelStyle;
-          else if ([@"regularSquare" isEqualToString: bezelStyle])
-            flag = NSRegularSquareBezelStyle;
-          else if ([@"disclosure" isEqualToString: bezelStyle])
-            flag = NSDisclosureBezelStyle;
-          else if ([@"shadowlessSquare" isEqualToString: bezelStyle])
-            flag = NSShadowlessSquareBezelStyle;
-          else if ([@"circular" isEqualToString: bezelStyle])
-            flag = NSCircularBezelStyle;
-          else if ([@"texturedSquare" isEqualToString: bezelStyle])
-            flag = NSTexturedSquareBezelStyle;
-          else if ([@"helpButton" isEqualToString: bezelStyle])
-            flag = NSHelpButtonBezelStyle;
-          else if ([@"smallSquare" isEqualToString: bezelStyle])
-            flag = NSSmallSquareBezelStyle;
-          else if ([@"texturedRounded" isEqualToString: bezelStyle])
-            flag = NSTexturedRoundedBezelStyle;
-          else if ([@"roundedRectangle" isEqualToString: bezelStyle])
-            flag = NSRoundRectBezelStyle;
-          else if ([@"roundedRect" isEqualToString: bezelStyle])
-            flag = NSRoundRectBezelStyle;
-          else if ([@"recessed" isEqualToString: bezelStyle])
-            flag = NSRecessedBezelStyle;
-          else if ([@"roundedDisclosure" isEqualToString: bezelStyle])
-            flag = NSRoundedDisclosureBezelStyle;
+	  if ([@"rounded" isEqualToString: bezelStyle])
+	    flag = NSRoundedBezelStyle;
+	  else if ([@"regularSquare" isEqualToString: bezelStyle])
+	    flag = NSRegularSquareBezelStyle;
+	  else if ([@"disclosure" isEqualToString: bezelStyle])
+	    flag = NSDisclosureBezelStyle;
+	  else if ([@"shadowlessSquare" isEqualToString: bezelStyle])
+	    flag = NSShadowlessSquareBezelStyle;
+	  else if ([@"circular" isEqualToString: bezelStyle])
+	    flag = NSCircularBezelStyle;
+	  else if ([@"texturedSquare" isEqualToString: bezelStyle])
+	    flag = NSTexturedSquareBezelStyle;
+	  else if ([@"helpButton" isEqualToString: bezelStyle])
+	    flag = NSHelpButtonBezelStyle;
+	  else if ([@"smallSquare" isEqualToString: bezelStyle])
+	    flag = NSSmallSquareBezelStyle;
+	  else if ([@"texturedRounded" isEqualToString: bezelStyle])
+	    flag = NSTexturedRoundedBezelStyle;
+	  else if ([@"roundedRectangle" isEqualToString: bezelStyle])
+	    flag = NSRoundRectBezelStyle;
+	  else if ([@"roundedRect" isEqualToString: bezelStyle])
+	    flag = NSRoundRectBezelStyle;
+	  else if ([@"recessed" isEqualToString: bezelStyle])
+	    flag = NSRecessedBezelStyle;
+	  else if ([@"roundedDisclosure" isEqualToString: bezelStyle])
+	    flag = NSRoundedDisclosureBezelStyle;
   #if 0
-          else if ([@"inline" isEqualToString: bezelStyle])
-            flag = NSInlineBezelStyle; // New value added in Cocoa version???
+	  else if ([@"inline" isEqualToString: bezelStyle])
+	    flag = NSInlineBezelStyle; // New value added in Cocoa version???
   #endif
-          else
-            NSWarnMLog(@"unknown bezelStyle: %@", bezelStyle);
+	  else
+	    NSWarnMLog(@"unknown bezelStyle: %@", bezelStyle);
 
-          mask.flags.bezelStyle  = (flag & 7);
-          mask.flags.bezelStyle2 = (flag & 8) >> 3;
-          if (flag == 0)
-            NSWarnMLog(@"_bezel_style: %ld", (long)mask.value);
-        }
+	  mask.flags.bezelStyle  = (flag & 7);
+	  mask.flags.bezelStyle2 = (flag & 8) >> 3;
+	  if (flag == 0)
+	    NSWarnMLog(@"_bezel_style: %ld", (long)mask.value);
+	}
 
       // Image scaling...
       if ([@"axesIndependently" isEqualToString: imageScaling])
-        {
-          mask.flags.imageScaling = 3;
-        }
+	{
+	  mask.flags.imageScaling = 3;
+	}
       else if ([@"proportionallyDown" isEqualToString: imageScaling])
-        {
-          mask.flags.imageScaling = 2;
-        }
+	{
+	  mask.flags.imageScaling = 2;
+	}
       else if ([@"proportionallyUpOrDown" isEqualToString: imageScaling])
-        {
-          mask.flags.imageScaling = 1;
-        }
+	{
+	  mask.flags.imageScaling = 1;
+	}
       else
-        {
-          // Warn about unknown image scaling to add later...
-          if (imageScaling && [imageScaling length])
-            NSWarnMLog(@"unknown image scaling: %@", imageScaling);
-          mask.flags.imageScaling = 0;
-        }
+	{
+	  // Warn about unknown image scaling to add later...
+	  if (imageScaling && [imageScaling length])
+	    NSWarnMLog(@"unknown image scaling: %@", imageScaling);
+	  mask.flags.imageScaling = 0;
+	}
 
       // keyEquivalentModifierMask...
       mask.value |= [[self decodeModifierMaskForElement: element] unsignedIntValue];
@@ -2722,14 +2725,14 @@ didStartElement: (NSString*)elementName
     {
       // If the current cell definition has no custom class defined...
       if ([element attributeForKey: @"customClass"] == nil)
-        {
-          // Check encompassing class for cellClass diversion...
-          Class class = NSClassFromString([topElement attributeForKey: @"class"]);
+	{
+	  // Check encompassing class for cellClass diversion...
+	  Class class = NSClassFromString([topElement attributeForKey: @"class"]);
 
-          // If the encompassing class supports cellClass type...
-          if ([class respondsToSelector: @selector(cellClass)])
-            [element setAttribute: NSStringFromClass([class cellClass]) forKey: @"class"];
-        }
+	  // If the encompassing class supports cellClass type...
+	  if ([class respondsToSelector: @selector(cellClass)])
+	    [element setAttribute: NSStringFromClass([class cellClass]) forKey: @"class"];
+	}
 
       // Generate the object normally...
       object = [self objectForXib: element];
@@ -2757,15 +2760,15 @@ didStartElement: (NSString*)elementName
   if (preferredEdge)
     {
       if ([@"minX" isEqualToString: preferredEdge])
-        value = NSMinXEdge;
+	value = NSMinXEdge;
       else if ([@"maxX" isEqualToString: preferredEdge])
-        value = NSMaxXEdge;
+	value = NSMaxXEdge;
       else if ([@"minY" isEqualToString: preferredEdge])
-        value = NSMinYEdge;
+	value = NSMinYEdge;
       else if ([@"maxY" isEqualToString: preferredEdge])
-        value = NSMaxYEdge;
+	value = NSMaxYEdge;
       else
-        NSWarnMLog(@"unknown preferred edge value: %@", preferredEdge);
+	NSWarnMLog(@"unknown preferred edge value: %@", preferredEdge);
     }
 
   return [NSNumber numberWithUnsignedInteger: value];
@@ -2857,7 +2860,7 @@ didStartElement: (NSString*)elementName
       num = [NSNumber numberWithInteger: NSPathStyleStandard];
     }
 
-  return num;  
+  return num;
 }
 
 - (id) decodeConstraintAttribute: (id)obj
@@ -2953,7 +2956,7 @@ didStartElement: (NSString*)elementName
     {
       num = [NSNumber numberWithInteger: NSLayoutRelationGreaterThanOrEqual];
     }
-  
+
   return num;
 }
 
@@ -2979,7 +2982,7 @@ didStartElement: (NSString*)elementName
       num = [NSNumber numberWithInteger: NSPageControllerTransitionStyleStackHistory];
     }
 
-  return num;  
+  return num;
 }
 
 - (id) _decodePlacementForObject: (id)obj
@@ -3012,7 +3015,7 @@ didStartElement: (NSString*)elementName
   else if ([obj isEqualToString: @"fill"])
     {
       alignment = NSGridCellPlacementFill;
-    }  
+    }
   return [NSNumber numberWithInteger: alignment];
 }
 
@@ -3113,13 +3116,13 @@ didStartElement: (NSString*)elementName
   NSDictionary *elements = [element elements];
   NSEnumerator *en = [elements objectEnumerator];
   GSXibElement *e = nil;
-  
+
   while ((e = [en nextObject]) != nil)
     {
       id o = [self objectForXib: e];
       [result addObject: o];
     }
-  
+
   return result;
 }
 
@@ -3132,21 +3135,21 @@ didStartElement: (NSString*)elementName
     {
       NSString *elementName = [element type];
       if ([@"range" isEqualToString: elementName])
-        {
-          NSRange range = [self decodeRangeForKey: [element attributeForKey: @"key"]];
-          object        = [NSValue valueWithRange: range];
+	{
+	  NSRange range = [self decodeRangeForKey: [element attributeForKey: @"key"]];
+	  object        = [NSValue valueWithRange: range];
 
-          if ([element attributeForKey: @"id"])
-            [decoded setObject: object forKey: [element attributeForKey: @"id"]];
-        }
+	  if ([element attributeForKey: @"id"])
+	    [decoded setObject: object forKey: [element attributeForKey: @"id"]];
+	}
       else if ([XmlTagToDecoderSelectorMap objectForKey: elementName])
-        {
-          SEL selector = NSSelectorFromString([XmlTagToDecoderSelectorMap objectForKey: elementName]);
-          object       = [self performSelector: selector withObject: element];
+	{
+	  SEL selector = NSSelectorFromString([XmlTagToDecoderSelectorMap objectForKey: elementName]);
+	  object       = [self performSelector: selector withObject: element];
 
-          if ([element attributeForKey: @"id"])
-            [decoded setObject: object forKey: [element attributeForKey: @"id"]];
-        }
+	  if ([element attributeForKey: @"id"])
+	    [decoded setObject: object forKey: [element attributeForKey: @"id"]];
+	}
     }
 
   return object;
@@ -3170,8 +3173,8 @@ didStartElement: (NSString*)elementName
 }
 
 - (id) decodeObjectForXib: (GSXibElement*)element
-             forClassName: (NSString*)classname
-                   withID: (NSString*)objID
+	     forClassName: (NSString*)classname
+		   withID: (NSString*)objID
 {
   // Try decoding the object using super first...
   id object = [super decodeObjectForXib: element forClassName: classname withID: objID];
@@ -3182,9 +3185,9 @@ didStartElement: (NSString*)elementName
   if ([element attributeForKey: @"toolTip"])
     {
       if ([object respondsToSelector: @selector(setToolTip:)])
-        [object setToolTip: [element attributeForKey: @"toolTip"]];
+	[object setToolTip: [element attributeForKey: @"toolTip"]];
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
-        [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
+	[object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
     }
   // Process IB runtime attributes for element...
   // Ensure we don't process the placeholders...
@@ -3201,13 +3204,13 @@ didStartElement: (NSString*)elementName
     {
       NSString *refID = [self getRefIDFor: element postFix: @"NSWindowTemplate.visibleAtLaunch"];
       id runtimeAttribute = [[GSXibElement alloc] initWithType: @"string"
-                                                  andAttributes: nil];
+						  andAttributes: nil];
       id visibleAtLaunch = [element attributeForKey: @"visibleAtLaunch"];
 
       if (visibleAtLaunch == nil)
-        {
-          visibleAtLaunch = @"YES";
-        }
+	{
+	  visibleAtLaunch = @"YES";
+	}
       [runtimeAttribute setValue: visibleAtLaunch];
 
       [_flattenedProperties setElement: runtimeAttribute forKey: refID];
@@ -3247,26 +3250,26 @@ didStartElement: (NSString*)elementName
   if (buttonCellFlags.imageDoesOverlap)
     {
       if (buttonCellFlags.isImageAndText)
-        [object setImagePosition: NSImageOverlaps];
+	[object setImagePosition: NSImageOverlaps];
       else
-        [object setImagePosition: NSImageOnly];
+	[object setImagePosition: NSImageOnly];
     }
   else if (buttonCellFlags.isImageAndText)
     {
       if (buttonCellFlags.isHorizontal)
-        {
-          if (buttonCellFlags.isBottomOrLeft)
-            [object setImagePosition: NSImageLeft];
-          else
-            [object setImagePosition: NSImageRight];
-        }
+	{
+	  if (buttonCellFlags.isBottomOrLeft)
+	    [object setImagePosition: NSImageLeft];
+	  else
+	    [object setImagePosition: NSImageRight];
+	}
       else
-        {
-          if (buttonCellFlags.isBottomOrLeft)
-            [object setImagePosition: NSImageBelow];
-          else
-            [object setImagePosition: NSImageAbove];
-        }
+	{
+	  if (buttonCellFlags.isBottomOrLeft)
+	    [object setImagePosition: NSImageBelow];
+	  else
+	    [object setImagePosition: NSImageAbove];
+	}
     }
   else
     {
@@ -3298,72 +3301,72 @@ didStartElement: (NSString*)elementName
     {
       // Try to reinterpret the request...
       if ([XmlKeyMapTable objectForKey: key])
-        {
-          object = [self decodeObjectForKey: [XmlKeyMapTable objectForKey: key]];
-        }
+	{
+	  object = [self decodeObjectForKey: [XmlKeyMapTable objectForKey: key]];
+	}
       else if ([XmlKeyToDecoderSelectorMap objectForKey: key])
-        {
-          SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
-          object       = [self performSelector: selector withObject: currentElement];
-        }
+	{
+	  SEL selector = NSSelectorFromString([XmlKeyToDecoderSelectorMap objectForKey: key]);
+	  object       = [self performSelector: selector withObject: currentElement];
+	}
       else if ([XmlReferenceAttributes containsObject: key])
-        {
-          // Elements not stored INSIDE current element potentially need to be cross
-          // referenced via attribute references...
-          NSString      *idString = [currentElement attributeForKey: key];
-          GSXibElement  *element  = [self createReference: idString];
-          object                  = [self objectForXib: element];
-        }
+	{
+	  // Elements not stored INSIDE current element potentially need to be cross
+	  // referenced via attribute references...
+	  NSString      *idString = [currentElement attributeForKey: key];
+	  GSXibElement  *element  = [self createReference: idString];
+	  object                  = [self objectForXib: element];
+	}
       else if ([currentElement attributeForKey: key])
-        {
-          // New xib stores values as attributes...
-          object = [currentElement attributeForKey: key];
-        }
+	{
+	  // New xib stores values as attributes...
+	  object = [currentElement attributeForKey: key];
+	}
       else if ([@"NSCollectionViewBackgroundColor" isEqualToString: key])
-        {
-          object = [self decodeObjectForKey: @"primaryBackgroundColor"];
-        }
+	{
+	  object = [self decodeObjectForKey: @"primaryBackgroundColor"];
+	}
       else if (([@"NSSearchButtonCell" isEqualToString: key]) ||
-               ([@"NSCancelButtonCell" isEqualToString: key]))
-        {
-          object = [self decodeSpecialButtonCellForKey: key];
+	       ([@"NSCancelButtonCell" isEqualToString: key]))
+	{
+	  object = [self decodeSpecialButtonCellForKey: key];
 
-        }
+	}
       else if ([@"NSSupport" isEqualToString: key])
-        {
-          // This is the key Cocoa uses for fonts...
-          // OR images - depending on what's encoded
-          if ([self containsValueForKey: @"font"])
-            object = [self decodeObjectForKey: @"font"];
-          else if ([self containsValueForKey: @"image"])
-            object = [self decodeObjectForKey: @"image"];
-        }
+	{
+	  // This is the key Cocoa uses for fonts...
+	  // OR images - depending on what's encoded
+	  if ([self containsValueForKey: @"font"])
+	    object = [self decodeObjectForKey: @"font"];
+	  else if ([self containsValueForKey: @"image"])
+	    object = [self decodeObjectForKey: @"image"];
+	}
       else if (([@"NSName" isEqualToString: key]) &&
-               ([@"font" isEqualToString: [currentElement attributeForKey: @"key"]]))
-        {
-          // We have to be careful with NSName as it is used by Cocoa in at least three places...
-          object = [currentElement attributeForKey: @"name"];
-        }
+	       ([@"font" isEqualToString: [currentElement attributeForKey: @"key"]]))
+	{
+	  // We have to be careful with NSName as it is used by Cocoa in at least three places...
+	  object = [currentElement attributeForKey: @"name"];
+	}
       else if ([@"NSFirstColumnTitle" isEqualToString: key])
-        {
-          object = @"Browser";
-        }
+	{
+	  object = @"Browser";
+	}
       else if ([@"NSPathSeparator" isEqualToString: key])
-        {
-          // This would allow to do system dependent path separator decoding...
-          object = @"/";
-        }
+	{
+	  // This would allow to do system dependent path separator decoding...
+	  object = @"/";
+	}
       else if ([key hasPrefix: @"NS"])
-        {
-          // Try a key minus a (potential) NS prefix...
-          NSString *newKey = [self alternateName: key];
-          object           = [self decodeObjectForKey: newKey];
-        }
+	{
+	  // Try a key minus a (potential) NS prefix...
+	  NSString *newKey = [self alternateName: key];
+	  object           = [self decodeObjectForKey: newKey];
+	}
 #if DEBUG_XIB5
       else // DEBUG ONLY...
-        {
-          NSWarnMLog(@"no element/attribute for key: %@", key);
-        }
+	{
+	  NSWarnMLog(@"no element/attribute for key: %@", key);
+	}
 #endif
     }
 
@@ -3541,83 +3544,83 @@ didStartElement: (NSString*)elementName
     {
       // Try reinterpreting the request...
       if ([XmlKeyMapTable objectForKey: key])
-        {
-          hasValue = [self containsValueForKey: [XmlKeyMapTable objectForKey: key]];
-        }
+	{
+	  hasValue = [self containsValueForKey: [XmlKeyMapTable objectForKey: key]];
+	}
       else if ([@"NSBackgroundColors" isEqualToString: key])
-        {
-          hasValue = [currentElement elementForKey: @"primaryBackgroundColor"] != nil;
-        }
+	{
+	  hasValue = [currentElement elementForKey: @"primaryBackgroundColor"] != nil;
+	}
       else if (([@"NSIntercellSpacingHeight" isEqualToString: key]) ||
-               ([@"NSIntercellSpacingWidth" isEqualToString: key]))
-        {
-          hasValue = [currentElement elementForKey: @"intercellSpacing"] != nil;
-        }
+	       ([@"NSIntercellSpacingWidth" isEqualToString: key]))
+	{
+	  hasValue = [currentElement elementForKey: @"intercellSpacing"] != nil;
+	}
       else if ([@"NSContents" isEqualToString: key])
-        {
-          hasValue  = [currentElement attributeForKey: @"title"] != nil;
-          hasValue |= [currentElement attributeForKey: @"image"] != nil;
-        }
+	{
+	  hasValue  = [currentElement attributeForKey: @"title"] != nil;
+	  hasValue |= [currentElement attributeForKey: @"image"] != nil;
+	}
       else if ([@"NSControlContents" isEqualToString: key])
-        {
-          hasValue  = [currentElement attributeForKey: @"state"] != nil;
-        }
+	{
+	  hasValue  = [currentElement attributeForKey: @"state"] != nil;
+	}
       else if ([@"NSAlternateContents" isEqualToString: key])
-        {
-          hasValue  = [currentElement attributeForKey: @"alternateTitle"] != nil;
-          hasValue |= [currentElement attributeForKey: @"alternateImage"] != nil;
-        }
+	{
+	  hasValue  = [currentElement attributeForKey: @"alternateTitle"] != nil;
+	  hasValue |= [currentElement attributeForKey: @"alternateImage"] != nil;
+	}
       else if ([@"NSHeaderClipView" isEqualToString: key])
-        {
-          hasValue = [currentElement elementForKey: @"headerView"] != nil;
-        }
+	{
+	  hasValue = [currentElement elementForKey: @"headerView"] != nil;
+	}
       else if ([@"NSNoAutoenable" isEqualToString: key])
-        {
-          hasValue = [currentElement attributeForKey: @"autoenablesItems"] != nil;
-        }
+	{
+	  hasValue = [currentElement attributeForKey: @"autoenablesItems"] != nil;
+	}
       else if ([@"NSToolbarItemImage" isEqualToString: key])
-        {
-          hasValue = [currentElement attributeForKey: @"image"] != nil;
-        }
+	{
+	  hasValue = [currentElement attributeForKey: @"image"] != nil;
+	}
       else if ([@"NSSelectedIndex" isEqualToString: key])
-        {
-          hasValue = [currentElement attributeForKey: @"selectedItem"] != nil;
-        }
+	{
+	  hasValue = [currentElement attributeForKey: @"selectedItem"] != nil;
+	}
       else if ([XmlKeysDefined containsObject: key])
-        {
-          // These are arbitrarily defined through hard-coding...
-          hasValue = YES;
-        }
+	{
+	  // These are arbitrarily defined through hard-coding...
+	  hasValue = YES;
+	}
       else if ([currentElement attributeForKey: key])
-        {
-          // Check attributes (for XIB 5 and above) for additional values...
-          hasValue = YES;
-        }
+	{
+	  // Check attributes (for XIB 5 and above) for additional values...
+	  hasValue = YES;
+	}
       else if ([XmlBoolDefaultYes containsObject: key])
-        {
-          // Missing values mean YES
-          hasValue = YES;
-        }
+	{
+	  // Missing values mean YES
+	  hasValue = YES;
+	}
       else if ([key hasPrefix: @"NS"])
-        {
-          // Try a key minus a (potential) NS prefix...
-          NSString *newKey = [self alternateName: key];
-          hasValue = [self containsValueForKey: newKey];
-        }
+	{
+	  // Try a key minus a (potential) NS prefix...
+	  NSString *newKey = [self alternateName: key];
+	  hasValue = [self containsValueForKey: newKey];
+	}
       else
-        {
-          // Check special cases...
-          if (([@"action" isEqualToString: key]) || ([@"target" isEqualToString: key]))
-            {
-              // Target is stored in the action XIB element - if present - which is
-              // stored under the connections array element...
-              NSArray     *connections = [self objectForXib: [currentElement elementForKey: @"connections"]];
-              // FIXME: Shouldn't this be IBActionConnection5 ?
-              NSPredicate *predicate   = [NSPredicate predicateWithFormat: @"className == 'IBActionConnection'"];
-              NSArray     *actions     = [connections filteredArrayUsingPredicate: predicate];
-              hasValue = ([actions count] != 0);
-            }
-        }
+	{
+	  // Check special cases...
+	  if (([@"action" isEqualToString: key]) || ([@"target" isEqualToString: key]))
+	    {
+	      // Target is stored in the action XIB element - if present - which is
+	      // stored under the connections array element...
+	      NSArray     *connections = [self objectForXib: [currentElement elementForKey: @"connections"]];
+	      // FIXME: Shouldn't this be IBActionConnection5 ?
+	      NSPredicate *predicate   = [NSPredicate predicateWithFormat: @"className == 'IBActionConnection'"];
+	      NSArray     *actions     = [connections filteredArrayUsingPredicate: predicate];
+	      hasValue = ([actions count] != 0);
+	    }
+	}
     }
 
   return hasValue;
