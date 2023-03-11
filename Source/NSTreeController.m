@@ -37,7 +37,6 @@
 
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTreeController.h"
-#import "AppKit/NSTreeNode.h"
 
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
@@ -471,7 +470,6 @@
 - (void) encodeWithCoder: (NSCoder*)coder
 {
   [super encodeWithCoder: coder];
-
   if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: _childrenKeyPath
