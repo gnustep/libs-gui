@@ -29,13 +29,13 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSIndexPath.h>
+#import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSSortDescriptor.h>
 
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTreeController.h"
-#import "AppKit/NSTreeNode.h"
 
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
@@ -311,14 +311,85 @@
   return nil;
 }
 
+
+- (void) bind: (NSString *)binding
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding isEqual: NSContentArrayBinding])
+    {
+      GSKeyValueBinding *kvb;
+
+      [self unbind: binding];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content"
+					      withName: binding
+					      toObject: anObject
+					   withKeyPath: keyPath
+					       options: options
+					    fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
+    }
+  else
+    {
+      [super bind: binding
+	 toObject: anObject
+      withKeyPath: keyPath
+	  options: options];
+    }
+}
+
 - (id) initWithCoder: (NSCoder*)coder
 {
+  self = [super initWithCoder: coder];
+
+  if (self != nil)
+    {
+      // These names do not stick to convention.  Usually it would be
+      // NS* or NSTreeController* so they must be overriden in
+      // GSXib5KeyedUnarchver.
+      if ([coder containsValueForKey: @"NSTreeContentChildrenKey"])
+	{
+	  [self setChildrenKeyPath:
+		  [coder decodeObjectForKey: @"NSTreeContentChildrenKey"]];
+	}
+      if ([coder containsValueForKey: @"NSTreeContentCountKey"])
+	{
+	  [self setChildrenKeyPath:
+		  [coder decodeObjectForKey: @"NSTreeContentCountKey"]];
+	}
+      if ([coder containsValueForKey: @"NSTreeContentLeafKey"])
+	{
+	  [self setChildrenKeyPath:
+		  [coder decodeObjectForKey: @"NSTreeContentLeafKey"]];
+	}
+
+      // Since we don't inherit from NSArrayController these are decoded here
+      // as well.
+      if ([coder containsValueForKey: @"NSAvoidsEmptySelection"])
+	{
+	  [self setAvoidsEmptySelection:
+		[coder decodeBoolForKey: @"NSAvoidsEmptySelection"]];
+	}
+      if ([coder containsValueForKey: @"NSPreservesSelection"])
+	{
+	  [self setPreservesSelection:
+		[coder decodeBoolForKey: @"NSPreservesSelection"]];
+	}
+      if ([coder containsValueForKey: @"NSSelectsInsertedObjects"])
+	{
+	  [self setSelectsInsertedObjects:
+		  [coder decodeBoolForKey: @"NSSelectsInsertedObjects"]];
+	}
+    }
+
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder*)coder
 {
-  // Do nothing...
+  [super encodeWithCoder: coder];
 }
 
 - (id) copyWithZone: (NSZone*)zone
