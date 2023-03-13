@@ -134,6 +134,11 @@ NSGraphicsContext	*GSCurrentContext(void)
   </unit> */
 @implementation NSGraphicsContext 
 
+- (const gsMethodTable *) methods
+{
+  return methods;
+}
+
 + (void) initialize
 {
   if (contextLock == nil)

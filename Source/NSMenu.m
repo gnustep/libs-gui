@@ -606,6 +606,11 @@ static BOOL menuBarVisible = YES;
     }
 }
 
+- (NSWindow *) window
+{
+  return _aWindow;
+}
+
 + (void) setMenuZone: (NSZone*)zone
 {
   menuZone = zone;

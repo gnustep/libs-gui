@@ -868,3 +868,171 @@ static GSFontEnumerator *sharedEnumerator = nil;
 }
 
 @end
+
+@implementation GSFontEnumerator (_GSPrivate_)
+
+- (NSMutableDictionary *) allFontFamilies
+{
+  return allFontFamilies;
+}
+
+- (NSArray *) allFontNames
+{
+  return allFontNames;
+}
+
+- (void) setAllFontFamilies: (NSMutableDictionary *)d
+{
+  allFontFamilies = d;
+}
+
+- (void) setAllFontNames: (NSArray *)a
+{
+  allFontNames = a;
+}
+
+@end
+
+@implementation GSFontInfo (_GSPrivate_)
+
+- (void) setFontName: (NSString *)n
+{
+  ASSIGN(fontName, n);
+}
+
+- (NSString *) fontName
+{
+  return fontName;
+}
+
+- (void) setMatrix: (const CGFloat *)m
+{
+   memcpy(matrix, m, sizeof(matrix));
+}
+
+- (const CGFloat *)matrix
+{
+  return matrix;
+}
+
+- (void) setFamilyName: (NSString *)n
+{
+  ASSIGN(familyName, n);
+}
+
+- (NSString *) familyName
+{
+  return familyName;
+}
+
+- (void) setCoveredCharacterSet: (NSCharacterSet *)c
+{
+  ASSIGN(coveredCharacterSet, c);
+}
+
+- (NSCharacterSet *) coveredCharacterSet
+{
+  return coveredCharacterSet;
+}
+
+- (void) setNumberOfGlyphs: (unsigned)n
+{
+  numberOfGlyphs = n;
+}
+
+- (unsigned) numberOfGlyphs
+{
+  return numberOfGlyphs;
+}
+
+- (void) setAscender: (CGFloat)a
+{
+  ascender = a;
+}
+
+- (CGFloat) ascender
+{
+  return ascender;
+}
+
+- (void) setDescender: (unsigned)d
+{
+  descender = d;
+}
+
+- (CGFloat) descender
+{
+  return descender;
+}
+
+- (void) setFixedPitch: (BOOL)f
+{
+  isFixedPitch = f;
+}
+
+- (BOOL) isFixedPitch
+{
+  return isFixedPitch;
+}
+
+- (void) setBaseFont: (BOOL)f
+{
+  isBaseFont = f;
+}
+
+- (BOOL) isBaseFont
+{
+  return isBaseFont;
+}
+
+- (void) setXHeight: (CGFloat)h
+{
+  xHeight = h;
+}
+
+- (CGFloat) xHeight
+{
+  return xHeight;
+}
+
+- (void) setMaximumAdvancement: (NSSize)s
+{
+  maximumAdvancement = s;
+}
+
+- (NSSize) maximumAdvancement
+{
+  return maximumAdvancement;
+}
+
+- (void) setFontBBox: (NSRect)r
+{
+  fontBBox = r;
+}
+
+- (void) setWeight: (int)w
+{
+  weight = w;
+}
+
+- (int) weight
+{
+  return weight;
+}
+
+- (NSFontTraitMask) traits
+{
+  return traits;
+}
+
+- (void) setTraits: (NSFontTraitMask)t
+{
+  traits = t;
+}
+
+- (void) setMostCompatibleStringEncoding: (NSStringEncoding)e
+{
+  mostCompatibleStringEncoding = e;
+}
+
+@end

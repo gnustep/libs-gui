@@ -1340,7 +1340,7 @@ didStartElement: (NSString*)elementName
 
       [object setAlignment: NSCenterTextAlignment];
       [object setBordered: NO];
-      [object setEditable: NO];
+      // [object setEditable: NO];
       [object setFont: font];
       return AUTORELEASE(object);
     }

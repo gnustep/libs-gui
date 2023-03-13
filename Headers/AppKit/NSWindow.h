@@ -371,6 +371,8 @@ PACKAGE_SCOPE
  */
 + (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
                          styleMask: (NSUInteger)aStyle;
+// private
+- (GSWindowDecorationView *) windowView;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (NSRect) contentRectForFrameRect: (NSRect)frameRect;

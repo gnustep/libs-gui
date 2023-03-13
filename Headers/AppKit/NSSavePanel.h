@@ -123,6 +123,10 @@ APPKIT_EXPORT_CLASS
   GSSavePanelCompletionHandler _completionHandler;
 }
 
+// private
+- (void) setFullFileName: (NSString *)f;
+
+
 /*
  * Getting the NSSavePanel shared instance
  */

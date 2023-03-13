@@ -182,6 +182,16 @@ APPKIT_EXPORT_CLASS
 @end
 
 /* ----------------------------------------------------------------------- */
+/* GNUstep Server Operations */
+/* ----------------------------------------------------------------------- */
+@interface GSDisplayServer (ServiceOps)
+- (BOOL) isServiceInstalled: (NSString*)serviceName;
+- (BOOL) isServiceRunning: (NSString*)serviceName;
+- (BOOL) isDiscoveryServiceInstalled;
+- (BOOL) isDiscoveryServiceRunning;
+@end
+
+/* ----------------------------------------------------------------------- */
 /* GNUstep Event Operations */
 /* ----------------------------------------------------------------------- */
 @interface GSDisplayServer (EventOps)

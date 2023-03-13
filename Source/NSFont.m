@@ -1368,7 +1368,7 @@ static BOOL flip_hack;
      	}
       else
         {
-     	  self = RETAIN([NSFont fontWithName: name size: size]);
+     	  self = RETAIN([NSFont systemFontOfSize: size]); // RETAIN([NSFont fontWithName: name size: size]);
      	}
       if (self == nil)
         {

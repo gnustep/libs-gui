@@ -190,6 +190,7 @@ APPKIT_EXPORT_CLASS
   NSCompositingOperation _compositingOperation;
 }
 
+- (const gsMethodTable *) methods; // private
 + (BOOL) currentContextDrawingToScreen;
 + (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)attributes;
 + (NSGraphicsContext *) graphicsContextWithWindow: (NSWindow *)aWindow;

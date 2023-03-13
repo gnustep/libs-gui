@@ -755,7 +755,7 @@ static NSDictionary		*urlPreferences = nil;
     name: @"GSHousekeeping"
     object: nil];
 
-  _workspaceCenter = [_GSWorkspaceCenter new];
+  _workspaceCenter = nil; // [_GSWorkspaceCenter new];
   _iconMap = [NSMutableDictionary new];
   _launched = [NSMutableDictionary new];
   if (applications == nil)

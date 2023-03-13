@@ -142,3 +142,12 @@
 }
 
 @end
+
+@implementation GSTrackingRect (_GSPrivate_)
+
+- (NSRect) rectangle
+{
+  return rectangle;
+}
+
+@end

@@ -418,6 +418,9 @@ APPKIT_EXPORT_CLASS
   NSString *_name;
 }
 
+// private
+- (NSWindow *) window;
+
 /** Returns the memory allocation zone used to create instances of this class.
  */
 + (NSZone*) menuZone;

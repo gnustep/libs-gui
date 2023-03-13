@@ -5287,3 +5287,17 @@ cmpFrame(id view1, id view2, void *context)
 }
 
 @end
+
+@implementation NSView (_GSPrivate_)
+
+- (struct _rFlagsType) rFlags
+{
+  return _rFlags;
+}
+
+- (NSArray *) cursorRects
+{
+  return _cursor_rects;
+}
+
+@end

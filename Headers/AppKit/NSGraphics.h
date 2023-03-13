@@ -202,7 +202,7 @@ NSBeep(void)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   if (ctxt != nil) {
-    (ctxt->methods->NSBeep)
+    ([ctxt methods]->NSBeep)
       (ctxt, @selector(NSBeep));
   }
 }
@@ -210,14 +210,14 @@ NSBeep(void)
 static inline void
 GSWSetViewIsFlipped(NSGraphicsContext *ctxt, BOOL flipped)
 {
-  (ctxt->methods->GSWSetViewIsFlipped_)
+  ([ctxt methods]->GSWSetViewIsFlipped_)
     (ctxt, @selector(GSWSetViewIsFlipped:), flipped);
 }
 
 static inline BOOL
 GSWViewIsFlipped(NSGraphicsContext *ctxt)
 {
-  return (ctxt->methods->GSWViewIsFlipped)
+  return ([ctxt methods]->GSWViewIsFlipped)
     (ctxt, @selector(GSWViewIsFlipped));
 }
 

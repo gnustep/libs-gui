@@ -129,6 +129,11 @@ setPath(NSBrowser *browser, NSString *path)
 
 @implementation NSSavePanel (PrivateMethods)
 
+- (void) setFullFileName: (NSString *)f
+{
+  ASSIGN(_fullFileName, f);
+}
+
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
 {
   NSPasteboard *pb;

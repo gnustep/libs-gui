@@ -701,6 +701,11 @@ static NSMapTable *windowmaps = NULL;
 static NSMapTable *windowUndoManagers = NULL;
 static NSNotificationCenter *nc = nil;
 
+- (GSWindowDecorationView *) windowView
+{
+  return _wv;
+}
+
 /*
  * Class methods
  */
