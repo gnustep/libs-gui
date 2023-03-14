@@ -35,7 +35,7 @@
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
-#if	defined(__cplusplus)
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -63,6 +63,10 @@ APPKIT_EXPORT_CLASS
 
 @end
 
+#if defined(__cplusplus)
+}
+#endif
+  
 #endif /* OS_API_MACOSX */
 
 #endif /* _GNUstep_H_NSCollectionViewItem */
