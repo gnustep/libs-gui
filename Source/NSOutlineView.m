@@ -54,15 +54,20 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSOutlineView.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderView.h"
 #import "AppKit/NSText.h"
 #import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSTreeController.h"
 #import "AppKit/NSWindow.h"
 
+#import "GSBindingHelpers.h"
+#import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
+
 #include <math.h>
 
 static NSMapTableKeyCallBacks keyCallBacks;
@@ -148,6 +153,10 @@ static NSImage *unexpandable  = nil;
        */
       keyCallBacks = NSObjectMapKeyCallBacks;
       keyCallBacks.isEqual = NSOwnedPointerMapKeyCallBacks.isEqual;
+
+      [self exposeBinding: NSContentBinding];
+      [self exposeBinding: NSSelectionIndexesBinding];
+      [self exposeBinding: NSSortDescriptorsBinding];
 #if 0
 /* Old Interface Builder style. */
       collapsed    = [NSImage imageNamed: @"common_outlineCollapsed"];
@@ -680,22 +689,32 @@ static NSImage *unexpandable  = nil;
  */
 - (void) setDataSource: (id)anObject
 {
+  GSKeyValueBinding *theBinding;
+
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				   forObject: self];
+  
 #define CHECK_REQUIRED_METHOD(selector_name) \
   if (anObject && ![anObject respondsToSelector: @selector(selector_name)]) \
     [NSException raise: NSInternalInconsistencyException \
                  format: @"data source does not respond to %@", @#selector_name]
 
-  CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
-  CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
-  CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
-  CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
+  // If the binding is present, the data source becomes like a delegate
+  if (theBinding == nil)
+    {
+      CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
+      CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
+      CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
+      CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
+    }
 
   // Is the data source editable?
   _dataSource_editable = [anObject respondsToSelector:
-    @selector(outlineView:setObjectValue:forTableColumn:byItem:)];
-
+				@selector(outlineView:setObjectValue:forTableColumn:byItem:)];
+  
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
+  
   [self tile];
   [self reloadData];
 }
@@ -929,8 +948,12 @@ static NSImage *unexpandable  = nil;
   NSRect imageRect;
   NSInteger i;
   CGFloat x_pos;
+  GSKeyValueBinding *theBinding;
 
-  if (_dataSource == nil)
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				   forObject: self];
+  
+  if (_dataSource == nil && theBinding == nil)
     {
       return;
     }
@@ -1900,8 +1923,17 @@ Also returns the child index relative to this parent. */
                               row: (NSInteger) index
 {
   id result = nil;
+  GSKeyValueBinding *theBinding;
 
-  if ([_dataSource respondsToSelector:
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+				   forObject: tb];
+
+  if (theBinding != nil)
+    {
+      return [(NSArray *)[theBinding destinationValue]
+		 objectAtIndex: index];
+    }
+  else if ([_dataSource respondsToSelector:
     @selector(outlineView:objectValueForTableColumn:byItem:)])
     {
       id item = [self itemAtRow: index];
@@ -1932,6 +1964,17 @@ Also returns the child index relative to this parent. */
 
 - (NSInteger) _numRows
 {
+  GSKeyValueBinding *theBinding = nil;
+  
+  // If we have content binding the data source is used only
+  // like a delegate
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+                                   forObject: self];
+  if (theBinding != nil)
+    {
+      return [(NSArray *)[theBinding destinationValue] count];
+    }
+
   return [_items count];
 }
 
@@ -2000,26 +2043,21 @@ Also returns the child index relative to this parent. */
 - (void)_collectItemsStartingWith: (id)startitem
                              into: (NSMutableArray *)allChildren
 {
-  NSUInteger num;
-  NSUInteger i;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
-  NSMutableArray *anarray;
+  NSArray *anarray = NSMapGet(_itemDict, sitem);
 
-  anarray = NSMapGet(_itemDict, sitem);
-  num = [anarray count];
-  for (i = 0; i < num; i++)
+  FOR_IN(id, anitem, anarray)
     {
-      id anitem = [anarray objectAtIndex: i];
-
       // Only collect the children if the item is expanded
       if ([self isItemExpanded: startitem])
-        {
-          [allChildren addObject: anitem];
-        }
-
+	{
+	  [allChildren addObject: anitem];
+	}
+      
       [self _collectItemsStartingWith: anitem
-            into: allChildren];
+				 into: allChildren];
     }
+  END_FOR_IN(anarray);
 }
 
 - (BOOL) _isItemLoaded: (id)item
@@ -2039,43 +2077,98 @@ Also returns the child index relative to this parent. */
 - (void) _loadDictionaryStartingWith: (id) startitem
                              atLevel: (NSInteger) level
 {
-  NSInteger num = 0;
-  NSInteger i = 0;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
+  GSKeyValueBinding *theBinding =
+    [GSKeyValueBinding getBinding: NSContentBinding
+			forObject: self];
   NSMutableArray *anarray = nil;
+  NSInteger num = 0;
 
-  /* Check to see if item is expandable and expanded before getting the number 
-   * of items. For macos compatibility the topmost item (startitem==nil)
-   * is always considered expandable and must not be checked.
-   * We must load the item only if expanded, otherwise an outline view is not 
-   * usable with a big tree structure. For example, an outline view to browse 
-   * file system would try to traverse every file/directory on -reloadData.
-   */
-  if ((startitem == nil
-    || [_dataSource outlineView: self isItemExpandable: startitem])
-    && [self isItemExpanded: startitem])
+  if (theBinding == nil)
     {
-      num = [_dataSource outlineView: self
-			 numberOfChildrenOfItem: startitem];
+      NSInteger i = 0;
+
+      /* Check to see if item is expandable and expanded before getting the number 
+       * of items. For macos compatibility the topmost item (startitem==nil)
+       * is always considered expandable and must not be checked.
+       * We must load the item only if expanded, otherwise an outline view is not 
+       * usable with a big tree structure. For example, an outline view to browse 
+       * file system would try to traverse every file/directory on -reloadData.
+       */
+      if ((startitem == nil
+	   || [_dataSource outlineView: self isItemExpandable: startitem])
+	  && [self isItemExpanded: startitem])
+	{
+	  num = [_dataSource outlineView: self
+		  numberOfChildrenOfItem: startitem];
+	}
+      
+      if (num > 0)
+	{
+	  anarray = [NSMutableArray array];
+	  NSMapInsert(_itemDict, sitem, anarray);
+	}
+      
+      NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
+      
+      for (i = 0; i < num; i++)
+	{
+	  id anitem = [_dataSource outlineView: self
+					 child: i
+					ofItem: startitem];
+	  
+	  [anarray addObject: anitem];
+	  [self _loadDictionaryStartingWith: anitem
+				    atLevel: level + 1];
+	}
     }
-
-  if (num > 0)
+  else
     {
-      anarray = [NSMutableArray array];
-      NSMapInsert(_itemDict, sitem, anarray);
-    }
+      id source = [theBinding sourceValueFor: NSContentBinding];
+      NSArray *contentArray = nil;
+      
+      // If sitem is NSNull then get the array..
+      if (sitem == [NSNull null])
+	{
+	  contentArray = (NSArray *)[theBinding destinationValue];
+	  num = [contentArray count];
+	}
+      else
+	{
+	  NSString *countKey = [source countKeyPath];
+	  SEL countSel = NSSelectorFromString(countKey);
+	  NSString *childrenKey = [source childrenKeyPath];
+	  SEL childrenSel = NSSelectorFromString(childrenKey);
+	  
+	  contentArray = (NSArray *)[sitem performSelector: childrenSel];
+	  num = (NSUInteger)[sitem performSelector: countSel];
+	}
 
-  NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
+      if (num > 0)
+	{
+	  anarray = [NSMutableArray array]; 
+	  NSMapInsert(_itemDict, sitem, anarray);
+	}
 
-  for (i = 0; i < num; i++)
-    {
-      id anitem = [_dataSource outlineView: self
-                               child: i
-                               ofItem: startitem];
+      NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
 
-      [anarray addObject: anitem];
-      [self _loadDictionaryStartingWith: anitem
-            atLevel: level + 1];
+      NSString *leafKey = [source leafKeyPath];
+      SEL leafSel = NSSelectorFromString(leafKey);
+      
+      FOR_IN(id, anitem, contentArray)
+	{
+	  BOOL leaf = (BOOL)[sitem performSelector: leafSel];
+	  
+	  [anarray addObject: anitem];
+
+	  if (!leaf)
+	    {
+	      [self _loadDictionaryStartingWith: anitem
+					atLevel: level + 1];
+	    }
+	}
+      END_FOR_IN(contentArray);
+      
     }
 }
 
