@@ -30,6 +30,7 @@
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSLayoutAnchor.h>
 #import <AppKit/NSView.h>
+#import <AppKit/NSWindow.h>
 
 @class NSControl, NSAnimation, NSArray, NSMutableArray, NSDictionary;
 
@@ -180,6 +181,14 @@ APPKIT_EXPORT_CLASS
 - (void) addConstraint: (NSLayoutConstraint *)constraint;
 
 - (void) addConstraints: (NSArray*)constraints;
+
+@end
+
+@interface NSWindow (NSConstraintBasedLayoutCoreMethods)
+
+- (void) _bootstrapAutoLayout;
+
+- (void) layoutIfNeeded;
 
 @end
 

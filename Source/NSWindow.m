@@ -89,8 +89,10 @@
 #import "GSGuiPrivate.h"
 #import "GSToolTips.h"
 #import "GSIconManager.h"
+#import "GSAutoLayoutEngine.h"
 #import "NSToolbarFrameworkPrivate.h"
 #import "NSViewPrivate.h"
+#import "NSWindowPrivate.h"
 
 #define GSI_ARRAY_TYPES 0
 #define GSI_ARRAY_TYPE NSWindow *
@@ -922,6 +924,8 @@ many times.
   DESTROY(_lastOtherMouseDownView);
   DESTROY(_lastDragView);
   DESTROY(_screen);
+
+  TEST_RELEASE(_layoutEngine);
 
   /*
    * FIXME This should not be necessary - the views should have removed
@@ -6154,6 +6158,20 @@ current key view.<br />
       [_inactive removeObject: window];
     }
 }
+@end
+
+@implementation NSWindow (NSConstraintBasedLayoutCorePrivateMethods)
+
+- (GSAutoLayoutEngine*) _layoutEngine
+{
+  return _layoutEngine;
+}
+
+- (void) _setLayoutEngine: (GSAutoLayoutEngine*)layoutEngine
+{
+  ASSIGN(_layoutEngine, layoutEngine);
+}
+
 @end
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)

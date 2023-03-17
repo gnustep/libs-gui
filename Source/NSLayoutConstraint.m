@@ -31,11 +31,13 @@
 #import "AppKit/NSAnimation.h"
 #import "AppKit/NSLayoutConstraint.h"
 #import "NSViewPrivate.h"
+#import "NSWindowPrivate.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSApplication.h"
 #import "NSAutoresizingMaskLayoutConstraint.h" 
 #import "GSFastEnumeration.h"
 #import "GSAutoLayoutVFLParser.h"
+#import "GSAutoLayoutEngine.h"
 
 static NSMutableArray *activeConstraints = nil;
 // static NSNotificationCenter *nc = nil;
@@ -652,16 +654,91 @@ static NSMutableArray *activeConstraints = nil;
 
 @implementation NSView (NSConstraintBasedLayoutInstallingConstraints)
 
+- (GSAutoLayoutEngine*) _getOrCreateLayoutEngine
+{
+  if (![self window])
+    {
+      return nil;
+    }
+  if (![[self window] _layoutEngine])
+    {
+      [[self window] _bootstrapAutoLayout];
+    }
+
+  return [[self window] _layoutEngine];
+ }
+
 - (void) addConstraint: (NSLayoutConstraint *)constraint
 {
-  // FIXME: Implement adding constraint to layout engine
+  if (![self _getOrCreateLayoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] addConstraint: constraint];
 }
 
 - (void) addConstraints: (NSArray*)constraints
 {
-  FOR_IN (NSLayoutConstraint*, constraint, constraints)
-    [self addConstraint: constraint];
-  END_FOR_IN (constraints);
+  if (![self _getOrCreateLayoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] addConstraints: constraints];
+}
+
+- (void) removeConstraint: (NSLayoutConstraint *)constraint
+{
+  if (![self _layoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] removeConstraint: constraint];
+}
+
+- (void) removeConstraints: (NSArray *)constraints
+{
+  if (![self _layoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] removeConstraints: constraints];
+}
+
+- (NSArray*) constraints
+{
+  GSAutoLayoutEngine *engine = [self _layoutEngine];
+  if (!engine)
+    {
+      return [NSArray array];
+    }
+
+  return [engine constraintsForView: self];
 }
 
 @end
+
+@implementation NSWindow (NSConstraintBasedLayoutCoreMethods)
+
+- (void) layoutIfNeeded
+{
+  [self updateConstraintsIfNeeded];
+  [[self contentView] _layoutViewAndSubViews];
+}
+
+- (void) updateConstraintsIfNeeded
+{
+  [[self contentView] updateConstraintsForSubtreeIfNeeded];
+}
+
+- (void) _bootstrapAutoLayout
+{
+  GSAutoLayoutEngine *layoutEngine = [[GSAutoLayoutEngine alloc] init];
+  [self _setLayoutEngine: layoutEngine];
+  RELEASE(layoutEngine);
+}
+
+@end 

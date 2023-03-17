@@ -79,7 +79,9 @@
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
+#import "GSAutoLayoutEngine.h"
 #import "NSViewPrivate.h"
+#import "NSWindowPrivate.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...
@@ -635,7 +637,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   _needsUpdateConstraints = YES;
   _translatesAutoresizingMaskIntoConstraints = YES;
-  
+
   return self;
 }
 
@@ -5140,27 +5142,24 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (void) layout
 {
-  // FIXME: Implement asking layout engine for the alignment rect of each subview and set the alignment rect of each sub view
+  GSAutoLayoutEngine *engine = [self _layoutEngine];
+  if (!engine)
+    {
+      return;
+    }
+
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    NSRect subviewAlignmentRect =
+        [engine alignmentRectForView: subview];
+    [subview setFrame: subviewAlignmentRect];
+  END_FOR_IN (subviews);
 }
 
 - (void) layoutSubtreeIfNeeded
 {
   [self updateConstraintsForSubtreeIfNeeded];
   [self _layoutViewAndSubViews];
-}
-
-- (void) _layoutViewAndSubViews
-{
-  if (_needsLayout)
-    {
-      [self layout];
-      _needsLayout = NO;
-    }
-
-  NSArray *subviews = [self subviews];
-  FOR_IN (NSView *, subview, subviews)
-    [subview _layoutViewAndSubViews];
-  END_FOR_IN (subviews);
 }
 
 - (void) setNeedsLayout: (BOOL) needsLayout
@@ -5210,6 +5209,30 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 - (void) _setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints
 {
   _needsUpdateConstraints = needsUpdateConstraints;
+}
+
+- (void) _layoutViewAndSubViews
+{
+  if (_needsLayout)
+    {
+      [self layout];
+      _needsLayout = NO;
+    }
+
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    [subview _layoutViewAndSubViews];
+  END_FOR_IN (subviews);
+}
+
+- (GSAutoLayoutEngine*) _layoutEngine
+{
+  if (![self window])
+    {
+      return nil;
+    }
+
+  return [[self window] _layoutEngine];
 }
 
 @end
