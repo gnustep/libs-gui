@@ -15,6 +15,9 @@
    Author:  Gregory John Casamento <greg_casamento@yahoo.com>
    Date: October 2001
 
+   KVO Support Added by greg.casamento@gmail.com.
+   Date: March 2023
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -39,6 +42,7 @@
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSIndexSet.h>
+#import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSMapTable.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSNull.h>
@@ -2137,13 +2141,13 @@ Also returns the child index relative to this parent. */
 	}
       else
 	{
-	  NSString *countKey = [source countKeyPath];
-	  SEL countSel = NSSelectorFromString(countKey);
-	  NSString *childrenKey = [source childrenKeyPath];
-	  SEL childrenSel = NSSelectorFromString(childrenKey);
+	  NSString *countKeyPath = [source countKeyPath];
+	  NSString *childrenKeyPath = [source childrenKeyPath];
+	  NSNumber *n = nil;
 	  
-	  contentArray = (NSArray *)[sitem performSelector: childrenSel];
-	  num = (NSUInteger)[sitem performSelector: countSel];
+	  contentArray = (NSArray *)[sitem valueForKey: childrenKeyPath];
+	  n = (NSNumber *)[sitem valueForKey: countKeyPath];
+	  num = [n integerValue];
 	}
 
       if (num > 0)
