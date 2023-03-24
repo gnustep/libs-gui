@@ -103,6 +103,7 @@ NSDataLinkManager.m \
 NSDataLinkPanel.m \
 NSDatePicker.m \
 NSDatePickerCell.m \
+NSDictionaryController.m \
 NSDockTile.m \
 NSDocument.m \
 NSDocumentController.m \
@@ -435,6 +436,7 @@ NSDataLinkManager.h \
 NSDataLinkPanel.h \
 NSDatePicker.h \
 NSDatePickerCell.h \
+NSDictionaryController.h \
 NSDockTile.h \
 NSDocument.h \
 NSDocumentController.h \

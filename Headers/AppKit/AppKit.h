@@ -167,6 +167,7 @@
 #import <AppKit/NSDockTile.h>
 #import <AppKit/NSDocument.h>
 #import <AppKit/NSDocumentController.h>
+#import <AppKit/NSDictionaryController.h>
 #import <AppKit/NSDrawer.h>
 #import <AppKit/NSFileWrapperExtensions.h>
 #import <AppKit/NSFontAssetRequest.h>
