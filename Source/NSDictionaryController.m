@@ -105,27 +105,25 @@
 
   FOR_IN(id, k, allKeys)
     {
-      NSDictionaryControllerKeyValuePair *kvp =
-	AUTORELEASE([[NSDictionaryControllerKeyValuePair alloc] init]);
-      id v = [content objectForKey: k];
-      NSString *localizedKey = [_localizedKeyDictionary objectForKey: k];
-
-      [kvp setLocalizedKey: localizedKey];
-      [kvp setKey: k];
-      [kvp setValue: v];
-      [kvp setExplicitlyIncluded: NO];
-
-      if ([_excludedKeys containsObject: k])
+      if (![_excludedKeys containsObject: k])
 	{
-	  continue; // skip if excluded...
-	}
+	  NSDictionaryControllerKeyValuePair *kvp =
+	    AUTORELEASE([[NSDictionaryControllerKeyValuePair alloc] init]);
+	  id v = [content objectForKey: k];
+	  NSString *localizedKey = [_localizedKeyDictionary objectForKey: k];
 
-      if ([_includedKeys containsObject: k])
-	{
-	  [kvp setExplicitlyIncluded: YES];
-	}
+	  [kvp setLocalizedKey: localizedKey];
+	  [kvp setKey: k];
+	  [kvp setValue: v];
+	  [kvp setExplicitlyIncluded: NO];
 
-      [result addObject: kvp];
+	  if ([_includedKeys containsObject: k])
+	    {
+	      [kvp setExplicitlyIncluded: YES];
+	    }
+
+	  [result addObject: kvp];
+	}
     }
   END_FOR_IN(allKeys);
 
@@ -157,8 +155,8 @@
   _contentDictionary = [[NSMutableDictionary alloc] init];
   _includedKeys = [[NSArray alloc] init];
   _excludedKeys = [[NSArray alloc] init];
-  _initialKey = @"key";
-  _initialValue = @"value";
+  _initialKey = [[NSString alloc] initWithString: @"key"];
+  _initialValue = [[NSString alloc] initWithString: @"value"];
   _count = 0;
 }
 
@@ -350,7 +348,6 @@
 	      format: @"-%@ cannot be sent to %@ ..."
 	      @" create an instance overriding this",
 	      NSStringFromSelector(_cmd), NSStringFromClass([self class])];
-  return;
 }
 
 - (void) bind: (NSString *)binding
