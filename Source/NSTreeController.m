@@ -163,6 +163,12 @@
   return [temp sortedArrayUsingDescriptors: _sortDescriptors];
 }
 
+- (NSArray*) arrangeObjects: (NSArray*)obj
+{
+  NSArray *temp = obj;  
+  return [temp sortedArrayUsingDescriptors: _sort_descriptors];
+}
+
 - (id) arrangedObjects
 {
   if (_arranged_objects == nil)
@@ -201,7 +207,7 @@
 
 - (NSArray*) sortDescriptors
 {
-  return _sortDescriptors;
+  return _sort_descriptors;
 }
 
 - (NSString*) childrenKeyPath
@@ -235,8 +241,13 @@
   GSKeyValueBinding *theBinding;
 
   [self setContent: obj];
+<<<<<<< HEAD
   theBinding = [GSKeyValueBinding getBinding: NSContentObjectBinding
 				   forObject: self];
+=======
+  theBinding = [GSKeyValueBinding getBinding: NSContentObjectBinding 
+                                   forObject: self];
+>>>>>>> e8ed44e86 (Update bindings)
   if (theBinding != nil)
     [theBinding reverseSetValueFor: @"content"];
 }
@@ -329,7 +340,7 @@
 
 - (void) setSortDescriptors: (NSArray*)descriptors
 {
-  ASSIGN(_sortDescriptors, descriptors);
+  ASSIGN(_sort_descriptors, descriptors);
 }
 
 - (NSString*) childrenKeyPathForNode: (NSTreeNode*)node
