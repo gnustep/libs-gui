@@ -158,6 +158,7 @@ static NSImage *unexpandable  = nil;
       keyCallBacks = NSObjectMapKeyCallBacks;
       keyCallBacks.isEqual = NSOwnedPointerMapKeyCallBacks.isEqual;
 
+      [self exposeBinding: NSContentArrayBinding];
       [self exposeBinding: NSContentBinding];
       [self exposeBinding: NSSelectionIndexesBinding];
       [self exposeBinding: NSSortDescriptorsBinding];
@@ -697,7 +698,7 @@ static NSImage *unexpandable  = nil;
 {
   GSKeyValueBinding *theBinding;
 
-  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+  theBinding = [GSKeyValueBinding getBinding: NSContentArrayBinding
 				   forObject: self];
   
 #define CHECK_REQUIRED_METHOD(selector_name) \
@@ -956,7 +957,7 @@ static NSImage *unexpandable  = nil;
   CGFloat x_pos;
   GSKeyValueBinding *theBinding;
 
-  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+  theBinding = [GSKeyValueBinding getBinding: NSContentArrayBinding
 				   forObject: self];
   
   if (_dataSource == nil && theBinding == nil)
@@ -1974,7 +1975,7 @@ Also returns the child index relative to this parent. */
   
   // If we have content binding the data source is used only
   // like a delegate
-  theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+  theBinding = [GSKeyValueBinding getBinding: NSContentArrayBinding 
                                    forObject: self];
   if (theBinding != nil)
     {
@@ -2085,7 +2086,7 @@ Also returns the child index relative to this parent. */
 {
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   GSKeyValueBinding *theBinding =
-    [GSKeyValueBinding getBinding: NSContentBinding
+    [GSKeyValueBinding getBinding: NSContentArrayBinding
 			forObject: self];
   NSMutableArray *anarray = nil;
   NSInteger num = 0;
@@ -2130,11 +2131,11 @@ Also returns the child index relative to this parent. */
     }
   else
     {
-      id source = [theBinding sourceValueFor: NSContentBinding];
+      id source = [theBinding sourceValueFor: NSContentArrayBinding];
       NSArray *contentArray = nil;
       
       // If sitem is NSNull then get the array..
-      if (sitem == [NSNull null])
+      if (sitem == [NSNull null] || sitem == nil)
 	{
 	  contentArray = (NSArray *)[theBinding destinationValue];
 	  num = [contentArray count];
