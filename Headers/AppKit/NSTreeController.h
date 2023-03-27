@@ -46,7 +46,8 @@ APPKIT_EXPORT_CLASS
   NSString *_childrenKeyPath;
   NSString *_countKeyPath;
   NSString *_leafKeyPath;
-  NSArray *_sortDescriptors;
+  NSArray *_sort_descriptors;
+  NSArray *_arranged_objects;
   BOOL _alwaysUsesMultipleValuesMarker;
   BOOL _avoidsEmptySelection;
   BOOL _preservesSelection;

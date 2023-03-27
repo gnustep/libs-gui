@@ -54,14 +54,25 @@
 
 - (id) initWithContent: (id)content
 {
+  NSLog(@"Content = %@", content);
   if ((self = [super initWithContent: content]) != nil)
     {
       _childrenKeyPath = nil;
       _countKeyPath = nil;
       _leafKeyPath = nil;
-      _sortDescriptors = nil;
+      _sort_descriptors = nil;
     }
 
+  return self;
+}
+
+- (id) init
+{
+  NSMutableArray *array = [[NSMutableArray alloc] init];
+
+  self = [self initWithContent: array];
+
+  RELEASE(array);
   return self;
 }
 
@@ -70,7 +81,7 @@
   RELEASE(_childrenKeyPath);
   RELEASE(_countKeyPath);
   RELEASE(_leafKeyPath);
-  RELEASE(_sortDescriptors);
+  RELEASE(_sort_descriptors);
   [super dealloc];
 }
 
@@ -130,10 +141,28 @@
   return NO;
 }
 
+- (NSArray*) arrangeObjects: (NSArray*)obj
+{
+  NSArray *temp = obj;  
+  return [temp sortedArrayUsingDescriptors: _sort_descriptors];
+}
+
 - (id) arrangedObjects
 {
-  // FIXME
-  return nil;
+  if (_arranged_objects == nil)
+    {
+      [self rearrangeObjects];
+    }
+  return _arranged_objects;
+}
+
+- (void) rearrangeObjects
+{
+  [self willChangeValueForKey: @"arrangedObjects"];
+  DESTROY(_arranged_objects);
+  _arranged_objects = [[GSObservableArray alloc]
+			  initWithArray: [self arrangeObjects: _content]];
+  [self didChangeValueForKey: @"arrangedObjects"];
 }
 
 - (NSArray *) selectedObjects
@@ -156,7 +185,7 @@
 
 - (NSArray*) sortDescriptors
 {
-  return _sortDescriptors;
+  return _sort_descriptors;
 }
 
 - (NSString*) childrenKeyPath
@@ -174,15 +203,34 @@
   return _leafKeyPath;
 }
 
-- (void) addChild: (id)sender
-{
-  // FIXME
-}
-
 - (void) add: (id)sender
 {
-  // FIXME
-  [super add: sender];
+  if ([self canAddChild])
+    {
+      id new = [self newObject];
+
+      [self addChild: new];
+      RELEASE(new);
+    }
+}
+
+- (void) addChild: (id)obj
+{
+  GSKeyValueBinding *theBinding;
+
+  [self setContent: obj];
+  theBinding = [GSKeyValueBinding getBinding: NSContentObjectBinding 
+                                   forObject: self];
+  if (theBinding != nil)
+    [theBinding reverseSetValueFor: @"content"];
+}
+
+- (void) remove: (id)sender
+{
+  if ([self canRemove])
+    {
+      [self removeObject: [self content]];
+    }
 }
 
 - (void) insertChild: (id)sender
@@ -205,11 +253,6 @@
   // FIXME
 }
 
-- (void) rearrangeObjects
-{
-  // FIXME
-}
-
 - (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath*)indexPath
 {
   // FIXME
@@ -223,12 +266,6 @@
 - (void) removeSelectionIndexPaths: (NSArray*)indexPaths
 {
   // FIXME
-}
-
-- (void) remove: (id)sender
-{
-  // FIXME
-  [super remove: sender];
 }
 
 - (void) setAlwaysUsesMultipleValuesMarker: (BOOL)flag
@@ -249,7 +286,9 @@
 - (void) setContent: (id)content
 {
   // FIXME
+  NSLog(@"in setContent... %@", content);
   [super setContent: content];
+  [self rearrangeObjects];
 }
 
 - (void) setCountKeyPath: (NSString*)path
@@ -274,7 +313,7 @@
 
 - (void) setSortDescriptors: (NSArray*)descriptors
 {
-  ASSIGN(_sortDescriptors, descriptors);
+  ASSIGN(_sort_descriptors, descriptors);
 }
 
 - (NSString*) childrenKeyPathForNode: (NSTreeNode*)node
