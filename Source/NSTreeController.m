@@ -385,42 +385,48 @@
 
   if (self != nil)
     {
-      // These names do not stick to convention.  Usually it would be
-      // NS* or NSTreeController* so they must be overriden in
-      // GSXib5KeyedUnarchver.
-      if ([coder containsValueForKey: @"NSTreeContentChildrenKey"])
+      if ([coder allowsKeyedCoding])
 	{
-	  [self setChildrenKeyPath:
-		  [coder decodeObjectForKey: @"NSTreeContentChildrenKey"]];
+	  // These names do not stick to convention.  Usually it would be
+	  // NS* or NSTreeController* so they must be overriden in
+	  // GSXib5KeyedUnarchver.
+	  if ([coder containsValueForKey: @"NSTreeContentChildrenKey"])
+	    {
+	      [self setChildrenKeyPath:
+		      [coder decodeObjectForKey: @"NSTreeContentChildrenKey"]];
+	    }
+	  if ([coder containsValueForKey: @"NSTreeContentCountKey"])
+	    {
+	      [self setChildrenKeyPath:
+		      [coder decodeObjectForKey: @"NSTreeContentCountKey"]];
+	    }
+	  if ([coder containsValueForKey: @"NSTreeContentLeafKey"])
+	    {
+	      [self setChildrenKeyPath:
+		      [coder decodeObjectForKey: @"NSTreeContentLeafKey"]];
+	    }
+	  
+	  // Since we don't inherit from NSArrayController these are decoded here
+	  // as well.
+	  if ([coder containsValueForKey: @"NSAvoidsEmptySelection"])
+	    {
+	      [self setAvoidsEmptySelection:
+		    [coder decodeBoolForKey: @"NSAvoidsEmptySelection"]];
+	    }
+	  if ([coder containsValueForKey: @"NSPreservesSelection"])
+	    {
+	      [self setPreservesSelection:
+		      [coder decodeBoolForKey: @"NSPreservesSelection"]];
+	    }
+	  if ([coder containsValueForKey: @"NSSelectsInsertedObjects"])
+	    {
+	      [self setSelectsInsertedObjects:
+		      [coder decodeBoolForKey: @"NSSelectsInsertedObjects"]];
+	    }
 	}
-      if ([coder containsValueForKey: @"NSTreeContentCountKey"])
-	{
-	  [self setChildrenKeyPath:
-		  [coder decodeObjectForKey: @"NSTreeContentCountKey"]];
-	}
-      if ([coder containsValueForKey: @"NSTreeContentLeafKey"])
-	{
-	  [self setChildrenKeyPath:
-		  [coder decodeObjectForKey: @"NSTreeContentLeafKey"]];
-	}
-
-      // Since we don't inherit from NSArrayController these are decoded here
-      // as well.
-      if ([coder containsValueForKey: @"NSAvoidsEmptySelection"])
-	{
-	  [self setAvoidsEmptySelection:
-		[coder decodeBoolForKey: @"NSAvoidsEmptySelection"]];
-	}
-      if ([coder containsValueForKey: @"NSPreservesSelection"])
-	{
-	  [self setPreservesSelection:
-		[coder decodeBoolForKey: @"NSPreservesSelection"]];
-	}
-      if ([coder containsValueForKey: @"NSSelectsInsertedObjects"])
-	{
-	  [self setSelectsInsertedObjects:
-		  [coder decodeBoolForKey: @"NSSelectsInsertedObjects"]];
-	}
+    }
+  else
+    {
     }
 
   return self;
@@ -429,6 +435,27 @@
 - (void) encodeWithCoder: (NSCoder*)coder
 {
   [super encodeWithCoder: coder];
+  
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: _childrenKeyPath
+		   forKey: @"NSTreeContentChildrenKey"];
+      [coder encodeObject:  _countKeyPath
+		   forKey: @"NSTreeContentCountKey"];
+      [coder encodeObject: _leafKeyPath
+		   forKey: @"NSTreeContentLeafKey"];
+
+
+      [coder encodeBool: _avoidsEmptySelection
+		 forKey: @"NSAvoidsEmptySelection"];
+      [coder encodeBool: _preservesSelection
+		 forKey: @"NSPreservesSelection"];
+      [coder encodeBool: _selectsInsertedObjects
+		 forKey: @"NSSelectsInsertedObjects"];
+    }
+  else
+    {
+    }
 }
 
 - (id) copyWithZone: (NSZone*)zone
