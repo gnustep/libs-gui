@@ -165,7 +165,7 @@
 
 - (NSArray*) arrangeObjects: (NSArray*)obj
 {
-  NSArray *temp = obj;  
+  NSArray *temp = obj;
   return [temp sortedArrayUsingDescriptors: _sort_descriptors];
 }
 
@@ -427,11 +427,7 @@
 	      [self setChildrenKeyPath:
 		      [coder decodeObjectForKey: @"NSTreeContentLeafKey"]];
 	    }
-<<<<<<< HEAD
 
-=======
-	  
->>>>>>> 476bad540 (Add proper encoding decoding for keyed objects)
 	  // Since we don't inherit from NSArrayController these are decoded here
 	  // as well.
 	  if ([coder containsValueForKey: @"NSAvoidsEmptySelection"])
@@ -453,7 +449,6 @@
     }
   else
     {
-<<<<<<< HEAD
       id obj = nil;
       BOOL f = NO;
 
@@ -473,8 +468,6 @@
       [coder decodeValueOfObjCType: @encode(BOOL)
 				at: &f];
       [self setSelectsInsertedObjects: f];
-=======
->>>>>>> 476bad540 (Add proper encoding decoding for keyed objects)
     }
 
   return self;
@@ -483,10 +476,6 @@
 - (void) encodeWithCoder: (NSCoder*)coder
 {
   [super encodeWithCoder: coder];
-<<<<<<< HEAD
-=======
-  
->>>>>>> 476bad540 (Add proper encoding decoding for keyed objects)
   if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: _childrenKeyPath
@@ -506,7 +495,6 @@
     }
   else
     {
-<<<<<<< HEAD
       id obj = nil;
       BOOL f = NO;
 
@@ -526,8 +514,6 @@
       f = [self selectsInsertedObjects];
       [coder encodeValueOfObjCType: @encode(BOOL)
 				at: &f];
-=======
->>>>>>> 476bad540 (Add proper encoding decoding for keyed objects)
     }
 }
 

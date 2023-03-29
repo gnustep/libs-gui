@@ -168,6 +168,7 @@ APPKIT_EXPORT_CLASS
  * will fail if canInsertChild returns NO.
  */
 - (void) insertChild: (id)sender;
+<<<<<<< HEAD
 
 /**
  * Inserts and object using the newObject method at the specified indexPath.
@@ -183,6 +184,10 @@ APPKIT_EXPORT_CLASS
 /**
  * Insert an object created by newObject into arranged objects.
  */
+=======
+- (void) insertObject: (id)object atArrangedObjectIndexPath: (NSIndexPath *)indexPath;
+- (void) insertObjects: (NSArray *)objects atArrangedObjectIndexPaths: (NSArray *)indexPaths;
+>>>>>>> d268caee3 (Update header and add non-keyed encoding to the class)
 - (void) insert: (id)sender;
 
 /**
@@ -191,6 +196,7 @@ APPKIT_EXPORT_CLASS
  * in the controller.
  */
 - (void) rearrangeObjects;
+<<<<<<< HEAD
 
 /**
  * Removes object at the specified indexPath.
@@ -210,6 +216,11 @@ APPKIT_EXPORT_CLASS
 /**
  * Remove the currently selected object
  */
+=======
+- (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath *)indexPath;
+- (void) removeObjectsAtArrangedObjectIndexPaths: (NSArray *)indexPaths;
+- (void) removeSelectionIndexPaths: (NSArray *)indexPaths;
+>>>>>>> d268caee3 (Update header and add non-keyed encoding to the class)
 - (void) remove: (id)sender;
 
 /**
@@ -221,6 +232,7 @@ APPKIT_EXPORT_CLASS
  * Sets the flag to avoid empty selection.
  */
 - (void) setAvoidsEmptySelection: (BOOL)flag;
+<<<<<<< HEAD
 
 /**
  * Sets the children key path.  This needs to be key-value compliant.
@@ -240,6 +252,11 @@ APPKIT_EXPORT_CLASS
 /**
  * Sets the preserves selection flag.
  */
+=======
+- (void) setChildrenKeyPath: (NSString *)path;
+- (void) setCountKeyPath: (NSString *)path;
+- (void) setLeafKeyPath: (NSString *)key;
+>>>>>>> d268caee3 (Update header and add non-keyed encoding to the class)
 - (void) setPreservesSelection: (BOOL)flag;
 
 /**
@@ -247,6 +264,7 @@ APPKIT_EXPORT_CLASS
  * selected.
  */
 - (void) setSelectsInsertedObjects: (BOOL)flag;
+<<<<<<< HEAD
 
 /**
  * Sets the array of sort descriptors used when building arrangedObjects.
@@ -282,6 +300,16 @@ APPKIT_EXPORT_CLASS
 /**
  * Array containing all selected nodes
  */
+=======
+- (void) setSortDescriptors: (NSArray *)descriptors;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSString*) childrenKeyPathForNode: (NSTreeNode *)node;
+- (NSString*) countKeyPathForNode: (NSTreeNode *)node;
+- (NSString*) leafKeyPathForNode: (NSTreeNode *)node;
+- (void) moveNode: (NSTreeNode *)node toIndexPath: (NSIndexPath *)indexPath;
+- (void) moveNodes: (NSArray *)nodes toIndexPath: (NSIndexPath *)startingIndexPath;
+>>>>>>> d268caee3 (Update header and add non-keyed encoding to the class)
 - (NSArray*) selectedNodes;
 #endif
 @end
