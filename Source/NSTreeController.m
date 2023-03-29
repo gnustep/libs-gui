@@ -27,6 +27,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <Foundation/NSArchiver.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSIndexPath.h>
 #import <Foundation/NSKeyedArchiver.h>
@@ -498,7 +499,7 @@
 
 - (id) copyWithZone: (NSZone*)zone
 {
-  NSData *data = [NSArchiver archiveDataWithRootObject: self];
+  NSData *data = [NSArchiver archivedDataWithRootObject: self];
   id result = [NSUnarchiver unarchiveObjectWithData: data];
   return result;
 }
