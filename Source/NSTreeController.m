@@ -498,7 +498,9 @@
 
 - (id) copyWithZone: (NSZone*)zone
 {
-  return [self retain];
+  NSData *data = [NSArchiver archiveDataWithRootObject: self];
+  id result = [NSUnarchiver unarchiveObjectWithData: data];
+  return result;
 }
 
 @end
