@@ -143,7 +143,7 @@
 
 - (NSArray*) arrangeObjects: (NSArray*)obj
 {
-  NSArray *temp = obj;  
+  NSArray *temp = obj;
   return [temp sortedArrayUsingDescriptors: _sort_descriptors];
 }
 
@@ -219,8 +219,8 @@
   GSKeyValueBinding *theBinding;
 
   [self setContent: obj];
-  theBinding = [GSKeyValueBinding getBinding: NSContentObjectBinding 
-                                   forObject: self];
+  theBinding = [GSKeyValueBinding getBinding: NSContentObjectBinding
+				   forObject: self];
   if (theBinding != nil)
     [theBinding reverseSetValueFor: @"content"];
 }
@@ -405,7 +405,7 @@
 	      [self setChildrenKeyPath:
 		      [coder decodeObjectForKey: @"NSTreeContentLeafKey"]];
 	    }
-	  
+
 	  // Since we don't inherit from NSArrayController these are decoded here
 	  // as well.
 	  if ([coder containsValueForKey: @"NSAvoidsEmptySelection"])
@@ -427,6 +427,25 @@
     }
   else
     {
+      id obj = nil;
+      BOOL f = NO;
+
+      obj = [coder decodeObject];
+      [self setChildrenKeyPath: obj];
+      obj = [coder decodeObject];
+      [self setCountKeyPath: obj];
+      obj = [coder decodeObject];
+      [self setLeafKeyPath: obj];
+
+      [coder decodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+      [self setAvoidsEmptySelection: f];
+      [coder decodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+      [self setPreservesSelection: f];
+      [coder decodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+      [self setSelectsInsertedObjects: f];
     }
 
   return self;
@@ -435,7 +454,7 @@
 - (void) encodeWithCoder: (NSCoder*)coder
 {
   [super encodeWithCoder: coder];
-  
+
   if ([coder allowsKeyedCoding])
     {
       [coder encodeObject: _childrenKeyPath
@@ -455,6 +474,25 @@
     }
   else
     {
+      id obj = nil;
+      BOOL f = NO;
+
+      obj = [self childrenKeyPath];
+      [coder encodeObject: obj];
+      obj = [self countKeyPath];
+      [coder encodeObject: obj];
+      obj = [self leafKeyPath];
+      [coder encodeObject: obj];
+
+      f = [self avoidsEmptySelection];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+      f = [self preservesSelection];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+      f = [self selectsInsertedObjects];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+				at: &f];
     }
 }
 

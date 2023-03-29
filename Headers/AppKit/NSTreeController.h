@@ -1,4 +1,4 @@
-/* 
+/*
    NSTreeController.h
 
    The tree controller class.
@@ -7,7 +7,7 @@
 
    Author:  Gregory Casamento <greg.casamento@gmail.com>
    Date: 2012
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -22,10 +22,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #ifndef _GNUstep_H_NSTreeController
 #define _GNUstep_H_NSTreeController
@@ -48,22 +48,23 @@ APPKIT_EXPORT_CLASS
   NSString *_leafKeyPath;
   NSArray *_sort_descriptors;
   NSArray *_arranged_objects;
+
   BOOL _alwaysUsesMultipleValuesMarker;
   BOOL _avoidsEmptySelection;
   BOOL _preservesSelection;
   BOOL _selectsInsertedObjects;
 }
 
-- (BOOL) addSelectionIndexPaths: (NSArray*)indexPaths;
+- (BOOL) addSelectionIndexPaths: (NSArray *)indexPaths;
 - (BOOL) alwaysUsesMultipleValuesMarker;
 - (BOOL) avoidsEmptySelection;
 - (BOOL) canAddChild;
 - (BOOL) canInsert;
 - (BOOL) canInsertChild;
-- (BOOL) preservesSelection; 
+- (BOOL) preservesSelection;
 - (BOOL) selectsInsertedObjects;
-- (BOOL) setSelectionIndexPath: (NSIndexPath*)indexPath;
-- (BOOL) setSelectionIndexPaths: (NSArray*)indexPaths;
+- (BOOL) setSelectionIndexPath: (NSIndexPath *)indexPath;
+- (BOOL) setSelectionIndexPaths: (NSArray *)indexPaths;
 - (id) arrangedObjects;
 - (NSArray*) selectedObjects;
 - (NSIndexPath*) selectionIndexPath;
@@ -75,29 +76,29 @@ APPKIT_EXPORT_CLASS
 - (void) addChild: (id)sender;
 - (void) add: (id)sender;
 - (void) insertChild: (id)sender;
-- (void) insertObject: (id)object atArrangedObjectIndexPath: (NSIndexPath*)indexPath;
-- (void) insertObjects: (NSArray*)objects atArrangedObjectIndexPaths: (NSArray*)indexPaths;
+- (void) insertObject: (id)object atArrangedObjectIndexPath: (NSIndexPath *)indexPath;
+- (void) insertObjects: (NSArray *)objects atArrangedObjectIndexPaths: (NSArray *)indexPaths;
 - (void) insert: (id)sender;
 - (void) rearrangeObjects;
-- (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath*)indexPath;
-- (void) removeObjectsAtArrangedObjectIndexPaths: (NSArray*)indexPaths;
-- (void) removeSelectionIndexPaths: (NSArray*)indexPaths;
+- (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath *)indexPath;
+- (void) removeObjectsAtArrangedObjectIndexPaths: (NSArray *)indexPaths;
+- (void) removeSelectionIndexPaths: (NSArray *)indexPaths;
 - (void) remove: (id)sender;
 - (void) setAlwaysUsesMultipleValuesMarker: (BOOL)flag;
 - (void) setAvoidsEmptySelection: (BOOL)flag;
-- (void) setChildrenKeyPath: (NSString*)path;
-- (void) setCountKeyPath: (NSString*)path;
-- (void) setLeafKeyPath: (NSString*)key;
+- (void) setChildrenKeyPath: (NSString *)path;
+- (void) setCountKeyPath: (NSString *)path;
+- (void) setLeafKeyPath: (NSString *)key;
 - (void) setPreservesSelection: (BOOL)flag;
 - (void) setSelectsInsertedObjects: (BOOL)flag;
-- (void) setSortDescriptors: (NSArray*)descriptors;
+- (void) setSortDescriptors: (NSArray *)descriptors;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
-- (NSString*) childrenKeyPathForNode: (NSTreeNode*)node;
-- (NSString*) countKeyPathForNode: (NSTreeNode*)node;
-- (NSString*) leafKeyPathForNode: (NSTreeNode*)node;
-- (void) moveNode: (NSTreeNode*)node toIndexPath: (NSIndexPath*)indexPath;
-- (void) moveNodes: (NSArray*)nodes toIndexPath: (NSIndexPath*)startingIndexPath;
+- (NSString*) childrenKeyPathForNode: (NSTreeNode *)node;
+- (NSString*) countKeyPathForNode: (NSTreeNode *)node;
+- (NSString*) leafKeyPathForNode: (NSTreeNode *)node;
+- (void) moveNode: (NSTreeNode *)node toIndexPath: (NSIndexPath *)indexPath;
+- (void) moveNodes: (NSArray *)nodes toIndexPath: (NSIndexPath *)startingIndexPath;
 - (NSArray*) selectedNodes;
 #endif
 @end
