@@ -650,6 +650,11 @@ static NSMutableArray *activeConstraints = nil;
   [self _setNeedsUpdateConstraints: NO];
 }
 
+- (void) _layoutEngineDidChangeAlignmentRect
+{
+  [self.superview setNeedsLayout: YES];
+}
+
 @end
 
 @implementation NSView (NSConstraintBasedLayoutInstallingConstraints)
