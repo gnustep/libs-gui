@@ -211,6 +211,7 @@ APPKIT_EXPORT_CLASS
                                              flipped: (BOOL)flipped;
 #endif
 
+- (const gsMethodTable *) methods;
 - (NSDictionary *) attributes;
 - (void *) graphicsPort;
 

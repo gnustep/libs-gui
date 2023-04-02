@@ -375,6 +375,11 @@ NSGraphicsContext	*GSCurrentContext(void)
   return context_info;
 }
 
+- (const gsMethodTable *) methods
+{
+  return methods;
+}
+
 - (void) flushGraphics
 {
   [self subclassResponsibility: _cmd];
