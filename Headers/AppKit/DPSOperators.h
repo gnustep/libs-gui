@@ -472,6 +472,61 @@ static inline void
 DPSWriteData(GSCTXT *ctxt, const char * buf, unsigned int count)
 __attribute__((unused));
 
+#ifdef _MSC_VER
+#define DPS_FUNCTION(type, name) static inline type \
+name(GSCTXT *ctxt) \
+{ \
+  return [ctxt name]; \
+}
+
+#define DPS_METHOD(name) static inline void \
+name(GSCTXT *ctxt) \
+{ \
+  [ctxt name]; \
+}
+
+#define DPS_METHOD_1(name, type1, var1) static inline void \
+name(GSCTXT *ctxt, type1 var1) \
+{ \
+  [ctxt name :var1]; \
+}
+
+#define DPS_METHOD_2(name, type1, var1, type2, var2) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2) \
+{ \
+  [ctxt name :var1 :var2]; \
+}
+
+#define DPS_METHOD_3(name, type1, var1, type2, var2, type3, var3) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3) \
+{ \
+  [ctxt name :var1 :var2 :var3]; \
+}
+
+#define DPS_METHOD_4(name, type1, var1, type2, var2, type3, var3, type4, var4) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4) \
+{ \
+  [ctxt name :var1 :var2 :var3 :var4]; \
+}
+
+#define DPS_METHOD_5(name, type1, var1, type2, var2, type3, var3, type4, var4, type5, var5) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5) \
+{ \
+  [ctxt name :var1 :var2 :var3 :var4 :var5]; \
+}
+
+#define DPS_METHOD_6(name, type1, var1, type2, var2, type3, var3, type4, var4, type5, var5, type6, var6) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5, type6 var6) \
+{ \
+  [ctxt name :var1 :var2 :var3 :var4 :var5 :var6]; \
+}
+
+#define DPS_METHOD_8(name, type1, var1, type2, var2, type3, var3, type4, var4, type5, var5, type6, var6, type7, var7, type8, var8) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5, type6 var6, type7 var7, type8 var8) \
+{ \
+  [ctxt name :var1 :var2 :var3 :var4 :var5 :var6 :var7 :var8]; \
+}
+#else
 #define DPS_FUNCTION(type, name) static inline type \
 name(GSCTXT *ctxt) \
 { \
@@ -534,6 +589,7 @@ name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5, t
   (ctxt->methods->name ## ________) \
     (ctxt, @selector(name: : : : : : : :), var1, var2, var3, var4, var5, var6, var7, var8); \
 }
+#endif
 
 /* ----------------------------------------------------------------------- */
 /* Color operations */
