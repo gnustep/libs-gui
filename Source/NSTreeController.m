@@ -62,6 +62,11 @@
       _countKeyPath = nil;
       _leafKeyPath = nil;
       _sort_descriptors = nil;
+      _selection_index_paths = [[NSMutableArray alloc] init];
+
+      _can_insert = YES;
+      _can_insert_child = YES;
+      _can_add_child = YES;
     }
 
   return self;
@@ -72,8 +77,8 @@
   NSMutableArray *array = [[NSMutableArray alloc] init];
 
   self = [self initWithContent: array];
-
   RELEASE(array);
+  
   return self;
 }
 
@@ -104,20 +109,17 @@
 
 - (BOOL) canAddChild
 {
-  // FIXME
-  return NO;
+  return _can_add_child;
 }
 
 - (BOOL) canInsert
 {
-  // FIXME
-  return NO;
+  return _can_insert;
 }
 
 - (BOOL) canInsertChild
 {
-  // FIXME
-  return NO;
+  return _can_insert_child;
 }
 
 - (BOOL) preservesSelection
@@ -132,14 +134,27 @@
 
 - (BOOL) setSelectionIndexPath: (NSIndexPath *)indexPath
 {
-  // FIXME
-  return NO;
+  BOOL f = [self commitEditing];
+
+  if (YES == f)
+    {
+      [_selection_index_paths addObject: indexPath];
+    }
+  
+  return f;
 }
 
 - (BOOL) setSelectionIndexPaths: (NSArray *)indexPaths
 {
-  // FIXME
-  return NO;
+  BOOL f = [self commitEditing];
+
+  if (YES == f)
+    {
+      NSMutableArray *mutable_index_paths = [NSMutableArray arrayWithArray: indexPaths];
+      ASSIGN(_selection_index_paths, mutable_index_paths);
+    }
+  
+  return f;
 }
 
 - (NSArray*) arrangeObjects: (NSArray*)obj

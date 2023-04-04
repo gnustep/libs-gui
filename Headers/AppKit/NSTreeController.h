@@ -48,11 +48,15 @@ APPKIT_EXPORT_CLASS
   NSString *_leafKeyPath;
   NSArray *_sort_descriptors;
   NSArray *_arranged_objects;
-
+  NSMutableArray *_selection_index_paths;
+  
   BOOL _alwaysUsesMultipleValuesMarker;
   BOOL _avoidsEmptySelection;
   BOOL _preservesSelection;
   BOOL _selectsInsertedObjects;
+  BOOL _can_add_child;
+  BOOL _can_insert;
+  BOOL _can_insert_child;
 }
 
 - (BOOL) addSelectionIndexPaths: (NSArray *)indexPaths;
