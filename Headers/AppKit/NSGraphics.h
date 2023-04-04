@@ -202,23 +202,35 @@ NSBeep(void)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   if (ctxt != nil) {
+#ifdef _MSC_VER
+    [ctxt NSBeep];
+#else
     (ctxt->methods->NSBeep)
       (ctxt, @selector(NSBeep));
+#endif
   }
 }
 
 static inline void
 GSWSetViewIsFlipped(NSGraphicsContext *ctxt, BOOL flipped)
 {
+#ifdef _MSC_VER
+  [ctxt GSWSetViewIsFlipped: flipped];
+#else
   (ctxt->methods->GSWSetViewIsFlipped_)
     (ctxt, @selector(GSWSetViewIsFlipped:), flipped);
+#endif
 }
 
 static inline BOOL
 GSWViewIsFlipped(NSGraphicsContext *ctxt)
 {
+#ifdef _MSC_VER
+  return [ctxt GSWViewIsFlipped];
+#else
   return (ctxt->methods->GSWViewIsFlipped)
     (ctxt, @selector(GSWViewIsFlipped));
+#endif
 }
 
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
