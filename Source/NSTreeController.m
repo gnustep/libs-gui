@@ -61,12 +61,12 @@
       _childrenKeyPath = nil;
       _countKeyPath = nil;
       _leafKeyPath = nil;
-      _sort_descriptors = nil;
+      _sortDescriptors = nil;
       _selection_index_paths = [[NSMutableArray alloc] init];
 
-      _can_insert = YES;
-      _can_insert_child = YES;
-      _can_add_child = YES;
+      _canInsert = YES;
+      _canInsertChild = YES;
+      _canAddChild = YES;
     }
 
   return self;
@@ -87,7 +87,8 @@
   RELEASE(_childrenKeyPath);
   RELEASE(_countKeyPath);
   RELEASE(_leafKeyPath);
-  RELEASE(_sort_descriptors);
+  RELEASE(_sortDescriptors);
+  RELEASE(_arranged_objects);
   [super dealloc];
 }
 
@@ -109,17 +110,17 @@
 
 - (BOOL) canAddChild
 {
-  return _can_add_child;
+  return _canAddChild;
 }
 
 - (BOOL) canInsert
 {
-  return _can_insert;
+  return _canInsert;
 }
 
 - (BOOL) canInsertChild
 {
-  return _can_insert_child;
+  return _canInsertChild;
 }
 
 - (BOOL) preservesSelection
@@ -160,7 +161,7 @@
 - (NSArray*) arrangeObjects: (NSArray*)obj
 {
   NSArray *temp = obj;
-  return [temp sortedArrayUsingDescriptors: _sort_descriptors];
+  return [temp sortedArrayUsingDescriptors: _sortDescriptors];
 }
 
 - (id) arrangedObjects
@@ -201,7 +202,7 @@
 
 - (NSArray*) sortDescriptors
 {
-  return _sort_descriptors;
+  return _sortDescriptors;
 }
 
 - (NSString*) childrenKeyPath
@@ -329,7 +330,7 @@
 
 - (void) setSortDescriptors: (NSArray*)descriptors
 {
-  ASSIGN(_sort_descriptors, descriptors);
+  ASSIGN(_sortDescriptors, descriptors);
 }
 
 - (NSString*) childrenKeyPathForNode: (NSTreeNode*)node
