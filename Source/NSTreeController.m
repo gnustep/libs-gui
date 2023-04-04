@@ -164,12 +164,6 @@
   return [temp sortedArrayUsingDescriptors: _sortDescriptors];
 }
 
-- (NSArray*) arrangeObjects: (NSArray*)obj
-{
-  NSArray *temp = obj;
-  return [temp sortedArrayUsingDescriptors: _sort_descriptors];
-}
-
 - (id) arrangedObjects
 {
   if (_arranged_objects == nil)
@@ -208,7 +202,7 @@
 
 - (NSArray*) sortDescriptors
 {
-  return _sort_descriptors;
+  return _sortDescriptors;
 }
 
 - (NSString*) childrenKeyPath
@@ -336,7 +330,7 @@
 
 - (void) setSortDescriptors: (NSArray*)descriptors
 {
-  ASSIGN(_sort_descriptors, descriptors);
+  ASSIGN(_sortDescriptors, descriptors);
 }
 
 - (NSString*) childrenKeyPathForNode: (NSTreeNode*)node
