@@ -46,7 +46,7 @@ APPKIT_EXPORT_CLASS
   NSString *_childrenKeyPath;
   NSString *_countKeyPath;
   NSString *_leafKeyPath;
-  NSArray *_sort_descriptors;
+  NSArray *_sortDescriptors;
   NSArray *_arranged_objects;
   NSMutableArray *_selection_index_paths;
   
@@ -54,9 +54,9 @@ APPKIT_EXPORT_CLASS
   BOOL _avoidsEmptySelection;
   BOOL _preservesSelection;
   BOOL _selectsInsertedObjects;
-  BOOL _can_add_child;
-  BOOL _can_insert;
-  BOOL _can_insert_child;
+  BOOL _canAddChild;
+  BOOL _canInsert;
+  BOOL _canInsertChild;
 }
 
 - (BOOL) addSelectionIndexPaths: (NSArray *)indexPaths;
