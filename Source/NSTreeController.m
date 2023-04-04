@@ -78,6 +78,7 @@
 
   self = [self initWithContent: array];
   RELEASE(array);
+  
   return self;
 }
 
