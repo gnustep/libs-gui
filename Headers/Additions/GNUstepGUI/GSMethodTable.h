@@ -112,7 +112,7 @@ typedef struct {
         (NSGraphicsContext*, SEL, const char *, size_t);
   void (*GSShowGlyphs__)
         (NSGraphicsContext*, SEL, const NSGlyph *, size_t);
-  void (*GSShowGlyphsWithAdvances__)
+  void (*GSShowGlyphsWithAdvances___)
         (NSGraphicsContext*, SEL, const NSGlyph *, const NSSize *, size_t);
 
 /* ----------------------------------------------------------------------- */
@@ -313,7 +313,7 @@ typedef struct {
   struct breaks apps that use PS* or DPS* functions and were compiled with
   an earlier version, so it's here until we figure out how to handle that.
   */
-  void (*DPSshfill)
+  void (*DPSshfill_)
         (NSGraphicsContext*, SEL, NSDictionary *);
 } gsMethodTable;
 

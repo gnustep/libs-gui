@@ -708,7 +708,7 @@ GSShowGlyphs(GSCTXT *ctxt, const NSGlyph * glyphs, size_t length)
 static inline void
 GSShowGlyphsWithAdvances(GSCTXT *ctxt, const NSGlyph * glyphs, const NSSize * advances, size_t length)
 {
-  (ctxt->methods->GSShowGlyphsWithAdvances__)
+  (ctxt->methods->GSShowGlyphsWithAdvances___)
     (ctxt, @selector(GSShowGlyphsWithAdvances: :), glyphs, advances, length); 
 }
 
@@ -1103,7 +1103,7 @@ DPSstroke(GSCTXT *ctxt)
 static inline void
 DPSshfill(GSCTXT *ctxt, NSDictionary *shaderDictionary)
 {
-  (ctxt->methods->DPSshfill)
+  (ctxt->methods->DPSshfill_)
     (ctxt, @selector(DPSshfill:), shaderDictionary);
 }
 
