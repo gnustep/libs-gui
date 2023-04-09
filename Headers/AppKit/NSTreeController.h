@@ -168,7 +168,6 @@ APPKIT_EXPORT_CLASS
  * will fail if canInsertChild returns NO.
  */
 - (void) insertChild: (id)sender;
-<<<<<<< HEAD
 
 /**
  * Inserts and object using the newObject method at the specified indexPath.
@@ -184,10 +183,17 @@ APPKIT_EXPORT_CLASS
 /**
  * Insert an object created by newObject into arranged objects.
  */
-=======
 - (void) insertObject: (id)object atArrangedObjectIndexPath: (NSIndexPath *)indexPath;
+
+/**
+ * Inserts objects into arranged objects at the specified indexPaths.  These arrays are
+ * expected to be parallel and have the same number of objects.
+ */
 - (void) insertObjects: (NSArray *)objects atArrangedObjectIndexPaths: (NSArray *)indexPaths;
->>>>>>> d268caee3 (Update header and add non-keyed encoding to the class)
+
+/**
+ * Insert an object created by newObject into arranged objects.
+ */
 - (void) insert: (id)sender;
 
 /**
@@ -196,7 +202,6 @@ APPKIT_EXPORT_CLASS
  * in the controller.
  */
 - (void) rearrangeObjects;
-<<<<<<< HEAD
 
 /**
  * Removes object at the specified indexPath.
@@ -216,11 +221,21 @@ APPKIT_EXPORT_CLASS
 /**
  * Remove the currently selected object
  */
-=======
 - (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath *)indexPath;
+
+/**
+ * Removes objects at the specified indexPaths.
+ */
 - (void) removeObjectsAtArrangedObjectIndexPaths: (NSArray *)indexPaths;
+
+/**
+ * Removes selection of objects at the specified indexPaths.
+ */
 - (void) removeSelectionIndexPaths: (NSArray *)indexPaths;
->>>>>>> d268caee3 (Update header and add non-keyed encoding to the class)
+
+/**
+ * Remove the currently selected object
+ */
 - (void) remove: (id)sender;
 
 /**
@@ -232,7 +247,6 @@ APPKIT_EXPORT_CLASS
  * Sets the flag to avoid empty selection.
  */
 - (void) setAvoidsEmptySelection: (BOOL)flag;
-<<<<<<< HEAD
 
 /**
  * Sets the children key path.  This needs to be key-value compliant.
@@ -252,11 +266,6 @@ APPKIT_EXPORT_CLASS
 /**
  * Sets the preserves selection flag.
  */
-=======
-- (void) setChildrenKeyPath: (NSString *)path;
-- (void) setCountKeyPath: (NSString *)path;
-- (void) setLeafKeyPath: (NSString *)key;
->>>>>>> d268caee3 (Update header and add non-keyed encoding to the class)
 - (void) setPreservesSelection: (BOOL)flag;
 
 /**
@@ -264,7 +273,6 @@ APPKIT_EXPORT_CLASS
  * selected.
  */
 - (void) setSelectsInsertedObjects: (BOOL)flag;
-<<<<<<< HEAD
 
 /**
  * Sets the array of sort descriptors used when building arrangedObjects.
@@ -300,16 +308,37 @@ APPKIT_EXPORT_CLASS
 /**
  * Array containing all selected nodes
  */
-=======
 - (void) setSortDescriptors: (NSArray *)descriptors;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+/**
+ * children key path for the given NSTreeNode.
+ */
 - (NSString*) childrenKeyPathForNode: (NSTreeNode *)node;
+
+/**
+ * count key path for the given NSTreeNode.
+ */
 - (NSString*) countKeyPathForNode: (NSTreeNode *)node;
+
+/**
+ * leaf key path for the given NSTreeNode.
+ */
 - (NSString*) leafKeyPathForNode: (NSTreeNode *)node;
+
+/**
+ * Moves node to given indexPath
+ */
 - (void) moveNode: (NSTreeNode *)node toIndexPath: (NSIndexPath *)indexPath;
+
+/**
+ * Move nodes to position at startingIndexPath
+ */
 - (void) moveNodes: (NSArray *)nodes toIndexPath: (NSIndexPath *)startingIndexPath;
->>>>>>> d268caee3 (Update header and add non-keyed encoding to the class)
+
+/**
+ * Array containing all selected nodes
+ */
 - (NSArray*) selectedNodes;
 #endif
 @end
