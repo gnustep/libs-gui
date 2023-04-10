@@ -1,4 +1,4 @@
-/* 
+/*
    NSNibLoading.h
 
    Copyright (C) 1997, 1999 Free Software Foundation, Inc.
@@ -7,7 +7,7 @@
    Date: 1997
    Author:  Richard Frith-Macdonald <richard@branstorm.co.uk>
    Date: 1999
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -22,10 +22,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #ifndef _GNUstep_H_NSNibLoading
 #define _GNUstep_H_NSNibLoading
@@ -41,8 +41,9 @@
 
 @interface NSObject (NSNibAwaking)
 
-/*
- * Notification of Loading
+/**
+ * Notification of Loading. This method is called on custom objects
+ * once model loading is completed.
  */
 - (void) awakeFromNib;
 
@@ -51,24 +52,48 @@
 
 @interface NSBundle (NSNibLoading)
 
+/**
+ * Load the model file specified by fileName using the existing context
+ * as the external name table.  The name table contains NSOwner, NSMenu
+ * and other well known top level objects with zone as the current
+ * memory allocation zone.  This method uses the current mainBundle.
+ */
 + (BOOL) loadNibFile: (NSString *)fileName
    externalNameTable: (NSDictionary *)context
 	    withZone: (NSZone *)zone;
 
+/**
+ * Load the model file specified by aNibName, using owner as the NSOwner.
+ * This method calls loadNibFile:externalNameTable:withZone:
+ */
 + (BOOL) loadNibNamed: (NSString *)aNibName
-	        owner: (id)owner;
+		owner: (id)owner;
 
+/**
+ * Load the model file specified by fileName, using the context dictionary
+ * to specify top level objects.  This method uses whatever bundle instance
+ * it is called on.  This method is called by
+ * +loadNibFile:externalNameTable:withZone:
+ */
 - (BOOL) loadNibFile: (NSString *)fileName
    externalNameTable: (NSDictionary *)context
 	    withZone: (NSZone *)zone;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+/**
+ * Loads the model file specified by aNibName with owner as NSOwner. The
+ * topLevelObjects array is a return parameter which returns a pointing
+ * to the topLevelObjects in this model.
+ */
 - (BOOL) loadNibNamed: (NSString *)aNibName
-	        owner: (id)owner
+		owner: (id)owner
       topLevelObjects: (NSArray **)topLevelObjects;
 #endif
 
 #if OS_API_VERSION(GS_API_NONE, GS_API_NONE)
+/**
+ * Returns the path of the model specified by fileName.
+ */
 - (NSString *) pathForNibResource: (NSString *)fileName;
 #endif // GS_API_NONE
 @end
