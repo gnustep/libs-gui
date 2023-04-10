@@ -116,7 +116,7 @@
 }
 
 
-- (NSCharacterCollection) characterCollection;
+- (NSCharacterCollection) characterCollection
 {
   return _characterCollection;
 }
