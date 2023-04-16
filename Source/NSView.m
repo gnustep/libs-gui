@@ -5235,6 +5235,11 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   return [[self window] _layoutEngine];
 }
 
+- (void) _layoutEngineDidChangeAlignmentRect
+{
+  [[self superview] setNeedsLayout: YES];
+}
+
 @end
 
 @implementation NSView (__NSViewPrivateMethods__)

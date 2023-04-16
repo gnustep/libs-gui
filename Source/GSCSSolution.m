@@ -66,10 +66,12 @@
   NSNumber *rhsResult = [solution resultForVariable: variable];
 
   BOOL hasResultForBoth = lhsResult != nil && rhsResult != nil;
-  BOOL hasTheSameResultForBoth =
-      [GSCSFloatComparator isApproxiatelyEqual: [lhsResult floatValue]
+  if (!hasResultForBoth) {
+    return NO;
+  }
+  
+  return [GSCSFloatComparator isApproxiatelyEqual: [lhsResult floatValue]
                                              b: [rhsResult floatValue]];
-  return hasResultForBoth && hasTheSameResultForBoth;
 }
 
 - (BOOL) isEqualToCassowarySolverSolution: (GSCSSolution *)solution

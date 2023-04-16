@@ -21,7 +21,8 @@
 */
 
 #import "GSAutoLayoutEngine.h"
-#include "AppKit/NSLayoutConstraint.h"
+#import "AppKit/NSLayoutConstraint.h"
+#import "NSViewPrivate.h"
 #import "GSCSConstraint.h"
 #import "GSFastEnumeration.h"
 
@@ -88,7 +89,6 @@ GSAutoLayoutEngine (PrivateMethods)
   self = [super init];
   if (self != nil)
     {
-      _viewCounter = 0;
       _solver = cassowarySolver;
       RETAIN(_solver);
 
@@ -132,7 +132,9 @@ GSAutoLayoutEngine (PrivateMethods)
 - (instancetype) init
 {
   GSCassowarySolver *solver = AUTORELEASE([[GSCassowarySolver alloc] init]);
-  return [self initWithSolver: solver];
+  self = [self initWithSolver: solver];
+  RELEASE(solver);
+  return self;
 }
 
 - (void) addConstraints: (NSArray *)constraints
@@ -214,7 +216,7 @@ GSAutoLayoutEngine (PrivateMethods)
     (NSLayoutConstraint *)constraint
 {
   // FIXME Map NSLayoutConstraint to GSCSConstraint
-  return [[GSCSConstraint alloc] init];
+  return AUTORELEASE([[GSCSConstraint alloc] init]);
 }
 
 - (void) mapLayoutConstraint: (NSLayoutConstraint *)layoutConstraint

@@ -174,8 +174,6 @@ APPKIT_EXPORT_CLASS
 
 - (void) updateConstraintsForSubtreeIfNeeded;
 
-- (void) _layoutEngineDidChangeAlignmentRect;
-
 @end
 
 @interface NSView (NSConstraintBasedLayoutInstallingConstraints)
