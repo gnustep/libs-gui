@@ -32,18 +32,18 @@
   if (self)
     {
       _resultsByVariable = [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN (_resultsByVariable);
+      RETAIN(_resultsByVariable);
     }
   return self;
 }
 
-- (void) setResult:(CGFloat)result forVariable:(GSCSVariable *)variable
+- (void) setResult: (CGFloat)result forVariable: (GSCSVariable *)variable
 {
   NSNumber *encodedResult = [NSNumber numberWithFloat: result];
   [_resultsByVariable setObject: encodedResult forKey: variable];
 }
 
-- (NSNumber *) resultForVariable:(GSCSVariable *)variable;
+- (NSNumber *) resultForVariable: (GSCSVariable *)variable;
 {
   return [_resultsByVariable objectForKey: variable];
 }
@@ -52,28 +52,27 @@
 {
   NSMutableArray *variables = [NSMutableArray array];
   NSEnumerator *resultVariables = [_resultsByVariable keyEnumerator];
-  FOR_IN (GSCSVariable *, variable, resultVariables)
-  [variables addObject: variable];
-  END_FOR_IN (resultVariables)
+  FOR_IN(GSCSVariable *, variable, resultVariables)
+    [variables addObject: variable];
+  END_FOR_IN(resultVariables)
 
   return variables;
 }
 
-
-- (BOOL) solution:(GSCSSolution *)solution
-    hasEqualResultForVariable:(GSCSVariable *)variable
+- (BOOL) solution: (GSCSSolution *)solution
+    hasEqualResultForVariable: (GSCSVariable *)variable
 {
   NSNumber *lhsResult = [self resultForVariable: variable];
   NSNumber *rhsResult = [solution resultForVariable: variable];
 
   BOOL hasResultForBoth = lhsResult != nil && rhsResult != nil;
   BOOL hasTheSameResultForBoth =
-      [GSCSFloatComparator isApproxiatelyEqual:[lhsResult floatValue]
-                                             b:[rhsResult floatValue]];
+      [GSCSFloatComparator isApproxiatelyEqual: [lhsResult floatValue]
+                                             b: [rhsResult floatValue]];
   return hasResultForBoth && hasTheSameResultForBoth;
 }
 
-- (BOOL) isEqualToCassowarySolverSolution:(GSCSSolution *)solution
+- (BOOL) isEqualToCassowarySolverSolution: (GSCSSolution *)solution
 {
   if ([[self variables] count] != [[solution variables] count])
     {
@@ -81,19 +80,19 @@
     }
 
   NSArray *variables = [self variables];
-  FOR_IN (GSCSVariable *, variable, variables)
-  if (![self solution: solution hasEqualResultForVariable: variable])
-    {
-      return NO;
-    }
-  END_FOR_IN (variables)
+  FOR_IN(GSCSVariable *, variable, variables)
+    if (![self solution: solution hasEqualResultForVariable: variable])
+      {
+        return NO;
+      }
+  END_FOR_IN(variables)
 
   return YES;
 }
 
 - (void) dealloc
 {
-  RELEASE (_resultsByVariable);
+  RELEASE(_resultsByVariable);
   [super dealloc];
 }
 

@@ -31,15 +31,15 @@ GSAutoLayoutEngine (PrivateMethods)
 - (GSCSConstraint *) solverConstraintForConstraint:
     (NSLayoutConstraint *)constraint;
 
-- (void) mapLayoutConstraint:(NSLayoutConstraint *)layoutConstraint
-         toSolverConstraint:(GSCSConstraint *)solverConstraint;
+- (void) mapLayoutConstraint: (NSLayoutConstraint *)layoutConstraint
+          toSolverConstraint: (GSCSConstraint *)solverConstraint;
 
 - (void) updateAlignmentRectsForTrackedViews;
 
 - (void) updateAlignmentRectsForTrackedViewsForSolution:
     (GSCSSolution *)solution;
 
-- (BOOL) hasConstraintsForView:(NSView *)view;
+- (BOOL) hasConstraintsForView: (NSView *)view;
 
 - (GSCSConstraint *) getExistingConstraintForAutolayoutConstraint:
     (NSLayoutConstraint *)constraint;
@@ -50,111 +50,115 @@ GSAutoLayoutEngine (PrivateMethods)
 - (void) removeConstraintAgainstViewConstraintsArray:
     (NSLayoutConstraint *)constraint;
 
-- (void) addSupportingInternalConstraintsToView:(NSView *)view
-                                  forAttribute:(NSLayoutAttribute)attribute
-                                    constraint:(GSCSConstraint *)constraint;
+- (void) addSupportingInternalConstraintsToView: (NSView *)view
+                                   forAttribute: (NSLayoutAttribute)attribute
+                                     constraint: (GSCSConstraint *)constraint;
 
-- (void) removeInternalConstraintsForView:(NSView *)view;
+- (void) removeInternalConstraintsForView: (NSView *)view;
 
-- (void) addSolverConstraint:(GSCSConstraint *)constraint;
+- (void) addSolverConstraint: (GSCSConstraint *)constraint;
 
-- (void) removeSolverConstraint:(GSCSConstraint *)constraint;
+- (void) removeSolverConstraint: (GSCSConstraint *)constraint;
 
-- (NSArray *) constraintsForView:(NSView *)view;
+- (NSArray *) constraintsForView: (NSView *)view;
 
-- (NSNumber *) indexForView:(NSView *)view;
+- (NSNumber *) indexForView: (NSView *)view;
 
-- (void) notifyViewsOfAlignmentRectChange:(NSArray *)viewsWithChanges;
+- (void) notifyViewsOfAlignmentRectChange: (NSArray *)viewsWithChanges;
 
-- (BOOL) solverCanSolveAlignmentRectForView:(NSView *)view solution:(GSCSSolution *)solution;
+- (BOOL) solverCanSolveAlignmentRectForView: (NSView *)view
+                                   solution: (GSCSSolution *)solution;
 
-- (void) recordAlignmentRect:(NSRect)alignmentRect forViewIndex:(NSNumber *)viewIndex;
+- (void) recordAlignmentRect: (NSRect)alignmentRect
+                forViewIndex: (NSNumber *)viewIndex;
 
-- (NSRect) solverAlignmentRectForView:(NSView *)view solution:(GSCSSolution *)solution;
+- (NSRect) solverAlignmentRectForView: (NSView *)view
+                             solution: (GSCSSolution *)solution;
 
-- (NSRect) currentAlignmentRectForViewAtIndex:(NSNumber *)viewIndex;
+- (NSRect) currentAlignmentRectForViewAtIndex: (NSNumber *)viewIndex;
 
-- (BOOL) updateViewAligmentRect:(GSCSSolution *)solution view:(NSView *)view;
+- (BOOL) updateViewAligmentRect: (GSCSSolution *)solution view: (NSView *)view;
 
 @end
 
 @implementation GSAutoLayoutEngine
 
-- (instancetype) initWithSolver:(GSCassowarySolver *)cassowarySolver;
+- (instancetype) initWithSolver: (GSCassowarySolver *)cassowarySolver;
 {
   self = [super init];
   if (self != nil)
     {
       _viewCounter = 0;
       _solver = cassowarySolver;
-      RETAIN (_solver);
+      RETAIN(_solver);
 
       _variablesByKey = [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN (_variablesByKey);
+      RETAIN(_variablesByKey);
 
       _constraintsByAutoLayoutConstaintHash =
           [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN (_constraintsByAutoLayoutConstaintHash);
+      RETAIN(_constraintsByAutoLayoutConstaintHash);
 
       _layoutConstraintsBySolverConstraint =
           [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN (_layoutConstraintsBySolverConstraint);
+      RETAIN(_layoutConstraintsBySolverConstraint);
 
       _solverConstraints = [NSMutableArray array];
-      RETAIN (_solverConstraints);
+      RETAIN(_solverConstraints);
 
       _trackedViews = [NSMutableArray array];
-      RETAIN (_trackedViews);
+      RETAIN(_trackedViews);
 
       _supportingConstraintsByConstraint =
           [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN (_supportingConstraintsByConstraint);
+      RETAIN(_supportingConstraintsByConstraint);
 
       _viewAlignmentRectByViewIndex = [NSMutableDictionary dictionary];
-      RETAIN (_viewAlignmentRectByViewIndex);
+      RETAIN(_viewAlignmentRectByViewIndex);
 
       _viewIndexByViewHash = [NSMutableDictionary dictionary];
-      RETAIN (_viewIndexByViewHash);
+      RETAIN(_viewIndexByViewHash);
 
       _constraintsByViewIndex = [NSMutableDictionary dictionary];
-      RETAIN (_viewIndexByViewHash);
+      RETAIN(_viewIndexByViewHash);
 
       _internalConstraintsByViewIndex =
           [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN (_internalConstraintsByViewIndex);
+      RETAIN(_internalConstraintsByViewIndex);
     }
   return self;
 }
 
 - (instancetype) init
 {
-  GSCassowarySolver *solver = AUTORELEASE ([[GSCassowarySolver alloc] init]);
+  GSCassowarySolver *solver = AUTORELEASE([[GSCassowarySolver alloc] init]);
   return [self initWithSolver: solver];
 }
 
-- (void) addConstraints:(NSArray *)constraints
+- (void) addConstraints: (NSArray *)constraints
 {
-  FOR_IN (NSLayoutConstraint *, constraint, constraints)
-  [self addConstraint: constraint];
-  END_FOR_IN (constraints);
+  FOR_IN(NSLayoutConstraint *, constraint, constraints)
+    [self addConstraint: constraint];
+  END_FOR_IN(constraints);
 }
 
-- (void) addConstraint:(NSLayoutConstraint *)constraint
+- (void) addConstraint: (NSLayoutConstraint *)constraint
 {
   GSCSConstraint *solverConstraint =
       [self solverConstraintForConstraint: constraint];
 
   [self mapLayoutConstraint: constraint toSolverConstraint: solverConstraint];
 
-  [self addSupportingInternalConstraintsToView:[constraint firstItem]
-                                  forAttribute:[constraint firstAttribute]
-                                    constraint:solverConstraint];
+  [self addSupportingInternalConstraintsToView: [constraint firstItem]
+                                  forAttribute: [constraint firstAttribute]
+                                    constraint: solverConstraint];
 
   if ([constraint secondItem])
     {
-      [self addSupportingInternalConstraintsToView:[constraint secondItem]
-                                      forAttribute:[constraint secondAttribute]
-                                        constraint:solverConstraint];
+      [self
+          addSupportingInternalConstraintsToView: [constraint secondItem]
+                                    forAttribute: [constraint secondAttribute]
+                                      constraint: solverConstraint];
     }
 
   [self addSolverConstraint: solverConstraint];
@@ -163,7 +167,7 @@ GSAutoLayoutEngine (PrivateMethods)
   [self addConstraintAgainstViewConstraintsArray: constraint];
 }
 
-- (void) removeConstraint:(NSLayoutConstraint *)constraint
+- (void) removeConstraint: (NSLayoutConstraint *)constraint
 {
   GSCSConstraint *solverConstraint =
       [self getExistingConstraintForAutolayoutConstraint: constraint];
@@ -178,9 +182,9 @@ GSAutoLayoutEngine (PrivateMethods)
       [_supportingConstraintsByConstraint objectForKey: solverConstraint];
   if (internalConstraints)
     {
-      FOR_IN (GSCSConstraint *, internalConstraint, internalConstraints)
-      [self removeSolverConstraint: internalConstraint];
-      END_FOR_IN (internalConstraints);
+      FOR_IN(GSCSConstraint *, internalConstraint, internalConstraints)
+        [self removeSolverConstraint: internalConstraint];
+      END_FOR_IN(internalConstraints);
     }
 
   [_supportingConstraintsByConstraint setObject: nil forKey: solverConstraint];
@@ -188,22 +192,22 @@ GSAutoLayoutEngine (PrivateMethods)
   [self updateAlignmentRectsForTrackedViews];
   [self removeConstraintAgainstViewConstraintsArray: constraint];
 
-  if ([self hasConstraintsForView:[constraint firstItem]])
+  if ([self hasConstraintsForView: [constraint firstItem]])
     {
-      [self removeInternalConstraintsForView:[constraint firstItem]];
+      [self removeInternalConstraintsForView: [constraint firstItem]];
     }
   if ([constraint secondItem] != nil &&
-      [self hasConstraintsForView:[constraint secondItem]])
+      [self hasConstraintsForView: [constraint secondItem]])
     {
-      [self removeInternalConstraintsForView:[constraint secondItem]];
+      [self removeInternalConstraintsForView: [constraint secondItem]];
     }
 }
 
-- (void) removeConstraints:(NSArray *)constraints
+- (void) removeConstraints: (NSArray *)constraints
 {
-  FOR_IN (NSLayoutConstraint *, constraint, constraints)
-  [self removeConstraint: constraint];
-  END_FOR_IN (constraints);
+  FOR_IN(NSLayoutConstraint *, constraint, constraints)
+    [self removeConstraint: constraint];
+  END_FOR_IN(constraints);
 }
 
 - (GSCSConstraint *) solverConstraintForConstraint:
@@ -213,8 +217,8 @@ GSAutoLayoutEngine (PrivateMethods)
   return [[GSCSConstraint alloc] init];
 }
 
-- (void) mapLayoutConstraint:(NSLayoutConstraint *)layoutConstraint
-         toSolverConstraint:(GSCSConstraint *)solverConstraint
+- (void) mapLayoutConstraint: (NSLayoutConstraint *)layoutConstraint
+          toSolverConstraint: (GSCSConstraint *)solverConstraint
 {
   [_constraintsByAutoLayoutConstaintHash setObject: solverConstraint
                                             forKey: layoutConstraint];
@@ -222,25 +226,25 @@ GSAutoLayoutEngine (PrivateMethods)
                                            forKey: solverConstraint];
 }
 
-- (void) addSupportingInternalConstraintsToView:(NSView *)view
-                                  forAttribute:(NSLayoutAttribute)attribute
-                                    constraint:(GSCSConstraint *)constraint
+- (void) addSupportingInternalConstraintsToView: (NSView *)view
+                                   forAttribute: (NSLayoutAttribute)attribute
+                                     constraint: (GSCSConstraint *)constraint
 {
   // FIXME addSupportingInternalConstraintsToView
 }
 
-- (void) removeInternalConstraintsForView:(NSView *)view
+- (void) removeInternalConstraintsForView: (NSView *)view
 {
   NSArray *internalViewConstraints =
       [_internalConstraintsByViewIndex objectForKey: view];
-  FOR_IN (GSCSConstraint *, constraint, internalViewConstraints)
-  [self removeSolverConstraint: constraint];
+  FOR_IN(GSCSConstraint *, constraint, internalViewConstraints)
+    [self removeSolverConstraint: constraint];
   END_FOR_IN(internalViewConstraints);
 
   [_internalConstraintsByViewIndex setObject: nil forKey: view];
 }
 
-- (BOOL) hasConstraintsForView:(NSView *)view
+- (BOOL) hasConstraintsForView: (NSView *)view
 {
   NSNumber *viewIndex = [self indexForView: view];
   return [[_constraintsByViewIndex objectForKey: viewIndex] count] > 0;
@@ -255,7 +259,7 @@ GSAutoLayoutEngine (PrivateMethods)
 - (void) addConstraintAgainstViewConstraintsArray:
     (NSLayoutConstraint *)constraint
 {
-  NSNumber *firstItemViewIndex = [self indexForView:[constraint firstItem]];
+  NSNumber *firstItemViewIndex = [self indexForView: [constraint firstItem]];
   NSMutableArray *constraintsForView =
       [_constraintsByViewIndex objectForKey: firstItemViewIndex];
   if (!constraintsForView)
@@ -269,21 +273,21 @@ GSAutoLayoutEngine (PrivateMethods)
   if ([constraint secondItem] != nil)
     {
       NSNumber *secondItemViewIndex =
-          [self indexForView:[constraint secondItem]];
+          [self indexForView: [constraint secondItem]];
       if ([_constraintsByViewIndex objectForKey: secondItemViewIndex])
         {
-          [_constraintsByViewIndex setObject:[NSMutableArray array]
-                                      forKey:secondItemViewIndex];
+          [_constraintsByViewIndex setObject: [NSMutableArray array]
+                                      forKey: secondItemViewIndex];
         }
       [[_constraintsByViewIndex objectForKey: secondItemViewIndex]
-          addObject:constraint];
+          addObject: constraint];
     }
 }
 
 - (void) removeConstraintAgainstViewConstraintsArray:
     (NSLayoutConstraint *)constraint
 {
-  NSNumber *firstItemViewIndex = [self indexForView:[constraint firstItem]];
+  NSNumber *firstItemViewIndex = [self indexForView: [constraint firstItem]];
   NSMutableArray *constraintsForFirstItem =
       [_constraintsByViewIndex objectForKey: firstItemViewIndex];
 
@@ -294,7 +298,7 @@ GSAutoLayoutEngine (PrivateMethods)
   if ([constraint secondItem] != nil)
     {
       NSNumber *secondItemViewIndexIndex =
-          [self indexForView:[constraint secondItem]];
+          [self indexForView: [constraint secondItem]];
       NSMutableArray *constraintsForSecondItem =
           [_constraintsByViewIndex objectForKey: secondItemViewIndexIndex];
 
@@ -311,35 +315,36 @@ GSAutoLayoutEngine (PrivateMethods)
   [self updateAlignmentRectsForTrackedViewsForSolution: solution];
 }
 
-- (void) updateAlignmentRectsForTrackedViewsForSolution:(GSCSSolution *)solution
+- (void) updateAlignmentRectsForTrackedViewsForSolution:
+    (GSCSSolution *)solution
 {
   NSMutableArray *viewsWithChanges = [NSMutableArray array];
-  FOR_IN (NSView *, view, _trackedViews)
-  BOOL viewAlignmentRectUpdated = [self updateViewAligmentRect: solution
-                                                          view: view];
-  if (viewAlignmentRectUpdated)
-    {
-      [viewsWithChanges addObject: view];
-    }
-  END_FOR_IN (_trackedViews);
+  FOR_IN(NSView *, view, _trackedViews)
+    BOOL viewAlignmentRectUpdated = [self updateViewAligmentRect: solution
+                                                            view: view];
+    if (viewAlignmentRectUpdated)
+      {
+        [viewsWithChanges addObject: view];
+      }
+  END_FOR_IN(_trackedViews);
 
   [self notifyViewsOfAlignmentRectChange: viewsWithChanges];
 }
 
-- (BOOL) updateViewAligmentRect:(GSCSSolution *)solution view:(NSView *)view
+- (BOOL) updateViewAligmentRect: (GSCSSolution *)solution view: (NSView *)view
 {
   NSNumber *viewIndex = [self indexForView: view];
   if ([self solverCanSolveAlignmentRectForView: view solution: solution])
     {
       NSRect existingAlignmentRect =
           [self currentAlignmentRectForViewAtIndex: viewIndex];
-      BOOL isExistingAlignmentRect = NSIsEmptyRect (existingAlignmentRect);
+      BOOL isExistingAlignmentRect = NSIsEmptyRect(existingAlignmentRect);
       NSRect solverAlignmentRect = [self solverAlignmentRectForView: view
                                                            solution: solution];
       [self recordAlignmentRect: solverAlignmentRect forViewIndex: viewIndex];
 
       if (isExistingAlignmentRect == NO
-          || !NSEqualRects (solverAlignmentRect, existingAlignmentRect))
+          || !NSEqualRects(solverAlignmentRect, existingAlignmentRect))
         {
           return YES;
         }
@@ -348,21 +353,21 @@ GSAutoLayoutEngine (PrivateMethods)
   return NO;
 }
 
-- (BOOL) solverCanSolveAlignmentRectForView:(NSView *)view
-                                  solution:(GSCSSolution *)solution
+- (BOOL) solverCanSolveAlignmentRectForView: (NSView *)view
+                                   solution: (GSCSSolution *)solution
 {
   // FIXME
   return NO;
 }
 
-- (void) recordAlignmentRect:(NSRect)alignmentRect
-               forViewIndex:(NSNumber *)viewIndex
+- (void) recordAlignmentRect: (NSRect)alignmentRect
+                forViewIndex: (NSNumber *)viewIndex
 {
   NSValue *newRectValue = [NSValue valueWithRect: alignmentRect];
   [_viewAlignmentRectByViewIndex setObject: newRectValue forKey: viewIndex];
 }
 
-- (NSRect) currentAlignmentRectForViewAtIndex:(NSNumber *)viewIndex
+- (NSRect) currentAlignmentRectForViewAtIndex: (NSNumber *)viewIndex
 {
   NSValue *existingRectValue =
       [_viewAlignmentRectByViewIndex objectForKey: viewIndex];
@@ -371,49 +376,49 @@ GSAutoLayoutEngine (PrivateMethods)
       return NSZeroRect;
     }
   NSRect existingAlignmentRect;
-  [existingRectValue getValue: &existingAlignmentRect];
+  [existingRectValue getValue:&existingAlignmentRect];
   return existingAlignmentRect;
 }
 
-- (NSRect) solverAlignmentRectForView:(NSView *)view
-                            solution:(GSCSSolution *)solution
+- (NSRect) solverAlignmentRectForView: (NSView *)view
+                             solution: (GSCSSolution *)solution
 {
   // FIXME Get view solution from solver
   return NSZeroRect;
 }
 
-- (void) notifyViewsOfAlignmentRectChange:(NSArray *)viewsWithChanges
+- (void) notifyViewsOfAlignmentRectChange: (NSArray *)viewsWithChanges
 {
-  FOR_IN (NSView *, view, viewsWithChanges)
-  [view _layoutEngineDidChangeAlignmentRect];
-  END_FOR_IN (viewsWithChanges);
+  FOR_IN(NSView *, view, viewsWithChanges)
+    [view _layoutEngineDidChangeAlignmentRect];
+  END_FOR_IN(viewsWithChanges);
 }
 
-- (NSRect) alignmentRectForView:(NSView *)view
+- (NSRect) alignmentRectForView: (NSView *)view
 {
   // FIXME Get alignment rect for view from solver
   return NSZeroRect;
 }
 
-- (void) addSolverConstraint:(GSCSConstraint *)constraint
+- (void) addSolverConstraint: (GSCSConstraint *)constraint
 {
   [_solverConstraints addObject: constraint];
   [_solver addConstraint: constraint];
 }
 
-- (void) removeSolverConstraint:(GSCSConstraint *)constraint
+- (void) removeSolverConstraint: (GSCSConstraint *)constraint
 {
   [_solver removeConstraint: constraint];
   [_solverConstraints removeObject: constraint];
 }
 
-- (NSNumber *) indexForView:(NSView *)view
+- (NSNumber *) indexForView: (NSView *)view
 {
   return [_viewIndexByViewHash
-      objectForKey:[NSNumber numberWithUnsignedInteger:[view hash]]];
+      objectForKey: [NSNumber numberWithUnsignedInteger: [view hash]]];
 }
 
-- (NSArray *) constraintsForView:(NSView *)view
+- (NSArray *) constraintsForView: (NSView *)view
 {
   NSNumber *viewIndex = [self indexForView: view];
   if (!viewIndex)
@@ -423,29 +428,29 @@ GSAutoLayoutEngine (PrivateMethods)
 
   NSMutableArray *constraintsForView = [NSMutableArray array];
   NSArray *viewConstraints = [_constraintsByViewIndex objectForKey: viewIndex];
-  FOR_IN (NSLayoutConstraint *, constraint, viewConstraints)
-  if ([constraint firstItem] == view)
-    {
-      [constraintsForView addObject: constraint];
-    }
-  END_FOR_IN (viewConstraints);
+  FOR_IN(NSLayoutConstraint *, constraint, viewConstraints)
+    if ([constraint firstItem] == view)
+      {
+        [constraintsForView addObject: constraint];
+      }
+  END_FOR_IN(viewConstraints);
 
   return constraintsForView;
 }
 
 - (void) dealloc
 {
-  RELEASE (_trackedViews);
-  RELEASE (_viewAlignmentRectByViewIndex);
-  RELEASE (_viewIndexByViewHash);
-  RELEASE (_constraintsByViewIndex);
-  RELEASE (_constraintsByViewIndex);
-  RELEASE (_supportingConstraintsByConstraint);
-  RELEASE (_constraintsByAutoLayoutConstaintHash);
-  RELEASE (_internalConstraintsByViewIndex);
-  RELEASE (_solverConstraints);
-  RELEASE (_variablesByKey);
-  RELEASE (_solver);
+  RELEASE(_trackedViews);
+  RELEASE(_viewAlignmentRectByViewIndex);
+  RELEASE(_viewIndexByViewHash);
+  RELEASE(_constraintsByViewIndex);
+  RELEASE(_constraintsByViewIndex);
+  RELEASE(_supportingConstraintsByConstraint);
+  RELEASE(_constraintsByAutoLayoutConstaintHash);
+  RELEASE(_internalConstraintsByViewIndex);
+  RELEASE(_solverConstraints);
+  RELEASE(_variablesByKey);
+  RELEASE(_solver);
 
   [super dealloc];
 }
