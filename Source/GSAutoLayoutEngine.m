@@ -22,9 +22,9 @@
 
 #import "GSAutoLayoutEngine.h"
 #import "AppKit/NSLayoutConstraint.h"
-#import "NSViewPrivate.h"
 #import "GSCSConstraint.h"
 #import "GSFastEnumeration.h"
+#import "NSViewPrivate.h"
 
 @interface
 GSAutoLayoutEngine (PrivateMethods)
@@ -378,7 +378,7 @@ GSAutoLayoutEngine (PrivateMethods)
       return NSZeroRect;
     }
   NSRect existingAlignmentRect;
-  [existingRectValue getValue:&existingAlignmentRect];
+  [existingRectValue getValue: &existingAlignmentRect];
   return existingAlignmentRect;
 }
 
