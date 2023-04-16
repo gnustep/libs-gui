@@ -37,6 +37,7 @@
 @class NSMutableArray;
 @class NSString;
 @class NSURL;
+@class GSKeyValueBinding;
 
 APPKIT_EXPORT_CLASS
 @interface NSOutlineView : NSTableView
@@ -51,6 +52,11 @@ APPKIT_EXPORT_CLASS
   BOOL _autosaveExpandedItems;
   CGFloat _indentationPerLevel;
   NSTableColumn *_outlineTableColumn;
+
+  GSKeyValueBinding *_theBinding;
+  NSString *_countKeyPath;
+  NSString *_childrenKeyPath;
+  NSString *_leafKeyPath;
 }
 
 // Instance methods
