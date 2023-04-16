@@ -1948,13 +1948,14 @@ Also returns the child index relative to this parent. */
 			      row: (NSInteger) index
 {
   id result = nil;
-
-  if (_theBinding != nil)
+  GSKeyValueBinding *binding =
+    [GSKeyValueBinding getBinding: NSValueBinding
+			forObject: tb];
+  
+  if (binding != nil)
     {
-      id item = [(NSArray *)[_theBinding destinationValue]
-		    objectAtIndex: index];
-
-      result = [item valueForKeyPath: @"value"];
+      result = [(NSArray *)[binding destinationValue]
+		   objectAtIndex: index];
     }
   else if ([_dataSource respondsToSelector:
     @selector(outlineView:objectValueForTableColumn:byItem:)])
