@@ -175,6 +175,7 @@
 
 - (void) rearrangeObjects
 {
+  NSLog(@"---- rearrangeObjects");
   [self willChangeValueForKey: @"arrangedObjects"];
   DESTROY(_arranged_objects);
   _arranged_objects = [[GSObservableArray alloc]
@@ -302,8 +303,6 @@
 
 - (void) setContent: (id)content
 {
-  // FIXME
-  NSLog(@"in setContent... %@", content);
   [super setContent: content];
   [self rearrangeObjects];
 }
@@ -414,12 +413,12 @@
 	    }
 	  if ([coder containsValueForKey: @"NSTreeContentCountKey"])
 	    {
-	      [self setChildrenKeyPath:
+	      [self setCountKeyPath:
 		      [coder decodeObjectForKey: @"NSTreeContentCountKey"]];
 	    }
 	  if ([coder containsValueForKey: @"NSTreeContentLeafKey"])
 	    {
-	      [self setChildrenKeyPath:
+	      [self setLeafKeyPath:
 		      [coder decodeObjectForKey: @"NSTreeContentLeafKey"]];
 	    }
 
@@ -475,7 +474,7 @@
     {
       [coder encodeObject: _childrenKeyPath
 		   forKey: @"NSTreeContentChildrenKey"];
-      [coder encodeObject:  _countKeyPath
+      [coder encodeObject: _countKeyPath
 		   forKey: @"NSTreeContentCountKey"];
       [coder encodeObject: _leafKeyPath
 		   forKey: @"NSTreeContentLeafKey"];
