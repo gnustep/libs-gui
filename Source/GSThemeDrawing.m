@@ -78,7 +78,7 @@
 @end
 
 @interface NSTableView (Private)
-- (NSUInteger) _numberOfRows;
+- (NSInteger) _numberOfRows;
 - (CGFloat *) _columnOrigins;
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
