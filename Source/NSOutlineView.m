@@ -72,6 +72,8 @@
 #import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
 
+#import "GNUstepGUI/GSTheme.h"
+
 #include <math.h>
 
 static NSMapTableKeyCallBacks keyCallBacks;
@@ -91,12 +93,6 @@ static NSInteger currentDropIndex;
 static NSMutableSet *autoExpanded = nil;
 static NSDate	*lastDragUpdate = nil;
 static NSDate	*lastDragChange = nil;
-
-
-// Cache the arrow images...
-static NSImage *collapsed = nil;
-static NSImage *expanded  = nil;
-static NSImage *unexpandable  = nil;
 
 @interface NSOutlineView (NotificationRequestMethods)
 - (void) _postSelectionIsChangingNotification;
@@ -145,6 +141,11 @@ static NSImage *unexpandable  = nil;
 
 @implementation NSOutlineView
 
+// Cache the arrow images...
+static NSImage *collapsed = nil;
+static NSImage *expanded  = nil;
+static NSImage *unexpandable  = nil;
+
 // Initialize the class when it is loaded
 + (void) initialize
 {
@@ -162,18 +163,20 @@ static NSImage *unexpandable  = nil;
       [self exposeBinding: NSContentBinding];
       [self exposeBinding: NSSelectionIndexesBinding];
       [self exposeBinding: NSSortDescriptorsBinding];
+
 #if 0
-/* Old Interface Builder style. */
+      /* Old Interface Builder style. */
       collapsed    = [NSImage imageNamed: @"common_outlineCollapsed"];
       expanded     = [NSImage imageNamed: @"common_outlineExpanded"];
       unexpandable = [NSImage imageNamed: @"common_outlineUnexpandable"];
 #else
-/* Current OSX style images. */
-// FIXME ... better ones?
+      /* Current OSX style images. */
+      // FIXME ... better ones?
       collapsed    = [NSImage imageNamed: @"common_ArrowRightH"];
       expanded     = [NSImage imageNamed: @"common_ArrowDownH"];
       unexpandable = [[NSImage alloc] initWithSize: [expanded size]];
 #endif
+      
       autoExpanded = [NSMutableSet new];
     }
 }
@@ -969,138 +972,9 @@ static NSImage *unexpandable  = nil;
  */
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)aRect
 {
-  NSInteger startingColumn;
-  NSInteger endingColumn;
-  NSRect drawingRect;
-  NSCell *imageCell = nil;
-  NSRect imageRect;
-  NSInteger i;
-  CGFloat x_pos;
-
-  // If there is no data source and no binding there is nothing to do.
-  if (_dataSource == nil && _theBinding == nil)
-    {
-      return;
-    }
-
-  /* Using columnAtPoint: here would make it called twice per row per drawn
-     rect - so we avoid it and do it natively */
-
-  if (rowIndex >= _numberOfRows)
-    {
-      return;
-    }
-
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (aRect);
-  i = 0;
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (aRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = _numberOfColumns - 1;
-
-  /* Draw the row between startingColumn and endingColumn */
-  for (i = startingColumn; i <= endingColumn; i++)
-    {
-      id item = [self itemAtRow: rowIndex];
-      NSTableColumn *tb = [_tableColumns objectAtIndex: i];
-      NSCell *cell = [self preparedCellAtColumn: i row: rowIndex];
-
-      [self _willDisplayCell: cell
-	    forTableColumn: tb
-	    row: rowIndex];
-      if (i == _editedColumn && rowIndex == _editedRow)
-	{
-	  [cell _setInEditing: YES];
-	  [cell setShowsFirstResponder: YES];
-	}
-      else
-	{
-	  [cell setObjectValue: [_dataSource outlineView: self
-					     objectValueForTableColumn: tb
-						  byItem: item]];
-	}
-      drawingRect = [self frameOfCellAtColumn: i
-			  row: rowIndex];
-
-      if (tb == _outlineTableColumn)
-	{
-	  NSImage *image = nil;
-	  NSInteger level = 0;
-	  CGFloat indentationFactor = 0.0;
-	  // float originalWidth = drawingRect.size.width;
-
-	  // display the correct arrow...
-	  if ([self isItemExpanded: item])
-	    {
-	      image = expanded;
-	    }
-	  else
-	    {
-	      image = collapsed;
-	    }
-
-	  if (![self isExpandable: item])
-	    {
-	      image = unexpandable;
-	    }
-
-	  level = [self levelForItem: item];
-	  indentationFactor = _indentationPerLevel * level;
-	  imageCell = [[NSCell alloc] initImageCell: image];
-	  imageRect = [self frameOfOutlineCellAtRow: rowIndex];
-
-	  if ([_delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
-	    {
-	      [_delegate outlineView: self
-			 willDisplayOutlineCell: imageCell
-			 forTableColumn: tb
-			 item: item];
-	    }
-
-	  /* Do not indent if the delegate set the image to nil. */
-	  if ([imageCell image])
-	    {
-	      imageRect.size.width = [image size].width;
-	      imageRect.size.height = [image size].height;
-	      [imageCell drawWithFrame: imageRect inView: self];
-	      drawingRect.origin.x
-		+= indentationFactor + imageRect.size.width + 5;
-	      drawingRect.size.width
-		-= indentationFactor + imageRect.size.width + 5;
-	    }
-	  else
-	    {
-	      drawingRect.origin.x += indentationFactor;
-	      drawingRect.size.width -= indentationFactor;
-	    }
-
-	  RELEASE(imageCell);
-	}
-
-      [cell drawWithFrame: drawingRect inView: self];
-      if (i == _editedColumn && rowIndex == _editedRow)
-	{
-	  [cell _setInEditing: NO];
-	  [cell setShowsFirstResponder: NO];
-	}
-    }
+  [[GSTheme theme] drawOutlineViewRow: rowIndex
+			     clipRect: aRect
+			       inView: self];
 }
 
 - (void) drawRect: (NSRect)aRect
@@ -1904,10 +1778,19 @@ Also returns the child index relative to this parent. */
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index
 {
+  id item = [self itemAtRow: index];
+
+  [self _willDisplayCell: cell
+	  forTableColumn: tb
+		    item: item];
+}
+
+- (void) _willDisplayCell: (NSCell*)cell
+	   forTableColumn: (NSTableColumn *)tb
+		     item: (id)item
+{
   if (_del_responds)
     {
-      id item = [self itemAtRow: index];
-
       [_delegate outlineView: self
 		 willDisplayCell: cell
 		 forTableColumn: tb
@@ -1990,6 +1873,9 @@ Also returns the child index relative to this parent. */
 {
   if (_theBinding != nil)
     {
+      // NSUInteger c = [(NSArray *)[_theBinding destinationValue] count];
+      // NSLog(@"*** numRows = %ld", c);
+      // return c;
       return [(NSArray *)[_theBinding destinationValue] count];
     }
 

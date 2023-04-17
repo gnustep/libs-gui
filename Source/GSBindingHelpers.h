@@ -62,6 +62,7 @@
 - (void) setValueFor: (NSString *)binding;
 - (void) reverseSetValue: (id)value;
 - (void) reverseSetValueFor: (NSString *)binding;
+- (id) observedObject;
 - (id) destinationValue;
 - (id) sourceValueFor: (NSString *)binding;
 

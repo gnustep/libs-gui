@@ -44,6 +44,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSMenuItemCell.h"
+#import "AppKit/NSOutlineView.h"
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSProgressIndicator.h"
@@ -62,6 +63,7 @@
 #import "AppKit/NSPathCell.h"
 #import "AppKit/NSPathControl.h"
 #import "AppKit/NSPathComponentCell.h"
+
 #import "GNUstepGUI/GSToolbarView.h"
 #import "GNUstepGUI/GSTitleView.h"
 
@@ -69,8 +71,15 @@
 /* 7.0 gives us the NeXT Look (which is 8 pix wide including the shadow) */
 #define COLOR_WELL_BORDER_WIDTH 7.0
 
+@interface NSOutlineView (Private)
+- (void) _willDisplayCell: (NSCell*)cell
+	   forTableColumn: (NSTableColumn *)tb
+		     item: (id)item;
+@end
+
 @interface NSTableView (Private)
-- (CGFloat *)_columnOrigins;
+- (NSUInteger) _numberOfRows;
+- (CGFloat *) _columnOrigins;
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index;
@@ -3316,10 +3325,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		   inView: (NSView *)view
 {
   NSTableView *tableView = (NSTableView *)view;
-  // NSInteger numberOfRows = [tableView numberOfRows];
   NSInteger numberOfColumns = [tableView numberOfColumns];
-  // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
-  // NSColor *backgroundColor = [tableView backgroundColor];
   CGFloat *columnOrigins = [tableView _columnOrigins];
   NSInteger editedRow = [tableView editedRow];
   NSInteger editedColumn = [tableView editedColumn];
@@ -3411,6 +3417,165 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	[cell _setInEditing: NO];
     }
 }
+
+- (void) drawOutlineViewRow: (NSInteger)rowIndex 
+		   clipRect: (NSRect)clipRect
+		     inView: (NSView *)view
+{
+  static NSImage *collapsed = nil;
+  static NSImage *expanded  = nil;
+  static NSImage *unexpandable  = nil;
+
+  NSOutlineView *ov = (NSOutlineView *)view;
+  NSCell *imageCell = nil;
+  NSRect imageRect;  
+  NSInteger numberOfRows = [ov _numberOfRows];
+  NSInteger numberOfColumns = [ov numberOfColumns];
+  CGFloat *columnOrigins = [ov _columnOrigins];
+  NSInteger editedRow = [ov editedRow];
+  NSInteger editedColumn = [ov editedColumn];
+  NSArray *tableColumns = [ov tableColumns];
+  NSInteger startingColumn; 
+  NSInteger endingColumn;
+  NSRect drawingRect;
+  CGFloat x_pos;
+  NSTableColumn *outlineTableColumn = [ov outlineTableColumn];
+  NSInteger i = 0;
+  CGFloat indentationPerLevel = [ov indentationPerLevel];
+  
+  if (expanded == nil)
+    {
+#if 0
+      /* Old Interface Builder style. */
+      collapsed    = [NSImage imageNamed: @"common_outlineCollapsed"];
+      expanded     = [NSImage imageNamed: @"common_outlineExpanded"];
+      unexpandable = [NSImage imageNamed: @"common_outlineUnexpandable"];
+#else
+      /* Current OSX style images. */
+      // FIXME ... better ones?
+      collapsed    = [NSImage imageNamed: @"common_ArrowRightH"];
+      expanded     = [NSImage imageNamed: @"common_ArrowDownH"];
+      unexpandable = [[NSImage alloc] initWithSize: [expanded size]];
+#endif
+    }
+  
+  if (rowIndex >= numberOfRows)
+    {
+      return;
+    }
+
+  /* Determine starting column as fast as possible */
+  x_pos = NSMinX (clipRect);
+  i = 0;
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  startingColumn = (i - 1);
+
+  if (startingColumn == -1)
+    startingColumn = 0;
+
+  /* Determine ending column as fast as possible */
+  x_pos = NSMaxX (clipRect);
+  // Nota Bene: we do *not* reset i
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  endingColumn = (i - 1);
+
+  if (endingColumn == -1)
+    endingColumn = numberOfColumns - 1;
+
+  /* Draw the row between startingColumn and endingColumn */
+  for (i = startingColumn; i <= endingColumn; i++)
+    {
+      id item = [ov itemAtRow: rowIndex];
+      NSTableColumn *tb = [tableColumns objectAtIndex: i];
+      NSCell *cell = [ov preparedCellAtColumn: i row: rowIndex];
+
+      [ov _willDisplayCell: cell
+	    forTableColumn: tb
+	    row: rowIndex];
+      
+      if (i == editedColumn && rowIndex == editedRow)
+	{
+	  [cell _setInEditing: YES];
+	  [cell setShowsFirstResponder: YES];
+	}
+      else
+	{
+	  id value = nil;
+
+	  value = [ov _objectValueForTableColumn: tb
+					     row: rowIndex];
+	  NSLog(@"value = %@", value);
+	  [cell setObjectValue: value];
+	}
+  
+      drawingRect = [ov frameOfCellAtColumn: i
+					row: rowIndex];
+
+      if (tb == outlineTableColumn)
+	{
+	  NSImage *image = nil;
+	  NSInteger level = 0;
+	  CGFloat indentationFactor = 0.0;
+
+	  // display the correct arrow...
+	  if ([ov isItemExpanded: item])
+	    {
+	      image = expanded;
+	    }
+	  else
+	    {
+	      image = collapsed;
+	    }
+
+	  if (![ov isExpandable: item])
+	    {
+	      image = unexpandable;
+	    }
+
+	  level = [ov levelForItem: item];
+	  indentationFactor = indentationPerLevel * level;
+	  imageCell = [[NSCell alloc] initImageCell: image];
+	  imageRect = [ov frameOfOutlineCellAtRow: rowIndex];
+
+	  [ov _willDisplayCell: cell
+		forTableColumn: tb
+			  item: item];
+
+	  /* Do not indent if the delegate set the image to nil. */
+	  if ([imageCell image])
+	    {
+	      imageRect.size.width = [image size].width;
+	      imageRect.size.height = [image size].height;
+	      [imageCell drawWithFrame: imageRect inView: ov];
+	      drawingRect.origin.x
+		+= indentationFactor + imageRect.size.width + 5;
+	      drawingRect.size.width
+		-= indentationFactor + imageRect.size.width + 5;
+	    }
+	  else
+	    {
+	      drawingRect.origin.x += indentationFactor;
+	      drawingRect.size.width -= indentationFactor;
+	    }
+
+	  RELEASE(imageCell);
+	}
+
+      [cell drawWithFrame: drawingRect inView: ov];
+      if (i == editedColumn && rowIndex == editedRow)
+	{
+	  [cell _setInEditing: NO];
+	  [cell setShowsFirstResponder: NO];
+	}
+    }
+}
+
 
 - (void) drawBoxInClipRect: (NSRect)clipRect
 		   boxType: (NSBoxType)boxType
