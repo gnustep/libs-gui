@@ -31,8 +31,7 @@
   self = [super init];
   if (self)
     {
-      _resultsByVariable = [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN(_resultsByVariable);
+      ASSIGN(_resultsByVariable, [NSMapTable strongToStrongObjectsMapTable]);
     }
   return self;
 }
@@ -90,12 +89,6 @@
   END_FOR_IN(variables)
 
   return YES;
-}
-
-- (void) dealloc
-{
-  RELEASE(_resultsByVariable);
-  [super dealloc];
 }
 
 @end

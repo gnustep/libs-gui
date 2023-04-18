@@ -26,8 +26,7 @@
 #import "GSFastEnumeration.h"
 #import "NSViewPrivate.h"
 
-@interface
-GSAutoLayoutEngine (PrivateMethods)
+@interface GSAutoLayoutEngine (PrivateMethods)
 
 - (GSCSConstraint *) solverConstraintForConstraint:
     (NSLayoutConstraint *)constraint;
@@ -89,49 +88,34 @@ GSAutoLayoutEngine (PrivateMethods)
   self = [super init];
   if (self != nil)
     {
-      _solver = cassowarySolver;
-      RETAIN(_solver);
+      ASSIGN(_solver, cassowarySolver);
 
-      _variablesByKey = [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN(_variablesByKey);
+      ASSIGN(_variablesByKey, [NSMapTable strongToStrongObjectsMapTable]);
 
-      _constraintsByAutoLayoutConstaintHash =
-          [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN(_constraintsByAutoLayoutConstaintHash);
+      ASSIGN(_constraintsByAutoLayoutConstaintHash, [NSMapTable strongToStrongObjectsMapTable]);
 
-      _layoutConstraintsBySolverConstraint =
-          [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN(_layoutConstraintsBySolverConstraint);
+      ASSIGN(_layoutConstraintsBySolverConstraint, [NSMapTable strongToStrongObjectsMapTable]);
 
-      _solverConstraints = [NSMutableArray array];
-      RETAIN(_solverConstraints);
+      ASSIGN(_solverConstraints, [NSMutableArray array]);
 
-      _trackedViews = [NSMutableArray array];
-      RETAIN(_trackedViews);
+      ASSIGN(_trackedViews, [NSMutableArray array]);
 
-      _supportingConstraintsByConstraint =
-          [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN(_supportingConstraintsByConstraint);
+      ASSIGN(_supportingConstraintsByConstraint, [NSMapTable strongToStrongObjectsMapTable]);
 
-      _viewAlignmentRectByViewIndex = [NSMutableDictionary dictionary];
-      RETAIN(_viewAlignmentRectByViewIndex);
+      ASSIGN(_viewAlignmentRectByViewIndex, [NSMutableDictionary dictionary]);
 
-      _viewIndexByViewHash = [NSMutableDictionary dictionary];
-      RETAIN(_viewIndexByViewHash);
+      ASSIGN(_viewIndexByViewHash, [NSMutableDictionary dictionary]);
 
-      _constraintsByViewIndex = [NSMutableDictionary dictionary];
-      RETAIN(_viewIndexByViewHash);
+      ASSIGN(_constraintsByViewIndex, [NSMutableDictionary dictionary]);
 
-      _internalConstraintsByViewIndex =
-          [NSMapTable strongToStrongObjectsMapTable];
-      RETAIN(_internalConstraintsByViewIndex);
+      ASSIGN(_internalConstraintsByViewIndex, [NSMapTable strongToStrongObjectsMapTable]);
     }
   return self;
 }
 
 - (instancetype) init
 {
-  GSCassowarySolver *solver = AUTORELEASE([[GSCassowarySolver alloc] init]);
+  GSCassowarySolver *solver = [[GSCassowarySolver alloc] init];
   self = [self initWithSolver: solver];
   RELEASE(solver);
   return self;
@@ -438,23 +422,6 @@ GSAutoLayoutEngine (PrivateMethods)
   END_FOR_IN(viewConstraints);
 
   return constraintsForView;
-}
-
-- (void) dealloc
-{
-  RELEASE(_trackedViews);
-  RELEASE(_viewAlignmentRectByViewIndex);
-  RELEASE(_viewIndexByViewHash);
-  RELEASE(_constraintsByViewIndex);
-  RELEASE(_constraintsByViewIndex);
-  RELEASE(_supportingConstraintsByConstraint);
-  RELEASE(_constraintsByAutoLayoutConstaintHash);
-  RELEASE(_internalConstraintsByViewIndex);
-  RELEASE(_solverConstraints);
-  RELEASE(_variablesByKey);
-  RELEASE(_solver);
-
-  [super dealloc];
 }
 
 @end

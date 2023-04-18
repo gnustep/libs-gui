@@ -681,7 +681,7 @@ GSAutoLayoutVFLParser.h \
 GSAutoLayoutEngine.h \
 GSCassowarySolver.h \
 GSCSConstraint.h \
-GSVariable.h \
+GSCSVariable.h \
 GSCSSolution.h \
 GSCSFloatComparator.h
 
