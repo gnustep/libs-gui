@@ -91,4 +91,10 @@
   return YES;
 }
 
+ - (void) dealloc
+ {
+   RELEASE (_resultsByVariable);
+   [super dealloc];
+ }
+
 @end

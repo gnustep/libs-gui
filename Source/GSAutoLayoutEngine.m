@@ -424,4 +424,21 @@
   return constraintsForView;
 }
 
+ - (void) dealloc
+ {
+   RELEASE (_trackedViews);
+   RELEASE (_viewAlignmentRectByViewIndex);
+   RELEASE (_viewIndexByViewHash);
+   RELEASE (_constraintsByViewIndex);
+   RELEASE (_constraintsByViewIndex);
+   RELEASE (_supportingConstraintsByConstraint);
+   RELEASE (_constraintsByAutoLayoutConstaintHash);
+   RELEASE (_internalConstraintsByViewIndex);
+   RELEASE (_solverConstraints);
+   RELEASE (_variablesByKey);
+   RELEASE (_solver);
+
+   [super dealloc];
+ }
+
 @end
