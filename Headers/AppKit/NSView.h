@@ -655,8 +655,8 @@ PACKAGE_SCOPE
 #if GS_HAS_DECLARED_PROPERTIES
 @property (nonatomic) BOOL needsLayout;
 #else
--(BOOL) needsLayout;
--(void) setNeedsLayout: (BOOL)needsLayout;
+- (BOOL) needsLayout;
+- (void) setNeedsLayout: (BOOL)needsLayout;
 #endif
 
 #if GS_HAS_DECLARED_PROPERTIES

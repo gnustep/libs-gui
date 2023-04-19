@@ -20,8 +20,9 @@
    Boston, MA 02110 USA.
 */
 
-#import "AppKit/NSLayoutConstraint.h"
 #import <Foundation/Foundation.h>
+#import "AppKit/NSLayoutConstraint.h"
+#import "GSCassowarySolver.h"
 
 @class NSView;
 @class NSLayoutConstraint;
@@ -30,6 +31,22 @@
 #define _GS_AUTO_LAYOUT_ENGINE_H
 
 @interface GSAutoLayoutEngine : NSObject
+{
+   GSCassowarySolver *_solver;
+   NSMapTable *_variablesByKey;
+   NSMutableArray *_solverConstraints;
+   NSMapTable *_constraintsByAutoLayoutConstaintHash;
+   NSMapTable *_layoutConstraintsBySolverConstraint;
+   NSMutableArray *_trackedViews;
+   NSMutableDictionary *_viewIndexByViewHash;
+   NSMutableDictionary *_viewAlignmentRectByViewIndex;
+   NSMutableDictionary *_constraintsByViewIndex;
+   NSMapTable *_internalConstraintsByViewIndex;
+   NSMapTable *_supportingConstraintsByConstraint;
+   int _viewCounter;
+}
+
+- (instancetype) initWithSolver: (GSCassowarySolver*)solver;
 
 - (void) addConstraint: (NSLayoutConstraint *)constraint;
 

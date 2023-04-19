@@ -358,7 +358,12 @@ GSXibKeyedUnarchiver.m \
 GSXib5KeyedUnarchiver.m \
 GSHelpAttachment.m \
 GSAutoLayoutEngine.m \
-GSAutoLayoutVFLParser.m
+GSAutoLayoutVFLParser.m \
+GSCassowarySolver.m \
+GSCSConstraint.m \
+GSCSVariable.m \
+GSCSSolution.m \
+GSCSFloatComparator.m \
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -675,7 +680,12 @@ GSXibLoading.h \
 GSXibKeyedUnarchiver.h \
 GSHelpAttachment.h \
 GSAutoLayoutVFLParser.h \
-GSAutoLayoutEngine.h
+GSAutoLayoutEngine.h \
+GSCassowarySolver.h \
+GSCSConstraint.h \
+GSCSVariable.h \
+GSCSSolution.h \
+GSCSFloatComparator.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 
