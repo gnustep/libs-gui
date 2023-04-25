@@ -464,11 +464,25 @@ static NSImage *unexpandable  = nil;
  */
 - (BOOL) isExpandable: (id)item
 {
-  if (item == nil)
+  BOOL result = NO;
+  
+  if (_theBinding == nil)
     {
-      return NO;
+      if (item == nil)
+	{
+	  result = NO;
+	}
+      else
+	{
+	  result = [_dataSource outlineView: self isItemExpandable: item];
+	}
     }
-  return [_dataSource outlineView: self isItemExpandable: item];
+  else
+    {
+      result = [[item valueForKeyPath: _leafKeyPath] boolValue];
+    }
+  
+  return result;
 }
 
 /**
@@ -1531,7 +1545,7 @@ Also returns the child index relative to this parent. */
   [_editedCell setEditable: _dataSource_editable];
   tb = [_tableColumns objectAtIndex: columnIndex];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb
-				     row: rowIndex]];
+							    row: rowIndex]];
 
   // But of course the delegate can mess it up if it wants
   [self _willDisplayCell: _editedCell
@@ -1850,6 +1864,8 @@ Also returns the child index relative to this parent. */
 			    byItem: item];
     }
 
+  NSLog(@"RESULT ======= %@, class = %@", result, NSStringFromClass([result class]));
+  
   return result;
 }
 

@@ -3458,7 +3458,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       unexpandable = [[NSImage alloc] initWithSize: [expanded size]];
 #endif
     }
-  
+
+  NSLog(@"rowIndex = %ld, numberOfRows = %ld", rowIndex, numberOfRows);
   if (rowIndex >= numberOfRows)
     {
       return;
@@ -3506,11 +3507,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	}
       else
 	{
-	  id value = nil;
-
-	  value = [ov _objectValueForTableColumn: tb
-					     row: rowIndex];
-	  NSLog(@"value = %@", value);
+	  id value = [ov _objectValueForTableColumn: tb
+						row: rowIndex];
 	  [cell setObjectValue: value];
 	}
   
