@@ -26,13 +26,7 @@
 
 - (instancetype) init
 {
-  self = [super init];
-  if (self != nil)
-    {
-      _type = GSCSVaraibleTypeVariable;
-    }
-
-  return self;
+  return [self initWithName: nil type: GSCSVaraibleTypeVariable];
 }
 
 - (instancetype) initWithName: (NSString *)name

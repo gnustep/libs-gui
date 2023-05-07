@@ -25,6 +25,11 @@
 
 @implementation GSCSStrength
 
+const float GSCSStrengthRequired = 1000;
+const float GSCSStrengthStrong = 750;
+const float GSCSStrengthMedium = 500;
+const float GSCSStrengthWeak = 250;
+
 - (instancetype) initWithName: (NSString *)name strength: (double)strength;
 {
   if (self = [super init])
@@ -37,22 +42,22 @@
 
 + (instancetype) strengthRequired
 {
-  return AUTORELEASE([[GSCSStrength alloc] initWithName: @"<Required>" strength: 1000]);
+  return AUTORELEASE([[GSCSStrength alloc] initWithName: @"<Required>" strength: GSCSStrengthRequired]);
 }
 
 + (instancetype) strengthStrong
 {
-  return AUTORELEASE([[GSCSStrength alloc] initWithName: @"strong" strength: 750]);
+  return AUTORELEASE([[GSCSStrength alloc] initWithName: @"strong" strength: GSCSStrengthStrong]);
 }
 
 + (instancetype) strengthMedium
 {
-  return AUTORELEASE([[GSCSStrength alloc] initWithName: @"medium" strength: 500]);
+  return AUTORELEASE([[GSCSStrength alloc] initWithName: @"medium" strength: GSCSStrengthMedium]);
 }
 
 + (instancetype) strengthWeak
 {
-  return AUTORELEASE([[GSCSStrength alloc] initWithName: @"weak" strength: 250]);
+  return AUTORELEASE([[GSCSStrength alloc] initWithName: @"weak" strength: GSCSStrengthWeak]);
 }
 
 - (BOOL) isEqualToStrength: (GSCSStrength *)strength
@@ -81,7 +86,7 @@
 {
   return [GSCSFloatComparator
       isApproxiatelyEqual: _strength
-                        b: [[GSCSStrength strengthRequired] strength]];
+                        b: GSCSStrengthRequired];
 }
 
 - (double) strength

@@ -122,7 +122,7 @@
 {
   CGFloat reciprocal = 1.0 / [self coefficientForTerm: subject];
 
-  [self multiplyConstantAndTermsBy:-reciprocal];
+  [self multiplyConstantAndTermsBy: -reciprocal];
 
   [self removeVariable: subject];
   return reciprocal;
@@ -157,7 +157,7 @@
 
 - (void) normalize
 {
-  [self multiplyConstantAndTermsBy:-1];
+  [self multiplyConstantAndTermsBy: -1];
 }
 
 - (id) copyWithZone: (NSZone *)zone
@@ -297,7 +297,7 @@
 - (void) addExpression: (GSCSLinearExpression *)expression
             multiplier: (CGFloat)multiplier
 {
-  [self setConstant: [self constant] + expression.constant * multiplier];
+  [self setConstant: [self constant] + [expression constant] * multiplier];
   NSArray *termVariables = [expression termVariables];
   FOR_IN(GSCSVariable *, term, termVariables)
     CGFloat termCoefficient =

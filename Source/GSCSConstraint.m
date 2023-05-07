@@ -82,7 +82,7 @@
 }
 
 - (instancetype) initEditConstraintWithVariable: (GSCSVariable *)variable
-                                        stength: (GSCSStrength *)strength
+                                        strength: (GSCSStrength *)strength
 {
   GSCSLinearExpression *expression =
       [[GSCSLinearExpression alloc] initWithVariable: variable
@@ -137,29 +137,23 @@
 
 + (GSCSConstraint *) constraintWithLeftVariable: (GSCSVariable *)lhs
 operator: (GSCSConstraintOperator) operator
-                                  rightVariable: (GSCSVariable *)rhsVariable
+                                  rightVariable: (GSCSVariable *)rhs
 {
-  if (operator== GSCSConstraintOperatorEqual)
+  if (operator == GSCSConstraintOperatorEqual)
     {
-      GSCSLinearExpression *expression =
-          [[GSCSLinearExpression alloc] initWithVariable: lhs];
-      [expression addVariable: rhsVariable coefficient: -1];
-
-      RELEASE(expression);
-
       return AUTORELEASE([[GSCSConstraint alloc]
-          initLinearConstraintWithExpression: expression]);
+          initWithLhsVariable: lhs equalsRhsVariable: rhs]);
     }
   else
     {
       GSCSLinearExpression *rhsExpression =
-          [[GSCSLinearExpression alloc] initWithVariable: rhsVariable];
-      if (operator== GSCSConstraintOperationGreaterThanOrEqual)
+          [[GSCSLinearExpression alloc] initWithVariable: rhs];
+      if (operator == GSCSConstraintOperationGreaterThanOrEqual)
         {
           [rhsExpression multiplyConstantAndTermsBy: -1];
           [rhsExpression addVariable: lhs];
         }
-      else if (operator== GSCSConstraintOperatorLessThanOrEqual)
+      else if (operator == GSCSConstraintOperatorLessThanOrEqual)
         {
           [rhsExpression addVariable: lhs coefficient: -1];
         }
@@ -177,7 +171,7 @@ operator: (GSCSConstraintOperator) operator
 {
   GSCSLinearExpression *expression;
   GSCSConstraint *constraint;
-  if (operator== GSCSConstraintOperatorEqual)
+  if (operator == GSCSConstraintOperatorEqual)
     {
       expression = [[GSCSLinearExpression alloc] init];
       [expression addVariable: lhs coefficient: 1];
@@ -192,12 +186,12 @@ operator: (GSCSConstraintOperator) operator
     {
       expression =
           [[GSCSLinearExpression alloc] initWithConstant: rhs];
-      if (operator== GSCSConstraintOperationGreaterThanOrEqual)
+      if (operator == GSCSConstraintOperationGreaterThanOrEqual)
         {
           [expression multiplyConstantAndTermsBy: -1];
           [expression addVariable: lhs coefficient: 1.0];
         }
-      else if (operator== GSCSConstraintOperatorLessThanOrEqual)
+      else if (operator == GSCSConstraintOperatorLessThanOrEqual)
         {
           [expression addVariable: lhs coefficient: -1.0];
         }
@@ -216,7 +210,7 @@ operator: (GSCSConstraintOperator) operator
 {
   GSCSLinearExpression *lhsExpression =
       [[GSCSLinearExpression alloc] initWithVariable: lhs];
-  GSCSConstraint *constraint = [self constraintWithLeftExpression:lhsExpression operator:operator rightExpression:rhs];
+  GSCSConstraint *constraint = [self constraintWithLeftExpression: lhsExpression operator: operator rightExpression: rhs];
   RELEASE(lhsExpression);
   return constraint;
 }
@@ -229,7 +223,7 @@ operator: (GSCSConstraintOperator) operator
         [[GSCSLinearExpression alloc] initWithConstant: lhs];
 
     GSCSConstraint *constraint = nil;
-    if (operator== GSCSConstraintOperatorEqual)
+    if (operator == GSCSConstraintOperatorEqual)
       {
         [valueExpression addVariable: rhs coefficient: -1.0];
         constraint = [[GSCSConstraint alloc]
@@ -237,11 +231,11 @@ operator: (GSCSConstraintOperator) operator
       }
     else
       {
-        if (operator== GSCSConstraintOperationGreaterThanOrEqual)
+        if (operator == GSCSConstraintOperationGreaterThanOrEqual)
           {
             [valueExpression addVariable: rhs coefficient: -1.0];
           }
-        else if (operator== GSCSConstraintOperatorLessThanOrEqual)
+        else if (operator == GSCSConstraintOperatorLessThanOrEqual)
           {
             [valueExpression multiplyConstantAndTermsBy: -1];
             [valueExpression addVariable: rhs coefficient: 1.0];
@@ -261,7 +255,9 @@ operator: (GSCSConstraintOperator) operator
 {
     GSCSLinearExpression *rhsExpression =
         [[GSCSLinearExpression alloc] initWithVariable: rhs];
-    return [self constraintWithLeftExpression:lhs operator:operator rightExpression:rhsExpression];
+    GSCSConstraint *constraint = [self constraintWithLeftExpression: lhs operator: operator rightExpression: rhsExpression];
+    RELEASE(rhsExpression);
+    return constraint;
 }
 
 + (GSCSConstraint *) constraintWithLeftExpression: (GSCSLinearExpression *)lhs
@@ -270,7 +266,7 @@ operator: (GSCSConstraintOperator) operator
 {
     GSCSLinearExpression *expression = [rhs copy];
     GSCSConstraint *constraint;
-    if (operator== GSCSConstraintOperatorEqual)
+    if (operator == GSCSConstraintOperatorEqual)
       {
         [expression addExpression: lhs multiplier: -1];
         constraint = [[GSCSConstraint alloc]
@@ -278,12 +274,12 @@ operator: (GSCSConstraintOperator) operator
       }
     else
       {
-        if (operator== GSCSConstraintOperationGreaterThanOrEqual)
+        if (operator == GSCSConstraintOperationGreaterThanOrEqual)
           {
             [expression multiplyConstantAndTermsBy: -1];
             [expression addExpression: lhs];
           }
-        else if (operator== GSCSConstraintOperatorLessThanOrEqual)
+        else if (operator == GSCSConstraintOperatorLessThanOrEqual)
           {
             [expression addExpression: lhs multiplier: -1];
           }
@@ -302,7 +298,7 @@ operator: (GSCSConstraintOperator) operator
 {
     GSCSLinearExpression *rhsExpression =
         [[GSCSLinearExpression alloc] initWithConstant: rhs];
-    GSCSConstraint *constraint = [self constraintWithLeftExpression:lhs operator:operator rightExpression:rhsExpression];
+    GSCSConstraint *constraint = [self constraintWithLeftExpression: lhs operator: operator rightExpression: rhsExpression];
     RELEASE(rhsExpression);
     return constraint;
 }
@@ -311,7 +307,7 @@ operator: (GSCSConstraintOperator) operator
 {
   return AUTORELEASE([[self alloc]
        initEditConstraintWithVariable: variable
-                              stength: [GSCSStrength strengthStrong]]);
+                              strength: [GSCSStrength strengthStrong]]);
 }
 
 - (BOOL) isRequired
