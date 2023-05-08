@@ -364,6 +364,8 @@ GSCSConstraint.m \
 GSCSVariable.m \
 GSCSSolution.m \
 GSCSFloatComparator.m \
+GSCSLinearExpression.m \
+GSCSStrength.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -684,8 +686,11 @@ GSAutoLayoutEngine.h \
 GSCassowarySolver.h \
 GSCSConstraint.h \
 GSCSVariable.h \
+GSCSFloatComparator.h \
 GSCSSolution.h \
-GSCSFloatComparator.h
+GSCSLinearExpression.h \
+GSCSConstraintOperator.h \
+GSCSStrength.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 

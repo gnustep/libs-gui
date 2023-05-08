@@ -22,52 +22,30 @@
 
 #import <Foundation/Foundation.h>
 
-#ifndef _GS_CS_VARIABLE_H
-#define _GS_CS_VARIABLE_H
+#ifndef _GS_CS_STRENGTH_H
+#define _GS_CS_STRENGTH_H
 
-enum GSCSVariableType
+@interface GSCSStrength : NSObject <NSCopying>
 {
-  GSCSVariableTypeDummy,
-  GSCSVariableTypeSlack,
-  GSCSVaraibleTypeVariable,
-  GSCSVariableTypeObjective,
-  GSCSVariableTypeExternal
-};
-typedef enum GSCSVariableType GSCSVariableType;
-
-@interface GSCSVariable : NSObject
-{
-  GSCSVariableType _type;
-  NSUInteger _id;
-  CGFloat _value;
   NSString *_name;
+  double _strength;
 }
-
-- (GSCSVariableType) type;
-
-- (NSUInteger) id;
-
-- (CGFloat) value;
-
-- (void) setValue: (CGFloat)value;
 
 - (NSString *) name;
 
-- (BOOL) isExternal;
+- (double) strength;
 
-- (BOOL) isDummy;
+- (instancetype) initWithName: (NSString *)name strength: (double)strength;
 
-- (BOOL) isPivotable;
++ (instancetype) strengthRequired;
 
-- (BOOL) isRestricted;
++ (instancetype) strengthStrong;
 
-- (instancetype) initWithName: (NSString *)name;
++ (instancetype) strengthMedium;
 
-+ (instancetype) variable;
++ (instancetype) strengthWeak;
 
-+ (instancetype) variableWithValue: (CGFloat)value;
-
-+ (instancetype) variableWithValue: (CGFloat)value name: (NSString *)name;
+- (BOOL) isRequired;
 
 @end
 
