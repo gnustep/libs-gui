@@ -3496,6 +3496,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       NSTableColumn *tb = [tableColumns objectAtIndex: i];
       NSCell *cell = [ov preparedCellAtColumn: i row: rowIndex];
 
+      NSLog(@"cell = %@", cell);
       [ov _willDisplayCell: cell
 	    forTableColumn: tb
 	    row: rowIndex];
@@ -3509,11 +3510,14 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	{
 	  id value = [ov _objectValueForTableColumn: tb
 						row: rowIndex];
+	  NSLog(@"Object Value = %@", value);
 	  [cell setObjectValue: value];
 	}
   
       drawingRect = [ov frameOfCellAtColumn: i
 					row: rowIndex];
+
+      NSLog(@"Rect = %@", NSStringFromRect(drawingRect));
 
       if (tb == outlineTableColumn)
 	{
@@ -3521,26 +3525,32 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  NSInteger level = 0;
 	  CGFloat indentationFactor = 0.0;
 
+	  NSLog(@"Outline column...");
 	  // display the correct arrow...
 	  if ([ov isItemExpanded: item])
 	    {
 	      image = expanded;
+	      NSLog(@"Expanded");
 	    }
 	  else
 	    {
 	      image = collapsed;
+	      NSLog(@"Collapsed");
 	    }
 
 	  if (![ov isExpandable: item])
 	    {
 	      image = unexpandable;
+	      NSLog(@"IS EXPANDABLE");
 	    }
 
 	  level = [ov levelForItem: item];
 	  indentationFactor = indentationPerLevel * level;
 	  imageCell = [[NSCell alloc] initImageCell: image];
 	  imageRect = [ov frameOfOutlineCellAtRow: rowIndex];
-
+	  NSLog(@"Level = %ld", level);
+	  NSLog(@"indentationFactor = %f", indentationFactor);
+	  
 	  [ov _willDisplayCell: cell
 		forTableColumn: tb
 			  item: item];

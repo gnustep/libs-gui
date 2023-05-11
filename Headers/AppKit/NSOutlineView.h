@@ -37,7 +37,7 @@
 @class NSMutableArray;
 @class NSString;
 @class NSURL;
-@class GSKeyValueBinding;
+@class GSOutlineViewBindingDataSource;
 
 APPKIT_EXPORT_CLASS
 @interface NSOutlineView : NSTableView
@@ -53,10 +53,8 @@ APPKIT_EXPORT_CLASS
   CGFloat _indentationPerLevel;
   NSTableColumn *_outlineTableColumn;
 
-  GSKeyValueBinding *_theBinding;
-  NSString *_countKeyPath;
-  NSString *_childrenKeyPath;
-  NSString *_leafKeyPath;
+  GSOutlineViewBindingDataSource *_bindingDataSource;
+  id _internalDataSource;
 }
 
 // Instance methods
