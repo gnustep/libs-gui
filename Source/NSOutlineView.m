@@ -94,6 +94,24 @@ static NSMutableSet *autoExpanded = nil;
 static NSDate	*lastDragUpdate = nil;
 static NSDate	*lastDragChange = nil;
 
+// This data source is used when there is a binding present... if a normal data
+// source also exists, that datasource is used preferentially, but mainly as a
+// "delegate".  This allows for encapsulation of the binding functionality.
+@interface GSOutlineViewBindingDataSource : NSObject <NSOutlineViewDataSource>
+{
+  GSKeyValueBinding *_theBinding;
+  NSString *_countKeyPath;
+  NSString *_childrenKeyPath;
+  NSString *_leafKeyPath;
+
+  id _observedObject;
+  NSOutlineView *_outlineView;
+}
+
+- (instancetype) initWithParent: (NSOutlineView *)ov;
+
+@end
+
 @interface NSOutlineView (NotificationRequestMethods)
 - (void) _postSelectionIsChangingNotification;
 - (void) _postSelectionDidChangeNotification;
@@ -176,37 +194,12 @@ static NSImage *unexpandable  = nil;
       expanded     = [NSImage imageNamed: @"common_ArrowDownH"];
       unexpandable = [[NSImage alloc] initWithSize: [expanded size]];
 #endif
-      
+
       autoExpanded = [NSMutableSet new];
     }
 }
 
 // Instance methods
-- (void) awakeFromNib
-{
-  id observedObject = nil;
-
-  _theBinding = [GSKeyValueBinding getBinding: NSContentBinding
-				    forObject: self];
-
-  observedObject = [_theBinding observedObject];
-
-  if ([observedObject isKindOfClass: [NSTreeController class]])
-    {
-      NSTreeController *tc = (NSTreeController *)observedObject;
-
-      _leafKeyPath = [tc leafKeyPath];
-      _childrenKeyPath = [tc childrenKeyPath];
-      _countKeyPath = [tc countKeyPath];
-    }
-  else
-    {
-      NSLog(@"Observed object is not an NSTreeController");
-    }
-
-  NSLog(@"_observedObject = %@, leafKeyPath = %@, childrenKeyPath = %@, countKeyPath = %@",
-	observedObject, _leafKeyPath, _childrenKeyPath, _countKeyPath);
-}
 
 /**
  *  Initalizes the outline view with the given frame.   Invokes
@@ -250,6 +243,19 @@ static NSImage *unexpandable  = nil;
     }
 
   [super dealloc];
+}
+
+- (void) awakeFromNib
+{
+  GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+						     forObject: self];
+  if (theBinding != nil)
+    {
+      _bindingDataSource = [[GSOutlineViewBindingDataSource alloc] initWithParent: self];
+      NSLog(@"A binding data source was created %@", _bindingDataSource);
+    }
+
+  _internalDataSource = (_bindingDataSource != nil) ? _bindingDataSource : _dataSource;
 }
 
 /**
@@ -465,23 +471,16 @@ static NSImage *unexpandable  = nil;
 - (BOOL) isExpandable: (id)item
 {
   BOOL result = NO;
-  
-  if (_theBinding == nil)
+
+  if (item == nil)
     {
-      if (item == nil)
-	{
-	  result = NO;
-	}
-      else
-	{
-	  result = [_dataSource outlineView: self isItemExpandable: item];
-	}
+      result = NO;
     }
   else
     {
-      result = [[item valueForKeyPath: _leafKeyPath] boolValue];
+      result = [_internalDataSource outlineView: self isItemExpandable: item];
     }
-  
+
   return result;
 }
 
@@ -604,9 +603,9 @@ static NSImage *unexpandable  = nil;
       if ((index = [childArray indexOfObjectIdenticalTo: object]) != NSNotFound)
 	{
 	  parent = (parent == [NSNull null]) ? (id)nil : (id)parent;
-	  dsobj = [_dataSource outlineView: self
-			       child: index
-			       ofItem: parent];
+	  dsobj = [_internalDataSource outlineView: self
+					     child: index
+					    ofItem: parent];
 
 	  if (dsobj != item)
 	    {
@@ -622,7 +621,7 @@ static NSImage *unexpandable  = nil;
     {
       [self _removeChildren: dsobj];
       [self _loadDictionaryStartingWith: dsobj
-	    atLevel: [self levelForItem: dsobj]];
+				atLevel: [self levelForItem: dsobj]];
 
       if (expanded)
 	{
@@ -745,8 +744,9 @@ static NSImage *unexpandable  = nil;
 		 format: @"data source does not respond to %@", @#selector_name]
 
   // If the binding is present, the data source becomes like a delegate
-  if (_theBinding == nil)
+  if (_bindingDataSource == nil)
     {
+      NSLog(@"Checking methods");
       CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
       CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
       CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
@@ -759,7 +759,11 @@ static NSImage *unexpandable  = nil;
 
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
-
+  _internalDataSource = anObject; // override the binding data source if it was created...
+  
+  NSLog(@"_bindingDataSource = %@", _bindingDataSource);
+  NSLog(@"dataSource = %@", _dataSource);
+  
   [self tile];
   [self reloadData];
 }
@@ -1353,13 +1357,13 @@ Also returns the child index relative to this parent. */
 	  currentDropIndex = childIndex;
 	}
 
-      if ([_dataSource respondsToSelector:
-	@selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
+      if ([_internalDataSource respondsToSelector:
+				   @selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
 	{
-	   dragOperation = [_dataSource outlineView: self
-				       validateDrop: sender
-				       proposedItem: currentDropItem
-				 proposedChildIndex: currentDropIndex];
+	  dragOperation = [_internalDataSource outlineView: self
+						     validateDrop: sender
+						     proposedItem: currentDropItem
+					       proposedChildIndex: currentDropIndex];
 	}
 
       //NSLog(@"Drop on %@ %d", currentDropItem, currentDropIndex);
@@ -1429,11 +1433,11 @@ Also returns the child index relative to this parent. */
 {
   BOOL	result = NO;
 
-  if ([_dataSource
+  if ([_internalDataSource
 	respondsToSelector:
 	  @selector(outlineView:acceptDrop:item:childIndex:)])
     {
-      result = [_dataSource outlineView: self
+      result = [_internalDataSource outlineView: self
 			     acceptDrop: sender
 				   item: currentDropItem
 			     childIndex: currentDropIndex];
@@ -1454,7 +1458,7 @@ Also returns the child index relative to this parent. */
 
 - (NSArray*) namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
 {
-  if ([_dataSource respondsToSelector:
+  if ([_internalDataSource respondsToSelector:
 		    @selector(outlineView:namesOfPromisedFilesDroppedAtDestination:forDraggedItems:)])
     {
       NSUInteger count = [_selectedRows count];
@@ -1467,7 +1471,7 @@ Also returns the child index relative to this parent. */
 	  index = [_selectedRows indexGreaterThanIndex: index];
 	}
 
-      return [_dataSource outlineView: self
+      return [_internalDataSource outlineView: self
 			  namesOfPromisedFilesDroppedAtDestination: dropDestination
 			  forDraggedItems: itemArray];
     }
@@ -1753,10 +1757,10 @@ Also returns the child index relative to this parent. */
 
 - (void) _didChangeSortDescriptors: (NSArray *)oldSortDescriptors
 {
-  if ([_dataSource
+  if ([_internalDataSource
 	respondsToSelector: @selector(outlineView:sortDescriptorsDidChange:)])
     {
-      [_dataSource outlineView: self
+      [_internalDataSource outlineView: self
       sortDescriptorsDidChange: oldSortDescriptors];
     }
 }
@@ -1825,10 +1829,10 @@ Also returns the child index relative to this parent. */
       index = [rows indexGreaterThanIndex: index];
     }
 
-  if ([_dataSource respondsToSelector:
+  if ([_internalDataSource respondsToSelector:
 		     @selector(outlineView:writeItems:toPasteboard:)] == YES)
     {
-      return [_dataSource outlineView: self
+      return [_internalDataSource outlineView: self
 			  writeItems: itemArray
 			  toPasteboard: pboard];
     }
@@ -1837,7 +1841,7 @@ Also returns the child index relative to this parent. */
 
 - (BOOL) _isDraggingSource
 {
-  return [_dataSource respondsToSelector:
+  return [_internalDataSource respondsToSelector:
 			@selector(outlineView:writeItems:toPasteboard:)];
 }
 
@@ -1848,24 +1852,24 @@ Also returns the child index relative to this parent. */
   GSKeyValueBinding *binding =
     [GSKeyValueBinding getBinding: NSValueBinding
 			forObject: tb];
-  
+
   if (binding != nil)
     {
       result = [(NSArray *)[binding destinationValue]
 		   objectAtIndex: index];
     }
-  else if ([_dataSource respondsToSelector:
+  else if ([_internalDataSource respondsToSelector:
     @selector(outlineView:objectValueForTableColumn:byItem:)])
     {
       id item = [self itemAtRow: index];
 
-      result = [_dataSource outlineView: self
+      result = [_internalDataSource outlineView: self
 			    objectValueForTableColumn: tb
 			    byItem: item];
     }
 
   NSLog(@"RESULT ======= %@, class = %@", result, NSStringFromClass([result class]));
-  
+
   return result;
 }
 
@@ -1873,12 +1877,12 @@ Also returns the child index relative to this parent. */
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (NSInteger) index
 {
-  if ([_dataSource respondsToSelector:
+  if ([_internalDataSource respondsToSelector:
     @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
     {
       id item = [self itemAtRow: index];
 
-      [_dataSource outlineView: self
+      [_internalDataSource outlineView: self
 		   setObjectValue: value
 		   forTableColumn: tb
 		   byItem: item];
@@ -1887,14 +1891,12 @@ Also returns the child index relative to this parent. */
 
 - (NSInteger) _numRows
 {
+  /*
   if (_theBinding != nil)
     {
-      // NSUInteger c = [(NSArray *)[_theBinding destinationValue] count];
-      // NSLog(@"*** numRows = %ld", c);
-      // return c;
       return [(NSArray *)[_theBinding destinationValue] count];
     }
-
+  */
   return [_items count];
 }
 
@@ -1966,6 +1968,7 @@ Also returns the child index relative to this parent. */
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSArray *anarray = NSMapGet(_itemDict, sitem);
 
+  NSLog(@"anarray = %@", anarray);
   FOR_IN(id, anitem, anarray)
     {
       // Only collect the children if the item is expanded
@@ -2002,16 +2005,14 @@ Also returns the child index relative to this parent. */
   NSInteger num = 0;
   BOOL expandable = YES;
   NSInteger i = 0;
-  NSArray *contentArray = nil;
+
+  NSLog(@"_internalDataSource = %@", _internalDataSource);
 
   // See if the item is expandable...
-  if ([_dataSource respondsToSelector: @selector(outlineView:isItemExpandable:)])
+  if ([_internalDataSource respondsToSelector: @selector(outlineView:isItemExpandable:)])
     {
-      expandable = [_dataSource outlineView: self isItemExpandable: startitem];
-    }
-  else if (_theBinding != nil && startitem != nil)
-    {
-      expandable = [[sitem valueForKeyPath: _leafKeyPath] boolValue];
+      expandable = [_internalDataSource outlineView: self
+				   isItemExpandable: startitem];
     }
 
   /* Check to see if item is expandable and expanded before getting the number
@@ -2023,30 +2024,8 @@ Also returns the child index relative to this parent. */
    */
   if (startitem == nil || (expandable && [self isItemExpanded: startitem]))
     {
-      if (_theBinding == nil)
-	{
-	  num = [_dataSource outlineView: self
-		  numberOfChildrenOfItem: startitem];
-	}
-      else
-	{
-	  if (startitem == nil)
-	    {
-	      id dest = [_theBinding destinationValue];
-
-	      if ([dest isKindOfClass: [NSArray class]])
-		{
-		  contentArray = (NSArray *)dest;
-		  num = [contentArray count];
-		}
-	    }
-	  else
-	    {
-	      NSNumber *n = [startitem valueForKeyPath: _countKeyPath];
-	      num = [n integerValue];
-	      contentArray = [startitem valueForKeyPath: _childrenKeyPath];
-	    }
-	}
+      num = [_internalDataSource outlineView: self
+		      numberOfChildrenOfItem: startitem];
     }
 
   if (num > 0)
@@ -2060,16 +2039,9 @@ Also returns the child index relative to this parent. */
   for (i = 0; i < num; i++)
     {
       id anitem = nil;
-      if (_theBinding == nil)
-	{
-	  anitem = [_dataSource outlineView: self
-				      child: i
-				     ofItem: startitem];
-	}
-      else
-	{
-	  anitem = [contentArray objectAtIndex: i];
-	}
+      anitem = [_internalDataSource outlineView: self
+					  child: i
+					 ofItem: startitem];
 
       [anarray addObject: anitem];
       [self _loadDictionaryStartingWith: anitem
@@ -2122,7 +2094,11 @@ Also returns the child index relative to this parent. */
     }
 
   object = NSMapGet(_itemDict, sitem);
+
+  NSLog(@"object = %@", object);
   numChildren = numDescendants = [object count];
+
+  NSLog(@"numChildren = %ld", numChildren);
 
   insertionPoint = [_items indexOfObjectIdenticalTo: item];
   if (insertionPoint == NSNotFound)
@@ -2152,7 +2128,7 @@ Also returns the child index relative to this parent. */
 	  for (j = numItems-1; j >= 0; j--)
 	    {
 	      [_items insertObject: [insertAll objectAtIndex: j]
-		      atIndex: insertionPoint];
+			   atIndex: insertionPoint];
 	    }
 	}
 
@@ -2304,4 +2280,216 @@ Also returns the child index relative to this parent. */
     }
   [autoExpanded removeAllObjects];
 }
+@end
+
+@implementation GSOutlineViewBindingDataSource
+
+- (instancetype) initWithParent: (NSOutlineView *)ov
+{
+  self = [super init];
+
+  if (self != nil)
+    {
+      // _mapTable = RETAIN([NSMapTable strongToStrongObjectsMapTable]);
+      _outlineView = ov; // don't retain, so we don't have a circular reference.
+      _theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+					forObject: self];
+      _observedObject = [_theBinding observedObject];
+
+      if ([_observedObject isKindOfClass: [NSTreeController class]])
+	{
+	  NSTreeController *tc = (NSTreeController *)_observedObject;
+
+	  ASSIGNCOPY(_leafKeyPath, [tc leafKeyPath]);
+	  ASSIGNCOPY(_childrenKeyPath, [tc childrenKeyPath]);
+	  ASSIGNCOPY(_countKeyPath, [tc countKeyPath]);
+	}
+      else
+	{
+	  return nil;
+	}
+
+      NSLog(@"_observedObject = %@, leafKeyPath = %@, childrenKeyPath = %@, countKeyPath = %@",
+	    _observedObject, _leafKeyPath, _childrenKeyPath, _countKeyPath);
+    }
+
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_leafKeyPath);
+  RELEASE(_childrenKeyPath);
+  RELEASE(_countKeyPath);
+  _outlineView = nil;
+
+  [super dealloc];
+}
+
+- (id) _findItemValue: (id)value
+	    startItem: (id)start
+{
+  id result = nil;
+  NSTableColumn *outlineTableColumn = [_outlineView outlineTableColumn];
+  GSKeyValueBinding *binding = [GSKeyValueBinding getBinding: NSValueBinding
+						   forObject: outlineTableColumn];
+
+  if (value != nil)
+    {
+      id v = nil; // [start valueForKeyPath: valueKey];
+      
+      if ([v isEqual: value] || result == start)
+	{
+	  result = start;
+	}
+      else
+	{
+	  NSArray *array = nil;
+
+	  if ([start isKindOfClass: [NSArray class]])
+	    {
+	      array = start;
+	    }
+	  else
+	    {
+	      array = (NSArray *)[start valueForKeyPath: _childrenKeyPath];
+	    }
+
+	  FOR_IN(id, i, array)
+	    {
+	      result = [self _findItemValue: value
+				  startItem: i];
+	      if (result != nil)
+		{
+		  break;
+		}
+	    }
+	  END_FOR_IN(array);
+	}
+    }
+
+  return result;
+}
+
+- (BOOL) outlineView: (NSOutlineView *)outlineView
+	  acceptDrop: (id <NSDraggingInfo>)info
+		item: (id)item
+	  childIndex: (NSInteger)index
+{
+  return NO;
+}
+
+- (id) outlineView: (NSOutlineView *)outlineView
+	     child: (NSInteger)index
+	    ofItem: (id)item
+{
+  // id item = [contentArray objectAtIndex: i];
+  id v = nil; // [(NSArray *)[b destinationValue] objectAtIndex: i];
+
+  return v;
+}
+
+- (BOOL) outlineView: (NSOutlineView *)outlineView
+    isItemExpandable: (id)i
+{
+  id item = [self _findItemValue: i
+		       startItem: nil];
+  BOOL f = [[item valueForKeyPath: _leafKeyPath] boolValue]; 
+
+  return f;
+}
+
+- (id) outlineView: (NSOutlineView *)outlineView
+  itemForPersistentObject: (id)object
+{
+  return nil;
+}
+
+- (NSInteger) outlineView: (NSOutlineView *)outlineView
+   numberOfChildrenOfItem: (id)value
+{
+  NSInteger num = 0;
+  NSNumber *n = nil;
+  id item = nil;
+  
+  if (value == nil)
+    {
+      id dest = [_theBinding destinationValue];
+
+      if ([dest isKindOfClass: [NSArray class]])
+	{
+	  NSArray *contentArray = (NSArray *)dest;
+	  num = [contentArray count];
+	}
+      else
+	{
+	  item = [self _findItemValue: value
+			    startItem: nil];
+
+
+	  n = [item valueForKeyPath: _countKeyPath];
+	  num = [n integerValue];
+	}
+    }
+  else
+    {
+      item = [self _findItemValue: value
+			startItem: nil];
+
+
+      n = [item valueForKeyPath: _countKeyPath];
+      num = [n integerValue];
+    }
+
+  return num;
+}
+
+- (id) outlineView: (NSOutlineView *)outlineView
+  objectValueForTableColumn: (NSTableColumn *)tableColumn
+	    byItem: (id)item
+{
+  return nil;
+}
+
+
+- (id) outlineView: (NSOutlineView *)outlineView
+  persistentObjectForItem: (id)item
+{
+  return nil;
+}
+
+- (void) outlineView: (NSOutlineView *)outlineView
+      setObjectValue: (id)object
+      forTableColumn: (NSTableColumn *)tableColumn
+	      byItem: (id)item
+{
+}
+
+- (NSDragOperation) outlineView: (NSOutlineView*)outlineView
+		   validateDrop: (id <NSDraggingInfo>)info
+		   proposedItem: (id)item
+	     proposedChildIndex: (NSInteger)index
+{
+  return 0;
+}
+
+- (BOOL) outlineView: (NSOutlineView *)outlineView
+	  writeItems: (NSArray*)items
+	toPasteboard: (NSPasteboard*)pboard
+{
+  return NO;
+}
+
+- (void) outlineView: (NSOutlineView *)outlineView
+  sortDescriptorsDidChange: (NSArray *)oldSortDescriptors
+{
+}
+
+- (NSArray *) outlineView: (NSOutlineView *)outlineView
+namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
+	  forDraggedItems: (NSArray *)items
+{
+  return nil;
+}
+
 @end

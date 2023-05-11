@@ -334,20 +334,17 @@
 
 - (NSString*) childrenKeyPathForNode: (NSTreeNode*)node
 {
-  // FIXME
-  return nil;
+  return _childrenKeyPath;
 }
 
 - (NSString*) countKeyPathForNode: (NSTreeNode*)node
 {
-  // FIXME
-  return nil;
+  return _countKeyPath;
 }
 
 - (NSString*) leafKeyPathForNode: (NSTreeNode*)node
 {
-  // FIXME
-  return nil;
+  return _leafKeyPath;
 }
 
 - (void) moveNode: (NSTreeNode*)node toIndexPath: (NSIndexPath*)indexPath
