@@ -310,6 +310,11 @@ operator: (GSCSConstraintOperator) operator
                               strength: [GSCSStrength strengthStrong]]);
 }
 
+- (void) setStrength: (GSCSStrength *)strength
+{
+  ASSIGN(_strength, strength);
+}
+
 - (BOOL) isRequired
 {
    return [_strength isRequired];

@@ -29,10 +29,15 @@
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <AppKit/NSLayoutAnchor.h>
-#import <AppKit/NSView.h>
 #import <AppKit/NSWindow.h>
 
-@class NSControl, NSAnimation, NSArray, NSMutableArray, NSDictionary;
+@class NSControl, NSAnimation, NSArray, NSMutableArray, NSDictionary, NSView;
+
+typedef float NSLayoutPriority;
+typedef struct GSIntrinsicContentSizePriority {
+  NSLayoutPriority horizontal;
+  NSLayoutPriority vertical;
+} GSIntrinsicContentSizePriority;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -41,7 +46,6 @@ extern "C" {
 #endif
 
 // Priority
-typedef float NSLayoutPriority;
 static const NSLayoutPriority NSLayoutPriorityRequired = 1000.0;
 static const NSLayoutPriority NSLayoutPriorityDefaultHigh = 750.0;
 static const NSLayoutPriority NSLayoutPriorityDragThatCanResizeWindow = 510.0;
@@ -165,22 +169,6 @@ APPKIT_EXPORT_CLASS
 - (NSLayoutPriority) priority;
 - (void) setPriority: (NSLayoutPriority)priority;
 #endif
-
-@end
-
-@interface NSView (NSConstraintBasedLayoutCoreMethods)
-
-- (void) updateConstraints;
-
-- (void) updateConstraintsForSubtreeIfNeeded;
-
-@end
-
-@interface NSView (NSConstraintBasedLayoutInstallingConstraints)
-
-- (void) addConstraint: (NSLayoutConstraint *)constraint;
-
-- (void) addConstraints: (NSArray*)constraints;
 
 @end
 

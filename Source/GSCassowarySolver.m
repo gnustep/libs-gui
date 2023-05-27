@@ -50,4 +50,9 @@
     return [[GSCSSolution alloc] init];
 }
 
+- (void) suggestEditVariable: (GSCSVariable*)variable equals: (CGFloat)value
+{
+    // FIXME Suggest edit variable
+}
+
 @end

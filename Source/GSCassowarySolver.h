@@ -37,6 +37,8 @@
 
 - (void) removeConstraints: (NSArray*)constraints;
 
+- (void) suggestEditVariable: (GSCSVariable*)variable equals: (CGFloat)value;
+
 - (GSCSSolution*) solve;
 
 @end
