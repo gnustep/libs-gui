@@ -54,7 +54,7 @@ enum
   GSLayoutViewAttributeBaselineOffsetFromBottom = 1,
   GSLayoutViewAttributeFirstBaselineOffsetFromTop,
   GSLayoutViewAttributeIntrinsicWidth,
-  GSLayoutViewAttributeInstrinctHeight,
+  GSLayoutViewAttributeIntrinsicHeight,
 } GSLayoutViewAttribue;
 typedef NSInteger GSLayoutViewAttribute;
 
@@ -192,8 +192,8 @@ typedef NSInteger GSLayoutViewAttribute;
                                         orientation:
                                           (NSLayoutConstraintOrientation)
                                             orientation
-                             instrinctSizeAttribute:
-                               (GSLayoutViewAttribute)instrinctSizeAttribute
+                             intrinsicSizeAttribute:
+                               (GSLayoutViewAttribute)intrinsicSizeAttribute
                                  dimensionAttribute:
                                    (GSLayoutAttribute)dimensionAttribute;
 
@@ -573,7 +573,7 @@ typedef NSInteger GSLayoutViewAttribute;
     return @"firstBaselineOffsetFromTop";
   case GSLayoutViewAttributeIntrinsicWidth:
     return @"intrinsicContentSize.width";
-  case GSLayoutViewAttributeInstrinctHeight:
+  case GSLayoutViewAttributeIntrinsicHeight:
     return @"intrinsicContentSize.height";
   default:
     [[NSException
@@ -859,7 +859,7 @@ typedef NSInteger GSLayoutViewAttribute;
 
     GSCSLinearExpression *exp =
       [[GSCSLinearExpression alloc] initWithVariable: maxY];
-    [exp addVariable: firstBaselineOffsetVariable coefficient:-1];
+    [exp addVariable: firstBaselineOffsetVariable coefficient: -1];
     GSCSConstraint *firstBaselineConstraint = [GSCSConstraint constraintWithLeftVariable: firstBaselineVariable operator: GSCSConstraintOperatorEqual rightExpression: exp];
     RELEASE(exp);
 
@@ -918,9 +918,9 @@ typedef NSInteger GSLayoutViewAttribute;
     if (intrinsicContentSize.width != NSViewNoIntrinsicMetric)
       {
             [self
-              addSupportingInstrictSizeConstraintsToView: view
+              addSupportingIntrinsicSizeConstraintsToView: view
                                              orientation: NSLayoutConstraintOrientationHorizontal
-                                  instrinctSizeAttribute: GSLayoutViewAttributeIntrinsicWidth
+                                  intrinsicSizeAttribute: GSLayoutViewAttributeIntrinsicWidth
                                       dimensionAttribute: GSLayoutAttributeWidth];
       }
     if (intrinsicContentSize.height != NSViewNoIntrinsicMetric)
@@ -928,32 +928,32 @@ typedef NSInteger GSLayoutViewAttribute;
             [self
               addSupportingInstrictSizeConstraintsToView: view
                                              orientation: NSLayoutConstraintOrientationVertical
-                                  instrinctSizeAttribute: GSLayoutViewAttributeInstrinctHeight
+                                  intrinsicSizeAttribute: GSLayoutViewAttributeIntrinsicHeight
                                       dimensionAttribute: GSLayoutAttributeHeight];
       }
 }
 
 - (void) addSupportingInstrictSizeConstraintsToView: (NSView *)view
                                         orientation: (NSLayoutConstraintOrientation)orientation
-                             instrinctSizeAttribute: (GSLayoutViewAttribute)instrinctSizeAttribute
+                             intrinsicSizeAttribute: (GSLayoutViewAttribute)intrinsicSizeAttribute
                                  dimensionAttribute: (GSLayoutAttribute)dimensionAttribute
 {
-    GSCSVariable *instrinctContentDimension =
-      [self variableForView: view andViewAttribute: instrinctSizeAttribute];
+    GSCSVariable *intrinsicContentDimension =
+      [self variableForView: view andViewAttribute: intrinsicSizeAttribute];
     GSCSVariable *dimensionVariable =
       [self variableForView: view andAttribute: dimensionAttribute];
 
-    GSCSVariable *instrinctSizeVariable =
+    GSCSVariable *intrinsicSizeVariable =
       [self getExistingVariableForView: view
-                     withViewAttribute: instrinctSizeAttribute];
-    GSCSConstraint *instrinctSizeConstraint =
-      [GSCSConstraint editConstraintWithVariable: instrinctSizeVariable];
-    [self addInternalSolverConstraint: instrinctSizeConstraint forView: view];
-    [self resolveVariableForView: view attribute: instrinctSizeAttribute];
+                     withViewAttribute: intrinsicSizeAttribute];
+    GSCSConstraint *intrinsicSizeConstraint =
+      [GSCSConstraint editConstraintWithVariable: intrinsicSizeVariable];
+    [self addInternalSolverConstraint: intrinsicSizeConstraint forView: view];
+    [self resolveVariableForView: view attribute: intrinsicSizeAttribute];
 
     double huggingPriority =
       [view contentHuggingPriorityForOrientation: orientation];
-    GSCSConstraint *huggingConstraint = [GSCSConstraint constraintWithLeftVariable: dimensionVariable operator: GSCSConstraintOperatorLessThanOrEqual rightVariable: instrinctContentDimension];
+    GSCSConstraint *huggingConstraint = [GSCSConstraint constraintWithLeftVariable: dimensionVariable operator: GSCSConstraintOperatorLessThanOrEqual rightVariable: intrinsicContentDimension];
     GSCSStrength *huggingConstraintStrength =
       [[GSCSStrength alloc] initWithName: nil strength: huggingPriority];
     [huggingConstraint setStrength: huggingConstraintStrength];
@@ -963,7 +963,7 @@ typedef NSInteger GSLayoutViewAttribute;
 
     double compressionPriority =
       [view contentCompressionResistancePriorityForOrientation: orientation];
-    GSCSConstraint *compressionConstraint = [GSCSConstraint constraintWithLeftVariable: dimensionVariable operator: GSCSConstraintOperationGreaterThanOrEqual rightVariable: instrinctContentDimension];
+    GSCSConstraint *compressionConstraint = [GSCSConstraint constraintWithLeftVariable: dimensionVariable operator: GSCSConstraintOperationGreaterThanOrEqual rightVariable: intrinsicContentDimension];
     GSCSStrength *compressionConstraintStrength =
       [[GSCSStrength alloc] initWithName: nil strength: compressionPriority];
     [compressionConstraint setStrength: compressionConstraintStrength];
@@ -1263,11 +1263,11 @@ typedef NSInteger GSLayoutViewAttribute;
       return [view firstBaselineOffsetFromTop];
     case GSLayoutViewAttributeIntrinsicWidth:
       return [view intrinsicContentSize].width;
-    case GSLayoutViewAttributeInstrinctHeight:
+    case GSLayoutViewAttributeIntrinsicHeight:
       return [view intrinsicContentSize].height;
     default:
       [[NSException exceptionWithName: @"Not handled"
-                                reason: @"GSLayoutAttribute not handled"
+                               reason: @"GSLayoutAttribute not handled"
                               userInfo: nil] raise];
       return 0;
     }
