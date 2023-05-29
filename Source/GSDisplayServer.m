@@ -62,7 +62,6 @@ static NSMapTable *windowmaps = NULL;
 /* Lock for use when creating contexts */
 static NSRecursiveLock  *serverLock = nil;
 
-static NSString *NSCurrentServerThreadKey;
 static GSDisplayServer *currentServer = nil;
 
 /** Returns the GSDisplayServer that created the interal
@@ -130,7 +129,6 @@ GSCurrentServer(void)
           serverLock = [NSRecursiveLock new];
           _globalGSZone = NSDefaultMallocZone();
           defaultServerClass = [GSDisplayServer class];
-          NSCurrentServerThreadKey  = @"NSCurrentServerThreadKey";
           windowmaps = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
                                         NSNonOwnedPointerMapValueCallBacks, 20);
         }
