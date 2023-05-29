@@ -188,7 +188,7 @@ typedef NSInteger GSLayoutViewAttribute;
 
 - (void) addIntrinsicContentSizeConstraintsToView: (NSView *)view;
 
-- (void) addSupportingInstrictSizeConstraintsToView: (NSView *)view
+- (void) addSupportingIntrinsicSizeConstraintsToView: (NSView *)view
                                         orientation:
                                           (NSLayoutConstraintOrientation)
                                             orientation
@@ -557,8 +557,8 @@ typedef NSInteger GSLayoutViewAttribute;
           return @"maxY";
     default:
           [[NSException exceptionWithName: @"Not handled"
-                                    reason: @"GSLayoutAttribute not handled"
-                                  userInfo: nil] raise];
+                                   reason: @"GSLayoutAttribute not handled"
+                                 userInfo: nil] raise];
           return nil;
     }
 }
@@ -926,14 +926,14 @@ typedef NSInteger GSLayoutViewAttribute;
     if (intrinsicContentSize.height != NSViewNoIntrinsicMetric)
       {
             [self
-              addSupportingInstrictSizeConstraintsToView: view
+              addSupportingIntrinsicSizeConstraintsToView: view
                                              orientation: NSLayoutConstraintOrientationVertical
                                   intrinsicSizeAttribute: GSLayoutViewAttributeIntrinsicHeight
                                       dimensionAttribute: GSLayoutAttributeHeight];
       }
 }
 
-- (void) addSupportingInstrictSizeConstraintsToView: (NSView *)view
+- (void) addSupportingIntrinsicSizeConstraintsToView: (NSView *)view
                                         orientation: (NSLayoutConstraintOrientation)orientation
                              intrinsicSizeAttribute: (GSLayoutViewAttribute)intrinsicSizeAttribute
                                  dimensionAttribute: (GSLayoutAttribute)dimensionAttribute
