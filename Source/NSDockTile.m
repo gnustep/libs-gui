@@ -22,8 +22,9 @@
    Boston, MA 02110 USA.
 */
 
-#import <AppKit/NSDockTile.h>
-#import <AppKit/NSView.h>
+#import "AppKit/NSDockTile.h"
+#import "AppKit/NSView.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 
 @implementation NSDockTile
 
@@ -32,8 +33,11 @@
   self = [super init];
   if (self != nil)
     {
-      NSRect rect = NSMakeRect(0,0,48,48);
-      _size = rect.size;
+      GSDisplayServer *server = GSCurrentServer();
+      NSSize size = [server iconSize]; 
+      NSRect rect = NSMakeRect(0,0,size.width,size.height);
+      
+      _size = size;
       _contentView = [[NSView alloc] initWithFrame: rect];
       _badgeLabel = nil;
       _owner = nil;
