@@ -80,6 +80,7 @@
 #import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
 #import "GSAutoLayoutEngine.h"
+#import "NSAutoresizingMaskLayoutConstraint.h" 
 #import "NSViewPrivate.h"
 #import "NSWindowPrivate.h"
 
@@ -102,6 +103,9 @@
    a class variable because we want it visible to subviews also
 */
 NSView *viewIsPrinting = nil;
+
+const CGFloat NSViewNoInstrinsicMetric = -1;
+const CGFloat NSViewNoIntrinsicMetric = -1;
 
 /**
   <unit>
@@ -5202,7 +5206,34 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   return _translatesAutoresizingMaskIntoConstraints;
 }
 
+- (NSLayoutPriority) contentCompressionResistancePriority
+{
+  return _contentCompressionResistancePriority;
+}
+
+- (void) setContentCompressionResistancePriority: (NSLayoutPriority)priority;
+{
+  _contentCompressionResistancePriority = priority;
+}
+
+- (NSSize) intrinsicContentSize
+{
+  return NSMakeSize(NSViewNoIntrinsicMetric, NSViewNoIntrinsicMetric); 
+}
+
+- (CGFloat) baselineOffsetFromBottom
+{
+  return 0;
+}
+
+- (CGFloat) firstBaselineOffsetFromTop
+{
+  return 0;
+}
+
 @end
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 
 @implementation NSView (NSConstraintBasedLayoutCorePrivateMethods)
 // This private setter allows the updateConstraints method to toggle needsUpdateConstraints
@@ -5240,7 +5271,145 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   [[self superview] setNeedsLayout: YES];
 }
 
+- (GSAutoLayoutEngine*) _getOrCreateLayoutEngine
+{
+  if (![self window])
+    {
+      return nil;
+    }
+  if (![[self window] _layoutEngine])
+    {
+      [[self window] _bootstrapAutoLayout];
+    }
+
+  return [[self window] _layoutEngine];
+ }
+
 @end
+
+@implementation NSView (NSConstraintBasedLayoutCoreMethods)
+
+- (void) updateConstraintsForSubtreeIfNeeded
+{
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    [subview updateConstraintsForSubtreeIfNeeded];
+  END_FOR_IN (subviews);
+
+  if ([self needsUpdateConstraints])
+    {
+      [self updateConstraints];
+    }
+}
+
+- (void) updateConstraints
+{
+  if ([self translatesAutoresizingMaskIntoConstraints] &&
+      [self superview] != nil)
+    {
+      NSArray *autoresizingConstraints = [NSAutoresizingMaskLayoutConstraint
+          constraintsWithAutoresizingMask: [self autoresizingMask]
+                                  subitem: self
+                                    frame: [self frame]
+                                superitem: [self superview]
+                                   bounds: [[self superview] bounds]];
+      [self addConstraints: autoresizingConstraints];
+    }
+
+  [self _setNeedsUpdateConstraints: NO];
+}
+
+- (NSLayoutPriority) contentCompressionResistancePriorityForOrientation: (NSLayoutConstraintOrientation)orientation {
+  if (orientation == NSLayoutConstraintOrientationHorizontal) {
+    return _compressionPriorities.horizontal;
+  } else {
+    return _compressionPriorities.vertical;
+  }
+}
+
+- (void) setContentCompressionResistancePriority: (NSLayoutPriority)priority forOrientation: (NSLayoutConstraintOrientation)orientation {
+    if (orientation == NSLayoutConstraintOrientationHorizontal) {
+      _compressionPriorities.horizontal = priority;
+    } else {
+      _compressionPriorities.vertical = priority;
+    }
+}
+
+- (NSLayoutPriority) contentHuggingPriorityForOrientation: (NSLayoutConstraintOrientation)orientation {
+  if (orientation == NSLayoutConstraintOrientationHorizontal) {
+    return _huggingPriorities.horizontal;
+  } else {
+    return _huggingPriorities.vertical;
+  }
+}
+
+- (void) setContentHuggingPriority: (NSLayoutPriority)priority forOrientation: (NSLayoutConstraintOrientation)orientation
+{
+    if (orientation == NSLayoutConstraintOrientationHorizontal) {
+      _huggingPriorities.horizontal = priority;
+    } else {
+      _huggingPriorities.vertical = priority;
+    }
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedLayoutInstallingConstraints)
+
+- (void) addConstraint: (NSLayoutConstraint *)constraint
+{
+  if (![self _getOrCreateLayoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] addConstraint: constraint];
+}
+
+- (void) addConstraints: (NSArray*)constraints
+{
+  if (![self _getOrCreateLayoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] addConstraints: constraints];
+}
+
+- (void) removeConstraint: (NSLayoutConstraint *)constraint
+{
+  if (![self _layoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] removeConstraint: constraint];
+}
+
+- (void) removeConstraints: (NSArray *)constraints
+{
+  if (![self _layoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] removeConstraints: constraints];
+}
+
+- (NSArray*) constraints
+{
+  GSAutoLayoutEngine *engine = [self _layoutEngine];
+  if (!engine)
+    {
+      return [NSArray array];
+    }
+
+  return [engine constraintsForView: self];
+}
+
+@end
+
+#endif
 
 @implementation NSView (__NSViewPrivateMethods__)
 

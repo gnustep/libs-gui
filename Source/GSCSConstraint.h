@@ -46,6 +46,13 @@ typedef enum GSCSConstraintType GSCSConstraintType;
   GSCSVariable *_variable;
 }
 
+#if GS_HAS_DECLARED_PROPERTIES
+@property (nonatomic, assign) GSCSStrength *strength;
+#else
+- (GSCSStrength *) strength;
+- (void) setStrength: (GSCSStrength *)strength;
+#endif
+
 - (instancetype) initWithType: (GSCSConstraintType)type
                      strength: (GSCSStrength *)strength
                    expression: (GSCSLinearExpression *)expression
@@ -63,7 +70,7 @@ typedef enum GSCSConstraintType GSCSConstraintType;
                                            variable: (GSCSVariable *)variable;
 
 - (instancetype) initEditConstraintWithVariable: (GSCSVariable *)variable
-                                        stength: (GSCSStrength *)strength;
+                                        strength: (GSCSStrength *)strength;
 
 - (instancetype) initStayConstraintWithVariable: (GSCSVariable *)variable
                                        strength: (GSCSStrength *)strength;
@@ -115,8 +122,6 @@ operator: (GSCSConstraintOperator) operator
 - (GSCSLinearExpression *) expression;
 
 - (GSCSConstraintType) type;
-
-- (GSCSStrength *) strength;
 
 - (GSCSVariable *) variable;
 
