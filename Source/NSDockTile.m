@@ -22,8 +22,10 @@
    Boston, MA 02110 USA.
 */
 
+#import "AppKit/NSApplication.h"
 #import "AppKit/NSDockTile.h"
 #import "AppKit/NSView.h"
+
 #import "GNUstepGUI/GSDisplayServer.h"
 
 @implementation NSDockTile
@@ -41,6 +43,7 @@
       _contentView = [[NSView alloc] initWithFrame: rect];
       _badgeLabel = nil;
       _owner = nil;
+      _showsApplicationBadge = YES;
     }
   return self;
 }
@@ -100,6 +103,10 @@
 - (void) display
 {
   [_contentView setNeedsDisplay: YES];
+
+  if (_showsApplicationBadge)
+    {
+    }
 }
 
 @end
