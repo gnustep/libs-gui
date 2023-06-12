@@ -24,11 +24,6 @@
 
 @implementation GSCSVariable
 
-- (instancetype) init
-{
-  return [self initWithName: nil type: GSCSVaraibleTypeVariable];
-}
-
 - (instancetype) initWithName: (NSString *)name
 {
   self = [super init];
@@ -51,6 +46,11 @@
     }
 
   return self;
+}
+
+- (instancetype) init
+{
+  return [self initWithName: nil type: GSCSVaraibleTypeVariable];
 }
 
 + (instancetype) dummyVariableWithName: (NSString *)name

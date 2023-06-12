@@ -32,7 +32,8 @@ const float GSCSStrengthWeak = 250;
 
 - (instancetype) initWithName: (NSString *)name strength: (double)strength;
 {
-  if (self = [super init])
+  self = [super init];
+  if (self != nil)
     {
       ASSIGN(_name, name);
       _strength = strength;
