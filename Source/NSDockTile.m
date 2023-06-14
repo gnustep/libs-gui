@@ -1,7 +1,9 @@
 /* Implementation of class NSDockTile
-   Copyright (C) 2019 Free Software Foundation, Inc.
+   Copyright (C) 2019-2023 Free Software Foundation, Inc.
 
    By: Gregory John Casamento <greg.casamento@gmail.com>
+       Riccardo Mottola <rm@gnu.org>
+
    Date: Sat Nov 16 21:11:06 EST 2019
 
    This file is part of the GNUstep Library.
@@ -25,6 +27,13 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSDockTile.h"
 #import "AppKit/NSView.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSImageRep.h"
+#import "AppKit/NSCustomImageRep.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSAttributedString.h"
+#import "AppKit/NSBezierPath.h"
 
 #import "GNUstepGUI/GSDisplayServer.h"
 
@@ -44,6 +53,7 @@
       _badgeLabel = nil;
       _owner = nil;
       _showsApplicationBadge = YES;
+      _appIconImage = [NSImage imageNamed: @"NSApplicationIcon"];
     }
   return self;
 }
@@ -52,6 +62,7 @@
 {
   RELEASE(_contentView);
   RELEASE(_badgeLabel);
+  RELEASE(_appIconImage);
   [super release];
 }
 
@@ -97,7 +108,19 @@
 
 - (void) setBadgeLabel: (NSString *)label
 {
+  NSImage *tempImage;
+  NSImageRep *rep;
+
   ASSIGNCOPY(_badgeLabel, label);
+
+  tempImage = [[NSImage alloc] initWithSize:[_appIconImage size]];
+
+  rep = [[NSCustomImageRep alloc] initWithDrawSelector:@selector(draw) delegate:self];
+  [rep setSize: [_appIconImage size]];
+  [tempImage addRepresentation:rep];
+  [rep release];
+
+  [NSApp setApplicationIconImage: tempImage];
 }
 
 - (void) display
@@ -106,6 +129,76 @@
 
   if (_showsApplicationBadge)
     {
+    }
+}
+
+- (void)draw
+{
+  NSMutableDictionary *attrs;
+  NSPoint text_location;
+  NSRect disc_rect;
+  NSSize disc_size;
+  int image_width, pad;
+  NSBezierPath *p;
+  NSPoint point;
+  CGFloat radius;
+  NSSize imageSize;
+
+  if (_showsApplicationBadge)
+    {
+      [_appIconImage compositeToPoint:NSZeroPoint operation:NSCompositeCopy];
+
+      imageSize = [_appIconImage size];
+      attrs = [[NSMutableDictionary alloc] init];
+      [attrs setObject: [NSFont boldSystemFontOfSize: imageSize.width/5]  forKey: NSFontAttributeName];
+      [attrs setObject: [NSColor blackColor]  forKey: NSForegroundColorAttributeName];
+
+      disc_size = [_badgeLabel sizeWithAttributes: attrs];
+
+      image_width = imageSize.width;
+
+      pad = image_width / 10;
+      disc_size.height += pad;
+      disc_size.width += pad;
+
+
+      disc_rect = NSMakeRect(image_width-disc_size.width-4,
+			     image_width-disc_size.height-4,
+			     disc_size.width,
+			     disc_size.height);
+
+      text_location = NSMakePoint(image_width - (disc_size.width - ((disc_size.width - [_badgeLabel sizeWithAttributes: attrs].width)  * 0.5))-4,
+				  image_width - (disc_size.height - ((disc_size.height - [_badgeLabel sizeWithAttributes: attrs].height) * 0.5))-4);
+
+      [[NSColor colorWithDeviceRed: 1.0
+			     green: 0.90
+			      blue: 0.24
+			     alpha: 1.0] set];
+
+      radius = disc_rect.size.height / 2.0;
+      point = disc_rect.origin;
+      point.x += radius;
+      point.y += radius - 0.5;
+
+      // left half-circle
+      p = [NSBezierPath bezierPath];
+      [p appendBezierPathWithArcWithCenter: point
+				    radius: radius
+				startAngle: 90.0
+				  endAngle: 270.0];
+
+      // line to first point and right halfcircle
+      point.x += disc_rect.size.width - disc_rect.size.height;
+      [p appendBezierPathWithArcWithCenter: point
+				    radius: radius
+				startAngle: 270.0
+				  endAngle: 90.0];
+      [p closePath];
+      [p fill];
+
+      [_badgeLabel drawAtPoint: text_location  withAttributes: attrs];
+
+      RELEASE(attrs);
     }
 }
 

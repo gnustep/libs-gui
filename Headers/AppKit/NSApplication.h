@@ -62,6 +62,7 @@ extern "C" {
 @class NSMenuItem;
 @class NSPasteboard;
 @class NSWindow;
+@class NSDockTile;
 
 @class GSInfoPanel;
 
@@ -221,6 +222,7 @@ APPKIT_EXPORT_CLASS
   BOOL			_windows_need_update;
   NSImage		*_app_icon;
   NSWindow		*_app_icon_window;
+  NSDockTile            *_dock_tile;
   NSMutableArray	*_hidden;
   NSMutableArray	*_inactive;
   NSWindow		*_hidden_key;

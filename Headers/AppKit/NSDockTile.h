@@ -45,6 +45,7 @@ APPKIT_EXPORT_CLASS
   id        _owner;
   BOOL      _showsApplicationBadge;
   NSString *_badgeLabel;
+  NSImage  *_appIconImage;
 }
 
 - (NSView *) contentView;
