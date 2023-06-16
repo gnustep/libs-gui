@@ -113,11 +113,11 @@
 
   ASSIGNCOPY(_badgeLabel, label);
 
-  tempImage = [[NSImage alloc] initWithSize:[_appIconImage size]];
+  tempImage = [[NSImage alloc] initWithSize: [_appIconImage size]];
 
-  rep = [[NSCustomImageRep alloc] initWithDrawSelector:@selector(draw) delegate:self];
+  rep = [[NSCustomImageRep alloc] initWithDrawSelector: @selector(draw) delegate: self];
   [rep setSize: [_appIconImage size]];
-  [tempImage addRepresentation:rep];
+  [tempImage addRepresentation: rep];
   [rep release];
 
   [NSApp setApplicationIconImage: tempImage];
@@ -146,7 +146,7 @@
 
   if (_showsApplicationBadge)
     {
-      [_appIconImage compositeToPoint:NSZeroPoint operation:NSCompositeCopy];
+      [_appIconImage compositeToPoint: NSZeroPoint operation: NSCompositeCopy];
 
       imageSize = [_appIconImage size];
       attrs = [[NSMutableDictionary alloc] init];
