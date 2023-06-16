@@ -177,7 +177,8 @@
 
       text_location = NSMakePoint(image_width - (disc_size.width - pad  * 0.5) - 4,
 				  image_width - (disc_size.height - pad * 0.5) - 4);
-
+git add -A
+  g
 
       radius = disc_rect.size.height / 2.0;
       point = disc_rect.origin;
