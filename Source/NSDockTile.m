@@ -118,7 +118,7 @@
   rep = [[NSCustomImageRep alloc] initWithDrawSelector: @selector(draw) delegate: self];
   [rep setSize: [_appIconImage size]];
   [tempImage addRepresentation: rep];
-  [rep release];
+  RELEASE(rep);
 
   [NSApp setApplicationIconImage: tempImage];
 }
