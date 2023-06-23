@@ -138,45 +138,51 @@
   NSPoint text_location;
   NSRect disc_rect;
   NSSize disc_size;
-  int image_width, pad;
+  NSSize textSize;
+  int pad;
   NSBezierPath *p;
   NSPoint point;
   CGFloat radius;
   NSSize imageSize;
 
-  if (_showsApplicationBadge)
+  if (_showsApplicationBadge && _badgeLabel)
     {
       NSColor *badgeBackColor;
       NSColor *badgeDecorationColor;
       NSColor *badgeTextColor;
+      NSString *displayString;
 
       badgeBackColor = [NSColor redColor];
       badgeDecorationColor = [NSColor lightGrayColor];
       badgeTextColor = [NSColor whiteColor];
 
+      displayString = _badgeLabel;
+      if ([_badgeLabel length] > 5)
+	displayString = [NSString stringWithFormat:@"%@\u2026%@",[_badgeLabel substringToIndex:2],  [_badgeLabel substringFromIndex:[_badgeLabel  length]-2]];
+
       [_appIconImage compositeToPoint: NSZeroPoint operation: NSCompositeCopy];
 
-      imageSize = [_appIconImage size];
       attrs = [[NSMutableDictionary alloc] init];
       [attrs setObject: [NSFont boldSystemFontOfSize: imageSize.width/5]  forKey: NSFontAttributeName];
       [attrs setObject: badgeTextColor  forKey: NSForegroundColorAttributeName];
 
-      disc_size = [_badgeLabel sizeWithAttributes: attrs];
+      textSize = [displayString sizeWithAttributes: attrs];
 
-      image_width = imageSize.width;
-
-      pad = image_width / 10;
+      imageSize = [_appIconImage size];
+      pad = imageSize.width / 10;
+      disc_size = textSize;
+      if (disc_size.width < 12)
+	disc_size.width = 12;
       disc_size.height += pad;
       disc_size.width += pad;
 
-
-      disc_rect = NSMakeRect(image_width-disc_size.width-4,
-			     image_width-disc_size.height-4,
+      disc_rect = NSMakeRect(imageSize.width - disc_size.width,
+			     imageSize.height - disc_size.height,
 			     disc_size.width,
 			     disc_size.height);
 
-      text_location = NSMakePoint(image_width - (disc_size.width - pad  * 0.5) - 4,
-				  image_width - (disc_size.height - pad * 0.5) - 4);
+      text_location = NSMakePoint(imageSize.width -  disc_size.width + (disc_size.width - textSize.width)/2,
+				  imageSize.height - disc_size.height + (disc_size.height - textSize.height)/2);
 
 
       radius = disc_rect.size.height / 2.0;
@@ -206,7 +212,7 @@
       [badgeDecorationColor set];
       [p stroke];
 
-      [_badgeLabel drawAtPoint: text_location  withAttributes: attrs];
+      [displayString drawAtPoint: text_location  withAttributes: attrs];
 
       RELEASE(attrs);
     }
