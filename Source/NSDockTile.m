@@ -134,21 +134,20 @@
 
 - (void)draw
 {
-  NSMutableDictionary *attrs;
-  NSPoint text_location;
-  NSRect disc_rect;
-  NSSize disc_size;
-  NSSize textSize;
-  int pad;
-  NSBezierPath *p;
-  NSPoint point;
-  CGFloat radius;
-  NSSize imageSize;
-
   [_appIconImage compositeToPoint: NSZeroPoint operation: NSCompositeCopy];
 
   if (_showsApplicationBadge && _badgeLabel)
     {
+      NSMutableDictionary *attrs;
+      NSPoint textLocation;
+      NSRect discRect;
+      NSSize discSize;
+      NSSize textSize;
+      int pad;
+      NSBezierPath *p;
+      NSPoint point;
+      CGFloat radius;
+      NSSize imageSize;
       NSColor *badgeBackColor;
       NSColor *badgeDecorationColor;
       NSColor *badgeTextColor;
@@ -170,23 +169,22 @@
 
       imageSize = [_appIconImage size];
       pad = imageSize.width / 10;
-      disc_size = textSize;
-      if (disc_size.width < 12)
-	disc_size.width = 12;
-      disc_size.height += pad;
-      disc_size.width += pad;
+      discSize = textSize;
+      if (discSize.width < 12)
+	discSize.width = 12;
+      discSize.height += pad;
+      discSize.width += pad;
 
-      disc_rect = NSMakeRect(imageSize.width - disc_size.width,
-			     imageSize.height - disc_size.height,
-			     disc_size.width,
-			     disc_size.height);
+      discRect = NSMakeRect(imageSize.width - discSize.width,
+			     imageSize.height - discSize.height,
+			     discSize.width,
+			     discSize.height);
 
-      text_location = NSMakePoint(imageSize.width -  disc_size.width + (disc_size.width - textSize.width)/2,
-				  imageSize.height - disc_size.height + (disc_size.height - textSize.height)/2);
+      textLocation = NSMakePoint(imageSize.width -  discSize.width + (discSize.width - textSize.width)/2,
+				 imageSize.height - discSize.height + (discSize.height - textSize.height)/2);
 
-
-      radius = disc_rect.size.height / 2.0;
-      point = disc_rect.origin;
+      radius = discRect.size.height / 2.0;
+      point = discRect.origin;
       point.x += radius;
       point.y += radius - 0.5;
 
@@ -198,7 +196,7 @@
 				  endAngle: 270.0];
 
       // line to first point and right halfcircle
-      point.x += disc_rect.size.width - disc_rect.size.height;
+      point.x += discRect.size.width - discRect.size.height;
       [p appendBezierPathWithArcWithCenter: point
 				    radius: radius
 				startAngle: 270.0
@@ -212,7 +210,7 @@
       [badgeDecorationColor set];
       [p stroke];
 
-      [displayString drawAtPoint: text_location  withAttributes: attrs];
+      [displayString drawAtPoint: textLocation  withAttributes: attrs];
 
       RELEASE(attrs);
     }
