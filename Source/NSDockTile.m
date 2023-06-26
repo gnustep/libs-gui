@@ -126,10 +126,6 @@
 - (void) display
 {
   [_contentView setNeedsDisplay: YES];
-
-  if (_showsApplicationBadge)
-    {
-    }
 }
 
 - (void)draw
