@@ -46,7 +46,7 @@
     {
       GSDisplayServer *server = GSCurrentServer();
       NSSize size = [server iconSize]; 
-      NSRect rect = NSMakeRect(0,0,size.width,size.height);
+      NSRect rect = NSMakeRect(0, 0, size.width, size.height);
       
       _size = size;
       _contentView = [[NSView alloc] initWithFrame: rect];
