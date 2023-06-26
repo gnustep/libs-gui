@@ -154,6 +154,8 @@
       badgeDecorationColor = [NSColor lightGrayColor];
       badgeTextColor = [NSColor whiteColor];
 
+      imageSize = [_appIconImage size];
+
       displayString = _badgeLabel;
       if ([_badgeLabel length] > 5)
 	displayString = [NSString stringWithFormat:@"%@\u2026%@", [_badgeLabel substringToIndex:2], [_badgeLabel substringFromIndex:[_badgeLabel  length]-2]];
@@ -164,7 +166,6 @@
 
       textSize = [displayString sizeWithAttributes: attrs];
 
-      imageSize = [_appIconImage size];
       pad = imageSize.width / 10;
       discSize = textSize;
       if (discSize.width < 12)
