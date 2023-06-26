@@ -121,6 +121,7 @@
   RELEASE(rep);
 
   [NSApp setApplicationIconImage: tempImage];
+  RELEASE(tempImage);
 }
 
 - (void) display
