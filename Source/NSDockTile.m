@@ -54,6 +54,8 @@
       _owner = nil;
       _showsApplicationBadge = YES;
       _appIconImage = [NSImage imageNamed: @"NSApplicationIcon"];
+      _imageRep = [[NSCustomImageRep alloc] initWithDrawSelector: @selector(draw) delegate: self];
+      [_imageRep setSize: [_appIconImage size]];
     }
   return self;
 }
@@ -63,6 +65,7 @@
   RELEASE(_contentView);
   RELEASE(_badgeLabel);
   RELEASE(_appIconImage);
+  RELEASE(_imageRep);
   [super release];
 }
 
@@ -109,17 +112,11 @@
 - (void) setBadgeLabel: (NSString *)label
 {
   NSImage *tempImage;
-  NSImageRep *rep;
 
   ASSIGNCOPY(_badgeLabel, label);
 
   tempImage = [[NSImage alloc] initWithSize: [_appIconImage size]];
-
-  rep = [[NSCustomImageRep alloc] initWithDrawSelector: @selector(draw) delegate: self];
-  [rep setSize: [_appIconImage size]];
-  [tempImage addRepresentation: rep];
-  RELEASE(rep);
-
+  [tempImage addRepresentation: _imageRep];
   [NSApp setApplicationIconImage: tempImage];
   RELEASE(tempImage);
 }

@@ -36,6 +36,7 @@ extern "C" {
 #endif
 
 @class NSView, NSString;
+@class NSImageRep;
 
 APPKIT_EXPORT_CLASS
 @interface NSDockTile : NSObject
@@ -46,6 +47,7 @@ APPKIT_EXPORT_CLASS
   BOOL      _showsApplicationBadge;
   NSString *_badgeLabel;
   NSImage  *_appIconImage;
+  NSImageRep *_imageRep;
 }
 
 - (NSView *) contentView;
