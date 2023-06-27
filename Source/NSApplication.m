@@ -1245,6 +1245,7 @@ static BOOL _isAutolaunchChecked = NO;
 
   TEST_RELEASE(_app_icon);
   TEST_RELEASE(_app_icon_window);
+  TEST_RELEASE(_dock_tile);
   TEST_RELEASE(_infoPanel);
 
   /* Destroy the default context */
