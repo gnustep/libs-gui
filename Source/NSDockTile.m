@@ -155,7 +155,9 @@
 
       displayString = _badgeLabel;
       if ([_badgeLabel length] > 5)
-	displayString = [NSString stringWithFormat:@"%@\u2026%@", [_badgeLabel substringToIndex:2], [_badgeLabel substringFromIndex:[_badgeLabel  length]-2]];
+	{
+	  displayString = [NSString stringWithFormat: @"%@\u2026%@", [_badgeLabel substringToIndex: 2], [_badgeLabel substringFromIndex: [_badgeLabel  length]-2]];
+	}
 
       attrs = [[NSMutableDictionary alloc] init];
       [attrs setObject: [NSFont boldSystemFontOfSize: imageSize.width/5]  forKey: NSFontAttributeName];
@@ -166,7 +168,9 @@
       pad = imageSize.width / 10;
       discSize = textSize;
       if (discSize.width < 12)
-	discSize.width = 12;
+	{
+	  discSize.width = 12;
+	}
       discSize.height += pad;
       discSize.width += pad;
 
