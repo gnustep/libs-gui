@@ -53,7 +53,8 @@
       _badgeLabel = nil;
       _owner = nil;
       _showsApplicationBadge = YES;
-      _appIconImage = [[NSImage imageNamed: @"NSApplicationIcon"] retain];
+      _appIconImage = [NSImage imageNamed: @"NSApplicationIcon"];
+      RETAIN(_appIconImage);
       _imageRep = [[NSCustomImageRep alloc] initWithDrawSelector: @selector(draw) delegate: self];
       [_imageRep setSize: [_appIconImage size]];
     }
