@@ -213,7 +213,6 @@
                    reason: @"No expression exists for the provided variable"
                  userInfo: nil];
       [missingExpressionException raise];
-      return;
     }
   [_rows removeObjectForKey: variable];
   if ([variable isExternal])
@@ -323,9 +322,7 @@
          coefficentInNewExpression: (CGFloat)coefficentInNewExpression
                         multiplier: (CGFloat)multiplier
 {
-  CGFloat newCoefficent
-    = coefficentInExistingExpression + multiplier * coefficentInNewExpression;
-  return newCoefficent;
+  return coefficentInExistingExpression + multiplier * coefficentInNewExpression;
 }
 
 - (BOOL) isBasicVariable: (GSCSVariable *)variable
@@ -461,14 +458,14 @@
 - (void) pivotWithEntryVariable: (GSCSVariable *)entryVariable
                    exitVariable: (GSCSVariable *)exitVariable
 {
-// The expression "expr" represents the exit variable, which is about to be removed from the basis. 
+// The expression represents the exit variable, which is about to be removed from the basis. 
 // This means that the old tableau should contain the equation: exitVar = expr.
   GSCSLinearExpression *expression =
     [self rowExpressionForVariable: exitVariable];
   [self removeRowForVariable: exitVariable];
 
   // Calculate an expression for the entry variable. 
-  // As "expr" has been removed from the tableau, 
+  // As "expression" has been removed from the tableau, 
   // we can make destructive modifications to it in order to construct this expression.
   [self changeSubjectOnExpression: expression
                   existingSubject: exitVariable
@@ -490,16 +487,16 @@
   [description appendFormat: @"Rows: %ld (%ld constraints)\n", [_rows count],
                             [_rows count] - 1];
   [description appendFormat: @"Columns: %ld\n", [_columns count]];
-  [description appendFormat: @"Infesible rows: %ld\n", [_infeasibleRows count]];
+  [description appendFormat: @"Infeasible rows: %ld\n", [_infeasibleRows count]];
   [description
     appendFormat: @"External basic variables: %ld\n", [_externalRows count]];
   [description appendFormat: @"External parametric variables: %ld\n\n",
                             [_externalParametricVariables count]];
 
-  [description appendFormat: @"Columns: \n"];
+  [description appendString: @"Columns: \n"];
   [description appendString: [self columnsDescription]];
 
-  [description appendFormat: @"\nRows:\n"];
+  [description appendString: @"\nRows:\n"];
   [description appendString: [self rowsDescription]];
 
   return description;
