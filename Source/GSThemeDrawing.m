@@ -676,6 +676,19 @@
   return color;
 }
 
+- (NSColor *) badgeBackgroundColor
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"badgeBackgroundColor"
+                state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [NSColor redColor];
+    }
+  return color;
+}
+
 - (void) drawToolbarRect: (NSRect)aRect
                    frame: (NSRect)viewFrame
               borderMask: (unsigned int)borderMask

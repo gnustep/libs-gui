@@ -35,6 +35,8 @@
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
 
+
+#import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 
 @implementation NSDockTile
@@ -148,7 +150,7 @@
       NSColor *badgeTextColor;
       NSString *displayString;
 
-      badgeBackColor = [NSColor redColor];
+      badgeBackColor = [[GSTheme theme] badgeBackgroundColor];
       badgeDecorationColor = [NSColor lightGrayColor];
       badgeTextColor = [NSColor whiteColor];
 

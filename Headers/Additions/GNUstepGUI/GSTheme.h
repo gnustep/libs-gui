@@ -1328,6 +1328,10 @@ APPKIT_EXPORT_CLASS
 		   boxType: (NSBoxType)boxType
 		borderType: (NSBorderType)borderType
 		    inView: (NSBox *)box;
+
+/* NSDockTile */
+- (NSColor *) badgeBackgroundColor;
+
 @end
 
 /**
