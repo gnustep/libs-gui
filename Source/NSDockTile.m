@@ -151,8 +151,8 @@
       NSString *displayString;
 
       badgeBackColor = [[GSTheme theme] badgeBackgroundColor];
-      badgeDecorationColor = [NSColor lightGrayColor];
-      badgeTextColor = [NSColor whiteColor];
+      badgeDecorationColor = [[GSTheme theme] badgeDecorationColor];
+      badgeTextColor = [[GSTheme theme] badgeTextColor];
 
       imageSize = [_appIconImage size];
 

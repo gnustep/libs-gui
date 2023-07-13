@@ -2,7 +2,7 @@
 
    <abstract>The theme methods for drawing controls</abstract>
 
-   Copyright (C) 2004-2010 Free Software Foundation, Inc.
+   Copyright (C) 2004-2023 Free Software Foundation, Inc.
 
    Author: Adam Fedor <fedor@gnu.org>
    Date: Jan 2004
@@ -680,11 +680,37 @@
 {
   NSColor *color;
 
-  color = [self colorNamed: @"badgeBackgroundColor"
+  color = [self colorNamed: @"badgeColor"
                 state: GSThemeNormalState];
   if (color == nil)
     {
       color = [NSColor redColor];
+    }
+  return color;
+}
+
+- (NSColor *) badgeDecorationColor
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"badgeColor"
+                state: GSThemeSelectedState];
+  if (color == nil)
+    {
+      color = [NSColor lightGrayColor];
+    }
+  return color;
+}
+
+- (NSColor *) badgeTextColor
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"badgeColor"
+                state: GSThemeHighlightedState];
+  if (color == nil)
+    {
+      color = [NSColor whiteColor];
     }
   return color;
 }
