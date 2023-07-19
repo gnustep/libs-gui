@@ -310,7 +310,6 @@ APPKIT_EXPORT_CLASS
  */
 - (void) setSortDescriptors: (NSArray *)descriptors;
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 /**
  * children key path for the given NSTreeNode.
  */
@@ -340,8 +339,9 @@ APPKIT_EXPORT_CLASS
  * Array containing all selected nodes
  */
 - (NSArray*) selectedNodes;
-#endif
+#endif // 10_5
+
 @end
 
-#endif
+#endif // if OS_API_VERSION...
 #endif /* _GNUstep_H_NSTreeController */
