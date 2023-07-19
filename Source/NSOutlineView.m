@@ -108,7 +108,7 @@ static NSDate	*lastDragChange = nil;
   NSOutlineView *_outlineView;
 }
 
-- (instancetype) initWithParent: (NSOutlineView *)ov;
+- (instancetype) initWithOutlineView: (NSOutlineView *)ov;
 
 @end
 
@@ -251,7 +251,7 @@ static NSImage *unexpandable  = nil;
 						     forObject: self];
   if (theBinding != nil)
     {
-      _bindingDataSource = [[GSOutlineViewBindingDataSource alloc] initWithParent: self];
+      _bindingDataSource = [[GSOutlineViewBindingDataSource alloc] initWithOutlineView: self];
       NSLog(@"A binding data source was created %@", _bindingDataSource);
     }
 
@@ -2284,7 +2284,7 @@ Also returns the child index relative to this parent. */
 
 @implementation GSOutlineViewBindingDataSource
 
-- (instancetype) initWithParent: (NSOutlineView *)ov
+- (instancetype) initWithOutlineView: (NSOutlineView *)ov
 {
   self = [super init];
 
@@ -2376,6 +2376,16 @@ Also returns the child index relative to this parent. */
 		item: (id)item
 	  childIndex: (NSInteger)index
 {
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
+    {
+      return [[outlineView dataSource] outlineView: outlineView
+					acceptDrop: info
+					      item: item
+					childIndex: index];
+    }
+  
   return NO;
 }
 
@@ -2383,6 +2393,15 @@ Also returns the child index relative to this parent. */
 	     child: (NSInteger)index
 	    ofItem: (id)item
 {
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
+    {
+      return [[outlineView dataSource] outlineView: outlineView
+					     child: index
+					    ofItem: item];
+    }
+  
   // id item = [contentArray objectAtIndex: i];
   id v = nil; // [(NSArray *)[b destinationValue] objectAtIndex: i];
 
@@ -2392,6 +2411,14 @@ Also returns the child index relative to this parent. */
 - (BOOL) outlineView: (NSOutlineView *)outlineView
     isItemExpandable: (id)i
 {
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
+    {
+      return [[outlineView dataSource] outlineView: outlineView
+				  isItemExpandable: i];
+    }
+  
   id item = [self _findItemValue: i
 		       startItem: nil];
   BOOL f = [[item valueForKeyPath: _leafKeyPath] boolValue]; 
