@@ -2436,38 +2436,49 @@ Also returns the child index relative to this parent. */
    numberOfChildrenOfItem: (id)value
 {
   NSInteger num = 0;
-  NSNumber *n = nil;
-  id item = nil;
   
-  if (value == nil)
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
     {
-      id dest = [_theBinding destinationValue];
-
-      if ([dest isKindOfClass: [NSArray class]])
+      num = [[outlineView dataSource] outlineView: outlineView
+			   numberOfChildrenOfItem: value];
+    }
+  else
+    {
+      NSNumber *n = nil;
+      id item = nil;
+      
+      if (value == nil)
 	{
-	  NSArray *contentArray = (NSArray *)dest;
-	  num = [contentArray count];
+	  id dest = [_theBinding destinationValue];
+	  
+	  if ([dest isKindOfClass: [NSArray class]])
+	    {
+	      NSArray *contentArray = (NSArray *)dest;
+	      num = [contentArray count];
+	    }
+	  else
+	    {
+	      item = [self _findItemValue: value
+				startItem: nil];
+	      
+	      
+	      n = [item valueForKeyPath: _countKeyPath];
+	      num = [n integerValue];
+	    }
 	}
       else
 	{
 	  item = [self _findItemValue: value
 			    startItem: nil];
-
-
+	  
+	  
 	  n = [item valueForKeyPath: _countKeyPath];
 	  num = [n integerValue];
 	}
     }
-  else
-    {
-      item = [self _findItemValue: value
-			startItem: nil];
-
-
-      n = [item valueForKeyPath: _countKeyPath];
-      num = [n integerValue];
-    }
-
+  
   return num;
 }
 
@@ -2475,14 +2486,35 @@ Also returns the child index relative to this parent. */
   objectValueForTableColumn: (NSTableColumn *)tableColumn
 	    byItem: (id)item
 {
-  return nil;
+  id ov = nil;
+  
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
+    {
+      ov = [[outlineView dataSource] outlineView: outlineView
+		       objectValueForTableColumn: tableColumn
+					  byItem: item];
+    }
+  
+  return ov;
 }
 
 
 - (id) outlineView: (NSOutlineView *)outlineView
   persistentObjectForItem: (id)item
 {
-  return nil;
+  id o = nil;
+  
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
+    {
+      o = [[outlineView dataSource] outlineView: outlineView
+			persistentObjectForItem: item];
+    }
+  
+  return o;
 }
 
 - (void) outlineView: (NSOutlineView *)outlineView
@@ -2490,6 +2522,16 @@ Also returns the child index relative to this parent. */
       forTableColumn: (NSTableColumn *)tableColumn
 	      byItem: (id)item
 {
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
+    {
+      [[outlineView dataSource] outlineView: outlineView
+			     setObjectValue: object
+			     forTableColumn: tableColumn
+				     byItem: item];
+    }
+  
 }
 
 - (NSDragOperation) outlineView: (NSOutlineView*)outlineView
@@ -2497,26 +2539,67 @@ Also returns the child index relative to this parent. */
 		   proposedItem: (id)item
 	     proposedChildIndex: (NSInteger)index
 {
-  return 0;
+  NSDragOperation op = 0;
+  
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
+    {
+      op = [[outlineView dataSource] outlineView: outlineView
+				    validateDrop: info
+				    proposedItem: item
+			      proposedChildIndex: index];
+    }				
+  
+  return op;
 }
 
 - (BOOL) outlineView: (NSOutlineView *)outlineView
 	  writeItems: (NSArray*)items
 	toPasteboard: (NSPasteboard*)pboard
 {
-  return NO;
+  BOOL flag = NO;
+  
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
+    {
+      flag = [[outlineView dataSource] outlineView: outlineView
+					writeItems: items
+				      toPasteboard: pboard];
+    }				
+  
+  return flag;
 }
 
 - (void) outlineView: (NSOutlineView *)outlineView
   sortDescriptorsDidChange: (NSArray *)oldSortDescriptors
 {
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
+    {
+      [[outlineView dataSource] outlineView: outlineView
+		   sortDescriptorsDidChange: oldSortDescriptors];
+    }
 }
 
 - (NSArray *) outlineView: (NSOutlineView *)outlineView
 namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
 	  forDraggedItems: (NSArray *)items
 {
-  return nil;
+  NSArray *array = nil;
+  
+  // If there is a [outlineView dataSource] set, then we return that methods
+  // result if it responds to it.
+  if ([[outlineView dataSource] respondsToSelector: _cmd])
+    {
+      array = [[outlineView dataSource] outlineView: outlineView
+					namesOfPromisedFilesDroppedAtDestination: dropDestination
+				    forDraggedItems: items];
+    }
+
+  return array;
 }
 
 @end
