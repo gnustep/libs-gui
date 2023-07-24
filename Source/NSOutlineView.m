@@ -105,7 +105,7 @@ static NSDate	*lastDragChange = nil;
   NSString *_childrenKeyPath;
   NSString *_leafKeyPath;
 
-  NSMutableDictionary *_internalRepresentation;
+  NSMapTable *_internalRepresentation;
   id _observedObject;
   NSOutlineView *_outlineView;
 }
@@ -2284,7 +2284,7 @@ Also returns the child index relative to this parent. */
 	      ASSIGNCOPY(_childrenKeyPath, [tc childrenKeyPath]);
 	      ASSIGNCOPY(_countKeyPath, [tc countKeyPath]);
 
-	      _internalRepresentation = [[NSMutableDictionary alloc] init];
+	      _internalRepresentation = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
 	    }
 	  else
 	    {
@@ -2354,6 +2354,7 @@ Also returns the child index relative to this parent. */
   if (_theBinding != nil)
     {
       NSArray *contentArray = (NSArray *)[_theBinding destinationValue];
+      [_internalRepresentation removeAllObjects];
       [self _collectNodes: contentArray];
       NSLog(@"_internalRepresentation = %@", _internalRepresentation);
     }
