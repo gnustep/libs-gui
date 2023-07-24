@@ -48,6 +48,7 @@ APPKIT_EXPORT_CLASS
   NSString *_badgeLabel;
   NSImage  *_appIconImage;
   NSImageRep *_imageRep;
+  NSImage  *_dockTileImage;
 }
 
 - (NSView *) contentView;

@@ -59,6 +59,10 @@
       RETAIN(_appIconImage);
       _imageRep = [[NSCustomImageRep alloc] initWithDrawSelector: @selector(draw) delegate: self];
       [_imageRep setSize: [_appIconImage size]];
+      _dockTileImage = [[NSImage alloc] initWithSize: [_appIconImage size]];
+      [_dockTileImage setCacheMode: NSImageCacheNever]; // Only needed because NSImage caches NSCustomImageReps
+      [_dockTileImage addRepresentation: _imageRep];
+      [NSApp setApplicationIconImage: _dockTileImage];
     }
   return self;
 }
@@ -69,6 +73,7 @@
   RELEASE(_badgeLabel);
   RELEASE(_appIconImage);
   RELEASE(_imageRep);
+  RELEASE(_dockTileImage);
   [super release];
 }
 
@@ -105,6 +110,7 @@
 - (void) setShowsApplicationBadge: (BOOL)flag
 {
   _showsApplicationBadge = flag;
+  [self display];
 }
 
 - (NSString *) badgeLabel
@@ -114,19 +120,13 @@
 
 - (void) setBadgeLabel: (NSString *)label
 {
-  NSImage *tempImage;
-
   ASSIGNCOPY(_badgeLabel, label);
-
-  tempImage = [[NSImage alloc] initWithSize: [_appIconImage size]];
-  [tempImage addRepresentation: _imageRep];
-  [NSApp setApplicationIconImage: tempImage];
-  RELEASE(tempImage);
+  [self display];
 }
 
 - (void) display
 {
-  [_contentView setNeedsDisplay: YES];
+  [_contentView display];
 }
 
 - (void)draw

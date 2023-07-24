@@ -2465,6 +2465,7 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (!_dock_tile)
     {
       _dock_tile = [[NSDockTile alloc] init];
+      [_dock_tile setContentView: [_app_icon_window contentView]];
     }
   return _dock_tile;
 }
