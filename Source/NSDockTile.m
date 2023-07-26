@@ -62,6 +62,7 @@
       _dockTileImage = [[NSImage alloc] initWithSize: [_appIconImage size]];
       [_dockTileImage setCacheMode: NSImageCacheNever]; // Only needed because NSImage caches NSCustomImageReps
       [_dockTileImage addRepresentation: _imageRep];
+      RELEASE(_imageRep);
       [NSApp setApplicationIconImage: _dockTileImage];
     }
   return self;
@@ -72,7 +73,6 @@
   RELEASE(_contentView);
   RELEASE(_badgeLabel);
   RELEASE(_appIconImage);
-  RELEASE(_imageRep);
   RELEASE(_dockTileImage);
   [super release];
 }
