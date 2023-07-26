@@ -126,7 +126,7 @@
 
 - (void) display
 {
-  [_contentView display];
+  [_contentView setNeedsDisplay: YES];
 }
 
 - (void)draw
