@@ -71,6 +71,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuItem.h"
+#import "AppKit/NSDockTile.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSPageLayout.h"
 #import "AppKit/NSPanel.h"
@@ -1244,6 +1245,7 @@ static BOOL _isAutolaunchChecked = NO;
 
   TEST_RELEASE(_app_icon);
   TEST_RELEASE(_app_icon_window);
+  TEST_RELEASE(_dock_tile);
   TEST_RELEASE(_infoPanel);
 
   /* Destroy the default context */
@@ -2458,6 +2460,15 @@ image.</p><p>See Also: -applicationIconImage</p>
   return _app_icon_window;
 }
 
+- (NSDockTile *) dockTile
+{
+  if (!_dock_tile)
+    {
+      _dock_tile = [[NSDockTile alloc] init];
+      [_dock_tile setContentView: [_app_icon_window contentView]];
+    }
+  return _dock_tile;
+}
 /*
  * Hiding and arranging windows
  */
