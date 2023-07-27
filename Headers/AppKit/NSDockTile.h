@@ -47,7 +47,6 @@ APPKIT_EXPORT_CLASS
   BOOL      _showsApplicationBadge;
   NSString *_badgeLabel;
   NSImage  *_appIconImage;
-  NSImageRep *_imageRep;
   NSImage  *_dockTileImage;
 }
 

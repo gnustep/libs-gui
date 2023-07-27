@@ -46,6 +46,7 @@
   self = [super init];
   if (self != nil)
     {
+      NSImageRep *_imageRep;
       GSDisplayServer *server = GSCurrentServer();
       NSSize size = [server iconSize]; 
       NSRect rect = NSMakeRect(0, 0, size.width, size.height);
