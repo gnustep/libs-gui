@@ -223,10 +223,6 @@
   FOR_IN(GSCSVariable *, expressionTermVariable, expressionTermVariables)
     [self removeMappingFromExpressionVariable: expressionTermVariable
                                 toRowVariable: variable];
-    if ([expressionTermVariable isExternal])
-      {
-        [_externalParametricVariables addObject: expressionTermVariable];
-      }
   END_FOR_IN(expressionTermVariables);
 }
 
