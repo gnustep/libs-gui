@@ -69,6 +69,12 @@ typedef enum GSCSVariableType GSCSVariableType;
 
 + (instancetype) variableWithValue: (CGFloat)value name: (NSString *)name;
 
++ (instancetype) dummyVariableWithName: (NSString*)name;
+
++ (instancetype) slackVariableWithName: (NSString*)name;
+
++ (instancetype) objectiveVariableWithName: (NSString*)name;
+
 @end
 
 #endif
