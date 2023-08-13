@@ -1,3 +1,8 @@
+2023-08-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSwitch.m (-drawRect:): Correct drawing as suggested by
+	Austin Clow (dr_clow@me.com). 
+
 2023-02-12 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSCollectionView.m: Implementation of methods
