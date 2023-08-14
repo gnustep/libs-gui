@@ -101,17 +101,18 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 
       CGFloat factor = [[NSScreen mainScreen] userSpaceScaleFactor]; 
 
-      aRect.size.width -= (l + r)/factor;
-      aRect.size.height -= (t + b)/factor;
+      aRect.size.width -= (l + r);
+      aRect.size.height -= (t + b);
       aRect.origin.x += (l/factor);
       aRect.origin.y += (b/factor);
       
       aRect = RectWithSizeScaledByFactor(aRect, 1/factor);
+      return aRect;
     } else {
-  	aRect.size.width -= l + r;
-  	aRect.size.height -= t + b;
-  	aRect.origin.x += (l);
- 	aRect.origin.y += (b);
+  	aRect.size.width -= (l + r);
+  	aRect.size.height -= (t + b);
+  	aRect.origin.x += l;
+ 	aRect.origin.y += b;
     }
  return aRect;
 }
