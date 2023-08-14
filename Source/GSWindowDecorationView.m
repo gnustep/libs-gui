@@ -108,8 +108,8 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
       
       aRect = RectWithSizeScaledByFactor(aRect, 1/factor);
     } else {
-  	aRect.size.width -= l + (r);
-  	aRect.size.height -= t + (b);
+  	aRect.size.width -= l + r;
+  	aRect.size.height -= t + b;
   	aRect.origin.x += (l);
  	aRect.origin.y += (b);
     }
