@@ -633,6 +633,12 @@ APPKIT_EXPORT_CLASS
  */
 - (void) removeItemAtIndex: (NSInteger)index;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+/** Removes all items
+ */
+- (void) removeAllItems;
+#endif
+
 /** Sets if a menu does autoenable.
  */
 - (void) setAutoenablesItems: (BOOL)flag;

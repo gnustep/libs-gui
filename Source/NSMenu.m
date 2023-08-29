@@ -849,6 +849,18 @@ static BOOL menuBarVisible = YES;
   [self menuChanged];
 }
 
+- (void) removeAllItems
+{
+  NSUInteger count = [_items count];
+  NSUInteger index = 0;
+
+  for (index = 0; index < count; index++)
+    {
+      // always remove item 0 since the index will chane with each removal..
+      [self removeItemAtIndex: 0];
+    }
+}
+
 - (void) itemChanged: (id <NSMenuItem>)anObject
 {
   NSNotification *changed;
