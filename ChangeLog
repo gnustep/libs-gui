@@ -1,3 +1,9 @@
+2023-08-29 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSMenu.h (-removeAllItems): Add method declaration.
+	* Source/NSMenu.m (-removeAllItems): Add implementation to remove
+	all menu items in the reciever.
+
 2023-08-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSwitch.m (-drawRect:): Correct drawing as suggested by
