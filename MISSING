@@ -1,7 +1,6 @@
 MISSING HEADERS ( * = difficult, - = quick, + = placeholder, x = won't do )
 ---
 > NSATSTypesetter.h +
-> NSDictionaryController.h -
 > NSDiffableDataSource.h *
 > NSDraggingItem.h -
 > NSDraggingSession.h -

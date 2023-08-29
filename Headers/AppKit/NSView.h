@@ -37,6 +37,7 @@
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSResponder.h>
 #import <AppKit/NSUserInterfaceLayout.h>
+#import <AppKit/NSLayoutConstraint.h>
 
 @class NSArray;
 @class NSAttributedString;
@@ -123,6 +124,9 @@ typedef enum _NSFocusRingType {
   NSFocusRingTypeExterior = 2
 } NSFocusRingType;
 
+extern const CGFloat NSViewNoInstrinsicMetric;
+extern const CGFloat NSViewNoIntrinsicMetric;
+
 APPKIT_EXPORT_CLASS
 @interface NSView : NSResponder
 {
@@ -182,6 +186,9 @@ PACKAGE_SCOPE
   BOOL _needsLayout;
   BOOL _needsUpdateConstraints;
   BOOL _translatesAutoresizingMaskIntoConstraints;
+  float _contentCompressionResistancePriority;
+  GSIntrinsicContentSizePriority _huggingPriorities;
+  GSIntrinsicContentSizePriority _compressionPriorities;
 
   NSUInteger _autoresizingMask;
   NSFocusRingType _focusRingType;
@@ -655,8 +662,8 @@ PACKAGE_SCOPE
 #if GS_HAS_DECLARED_PROPERTIES
 @property (nonatomic) BOOL needsLayout;
 #else
--(BOOL) needsLayout;
--(void) setNeedsLayout: (BOOL)needsLayout;
+- (BOOL) needsLayout;
+- (void) setNeedsLayout: (BOOL)needsLayout;
 #endif
 
 #if GS_HAS_DECLARED_PROPERTIES
@@ -672,10 +679,61 @@ PACKAGE_SCOPE
 - (BOOL) translatesAutoresizingMaskIntoConstraints;
 - (void) setTranslatesAutoresizingMaskIntoConstraints: (BOOL)translatesAutoresizingMaskIntoConstraints;
 #endif
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property float contentCompressionResistancePriority;
+#else
+- (BOOL) contentCompressionResistancePriority;
+- (void) setContentCompressionResistancePriority: (float)priority;
+#endif
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property (readonly) NSSize intrinsicContentSize;
+#else
+- (BOOL) intrinsicContentSize;
+#endif
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property (readonly) CGFloat baselineOffsetFromBottom;
+#else
+- (CGFloat) baselineOffsetFromBottom;
+#endif
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property (readonly) CGFloat firstBaselineOffsetFromTop;
+#else
+- (CGFloat) firstBaselineOffsetFromTop;
+#endif
+
 #endif
 
 @end
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+@interface NSView (NSConstraintBasedLayoutCoreMethods)
+
+- (void) updateConstraints;
+
+- (void) updateConstraintsForSubtreeIfNeeded;
+
+- (NSLayoutPriority) contentHuggingPriorityForOrientation: (NSLayoutConstraintOrientation)orientation;
+
+- (void) setContentHuggingPriority: (NSLayoutPriority)priority forOrientation: (NSLayoutConstraintOrientation)orientation;
+
+- (NSLayoutPriority) contentCompressionResistancePriorityForOrientation: (NSLayoutConstraintOrientation)orientation;
+
+- (void)setContentCompressionResistancePriority: (NSLayoutPriority)priority forOrientation: (NSLayoutConstraintOrientation)orientation;
+
+@end
+
+@interface NSView (NSConstraintBasedLayoutInstallingConstraints)
+
+- (void) addConstraint: (NSLayoutConstraint *)constraint;
+
+- (void) addConstraints: (NSArray*)constraints;
+
+@end
+#endif
 
 @class NSAffineTransform;
 

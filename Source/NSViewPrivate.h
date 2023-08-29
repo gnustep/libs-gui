@@ -47,6 +47,8 @@
 
 - (GSAutoLayoutEngine*) _layoutEngine;
 
+- (void) _layoutEngineDidChangeAlignmentRect;
+
 @end
 
 #endif // _GNUstep_H_NSViewPrivate

@@ -149,7 +149,7 @@
 
 - (void) drawRect: (NSRect)rect
 {
-  [[GSTheme theme] drawSwitchInRect: rect
+  [[GSTheme theme] drawSwitchInRect: [self bounds]
                            forState: _state
                             enabled: [self isEnabled]];
 }
