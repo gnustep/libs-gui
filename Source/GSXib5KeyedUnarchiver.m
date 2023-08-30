@@ -3186,6 +3186,20 @@ didStartElement: (NSString*)elementName
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
         [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
     }
+  else if ([element elementForKey: @"toolTip"])
+    {
+      GSXibElement *toolTipElement = [element elementForKey: @"toolTip"];
+      NSString *v = [toolTipElement value];
+      if ([object respondsToSelector: @selector(setToolTip:)])
+	{
+	  [object setToolTip: v];
+	}
+      else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
+	{
+	  [object setHeaderToolTip: v];
+	}
+    }
+  
   // Process IB runtime attributes for element...
   // Ensure we don't process the placeholders...
   if ([element elementForKey: @"userDefinedRuntimeAttributes"] &&
