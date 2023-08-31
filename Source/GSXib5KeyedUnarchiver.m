@@ -3169,6 +3169,31 @@ didStartElement: (NSString*)elementName
     }
 }
 
+- (void) addToolTip: (GSXibElement *)element forObject: (id)object
+{
+  NSString *toolTipString = [element attributeForKey: @"toolTip"];
+  
+  // Process tooltips...
+  if (toolTipString == nil)
+    {
+      GSXibElement *toolTipElement = [element elementForKey: @"toolTip"];
+
+      toolTipString = [toolTipElement value];
+    }
+
+  if (toolTipString != nil)
+    {
+      if ([object respondsToSelector: @selector(setToolTip:)])
+	{
+	  [object setToolTip: toolTipString];
+	}
+      else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
+	{
+	  [object setHeaderToolTip: toolTipString];
+	}
+    }
+}
+
 - (id) decodeObjectForXib: (GSXibElement*)element
              forClassName: (NSString*)classname
                    withID: (NSString*)objID
@@ -3177,15 +3202,8 @@ didStartElement: (NSString*)elementName
   id object = [super decodeObjectForXib: element forClassName: classname withID: objID];
 
   [self addOrderedObject: element];
-
-  // Process tooltips...
-  if ([element attributeForKey: @"toolTip"])
-    {
-      if ([object respondsToSelector: @selector(setToolTip:)])
-        [object setToolTip: [element attributeForKey: @"toolTip"]];
-      else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
-        [object setHeaderToolTip: [element attributeForKey: @"toolTip"]];
-    }
+  [self addToolTip: element forObject: object];
+  
   // Process IB runtime attributes for element...
   // Ensure we don't process the placeholders...
   if ([element elementForKey: @"userDefinedRuntimeAttributes"] &&
