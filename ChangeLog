@@ -4,10 +4,16 @@
 	* Source/NSMenu.m (-removeAllItems): Add implementation to remove
 	all menu items in the reciever.
 
+2023-08-30 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSXib5KeyedUnarchive.m: Fix for issue#192.  Added code to
+	-decodeObjectForXib:forClassName:withID: to decode toolTip using
+	alternative format described in the issue.
+
 2023-08-13 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSwitch.m (-drawRect:): Correct drawing as suggested by
-	Austin Clow (dr_clow@me.com). 
+	Austin Clow (dr_clow@me.com).
 
 2023-02-12 Gregory John Casamento <greg.casamento@gmail.com>
 
