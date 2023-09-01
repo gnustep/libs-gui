@@ -472,728 +472,350 @@ static inline void
 DPSWriteData(GSCTXT *ctxt, const char * buf, unsigned int count)
 __attribute__((unused));
 
+#ifdef _MSC_VER
+#define DPS_FUNCTION(type, name) static inline type \
+name(GSCTXT *ctxt) \
+{ \
+  return [ctxt name]; \
+}
+
+#define DPS_METHOD(name) static inline void \
+name(GSCTXT *ctxt) \
+{ \
+  [ctxt name]; \
+}
+
+#define DPS_METHOD_1(name, type1, var1) static inline void \
+name(GSCTXT *ctxt, type1 var1) \
+{ \
+  [ctxt name :var1]; \
+}
+
+#define DPS_METHOD_2(name, type1, var1, type2, var2) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2) \
+{ \
+  [ctxt name :var1 :var2]; \
+}
+
+#define DPS_METHOD_3(name, type1, var1, type2, var2, type3, var3) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3) \
+{ \
+  [ctxt name :var1 :var2 :var3]; \
+}
+
+#define DPS_METHOD_4(name, type1, var1, type2, var2, type3, var3, type4, var4) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4) \
+{ \
+  [ctxt name :var1 :var2 :var3 :var4]; \
+}
+
+#define DPS_METHOD_5(name, type1, var1, type2, var2, type3, var3, type4, var4, type5, var5) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5) \
+{ \
+  [ctxt name :var1 :var2 :var3 :var4 :var5]; \
+}
+
+#define DPS_METHOD_6(name, type1, var1, type2, var2, type3, var3, type4, var4, type5, var5, type6, var6) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5, type6 var6) \
+{ \
+  [ctxt name :var1 :var2 :var3 :var4 :var5 :var6]; \
+}
+
+#define DPS_METHOD_8(name, type1, var1, type2, var2, type3, var3, type4, var4, type5, var5, type6, var6, type7, var7, type8, var8) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5, type6 var6, type7 var7, type8 var8) \
+{ \
+  [ctxt name :var1 :var2 :var3 :var4 :var5 :var6 :var7 :var8]; \
+}
+#else
+#define DPS_FUNCTION(type, name) static inline type \
+name(GSCTXT *ctxt) \
+{ \
+  return (ctxt->methods->name) \
+    (ctxt, @selector(name)); \
+}
+
+#define DPS_METHOD(name) static inline void \
+name(GSCTXT *ctxt) \
+{ \
+  (ctxt->methods->name) \
+    (ctxt, @selector(name)); \
+}
+
+#define DPS_METHOD_1(name, type1, var1) static inline void \
+name(GSCTXT *ctxt, type1 var1) \
+{ \
+  (ctxt->methods->name ## _) \
+    (ctxt, @selector(name:), var1); \
+}
+
+#define DPS_METHOD_2(name, type1, var1, type2, var2) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2) \
+{ \
+  (ctxt->methods->name ## __) \
+    (ctxt, @selector(name: :), var1, var2); \
+}
+
+#define DPS_METHOD_3(name, type1, var1, type2, var2, type3, var3) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3) \
+{ \
+  (ctxt->methods->name ## ___) \
+    (ctxt, @selector(name: : :), var1, var2, var3); \
+}
+
+#define DPS_METHOD_4(name, type1, var1, type2, var2, type3, var3, type4, var4) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4) \
+{ \
+  (ctxt->methods->name ## ____) \
+    (ctxt, @selector(name: : : :), var1, var2, var3, var4); \
+}
+
+#define DPS_METHOD_5(name, type1, var1, type2, var2, type3, var3, type4, var4, type5, var5) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5) \
+{ \
+  (ctxt->methods->name ## _____) \
+    (ctxt, @selector(name: : : : :), var1, var2, var3, var4, var5); \
+}
+
+#define DPS_METHOD_6(name, type1, var1, type2, var2, type3, var3, type4, var4, type5, var5, type6, var6) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5, type6 var6) \
+{ \
+  (ctxt->methods->name ## ______) \
+    (ctxt, @selector(name: : : : : :), var1, var2, var3, var4, var5, var6); \
+}
+
+#define DPS_METHOD_8(name, type1, var1, type2, var2, type3, var3, type4, var4, type5, var5, type6, var6, type7, var7, type8, var8) static inline void \
+name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5, type6 var6, type7 var7, type8 var8) \
+{ \
+  (ctxt->methods->name ## ________) \
+    (ctxt, @selector(name: : : : : : : :), var1, var2, var3, var4, var5, var6, var7, var8); \
+}
+#endif
+
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
-static inline void
-DPScurrentalpha(GSCTXT *ctxt, CGFloat* a)
-{
-  (ctxt->methods->DPScurrentalpha_)
-    (ctxt, @selector(DPScurrentalpha:), a);
-}
+DPS_METHOD_1(DPScurrentalpha, CGFloat*, a)
 
-static inline void
-DPScurrentcmykcolor(GSCTXT *ctxt, CGFloat* c, CGFloat* m, CGFloat* y, CGFloat* k)
-{
-  (ctxt->methods->DPScurrentcmykcolor____)
-    (ctxt, @selector(DPScurrentcmykcolor: : : :), c, m, y, k);
-}
+DPS_METHOD_4(DPScurrentcmykcolor, CGFloat*, c, CGFloat*, m, CGFloat*, y, CGFloat*, k)
 
-static inline void
-DPScurrentgray(GSCTXT *ctxt, CGFloat* gray)
-{
-  (ctxt->methods->DPScurrentgray_)
-    (ctxt, @selector(DPScurrentgray:), gray);
-}
+DPS_METHOD_1(DPScurrentgray, CGFloat*, gray)
 
-static inline void
-DPScurrenthsbcolor(GSCTXT *ctxt, CGFloat* h, CGFloat* s, CGFloat* b)
-{
-  (ctxt->methods->DPScurrenthsbcolor___)
-    (ctxt, @selector(DPScurrenthsbcolor: : :), h, s, b);
-}
+DPS_METHOD_3(DPScurrenthsbcolor, CGFloat*, h, CGFloat*, s, CGFloat*, b)
 
-static inline void
-DPScurrentrgbcolor(GSCTXT *ctxt, CGFloat* r, CGFloat* g, CGFloat* b)
-{
-  (ctxt->methods->DPScurrentrgbcolor___)
-    (ctxt, @selector(DPScurrentrgbcolor: : :), r, g, b);
-}
+DPS_METHOD_3(DPScurrentrgbcolor, CGFloat*, r, CGFloat*, g, CGFloat*, b)
 
-static inline void
-DPSsetalpha(GSCTXT *ctxt, CGFloat a)
-{
-  (ctxt->methods->DPSsetalpha_)
-    (ctxt, @selector(DPSsetalpha:), a);
-}
+DPS_METHOD_1(DPSsetalpha, CGFloat, a)
 
-static inline void
-DPSsetcmykcolor(GSCTXT *ctxt, CGFloat c, CGFloat m, CGFloat y, CGFloat k)
-{
-  (ctxt->methods->DPSsetcmykcolor____)
-    (ctxt, @selector(DPSsetcmykcolor: : : :), c, m, y, k);
-}
+DPS_METHOD_4(DPSsetcmykcolor, CGFloat, c, CGFloat, m, CGFloat, y, CGFloat, k)
 
-static inline void
-DPSsetgray(GSCTXT *ctxt, CGFloat gray)
-{
-  (ctxt->methods->DPSsetgray_)
-    (ctxt, @selector(DPSsetgray:), gray);
-}
+DPS_METHOD_1(DPSsetgray, CGFloat, gray)
 
-static inline void
-DPSsethsbcolor(GSCTXT *ctxt, CGFloat h, CGFloat s, CGFloat b)
-{
-  (ctxt->methods->DPSsethsbcolor___)
-    (ctxt, @selector(DPSsethsbcolor: : :), h, s, b);
-}
+DPS_METHOD_3(DPSsethsbcolor, CGFloat, h, CGFloat, s, CGFloat, b)
 
-static inline void
-DPSsetrgbcolor(GSCTXT *ctxt, CGFloat r, CGFloat g, CGFloat b)
-{
-  (ctxt->methods->DPSsetrgbcolor___)
-    (ctxt, @selector(DPSsetrgbcolor: : :), r, g, b);
-}
+DPS_METHOD_3(DPSsetrgbcolor, CGFloat, r, CGFloat, g, CGFloat, b)
 
+DPS_METHOD_1(GSSetFillColorspace, NSDictionary *, dict)
 
-static inline void
-GSSetFillColorspace(GSCTXT *ctxt, NSDictionary * dict)
-{
-  (ctxt->methods->GSSetFillColorspace_)
-    (ctxt, @selector(GSSetFillColorspace:), dict);
-}
+DPS_METHOD_1(GSSetStrokeColorspace, NSDictionary *, dict)
 
-static inline void
-GSSetStrokeColorspace(GSCTXT *ctxt, NSDictionary * dict)
-{
-  (ctxt->methods->GSSetStrokeColorspace_)
-    (ctxt, @selector(GSSetStrokeColorspace:), dict);
-}
+DPS_METHOD_1(GSSetFillColor, CGFloat *, values)
 
-static inline void
-GSSetFillColor(GSCTXT *ctxt, CGFloat * values)
-{
-  (ctxt->methods->GSSetFillColor_)
-    (ctxt, @selector(GSSetFillColor:), values);
-}
-
-static inline void
-GSSetStrokeColor(GSCTXT *ctxt, CGFloat * values)
-{
-  (ctxt->methods->GSSetStrokeColor_)
-    (ctxt, @selector(GSSetStrokeColor:), values);
-}
-
+DPS_METHOD_1(GSSetStrokeColor, CGFloat *, values)
 
 /* ----------------------------------------------------------------------- */
 /* Text operations */
 /* ----------------------------------------------------------------------- */
-static inline void
-DPSashow(GSCTXT *ctxt, CGFloat x, CGFloat y, const char* s)
-{
-  (ctxt->methods->DPSashow___)
-    (ctxt, @selector(DPSashow: : :), x, y, s);
-}
+DPS_METHOD_3(DPSashow, CGFloat, x, CGFloat, y, const char*, s)
 
-static inline void
-DPSawidthshow(GSCTXT *ctxt, CGFloat cx, CGFloat cy, int c, CGFloat ax, CGFloat ay, const char* s)
-{
-  (ctxt->methods->DPSawidthshow______)
-    (ctxt, @selector(DPSawidthshow: : : : : :), cx, cy, c, ax, ay, s);
-}
+DPS_METHOD_6(DPSawidthshow, CGFloat, cx, CGFloat, cy, int, c, CGFloat, ax, CGFloat, ay, const char*, s)
 
-static inline void
-DPScharpath(GSCTXT *ctxt, const char* s, int b)
-{
-  (ctxt->methods->DPScharpath__)
-    (ctxt, @selector(DPScharpath: :), s, b);
-}
+DPS_METHOD_2(DPScharpath, const char*, s, int, b)
 
-static inline void
-DPSshow(GSCTXT *ctxt, const char* s)
-{
-  (ctxt->methods->DPSshow_)
-    (ctxt, @selector(DPSshow:), s);
-}
+DPS_METHOD_1(DPSshow, const char*, s)
 
-static inline void
-DPSwidthshow(GSCTXT *ctxt, CGFloat x, CGFloat y, int c, const char* s)
-{
-  (ctxt->methods->DPSwidthshow____)
-    (ctxt, @selector(DPSwidthshow: : : :), x, y, c, s);
-}
+DPS_METHOD_4(DPSwidthshow, CGFloat, x, CGFloat, y, int, c, const char*, s)
 
-static inline void
-DPSxshow(GSCTXT *ctxt, const char* s, const CGFloat* numarray, int size)
-{
-  (ctxt->methods->DPSxshow___)
-    (ctxt, @selector(DPSxshow: : :), s, numarray, size);
-}
+DPS_METHOD_3(DPSxshow, const char*, s, const CGFloat*, numarray, int, size)
 
-static inline void
-DPSxyshow(GSCTXT *ctxt, const char* s, const CGFloat* numarray, int size)
-{
-  (ctxt->methods->DPSxyshow___)
-    (ctxt, @selector(DPSxyshow: : :), s, numarray, size);
-}
+DPS_METHOD_3(DPSxyshow, const char*, s, const CGFloat*, numarray, int, size)
 
-static inline void
-DPSyshow(GSCTXT *ctxt, const char* s, const CGFloat* numarray, int size)
-{
-  (ctxt->methods->DPSyshow___)
-    (ctxt, @selector(DPSyshow: : :), s, numarray, size);
-}
+DPS_METHOD_3(DPSyshow, const char*, s, const CGFloat*, numarray, int, size)
 
+DPS_METHOD_1(GSSetCharacterSpacing, CGFloat, extra)
 
-static inline void
-GSSetCharacterSpacing(GSCTXT *ctxt, CGFloat extra)
-{
-  (ctxt->methods->GSSetCharacterSpacing_)
-    (ctxt, @selector(GSSetCharacterSpacing:), extra);
-}
+DPS_METHOD_1(GSSetFont, NSFont*, font)
 
-static inline void
-GSSetFont(GSCTXT *ctxt, NSFont* font)
-{
-  (ctxt->methods->GSSetFont_)
-    (ctxt, @selector(GSSetFont:), font);
-}
+DPS_METHOD_1(GSSetFontSize, CGFloat, size)
 
-static inline void
-GSSetFontSize(GSCTXT *ctxt, CGFloat size)
-{
-  (ctxt->methods->GSSetFontSize_)
-    (ctxt, @selector(GSSetFontSize:), size);
-}
+DPS_FUNCTION(NSAffineTransform *, GSGetTextCTM)
 
-static inline NSAffineTransform *
-GSGetTextCTM(GSCTXT *ctxt)
-{
-  return (ctxt->methods->GSGetTextCTM)
-    (ctxt, @selector(GSGetTextCTM));
-}
+DPS_FUNCTION(NSPoint, GSGetTextPosition)
 
-static inline NSPoint
-GSGetTextPosition(GSCTXT *ctxt)
-{
-  return (ctxt->methods->GSGetTextPosition)
-    (ctxt, @selector(GSGetTextPosition));
-}
+DPS_METHOD_1(GSSetTextCTM, NSAffineTransform *, ctm)
 
-static inline void
-GSSetTextCTM(GSCTXT *ctxt, NSAffineTransform * ctm)
-{
-  (ctxt->methods->GSSetTextCTM_)
-    (ctxt, @selector(GSSetTextCTM:), ctm);
-}
+DPS_METHOD_1(GSSetTextDrawingMode, GSTextDrawingMode, mode)
 
-static inline void
-GSSetTextDrawingMode(GSCTXT *ctxt, GSTextDrawingMode mode)
-{
-  (ctxt->methods->GSSetTextDrawingMode_)
-    (ctxt, @selector(GSSetTextDrawingMode:), mode);
-}
+DPS_METHOD_1(GSSetTextPosition, NSPoint, loc)
 
-static inline void
-GSSetTextPosition(GSCTXT *ctxt, NSPoint loc)
-{
-  (ctxt->methods->GSSetTextPosition_)
-    (ctxt, @selector(GSSetTextPosition:), loc);
-}
+DPS_METHOD_2(GSShowText, const char *, string, size_t, length)
 
-static inline void
-GSShowText(GSCTXT *ctxt, const char * string, size_t length)
-{
-  (ctxt->methods->GSShowText__)
-    (ctxt, @selector(GSShowText: :), string, length);
-}
+DPS_METHOD_2(GSShowGlyphs, const NSGlyph *, glyphs, size_t, length)
 
-static inline void
-GSShowGlyphs(GSCTXT *ctxt, const NSGlyph * glyphs, size_t length)
-{
-  (ctxt->methods->GSShowGlyphs__)
-    (ctxt, @selector(GSShowGlyphs: :), glyphs, length);
-}
-
-static inline void
-GSShowGlyphsWithAdvances(GSCTXT *ctxt, const NSGlyph * glyphs, const NSSize * advances, size_t length)
-{
-  (ctxt->methods->GSShowGlyphsWithAdvances__)
-    (ctxt, @selector(GSShowGlyphsWithAdvances: :), glyphs, advances, length); 
-}
-
+DPS_METHOD_3(GSShowGlyphsWithAdvances, const NSGlyph *, glyphs, const NSSize *, advances, size_t, length)
 
 /* ----------------------------------------------------------------------- */
 /* Gstate Handling */
 /* ----------------------------------------------------------------------- */
-static inline void
-DPSgrestore(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSgrestore)
-    (ctxt, @selector(DPSgrestore));
-}
+DPS_METHOD(DPSgrestore)
 
-static inline void
-DPSgsave(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSgsave)
-    (ctxt, @selector(DPSgsave));
-}
+DPS_METHOD(DPSgsave)
 
-static inline void
-DPSinitgraphics(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSinitgraphics)
-    (ctxt, @selector(DPSinitgraphics));
-}
+DPS_METHOD(DPSinitgraphics)
 
-static inline void
-DPSsetgstate(GSCTXT *ctxt, NSInteger gst)
-{
-  (ctxt->methods->DPSsetgstate_)
-    (ctxt, @selector(DPSsetgstate:), gst);
-}
+DPS_METHOD_1(DPSsetgstate, NSInteger, gst)
 
+DPS_FUNCTION(NSInteger, GSDefineGState)
 
-static inline NSInteger
-GSDefineGState(GSCTXT *ctxt)
-{
-  return (ctxt->methods->GSDefineGState)
-    (ctxt, @selector(GSDefineGState));
-}
+DPS_METHOD_1(GSUndefineGState, NSInteger, gst)
 
-static inline void
-GSUndefineGState(GSCTXT *ctxt, NSInteger gst)
-{
-  (ctxt->methods->GSUndefineGState_)
-    (ctxt, @selector(GSUndefineGState:), gst);
-}
-
-static inline void
-GSReplaceGState(GSCTXT *ctxt, NSInteger gst)
-{
-  (ctxt->methods->GSReplaceGState_)
-    (ctxt, @selector(GSReplaceGState:), gst);
-}
+DPS_METHOD_1(GSReplaceGState, NSInteger, gst)
 
 /* ----------------------------------------------------------------------- */
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */
-static inline void
-DPScurrentflat(GSCTXT *ctxt, CGFloat* flatness)
-{
-  (ctxt->methods->DPScurrentflat_)
-    (ctxt, @selector(DPScurrentflat:), flatness);
-}
+DPS_METHOD_1(DPScurrentflat, CGFloat*, flatness)
 
-static inline void
-DPScurrentlinecap(GSCTXT *ctxt, int* linecap)
-{
-  (ctxt->methods->DPScurrentlinecap_)
-    (ctxt, @selector(DPScurrentlinecap:), linecap);
-}
+DPS_METHOD_1(DPScurrentlinecap, int*, linecap)
 
-static inline void
-DPScurrentlinejoin(GSCTXT *ctxt, int* linejoin)
-{
-  (ctxt->methods->DPScurrentlinejoin_)
-    (ctxt, @selector(DPScurrentlinejoin:), linejoin);
-}
+DPS_METHOD_1(DPScurrentlinejoin, int*, linejoin)
 
-static inline void
-DPScurrentlinewidth(GSCTXT *ctxt, CGFloat* width)
-{
-  (ctxt->methods->DPScurrentlinewidth_)
-    (ctxt, @selector(DPScurrentlinewidth:), width);
-}
+DPS_METHOD_1(DPScurrentlinewidth, CGFloat*, width)
 
-static inline void
-DPScurrentmiterlimit(GSCTXT *ctxt, CGFloat* limit)
-{
-  (ctxt->methods->DPScurrentmiterlimit_)
-    (ctxt, @selector(DPScurrentmiterlimit:), limit);
-}
+DPS_METHOD_1(DPScurrentmiterlimit, CGFloat*, limit)
 
-static inline void
-DPScurrentpoint(GSCTXT *ctxt, CGFloat* x, CGFloat* y)
-{
-  (ctxt->methods->DPScurrentpoint__)
-    (ctxt, @selector(DPScurrentpoint: :), x, y);
-}
+DPS_METHOD_2(DPScurrentpoint, CGFloat*, x, CGFloat*, y)
 
-static inline void
-DPScurrentstrokeadjust(GSCTXT *ctxt, int* b)
-{
-  (ctxt->methods->DPScurrentstrokeadjust_)
-    (ctxt, @selector(DPScurrentstrokeadjust:), b);
-}
+DPS_METHOD_1(DPScurrentstrokeadjust, int*, b)
 
-static inline void
-DPSsetdash(GSCTXT *ctxt, const CGFloat* pat, NSInteger size, CGFloat offset)
-{
-  (ctxt->methods->DPSsetdash___)
-    (ctxt, @selector(DPSsetdash: : :), pat, size, offset);
-}
+DPS_METHOD_3(DPSsetdash, const CGFloat*, pat, NSInteger, size, CGFloat, offset)
 
-static inline void
-DPSsetflat(GSCTXT *ctxt, CGFloat flatness)
-{
-  (ctxt->methods->DPSsetflat_)
-    (ctxt, @selector(DPSsetflat:), flatness);
-}
+DPS_METHOD_1(DPSsetflat, CGFloat, flatness)
 
-static inline void
-DPSsethalftonephase(GSCTXT *ctxt, CGFloat x, CGFloat y)
-{
-  (ctxt->methods->DPSsethalftonephase__)
-    (ctxt, @selector(DPSsethalftonephase: :), x, y);
-}
+DPS_METHOD_2(DPSsethalftonephase, CGFloat, x, CGFloat, y)
 
-static inline void
-DPSsetlinecap(GSCTXT *ctxt, int linecap)
-{
-  (ctxt->methods->DPSsetlinecap_)
-    (ctxt, @selector(DPSsetlinecap:), linecap);
-}
+DPS_METHOD_1(DPSsetlinecap, int, linecap)
 
-static inline void
-DPSsetlinejoin(GSCTXT *ctxt, int linejoin)
-{
-  (ctxt->methods->DPSsetlinejoin_)
-    (ctxt, @selector(DPSsetlinejoin:), linejoin);
-}
+DPS_METHOD_1(DPSsetlinejoin, int, linejoin)
 
-static inline void
-DPSsetlinewidth(GSCTXT *ctxt, CGFloat width)
-{
-  (ctxt->methods->DPSsetlinewidth_)
-    (ctxt, @selector(DPSsetlinewidth:), width);
-}
+DPS_METHOD_1(DPSsetlinewidth, CGFloat, width)
 
-static inline void
-DPSsetmiterlimit(GSCTXT *ctxt, CGFloat limit)
-{
-  (ctxt->methods->DPSsetmiterlimit_)
-    (ctxt, @selector(DPSsetmiterlimit:), limit);
-}
+DPS_METHOD_1(DPSsetmiterlimit, CGFloat, limit)
 
-static inline void
-DPSsetstrokeadjust(GSCTXT *ctxt, int b)
-{
-  (ctxt->methods->DPSsetstrokeadjust_)
-    (ctxt, @selector(DPSsetstrokeadjust:), b);
-}
+DPS_METHOD_1(DPSsetstrokeadjust, int, b)
 
 
 /* ----------------------------------------------------------------------- */
 /* Matrix operations */
 /* ----------------------------------------------------------------------- */
-static inline void
-DPSconcat(GSCTXT *ctxt, const CGFloat* m)
-{
-  (ctxt->methods->DPSconcat_)
-    (ctxt, @selector(DPSconcat:), m);
-}
+DPS_METHOD_1(DPSconcat, const CGFloat*, m)
 
-static inline void
-DPSinitmatrix(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSinitmatrix)
-    (ctxt, @selector(DPSinitmatrix));
-}
+DPS_METHOD(DPSinitmatrix)
 
-static inline void
-DPSrotate(GSCTXT *ctxt, CGFloat angle)
-{
-  (ctxt->methods->DPSrotate_)
-    (ctxt, @selector(DPSrotate:), angle);
-}
+DPS_METHOD_1(DPSrotate, CGFloat, angle)
 
-static inline void
-DPSscale(GSCTXT *ctxt, CGFloat x, CGFloat y)
-{
-  (ctxt->methods->DPSscale__)
-    (ctxt, @selector(DPSscale: :), x, y);
-}
+DPS_METHOD_2(DPSscale, CGFloat, x, CGFloat, y)
 
-static inline void
-DPStranslate(GSCTXT *ctxt, CGFloat x, CGFloat y)
-{
-  (ctxt->methods->DPStranslate__)
-    (ctxt, @selector(DPStranslate: :), x, y);
-}
+DPS_METHOD_2(DPStranslate, CGFloat, x, CGFloat, y)
 
+DPS_FUNCTION(NSAffineTransform *, GSCurrentCTM)
 
-static inline NSAffineTransform *
-GSCurrentCTM(GSCTXT *ctxt)
-{
-  return (ctxt->methods->GSCurrentCTM)
-    (ctxt, @selector(GSCurrentCTM));
-}
+DPS_METHOD_1(GSSetCTM, NSAffineTransform *, ctm)
 
-static inline void
-GSSetCTM(GSCTXT *ctxt, NSAffineTransform * ctm)
-{
-  (ctxt->methods->GSSetCTM_)
-    (ctxt, @selector(GSSetCTM:), ctm);
-}
-
-static inline void
-GSConcatCTM(GSCTXT *ctxt, NSAffineTransform * ctm)
-{
-  (ctxt->methods->GSConcatCTM_)
-    (ctxt, @selector(GSConcatCTM:), ctm);
-}
+DPS_METHOD_1(GSConcatCTM, NSAffineTransform *, ctm)
 
 
 /* ----------------------------------------------------------------------- */
 /* Paint operations */
 /* ----------------------------------------------------------------------- */
-static inline void
-DPSarc(GSCTXT *ctxt, CGFloat x, CGFloat y, CGFloat r, CGFloat angle1, CGFloat angle2)
-{
-  (ctxt->methods->DPSarc_____)
-    (ctxt, @selector(DPSarc: : : : :), x, y, r, angle1, angle2);
-}
+DPS_METHOD_5(DPSarc, CGFloat, x, CGFloat, y, CGFloat, r, CGFloat, angle1, CGFloat, angle2)
 
-static inline void
-DPSarcn(GSCTXT *ctxt, CGFloat x, CGFloat y, CGFloat r, CGFloat angle1, CGFloat angle2)
-{
-  (ctxt->methods->DPSarcn_____)
-    (ctxt, @selector(DPSarcn: : : : :), x, y, r, angle1, angle2);
-}
+DPS_METHOD_5(DPSarcn, CGFloat, x, CGFloat, y, CGFloat, r, CGFloat, angle1, CGFloat, angle2)
 
-static inline void
-DPSarct(GSCTXT *ctxt, CGFloat x1, CGFloat y1, CGFloat x2, CGFloat y2, CGFloat r)
-{
-  (ctxt->methods->DPSarct_____)
-    (ctxt, @selector(DPSarct: : : : :), x1, y1, x2, y2, r);
-}
+DPS_METHOD_5(DPSarct, CGFloat, x1, CGFloat, y1, CGFloat, x2, CGFloat, y2, CGFloat, r)
 
-static inline void
-DPSclip(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSclip)
-    (ctxt, @selector(DPSclip));
-}
+DPS_METHOD(DPSclip)
 
-static inline void
-DPSclosepath(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSclosepath)
-    (ctxt, @selector(DPSclosepath));
-}
+DPS_METHOD(DPSclosepath)
 
-static inline void
-DPScurveto(GSCTXT *ctxt, CGFloat x1, CGFloat y1, CGFloat x2, CGFloat y2, CGFloat x3, CGFloat y3)
-{
-  (ctxt->methods->DPScurveto______)
-    (ctxt, @selector(DPScurveto: : : : : :), x1, y1, x2, y2, x3, y3);
-}
+DPS_METHOD_6(DPScurveto, CGFloat, x1, CGFloat, y1, CGFloat, x2, CGFloat, y2, CGFloat, x3, CGFloat, y3)
 
-static inline void
-DPSeoclip(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSeoclip)
-    (ctxt, @selector(DPSeoclip));
-}
+DPS_METHOD(DPSeoclip)
 
-static inline void
-DPSeofill(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSeofill)
-    (ctxt, @selector(DPSeofill));
-}
+DPS_METHOD(DPSeofill)
 
-static inline void
-DPSfill(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSfill)
-    (ctxt, @selector(DPSfill));
-}
+DPS_METHOD(DPSfill)
 
-static inline void
-DPSflattenpath(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSflattenpath)
-    (ctxt, @selector(DPSflattenpath));
-}
+DPS_METHOD(DPSflattenpath)
 
-static inline void
-DPSinitclip(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSinitclip)
-    (ctxt, @selector(DPSinitclip));
-}
+DPS_METHOD(DPSinitclip)
 
-static inline void
-DPSlineto(GSCTXT *ctxt, CGFloat x, CGFloat y)
-{
-  (ctxt->methods->DPSlineto__)
-    (ctxt, @selector(DPSlineto: :), x, y);
-}
+DPS_METHOD_2(DPSlineto, CGFloat, x, CGFloat, y)
 
-static inline void
-DPSmoveto(GSCTXT *ctxt, CGFloat x, CGFloat y)
-{
-  (ctxt->methods->DPSmoveto__)
-    (ctxt, @selector(DPSmoveto: :), x, y);
-}
+DPS_METHOD_2(DPSmoveto, CGFloat, x, CGFloat, y)
 
-static inline void
-DPSnewpath(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSnewpath)
-    (ctxt, @selector(DPSnewpath));
-}
+DPS_METHOD(DPSnewpath)
 
-static inline void
-DPSpathbbox(GSCTXT *ctxt, CGFloat* llx, CGFloat* lly, CGFloat* urx, CGFloat* ury)
-{
-  (ctxt->methods->DPSpathbbox____)
-    (ctxt, @selector(DPSpathbbox: : : :), llx, lly, urx, ury);
-}
+DPS_METHOD_4(DPSpathbbox, CGFloat *, llx, CGFloat *, lly, CGFloat *, urx, CGFloat *, ury)
 
-static inline void
-DPSrcurveto(GSCTXT *ctxt, CGFloat x1, CGFloat y1, CGFloat x2, CGFloat y2, CGFloat x3, CGFloat y3)
-{
-  (ctxt->methods->DPSrcurveto______)
-    (ctxt, @selector(DPSrcurveto: : : : : :), x1, y1, x2, y2, x3, y3);
-}
+DPS_METHOD_6(DPSrcurveto, CGFloat, x1, CGFloat, y1, CGFloat, x2, CGFloat, y2, CGFloat, x3, CGFloat, y3)
 
-static inline void
-DPSrectclip(GSCTXT *ctxt, CGFloat x, CGFloat y, CGFloat w, CGFloat h)
-{
-  (ctxt->methods->DPSrectclip____)
-    (ctxt, @selector(DPSrectclip: : : :), x, y, w, h);
-}
+DPS_METHOD_4(DPSrectclip, CGFloat, x, CGFloat, y, CGFloat, w, CGFloat, h)
 
-static inline void
-DPSrectfill(GSCTXT *ctxt, CGFloat x, CGFloat y, CGFloat w, CGFloat h)
-{
-  (ctxt->methods->DPSrectfill____)
-    (ctxt, @selector(DPSrectfill: : : :), x, y, w, h);
-}
+DPS_METHOD_4(DPSrectfill, CGFloat, x, CGFloat, y, CGFloat, w, CGFloat, h)
 
-static inline void
-DPSrectstroke(GSCTXT *ctxt, CGFloat x, CGFloat y, CGFloat w, CGFloat h)
-{
-  (ctxt->methods->DPSrectstroke____)
-    (ctxt, @selector(DPSrectstroke: : : :), x, y, w, h);
-}
+DPS_METHOD_4(DPSrectstroke, CGFloat, x, CGFloat, y, CGFloat, w, CGFloat, h)
 
-static inline void
-DPSreversepath(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSreversepath)
-    (ctxt, @selector(DPSreversepath));
-}
+DPS_METHOD(DPSreversepath)
 
-static inline void
-DPSrlineto(GSCTXT *ctxt, CGFloat x, CGFloat y)
-{
-  (ctxt->methods->DPSrlineto__)
-    (ctxt, @selector(DPSrlineto: :), x, y);
-}
+DPS_METHOD_2(DPSrlineto, CGFloat, x, CGFloat, y)
 
-static inline void
-DPSrmoveto(GSCTXT *ctxt, CGFloat x, CGFloat y)
-{
-  (ctxt->methods->DPSrmoveto__)
-    (ctxt, @selector(DPSrmoveto: :), x, y);
-}
+DPS_METHOD_2(DPSrmoveto, CGFloat, x, CGFloat, y)
 
-static inline void
-DPSstroke(GSCTXT *ctxt)
-{
-  (ctxt->methods->DPSstroke)
-    (ctxt, @selector(DPSstroke));
-}
+DPS_METHOD(DPSstroke)
 
-static inline void
-DPSshfill(GSCTXT *ctxt, NSDictionary *shaderDictionary)
-{
-  (ctxt->methods->DPSshfill)
-    (ctxt, @selector(DPSshfill:), shaderDictionary);
-}
+DPS_METHOD_1(DPSshfill, NSDictionary *, shaderDictionary)
 
+DPS_METHOD_1(GSSendBezierPath, NSBezierPath *, path)
 
-static inline void
-GSSendBezierPath(GSCTXT *ctxt, NSBezierPath * path)
-{
-  (ctxt->methods->GSSendBezierPath_)
-    (ctxt, @selector(GSSendBezierPath:), path);
-}
+DPS_METHOD_2(GSRectClipList, const NSRect *, rects, int, count)
 
-static inline void
-GSRectClipList(GSCTXT *ctxt, const NSRect * rects, int count)
-{
-  (ctxt->methods->GSRectClipList__)
-    (ctxt, @selector(GSRectClipList: :), rects, count);
-}
-
-static inline void
-GSRectFillList(GSCTXT *ctxt, const NSRect * rects, int count)
-{
-  (ctxt->methods->GSRectFillList__)
-    (ctxt, @selector(GSRectFillList: :), rects, count);
-}
+DPS_METHOD_2(GSRectFillList, const NSRect *, rects, int, count)
 
 
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
-static inline void
-GSCurrentDevice(GSCTXT *ctxt, void** device, int* x, int* y)
-{
-  (ctxt->methods->GSCurrentDevice___)
-    (ctxt, @selector(GSCurrentDevice: : :), device, x, y);
-}
+DPS_METHOD_3(GSCurrentDevice, void**, device, int*, x, int*, y)
 
-static inline void
-DPScurrentoffset(GSCTXT *ctxt, int* x, int* y)
-{
-  (ctxt->methods->DPScurrentoffset__)
-    (ctxt, @selector(DPScurrentoffset: :), x, y);
-}
+DPS_METHOD_2(DPScurrentoffset, int*, x, int*, y)
 
-static inline void
-GSSetDevice(GSCTXT *ctxt, void* device, int x, int y)
-{
-  (ctxt->methods->GSSetDevice___)
-    (ctxt, @selector(GSSetDevice: : :), device, x, y);
-}
+DPS_METHOD_3(GSSetDevice, void*, device, int, x, int, y)
 
-static inline void
-DPSsetoffset(GSCTXT *ctxt, short int x, short int y)
-{
-  (ctxt->methods->DPSsetoffset__)
-    (ctxt, @selector(DPSsetoffset: :), x, y);
-}
+DPS_METHOD_2(DPSsetoffset, short int, x, short int, y)
 
 
 /*-------------------------------------------------------------------------*/
 /* Graphics Extensions Ops */
 /*-------------------------------------------------------------------------*/
-static inline void
-DPScomposite(GSCTXT *ctxt, CGFloat x, CGFloat y, CGFloat w, CGFloat h,
-             NSInteger gstateNum, CGFloat dx, CGFloat dy, NSCompositingOperation op)
-{
-  (ctxt->methods->DPScomposite________)
-    (ctxt, @selector(DPScomposite: : : : : : : :), x, y, w, h, gstateNum, dx, dy, op);
-}
+DPS_METHOD_8(DPScomposite, CGFloat, x, CGFloat, y, CGFloat, w, CGFloat, h,
+             NSInteger, gstateNum, CGFloat, dx, CGFloat, dy, NSCompositingOperation, op)
 
-static inline void
-DPScompositerect(GSCTXT *ctxt, CGFloat x, CGFloat y, CGFloat w, CGFloat h, NSCompositingOperation op)
-{
-  (ctxt->methods->DPScompositerect_____)
-    (ctxt, @selector(DPScompositerect: : : : :), x, y, w, h, op);
-}
+DPS_METHOD_5(DPScompositerect, CGFloat, x, CGFloat, y, CGFloat, w, CGFloat, h, NSCompositingOperation, op)
 
-static inline void
-DPSdissolve(GSCTXT *ctxt, CGFloat x, CGFloat y, CGFloat w, CGFloat h, NSInteger gstateNum, CGFloat dx, CGFloat dy, CGFloat delta)
-{
-  (ctxt->methods->DPSdissolve________)
-    (ctxt, @selector(DPSdissolve: : : : : : : :), x, y, w, h, gstateNum, dx, dy, delta);
-}
+DPS_METHOD_8(DPSdissolve, CGFloat, x, CGFloat, y, CGFloat, w, CGFloat, h, NSInteger, gstateNum, CGFloat, dx, CGFloat, dy, CGFloat, delta)
 
 
-static inline void
-GSDrawImage(GSCTXT *ctxt, NSRect rect, void * imageref)
-{
-  (ctxt->methods->GSDrawImage__)
-    (ctxt, @selector(GSDrawImage: :), rect, imageref);
-}
+DPS_METHOD_2(GSDrawImage, NSRect, rect, void *, imageref)
 
 
 /* ----------------------------------------------------------------------- */
