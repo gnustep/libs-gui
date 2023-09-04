@@ -283,7 +283,7 @@ static NSString *commandKeyString = @"#";
       else
         {
           // shift mask and not an upper case string?
-          shift = (m & NSShiftKeyMask) & ![key isEqualToString: ucKey];
+          shift = (m & NSShiftKeyMask) && ![key isEqualToString: ucKey];
           key = [NSString stringWithFormat:@"%@%@%@%@%@",
                           (m & NSControlKeyMask) ? controlKeyString : @"",
                           (m & NSAlternateKeyMask) ? alternateKeyString : @"",
