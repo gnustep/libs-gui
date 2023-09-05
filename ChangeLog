@@ -1,3 +1,9 @@
+2023-09-05 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/DocMakefile: Fix issue #198 ... headers had added a new
+	APPKIT_EXPORT_CLASS value added without telling autogsdoc how to
+	handle it, breaking parsing.  Mapped it to an empty string.
+
 2023-08-30 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSXib5KeyedUnarchive.m: Fix for issue#192.  Added code to
