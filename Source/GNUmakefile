@@ -684,19 +684,6 @@ GSXibElement.h \
 GSXibLoading.h \
 GSXibKeyedUnarchiver.h \
 GSHelpAttachment.h \
-GSAutoLayoutVFLParser.h \
-GSAutoLayoutEngine.h \
-GSCassowarySolver.h \
-GSCSConstraint.h \
-GSCSVariable.h \
-GSCSFloatComparator.h \
-GSCSSolution.h \
-GSCSLinearExpression.h \
-GSCSConstraintOperator.h \
-GSCSStrength.h \
-GSCSEditVariableManager.h \
-GSCSEditInfo.h \
-GSCSTableau.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 
