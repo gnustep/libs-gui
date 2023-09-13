@@ -20,6 +20,7 @@ Tools/speech_recognizer/GSSpeechRecognitionServer.app
 *~
 *.nssound
 *.nsmovie
+*.swp
 
 # Created by https://www.gitignore.io/api/xcode
 # Edit at https://www.gitignore.io/?templates=xcode
