@@ -978,28 +978,40 @@ APPKIT_EXPORT_CLASS
 - (void) drawStepperHighlightDownButton: (NSRect)aRect;
 
 // NSSwitch drawing methods
+/**
+ * Draw an NSSwitch knob.
+ */
 - (void) drawSwitchKnob: (NSRect)frame
                forState: (NSControlStateValue)value
                 enabled: (BOOL)enabled;
 
-
+/**
+ * Draws the bezel for the NSSwitch.
+ */
 - (void) drawSwitchBezel: (NSRect)frame
                 forState: (NSControlStateValue)v
                  enabled: (BOOL)enabled;
 
+/**
+ * Draws the switch in the rect.
+ */
 - (void) drawSwitchInRect: (NSRect)rect
                  forState: (NSControlStateValue)state
                   enabled: (BOOL)enabled;
 
 // NSPathComponentCell
-
+/**
+ * Draw the path component
+ */
 - (void) drawPathComponentCellWithFrame: (NSRect)f
                                  inView: (NSPathControl *)pc
                                withCell: (NSPathComponentCell *)cell
                         isLastComponent: (BOOL)last;
 
 // NSSegmentedControl drawing methods
-
+/**
+ * Draw the segmented control.
+ */
 - (void) drawSegmentedControlSegment: (NSCell *)cell
                            withFrame: (NSRect)cellFrame
                               inView: (NSView *)controlView
@@ -1191,143 +1203,283 @@ APPKIT_EXPORT_CLASS
  */
 - (Class) titleViewClassForMenuView: (NSMenuView *)aMenuView;
 
+/**
+ * Draws the menu title background
+ *
+ * Returns the resulting NSRect
+ */
 - (NSRect) drawMenuTitleBackground: (GSTitleView *)aTitleView
 			withBounds: (NSRect)bounds
 			  withClip: (NSRect)clipRect;
 
+/**
+ * returns a CGFloat representing the height of the menu bar.
+ */
 - (CGFloat) menuBarHeight;
+
+/**
+ * returns a CGFloat representing the item height.
+ */
 - (CGFloat) menuItemHeight;
+
+/**
+ * returns a CGFloat representing the menu separator height.
+ */
 - (CGFloat) menuSeparatorHeight;
 
 // NSColorWell drawing method
+/**
+ * Draw an NSColorWell
+ */
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
                     withBounds: (NSRect)bounds
                       withClip: (NSRect)clipRect;
 
 // progress indicator drawing methods
+/**
+ * Draw an NSProgressIndicator
+ */
 - (void) drawProgressIndicator: (NSProgressIndicator*)progress
                     withBounds: (NSRect)bounds
                       withClip: (NSRect)rect
                        atCount: (int)count
                       forValue: (double)val;
 
+/**
+ * Draw an NSProgressIndicator bezel
+ */
 - (NSRect) drawProgressIndicatorBezel: (NSRect)bounds withClip: (NSRect) rect;
+
+/**
+ * Draw a determinate NSProgressIndicator
+ */
 - (void) drawProgressIndicatorBarDeterminate: (NSRect)bounds;
 
 // Table drawing methods
+/**
+ * Draw the table header for an NSTableView
+ */
 - (NSColor *) tableHeaderTextColorForState: (GSThemeControlState)state;
 
+/**
+ * Draw the corner view for an NSTableView
+ */
 - (void) drawTableCornerView: (NSView*)cornerView
                     withClip: (NSRect)aRect;
+
+/**
+ * Draw the NSTableHeaderCell
+ */
 - (void) drawTableHeaderCell: (NSTableHeaderCell *)cell
                    withFrame: (NSRect)cellFrame
                       inView: (NSView *)controlView
                        state: (GSThemeControlState)state;
 
+/**
+ * returns NSTableView title bar height as a float
+ */
 - (float) titlebarHeight;
 
+/**
+ * returns NSTableView resize bar height as a float
+ */
 - (float) resizebarHeight;
 
+/**
+ * returns NSTableView resize bar notch width as a float
+ */
 - (float) resizebarNotchWidth;
 
+/**
+ * returns NSTableView title bar button size as a float
+ */
 - (float) titlebarButtonSize;
 
+/**
+ * returns NSTableView title bar right padding as a float
+ */
 - (float) titlebarPaddingRight;
 
+/**
+ * returns NSTableView title bar top padding as a float
+ */
 - (float) titlebarPaddingTop;
 
+/**
+ * returns NSTableView title bar ;eft padding as a float
+ */
 - (float) titlebarPaddingLeft;
 
+/**
+ * Draws the NSWindow border with the given styleMask
+ */
 - (void) drawWindowBorder: (NSRect)rect
                 withFrame: (NSRect)frame 
              forStyleMask: (unsigned int)styleMask
                     state: (int)inputState
                  andTitle: (NSString*)title;
 
+/**
+ * returns the current browser header text color.
+ */
 - (NSColor *) browserHeaderTextColor;
 
+/**
+ * Draws NSBrowser header cell
+ */
 - (void) drawBrowserHeaderCell: (NSTableHeaderCell*)cell
 		     withFrame: (NSRect)rect
 			inView: (NSView*)view;
 
+/**
+ * returns NSrect for NSBrwoser header cell
+ */
 - (NSRect) browserHeaderDrawingRectForCell: (NSTableHeaderCell*)cell
 				 withFrame: (NSRect)rect;
 
+/**
+ * Draw NSTabView content rect
+ */
 - (NSRect) tabViewContentRectForBounds: (NSRect)aRect
 			   tabViewType: (NSTabViewType)type
 			       tabView: (NSTabView *)view;
 
+/**
+ * Draw NSTabView and its items in rect with the selected item
+ */
 - (void) drawTabViewRect: (NSRect)rect
 		  inView: (NSView *)view
 	       withItems: (NSArray *)items
 	    selectedItem: (NSTabViewItem *)item;
 
+/**
+ * Draw NSScroller in rect
+ */
 - (void) drawScrollerRect: (NSRect)rect
 		   inView: (NSView *)view
       		  hitPart: (NSScrollerPart)hitPart
 	     isHorizontal: (BOOL)isHorizontal;
 
+/**
+ * Draw the NSBrowser in rect
+ */
 - (void) drawBrowserRect: (NSRect)rect
 		  inView: (NSView *)view
 	withScrollerRect: (NSRect)scrollerRect
 	      columnSize: (NSSize)columnSize;
 
+/**
+ * returns CGFloat representing the separation between columns
+ */
 - (CGFloat) browserColumnSeparation;
 
+/**
+ * returns CGFloat representing NSBrowser vertical padding
+ */
 - (CGFloat) browserVerticalPadding;
 
+/**
+ * returns a BOOL. YES if NSBrowser uses bezels.
+ */
 - (BOOL) browserUseBezels;
 
+/**
+ * Draw the menu in rect, view. If the BOOL horizontal is
+ * YES, the itemCells for menu will be draw as such
+ */
 - (void) drawMenuRect: (NSRect)rect
 	       inView: (NSView *)view
 	 isHorizontal: (BOOL)horizontal
 	    itemCells: (NSArray *)itemCells;
 
+/**
+ * Draws NSScrollView in rect with in view.
+ */
 - (void) drawScrollViewRect: (NSRect)rect
 	             inView: (NSView *)view;
 
+/**
+ * Draws NSSlider border, background with in frame using cell
+ * using horizontal to determine its orientation.
+ */
 - (void) drawSliderBorderAndBackground: (NSBorderType)aType
 				 frame: (NSRect)cellFrame
 				inCell: (NSCell *)cell
 			  isHorizontal: (BOOL)horizontal;
 
+/**
+ * Draw bar inside cell
+ */
 - (void) drawBarInside: (NSRect)rect
 		inCell: (NSCell *)cell
 	       flipped: (BOOL)flipped;
 
+/**
+ * Draws knob fpr NSSlider in specified cell
+ */
 - (void) drawKnobInCell: (NSCell *)cell;
 
+/**
+ * returns NSRect for NSTable header
+ */
 - (NSRect) tableHeaderCellDrawingRectForBounds: (NSRect)theRect;
-							
+
+/**
+ * Draws NSTableView header in view
+ */ 
 - (void) drawTableHeaderRect: (NSRect)aRect		
 		      inView: (NSView *)view;
 
+/**
+ * Draw NSPopUpButtonCell
+ */
 - (void) drawPopUpButtonCellInteriorWithFrame: (NSRect)cellFrame
 				     withCell: (NSCell *)cell
 				       inView: (NSView *)controlView;
 
+/**
+ * Draw NSTableView background
+ */
 - (void) drawTableViewBackgroundInClipRect: (NSRect)clipRect
 				    inView: (NSView *)view
 		       withBackgroundColor: (NSColor *)backgroundColor;
 
+/**
+ * Draw NSTableView in aRect within view.
+ */
 - (void) drawTableViewRect: (NSRect)aRect
 		    inView: (NSView *)view;
 
+/**
+ * Draw the grid inside the NSTableView within aRect in view
+ */
 - (void) drawTableViewGridInClipRect: (NSRect)aRect
 		      	      inView: (NSView *)view;
 
+/**
+ * Highlight NSTableView selection in clipRect, within view
+ */
 - (void) highlightTableViewSelectionInClipRect: (NSRect)clipRect
 					inView: (NSView *)view
 			      selectingColumns: (BOOL)selectingColumns;
 
+/**
+ * Draw NSTableView row in clipRect, within view
+ */
 - (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
 		   inView: (NSView *)view;
 
+/**
+ * Draw NSOutlineView row in clipRect, within view
+ */
 - (void) drawOutlineViewRow: (NSInteger)rowIndex 
                    clipRect: (NSRect)clipRect
                      inView: (NSView *)view;
 
+/**
+ * Draw NSBox in clipRect, with boxType, borderType within box
+ */
 - (void) drawBoxInClipRect: (NSRect)clipRect
 		   boxType: (NSBoxType)boxType
 		borderType: (NSBorderType)borderType
