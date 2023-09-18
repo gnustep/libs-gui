@@ -110,8 +110,8 @@ NSUnregisterServicesProvider(NSString *name)
 		object: listenerConnection];
       DESTROY(listenerConnection);
     }
-  ASSIGN(servicesProvider, nil);
-  ASSIGN(providerName, nil);
+  DESTROY(servicesProvider);
+  DESTROY(providerName);
 }
 
 /**

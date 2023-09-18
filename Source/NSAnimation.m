@@ -78,14 +78,6 @@ _GSBezierEval(_GSBezierDesc *b, float t)
   return b->a[0] + t * (b->a[1] + t * (b->a[2] + t * b->a[3]));
 }
 
-static inline float 
-_GSBezierDerivEval(_GSBezierDesc *b, float t)
-{
-  if (!b->areCoefficientsComputed)
-    _GSBezierComputeCoefficients(b);
-  return b->a[1] + t * (2.0 * b->a[2] + t * 3.0 * b->a[3]);
-}
-
 static inline void 
 _GSRationalBezierComputeBezierDesc(_GSRationalBezierDesc *rb)
 {
@@ -104,18 +96,6 @@ _GSRationalBezierEval(_GSRationalBezierDesc *rb, float t)
   if (!rb->areBezierDescComputed)
     _GSRationalBezierComputeBezierDesc(rb);
   return _GSBezierEval(&(rb->n), t) / _GSBezierEval(&(rb->d), t);
-}
-
-static inline float
-_GSRationalBezierDerivEval(_GSRationalBezierDesc *rb, float t)
-{
-  float h;
-  if (!rb->areBezierDescComputed)
-    _GSRationalBezierComputeBezierDesc(rb);
-  h = _GSBezierEval(&(rb->d), t);
-  return (_GSBezierDerivEval(&(rb->n), t) * h 
-          - _GSBezierEval   (&(rb->n), t) * _GSBezierDerivEval(&(rb->d), t))
-    / (h*h);
 }
 
 static

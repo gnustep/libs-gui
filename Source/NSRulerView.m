@@ -363,7 +363,7 @@ static NSMutableDictionary *units = nil;
     }
   else
     {
-      ASSIGN(_markers, nil);
+      DESTROY(_markers);
     }
   [self setNeedsDisplay: YES];
 }
