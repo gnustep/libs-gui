@@ -48,7 +48,7 @@
 {
   NSError *error = nil;
 
-  NSAssert(completionHandler != nil, NSInvalidArgumentException);
+  NSAssert(completionHandler != NULL, NSInvalidArgumentException);
   CALL_NON_NULL_BLOCK(completionHandler, error);
 }
 
