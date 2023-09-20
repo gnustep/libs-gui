@@ -42,6 +42,7 @@
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSMenu.h"
 #import "GSBindingHelpers.h"
+#import "GNUstepGUI/GSTheme.h"
 
 static BOOL usesUserKeyEquivalents = NO;
 static Class imageClass;
@@ -264,7 +265,12 @@ static Class imageClass;
 
 - (NSString*) title
 {
-  return _title;
+  NSString *proposedTitle = _title;
+
+  proposedTitle = [[GSTheme theme] proposedTitle: proposedTitle
+	  			     forMenuItem: self];
+
+  return proposedTitle;
 }
 
 - (BOOL) isSeparatorItem

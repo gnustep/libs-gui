@@ -175,5 +175,29 @@
   return YES; // override whether or not to show the icon in the menu.
 }
 
+- (NSRect) modifyRect: (NSRect)aRect
+	   forMenu: (NSMenu *)aMenu
+	   isHorizontal: (BOOL) horizontal;
+{
+  return aRect;
+}
+
+- (float) proposedTitleWidth: (float)proposedWidth
+		 forMenuView: (NSMenuView *)aMenuView
+{
+  return proposedWidth;
+}
+
+- (NSString *) keyForKeyEquivalent: (NSString *)aString
+{
+  return aString;
+}
+
+- (NSString *) proposedTitle: (NSString *)title
+		 forMenuItem: (NSMenuItem *)menuItem
+{
+  return title;
+}
+
 @end
 

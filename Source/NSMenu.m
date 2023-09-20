@@ -471,16 +471,22 @@ static BOOL menuBarVisible = YES;
 
 - (void) _setGeometry
 {
-  NSPoint        origin;
-
   if (_menu.horizontal == YES)
     {
       NSRect screenFrame = [[NSScreen mainScreen] frame];
-      origin = NSMakePoint (0, screenFrame.size.height
-                            - [_aWindow frame].size.height);
-      origin.y += screenFrame.origin.y;
-      [_aWindow setFrameOrigin: origin];
-      [_bWindow setFrameOrigin: origin];
+
+      NSRect proposedFrame = NSMakeRect(0, 
+		      			screenFrame.size.height -
+		      			[_aWindow frame].size.height +
+					screenFrame.origin.y,
+					screenFrame.size.width,
+					[_aWindow frame].size.height);
+      proposedFrame = [[GSTheme theme] modifyRect: proposedFrame
+	   				  forMenu: self
+	   			     isHorizontal: YES];
+
+      [_aWindow setFrame: proposedFrame display: NO];
+      [_bWindow setFrame: proposedFrame display: NO];
     }
   else
     {
@@ -510,7 +516,7 @@ static BOOL menuBarVisible = YES;
       
       if ((_aWindow != nil) && ([_aWindow screen] != nil))
         {
-          origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
+          NSPoint origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
                                - [_aWindow frame].size.height);
 	  
           [_aWindow setFrameOrigin: origin];
