@@ -199,5 +199,14 @@
   return title;
 }
 
+- (BOOL) organizesMainMenu
+{
+  return NO;
+}
+
+- (void) organizeMainMenu: (NSMenu *)menu
+{
+	// Do nothing, just return.
+}
 @end
 

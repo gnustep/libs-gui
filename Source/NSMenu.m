@@ -265,6 +265,8 @@ static BOOL menuBarVisible = YES;
   NSString *servicesString = _(@"Services");
   int i;
 
+  
+
   if ([self _isMain])
     {
       NSString *appTitle;
@@ -279,6 +281,12 @@ static BOOL menuBarVisible = YES;
         }
       appItem = [self itemWithTitle: appTitle];
       appMenu = [appItem submenu];
+
+      if ([[GSTheme theme] organizesMainMenu])
+        {
+	    [[GSTheme theme] organizeMainMenu: self];
+	    return;
+        }
 
       if (_menu.horizontal == YES)
         {

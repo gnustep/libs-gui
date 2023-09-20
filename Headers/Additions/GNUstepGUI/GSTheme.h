@@ -1531,6 +1531,18 @@ withRepeatedImage: (NSImage*)image
 - (NSString *) proposedTitle: (NSString *)title
 		 forMenuItem: (NSMenuItem *)menuItem;
 
+/**
+ * Used to determine whether or not the theme handles organizing the app's main
+ * menu. The default implementation returns NO.
+ */
+- (BOOL) organizesMainMenu;
+
+/**
+ * Used by the theme to organize the main menu. The default implementation does 
+ * nothing, because it will never be called.
+ */
+- (void) organizeMainMenu: (NSMenu *)menu;
+
 @end 
 
 @interface GSTheme (OpenSavePanels)
