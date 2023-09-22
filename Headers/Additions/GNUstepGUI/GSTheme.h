@@ -1244,6 +1244,13 @@ APPKIT_EXPORT_CLASS
                     state: (int)inputState
                  andTitle: (NSString*)title;
 
+- (void) setFrameForCloseButton: (NSButton *)closeButton
+		       viewSize: (NSSize)viewSize;
+
+- (NSRect) miniaturizeButtonFrameForBounds: (NSRect)bounds;
+
+- (NSRect) closeButtonFrameForBounds: (NSRect)bounds;
+
 - (NSColor *) browserHeaderTextColor;
 
 - (void) drawBrowserHeaderCell: (NSTableHeaderCell*)cell

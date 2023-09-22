@@ -967,12 +967,11 @@
   // fill oval with background color
   [backgroundColor set];
   [oval fill];
-  
+
   // and stroke rounded button
   [[NSColor shadowColor] set];
   [oval stroke];
 }
-
 
 - (void) drawSwitchInRect: (NSRect)rect
                  forState: (NSControlStateValue)state
@@ -2071,6 +2070,38 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  PSstroke();
 	}
     }
+}
+
+- (void) setFrameForCloseButton: (NSButton *)closeButton
+		       viewSize: (NSSize)viewSize
+{
+  NSSize buttonSize = [[closeButton image] size];
+  buttonSize = NSMakeSize(buttonSize.width + 3, buttonSize.height + 3);
+  
+  [closeButton setFrame: NSMakeRect(viewSize.width - buttonSize.width - 4,
+                   		   (viewSize.height - buttonSize.height) / 2,
+  		                    buttonSize.width, 
+				    buttonSize.height)];
+}
+
+- (NSRect) minimizeButtonFrameForBounds: (NSRect)bounds
+{
+  GSTheme *theme = [GSTheme theme];
+
+  return NSMakeRect(bounds.size.width - [theme titlebarButtonSize] - 
+				   [theme titlebarPaddingRight], bounds.size.height - 
+				   [theme titlebarButtonSize] - [theme titlebarPaddingTop], 
+				   [theme titlebarButtonSize], [theme titlebarButtonSize]);
+}
+
+- (NSRect) miniaturizeButtonFrameForBounds: (NSRect)bounds
+{
+  GSTheme *theme = [GSTheme theme];
+
+  return NSMakeRect([theme titlebarPaddingLeft], 
+		    bounds.size.height - [theme titlebarButtonSize] - [theme titlebarPaddingTop], 
+		    [theme titlebarButtonSize],
+		    [theme titlebarButtonSize]);
 }
 
 - (NSColor *) browserHeaderTextColor
