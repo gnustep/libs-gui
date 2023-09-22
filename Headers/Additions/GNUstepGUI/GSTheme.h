@@ -1539,16 +1539,12 @@ withRepeatedImage: (NSImage*)image
 		 forMenuItem: (NSMenuItem *)menuItem;
 
 /**
- * Used to determine whether or not the theme handles organizing the app's main
- * menu. The default implementation returns NO.
+ * Used by the theme to organize the main menu. The default implementation
+ * organizes the main menu in the same way that NSMenu's old default behaviour
+ * did, generating an "app name" menu for horizontal display.
  */
-- (BOOL) organizesMainMenu;
-
-/**
- * Used by the theme to organize the main menu. The default implementation does 
- * nothing, because it will never be called.
- */
-- (void) organizeMainMenu: (NSMenu *)menu;
+- (void) organizeMenu: (NSMenu *)menu
+	 isHorizontal: (BOOL)horizontal;
 
 @end 
 
