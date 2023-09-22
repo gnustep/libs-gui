@@ -265,8 +265,6 @@ static BOOL menuBarVisible = YES;
   NSString *servicesString = _(@"Services");
   int i;
 
-  
-
   if ([self _isMain])
     {
       NSString *appTitle;

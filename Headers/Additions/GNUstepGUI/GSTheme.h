@@ -1522,8 +1522,8 @@ withRepeatedImage: (NSImage*)image
  * Modifies the proposed default width for a menu title in the given NSMenuView. 
  * The default implementation simply returns the proposed width unmodified.
  */
-- (float) proposedTitleWidth: (float)proposedWidth
-		 forMenuView: (NSMenuView *)aMenuView;
+- (CGFloat) proposedTitleWidth: (CGFloat)proposedWidth
+		   forMenuView: (NSMenuView *)aMenuView;
 
 /**
  * Modifies the proposed key equivalent string for the menu item. The default

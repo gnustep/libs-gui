@@ -182,8 +182,8 @@
   return aRect;
 }
 
-- (float) proposedTitleWidth: (float)proposedWidth
-		 forMenuView: (NSMenuView *)aMenuView
+- (CGFloat) proposedTitleWidth: (CGFloat)proposedWidth
+		   forMenuView: (NSMenuView *)aMenuView
 {
   return proposedWidth;
 }

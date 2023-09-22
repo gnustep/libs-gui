@@ -2084,7 +2084,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 				    buttonSize.height)];
 }
 
-- (NSRect) minimizeButtonFrameForBounds: (NSRect)bounds
+- (NSRect) closeButtonFrameForBounds: (NSRect)bounds
 {
   GSTheme *theme = [GSTheme theme];
 
