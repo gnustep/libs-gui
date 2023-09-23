@@ -235,6 +235,8 @@
 #import <AppKit/NSTabView.h>
 #import <AppKit/NSPrintPanel.h>
 #import <AppKit/NSPageLayout.h>
+// For window decorator protocol
+#import <GNUstepGUI/GSWindowDecorationView.h>
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
@@ -1586,6 +1588,13 @@ APPKIT_EXPORT_CLASS
 @end
 
 @interface GSTheme (NSWindow)
+
+/**
+ * This method returns the window decorator provided by
+ * the current theme.
+ */
+- (id<GSWindowDecorator>) windowDecorator;
+
 /**
  * This method returns the standard window button for the
  * given mask for the current theme.

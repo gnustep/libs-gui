@@ -109,7 +109,6 @@
   if (hasCloseButton)
     {
       NSRect closeButtonFrame = [[GSTheme theme] closeButtonFrameForBounds: [self bounds]];
-      
       [closeButton setFrame: closeButtonFrame];
     }
   else
