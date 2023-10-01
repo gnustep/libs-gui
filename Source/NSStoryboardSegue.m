@@ -172,14 +172,27 @@
     }
   else if ([_kind isEqualToString: @"popover"])
     {
-      NSPopover *po = [[NSPopover alloc] init];
-      NSRect rect = [_popoverAnchorView frame];
+      if (_popover == nil)
+	{
+	  NSPopover *po = [[NSPopover alloc] init];
+	  NSRect rect = [_popoverAnchorView frame];
 
-      [po setBehavior: _popoverBehavior];
-      [po setContentViewController: _destinationController];
-      [po showRelativeToRect: rect
-                      ofView: _popoverAnchorView
-               preferredEdge: _preferredEdge];      
+	  _popover = po; // weak... since we manually release...
+	  [po setBehavior: _popoverBehavior];
+	  [po setContentViewController: _destinationController];
+	  [po showRelativeToRect: rect
+			  ofView: _popoverAnchorView
+		   preferredEdge: _preferredEdge];
+	}
+      else
+	{
+	  if ([_popover behavior] == NSPopoverBehaviorTransient)
+	    {
+	      [_popover close];
+	      RELEASE(_popover);
+	      _popover = nil;
+	    }
+	}
     }
   else if ([_kind isEqualToString: @"sheet"])
     {

@@ -232,12 +232,16 @@
 {
   [_realPanel close];
   [_realPanel setDelegate:nil];
+  [_realPanel orderOut: nil];
+  _shown = NO;
 }
 
 - (IBAction) performClose: (id)sender
 {
-  [_realPanel performClose:sender];
-  [_realPanel setDelegate:nil];
+  [_realPanel performClose: sender];
+  [_realPanel setDelegate: nil];
+  [_realPanel orderOut: nil];
+  _shown = NO;
 }
 
 - (void) showRelativeToRect: (NSRect)positioningRect
