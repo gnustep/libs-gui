@@ -81,6 +81,26 @@
 {
 }
 
+- (void) viewWillAppear: (BOOL)animated
+{
+}
+
+- (void) viewIsAppearing: (BOOL)animated
+{
+}
+
+- (void) viewDidAppear: (BOOL)animated
+{
+}
+
+- (void) viewWillDisappear: (BOOL)animated
+{
+}
+
+- (void) viewDidDisappear: (BOOL)animated
+{
+}
+
 - (void)setRepresentedObject:(id)representedObject
 {
   ASSIGN(_representedObject, representedObject);
@@ -133,6 +153,7 @@
     }
 
   [self viewWillLoad];
+  [self viewWillAppear: NO];
   nib = [[NSNib alloc] initWithNibNamed: [self nibName]
                                  bundle: [self nibBundle]];
   if ((nib != nil) && [nib instantiateNibWithOwner: self
@@ -141,6 +162,7 @@
       _vcFlags.nib_is_loaded = YES;
       // FIXME: Need to resolve possible retain cycles here
       [self viewDidLoad];
+      [self viewDidAppear: NO];
     }
   else
     {
@@ -164,6 +186,45 @@
   return _nibBundle;
 }
 
+// Dismiss
+- (void) dismissViewController: (NSViewController *)viewController
+{
+  [viewController viewDidDisappear: NO];
+}
+
+- (void) dismissController: (id)sender
+{
+  [self dismissViewController: self];
+}
+
+// NSSeguePerforming methods...
+- (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                            sender: (id)sender
+{
+  NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
+  [self prepareForSegue: segue
+                 sender: sender];  
+  [segue perform];
+}
+
+- (void)prepareForSegue: (NSStoryboardSegue *)segue 
+                 sender: (id)sender
+{
+  // do nothing in base class method...
+}
+
+- (BOOL)shouldPerformSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
+                                  sender: (id)sender
+{
+  return YES;
+}
+
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"%@ - view = %@", [super description], view];
+}
+
+// NSCoding
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
@@ -202,33 +263,6 @@
     }
 }
 
-
-// NSSeguePerforming methods...
-- (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
-                            sender: (id)sender
-{
-  NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
-  [self prepareForSegue: segue
-                 sender: sender];  
-  [segue perform];
-}
-
-- (void)prepareForSegue: (NSStoryboardSegue *)segue 
-                 sender: (id)sender
-{
-  // do nothing in base class method...
-}
-
-- (BOOL)shouldPerformSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
-                                  sender: (id)sender
-{
-  return YES;
-}
-
-- (NSString *) description
-{
-  return [NSString stringWithFormat: @"%@ - view = %@", [super description], view];
-}
 @end
 
 @implementation NSViewController (NSEditorRegistration)
