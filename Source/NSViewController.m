@@ -198,8 +198,8 @@
 }
 
 // NSSeguePerforming methods...
-- (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier
-			    sender: (id)sender
+- (void) performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier
+			     sender: (id)sender
 {
   NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
   [self prepareForSegue: segue
@@ -207,14 +207,14 @@
   [segue perform];
 }
 
-- (void)prepareForSegue: (NSStoryboardSegue *)segue
-		 sender: (id)sender
+- (void) prepareForSegue: (NSStoryboardSegue *)segue
+		  sender: (id)sender
 {
   // do nothing in base class method...
 }
 
-- (BOOL)shouldPerformSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier
-				  sender: (id)sender
+- (BOOL) shouldPerformSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier
+				   sender: (id)sender
 {
   return YES;
 }
