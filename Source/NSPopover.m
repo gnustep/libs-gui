@@ -88,6 +88,7 @@
     {
       [super setContentView: AUTORELEASE([[GSPopoverView alloc]
 					   initWithFrame: contentRect])];
+      [self setReleasedWhenClosed: YES];
     }
   return self;
 }
@@ -231,16 +232,12 @@
 - (void) close
 {
   [_realPanel close];
-  [_realPanel setDelegate:nil];
-  [_realPanel orderOut: nil];
   _shown = NO;
 }
 
 - (IBAction) performClose: (id)sender
 {
   [_realPanel performClose: sender];
-  [_realPanel setDelegate: nil];
-  [_realPanel orderOut: nil];
   _shown = NO;
 }
 
