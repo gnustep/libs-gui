@@ -63,9 +63,15 @@ objective-c headers.
 #endif
 
 // GIF> 5.1
-#if GIFLIB_MAJOR >= 5 && GIFLIB_MINOR >= 1
+#if (GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1) || GIFLIB_MAJOR > 5
   #define DGifCloseFile(f) DGifCloseFile(f, NULL)
   #define EGifCloseFile(f) EGifCloseFile(f, NULL)
+#endif
+
+// GifQuantizeBuffer is considered private API on GIF 5.2 and later:
+// https://sourceforge.net/p/giflib/code/ci/befe188771035de7acbc2ad46bea22ea73ab09cd/
+#if (GIFLIB_MAJOR == 5 && GIFLIB_MINOR < 2) || GIFLIB_MAJOR < 5
+  #define PUBLIC_QUANTIZEBUFFER
 #endif
 
 /* -----------------------------------------------------------
@@ -128,7 +134,7 @@ static void gs_gif_init_input_source(gs_gif_input_src *src, NSData *data)
   src->pos    = 0;
 }
 
-#if HAVE_QUANTIZEBUFFER || HAVE_GIFQUANTIZEBUFFER
+#if (HAVE_QUANTIZEBUFFER || HAVE_GIFQUANTIZEBUFFER) && PUBLIC_QUANTIZEBUFFER
 /* Function to write GIF to buffer */
 static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 {
@@ -404,7 +410,7 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 - (NSData *) _GIFRepresentationWithProperties: (NSDictionary *) properties
                                  errorMessage: (NSString **)errorMsg
 {
-#if HAVE_QUANTIZEBUFFER || HAVE_GIFQUANTIZEBUFFER
+#if (HAVE_QUANTIZEBUFFER || HAVE_GIFQUANTIZEBUFFER) && PUBLIC_QUANTIZEBUFFER
   NSMutableData         * GIFRep = nil;	// our return value
   GifFileType           * GIFFile = NULL;
   GifByteType           * rgbPlanes = NULL;	// giflib needs planar RGB
