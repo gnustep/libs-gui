@@ -249,10 +249,12 @@
   NSRect screenRect;
   NSRect windowFrame;
   NSRect viewFrame;
-
+  NSWindow *window = nil;
+  
   [_contentViewController loadView];
   view = [_contentViewController view];
-  viewFrame = [view frame];
+  window = [view window];
+  viewFrame = [view frame]; // [window convertRectToScreen: [view frame]];
 
   if (!_realPanel)
     {
@@ -261,7 +263,6 @@
 							backing: NSBackingStoreRetained
 							  defer: NO];
 
-      [_realPanel setBackgroundColor: [NSColor darkGrayColor]];
       [_realPanel setReleasedWhenClosed: YES];
       [_realPanel setExcludedFromWindowsMenu: YES];
       [_realPanel setLevel: NSPopUpMenuWindowLevel];
@@ -270,7 +271,7 @@
       [_realPanel setContentView: view];
     }
 
-  screenRect = [[positioningView window] convertRectToScreen:positioningRect];
+  screenRect = [[positioningView window] convertRectToScreen: positioningRect];
   windowFrame = [_realPanel frame];
   windowFrame.origin = screenRect.origin;
 
@@ -294,8 +295,8 @@
   [_realPanel setFrame: windowFrame display: YES];
   [_realPanel makeKeyAndOrderFront:self];
 
-  NSDebugLog(@"Showing relative to in window %@",NSStringFromRect(positioningRect));
-  NSDebugLog(@"Showing relative to in screen %@",NSStringFromRect(screenRect));
+  NSLog(@"Showing relative to in window %@",NSStringFromRect(positioningRect));
+  NSLog(@"Showing relative to in screen %@",NSStringFromRect(screenRect));
 
   _shown = YES;
 }

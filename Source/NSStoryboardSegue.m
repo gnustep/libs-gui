@@ -174,15 +174,15 @@
     {
       if (_popover == nil)
 	{
-	  NSPopover *po = [[NSPopover alloc] init];
 	  NSRect rect = [_popoverAnchorView frame];
 
-	  _popover = po; // weak... since we manually release...
-	  [po setBehavior: _popoverBehavior];
-	  [po setContentViewController: _destinationController];
-	  [po showRelativeToRect: rect
-			  ofView: _popoverAnchorView
-		   preferredEdge: _preferredEdge];
+	  NSLog(@"anchor view = %@", _popoverAnchorView);
+	  _popover = [[NSPopover alloc] init]; // manually release when closed...
+	  [_popover setBehavior: _popoverBehavior];
+	  [_popover setContentViewController: _destinationController];
+	  [_popover showRelativeToRect: rect
+				ofView: _popoverAnchorView
+			 preferredEdge: _preferredEdge];
 	}
       else
 	{
@@ -190,8 +190,7 @@
 	    {
 	      [_destinationController dismissController: nil];
 	      [_popover close];
-	      RELEASE(_popover);
-	      _popover = nil;
+	      DESTROY(_popover);
 	    }
 	}
     }
