@@ -45,11 +45,14 @@ APPKIT_EXPORT_CLASS
   id _sourceController;
   id _destinationController;
   NSStoryboardSegueIdentifier _identifier;
+
   NSString *_kind;
   NSString *_relationship;
   id _popoverAnchorView;
   NSPopoverBehavior _popoverBehavior;
+  NSPopover *_popover;
   NSRectEdge _preferredEdge;
+
   GSStoryboardSeguePerformHandler _handler;
 }
 

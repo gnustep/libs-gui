@@ -22,8 +22,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -76,18 +76,19 @@
 @implementation GSPopoverPanel
 
 - (id) initWithContentRect: (NSRect)contentRect
-                 styleMask: (NSUInteger)aStyle
-                   backing: (NSBackingStoreType)bufferingType
-                     defer: (BOOL)flag
+		 styleMask: (NSUInteger)aStyle
+		   backing: (NSBackingStoreType)bufferingType
+		     defer: (BOOL)flag
 {
   self = [super initWithContentRect: contentRect
-                          styleMask: aStyle
-                            backing: bufferingType
-                              defer: flag];
+			  styleMask: aStyle
+			    backing: bufferingType
+			      defer: flag];
   if (self)
     {
       [super setContentView: AUTORELEASE([[GSPopoverView alloc]
-                                           initWithFrame: contentRect])];
+					   initWithFrame: contentRect])];
+      [self setReleasedWhenClosed: YES];
     }
   return self;
 }
@@ -98,12 +99,12 @@
   [self close];
 }
 
-- (BOOL) canBecomeKeyWindow 
+- (BOOL) canBecomeKeyWindow
 {
   return NO;
 }
 
-- (BOOL) canBecomeMainWindow 
+- (BOOL) canBecomeMainWindow
 {
   return NO;
 }
@@ -121,7 +122,7 @@
     {
       return nil;
     }
-  
+
   return [subviews objectAtIndex: 0];
 }
 
@@ -180,18 +181,18 @@
       BOOL loaded = [NSBundle loadNibNamed: controllerClassName
 				     owner: controller];
       if (!loaded)
-        {
-          [NSException raise: NSInternalInconsistencyException
-                      format: @"Could not load controller %@", controllerClassName];
-        }
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		      format: @"Could not load controller %@", controllerClassName];
+	}
       else
-        {
-          if ([controller view] == nil)
-            {
-              [NSException raise: NSInternalInconsistencyException
-                          format: @"Loaded controller named %@, but view is not set", controllerClassName];
-            }
-        }
+	{
+	  if ([controller view] == nil)
+	    {
+	      [NSException raise: NSInternalInconsistencyException
+			  format: @"Loaded controller named %@, but view is not set", controllerClassName];
+	    }
+	}
     }
   ASSIGN(_contentViewController, controller);
 }
@@ -231,24 +232,24 @@
 - (void) close
 {
   [_realPanel close];
-  [_realPanel setDelegate:nil];
+  _shown = NO;
 }
 
 - (IBAction) performClose: (id)sender
 {
-  [_realPanel performClose:sender];
-  [_realPanel setDelegate:nil];
+  [_realPanel performClose: sender];
+  _shown = NO;
 }
 
 - (void) showRelativeToRect: (NSRect)positioningRect
-                     ofView: (NSView *)positioningView 
-              preferredEdge: (NSRectEdge)preferredEdge
+		     ofView: (NSView *)positioningView
+	      preferredEdge: (NSRectEdge)preferredEdge
 {
   NSView *view = nil;
   NSRect screenRect;
   NSRect windowFrame;
   NSRect viewFrame;
-  
+
   [_contentViewController loadView];
   view = [_contentViewController view];
   viewFrame = [view frame];
@@ -259,7 +260,7 @@
 						      styleMask: NSBorderlessWindowMask
 							backing: NSBackingStoreRetained
 							  defer: NO];
-      
+
       [_realPanel setBackgroundColor: [NSColor darkGrayColor]];
       [_realPanel setReleasedWhenClosed: YES];
       [_realPanel setExcludedFromWindowsMenu: YES];
@@ -268,7 +269,7 @@
       [_realPanel setDelegate: self];
       [_realPanel setContentView: view];
     }
-  
+
   screenRect = [[positioningView window] convertRectToScreen:positioningRect];
   windowFrame = [_realPanel frame];
   windowFrame.origin = screenRect.origin;
@@ -292,10 +293,10 @@
 
   [_realPanel setFrame: windowFrame display: YES];
   [_realPanel makeKeyAndOrderFront:self];
-  
+
   NSDebugLog(@"Showing relative to in window %@",NSStringFromRect(positioningRect));
   NSDebugLog(@"Showing relative to in screen %@",NSStringFromRect(screenRect));
-  
+
   _shown = YES;
 }
 
@@ -364,7 +365,7 @@
       [coder encodeValueOfObjCType: @encode(CGFloat) at: &_contentSize.width];
       [coder encodeValueOfObjCType: @encode(CGFloat) at: &_contentSize.height];
       [coder encodeObject:_contentViewController];
-    } 
+    }
 }
 
 @end
