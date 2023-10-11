@@ -1746,6 +1746,13 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     {
       path = [[NSTask launchPathForTool: @"make_services"] retain];
     }
+
+  if (path == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+	           format: @"Unable to find the make_services tool.\n"];
+    }
+
   task = [NSTask launchedTaskWithLaunchPath: path
 				  arguments: nil];
   if (task != nil)
