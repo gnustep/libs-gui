@@ -290,6 +290,8 @@ static NSString *commandKeyString = @"#";
                           (shift != NO) ? shiftKeyString : @"",
                           (m & NSCommandKeyMask) ? commandKeyString : @"",
                           key];
+
+	  key = [[GSTheme theme] keyForKeyEquivalent: key];
         }
     }
 

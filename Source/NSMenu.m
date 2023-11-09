@@ -261,226 +261,28 @@ static BOOL menuBarVisible = YES;
 
 - (void) _organizeMenu
 {
-  NSString *infoString = _(@"Info");
-  NSString *servicesString = _(@"Services");
-  int i;
-
-  if ([self _isMain])
-    {
-      NSString *appTitle;
-      NSMenu *appMenu;
-      id <NSMenuItem> appItem;
-
-      appTitle = [[[NSBundle mainBundle] localizedInfoDictionary]
-                     objectForKey: @"ApplicationName"];
-      if (nil == appTitle)
-        {
-          appTitle = [[NSProcessInfo processInfo] processName];
-        }
-      appItem = [self itemWithTitle: appTitle];
-      appMenu = [appItem submenu];
-
-      if (_menu.horizontal == YES)
-        {
-          NSMutableArray *itemsToMove;
-	  
-          itemsToMove = [NSMutableArray new];
-          
-          if (appMenu == nil)
-            {
-              [self insertItemWithTitle: appTitle
-                    action: NULL
-                    keyEquivalent: @"" 
-                    atIndex: 0];
-              appItem = [self itemAtIndex: 0];
-              appMenu = [NSMenu new];
-              [self setSubmenu: appMenu forItem: appItem];
-              RELEASE(appMenu);
-            }
-          else
-            {
-              int index = [self indexOfItem: appItem];
-              
-              if (index != 0)
-                {
-                  RETAIN (appItem);
-                  [self removeItemAtIndex: index];
-                  [self insertItem: appItem atIndex: 0];
-                  RELEASE (appItem);
-                }
-            }
-
-	  if ([[GSTheme theme] menuShouldShowIcon])
-	    {
-              NSImage *ti;
-              float bar;
-	      ti = [[NSApp applicationIconImage] copy];
-	      if (ti == nil)
-		{
-		  ti = [[NSImage imageNamed: @"GNUstep"] copy];
-		}
-	      [ti setScalesWhenResized: YES];
-	      bar = [NSMenuView menuBarHeight] - 4;
-	      [ti setSize: NSMakeSize(bar, bar)];
-	      [appItem setImage: ti];
-	      RELEASE(ti);
-	    }
-
-          // Collect all simple items plus "Info" and "Services"
-          for (i = 1; i < [_items count]; i++)
-            {
-              NSMenuItem *anItem = [_items objectAtIndex: i];
-              NSString *title = [anItem title];
-              NSMenu *submenu = [anItem submenu];
-
-              if (submenu == nil)
-                {
-                  [itemsToMove addObject: anItem];
-                }
-              else
-                {
-                  // The menu may not be localized, so we have to 
-                  // check both the English and the local version.
-                  if ([title isEqual: @"Info"] ||
-                      [title isEqual: @"Services"] ||
-                      [title isEqual: infoString] ||
-                      [title isEqual: servicesString])
-                    {
-                      [itemsToMove addObject: anItem];
-                    }
-                }
-            }
-          
-          for (i = 0; i < [itemsToMove count]; i++)
-            {
-              NSMenuItem *anItem = [itemsToMove objectAtIndex: i];
-
-              [self removeItem: anItem];
-              [appMenu addItem: anItem];
-            }
-          
-          RELEASE(itemsToMove);
-        }      
-      else 
-        {
-          [appItem setImage: nil];
-          if (appMenu != nil)
-            {
-              NSArray	*array = [NSArray arrayWithArray: [appMenu itemArray]];
-              /* 
-               * Everything above the Serives menu goes into the info submenu,
-               * the rest into the main menu.
-               */
-              int k = [appMenu indexOfItemWithTitle: servicesString];
-
-              // The menu may not be localized, so we have to 
-              // check both the English and the local version.
-              if (k == -1)
-                k = [appMenu indexOfItemWithTitle: @"Services"];
-
-              if ((k > 0) && ([[array objectAtIndex: k - 1] isSeparatorItem]))
-                k--;
-
-              if (k == 1)
-                {
-                  // Exactly one info item
-                  NSMenuItem *anItem = [array objectAtIndex: 0];
-
-                  [appMenu removeItem: anItem];
-                  [self insertItem: anItem atIndex: 0];
-                }
-              else if (k > 1)
-                {
-                  id <NSMenuItem> infoItem;
-                  NSMenu *infoMenu;
-
-                  // Multiple info items, add a submenu for them
-                  [self insertItemWithTitle: infoString
-                        action: NULL
-                        keyEquivalent: @"" 
-                        atIndex: 0];
-                  infoItem = [self itemAtIndex: 0];
-                  infoMenu = [NSMenu new];
-                  [self setSubmenu: infoMenu forItem: infoItem];
-                  RELEASE(infoMenu);
-
-                  for (i = 0; i < k; i++)
-                    {
-                      NSMenuItem *anItem = [array objectAtIndex: i];
-                  
-                      [appMenu removeItem: anItem];
-                      [infoMenu addItem: anItem];
-                    }
-                }
-              else
-                {
-                  // No service menu, or it is the first item.
-                  // We still look for an info item.
-                  NSMenuItem *anItem = [array objectAtIndex: 0];
-                  NSString *title = [anItem title];
-
-                  // The menu may not be localized, so we have to 
-                  // check both the English and the local version.
-                  if ([title isEqual: @"Info"] ||
-                      [title isEqual: infoString])
-                    {
-                      [appMenu removeItem: anItem];
-                      [self insertItem: anItem atIndex: 0];
-                      k = 1;
-                    }
-                  else
-                    {
-                      k = 0;
-                    }
-                }
-
-              // Copy the remaining entries.
-              for (i = k; i < [array count]; i++)
-                {
-                  NSMenuItem *anItem = [array objectAtIndex: i];
-                  
-                  [appMenu removeItem: anItem];
-                  [self addItem: anItem];
-                }
-
-              [self removeItem: appItem];
-            }
-        }  
-    }
-
-  // recurse over all submenus
-  for (i = 0; i < [_items count]; i++)
-    {
-      NSMenuItem *anItem = [_items objectAtIndex: i];
-      NSMenu *submenu = [anItem submenu];
-
-      if (submenu != nil)
-        {
-          if ([submenu isTransient])
-            {
-              [submenu closeTransient];
-            }
-          [submenu close];
-          [submenu _organizeMenu];
-        }
-    }
-
-  [[self menuRepresentation] update];
-  [self sizeToFit];
+  [[GSTheme theme] organizeMenu: self
+  		   isHorizontal: _menu.horizontal];
 }
 
 - (void) _setGeometry
 {
-  NSPoint        origin;
-
   if (_menu.horizontal == YES)
     {
       NSRect screenFrame = [[NSScreen mainScreen] frame];
-      origin = NSMakePoint (0, screenFrame.size.height
-                            - [_aWindow frame].size.height);
-      origin.y += screenFrame.origin.y;
-      [_aWindow setFrameOrigin: origin];
-      [_bWindow setFrameOrigin: origin];
+
+      NSRect proposedFrame = NSMakeRect(0, 
+		      			screenFrame.size.height -
+		      			[_aWindow frame].size.height +
+					screenFrame.origin.y,
+					screenFrame.size.width,
+					[_aWindow frame].size.height);
+      proposedFrame = [[GSTheme theme] modifyRect: proposedFrame
+	   				  forMenu: self
+	   			     isHorizontal: YES];
+
+      [_aWindow setFrame: proposedFrame display: NO];
+      [_bWindow setFrame: proposedFrame display: NO];
     }
   else
     {
@@ -510,7 +312,7 @@ static BOOL menuBarVisible = YES;
       
       if ((_aWindow != nil) && ([_aWindow screen] != nil))
         {
-          origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
+          NSPoint origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
                                - [_aWindow frame].size.height);
 	  
           [_aWindow setFrameOrigin: origin];
