@@ -789,7 +789,10 @@ static float menuBarHeight = 0.0;
         {
           GSCellRect elem;
           NSMenuItemCell *aCell = [self menuItemCellForItemAtIndex: i];
-          float titleWidth = [aCell titleWidth];
+          CGFloat titleWidth = [aCell titleWidth];
+
+	  titleWidth = [[GSTheme theme] proposedTitleWidth: titleWidth
+					       forMenuView: self];
 
           if ([aCell imageWidth])
             {
