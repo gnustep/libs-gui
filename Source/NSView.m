@@ -5218,7 +5218,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (NSSize) intrinsicContentSize
 {
-  return NSMakeSize(NSViewNoIntrinsicMetric, NSViewNoIntrinsicMetric)
+  return NSMakeSize(NSViewNoIntrinsicMetric, NSViewNoIntrinsicMetric);
 }
 
 - (CGFloat) baselineOffsetFromBottom
