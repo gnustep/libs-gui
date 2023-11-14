@@ -119,6 +119,23 @@
 @end
 
 @implementation NSStoryboardSeguePerformAction
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _target = nil;
+      _action = NULL;
+      _sender = nil;
+      _identifier = nil;
+      _kind = nil;
+      _popoverAnchorView = nil;
+      _storyboardSegue = nil;
+      _storyboard = nil;
+    }
+  return self;
+}
+
 - (id) target
 {
   return _target;
@@ -306,6 +323,16 @@
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   // this is never encoded directly...
+}
+
+- (NSString *) description
+{
+  return [NSString stringWithFormat:
+		     @"<%@ - target = %@, selector = %@, sender = %@, "
+		   @"identifier = %@, kind = %@, popoverAnchorView = %@>",
+		   [super description], [self target], [self selector],
+		   [self sender], [self identifier], [self kind],
+		   [self popoverAnchorView]];
 }
 @end
 
