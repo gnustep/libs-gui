@@ -36,7 +36,7 @@
 #ifdef GNUSTEP_WITH_DLL 
 
 #if BUILD_libgnustep_gui_DLL
-#
+
 # if defined(__MINGW__)
   /* On Mingw, the compiler will export all symbols automatically, so
    * __declspec(dllexport) is not needed.

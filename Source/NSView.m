@@ -1668,7 +1668,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   return 0.0;
 }
 
-- (void) setFrameCenterRotation:(CGFloat)rot;
+- (void) setFrameCenterRotation:(CGFloat)rot
 {
   // FIXME this is dummy, we don't have layers yet
   // we probably need a Matrix akin frame rotation.
@@ -5211,14 +5211,14 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   return _contentCompressionResistancePriority;
 }
 
-- (void) setContentCompressionResistancePriority: (NSLayoutPriority)priority;
+- (void) setContentCompressionResistancePriority: (NSLayoutPriority)priority
 {
   _contentCompressionResistancePriority = priority;
 }
 
 - (NSSize) intrinsicContentSize
 {
-  return NSMakeSize(NSViewNoIntrinsicMetric, NSViewNoIntrinsicMetric); 
+  return NSMakeSize(NSViewNoIntrinsicMetric, NSViewNoIntrinsicMetric)
 }
 
 - (CGFloat) baselineOffsetFromBottom
