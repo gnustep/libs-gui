@@ -1987,7 +1987,7 @@ static NSString *_placeholderItem = nil;
   return _allowsEmptySelection;
 }
 
-- (void) setAllowsEmptySelection: (BOOL)flag;
+- (void) setAllowsEmptySelection: (BOOL)flag
 {
   _allowsEmptySelection = flag;
 }

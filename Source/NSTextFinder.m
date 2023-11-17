@@ -134,7 +134,7 @@
                              withTextView: nil];
 }
 
-- (void)cancelFindIndicator;
+- (void)cancelFindIndicator
 {
 }
 
