@@ -684,7 +684,7 @@ PACKAGE_SCOPE
 @property float contentCompressionResistancePriority;
 #else
 - (BOOL) contentCompressionResistancePriority;
-- (void) setContentCompressionResistancePriority: (float)priority;
+- (void) setContentCompressionResistancePriority: (NSLayoutPriority)priority;
 #endif
 
 #if GS_HAS_DECLARED_PROPERTIES
