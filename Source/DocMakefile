@@ -330,6 +330,8 @@ Gui_AGSDOC_FLAGS = \
 	APPKIT_EXTERN=extern;\
 	DEFINE_RINT_IF_MISSING="";\
 	PACKAGE_SCOPE="";\
+	IBOutlet="";\
+	IBAction=void;\
 	}' -Up Gui
 
 GuiAdditions_AGSDOC_FLAGS = \
