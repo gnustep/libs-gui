@@ -472,6 +472,7 @@ static inline void
 DPSWriteData(GSCTXT *ctxt, const char * buf, unsigned int count)
 __attribute__((unused));
 
+/** <ignore> These are duplicate definitions for MSVC, let's ignore them for autogsdoc */
 #ifdef _MSC_VER
 #define DPS_FUNCTION(type, name) static inline type \
 name(GSCTXT *ctxt) \
@@ -589,7 +590,8 @@ name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5, t
   (ctxt->methods->name ## ________) \
     (ctxt, @selector(name: : : : : : : :), var1, var2, var3, var4, var5, var6, var7, var8); \
 }
-#endif
+#endif // _MSVC_VER
+/** </ignore> */
 
 /* ----------------------------------------------------------------------- */
 /* Color operations */

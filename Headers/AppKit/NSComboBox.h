@@ -101,7 +101,9 @@ APPKIT_EXPORT_CLASS
 @optional
 #endif
 #else
+/** <ignore> */
 @interface NSObject (NSComboBoxDataSource)
+/** </ignore> */
 #endif
 - (NSInteger) numberOfItemsInComboBox: (NSComboBox *)aComboBox;
 - (id) comboBox: (NSComboBox *)aComboBox objectValueForItemAtIndex:(NSInteger)index;
@@ -120,7 +122,9 @@ APPKIT_EXPORT_CLASS
 @optional
 #endif
 #else
+/** <ignore> */
 @interface NSObject (NSComboBoxNotifications)
+/** </ignore> */
 #endif
 - (void) comboBoxWillPopUp: (NSNotification *)notification;
 - (void) comboBoxWillDismiss: (NSNotification *)notification;
