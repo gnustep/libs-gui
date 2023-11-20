@@ -261,7 +261,7 @@ static NSMutableArray *activeConstraints = nil;
                     attribute: (NSLayoutAttribute)secondAttribute 
                    multiplier: (CGFloat)multiplier
                      constant: (CGFloat)constant
-                     priority: (CGFloat)priority;
+                     priority: (CGFloat)priority
 {
   self = [super init];
   if (self != nil)

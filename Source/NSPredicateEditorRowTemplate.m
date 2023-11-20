@@ -55,7 +55,7 @@
   rightExpressionAttributeType: (NSAttributeType)attrType
                       modifier: (NSComparisonPredicateModifier)modif
                      operators: (NSArray *)ops
-                       options: (NSUInteger)opts;
+                       options: (NSUInteger)opts
 {
   return self;
 }
@@ -64,7 +64,7 @@
               rightExpressions: (NSArray *)rightExprs
                       modifier: (NSComparisonPredicateModifier)modif
                      operators: (NSArray *)ops
-                       options: (NSUInteger)opts;
+                       options: (NSUInteger)opts
 {
   return self;
 }

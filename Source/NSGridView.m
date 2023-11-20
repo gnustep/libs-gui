@@ -541,27 +541,27 @@
   return _xPlacement;
 }
 
-- (void) setXPlacement: (NSGridCellPlacement)x;
+- (void) setXPlacement: (NSGridCellPlacement)x
 {
   _xPlacement = x;
 }
 
-- (NSGridCellPlacement) yPlacement;
+- (NSGridCellPlacement) yPlacement
 {
   return _yPlacement;
 }
 
-- (void) setYPlacement: (NSGridCellPlacement)y;
+- (void) setYPlacement: (NSGridCellPlacement)y
 {
   _yPlacement = y;
 }
 
-- (NSGridRowAlignment) rowAlignment;
+- (NSGridRowAlignment) rowAlignment
 {
   return _rowAlignment;
 }
 
-- (void) setRowAlignment: (NSGridRowAlignment)a;
+- (void) setRowAlignment: (NSGridRowAlignment)a
 {
   _rowAlignment = a;
 }

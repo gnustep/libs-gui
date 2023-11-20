@@ -359,7 +359,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 
 - (id) initWithGraphicsPort: (void *)port 
-                    flipped: (BOOL)flag;
+                    flipped: (BOOL)flag
 {
   self = [self init];
   if (self != nil)
