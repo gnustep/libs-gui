@@ -109,6 +109,30 @@ You will notice that these methods use the integer window number rather
 than the NSWindow object - this is for the convenience of the backend
 library which should (eventually) use window numbers for everything
 
+@subsection Theming
+
+GNUstep implements Theming via the GSTheme class.  This class can be subclassed
+to override the existing drawing being done by the widgets.  Each widget has
+a category in this class in which the drawing for that widget is done. There are
+two types of theme: code and non-code...
+
+@table @command
+
+@item Code
+
+Code themes, for example, the WinUXTheme, use code to override specific things in
+the GSTheme class so that the theme can display using the native widgets.  These
+can be combined with custom widgets as well as color and image settings.
+
+@item Non-code
+Non-code themes use .plist files (which can also be used in code based themes) to
+override standard images and color settings in GNUstep.
+
+@end table
+
+Theming is extremely flexible.  GNUstep can be made to blend into most environments.
+The application to modify themes is called Thematic.
+
 @subsection NSWorkspace
 
 Here is (I think) the current state of the code (largely untested) -
