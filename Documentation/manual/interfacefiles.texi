@@ -31,7 +31,7 @@
 Interface files are often referred to as "nib" (or, more generally, model) files.@footnote{This is a throwback to the origin's of the GNUstep framework, when it's API specification (OpenStep) was based on NeXTStep, which used typedstream "nib" files (NeXT Inteface Builder) to store interfaces.} XML nib files after 10.2.x are usable by GNUstep, early nib files are ``typedstream'' style nibs which cannot be read by GNUstep.  The framework can read other formats as detailed below. This section is very important to understanding key concepts in the AppKit, especially with regards to manipulation of your user interface. It is strongly recommended you do not skip this section, and refer back to it if you do not understand anything, even if you don't intend to use Gorm (also not recommended).
 
 The different types of models which are usable by GNUstep are:
-@table @command
+@table @code
 @item .gorm
 .gorm files are the native format that is used by GNUstep, these are encoded and decoded in the Foundation / AppKit classes themselves.  This is Gorm's native format.
 

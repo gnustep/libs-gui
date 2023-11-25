@@ -132,6 +132,30 @@ override standard images and color settings in GNUstep.
 Theming is extremely flexible.  GNUstep can be made to blend into most environments.
 The application to modify themes is called Thematic.
 
+You can set the theme using the follow command:
+
+@example
+defaults write NSGlobalDomain GSTheme THEMENAME
+@end example
+
+Where THEMENAME is the name of the theme installed.  The locations for themes are:
+
+@table @samp
+
+@item PREFIX/System/Library/Themes
+System themes
+
+@item PREFIX/Local/Library/Themes
+Locally installed themes
+
+@item ~/GNUstep/Library/Themes
+User installed themes
+
+@end table
+
+Where PREFIX is whatever prefix that was specified when building GNUstep. Usually
+this is /usr/GNUstep, /usr/local/GNUstep, or /.
+
 @subsection NSWorkspace
 
 Here is (I think) the current state of the code (largely untested) -
