@@ -53,6 +53,16 @@
 #import "AppKit/NSNibLoading.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 
+
+@implementation NSObject (NSNibLoading)
+
+- (void) awakeFromNib
+{
+  // empty implementation, so that all objects respond...
+}
+
+@end
+
 @implementation NSNib
 
 // private method to read in the data...
