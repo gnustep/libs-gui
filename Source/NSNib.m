@@ -61,6 +61,11 @@
   // empty implementation, so that all objects respond...
 }
 
+- (void) prepareForInterfaceBuilder
+{
+  // empty implementation, so that all objects respond...
+}
+
 @end
 
 @implementation NSNib

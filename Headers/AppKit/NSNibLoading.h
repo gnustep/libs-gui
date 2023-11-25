@@ -47,6 +47,15 @@
  */
 - (void) awakeFromNib;
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+/**
+ * This method is called on a designable object to notify it that it
+ * was created at design time.  This allows IB/Gorm to set up the
+ * appearance of the object when loaded into the editor.
+ */
+- (void) prepareForInterfaceBuilder;
+#endif
+
 @end
 
 
