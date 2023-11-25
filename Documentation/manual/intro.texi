@@ -119,7 +119,6 @@ two types of theme: code and non-code...
 @table @command
 
 @item Code
-
 Code themes, for example, the WinUXTheme, use code to override specific things in
 the GSTheme class so that the theme can display using the native widgets.  These
 can be combined with custom widgets as well as color and image settings.
