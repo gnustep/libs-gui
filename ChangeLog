@@ -1,3 +1,24 @@
+2023-11-25 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Documentation/manual/applicationmakefiles.texi: Update
+	documentation.
+	* Documentation/manual/gnustepapplication.texi: Update
+	documentation.  Update installation path default.
+	* Documentation/manual/interfacefiles.texi: Update
+	documentation.  Add information about model files (xib,
+	nib, etc).
+	* Documentation/manual/intro.texi: Update
+	documentation.  Add information about themes.
+
+2023-11-25 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSNibLoading.h: Add declaration for
+	-prepareForInterfaceBuilder to NSNibLoading category.
+	* Source/NSNib.m: Add new empty method implementation for
+	-awakeFromNib and -prepareForInterfaceBuilder to NSNibLoading
+	category on NSObject.
+	* Source/NSView.m: Remove empty implementation of awakeFromNib.
+
 2023-09-05 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/DocMakefile: Fix issue #198 ... headers had added a new
