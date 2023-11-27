@@ -2022,15 +2022,12 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 
   // awaken the owner
-  if ([owner respondsToSelector: @selector(awakeFromNib)])
-    {
-      [owner awakeFromNib];
+  [owner awakeFromNib];
 
-      // If we are in Gorm/IB, set the object up for display
-      if ([NSClassSwapper isInInterfaceBuilder] == YES)
-	{
-	  [obj prepareForInterfaceBuilder];
-	}
+  // If we are in Gorm/IB, set the object up for display
+  if ([NSClassSwapper isInInterfaceBuilder] == YES)
+    {
+      [owner prepareForInterfaceBuilder];
     }
 
   // bring visible windows to front...
