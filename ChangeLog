@@ -1,3 +1,12 @@
+2023-11-27 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSGormLoading.m
+	* Source/GSNibLoading.m
+	* Source/GSXibLoading.m: Remove calls to respondsToSelector:
+	for awakeFromNib.  This method is now implemented on a
+	category on NSObject called NSNibAwaking.  Also add a
+	call to prepareForInterfaceBuilder when we are in Gorm/IB.
+
 2023-11-25 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Documentation/manual/applicationmakefiles.texi: Update
