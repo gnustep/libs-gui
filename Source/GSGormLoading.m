@@ -6,7 +6,7 @@
 
    Author: Gregory John Casamento
    Date: July 2003.
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -21,10 +21,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSDictionary.h>
@@ -55,7 +55,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 @end
 
 /*
- * This private class is used to collect the nib items while the 
+ * This private class is used to collect the nib items while the
  * .gorm file is being unarchived.  This is done to allow only
  * the top level items to be retained in a clean way.  The reason it's
  * being done this way is because old .gorm files don't have any
@@ -65,7 +65,7 @@ static const int currentVersion = 1; // GSNibItem version number...
  * of subclasses of NSMenu, NSWindow, or any controller class.
  * It's the last one that's hairy.  Controller classes are
  * represented in .gorm files by the GSNibItem class, but once they transform
- * into the actual class instance it's not easy to tell if it should be 
+ * into the actual class instance it's not easy to tell if it should be
  * retained or not since there are a lot of other things stored in the nameTable
  * as well.  GJC
  */
@@ -96,7 +96,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       // add myself as an observer and initialize the items array.
       [nc addObserver: self
 	  selector: @selector(handleNotification:)
-	  name: GSInternalNibItemAddedNotification 
+	  name: GSInternalNibItemAddedNotification
 	  object: nil];
       items = [[NSMutableArray alloc] init];
     }
@@ -137,7 +137,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       NSNibConnector	*connection;
       NSString		*key;
       NSMenu		*menu;
-      NSMutableArray    *topObjects; 
+      NSMutableArray    *topObjects;
       id                 obj;
 
       // Add these objects with there old names as the code expects them
@@ -171,7 +171,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	}
 
       /*
-       * See if there is a main menu to be set.  Report #4815, mainMenu 
+       * See if there is a main menu to be set.  Report #4815, mainMenu
        * should be initialized before awakeFromNib is called.
        */
       menu = [nameTable objectForKey: @"NSMenu"];
@@ -211,10 +211,10 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	}
 
 
-      /* 
+      /*
        * See if the user has passed in the NSNibTopLevelObjects key.
        * This is an implementation of a commonly used feature to give access to
-       * all top level objects of a nib file.
+       * all top level objects of a gorm file.
        */
       obj = [context objectForKey: NSNibTopLevelObjects];
       if ([obj isKindOfClass: [NSMutableArray class]])
@@ -223,46 +223,55 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	}
       else
 	{
-	  topObjects = nil; 
+	  topObjects = nil;
 	}
 
 
       /*
        * Now tell all the objects that they have been loaded from
-       * a nib.
+       * a gorm model.
        */
       enumerator = [nameTable keyEnumerator];
       while ((key = [enumerator nextObject]) != nil)
 	{
-	  if ([context objectForKey: key] == nil || 
+	  if ([context objectForKey: key] == nil ||
 	      [key isEqualToString: NSNibOwner]) // we want to send the message to the owner
 	    {
-	      // we don't want to send a message to these menus twice, if they're custom classes. 
-	      if ([key isEqualToString: @"NSWindowsMenu"] == NO && 
-		  [key isEqualToString: @"NSServicesMenu"] == NO && 
+	      // we don't want to send a message to these menus twice, if they're custom classes.
+	      if ([key isEqualToString: @"NSWindowsMenu"] == NO &&
+		  [key isEqualToString: @"NSServicesMenu"] == NO &&
 		  [key isEqualToString: NSNibTopLevelObjects] == NO)
 		{
 		  id o = [nameTable objectForKey: key];
 
-		  // send the awake message, if it responds...
-		  if ([o respondsToSelector: @selector(awakeFromNib)])
+		  // send the awake message, every object should respond to this message since
+		  // it is defined on NSObject(NSNibAwaking)
+		  [o awakeFromNib];
+
+		  // Call prepareForInteraceBuilder if we are in IB/Gorm.
+		  if ([self respondsToSelector: @selector(isInInterfaceBuilder)])
 		    {
-		      [o awakeFromNib];
+		      if ([self isInInterfaceBuilder] == YES)
+			{
+			  // All objects should respond to this as it is defined on
+			  // NSObject(NSNibAwaking)
+			  [o prepareForInterfaceBuilder];
+			}
 		    }
 
 		  /*
-		   * Retain all "top level" items so that, when the container 
-		   * is released, they will remain. The GSNibItems instantiated in the gorm need 
-		   * to be retained, since we are deallocating the container.  
+		   * Retain all "top level" items so that, when the container
+		   * is released, they will remain. The GSNibItems instantiated in the gorm need
+		   * to be retained, since we are deallocating the container.
 		   * We don't want to retain the owner.
 		   *
-		   * Please note: It is encumbent upon the developer of an application to 
-		   * release these objects. Instantiating a window manually or loading in a .gorm 
-		   * file are equivalent processes. These objects need to be released in their 
-		   * respective controllers. If the developer has used the NSNibTopLevelObjects feature, 
-		   * then she will get the objects back in an array. She will will have to first release 
-                   * all the objects in the array and then the array itself in order to release the 
-                   * objects held within.
+		   * Please note: It is encumbent upon the developer of an application to
+		   * release these objects. Instantiating a window manually or loading in a .gorm
+		   * file are equivalent processes. These objects need to be released in their
+		   * respective controllers. If the developer has used the NSNibTopLevelObjects feature,
+		   * then she will get the objects back in an array. She will will have to first release
+		   * all the objects in the array and then the array itself in order to release the
+		   * objects held within.
 		   */
 		  if ([key isEqualToString: NSNibOwner] == NO)
 		    {
@@ -271,7 +280,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 			  [topObjects addObject: o];
 			  // All top level objects must be released by the
 			  // caller to avoid leaking, unless they are going
-			  // to be released by other nib objects on behalf
+			  // to be released by other gorm objects on behalf
 			  // of the owner.
 			  RETAIN(o);
 			}
@@ -279,7 +288,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 		}
 	    }
 	}
-      
+
       /*
        * See if there are objects that should be made visible.
        * This is the last thing we should do since changes might be made
@@ -345,11 +354,11 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   else if (version == 1)
     {
       NSMutableDictionary *nt = [NSMutableDictionary dictionaryWithDictionary: nameTable];
-      [nt setObject: [NSMutableArray arrayWithArray: visibleWindows] 
+      [nt setObject: [NSMutableArray arrayWithArray: visibleWindows]
 	  forKey: @"NSVisible"];
-      [nt setObject: [NSMutableArray arrayWithArray: deferredWindows] 
+      [nt setObject: [NSMutableArray arrayWithArray: deferredWindows]
 	  forKey: @"NSDeferred"];
-      [nt setObject: [NSMutableDictionary dictionaryWithDictionary: customClasses] 
+      [nt setObject: [NSMutableDictionary dictionaryWithDictionary: customClasses]
 	  forKey: @"GSCustomClassMap"];
       [aCoder encodeObject: nt];
       [aCoder encodeObject: connections];
@@ -358,11 +367,11 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   else if (version == 0)
     {
       NSMutableDictionary *nt = [NSMutableDictionary dictionaryWithDictionary: nameTable];
-      [nt setObject: [NSMutableArray arrayWithArray: visibleWindows] 
+      [nt setObject: [NSMutableArray arrayWithArray: visibleWindows]
 	  forKey: @"NSVisible"];
-      [nt setObject: [NSMutableArray arrayWithArray: deferredWindows] 
+      [nt setObject: [NSMutableArray arrayWithArray: deferredWindows]
 	  forKey: @"NSDeferred"];
-      [nt setObject: [NSMutableDictionary dictionaryWithDictionary: customClasses] 
+      [nt setObject: [NSMutableDictionary dictionaryWithDictionary: customClasses]
 	  forKey: @"GSCustomClassMap"];
       [aCoder encodeObject: nt];
       [aCoder encodeObject: connections];
@@ -376,7 +385,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  int version = [aCoder versionForClassName: @"GSNibContainer"]; 
+  int version = [aCoder versionForClassName: @"GSNibContainer"];
 
   // save the version to the ivar, we need it later.
   if (version == GNUSTEP_NIB_VERSION)
@@ -395,11 +404,11 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       [aCoder decodeValueOfObjCType: @encode(id) at: &topLevelObjects];
 
       // initialize with special entries...
-      ASSIGN(visibleWindows, [NSMutableArray arrayWithArray: 
+      ASSIGN(visibleWindows, [NSMutableArray arrayWithArray:
 					       [nameTable objectForKey: @"NSVisible"]]);
-      ASSIGN(deferredWindows, [NSMutableArray arrayWithArray: 
+      ASSIGN(deferredWindows, [NSMutableArray arrayWithArray:
 						[nameTable objectForKey: @"NSDeferred"]]);
-      ASSIGN(customClasses, [NSMutableDictionary dictionaryWithDictionary: 
+      ASSIGN(customClasses, [NSMutableDictionary dictionaryWithDictionary:
 						   [nameTable objectForKey: @"GSCustomClassMap"]]);
 
       // then remove them from the name table.
@@ -412,7 +421,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       GSNibItemCollector *nibitems = [[GSNibItemCollector alloc] init];
       NSEnumerator *en;
       NSString *key;
-      
+
       // initialize the set of top level objects...
       topLevelObjects = [[NSMutableSet alloc] initWithCapacity: 8];
 
@@ -435,11 +444,11 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	}
 
       // initialize with special entries...
-      ASSIGN(visibleWindows, [NSMutableArray arrayWithArray: 
+      ASSIGN(visibleWindows, [NSMutableArray arrayWithArray:
 					       [nameTable objectForKey: @"NSVisible"]]);
-      ASSIGN(deferredWindows, [NSMutableArray arrayWithArray: 
+      ASSIGN(deferredWindows, [NSMutableArray arrayWithArray:
 						[nameTable objectForKey: @"NSDeferred"]]);
-      ASSIGN(customClasses, [NSMutableDictionary dictionaryWithDictionary: 
+      ASSIGN(customClasses, [NSMutableDictionary dictionaryWithDictionary:
 						   [nameTable objectForKey: @"GSCustomClassMap"]]);
 
 
@@ -509,13 +518,13 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 {
   [aCoder encodeObject: theClass];
   [aCoder encodeRect: theFrame];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) 
+  [aCoder encodeValueOfObjCType: @encode(unsigned int)
 	  at: &autoresizingMask];
 }
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  int version = [aCoder versionForClassName: 
+  int version = [aCoder versionForClassName:
 			  NSStringFromClass([self class])];
   id obj = nil;
 
@@ -523,19 +532,19 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
     {
       Class		cls;
       unsigned int      mask;
-      
+
       [aCoder decodeValueOfObjCType: @encode(id) at: &theClass];
       theFrame = [aCoder decodeRect];
-      [aCoder decodeValueOfObjCType: @encode(unsigned int) 
+      [aCoder decodeValueOfObjCType: @encode(unsigned int)
 	      at: &mask];
-      
+
       cls = NSClassFromString(theClass);
       if (cls == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
 		       format: @"Unable to find class '%@', it is not linked into the application.", theClass];
 	}
-      
+
       if (theFrame.size.height > 0 && theFrame.size.width > 0)
 	{
 	  obj = [[cls allocWithZone: [self zone]] initWithFrame: theFrame];
@@ -549,7 +558,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	  else
 	    {
 	      obj = [[cls allocWithZone: [self zone]] init];
-	    }  
+	    }
 	}
 
       if ([obj respondsToSelector: @selector(setAutoresizingMask:)])
@@ -560,17 +569,17 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   else if (version == 0)
     {
       Class		cls;
-      
+
       [aCoder decodeValueOfObjCType: @encode(id) at: &theClass];
       theFrame = [aCoder decodeRect];
-      
+
       cls = NSClassFromString(theClass);
       if (cls == nil)
 	{
 	  [NSException raise: NSInternalInconsistencyException
 		       format: @"Unable to find class '%@', it is not linked into the application.", theClass];
 	}
-      
+
       obj = [cls allocWithZone: [self zone]];
       if (theFrame.size.height > 0 && theFrame.size.width > 0)
 	{
@@ -631,14 +640,14 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 /*
   These stand-ins are here for use by GUI elements within Gorm.   Since each gui element
   has it's own "designated initializer" it's important to provide a division between these
-  so that when they are loaded, the application will call the correct initializer. 
-  
+  so that when they are loaded, the application will call the correct initializer.
+
   Some "tricks" are employed in this code.   For instance the use of initWithCoder and
   encodeWithCoder directly as opposed to using the encodeObjC..  methods is the obvious
   standout.  To understand this it's necessary to explain a little about how encoding itself
   works.
 
-  When the model is saved by the Interface Builder (whether Gorm or another 
+  When the model is saved by the Interface Builder (whether Gorm or another
   IB equivalent) these classes should be used to substitute for the actual classes.  The actual
   classes are encoded as part of it, but since they are being replaced we can't use the normal
   encode methods to do it and must encode it directly.
@@ -651,8 +660,8 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 @implementation GSClassSwapper
 + (void) initialize
 {
-  if (self == [GSClassSwapper class]) 
-    { 
+  if (self == [GSClassSwapper class])
+    {
       [self setVersion: GSSWAPPER_VERSION];
     }
 }
@@ -681,7 +690,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       _className = nil;
       _superClass = nil;
       _object = nil;
-    } 
+    }
   return self;
 }
 
@@ -713,10 +722,10 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	  NSUnarchiver *unarchiver = (NSUnarchiver *)coder;
 
 	  // decode class/superclass...
-	  [coder decodeValueOfObjCType: @encode(id) at: &_className];  
+	  [coder decodeValueOfObjCType: @encode(id) at: &_className];
 	  [coder decodeValueOfObjCType: @encode(Class) at: &_superClass];
 
-	  // if we are living within the interface builder app, then don't try to 
+	  // if we are living within the interface builder app, then don't try to
 	  // morph into the subclass.
 	  if ([self shouldSwapClass])
 	    {
@@ -726,9 +735,9 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 		  [NSException raise: NSInternalInconsistencyException
 			       format: @"Unable to find class '%@', it is not linked into the application.", _className];
 		}
-	  
-	      // Initialize the object...  dont call decode, since this wont 
-	      // allow us to instantiate the class we want. 
+
+	      // Initialize the object...  dont call decode, since this wont
+	      // allow us to instantiate the class we want.
 	      obj = [aClass alloc];
 	    }
 	  else
@@ -738,7 +747,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 	  // inform the coder that this object is to replace the template in all cases.
 	  [unarchiver replaceObject: self withObject: obj];
-	  obj = [obj initWithCoder: coder]; // unarchive the object... 
+	  obj = [obj initWithCoder: coder]; // unarchive the object...
 	}
     }
 
@@ -748,14 +757,14 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];
   [aCoder encodeValueOfObjCType: @encode(Class) at: &_superClass];
 
   if (_object != nil)
     {
       // Don't call encodeValue, the way templates are used will prevent
       // it from being saved correctly.  Just call encodeWithCoder directly.
-      [_object encodeWithCoder: aCoder]; 
+      [_object encodeWithCoder: aCoder];
     }
 }
 
@@ -773,8 +782,8 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 @implementation GSWindowTemplate
 + (void) initialize
 {
-  if (self == [GSWindowTemplate class]) 
-    { 
+  if (self == [GSWindowTemplate class])
+    {
       [self setVersion: GSWINDOWT_VERSION];
     }
 }
@@ -854,7 +863,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
     {
       float change = newSize.height - oldSize.height;
       float changePerOption = change / options;
-      
+
       if (_autoPositionMask & (GSWindowMaxYMargin | GSWindowMinYMargin))
 	{
 	  if (_autoPositionMask & GSWindowMinYMargin)
@@ -864,7 +873,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	    }
 	}
     }
-  
+
   // change the origin of the window.
   if (changedOrigin)
     {
@@ -883,25 +892,25 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       if (version == GSWINDOWT_VERSION)
 	{
 	  // decode the defer flag...
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];      
+	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];
 	  [coder decodeValueOfObjCType: @encode(unsigned int) at: &_autoPositionMask];
 	  _screenRect = [coder decodeRect];
 	}
       else if (version == 0)
 	{
 	  // decode the defer flag...
-	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];      
+	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];
 	  _autoPositionMask = GSWindowAutoPositionNone;
 	  _screenRect = [[obj screen] frame];
 	}
 
       // FIXME: The designated initializer logic for NSWindow is in the initWithCoder: method of
       // NSWindow.   Unfortunately, this means that the "defer" flag for NSWindows and NSWindow
-      // subclasses in gorm files will be ignored.   This shouldn't have a great impact, 
-      // but it is not the correct behavior.  
+      // subclasses in gorm files will be ignored.   This shouldn't have a great impact,
+      // but it is not the correct behavior.
 
       //
-      // Set all of the attributes into the object, if it 
+      // Set all of the attributes into the object, if it
       // responds to any of these methods.
       //
       if ([obj respondsToSelector: @selector(setAutoPositionMask:)])
@@ -922,10 +931,10 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
   if (version == GSWINDOWT_VERSION)
     {
-      _screenRect = [[_object screen] frame];  
+      _screenRect = [[_object screen] frame];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];
       [coder encodeValueOfObjCType: @encode(unsigned int) at: &_autoPositionMask];
-      [coder encodeRect: _screenRect]; 
+      [coder encodeRect: _screenRect];
     }
   else if (version == 0)
     {
@@ -937,7 +946,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 @implementation GSViewTemplate
 + (void) initialize
 {
-  if (self == [GSViewTemplate class]) 
+  if (self == [GSViewTemplate class])
     {
       [self setVersion: GSVIEWT_VERSION];
     }
@@ -958,7 +967,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 @implementation GSTextTemplate
 + (void) initialize
 {
-  if (self == [GSTextTemplate class]) 
+  if (self == [GSTextTemplate class])
     {
       [self setVersion: GSTEXTT_VERSION];
     }
@@ -979,7 +988,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 @implementation GSTextViewTemplate
 + (void) initialize
 {
-  if (self == [GSTextViewTemplate class]) 
+  if (self == [GSTextViewTemplate class])
     {
       [self setVersion: GSTEXTVIEWT_VERSION];
     }
@@ -1000,7 +1009,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 @implementation GSMenuTemplate
 + (void) initialize
 {
-  if (self == [GSMenuTemplate class]) 
+  if (self == [GSMenuTemplate class])
     {
       [self setVersion: GSMENUT_VERSION];
     }
@@ -1022,7 +1031,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 @implementation GSControlTemplate
 + (void) initialize
 {
-  if (self == [GSControlTemplate class]) 
+  if (self == [GSControlTemplate class])
     {
       [self setVersion: GSCONTROLT_VERSION];
     }
@@ -1042,7 +1051,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 @implementation GSObjectTemplate
 + (void) initialize
 {
-  if (self == [GSObjectTemplate class]) 
+  if (self == [GSObjectTemplate class])
     {
       [self setVersion: GSOBJECTT_VERSION];
     }
@@ -1059,11 +1068,11 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 }
 @end
 
-// Order in this factory method is very important.  
+// Order in this factory method is very important.
 // Which template to create must be determined
 // in sequence because of the class hierarchy.
 @implementation GSTemplateFactory
-+ (id) templateForObject: (id) object 
++ (id) templateForObject: (id) object
 	   withClassName: (NSString *)className
       withSuperClassName: (NSString *)superClassName
 {
@@ -1073,44 +1082,44 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       if ([object isKindOfClass: [NSWindow class]])
 	{
 	  template = [[GSWindowTemplate alloc] initWithObject: object
-					       className: className 
+					       className: className
 					       superClassName: superClassName];
 	}
       else if ([object isKindOfClass: [NSTextView class]])
 	{
 	  template = [[GSTextViewTemplate alloc] initWithObject: object
-						 className: className 
+						 className: className
 						 superClassName: superClassName];
 	}
       else if ([object isKindOfClass: [NSText class]])
 	{
 	  template = [[GSTextTemplate alloc] initWithObject: object
-					     className: className 
+					     className: className
 					     superClassName: superClassName];
 	}
       else if ([object isKindOfClass: [NSControl class]])
 	{
 	  template = [[GSControlTemplate alloc] initWithObject: object
-						className: className 
+						className: className
 						superClassName: superClassName];
 	}
       else if ([object isKindOfClass: [NSView class]])
 	{
 	  template = [[GSViewTemplate alloc] initWithObject: object
-					     className: className 
+					     className: className
 					     superClassName: superClassName];
 	}
       else if ([object isKindOfClass: [NSMenu class]])
 	{
 	  template = [[GSMenuTemplate alloc] initWithObject: object
-					     className: className 
+					     className: className
 					     superClassName: superClassName];
 	}
-      else if ([object isKindOfClass: [NSObject class]]) 
+      else if ([object isKindOfClass: [NSObject class]])
 	{
 	  // for gui elements derived from NSObject
 	  template = [[GSObjectTemplate alloc] initWithObject: object
-					       className: className 
+					       className: className
 					       superClassName: superClassName];
 	}
     }
