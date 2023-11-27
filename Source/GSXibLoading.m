@@ -1049,6 +1049,17 @@
   // If we are currently in IB, then don't do anything.
   if ([NSClassSwapper isInInterfaceBuilder])
     {
+      // Prepare objects for display in Gorm/IB.
+      en = [[objectRecords orderedObjects] objectEnumerator];
+      while ((obj = [en nextObject]) != nil)
+	{
+	  id realObj = [obj object];
+	  
+	  // All objects should respond to this as it is defined on
+	  // NSObject(NSNibAwaking)
+	  [realObj prepareForInterfaceBuilder];
+	}
+
       return self;
     }
 
@@ -1124,10 +1135,7 @@
             }
         }
 
-      if ([realObj respondsToSelector: @selector(awakeFromNib)])
-        {
-          [realObj awakeFromNib];
-        }
+      [realObj awakeFromNib];
     }
 
   return self;
