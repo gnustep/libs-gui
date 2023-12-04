@@ -43,7 +43,7 @@
 
 #if HAVE_IMAGEMAGICK
 
-#include <magick/MagickCore.h>
+#include <MagickCore/MagickCore.h>
 
 @implementation GSImageMagickImageRep 
 
