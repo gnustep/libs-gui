@@ -644,6 +644,8 @@ BUILD_SOUND
 HAVE_ICU
 ICU_LIBS
 ICU_CONFIG
+MAGICKCORE_LIBS
+MAGICKCORE_CFLAGS
 IMAGEMAGICK_LIBS
 IMAGEMAGICK_CFLAGS
 PKG_CONFIG_LIBDIR
@@ -750,7 +752,9 @@ PKG_CONFIG
 PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
 IMAGEMAGICK_CFLAGS
-IMAGEMAGICK_LIBS'
+IMAGEMAGICK_LIBS
+MAGICKCORE_CFLAGS
+MAGICKCORE_LIBS'
 
 
 # Initialize some variables set by options.
@@ -1424,6 +1428,10 @@ Some influential environment variables:
               C compiler flags for IMAGEMAGICK, overriding pkg-config
   IMAGEMAGICK_LIBS
               linker flags for IMAGEMAGICK, overriding pkg-config
+  MAGICKCORE_CFLAGS
+              C compiler flags for MAGICKCORE, overriding pkg-config
+  MAGICKCORE_LIBS
+              linker flags for MAGICKCORE, overriding pkg-config
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -5193,6 +5201,87 @@ $as_echo "yes" >&6; }
 
 $as_echo "#define HAVE_IMAGEMAGICK 1" >>confdefs.h
 
+
+fi
+
+fi
+if test "x$enable_imagemagick" = "xyes"; then :
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for MagickCore >= 7" >&5
+$as_echo_n "checking for MagickCore >= 7... " >&6; }
+
+if test -n "$MAGICKCORE_CFLAGS"; then
+    pkg_cv_MAGICKCORE_CFLAGS="$MAGICKCORE_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"MagickCore >= 7\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "MagickCore >= 7") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_MAGICKCORE_CFLAGS=`$PKG_CONFIG --cflags "MagickCore >= 7" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$MAGICKCORE_LIBS"; then
+    pkg_cv_MAGICKCORE_LIBS="$MAGICKCORE_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"MagickCore >= 7\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "MagickCore >= 7") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_MAGICKCORE_LIBS=`$PKG_CONFIG --libs "MagickCore >= 7" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        MAGICKCORE_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "MagickCore >= 7" 2>&1`
+        else
+	        MAGICKCORE_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "MagickCore >= 7" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$MAGICKCORE_PKG_ERRORS" >&5
+
+
+$as_echo "#define MAGICKCORE_7_OR_NEWER 0" >>confdefs.h
+
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+$as_echo "#define MAGICKCORE_7_OR_NEWER 0" >>confdefs.h
+
+else
+	MAGICKCORE_CFLAGS=$pkg_cv_MAGICKCORE_CFLAGS
+	MAGICKCORE_LIBS=$pkg_cv_MAGICKCORE_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+$as_echo "#define MAGICKCORE_7_OR_NEWER 1" >>confdefs.h
 
 fi
 
