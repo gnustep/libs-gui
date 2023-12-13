@@ -37,6 +37,7 @@
 @class NSMutableArray;
 @class NSString;
 @class NSURL;
+@class GSOutlineViewBindingDataSource;
 
 APPKIT_EXPORT_CLASS
 @interface NSOutlineView : NSTableView
@@ -51,6 +52,9 @@ APPKIT_EXPORT_CLASS
   BOOL _autosaveExpandedItems;
   CGFloat _indentationPerLevel;
   NSTableColumn *_outlineTableColumn;
+
+  GSOutlineViewBindingDataSource *_bindingDataSource;
+  id _internalDataSource;
 }
 
 // Instance methods

@@ -5811,6 +5811,11 @@ This method is deprecated, use -columnIndexesInRect:. */
   [[_tableColumns objectAtIndex: index] setWidth: width];
 }
 
+- (NSInteger) _numberOfRows
+{
+  return _numberOfRows;
+}
+
 - (CGFloat *) _columnOrigins
 {
   return _columnOrigins;

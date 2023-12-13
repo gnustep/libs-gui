@@ -321,6 +321,11 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   [super dealloc];
 }
 
+- (id) observedObject
+{
+  return [info objectForKey: NSObservedObjectKey];
+}
+
 - (id) destinationValue
 {
   id newValue;
