@@ -310,6 +310,7 @@
   objects = [[NSMutableDictionary alloc] init];
   stack = [[NSMutableArray alloc] init];
   decoded = [[NSMutableDictionary alloc] init];
+  _customClasses= [[NSMutableDictionary alloc] init];
 }
 
 - (id) initForReadingWithData: (NSData*)data
@@ -318,17 +319,15 @@
   NSXMLParser *theParser;
   NSData *theData = data;
 
-  // Dictionary which contains custom class information for Gorm/IB.
-  _customClasses = [[NSMutableDictionary alloc] init];
+  // Initialize...
+  [self _initCommon];
 
+  // Prepare the XIB data for parsing...
   theData = [self _preProcessXib: data];
   if (theData == nil)
     {
       return nil;
     }
-
-  // Initialize...
-  [self _initCommon];
 
   theParser = [[NSXMLParser alloc] initWithData: theData];
   [theParser setDelegate: self];
