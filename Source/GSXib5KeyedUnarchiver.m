@@ -870,10 +870,12 @@ didStartElement: (NSString*)elementName
               // Need to store element for making the connections...
               [self addConnection: element];
             }
+	  /*
           else if ([XmlConstraintRecordTags containsObject: elementName])
             {
               [self objectForXib: element]; // decode the constraint...
             }
+	  */
         }
       else
         {
