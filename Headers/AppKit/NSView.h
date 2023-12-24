@@ -54,6 +54,7 @@
 @class NSScrollView;
 @class NSView;
 @class NSWindow;
+@class NSShadow;
 
 typedef NSInteger NSTrackingRectTag;
 typedef NSInteger NSToolTipTag;
@@ -193,6 +194,7 @@ PACKAGE_SCOPE
   NSUInteger _autoresizingMask;
   NSFocusRingType _focusRingType;
   NSRect _autoresizingFrameError;
+  NSShadow *_shadow;
 }
 
 /*
@@ -739,8 +741,6 @@ PACKAGE_SCOPE
 /*
  * Core Animation support methods.  More methods will be added here as more are implemented.
  */
-
-@class NSShadow;
 
 @interface NSView (CoreAnimationSupport)
 

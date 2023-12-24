@@ -772,6 +772,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   TEST_RELEASE(_cursor_rects);
   TEST_RELEASE(_tracking_rects);
+  TEST_RELEASE(_shadow);
+  
   [self unregisterDraggedTypes];
   [self releaseGState];
 
@@ -5490,11 +5492,12 @@ cmpFrame(id view1, id view2, void *context)
 
 - (NSShadow *) shadow
 {
-  return nil;
+  return _shadow;
 }
 
 - (void) setShadow: (NSShadow *)shadow
 {
+  ASSIGN(_shadow, shadow);
 }
 
 @end
