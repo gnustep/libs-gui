@@ -570,7 +570,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       viewClass = [NSView class];
       rectClass = [GSTrackingRect class];
       NSDebugLLog(@"NSView", @"Initialize NSView class\n");
-      [self setVersion: 1];
+      [self setVersion: 2];
 
       // expose bindings
       [self exposeBinding: NSToolTipBinding];
@@ -4611,6 +4611,12 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
         {
           [aCoder encodeConditionalObject: _super_view forKey: @"NSSuperview"];
         }
+
+      // Encode the shadow...
+      if (_shadow != nil)
+	{
+	  [aCoder encodeConditionalObject: _shadow forKey: @"NSShadow"];
+	}
     }
   else
     {
@@ -4628,6 +4634,9 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
       [aCoder encodeConditionalObject: [self nextKeyView]];
       [aCoder encodeConditionalObject: [self previousKeyView]];
       [aCoder encodeObject: _sub_views];
+
+      // Encode view effects attributes...
+      [aCoder encodeConditionalObject: [self shadow]];
       NSDebugLLog(@"NSView", @"NSView: finish encoding\n");
     }
 }
@@ -4637,7 +4646,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   NSEnumerator *e;
   NSView	*sub;
   NSArray	*subs;
-
+    
   // decode the superclass...
   self = [super initWithCoder: aDecoder];
   if (!self)
@@ -4740,12 +4749,19 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 	  [self didAddSubview: sub];
 	}
 
+      // Decode the shadow...
+      if ([aDecoder containsValueForKey: @"NSShadow"])
+	{
+	  _shadow = [aDecoder decodeObjectForKey: @"NSShadow"];
+	}
+
       // the superview...
       //[aDecoder decodeObjectForKey: @"NSSuperview"];
     }
   else
     {
       NSRect	rect;
+      int version = [aDecoder versionForClassName: @"NSView"];
       
       NSDebugLLog(@"NSView", @"NSView: start decoding\n");
 
@@ -4801,6 +4817,12 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 	  [self didAddSubview: sub];
 	}
       RELEASE(subs);
+
+      // Decode the shadow if this is version 2 or greater...
+      if (version >= 2)
+	{
+	  _shadow = [aDecoder decodeObject];
+	}
     }
 
   return self;
