@@ -68,6 +68,7 @@
 #import "AppKit/NSPrintInfo.h"
 #import "AppKit/NSPrintOperation.h"
 #import "AppKit/NSScrollView.h"
+#import "AppKit/NSShadow.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSWorkspace.h"
@@ -5481,6 +5482,19 @@ cmpFrame(id view1, id view2, void *context)
       nextKeyView = aView;
     }
   [self setNextKeyView: nextKeyView];
+}
+
+@end
+
+@implementation NSView (CoreAnimationSupport)
+
+- (NSShadow *) shadow
+{
+  return nil;
+}
+
+- (void) setShadow: (NSShadow *)shadow
+{
 }
 
 @end

@@ -735,6 +735,22 @@ PACKAGE_SCOPE
 @end
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+/*
+ * Core Animation support methods.  More methods will be added here as more are implemented.
+ */
+
+@class NSShadow;
+
+@interface NSView (CoreAnimationSupport)
+
+- (NSShadow *) shadow;
+
+- (void) setShadow: (NSShadow *)shadow;
+
+@end
+#endif
+
 @class NSAffineTransform;
 
 /*
