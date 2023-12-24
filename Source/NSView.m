@@ -4615,7 +4615,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
       // Encode the shadow...
       if (_shadow != nil)
 	{
-	  [aCoder encodeConditionalObject: _shadow forKey: @"NSShadow"];
+	  [aCoder encodeConditionalObject: _shadow forKey: @"NSViewShadow"];
 	}
     }
   else
@@ -4750,9 +4750,9 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 	}
 
       // Decode the shadow...
-      if ([aDecoder containsValueForKey: @"NSShadow"])
+      if ([aDecoder containsValueForKey: @"NSViewShadow"])
 	{
-	  _shadow = [aDecoder decodeObjectForKey: @"NSShadow"];
+	  _shadow = [aDecoder decodeObjectForKey: @"NSViewShadow"];
 	}
 
       // the superview...
