@@ -4646,7 +4646,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   NSEnumerator *e;
   NSView	*sub;
   NSArray	*subs;
-    
+
   // decode the superclass...
   self = [super initWithCoder: aDecoder];
   if (!self)

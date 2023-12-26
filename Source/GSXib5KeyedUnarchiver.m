@@ -327,8 +327,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 					   @"collectionViewLayout", @"NSCollectionViewLayout",
 					   @"shadow", @"NSViewShadow",
 					   @"blurRadius", @"NSShadowBlurRadius",
-					   @"width", @"NSShadowHoriz",
-					   @"height", @"NSShadowVert",
+					 //					   @"width", @"NSShadowHoriz",
+					 //					   @"height", @"NSShadowVert",
 					   @"color", @"NSShadowColor",
                                            nil];
           RETAIN(XmlKeyMapTable);
@@ -450,6 +450,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeSecondAttribute:", @"NSSecondAttribute",
                @"decodeRelation:", @"NSRelation",
                @"decodeTransitionStyle:", @"NSTransitionStyle",
+	    @"decodeShadowOffsetHoriz:", @"NSShadowHoriz",
+	    @"decodeShadowOffsetVert:", @"NSShadowVert",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -2987,6 +2989,20 @@ didStartElement: (NSString*)elementName
     }
 
   return num;  
+}
+
+- (id) decodeShadowOffsetHoriz: (GSXibElement *)element
+{
+  NSSize size = [self decodeSizeForKey: @"offset"];
+  NSNumber *num = [NSNumber numberWithFloat: size.width];
+  return num;
+}
+
+- (id) decodeShadowOffsetVert: (GSXibElement *)element
+{
+  NSSize size = [self decodeSizeForKey: @"offset"];
+  NSNumber *num = [NSNumber numberWithFloat: size.height];
+  return num;
 }
 
 - (id) _decodePlacementForObject: (id)obj
