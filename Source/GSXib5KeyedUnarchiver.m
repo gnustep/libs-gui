@@ -325,6 +325,11 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"middleViews", @"NSStackViewMiddleContainer",
                                            @"endViews", @"NSStackViewEndContainer",
 					   @"collectionViewLayout", @"NSCollectionViewLayout",
+					   @"shadow", @"NSViewShadow",
+					   @"blurRadius", @"NSShadowBlurRadius",
+					   @"width", @"NSShadowHoriz",
+					   @"height", @"NSShadowVert",
+					   @"color", @"NSShadowColor",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -870,12 +875,12 @@ didStartElement: (NSString*)elementName
               // Need to store element for making the connections...
               [self addConnection: element];
             }
-	  /*
+          /*
           else if ([XmlConstraintRecordTags containsObject: elementName])
             {
               [self objectForXib: element]; // decode the constraint...
             }
-	  */
+          */
         }
       else
         {
@@ -3186,13 +3191,13 @@ didStartElement: (NSString*)elementName
   if (toolTipString != nil)
     {
       if ([object respondsToSelector: @selector(setToolTip:)])
-	{
-	  [object setToolTip: toolTipString];
-	}
+        {
+          [object setToolTip: toolTipString];
+        }
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
-	{
-	  [object setHeaderToolTip: toolTipString];
-	}
+        {
+          [object setHeaderToolTip: toolTipString];
+        }
     }
 }
 
