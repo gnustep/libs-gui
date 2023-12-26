@@ -327,8 +327,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
 					   @"collectionViewLayout", @"NSCollectionViewLayout",
 					   @"shadow", @"NSViewShadow",
 					   @"blurRadius", @"NSShadowBlurRadius",
-					 //					   @"width", @"NSShadowHoriz",
-					 //					   @"height", @"NSShadowVert",
 					   @"color", @"NSShadowColor",
                                            nil];
           RETAIN(XmlKeyMapTable);
