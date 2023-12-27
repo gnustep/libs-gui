@@ -96,7 +96,8 @@
 
 - (void) set
 {
-  // FIXME: Implement
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  [ctxt setShadow: self];
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
