@@ -1,3 +1,15 @@
+2023-12-27 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSView.h: Add ivar for NSShadow, update
+	version of class for NSArchiver so this can be properly
+	read and saved in .gorm files.
+	* Source/GSXib5KeyedUnarchiver.m: Add code to handle XIB
+	keys for NSShadow.
+	* Source/NSShadow.m: Minor cleanup to use ASSIGN macro
+	in -initWithCoder:
+	* Source/NSView.m: Add code to -encodeWithCoder: and
+	-initWithCoder: to properly handle NSViewShadow.
+
 2023-11-27 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/GSGormLoading.m
