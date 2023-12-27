@@ -4821,7 +4821,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
       // Decode the shadow if this is version 2 or greater...
       if (version >= 2)
 	{
-	  _shadow = [aDecoder decodeObject];
+	  _shadow = RETAIN([aDecoder decodeObject]);
 	}
     }
 
