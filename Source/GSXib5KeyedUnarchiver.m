@@ -448,8 +448,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeSecondAttribute:", @"NSSecondAttribute",
                @"decodeRelation:", @"NSRelation",
                @"decodeTransitionStyle:", @"NSTransitionStyle",
-	    @"decodeShadowOffsetHoriz:", @"NSShadowHoriz",
-	    @"decodeShadowOffsetVert:", @"NSShadowVert",
+	       @"decodeShadowOffsetHoriz:", @"NSShadowHoriz",
+	       @"decodeShadowOffsetVert:", @"NSShadowVert",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -2992,15 +2992,13 @@ didStartElement: (NSString*)elementName
 - (id) decodeShadowOffsetHoriz: (GSXibElement *)element
 {
   NSSize size = [self decodeSizeForKey: @"offset"];
-  NSNumber *num = [NSNumber numberWithFloat: size.width];
-  return num;
+  return [NSNumber numberWithFloat: size.width];
 }
 
 - (id) decodeShadowOffsetVert: (GSXibElement *)element
 {
   NSSize size = [self decodeSizeForKey: @"offset"];
-  NSNumber *num = [NSNumber numberWithFloat: size.height];
-  return num;
+  return [NSNumber numberWithFloat: size.height];
 }
 
 - (id) _decodePlacementForObject: (id)obj
