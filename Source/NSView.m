@@ -4752,7 +4752,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
       // Decode the shadow...
       if ([aDecoder containsValueForKey: @"NSViewShadow"])
 	{
-	  _shadow = RETAIN([aDecoder decodeObjectForKey: @"NSViewShadow"]);
+	  [self setShadow: [aDecoder decodeObjectForKey: @"NSViewShadow"]];
 	}
 
       // the superview...
@@ -4821,7 +4821,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
       // Decode the shadow if this is version 2 or greater...
       if (version >= 2)
 	{
-	  _shadow = RETAIN([aDecoder decodeObject]);
+	  [self setShadow: [aDecoder decodeObject]];
 	}
     }
 
