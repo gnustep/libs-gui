@@ -30,6 +30,7 @@
 #import <Foundation/NSString.h>
 #import "AppKit/NSShadow.h"
 #import "AppKit/NSColor.h"
+#import "AppKit/NSGraphicsContext.h"
 
 @implementation NSShadow
 
