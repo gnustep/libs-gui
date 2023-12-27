@@ -128,7 +128,7 @@
       _radius = [aDecoder decodeFloatForKey: @"NSShadowBlurRadius"];
       _offset = NSMakeSize([aDecoder decodeFloatForKey:  @"NSShadowHoriz"],
                            [aDecoder decodeFloatForKey:  @"NSShadowVert"]);
-      _color = [[aDecoder decodeObjectForKey: @"NSShadowColor"] retain];
+      _color = RETAIN([aDecoder decodeObjectForKey: @"NSShadowColor"]);
     }
   else
     {
@@ -136,7 +136,7 @@
       [aDecoder decodeValueOfObjCType: @encode(float) at: &radius];
       _radius = radius;
       _offset = [aDecoder decodeSize];
-      _color = [[aDecoder decodeObject] retain];
+      _color = RETAIN([aDecoder decodeObject]);
     }
   return self;
 }

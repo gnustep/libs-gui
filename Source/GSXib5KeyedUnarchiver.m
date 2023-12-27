@@ -325,6 +325,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"middleViews", @"NSStackViewMiddleContainer",
                                            @"endViews", @"NSStackViewEndContainer",
 					   @"collectionViewLayout", @"NSCollectionViewLayout",
+					   @"shadow", @"NSViewShadow",
+					   @"blurRadius", @"NSShadowBlurRadius",
+					   @"color", @"NSShadowColor",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -445,6 +448,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeSecondAttribute:", @"NSSecondAttribute",
                @"decodeRelation:", @"NSRelation",
                @"decodeTransitionStyle:", @"NSTransitionStyle",
+	       @"decodeShadowOffsetHoriz:", @"NSShadowHoriz",
+	       @"decodeShadowOffsetVert:", @"NSShadowVert",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -870,12 +875,12 @@ didStartElement: (NSString*)elementName
               // Need to store element for making the connections...
               [self addConnection: element];
             }
-	  /*
+          /*
           else if ([XmlConstraintRecordTags containsObject: elementName])
             {
               [self objectForXib: element]; // decode the constraint...
             }
-	  */
+          */
         }
       else
         {
@@ -2984,6 +2989,18 @@ didStartElement: (NSString*)elementName
   return num;  
 }
 
+- (id) decodeShadowOffsetHoriz: (GSXibElement *)element
+{
+  NSSize size = [self decodeSizeForKey: @"offset"];
+  return [NSNumber numberWithFloat: size.width];
+}
+
+- (id) decodeShadowOffsetVert: (GSXibElement *)element
+{
+  NSSize size = [self decodeSizeForKey: @"offset"];
+  return [NSNumber numberWithFloat: size.height];
+}
+
 - (id) _decodePlacementForObject: (id)obj
 {
   NSGridRowAlignment alignment = NSGridCellPlacementNone;
@@ -3186,13 +3203,13 @@ didStartElement: (NSString*)elementName
   if (toolTipString != nil)
     {
       if ([object respondsToSelector: @selector(setToolTip:)])
-	{
-	  [object setToolTip: toolTipString];
-	}
+        {
+          [object setToolTip: toolTipString];
+        }
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
-	{
-	  [object setHeaderToolTip: toolTipString];
-	}
+        {
+          [object setHeaderToolTip: toolTipString];
+        }
     }
 }
 
