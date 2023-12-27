@@ -320,6 +320,7 @@ NSGraphicsContext	*GSCurrentContext(void)
   DESTROY(focus_stack);
   DESTROY(context_data);
   DESTROY(context_info);
+  DESTROY(_shadow);
   [super dealloc];
 }
 
