@@ -515,6 +515,12 @@ NSGraphicsContext	*GSCurrentContext(void)
 {
 }
 
+/* Private method for handling shadows */
+- (void) setShadow: (NSShadow *)shadow
+{
+  ASSIGN(_shadow, shadow);
+}
+
 @end
 
 @implementation NSGraphicsContext (Private)
