@@ -4752,7 +4752,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
       // Decode the shadow...
       if ([aDecoder containsValueForKey: @"NSViewShadow"])
 	{
-	  _shadow = [aDecoder decodeObjectForKey: @"NSViewShadow"];
+	  _shadow = RETAIN([aDecoder decodeObjectForKey: @"NSViewShadow"]);
 	}
 
       // the superview...
