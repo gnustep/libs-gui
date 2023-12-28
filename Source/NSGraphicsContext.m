@@ -320,6 +320,7 @@ NSGraphicsContext	*GSCurrentContext(void)
   DESTROY(focus_stack);
   DESTROY(context_data);
   DESTROY(context_info);
+  DESTROY(_shadow);
   [super dealloc];
 }
 
@@ -513,6 +514,12 @@ NSGraphicsContext	*GSCurrentContext(void)
     context and/or buffer should be. */
 + (void) handleExposeRect: (NSRect)rect forDriver: (void *)driver
 {
+}
+
+/* Private method for handling shadows */
+- (void) setShadow: (NSShadow *)shadow
+{
+  ASSIGN(_shadow, shadow);
 }
 
 @end

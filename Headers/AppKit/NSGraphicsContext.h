@@ -49,6 +49,7 @@
 @class NSSet;
 @class NSBitmapImageRep;
 @class NSGradient;
+@class NSShadow;
 
 typedef struct CGContext *CGContextRef;
 
@@ -188,6 +189,7 @@ APPKIT_EXPORT_CLASS
   void *_graphicsPort;
   BOOL _isFlipped;
   NSCompositingOperation _compositingOperation;
+  NSShadow *_shadow;
 }
 
 + (BOOL) currentContextDrawingToScreen;
@@ -268,6 +270,10 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 
 /* Private backend methods */
 + (void) handleExposeRect: (NSRect)rect forDriver: (void *)driver;
+
+/* Private method for handling shadows */
+- (void) setShadow: (NSShadow *)shadow;
+
 @end
 #endif
 
