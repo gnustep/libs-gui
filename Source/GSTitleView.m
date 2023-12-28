@@ -425,9 +425,6 @@
 {
   if (closeButton == nil)
     {
-      NSSize viewSize;
-      NSSize buttonSize;
-      
       [[GSTheme theme] setName: nil forElement: [closeButton cell] temporary: NO];
       ASSIGN(closeButton, 
              [NSWindow standardWindowButton: 

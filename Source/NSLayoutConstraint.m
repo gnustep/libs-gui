@@ -620,15 +620,15 @@ static NSMutableArray *activeConstraints = nil;
 
 @implementation NSWindow (NSConstraintBasedLayoutCoreMethods)
 
+- (void) updateConstraintsIfNeeded
+{
+  [[self contentView] updateConstraintsForSubtreeIfNeeded];
+}
+
 - (void) layoutIfNeeded
 {
   [self updateConstraintsIfNeeded];
   [[self contentView] _layoutViewAndSubViews];
-}
-
-- (void) updateConstraintsIfNeeded
-{
-  [[self contentView] updateConstraintsForSubtreeIfNeeded];
 }
 
 - (void) _bootstrapAutoLayout

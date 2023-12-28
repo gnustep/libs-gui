@@ -33,6 +33,7 @@
 
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
+#import "AppKit/NSButton.h"
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"

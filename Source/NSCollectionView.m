@@ -1605,6 +1605,15 @@ static NSString *_placeholderItem = nil;
 
 /* Creating Collection view Items */
 
+- (NSNib *) _nibForClass: (Class)cls
+{
+  NSString *clsName = NSStringFromClass(cls);
+  NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
+					bundle: [NSBundle bundleForClass: cls]];
+  AUTORELEASE(nib);
+  return nib;
+}
+
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
@@ -1702,15 +1711,6 @@ static NSString *_placeholderItem = nil;
 }
 
 /* Configuring the Collection view */
-
-- (NSNib *) _nibForClass: (Class)cls
-{
-  NSString *clsName = NSStringFromClass(cls);
-  NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
-					bundle: [NSBundle bundleForClass: cls]];
-  AUTORELEASE(nib);
-  return nib;
-}
 
 - (NSView *) backgroundView
 {
