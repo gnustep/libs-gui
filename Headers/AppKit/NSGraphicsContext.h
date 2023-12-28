@@ -273,6 +273,7 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 
 /* Private method for handling shadows */
 - (void) setShadow: (NSShadow *)shadow;
+- (NSShadow *) shadow;
 
 @end
 #endif

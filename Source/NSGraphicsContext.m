@@ -522,6 +522,11 @@ NSGraphicsContext	*GSCurrentContext(void)
   ASSIGN(_shadow, shadow);
 }
 
+- (NSShadow *) shadow
+{
+  return _shadow;
+}
+
 @end
 
 @implementation NSGraphicsContext (Private)
