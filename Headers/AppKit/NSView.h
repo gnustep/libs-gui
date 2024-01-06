@@ -34,6 +34,7 @@
 #define _GNUstep_H_NSView
 #import <AppKit/AppKitDefines.h>
 
+#import <AppKit/NSAppearance.h>
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSResponder.h>
 #import <AppKit/NSUserInterfaceLayout.h>
