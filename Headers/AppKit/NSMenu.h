@@ -410,8 +410,10 @@ APPKIT_EXPORT_CLASS
 		unsigned int unused: 25;
   } _menu;
 
-@private
+@protected
   NSWindow *_aWindow;
+
+@private
   NSWindow *_bWindow;
   NSMenu *_oldAttachedMenu;
   int     _oldHiglightedIndex;
