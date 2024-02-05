@@ -147,11 +147,11 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 - (void)setScrollerStyle:(NSScrollerStyle)style {
   if(style == NSScrollerStyleOverlay) NSWarnLog(@"GNUstep does not support overlay scrollbars.");
 }
-- (NSScrollerKnobStyle)scrollerKnobStyle {
+- (NSScrollerKnobStyle)knobStyle {
   // FIXME: We should set this as an ivar so themes can use this.
   return NSScrollerKnobStyleDefault;
 }
-- (void)setScrollerKnobStyle:(NSScrollerKnobStyle)style {
+- (void)setKnobStyle:(NSScrollerKnobStyle)style {
   NSWarnLog(@"GNUstep does not support custom scroller knob styles.");
 }
 - (void)flashScroller {
