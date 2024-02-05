@@ -3844,8 +3844,14 @@ struct _DelegateWrapper
 }
 
 - (NSAppearance*) effectiveAppearance {
-  if(_appearance) return _appearance;
-  else return [NSAppearance currentAppearance];
+  if (_appearance)
+  {
+    return _appearance;
+  }
+  else
+  {
+    return [NSAppearance currentAppearance];
+  }
 }
 
 
