@@ -28,6 +28,7 @@
 
 #ifndef _GNUstep_H_NSAlert
 #define _GNUstep_H_NSAlert
+#import <AppKit/NSWindow.h>
 #import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
@@ -48,17 +49,6 @@ enum _NSAlertStyle {
   NSCriticalAlertStyle = 2 
 };
 typedef NSUInteger NSAlertStyle;
-
-enum { 
-  NSAlertFirstButtonReturn = 1000,
-  NSAlertSecondButtonReturn = 1001,
-  NSAlertThirdButtonReturn = 1002
-};
-
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
-  typedef NSInteger NSModalResponse;
-  DEFINE_BLOCK_TYPE(GSNSWindowDidEndSheetCallbackBlock, void, NSModalResponse returnCode);
-#endif
 
 APPKIT_EXPORT_CLASS
 @interface NSAlert : NSObject 

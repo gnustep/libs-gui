@@ -41,6 +41,7 @@
 
 #import <AppKit/NSResponder.h>
 #import <AppKit/NSUserInterfaceValidation.h>
+#import <AppKit/NSWindow.h>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -74,10 +75,6 @@ enum {
   NSRunAbortedResponse = (-1001),
   NSRunContinuesResponse = (-1002)
 };
-
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
-  typedef NSInteger NSModalResponse;
-#endif
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 #define NSUpdateWindowsRunLoopOrdering 600000
@@ -785,16 +782,6 @@ NSShowSystemInfoPanel(NSDictionary *options);
  * The NSApp global variable.
  */
 APPKIT_EXPORT NSApplication	*NSApp;
-
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-enum
-{
-  NSModalResponseStop = -1000,
-  NSModalResponseAbort = -1001,
-  NSModalResponseContinue = -1002
-};
-typedef NSInteger NSModalResponse;
-#endif
 
 #if defined(__cplusplus)
 }

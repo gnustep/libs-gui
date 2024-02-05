@@ -93,7 +93,13 @@ enum {
   typedef NSInteger NSModalResponse;
   enum {
     NSModalResponseOK = 1,
-    NSModalResponseCancel = 0
+    NSModalResponseCancel = 0,
+    NSModalResponseStop = -1000,
+    NSModalResponseAbort = -1001,
+    NSModalResponseContinue = -1002,
+    NSAlertFirstButtonReturn = 1000,
+    NSAlertSecondButtonReturn = 1001,
+    NSAlertThirdButtonReturn = 1002,
   };
   DEFINE_BLOCK_TYPE(GSNSWindowDidEndSheetCallbackBlock, void, NSModalResponse returnCode);
 #endif
