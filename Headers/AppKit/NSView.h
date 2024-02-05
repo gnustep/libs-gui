@@ -40,7 +40,6 @@
 #import <AppKit/NSUserInterfaceLayout.h>
 #import <AppKit/NSLayoutConstraint.h>
 
-@class NSAppearance;
 @class NSArray;
 @class NSAttributedString;
 @class NSData;
