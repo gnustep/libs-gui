@@ -3500,7 +3500,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSInteger endingColumn;
   NSTableColumn *tb;
   NSRect drawingRect;
-  NSCell *cell;
   NSInteger i;
   CGFloat x_pos;
   const BOOL rowSelected = [[tableView selectedRowIndexes] containsIndex: rowIndex];
@@ -3509,7 +3508,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 					  state: GSThemeNormalState];
   id<NSTableViewDelegate> delegate = [tableView delegate];
   
-  NSLog(@"View based NSTableView, in GSTheme...");
   /* Using columnAtPoint: here would make it called twice per row per drawn 
      rect - so we avoid it and do it natively */
 
@@ -3549,24 +3547,12 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  NSView *view = [delegate tableView: tableView
 				   viewForTableColumn: tb
 					 row: rowIndex];
-	  NSLog(@"View = %@", view);
-	  /*
-	  cell = [tb dataCellForRow: rowIndex];
-	  [tableView _willDisplayCell: cell
-		       forTableColumn: tb
-				  row: rowIndex];
-	  if (i == editedColumn && rowIndex == editedRow)
-	    {
-	      [cell _setInEditing: YES];
-	    }
-	  else
-	    {
-	      [cell setObjectValue: [tableView _objectValueForTableColumn: tb
-								      row: rowIndex]];
-	    }
+	  NSDebugLog(@"View = %@", view);
 	  drawingRect = [tableView frameOfCellAtColumn: i
 						   row: rowIndex];
-	  */
+
+	  [view setFrame: drawingRect];
+	  [tableView addSubview: view];
 	}
 
       // Set the cell text color if the theme provides a custom highlighted
