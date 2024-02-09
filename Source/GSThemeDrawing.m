@@ -52,6 +52,7 @@
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSTableView.h"
+#import "AppKit/NSTableCellView.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderCell.h"
 #import "AppKit/NSTableHeaderView.h"
@@ -3481,9 +3482,119 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     {
       return ![box isTransparent];
     }
-  else
+
+  return YES;
+}
+    
+- (void) drawTableCellViewRow: (NSInteger)rowIndex
+		     clipRect: (NSRect)clipRect
+		       inView: (NSView *)view
+{
+  NSTableView *tableView = (NSTableView *)view;
+  NSInteger numberOfColumns = [tableView numberOfColumns];
+  CGFloat *columnOrigins = [tableView _columnOrigins];
+  NSInteger editedRow = [tableView editedRow];
+  NSInteger editedColumn = [tableView editedColumn];
+  NSArray *tableColumns = [tableView tableColumns];
+  NSInteger startingColumn; 
+  NSInteger endingColumn;
+  NSTableColumn *tb;
+  NSRect drawingRect;
+  NSCell *cell;
+  NSInteger i;
+  CGFloat x_pos;
+  const BOOL rowSelected = [[tableView selectedRowIndexes] containsIndex: rowIndex];
+  NSColor *tempColor = nil;
+  NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
+					  state: GSThemeNormalState];
+  id<NSTableViewDelegate> delegate = [tableView delegate];
+  
+  NSLog(@"View based NSTableView, in GSTheme...");
+  /* Using columnAtPoint: here would make it called twice per row per drawn 
+     rect - so we avoid it and do it natively */
+
+  /* Determine starting column as fast as possible */
+  x_pos = NSMinX (clipRect);
+  i = 0;
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
     {
-      return YES;
+      i++;
+    }
+  startingColumn = (i - 1);
+
+  if (startingColumn == -1)
+    startingColumn = 0;
+
+  /* Determine ending column as fast as possible */
+  x_pos = NSMaxX (clipRect);
+  // Nota Bene: we do *not* reset i
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  endingColumn = (i - 1);
+
+  if (endingColumn == -1)
+    endingColumn = numberOfColumns - 1;
+
+  /* Draw the row between startingColumn and endingColumn */
+  for (i = startingColumn; i <= endingColumn; i++)
+    {
+      const BOOL columnSelected = [tableView isColumnSelected: i];
+      const BOOL cellSelected = (rowSelected || columnSelected);
+      
+      tb = [tableColumns objectAtIndex: i];
+      if ([delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)])
+	{
+	  NSView *view = [delegate tableView: tableView
+				   viewForTableColumn: tb
+					 row: rowIndex];
+	  NSLog(@"View = %@", view);
+	  /*
+	  cell = [tb dataCellForRow: rowIndex];
+	  [tableView _willDisplayCell: cell
+		       forTableColumn: tb
+				  row: rowIndex];
+	  if (i == editedColumn && rowIndex == editedRow)
+	    {
+	      [cell _setInEditing: YES];
+	    }
+	  else
+	    {
+	      [cell setObjectValue: [tableView _objectValueForTableColumn: tb
+								      row: rowIndex]];
+	    }
+	  drawingRect = [tableView frameOfCellAtColumn: i
+						   row: rowIndex];
+	  */
+	}
+
+      // Set the cell text color if the theme provides a custom highlighted
+      // row color.
+      //
+      // FIXME: This could probably be done in a cleaner way. We should
+      // probably do -setHighlighted: YES, and the implementation of
+      // -textColor in NSCell could use that to return a highlighted text color.
+      /*
+      if (cellSelected && (selectedTextColor != nil)
+	  && [cell isKindOfClass: [NSTextFieldCell class]])
+	{
+	  tempColor = [cell textColor];
+	  [(NSTextFieldCell *)cell setTextColor: selectedTextColor];
+	}
+
+      [cell drawWithFrame: drawingRect inView: tableView];
+
+      if (cellSelected && (selectedTextColor != nil)
+	  && [cell isKindOfClass: [NSTextFieldCell class]])
+	{
+	  // Restore the cell's text color if we changed it
+	  [(NSTextFieldCell *)cell setTextColor: tempColor];
+	}
+
+      if (i == editedColumn && rowIndex == editedRow)
+	[cell _setInEditing: NO];
+      */
     }
 }
 

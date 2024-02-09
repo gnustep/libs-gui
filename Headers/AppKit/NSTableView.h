@@ -39,6 +39,7 @@
 @class NSMutableIndexSet;
 @class NSTableColumn;
 @class NSTableHeaderView;
+@class NSTableRowView;
 @class NSText;
 @class NSImage;
 @class NSURL;
@@ -507,6 +508,24 @@ dataCellForTableColumn: (NSTableColumn *)aTableColumn
              tableColumn: (NSTableColumn *)col
                      row: (NSInteger)row
            mouseLocation: (NSPoint)mouse;
+#endif
+
+// NSTableCellView based table methods...
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (NSView *) tableView: (NSTableView *)tableView
+    viewForTableColumn: (NSTableColumn *)aTableColumn
+                   row: (NSInteger)rowIndex;
+
+- (NSTableRowView *) tableView: (NSTableView *)tableView
+                 rowViewForRow: (NSInteger)rowIndex;
+
+- (void) tableView: (NSTableView *)tableView
+     didAddRowView: (NSTableRowView *)rowView
+            forRow: (NSInteger)rowIndex;
+
+- (void) tableView: (NSTableView *)tableView
+  didRemoveRowView: (NSTableRowView *)rowView
+            forRow: (NSInteger)rowIndex;
 #endif
 @end
 

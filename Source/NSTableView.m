@@ -5032,9 +5032,18 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)clipRect
 {
-  [[GSTheme theme] drawTableViewRow: rowIndex
-		   clipRect: clipRect
-		   inView: self];
+  if (_viewBased)
+    {
+      [[GSTheme theme] drawTableCellViewRow: rowIndex
+				   clipRect: clipRect
+				     inView: self];
+    }
+  else
+    {
+      [[GSTheme theme] drawTableViewRow: rowIndex
+			       clipRect: clipRect
+				 inView: self];
+    }
 }
 
 - (void) noteHeightOfRowsWithIndexesChanged: (NSIndexSet*)indexes

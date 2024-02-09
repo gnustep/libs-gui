@@ -258,6 +258,7 @@
 @class NSPathComponentCell;
 @class GSDrawTiles;
 @class GSTitleView;
+// @class NSTableCellView;
 
 APPKIT_EXPORT	NSString	*GSSwitch;
 APPKIT_EXPORT   NSString        *GSRadio;
@@ -1340,6 +1341,14 @@ APPKIT_EXPORT_CLASS
 		   inView: (NSView *)view;
 
 - (BOOL) isBoxOpaque: (NSBox *)box;
+
+- (void) drawTableViewRow: (NSInteger)rowIndex 
+		 clipRect: (NSRect)clipRect
+		   inView: (NSView *)view;
+
+- (void) drawTableCellViewRow: (NSInteger)rowIndex
+                     clipRect: (NSRect)clipRect
+                       inView: (NSView *)view;
 
 - (void) drawBoxInClipRect: (NSRect)clipRect
 		   boxType: (NSBoxType)boxType
