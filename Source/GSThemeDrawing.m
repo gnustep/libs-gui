@@ -3493,8 +3493,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSTableView *tableView = (NSTableView *)view;
   NSInteger numberOfColumns = [tableView numberOfColumns];
   CGFloat *columnOrigins = [tableView _columnOrigins];
-  NSInteger editedRow = [tableView editedRow];
-  NSInteger editedColumn = [tableView editedColumn];
   NSArray *tableColumns = [tableView tableColumns];
   NSInteger startingColumn; 
   NSInteger endingColumn;
@@ -3502,10 +3500,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSRect drawingRect;
   NSInteger i;
   CGFloat x_pos;
-  const BOOL rowSelected = [[tableView selectedRowIndexes] containsIndex: rowIndex];
-  NSColor *tempColor = nil;
-  NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
-					  state: GSThemeNormalState];
   id<NSTableViewDelegate> delegate = [tableView delegate];
   
   /* Using columnAtPoint: here would make it called twice per row per drawn 
@@ -3538,9 +3532,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
-      const BOOL columnSelected = [tableView isColumnSelected: i];
-      const BOOL cellSelected = (rowSelected || columnSelected);
-      
       tb = [tableColumns objectAtIndex: i];
       if ([delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)])
 	{
@@ -3554,33 +3545,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  [view setFrame: drawingRect];
 	  [tableView addSubview: view];
 	}
-
-      // Set the cell text color if the theme provides a custom highlighted
-      // row color.
-      //
-      // FIXME: This could probably be done in a cleaner way. We should
-      // probably do -setHighlighted: YES, and the implementation of
-      // -textColor in NSCell could use that to return a highlighted text color.
-      /*
-      if (cellSelected && (selectedTextColor != nil)
-	  && [cell isKindOfClass: [NSTextFieldCell class]])
-	{
-	  tempColor = [cell textColor];
-	  [(NSTextFieldCell *)cell setTextColor: selectedTextColor];
-	}
-
-      [cell drawWithFrame: drawingRect inView: tableView];
-
-      if (cellSelected && (selectedTextColor != nil)
-	  && [cell isKindOfClass: [NSTextFieldCell class]])
-	{
-	  // Restore the cell's text color if we changed it
-	  [(NSTextFieldCell *)cell setTextColor: tempColor];
-	}
-
-      if (i == editedColumn && rowIndex == editedRow)
-	[cell _setInEditing: NO];
-      */
     }
 }
 
