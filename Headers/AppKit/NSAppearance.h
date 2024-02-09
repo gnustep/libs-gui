@@ -86,11 +86,11 @@ APPKIT_EXPORT NSAppearanceName const NSAppearanceNameLightContent;
 @required
 #if GS_HAS_DECLARED_PROPERTIES
 /** Set the appearance of the reciever. Default is nil. */
-@property(strong) NSAppearance* appearance;
+@property(retain) NSAppearance* appearance;
 /** Get the appearance of the reciever. If self.appearance is nil, then go up the 
     view hierarchy to find an appearance. If still nil, go up to NSApp. If still nil,
     go up to [NSAppearance currentAppearance]. */
-@property(readonly, strong) NSAppearance* effectiveAppearance;
+@property(readonly, retain) NSAppearance* effectiveAppearance;
 #else
 - (NSAppearance*) appearance;
 - (void) setAppearance: (NSAppearance*) appearance;
