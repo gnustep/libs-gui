@@ -5257,6 +5257,30 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   return 0;
 }
 
+/* Implement NSAppearanceCustomization */
+- (NSAppearance*) appearance {
+  return _appearance;
+}
+
+- (void) setAppearance: (NSAppearance*) appearance {
+  ASSIGNCOPY(_appearance, appearance);
+}
+
+- (NSAppearance*) effectiveAppearance {
+  if (_appearance)
+  {
+    return _appearance;
+  }
+  else if ([self superview])
+  {
+    return [[self superview] effectiveAppearance];
+  }
+  else
+  {
+    return [NSAppearance currentAppearance];
+  }
+}
+
 @end
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
