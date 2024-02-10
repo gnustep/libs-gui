@@ -81,5 +81,23 @@ APPKIT_EXPORT NSAppearanceName const NSAppearanceNameLightContent;
 
 #endif	/* GS_API_MACOSX */
 
+@protocol NSAppearanceCustomization
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+@required
+#if GS_HAS_DECLARED_PROPERTIES
+/** Set the appearance of the reciever. Default is nil. */
+@property(retain) NSAppearance* appearance;
+/** Get the appearance of the reciever. If self.appearance is nil, then go up the 
+    view hierarchy to find an appearance. If still nil, go up to NSApp. If still nil,
+    go up to [NSAppearance currentAppearance]. */
+@property(readonly, retain) NSAppearance* effectiveAppearance;
+#else
+- (NSAppearance*) appearance;
+- (void) setAppearance: (NSAppearance*) appearance;
+- (NSAppearance*) effectiveAppearance;
+#endif
+#endif
+@end
+
 #endif	/* _NSAppearance_h_GNUSTEP_GUI_INCLUDE */
 

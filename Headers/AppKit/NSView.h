@@ -34,6 +34,7 @@
 #define _GNUstep_H_NSView
 #import <AppKit/AppKitDefines.h>
 
+#import <AppKit/NSAppearance.h>
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSResponder.h>
 #import <AppKit/NSUserInterfaceLayout.h>
@@ -129,7 +130,7 @@ extern const CGFloat NSViewNoInstrinsicMetric;
 extern const CGFloat NSViewNoIntrinsicMetric;
 
 APPKIT_EXPORT_CLASS
-@interface NSView : NSResponder
+@interface NSView : NSResponder <NSAppearanceCustomization>
 {
   NSRect _frame;
   NSRect _bounds;
@@ -195,6 +196,7 @@ PACKAGE_SCOPE
   NSFocusRingType _focusRingType;
   NSRect _autoresizingFrameError;
   NSShadow *_shadow;
+  NSAppearance* _appearance;
 }
 
 /*
