@@ -1,8 +1,8 @@
 /* Definition of class NSTableCellView
    Copyright (C) 2022 Free Software Foundation, Inc.
    
-   By: Gregory John Casamento
-   Date: 12-12-2022
+   By: Gregory John Casamento <greg.casamento@gmail.com>
+   Date: 03-09-2022
 
    This file is part of the GNUstep Library.
    
@@ -78,4 +78,3 @@ APPKIT_EXPORT_CLASS
 #endif	/* GS_API_MACOSX */
 
 #endif	/* _NSTableCellView_h_GNUSTEP_GUI_INCLUDE */
-

@@ -1,7 +1,7 @@
 /* Definition of class NSTableRowView
    Copyright (C) 2022 Free Software Foundation, Inc.
    
-   By: Gregory John Casamento
+   By: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 03-09-2022
 
    This file is part of the GNUstep Library.
@@ -44,4 +44,3 @@ extern "C" {
 #endif	/* GS_API_MACOSX */
 
 #endif	/* _NSTableRowView_h_GNUSTEP_GUI_INCLUDE */
-
