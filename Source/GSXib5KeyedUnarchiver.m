@@ -221,7 +221,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"IBActionConnection", @"action",
                             @"NSNibBindingConnector", @"binding",
                             @"NSWindowTemplate", @"window",
-                            @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             @"NSURL", @"url",
                             @"NSLayoutConstraint", @"constraint",
