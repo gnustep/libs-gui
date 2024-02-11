@@ -3531,19 +3531,26 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
+      NSView *view = nil;
+      
       tb = [tableColumns objectAtIndex: i];
       if ([delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)])
 	{
-	  NSView *view = [delegate tableView: tableView
-				   viewForTableColumn: tb
-					 row: rowIndex];
-	  NSDebugLog(@"View = %@", view);
-	  drawingRect = [tableView frameOfCellAtColumn: i
-						   row: rowIndex];
-
-	  [view setFrame: drawingRect];
-	  [tableView addSubview: view];
+	  view = [delegate tableView: tableView
+			   viewForTableColumn: tb
+				 row: rowIndex];
 	}
+      else
+	{
+	  view = AUTORELEASE([[NSTableCellView alloc] init]);
+	}
+      
+      NSDebugLog(@"View = %@", view);
+      drawingRect = [tableView frameOfCellAtColumn: i
+					       row: rowIndex];
+      
+      [view setFrame: drawingRect];
+      [tableView addSubview: view];      
     }
 }
 
