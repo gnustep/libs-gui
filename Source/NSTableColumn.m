@@ -626,6 +626,11 @@ to YES. */
   return self;
 }
 
+- (NSArray *) _prototypeCellViews
+{
+  return _prototypeCellViews;
+}
+
 - (void) setValue: (id)anObject forKey: (NSString*)aKey
 {
   if ([aKey isEqual: NSValueBinding])

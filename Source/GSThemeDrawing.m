@@ -80,6 +80,10 @@
 			     row: (NSInteger)index;
 @end
 
+@interface NSTableColumn (Private)
+- (NSArray *) _prototypeCellViews;
+@end
+
 @interface NSCell (Private)
 - (void) _setInEditing: (BOOL)flag;
 - (BOOL) _inEditing;
@@ -3496,11 +3500,11 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSArray *tableColumns = [tableView tableColumns];
   NSInteger startingColumn; 
   NSInteger endingColumn;
-  NSTableColumn *tb;
-  NSRect drawingRect;
   NSInteger i;
   CGFloat x_pos;
   id<NSTableViewDelegate> delegate = [tableView delegate];
+  BOOL hasMethod = [delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)];
+  // CGFloat headerHeight = [[tableView headerView] frame].size.height;
   
   /* Using columnAtPoint: here would make it called twice per row per drawn 
      rect - so we avoid it and do it natively */
@@ -3531,27 +3535,36 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
-      NSView *view = nil;
-      
+      NSRect drawingRect = drawingRect = [tableView frameOfCellAtColumn: i
+								    row: rowIndex];
+      NSTableColumn *tb = nil;
+
+      // drawingRect.origin.y += headerHeight;
       tb = [tableColumns objectAtIndex: i];
-      if ([delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)])
+      if (hasMethod)
 	{
-	  view = [delegate tableView: tableView
-			   viewForTableColumn: tb
-				 row: rowIndex];
-	  NSDebugLog(@"View = %@", view);
-	  drawingRect = [tableView frameOfCellAtColumn: i
-						   row: rowIndex];
-	  
+	  NSView *view = [delegate tableView: tableView
+				   viewForTableColumn: tb
+					 row: rowIndex];
 	  [view setFrame: drawingRect];
 	  [tableView addSubview: view];      
 	}
-      /*
       else
 	{
-	  view = AUTORELEASE([[NSTableCellView alloc] init]);
+	  NSArray *protoCellViews = [tb _prototypeCellViews];
+	  NSEnumerator *en = [protoCellViews objectEnumerator];
+	  id cellView = nil;
+
+	  // NSLog(@"Rect for calculated frame = %@", NSStringFromRect(drawingRect));
+	  
+	  while ((cellView = [en nextObject]) != nil)
+	    {
+	      [cellView setFrame: drawingRect];
+	      [tableView addSubview: cellView];
+
+	      NSLog(@"cell view = %@, title = %@", cellView, [[cellView textField] stringValue]);
+	    }
 	}
-      */      
     }
 }
 
