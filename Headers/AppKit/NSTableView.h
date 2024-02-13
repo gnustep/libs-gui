@@ -166,7 +166,8 @@ APPKIT_EXPORT_CLASS
    * We cache column origins (precisely, the x coordinate of the left
    * origin of each column).  When a column width is changed through
    * [NSTableColumn setWidth:], then [NSTableView tile] gets called,
-   * which updates the cache.  */
+   * which updates the cache.
+   */
   CGFloat *_columnOrigins;
 
   /*
@@ -188,7 +189,7 @@ APPKIT_EXPORT_CLASS
 
   /* Supporting ivars for view based tables */
   BOOL _viewBased;
-  NSMutableArray *_renderedViewPaths;
+  NSMapTable *_renderedViewPaths;
 }
 
 /* Data Source */

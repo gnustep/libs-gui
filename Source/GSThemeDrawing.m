@@ -78,7 +78,7 @@
 		      row: (NSInteger)index;
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
 			     row: (NSInteger)index;
-- (NSMutableArray *) _renderedViewPaths;
+- (NSMapTable *) _renderedViewPaths;
 @end
 
 @interface NSTableColumn (Private)
@@ -3542,38 +3542,39 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       NSTableColumn *tb = nil;
       NSIndexPath *path = [NSIndexPath indexPathForItem: i
 					      inSection: rowIndex];
-      NSMutableArray *paths = [tableView _renderedViewPaths];
-
-      // If the path has been rendered, move on...
-      if ([paths containsObject: path])
-	continue;
+      NSMapTable *paths = [tableView _renderedViewPaths];
+      NSView *view = [paths objectForKey: path];
       
-      // Store the path...
-      [paths addObject: path];
-      
-      // drawingRect.origin.y += headerHeight;
-      tb = [tableColumns objectAtIndex: i];
-      if (hasMethod)
+      // If the view has been stored use it, if not
+      // then grab it.
+      if (view == nil)
 	{
-	  NSView *view = [delegate tableView: tableView
-				   viewForTableColumn: tb
-					 row: rowIndex];
-	  [view setFrame: drawingRect];
-	  [tableView addSubview: view];      
-	}
-      else
-	{
-	  NSArray *protoCellViews = [tb _prototypeCellViews];
-	  NSEnumerator *en = [protoCellViews objectEnumerator];
-	  id cellView = nil;
-
-	  while ((cellView = [en nextObject]) != nil)
+	  tb = [tableColumns objectAtIndex: i];
+	  if (hasMethod)
 	    {
-	      cellView = [cellView copy]; // instantiate the prototype...
-	      [cellView setFrame: drawingRect];
-	      [tableView addSubview: cellView];
+	      view = [delegate tableView: tableView
+			       viewForTableColumn: tb
+				     row: rowIndex];
 	    }
+	  else
+	    {
+	      NSArray *protoCellViews = [tb _prototypeCellViews];
+	      
+	      // it seems there is always one prototype...
+	      if ([protoCellViews count] > 0)
+		{
+		  view = [protoCellViews objectAtIndex: 0];
+		  view = [view copy]; // instantiate the prototype...
+		}
+	    }
+
+	  // Store the object...
+	  [paths setObject: view forKey: path];
 	}
+
+      // Place the view...
+      [view setFrame: drawingRect];
+      [tableView addSubview: view];      
     }
 }
 
