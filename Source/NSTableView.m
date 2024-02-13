@@ -3218,18 +3218,23 @@ byExtendingSelection: (BOOL)flag
 - (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex
 {
   NSCell *cell = nil;
-  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
 
-  if ([_delegate respondsToSelector: 
-        @selector(tableView:dataCellForTableColumn:row:)])
-    {
-      cell = [_delegate tableView: self dataCellForTableColumn: tb
-                                                           row: rowIndex];
+  if (_viewBased == NO)
+    {  
+      NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+
+      if ([_delegate respondsToSelector: 
+		    @selector(tableView:dataCellForTableColumn:row:)])
+	{
+	  cell = [_delegate tableView: self dataCellForTableColumn: tb
+				  row: rowIndex];
+	}
+      if (cell == nil)
+	{
+	  cell = [tb dataCellForRow: rowIndex];
+	}
     }
-  if (cell == nil)
-    {
-      cell = [tb dataCellForRow: rowIndex];
-    }
+  
   return cell;
 }
 
@@ -3349,6 +3354,11 @@ byExtendingSelection: (BOOL)flag
   NSTableColumn *tb;
   NSRect drawingRect;
   NSUInteger length = 0;
+
+  if (_viewBased)
+    {
+      return;
+    }
 
   if (rowIndex != _selectedRow)
     {
@@ -3483,6 +3493,11 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
 		row: (NSInteger) rowIndex
 		withEvent: (NSEvent *) theEvent
 {
+  if (_viewBased)
+    {
+      return;
+    }
+  
   if (rowIndex == -1 || columnIndex == -1)
     {
       return;
@@ -3848,31 +3863,35 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		  
 		  if (eventType == NSLeftMouseDown)
 		    {
-		      /*
-		       * Can never get here from a dragging source
-		       * so they need to track in mouse up.
-		       */
-		      NSCell *cell = [self preparedCellAtColumn: _clickedColumn 
-                                                            row: _clickedRow];
-		      
-		      [self _trackCellAtColumn: _clickedColumn
-				row: _clickedRow
-				withEvent: theEvent];
-		      didTrackCell = YES;
-
-		      if ([[cell class] prefersTrackingUntilMouseUp])
-		        {
-		          /* the mouse could have gone up outside of the cell
-		           * avoid selecting the row under mouse cursor */ 
-			  sendAction = YES;
-			  done = YES;
+		      if (_viewBased == NO)
+			{
+			  /*
+			   * Can never get here from a dragging source
+			   * so they need to track in mouse up.
+			   */
+			  NSCell *cell = [self preparedCellAtColumn: _clickedColumn 
+								row: _clickedRow];
+			  
+			  [self _trackCellAtColumn: _clickedColumn
+					       row: _clickedRow
+					 withEvent: theEvent];
+			  didTrackCell = YES;
+			  
+			  if ([[cell class] prefersTrackingUntilMouseUp])
+			    {
+			      /* the mouse could have gone up outside of the cell
+			       * avoid selecting the row under mouse cursor */ 
+			      sendAction = YES;
+			      done = YES;
+			    }
 			}
 		    }
+
 		  /*
 		   * Since we may have tracked a cell which may have caused
 		   * a change to the currentEvent we may need to loop over
 		   * the current event
-		   */ 
+		   */
 		  getNextEvent = (lastEvent == [NSApp currentEvent]);
 		}
 	      else
@@ -5805,6 +5824,11 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   NSInteger i, j;
 
+  if (_viewBased)
+    {
+      return;
+    }
+  
   if (aCell == nil)
     return;
 
@@ -6704,7 +6728,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index
 {
-  if (_del_responds)
+  if (_del_responds && _viewBased == NO)
     {
       [_delegate tableView: self   
 		 willDisplayCell: cell 
@@ -6717,23 +6741,27 @@ For a more detailed explanation, -setSortDescriptors:. */
 			      row: (NSInteger) index
 {
   id result = nil;
-  GSKeyValueBinding *theBinding;
-
-  theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
-                                   forObject: tb];
-  if (theBinding != nil)
+  
+  if (_viewBased == NO)
     {
-      return [(NSArray *)[theBinding destinationValue]
-                 objectAtIndex: index];
+      GSKeyValueBinding *theBinding;
+      
+      theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
+				       forObject: tb];
+      if (theBinding != nil)
+	{
+	  return [(NSArray *)[theBinding destinationValue]
+		     objectAtIndex: index];
+	}
+      else if ([_dataSource respondsToSelector:
+			   @selector(tableView:objectValueForTableColumn:row:)])
+	{
+	  result = [_dataSource tableView: self
+				objectValueForTableColumn: tb
+				      row: index];
+	}
     }
-  else if ([_dataSource respondsToSelector:
-		    @selector(tableView:objectValueForTableColumn:row:)])
-    {
-      result = [_dataSource tableView: self
-			    objectValueForTableColumn: tb
-			    row: index];
-    }
-
+      
   return result;
 }
 
@@ -6741,15 +6769,18 @@ For a more detailed explanation, -setSortDescriptors:. */
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (NSInteger) index
 {
-  if ([_dataSource respondsToSelector:
-		    @selector(tableView:setObjectValue:forTableColumn:row:)])
+  if (_viewBased == NO)
     {
-      [_dataSource tableView: self
-		   setObjectValue: value
-		   forTableColumn: tb
-		   row: index];
+      if ([_dataSource respondsToSelector:
+		      @selector(tableView:setObjectValue:forTableColumn:row:)])
+	{
+	  [_dataSource tableView: self
+		  setObjectValue: value
+		  forTableColumn: tb
+			     row: index];
+	}
     }
-}
+ }
 
 /* Quasi private method called on self from -noteNumberOfRowsChanged
  * implemented in NSTableView and subclasses 
