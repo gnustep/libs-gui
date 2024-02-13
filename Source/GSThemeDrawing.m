@@ -78,6 +78,7 @@
 		      row: (NSInteger)index;
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
 			     row: (NSInteger)index;
+- (NSMutableArray *) _renderedViewPaths;
 @end
 
 @interface NSTableColumn (Private)
@@ -3539,7 +3540,17 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 			     frameOfCellAtColumn: i
 					     row: rowIndex];
       NSTableColumn *tb = nil;
+      NSIndexPath *path = [NSIndexPath indexPathForItem: i
+					      inSection: rowIndex];
+      NSMutableArray *paths = [tableView _renderedViewPaths];
 
+      // If the path has been rendered, move on...
+      if ([paths containsObject: path])
+	continue;
+      
+      // Store the path...
+      [paths addObject: path];
+      
       // drawingRect.origin.y += headerHeight;
       tb = [tableColumns objectAtIndex: i];
       if (hasMethod)

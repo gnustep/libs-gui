@@ -185,7 +185,10 @@ APPKIT_EXPORT_CLASS
   NSDragOperation _draggingSourceOperationMaskForRemote;
 
   NSInteger _beginEndUpdates;
+
+  /* Supporting ivars for view based tables */
   BOOL _viewBased;
+  NSMutableArray *_renderedViewPaths;
 }
 
 /* Data Source */
