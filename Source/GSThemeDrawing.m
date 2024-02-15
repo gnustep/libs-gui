@@ -3570,11 +3570,11 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 	  // Store the object...
 	  [paths setObject: view forKey: path];
+	  [tableView addSubview: view];      
 	}
 
       // Place the view...
       [view setFrame: drawingRect];
-      [tableView addSubview: view];      
     }
 }
 
