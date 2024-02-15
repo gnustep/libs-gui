@@ -3362,11 +3362,6 @@ byExtendingSelection: (BOOL)flag
   NSRect drawingRect;
   NSUInteger length = 0;
 
-  if (_viewBased)
-    {
-      return;
-    }
-
   if (rowIndex != _selectedRow)
     {
       [NSException raise:NSInvalidArgumentException
@@ -3500,11 +3495,6 @@ static inline NSTimeInterval computePeriod(NSPoint mouseLocationWin,
 		row: (NSInteger) rowIndex
 		withEvent: (NSEvent *) theEvent
 {
-  if (_viewBased)
-    {
-      return;
-    }
-  
   if (rowIndex == -1 || columnIndex == -1)
     {
       return;
@@ -5828,11 +5818,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   NSInteger i, j;
 
-  if (_viewBased)
-    {
-      return;
-    }
-  
   if (aCell == nil)
     return;
 
@@ -6732,7 +6717,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index
 {
-  if (_del_responds && _viewBased == NO)
+  if (_del_responds)
     {
       [_delegate tableView: self   
 		 willDisplayCell: cell 
