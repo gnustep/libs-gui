@@ -923,9 +923,18 @@ static NSImage *unexpandable  = nil;
  */
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)aRect
 {
-  [[GSTheme theme] drawOutlineViewRow: rowIndex
-			     clipRect: aRect
-			       inView: self];
+  if (_viewBased)
+    {
+      [[GSTheme theme] drawOutlineCellViewRow: rowIndex
+				     clipRect: aRect
+				       inView: self];
+    }
+  else
+    {
+      [[GSTheme theme] drawOutlineViewRow: rowIndex
+				 clipRect: aRect
+				   inView: self];
+    }
 }
 
 - (void) drawRect: (NSRect)aRect
@@ -2146,19 +2155,24 @@ Also returns the child index relative to this parent. */
 - (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex
 {
   NSCell *cell = nil;
-  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
 
-  if ([_delegate respondsToSelector:
-        @selector(outlineView:dataCellForTableColumn:item:)])
+  if (_viewBased)
     {
-      id item = [self itemAtRow: rowIndex];
-      cell = [_delegate outlineView: self dataCellForTableColumn: tb
-                                                            item: item];
+      NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+      
+      if ([_delegate respondsToSelector:
+		  @selector(outlineView:dataCellForTableColumn:item:)])
+	{
+	  id item = [self itemAtRow: rowIndex];
+	  cell = [_delegate outlineView: self dataCellForTableColumn: tb
+				   item: item];
+	}
+      if (cell == nil)
+	{
+	  cell = [tb dataCellForRow: rowIndex];
+	}
     }
-  if (cell == nil)
-    {
-      cell = [tb dataCellForRow: rowIndex];
-    }
+  
   return cell;
 }
 

@@ -43,6 +43,7 @@
 #import "AppKit/NSColorWell.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSImageView.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSMenuItemCell.h"
 #import "AppKit/NSOutlineView.h"
@@ -3507,7 +3508,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   CGFloat x_pos;
   id<NSTableViewDelegate> delegate = [tableView delegate];
   BOOL hasMethod = [delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)];
-  // CGFloat headerHeight = [[tableView headerView] frame].size.height;
   
   /* Using columnAtPoint: here would make it called twice per row per drawn 
      rect - so we avoid it and do it natively */
@@ -3731,6 +3731,150 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		       clipRect: (NSRect)clipRect
 			 inView: (NSView *)view
 {
+  NSOutlineView *outlineView = (NSOutlineView *)view;
+  NSInteger numberOfColumns = [outlineView numberOfColumns];
+  CGFloat *columnOrigins = [outlineView _columnOrigins];
+  NSArray *tableColumns = [outlineView tableColumns];
+  CGFloat indentationPerLevel = [outlineView indentationPerLevel];
+  NSInteger numberOfRows = [outlineView numberOfRows];
+  NSInteger startingColumn;
+  NSInteger endingColumn;
+  NSInteger i;
+  CGFloat x_pos;
+  id dataSource = [outlineView dataSource];
+  id delegate = [outlineView delegate];
+  NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
+  BOOL hasMethod = [delegate respondsToSelector: @selector(outlineView:viewForTableColumn:row:)];
+  
+  if (dataSource == nil)
+    {
+      return;
+    }
+
+  /* Using columnAtPoint: here would make it called twice per row per drawn
+     rect - so we avoid it and do it natively */
+
+  if (rowIndex >= numberOfRows)
+    {
+      return;
+    }
+
+  /* Determine starting column as fast as possible */
+  x_pos = NSMinX (clipRect);
+  i = 0;
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  startingColumn = (i - 1);
+
+  if (startingColumn == -1)
+    startingColumn = 0;
+
+  /* Determine ending column as fast as possible */
+  x_pos = NSMaxX (clipRect);
+
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  endingColumn = (i - 1);
+
+  if (endingColumn == -1)
+    endingColumn = numberOfColumns - 1;
+
+  /* Draw the row between startingColumn and endingColumn */
+  for (i = startingColumn; i <= endingColumn; i++)
+    {
+      NSRect drawingRect = [outlineView
+			     frameOfCellAtColumn: i
+					     row: rowIndex];
+      id item = [outlineView itemAtRow: rowIndex];
+      NSTableColumn *tb = [tableColumns objectAtIndex: i];
+      NSIndexPath *path = [NSIndexPath indexPathForItem: i
+					      inSection: rowIndex];
+      NSMapTable *paths = [outlineView _renderedViewPaths];
+      NSView *view = [paths objectForKey: path];
+      
+      if (tb == outlineTableColumn)
+        {
+          NSImage *image = nil;
+          NSInteger level = 0;
+          CGFloat indentationFactor = 0.0;
+	  NSImageView *imageView = nil;
+	  NSRect imageRect = NSZeroRect;
+
+          // display the correct arrow...
+          if ([outlineView isItemExpanded: item])
+            {
+              image = [NSImage imageNamed: @"common_ArrowDownH"];
+            }
+          else
+            {
+              image = [NSImage imageNamed: @"common_ArrowRightH"];
+            }
+
+          if (![outlineView isExpandable: item])
+            {
+              image = [[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)];  // revisit this.. memory leak
+            }
+
+          level = [outlineView levelForItem: item];
+          indentationFactor = indentationPerLevel * level;
+          imageView = [[NSImageView alloc] init];
+          imageRect = [outlineView frameOfOutlineCellAtRow: rowIndex];
+
+          /* Do not indent if the delegate set the image to nil. */
+          if ([imageView image])
+            {
+              imageRect.size.width = [image size].width;
+              imageRect.size.height = [image size].height;
+
+	      // Place the image...
+	      [imageView setFrame: imageRect];
+	      [outlineView addSubview: imageView];
+
+              drawingRect.origin.x
+                += indentationFactor + imageRect.size.width + 5;
+              drawingRect.size.width
+                -= indentationFactor + imageRect.size.width + 5;
+            }
+          else
+            {
+              drawingRect.origin.x += indentationFactor;
+              drawingRect.size.width -= indentationFactor;
+            }
+
+          RELEASE(imageView);
+        }
+
+      if (view == nil)
+	{
+	  if (hasMethod)
+	    {
+	      view = [delegate outlineView: outlineView
+			viewForTableColumn: tb
+				      item: item];
+	    }
+	  else
+	    {
+	      NSArray *protoCellViews = [tb _prototypeCellViews];
+	      
+	      // it seems there is always one prototype...
+	      if ([protoCellViews count] > 0)
+		{
+		  view = [protoCellViews objectAtIndex: 0];
+		  view = [view copy]; // instantiate the prototype...
+		}      
+	    }
+
+	  [paths setObject: view forKey: path];
+	  [outlineView addSubview: view];
+	}
+
+      // Place the view...
+      [view setFrame: drawingRect];
+    }  
 }
 
 - (void) drawBoxInClipRect: (NSRect)clipRect
