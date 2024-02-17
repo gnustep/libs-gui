@@ -30,7 +30,7 @@
 
 #import <Foundation/NSObject.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {

@@ -33,6 +33,7 @@
 #import <AppKit/NSControl.h>
 #import <AppKit/NSDragging.h>
 #import <AppKit/NSUserInterfaceValidation.h>
+#import <AppKit/NSUserInterfaceItemIdentification.h>
 
 @class NSArray;
 @class NSIndexSet;
@@ -190,6 +191,7 @@ APPKIT_EXPORT_CLASS
   /* Supporting ivars for view based tables */
   BOOL _viewBased;
   NSMapTable *_renderedViewPaths;
+  NSMutableDictionary *_registeredViews;
 }
 
 /* Data Source */
@@ -396,6 +398,7 @@ APPKIT_EXPORT_CLASS
 - (void) insertRowsAtIndexes: (NSIndexSet*)indexes withAnimation: (NSTableViewAnimationOptions)animationOptions;
 - (void) removeRowsAtIndexes: (NSIndexSet*)indexes withAnimation: (NSTableViewAnimationOptions)animationOptions;
 - (NSInteger) rowForView: (NSView*)view;
+- (NSView *) makeViewWithIdentifier: (NSUserInterfaceItemIdentifier)identifier owner:(id)owner;
 #endif
 
 @end /* interface of NSTableView */

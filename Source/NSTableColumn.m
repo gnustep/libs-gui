@@ -579,7 +579,7 @@ to YES. */
       if ([aDecoder containsValueForKey: @"NSPrototypeCellViews"])
 	{
 	  ASSIGN(_prototypeCellViews, [aDecoder decodeObjectForKey: @"NSPrototypeCellViews"]);
-	}      
+	}
     }
   else
     {
