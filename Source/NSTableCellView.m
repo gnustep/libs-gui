@@ -99,7 +99,7 @@
   return _rowSizeStyle;
 }
 
-- (void) setRowSizeStyle: (NSTableViewRowSizeStyle) rowSizeStyle
+- (void) setRowSizeStyle: (NSTableViewRowSizeStyle)rowSizeStyle
 {
   _rowSizeStyle = rowSizeStyle;
 }
@@ -119,6 +119,18 @@
   [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
+      [coder encodeObject: [self objectValue]
+		   forKey: @"NSObjectValue"];
+      [coder encodeObject: [self imageView]
+		   forKey: @"NSImageView"];
+      [coder encodeObject: [self textField]
+		   forKey: @"NSTextField"];
+      [coder encodeInt: [self backgroundStyle]
+		forKey: @"NSBackgroundStyle"];
+      [coder encodeInt: [self rowSizeStyle]
+		forKey: @"NSTableViewRowSizeStyle"];
+      [coder encodeObject: [self draggingImageComponents]
+		   forKey: @"NSDraggingImageComponents"];
     }
   else
     {
@@ -141,6 +153,35 @@
     {
       if ([coder allowsKeyedCoding])
 	{
+	  if ([coder containsValueForKey: @"NSObjectValue"])
+	    {
+	      [self setObjectValue: [coder decodeObjectForKey: @"NSObjectValue"]];	      
+	    }
+
+	  if ([coder containsValueForKey: @"NSImageView"])
+	    {
+	      [self setImageView: [coder decodeObjectForKey: @"NSImageView"]];	      
+	    }
+
+	  if ([coder containsValueForKey: @"NSTextField"])
+	    {
+	      [self setTextField: [coder decodeObjectForKey: @"NSTextField"]];	      
+	    }
+	  
+	  if ([coder containsValueForKey: @"NSBackgroundStyle"])
+	    {
+	      [self setBackgroundStyle: [coder decodeIntForKey: @"NSBackgroundStyle"]];
+	    }
+
+	  if ([coder containsValueForKey: @"NSTableViewRowSizeStyle"])
+	    {
+	      [self setRowSizeStyle: [coder decodeIntForKey: @"NSTableViewRowSizeStyle"]];
+	    }
+
+	  if ([coder containsValueForKey: @"NSDraggingImageComponents"])
+	    {
+	      [self setDraggingImageComponents: [coder decodeObjectForKey: @"NSDrawggingImageComponents"]];
+	    }
 	}
       else
 	{
