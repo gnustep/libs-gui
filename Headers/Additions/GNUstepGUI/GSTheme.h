@@ -1266,10 +1266,11 @@ APPKIT_EXPORT_CLASS
 			   tabViewType: (NSTabViewType)type
 			       tabView: (NSTabView *)view;
 
-- (NSImage *)imageForTabPart: (GSTabPart)part type: (NSTabViewType)type;
+- (NSImage *) imageForTabPart: (GSTabPart)part
+			 type: (NSTabViewType)type;
 
 - (NSRect) tabViewBackgroundRectForBounds: (NSRect)aRect
-tabViewType: (NSTabViewType)type;
+			      tabViewType: (NSTabViewType)type;
 
 - (void) drawTabViewRect: (NSRect)rect
 		  inView: (NSView *)view
