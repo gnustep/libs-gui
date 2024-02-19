@@ -5765,7 +5765,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       _cornerView      = RETAIN([aDecoder decodeObject]);
       aDelegate        = [aDecoder decodeObject];
       _target          = [aDecoder decodeObject];
-      
+
       [self setDelegate: aDelegate];
       [_headerView setTableView: self];
       [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
