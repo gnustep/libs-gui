@@ -54,6 +54,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSNib.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableColumn.h"
@@ -2047,6 +2048,9 @@ static void computeNewSelection
   ASSIGN(_sortDescriptors, [NSArray array]);
   _viewBased = NO;
   _renderedViewPaths = RETAIN([NSMapTable strongToWeakObjectsMapTable]);
+  _pathsToViews = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
+  _registeredNibs = [[NSMutableDictionary alloc] init];
+  _registeredViews = [[NSMutableDictionary alloc] init];
 }
 
 - (id) initWithFrame: (NSRect)frameRect
@@ -2079,6 +2083,9 @@ static void computeNewSelection
   RELEASE (_selectedRows);
   RELEASE (_sortDescriptors);
   RELEASE (_renderedViewPaths);
+  RELEASE (_pathsToViews);
+  RELEASE (_registeredNibs);
+  RELEASE (_registeredViews);
   TEST_RELEASE (_headerView);
   TEST_RELEASE (_cornerView);
   if (_autosaveTableColumns == YES)
@@ -6731,27 +6738,23 @@ For a more detailed explanation, -setSortDescriptors:. */
 			      row: (NSInteger) index
 {
   id result = nil;
+  GSKeyValueBinding *theBinding;
   
-  if (_viewBased == NO)
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
+				   forObject: tb];
+  if (theBinding != nil)
     {
-      GSKeyValueBinding *theBinding;
-      
-      theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
-				       forObject: tb];
-      if (theBinding != nil)
-	{
-	  return [(NSArray *)[theBinding destinationValue]
-		     objectAtIndex: index];
-	}
-      else if ([_dataSource respondsToSelector:
-			   @selector(tableView:objectValueForTableColumn:row:)])
-	{
-	  result = [_dataSource tableView: self
-				objectValueForTableColumn: tb
-				      row: index];
-	}
+      return [(NSArray *)[theBinding destinationValue]
+		 objectAtIndex: index];
     }
-      
+  else if ([_dataSource respondsToSelector:
+		       @selector(tableView:objectValueForTableColumn:row:)])
+    {
+      result = [_dataSource tableView: self
+			    objectValueForTableColumn: tb
+				  row: index];
+    }
+  
   return result;
 }
 
@@ -6759,18 +6762,15 @@ For a more detailed explanation, -setSortDescriptors:. */
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (NSInteger) index
 {
-  if (_viewBased == NO)
+  if ([_dataSource respondsToSelector:
+		  @selector(tableView:setObjectValue:forTableColumn:row:)])
     {
-      if ([_dataSource respondsToSelector:
-		      @selector(tableView:setObjectValue:forTableColumn:row:)])
-	{
-	  [_dataSource tableView: self
-		  setObjectValue: value
-		  forTableColumn: tb
-			     row: index];
-	}
+      [_dataSource tableView: self
+	      setObjectValue: value
+	      forTableColumn: tb
+			 row: index];
     }
- }
+}
 
 /* Quasi private method called on self from -noteNumberOfRowsChanged
  * implemented in NSTableView and subclasses 
@@ -6871,7 +6871,8 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSInteger) columnForView: (NSView*)view
 {
-  return NSNotFound;
+  NSIndexPath *path = [_pathsToViews objectForKey: view];
+  return [path item];
 }
 
 - (void) insertRowsAtIndexes: (NSIndexSet*)indexes
@@ -6886,12 +6887,62 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSInteger) rowForView: (NSView*)view
 {
-  return NSNotFound;
+  NSIndexPath *path = [_pathsToViews objectForKey: view];
+  return [path section];
 }
 
 - (NSView *) makeViewWithIdentifier: (NSUserInterfaceItemIdentifier)identifier owner:(id)owner
 {
-  return nil;
+  NSView *view = [_registeredViews objectForKey: identifier];
+
+  if (view != nil)
+    {
+      view = [view copy];
+      // [owner awakeFromNib];
+    }
+  else
+    {
+      NSNib *nib = [_registeredNibs objectForKey: identifier];
+
+      if (nib != nil)
+	{
+	  NSArray *tlo = nil;
+	  BOOL loaded = [nib instantiateWithOwner: owner
+				  topLevelObjects: &tlo];
+	  if (loaded)
+	    {
+	      NSEnumerator *en = [tlo objectEnumerator];
+	      id o = nil;
+	      
+	      while ((o = [en nextObject]) != nil)
+		{
+		  if ([o isKindOfClass: [NSView class]])
+		    {
+		      view = o;
+		      break;
+		    }
+		}
+	    }
+	  else
+	    {
+	      NSLog(@"Failed to load model for identifier %@, in %@", identifier, self);
+	    }
+	}
+    }
+  
+  return view;
+}
+
+- (void) registerNib: (NSNib *)nib
+       forIdentifier: (NSUserInterfaceItemIdentifier)identifier
+{
+  [_registeredNibs setObject: nib
+		      forKey: identifier];
+}
+
+- (NSDictionary *) registeredNibsByIdentifier
+{
+  return [_registeredNibs copy];
 }
 
 @end /* implementation of NSTableView */
@@ -7085,6 +7136,11 @@ For a more detailed explanation, -setSortDescriptors:. */
 - (NSMapTable *) _renderedViewPaths
 {
   return _renderedViewPaths;
+}
+
+- (NSMapTable *) _pathsToViews
+{
+  return _pathsToViews;
 }
 
 @end

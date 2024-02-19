@@ -82,6 +82,7 @@
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
 			     row: (NSInteger)index;
 - (NSMapTable *) _renderedViewPaths;
+- (NSMapTable *) _pathsToViews;
 @end
 
 @interface NSTableColumn (Private)
@@ -3545,6 +3546,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       NSIndexPath *path = [NSIndexPath indexPathForItem: i
 					      inSection: rowIndex];
       NSMapTable *paths = [tableView _renderedViewPaths];
+      NSMapTable *views = [tableView _pathsToViews];
       NSView *view = [paths objectForKey: path];
       
       // If the view has been stored use it, if not
@@ -3572,6 +3574,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 	  // Store the object...
 	  [paths setObject: view forKey: path];
+	  [views setObject: path forKey: view];
 	  [tableView addSubview: view];      
 	}
 

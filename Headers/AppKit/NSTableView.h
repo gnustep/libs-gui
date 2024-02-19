@@ -44,6 +44,7 @@
 @class NSText;
 @class NSImage;
 @class NSURL;
+@class NSNib;
 
 typedef enum _NSTableViewDropOperation {
   NSTableViewDropOn,
@@ -191,6 +192,8 @@ APPKIT_EXPORT_CLASS
   /* Supporting ivars for view based tables */
   BOOL _viewBased;
   NSMapTable *_renderedViewPaths;
+  NSMapTable *_pathsToViews;
+  NSMutableDictionary *_registeredNibs;
   NSMutableDictionary *_registeredViews;
 }
 
@@ -399,6 +402,12 @@ APPKIT_EXPORT_CLASS
 - (void) removeRowsAtIndexes: (NSIndexSet*)indexes withAnimation: (NSTableViewAnimationOptions)animationOptions;
 - (NSInteger) rowForView: (NSView*)view;
 - (NSView *) makeViewWithIdentifier: (NSUserInterfaceItemIdentifier)identifier owner:(id)owner;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+- (void) registerNib: (NSNib *)nib
+       forIdentifier: (NSUserInterfaceItemIdentifier)identifier;
+- (NSDictionary *) registeredNibsByIdentifier;
 #endif
 
 @end /* interface of NSTableView */
