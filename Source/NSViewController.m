@@ -83,6 +83,7 @@
 
 - (void) viewWillAppear: (BOOL)animated
 {
+  [self viewWillAppear];
 }
 
 - (void) viewIsAppearing: (BOOL)animated
@@ -91,13 +92,32 @@
 
 - (void) viewDidAppear: (BOOL)animated
 {
+  [self viewDidAppear];
 }
 
 - (void) viewWillDisappear: (BOOL)animated
 {
+  [self viewWillDisappear];
 }
 
 - (void) viewDidDisappear: (BOOL)animated
+{
+  [self viewDidDisappear];
+}
+
+- (void) viewWillAppear
+{
+}
+
+- (void) viewWillDisappear
+{
+}
+
+- (void) viewDidAppear
+{
+}
+
+- (void) viewDidDisappear
 {
 }
 
