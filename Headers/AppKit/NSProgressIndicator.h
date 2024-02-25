@@ -51,7 +51,9 @@ typedef enum _NSProgressIndicatorThickness
 typedef enum _NSProgressIndicatorStyle
 {
   NSProgressIndicatorBarStyle = 0,
-  NSProgressIndicatorSpinningStyle = 1
+  NSProgressIndicatorSpinningStyle = 1,
+  NSProgressIndicatorStyleBar = 0,
+  NSProgressIndicatorStyleSpinning = 1
 } NSProgressIndicatorStyle;
 
 APPKIT_EXPORT_CLASS
