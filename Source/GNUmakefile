@@ -679,6 +679,8 @@ GSImageMagickImageRep.h \
 GSInstantiator.h \
 GSSoundSink.h \
 GSSoundSource.h \
+GSVideoSink.h \
+GSVideoSource.h \
 GSWindowDecorationView.h \
 GSXibElement.h \
 GSXibLoading.h \
