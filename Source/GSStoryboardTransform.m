@@ -119,6 +119,23 @@
 @end
 
 @implementation NSStoryboardSeguePerformAction
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _target = nil;
+      _action = NULL;
+      _sender = nil;
+      _identifier = nil;
+      _kind = nil;
+      _popoverAnchorView = nil;
+      _storyboardSegue = nil;
+      _storyboard = nil;
+    }
+  return self;
+}
+
 - (id) target
 {
   return _target;
@@ -306,6 +323,16 @@
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   // this is never encoded directly...
+}
+
+- (NSString *) description
+{
+  return [NSString stringWithFormat:
+		     @"<%@ - target = %@, selector = %@, sender = %@, "
+		   @"identifier = %@, kind = %@, popoverAnchorView = %@>",
+		   [super description], [self target], [self selector],
+		   [self sender], [self identifier], [self kind],
+		   [self popoverAnchorView]];
 }
 @end
 
@@ -727,9 +754,13 @@
   NSXMLNode *pkind
     = [NSXMLNode attributeWithName: @"kind"
                        stringValue: kind];
-  NSXMLNode *panchorview
-    = [NSXMLNode attributeWithName: @"popoverAnchorView"
-                       stringValue: anchorView];
+
+  NSXMLNode *panchorview = nil;
+  if (anchorView != nil)
+    {
+      panchorview = [NSXMLNode attributeWithName: @"popoverAnchorView"
+				     stringValue: anchorView];
+    }
   
   [sbproxy addAttribute: pselector];
   [sbproxy addAttribute: ptarget];
@@ -737,8 +768,12 @@
   [sbproxy addAttribute: psegueIdent];
   [sbproxy addAttribute: psender];
   [sbproxy addAttribute: pkind];
-  [sbproxy addAttribute: panchorview];
 
+  if (panchorview != nil)
+    {
+      [sbproxy addAttribute: panchorview];
+    }
+  
   return sbproxy;
 }
 
@@ -774,43 +809,48 @@
                 ident = [[NSUUID UUID] UUIDString];
               }
             attr = [obj attributeForName: @"popoverAnchorView"];
-            NSString *av = [attr stringValue];
-            attr = [obj attributeForName: @"popoverBehavior"];
-            NSString *pb = [attr stringValue];
-            NSPopoverBehavior behavior = NSPopoverBehaviorApplicationDefined; 
-            if ([pb isEqualToString: @"a"])
-              {
-                behavior = NSPopoverBehaviorApplicationDefined; 
-              }
-            else if ([pb isEqualToString: @"t"])
-              {
-                behavior = NSPopoverBehaviorTransient;
-              }
-            else if ([pb isEqualToString: @"s"])
-              {
-                behavior = NSPopoverBehaviorSemitransient;
-              }
-            
-            attr = [obj attributeForName: @"preferredEdge"];
-            NSString *pe = [attr stringValue];
-            NSRectEdge edge = NSMinXEdge;
-            if ([pe isEqualToString: @"maxY"])
-              {
-                edge = NSMaxYEdge;
-              }
-            else if ([pe isEqualToString: @"minY"])
-              {
-                edge = NSMinYEdge;
-              }
-            else if ([pe isEqualToString: @"maxX"])
-              {
-                edge = NSMaxXEdge;
-              }
-            else if ([pe isEqualToString: @"minX"])
-              {
-                edge = NSMinXEdge;
-              }
-            [obj detach]; // segue can't be in the archive since it doesn't conform to NSCoding
+
+	    NSString *av = [attr stringValue];
+	    NSPopoverBehavior behavior = NSNotFound;
+	    NSRectEdge edge = NSNotFound;
+
+	    if (av != nil)
+	      {
+		attr = [obj attributeForName: @"popoverBehavior"];
+		NSString *pb = [attr stringValue];
+		if ([pb isEqualToString: @"a"])
+		  {
+		    behavior = NSPopoverBehaviorApplicationDefined; 
+		  }
+		else if ([pb isEqualToString: @"t"])
+		  {
+		    behavior = NSPopoverBehaviorTransient;
+		  }
+		else if ([pb isEqualToString: @"s"])
+		  {
+		    behavior = NSPopoverBehaviorSemitransient;
+		  }
+		
+		attr = [obj attributeForName: @"preferredEdge"];
+		NSString *pe = [attr stringValue];
+		if ([pe isEqualToString: @"maxY"])
+		  {
+		    edge = NSMaxYEdge;
+		  }
+		else if ([pe isEqualToString: @"minY"])
+		  {
+		    edge = NSMinYEdge;
+		  }
+		else if ([pe isEqualToString: @"maxX"])
+		  {
+		    edge = NSMaxXEdge;
+		  }
+		else if ([pe isEqualToString: @"minX"])
+		  {
+		    edge = NSMinXEdge;
+		  }
+	      }
+	    [obj detach]; // segue can't be in the archive since it doesn't conform to NSCoding
             
             // Create proxy object to invoke methods on the window controller
             NSXMLElement *sbproxy =  [self createStoryboardProxyElementWithSelector: @"doAction:"
@@ -838,11 +878,13 @@
                                      stringValue: [[sbproxy attributeForName: @"id"] stringValue]];
                 NSXMLNode *controller_ident
                   = [NSXMLNode attributeWithName: @"id"
-                                     stringValue: uid]; 
+                                     stringValue: uid];
+		
                 [action addAttribute: selector];
                 [action addAttribute: target];
                 [action addAttribute: controller_ident];
-                [segue_parent addChild: action];
+		
+		[segue_parent addChild: action];
               }
             
             // Create the segue...
@@ -851,9 +893,17 @@
                                                                       destination: dst];
             [ss _setKind: kind];
             [ss _setRelationship: rel];
-            [ss _setPopoverBehavior: behavior];
-            [ss _setPreferredEdge: edge];
-              
+
+	    if (behavior != NSNotFound)
+	      {
+		[ss _setPopoverBehavior: behavior];
+	      }
+
+	    if (edge != NSNotFound)
+	      {
+		[ss _setPreferredEdge: edge];
+	      }
+	    
             // Add to maptable...
             [mapTable setObject: ss
                          forKey: ident];
