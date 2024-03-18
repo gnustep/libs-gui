@@ -73,6 +73,18 @@
 #import "AppKit/NSTableView.h"
 #import "GSBindingHelpers.h"
 
+
+// Private method on NSTableView to register views...
+@interface NSTableView (NSTableColumnPrivate)
+- (void) _registerView: (NSView *)view;
+@end
+
+@implementation NSTableView (NSTableColumnPrivate)
+- (void) _registerView: (NSView *)view
+{
+}
+@end
+
 /**
   <p>
   NSTableColumn objects represent columns in NSTableViews.  
@@ -471,6 +483,17 @@ to YES. */
   ASSIGN(_sortDescriptorPrototype, aSortDescriptor);
 }
 
+- (void) _registerPrototypes
+{
+  NSEnumerator *en = [_prototypeCellViews objectEnumerator];
+  NSView *v = nil;
+
+  while ((v = [en nextObject]) != nil)
+    {
+      [_tableView _registerView: v];
+    }
+}
+
 /*
  * Encoding/Decoding
  */
@@ -579,6 +602,7 @@ to YES. */
       if ([aDecoder containsValueForKey: @"NSPrototypeCellViews"])
 	{
 	  ASSIGN(_prototypeCellViews, [aDecoder decodeObjectForKey: @"NSPrototypeCellViews"]);
+	  [self _registerPrototypes];
 	}
     }
   else
@@ -609,6 +633,7 @@ to YES. */
 	  if (version >= 4)
 	    {
 	      _prototypeCellViews = RETAIN([aDecoder decodeObject]);
+	      [self _registerPrototypes];
 	    }
         }
       else
