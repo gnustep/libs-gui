@@ -4982,6 +4982,44 @@ right.)
 	  RELEASE(attachment);
 	  return YES;
 	}
+      if ([type isEqualToString: NSFilenamesPboardType])
+	{
+          NSArray *list = [pboard propertyListForType: NSFilenamesPboardType];
+          NSMutableAttributedString *as = [[NSMutableAttributedString alloc] init]; 
+
+	  id<NSFastEnumeration> enumerator = list;
+	  FOR_IN (NSString*, filename, enumerator)
+	   {
+	      NSFileWrapper *fw = [[NSFileWrapper alloc] initWithPath: filename];
+	      if (fw) 
+	        {
+	          NSTextAttachment *attachment = [[NSTextAttachment alloc] 
+					         initWithFileWrapper: fw];
+	          NSAttributedString *asat =
+	            [NSAttributedString attributedStringWithAttachment: attachment];
+
+	          RELEASE(fw);
+	          RELEASE(attachment);
+
+	          [as appendAttributedString: asat];
+	        }
+	   }
+	  END_FOR_IN(enumerator)
+
+	  if (as && changeRange.location != NSNotFound &&
+	      [self shouldChangeTextInRange: changeRange
+		replacementString: [as string]])
+	    {
+	      [self replaceCharactersInRange: changeRange
+		withAttributedString: as];
+	      [self didChangeText];
+	      changeRange.length = [as length];
+	      [self setSelectedRange: NSMakeRange(NSMaxRange(changeRange),0)];
+	    }
+
+	  RELEASE(as);
+	  return YES;
+	}
     }
 
   // color accepting
@@ -5078,6 +5116,7 @@ right.)
       [ret addObject: NSRTFDPboardType];
       [ret addObject: NSTIFFPboardType];
       [ret addObject: NSFileContentsPboardType];
+      [ret addObject: NSFilenamesPboardType];
     }
   if (_tf.is_rich_text)
     {
