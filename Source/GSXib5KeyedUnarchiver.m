@@ -33,6 +33,7 @@
  */
 
 #import "GSXib5KeyedUnarchiver.h"
+#import "GSXibInternal.h"
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSXibLoading.h"
 #import "GNUstepGUI/GSXibElement.h"

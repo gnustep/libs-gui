@@ -355,6 +355,7 @@ GSGormLoader.m \
 GSGModelLoader.m \
 GSNibLoader.m \
 GSXibElement.m \
+GSXibInternal.m \
 GSXibLoader.m \
 GSXibLoading.m \
 GSXibKeyedUnarchiver.m \
