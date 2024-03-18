@@ -5006,10 +5006,10 @@ right.)
 	   }
 	  END_FOR_IN(enumerator)
 
-	  if (as && changeRange.location != NSNotFound &&
+          if ([as length] != 0  && changeRange.location != NSNotFound &&
 	      [self shouldChangeTextInRange: changeRange
 		replacementString: [as string]])
-	    {
+            {
 	      [self replaceCharactersInRange: changeRange
 		withAttributedString: as];
 	      [self didChangeText];
@@ -5017,9 +5017,9 @@ right.)
 	      [self setSelectedRange: NSMakeRange(NSMaxRange(changeRange),0)];
 	    }
 
-	  RELEASE(as);
-	  return YES;
-	}
+	RELEASE(as);
+	return YES;
+      }
     }
 
   // color accepting
