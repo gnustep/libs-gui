@@ -2369,6 +2369,7 @@ static void computeNewSelection
   if (_viewBased)
     {
       [_renderedViewPaths removeAllObjects];
+      [_pathsToViews removeAllObjects];
     }
   
   [self noteNumberOfRowsChanged];
