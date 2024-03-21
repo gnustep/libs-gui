@@ -62,6 +62,7 @@
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSWindow.h"
 
+#import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 #include <math.h>
 
@@ -922,136 +923,17 @@ static NSImage *unexpandable  = nil;
  */
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)aRect
 {
-  NSInteger startingColumn;
-  NSInteger endingColumn;
-  NSRect drawingRect;
-  NSCell *imageCell = nil;
-  NSRect imageRect;
-  NSInteger i;
-  CGFloat x_pos;
-
-  if (_dataSource == nil)
+  if (_viewBased)
     {
-      return;
+      [[GSTheme theme] drawOutlineCellViewRow: rowIndex
+				     clipRect: aRect
+				       inView: self];
     }
-
-  /* Using columnAtPoint: here would make it called twice per row per drawn
-     rect - so we avoid it and do it natively */
-
-  if (rowIndex >= _numberOfRows)
+  else
     {
-      return;
-    }
-
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (aRect);
-  i = 0;
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (aRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = _numberOfColumns - 1;
-
-  /* Draw the row between startingColumn and endingColumn */
-  for (i = startingColumn; i <= endingColumn; i++)
-    {
-      id item = [self itemAtRow: rowIndex];
-      NSTableColumn *tb = [_tableColumns objectAtIndex: i];
-      NSCell *cell = [self preparedCellAtColumn: i row: rowIndex];
-
-      [self _willDisplayCell: cell
-            forTableColumn: tb
-            row: rowIndex];
-      if (i == _editedColumn && rowIndex == _editedRow)
-        {
-          [cell _setInEditing: YES];
-          [cell setShowsFirstResponder: YES];
-        }
-      else
-        {
-          [cell setObjectValue: [_dataSource outlineView: self
-                                             objectValueForTableColumn: tb
-                                                  byItem: item]];
-        }
-      drawingRect = [self frameOfCellAtColumn: i
-                          row: rowIndex];
-
-      if (tb == _outlineTableColumn)
-        {
-          NSImage *image = nil;
-          NSInteger level = 0;
-          CGFloat indentationFactor = 0.0;
-          // float originalWidth = drawingRect.size.width;
-
-          // display the correct arrow...
-          if ([self isItemExpanded: item])
-            {
-              image = expanded;
-            }
-          else
-            {
-              image = collapsed;
-            }
-
-          if (![self isExpandable: item])
-            {
-              image = unexpandable;
-            }
-
-          level = [self levelForItem: item];
-          indentationFactor = _indentationPerLevel * level;
-          imageCell = [[NSCell alloc] initImageCell: image];
-          imageRect = [self frameOfOutlineCellAtRow: rowIndex];
-
-          if ([_delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
-            {
-              [_delegate outlineView: self
-                         willDisplayOutlineCell: imageCell
-                         forTableColumn: tb
-                         item: item];
-            }
-
-          /* Do not indent if the delegate set the image to nil. */
-          if ([imageCell image])
-            {
-              imageRect.size.width = [image size].width;
-              imageRect.size.height = [image size].height;
-              [imageCell drawWithFrame: imageRect inView: self];
-              drawingRect.origin.x
-                += indentationFactor + imageRect.size.width + 5;
-              drawingRect.size.width
-                -= indentationFactor + imageRect.size.width + 5;
-            }
-          else
-            {
-              drawingRect.origin.x += indentationFactor;
-              drawingRect.size.width -= indentationFactor;
-            }
-
-          RELEASE(imageCell);
-        }
-
-      [cell drawWithFrame: drawingRect inView: self];
-      if (i == _editedColumn && rowIndex == _editedRow)
-        {
-          [cell _setInEditing: NO];
-          [cell setShowsFirstResponder: NO];
-        }
+      [[GSTheme theme] drawOutlineViewRow: rowIndex
+				 clipRect: aRect
+				   inView: self];
     }
 }
 
@@ -2273,19 +2155,24 @@ Also returns the child index relative to this parent. */
 - (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex
 {
   NSCell *cell = nil;
-  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
 
-  if ([_delegate respondsToSelector:
-        @selector(outlineView:dataCellForTableColumn:item:)])
+  if (_viewBased)
     {
-      id item = [self itemAtRow: rowIndex];
-      cell = [_delegate outlineView: self dataCellForTableColumn: tb
-                                                            item: item];
+      NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+      
+      if ([_delegate respondsToSelector:
+		  @selector(outlineView:dataCellForTableColumn:item:)])
+	{
+	  id item = [self itemAtRow: rowIndex];
+	  cell = [_delegate outlineView: self dataCellForTableColumn: tb
+				   item: item];
+	}
+      if (cell == nil)
+	{
+	  cell = [tb dataCellForRow: rowIndex];
+	}
     }
-  if (cell == nil)
-    {
-      cell = [tb dataCellForRow: rowIndex];
-    }
+  
   return cell;
 }
 

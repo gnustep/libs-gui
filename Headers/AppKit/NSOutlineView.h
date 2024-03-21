@@ -297,6 +297,23 @@ willDisplayOutlineCell: (id)cell
   didClickTableColumn: (NSTableColumn *)aTableColumn;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (NSView *) outlineView: (NSOutlineView *)outlineView
+      viewForTableColumn: (NSTableColumn *)aTableColumn
+                    item: (id)item;
+
+- (NSTableRowView *) outlineView: (NSOutlineView *)outlineView
+                  rowViewForItem: (id)item;
+
+- (void) outlineView: (NSOutlineView *)outlineView
+       didAddRowView: (NSTableRowView *)rowView
+              forRow: (NSInteger)rowIndex;
+
+- (void) outlineView: (NSTableView *)outlineView
+    didRemoveRowView: (NSTableRowView *)rowView
+              forRow: (NSInteger)rowIndex;
+#endif
+
 @end
 
 #endif /* _GNUstep_H_NSOutlineView */

@@ -54,6 +54,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSNib.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableColumn.h"
@@ -66,13 +67,15 @@
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSCustomImageRep.h"
+
 #import "GNUstepGUI/GSTheme.h"
 #import "GSBindingHelpers.h"
 
 #include <math.h>
+
 static NSNotificationCenter *nc = nil;
 
-static const int currentVersion = 5;
+static const int currentVersion = 6;
 
 static NSRect oldDraggingRect;
 static NSInteger oldDropRow;
@@ -2035,6 +2038,11 @@ static void computeNewSelection
       | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
   _draggingSourceOperationMaskForRemote = NSDragOperationNone;
   ASSIGN(_sortDescriptors, [NSArray array]);
+  _viewBased = NO;
+  _renderedViewPaths = RETAIN([NSMapTable strongToWeakObjectsMapTable]);
+  _pathsToViews = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
+  _registeredNibs = [[NSMutableDictionary alloc] init];
+  _registeredViews = [[NSMutableDictionary alloc] init];
 }
 
 - (id) initWithFrame: (NSRect)frameRect
@@ -2066,6 +2074,10 @@ static void computeNewSelection
   RELEASE (_selectedColumns);
   RELEASE (_selectedRows);
   RELEASE (_sortDescriptors);
+  RELEASE (_renderedViewPaths);
+  RELEASE (_pathsToViews);
+  RELEASE (_registeredNibs);
+  RELEASE (_registeredViews);
   TEST_RELEASE (_headerView);
   TEST_RELEASE (_cornerView);
   if (_autosaveTableColumns == YES)
@@ -2346,6 +2358,12 @@ static void computeNewSelection
 
 - (void) reloadData
 {
+  if (_viewBased)
+    {
+      [_renderedViewPaths removeAllObjects];
+      [_pathsToViews removeAllObjects];
+    }
+  
   [self noteNumberOfRowsChanged];
   [self setNeedsDisplay: YES];
 }
@@ -3205,18 +3223,23 @@ byExtendingSelection: (BOOL)flag
 - (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex
 {
   NSCell *cell = nil;
-  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
 
-  if ([_delegate respondsToSelector: 
-        @selector(tableView:dataCellForTableColumn:row:)])
-    {
-      cell = [_delegate tableView: self dataCellForTableColumn: tb
-                                                           row: rowIndex];
+  if (_viewBased == NO)
+    {  
+      NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+
+      if ([_delegate respondsToSelector: 
+		    @selector(tableView:dataCellForTableColumn:row:)])
+	{
+	  cell = [_delegate tableView: self dataCellForTableColumn: tb
+				  row: rowIndex];
+	}
+      if (cell == nil)
+	{
+	  cell = [tb dataCellForRow: rowIndex];
+	}
     }
-  if (cell == nil)
-    {
-      cell = [tb dataCellForRow: rowIndex];
-    }
+  
   return cell;
 }
 
@@ -3840,26 +3863,27 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		       * so they need to track in mouse up.
 		       */
 		      NSCell *cell = [self preparedCellAtColumn: _clickedColumn 
-                                                            row: _clickedRow];
+							    row: _clickedRow];
 		      
 		      [self _trackCellAtColumn: _clickedColumn
-				row: _clickedRow
-				withEvent: theEvent];
+					   row: _clickedRow
+				     withEvent: theEvent];
 		      didTrackCell = YES;
-
+		      
 		      if ([[cell class] prefersTrackingUntilMouseUp])
-		        {
-		          /* the mouse could have gone up outside of the cell
-		           * avoid selecting the row under mouse cursor */ 
+			{
+			  /* the mouse could have gone up outside of the cell
+			   * avoid selecting the row under mouse cursor */ 
 			  sendAction = YES;
 			  done = YES;
 			}
 		    }
+
 		  /*
 		   * Since we may have tracked a cell which may have caused
 		   * a change to the currentEvent we may need to loop over
 		   * the current event
-		   */ 
+		   */
 		  getNextEvent = (lastEvent == [NSApp currentEvent]);
 		}
 	      else
@@ -5019,9 +5043,18 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)clipRect
 {
-  [[GSTheme theme] drawTableViewRow: rowIndex
-		   clipRect: clipRect
-		   inView: self];
+  if (_viewBased)
+    {
+      [[GSTheme theme] drawTableCellViewRow: rowIndex
+				   clipRect: clipRect
+				     inView: self];
+    }
+  else
+    {
+      [[GSTheme theme] drawTableViewRow: rowIndex
+			       clipRect: clipRect
+				 inView: self];
+    }
 }
 
 - (void) noteHeightOfRowsWithIndexesChanged: (NSIndexSet*)indexes
@@ -5499,6 +5532,9 @@ This method is deprecated, use -columnIndexesInRect:. */
 
       // encode..
       [aCoder encodeInt: vFlags forKey: @"NSTvFlags"];
+
+      // Encode that the table is view based...
+      [aCoder encodeBool: _viewBased forKey: @"NSViewBased"];
     }
   else
     {
@@ -5534,6 +5570,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_verticalMotionDrag];
       [aCoder encodeObject: _sortDescriptors];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_viewBased];
     }
 }
 
@@ -5680,6 +5717,11 @@ This method is deprecated, use -columnIndexesInRect:. */
           [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
         }
  
+      if ([aDecoder containsValueForKey: @"NSViewBased"])
+	{
+	  _viewBased = [aDecoder decodeBoolForKey: @"NSViewBased"];
+	}
+
       // get the table columns...
       columns = [aDecoder decodeObjectForKey: @"NSTableColumns"];
       e = [columns objectEnumerator];
@@ -5729,10 +5771,12 @@ This method is deprecated, use -columnIndexesInRect:. */
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
+
       if (version >= 3)
         {
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
         }
+
       if (version >= 2)
         {
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
@@ -5742,9 +5786,15 @@ This method is deprecated, use -columnIndexesInRect:. */
         {
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_verticalMotionDrag];
         }
+
       if (version >= 5)
 	{
 	  ASSIGN(_sortDescriptors, [aDecoder decodeObject]);
+	}
+
+      if (version >= 6)
+	{
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_viewBased];	  
 	}
      
       if (_numberOfColumns > 0)
@@ -6675,22 +6725,22 @@ For a more detailed explanation, -setSortDescriptors:. */
 {
   id result = nil;
   GSKeyValueBinding *theBinding;
-
+  
   theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
-                                   forObject: tb];
+				   forObject: tb];
   if (theBinding != nil)
     {
       return [(NSArray *)[theBinding destinationValue]
-                 objectAtIndex: index];
+		 objectAtIndex: index];
     }
   else if ([_dataSource respondsToSelector:
-		    @selector(tableView:objectValueForTableColumn:row:)])
+		       @selector(tableView:objectValueForTableColumn:row:)])
     {
       result = [_dataSource tableView: self
 			    objectValueForTableColumn: tb
-			    row: index];
+				  row: index];
     }
-
+  
   return result;
 }
 
@@ -6699,12 +6749,12 @@ For a more detailed explanation, -setSortDescriptors:. */
 		     row: (NSInteger) index
 {
   if ([_dataSource respondsToSelector:
-		    @selector(tableView:setObjectValue:forTableColumn:row:)])
+		  @selector(tableView:setObjectValue:forTableColumn:row:)])
     {
       [_dataSource tableView: self
-		   setObjectValue: value
-		   forTableColumn: tb
-		   row: index];
+	      setObjectValue: value
+	      forTableColumn: tb
+			 row: index];
     }
 }
 
@@ -6803,7 +6853,8 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSInteger) columnForView: (NSView*)view
 {
-  return NSNotFound;
+  NSIndexPath *path = [_pathsToViews objectForKey: view];
+  return [path item];
 }
 
 - (void) insertRowsAtIndexes: (NSIndexSet*)indexes
@@ -6818,7 +6869,62 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSInteger) rowForView: (NSView*)view
 {
-  return NSNotFound;
+  NSIndexPath *path = [_pathsToViews objectForKey: view];
+  return [path section];
+}
+
+- (NSView *) makeViewWithIdentifier: (NSUserInterfaceItemIdentifier)identifier owner:(id)owner
+{
+  NSView *view = [_registeredViews objectForKey: identifier];
+
+  if (view != nil)
+    {
+      view = [view copy];
+      // [owner awakeFromNib];
+    }
+  else
+    {
+      NSNib *nib = [_registeredNibs objectForKey: identifier];
+
+      if (nib != nil)
+	{
+	  NSArray *tlo = nil;
+	  BOOL loaded = [nib instantiateWithOwner: owner
+				  topLevelObjects: &tlo];
+	  if (loaded)
+	    {
+	      NSEnumerator *en = [tlo objectEnumerator];
+	      id o = nil;
+	      
+	      while ((o = [en nextObject]) != nil)
+		{
+		  if ([o isKindOfClass: [NSView class]])
+		    {
+		      view = o;
+		      break;
+		    }
+		}
+	    }
+	  else
+	    {
+	      NSLog(@"Failed to load model for identifier %@, in %@", identifier, self);
+	    }
+	}
+    }
+  
+  return view;
+}
+
+- (void) registerNib: (NSNib *)nib
+       forIdentifier: (NSUserInterfaceItemIdentifier)identifier
+{
+  [_registeredNibs setObject: nib
+		      forKey: identifier];
+}
+
+- (NSDictionary *) registeredNibsByIdentifier
+{
+  return [_registeredNibs copy];
 }
 
 @end /* implementation of NSTableView */
@@ -7007,6 +7113,16 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       return [super valueForKey: aKey];
     }
+}
+
+- (NSMapTable *) _renderedViewPaths
+{
+  return _renderedViewPaths;
+}
+
+- (NSMapTable *) _pathsToViews
+{
+  return _pathsToViews;
 }
 
 @end

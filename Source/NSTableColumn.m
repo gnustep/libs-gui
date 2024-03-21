@@ -73,6 +73,18 @@
 #import "AppKit/NSTableView.h"
 #import "GSBindingHelpers.h"
 
+
+// Private method on NSTableView to register views...
+@interface NSTableView (NSTableColumnPrivate)
+- (void) _registerView: (NSView *)view;
+@end
+
+@implementation NSTableView (NSTableColumnPrivate)
+- (void) _registerView: (NSView *)view
+{
+}
+@end
+
 /**
   <p>
   NSTableColumn objects represent columns in NSTableViews.  
@@ -89,7 +101,7 @@
 {
   if (self == [NSTableColumn class])
     {
-      [self setVersion: 3];
+      [self setVersion: 4];
       [self exposeBinding: NSValueBinding];
       [self exposeBinding: NSEnabledBinding];
     }
@@ -127,8 +139,9 @@
   _headerToolTip = nil;
 
   _sortDescriptorPrototype = nil;
-
-  ASSIGN (_identifier, anObject);
+  _prototypeCellViews = nil;
+  
+  ASSIGN (_identifier, anObject);  
   return self;
 }
 
@@ -141,6 +154,7 @@
   RELEASE(_headerToolTip);
   RELEASE(_dataCell);
   RELEASE(_sortDescriptorPrototype);
+  RELEASE(_prototypeCellViews);
   TEST_RELEASE(_identifier);
   [super dealloc];
 }
@@ -469,6 +483,17 @@ to YES. */
   ASSIGN(_sortDescriptorPrototype, aSortDescriptor);
 }
 
+- (void) _registerPrototypes
+{
+  NSEnumerator *en = [_prototypeCellViews objectEnumerator];
+  NSView *v = nil;
+
+  while ((v = [en nextObject]) != nil)
+    {
+      [_tableView _registerView: v];
+    }
+}
+
 /*
  * Encoding/Decoding
  */
@@ -491,6 +516,7 @@ to YES. */
       [aCoder encodeObject: _headerToolTip forKey: @"NSHeaderToolTip"];
       [aCoder encodeBool: _is_hidden forKey: @"NSHidden"];
       [aCoder encodeObject: _tableView forKey: @"NSTableView"];
+      [aCoder encodeObject: _prototypeCellViews forKey: @"NSPrototypeCellViews"];
     }
   else
     {
@@ -506,6 +532,7 @@ to YES. */
       [aCoder encodeObject: _dataCell];
 
       [aCoder encodeObject: _sortDescriptorPrototype];
+      [aCoder encodeObject: _prototypeCellViews];
     }
 }
 
@@ -572,6 +599,11 @@ to YES. */
         {
           [self setTableView: [aDecoder decodeObjectForKey: @"NSTableView"]];
         }
+      if ([aDecoder containsValueForKey: @"NSPrototypeCellViews"])
+	{
+	  ASSIGN(_prototypeCellViews, [aDecoder decodeObjectForKey: @"NSPrototypeCellViews"]);
+	  [self _registerPrototypes];
+	}
     }
   else
     {
@@ -597,6 +629,12 @@ to YES. */
             {
               _sortDescriptorPrototype = RETAIN([aDecoder decodeObject]);
             }
+
+	  if (version >= 4)
+	    {
+	      _prototypeCellViews = RETAIN([aDecoder decodeObject]);
+	      [self _registerPrototypes];
+	    }
         }
       else
         {
@@ -611,6 +649,11 @@ to YES. */
         }
     }
   return self;
+}
+
+- (NSArray *) _prototypeCellViews
+{
+  return _prototypeCellViews;
 }
 
 - (void) setValue: (id)anObject forKey: (NSString*)aKey
