@@ -1142,6 +1142,7 @@ that makes decoding and encoding compatible with the old code.
       [notificationCenter removeObserver: _delegate
                           name: nil
                           object: _notifObject];
+      _delegate = nil;
     }
 
   DESTROY(_selectedTextAttributes);
