@@ -640,6 +640,12 @@ fi
 AC_SUBST(WARN_FLAGS)
 
 #--------------------------------------------------------------------
+# Get the Cflags and Libs values for gnustep-gui.pc
+#--------------------------------------------------------------------
+AC_SUBST(GUIFLAGS, `gnustep-config --objc-flags`)
+AC_SUBST(GUILIBS, `gnustep-config --gui-libs`)
+
+#--------------------------------------------------------------------
 # Record the version
 #--------------------------------------------------------------------
 AC_MSG_CHECKING(for the version of gnustep-gui we are compiling)
@@ -678,5 +684,5 @@ static double rint(double a)     \
 #endif
 ])
 
-AC_CONFIG_FILES([config.make gui.make Headers/Additions/GNUstepGUI/GSVersion.h])
+AC_CONFIG_FILES([config.make gui.make Source/gnustep-gui.pc Headers/Additions/GNUstepGUI/GSVersion.h])
 AC_OUTPUT

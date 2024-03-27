@@ -628,6 +628,8 @@ GNUSTEP_GUI_SUBMINOR_VERSION
 GNUSTEP_GUI_MINOR_VERSION
 GNUSTEP_GUI_MAJOR_VERSION
 GNUSTEP_GUI_VERSION
+GUILIBS
+GUIFLAGS
 WARN_FLAGS
 BUILD_GSCUPS
 GSCUPS_DATADIR
@@ -6025,6 +6027,14 @@ fi
 
 
 #--------------------------------------------------------------------
+# Get the Cflags and Libs values for gnustep-gui.pc
+#--------------------------------------------------------------------
+GUIFLAGS=`gnustep-config --objc-flags`
+
+GUILIBS=`gnustep-config --gui-libs`
+
+
+#--------------------------------------------------------------------
 # Record the version
 #--------------------------------------------------------------------
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for the version of gnustep-gui we are compiling" >&5
@@ -6051,7 +6061,7 @@ CONFIG_SYSTEM_LIB_DIR="$CONFIG_SYSTEM_LIB_DIR $GRAPHIC_LFLAGS"
 #--------------------------------------------------------------------
 
 
-ac_config_files="$ac_config_files config.make gui.make Headers/Additions/GNUstepGUI/GSVersion.h"
+ac_config_files="$ac_config_files config.make gui.make Source/gnustep-gui.pc Headers/Additions/GNUstepGUI/GSVersion.h"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6745,6 +6755,7 @@ do
     "Headers/Additions/GNUstepGUI/config.h") CONFIG_HEADERS="$CONFIG_HEADERS Headers/Additions/GNUstepGUI/config.h" ;;
     "config.make") CONFIG_FILES="$CONFIG_FILES config.make" ;;
     "gui.make") CONFIG_FILES="$CONFIG_FILES gui.make" ;;
+    "Source/gnustep-gui.pc") CONFIG_FILES="$CONFIG_FILES Source/gnustep-gui.pc" ;;
     "Headers/Additions/GNUstepGUI/GSVersion.h") CONFIG_FILES="$CONFIG_FILES Headers/Additions/GNUstepGUI/GSVersion.h" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

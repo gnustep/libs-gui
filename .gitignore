@@ -13,6 +13,7 @@ gnustep-gui-debug.spec
 gui.make
 Headers/Additions/GNUstepGUI/GSVersion.h
 Source/config.h
+Source/gnustep-gui.pc
 Source/Info-gnustep.plist
 Tests/gui/*/GNUmakefile
 Tools/speech/GSSpeechServer.app

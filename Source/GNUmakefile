@@ -701,6 +701,9 @@ libgui-resources_RESOURCE_FILES = Info-gnustep.plist
 # Extra DLL exports file
 libgnustep-gui_DLL_DEF = libgnustep-gui.def
 
+# pkg-config file
+libgnustep-gui_PKGCONFIG_FILES = "gnustep-gui.pc"
+
 include GNUmakefile.preamble
 
 include $(GNUSTEP_MAKEFILES)/library.make
