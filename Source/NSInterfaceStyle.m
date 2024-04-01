@@ -131,7 +131,7 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
        *	First try the cache - then, if no style is found,  use the
        *	defaults system and add the results into the cache.
        */
-      style = (NSInterfaceStyle)NSMapGet(styleMap, key);
+      style = (NSInterfaceStyle)(uintptr_t)NSMapGet(styleMap, key);
       if (style == NSNoInterfaceStyle)
 	{
 	  NSUserDefaults	*defs;
@@ -231,7 +231,7 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
 	    }
 	}
 
-      if (newStyle != ((NSInterfaceStyle)val))
+      if (newStyle != ((NSInterfaceStyle)(uintptr_t)val))
 	{
 	  NSMapInsert(styleMap, (void*)key, (void*)newStyle);
 	}
