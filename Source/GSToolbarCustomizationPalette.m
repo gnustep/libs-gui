@@ -100,7 +100,6 @@
   float vAccumulator = 0.0;
   NSEnumerator *e = [[self subviews] objectEnumerator];
   NSView *layoutedView = nil;
-  int index = 0;
 
   // Loop over all subviews
   while ((layoutedView = [e nextObject]) != nil)
@@ -137,7 +136,6 @@
                                                 maxHeight - vAccumulator)];
       [layoutedView setAutoresizingMask:NSViewMinYMargin];
       hAccumulator += width;
-      index++;
     }
   maxHeight -= vAccumulator; // adjust for final row
   if (maxHeight != 0) // need to grow (or shrink) the window to accommodate more (or fewer) items
