@@ -30,8 +30,13 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifndef _GNUSTEP_H_GSXIBINTERNAL
+#define _GNUSTEP_H_GSXIBINTERNAL
+
 #import <Foundation/NSObject.h>
 #import "GSXib5KeyedUnarchiver.h"
 
 @interface GSXibInternal : NSObject
 @end
+
+#endif // _GNUSTEP_H_GSXIBINTERNAL
