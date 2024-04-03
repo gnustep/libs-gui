@@ -287,6 +287,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"initialItem", @"NSSelectedTabViewItem",
                                            @"allowsExpansionToolTips", @"NSControlAllowsExpansionToolTips",
                                            @"segments", @"NSSegmentImages",
+                                           @"label", @"NSSegmentItemLabel",
+                                           @"image", @"NSSegmentItemImage",
                                            @"editable", @"NSIsEditable",
                                            @"objectValues", @"NSPopUpListData",
                                            @"maxNumberOfRows", @"NSMaxNumberOfGridRows",
@@ -324,10 +326,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"beginningViews", @"NSStackViewBeginningContainer",  // NSStackView
                                            @"middleViews", @"NSStackViewMiddleContainer",
                                            @"endViews", @"NSStackViewEndContainer",
-					   @"collectionViewLayout", @"NSCollectionViewLayout",
-					   @"shadow", @"NSViewShadow",
-					   @"blurRadius", @"NSShadowBlurRadius",
-					   @"color", @"NSShadowColor",
+                                           @"collectionViewLayout", @"NSCollectionViewLayout",
+                                           @"shadow", @"NSViewShadow",
+                                           @"blurRadius", @"NSShadowBlurRadius",
+                                           @"color", @"NSShadowColor",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
