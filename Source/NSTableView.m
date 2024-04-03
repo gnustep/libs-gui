@@ -96,9 +96,17 @@ typedef struct _tableViewFlags
   unsigned int emptySelection:1;
   unsigned int multipleSelection:1;
   unsigned int columnSelection:1;
-  unsigned int _unused:26;
+  unsigned int unknown1:1;
+  unsigned int columnAutosave:1;
+  unsigned int alternatingRowBackgroundColors:1;
+  unsigned int unknown2:3;
+  unsigned int _unused:20;
 #else
-  unsigned int _unused:26;
+  unsigned int _unused:20;
+  unsigned int unknown2:3;
+  unsigned int alternatingRowBackgroundColors:1;
+  unsigned int columnAutosave:1;
+  unsigned int unknown1:1;
   unsigned int columnSelection:1;
   unsigned int multipleSelection:1;
   unsigned int emptySelection:1;
@@ -2560,13 +2568,16 @@ static void computeNewSelection
 
 - (void) setUsesAlternatingRowBackgroundColors: (BOOL)useAlternatingRowColors
 {
-  // FIXME
+  if (_usesAlternatingRowBackgroundColors != useAlternatingRowColors)
+  {
+    _usesAlternatingRowBackgroundColors = useAlternatingRowColors;
+    [self reloadData];
+  }
 }
 
 - (BOOL) usesAlternatingRowBackgroundColors
 {
-  // FIXME
-  return NO;
+  return _usesAlternatingRowBackgroundColors;
 }
 
 - (void)setSelectionHighlightStyle: (NSTableViewSelectionHighlightStyle)s
@@ -5494,6 +5505,8 @@ This method is deprecated, use -columnIndexesInRect:. */
       tableViewFlags.drawsGrid = [self drawsGrid]; 
       tableViewFlags.columnResizing = [self allowsColumnResizing];
       tableViewFlags.columnOrdering = [self allowsColumnReordering];
+      tableViewFlags.columnAutosave = [self autosaveTableColumns];
+      tableViewFlags.alternatingRowBackgroundColors = [self usesAlternatingRowBackgroundColors];
       
       memcpy((void *)&vFlags,(void *)&tableViewFlags,sizeof(unsigned int));
 
@@ -5678,6 +5691,8 @@ This method is deprecated, use -columnIndexesInRect:. */
           [self setDrawsGrid: tableViewFlags.drawsGrid];
           [self setAllowsColumnResizing: tableViewFlags.columnResizing];
           [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
+          [self setAutosaveTableColumns: tableViewFlags.columnAutosave];
+          [self setUsesAlternatingRowBackgroundColors: tableViewFlags.alternatingRowBackgroundColors];
         }
  
       // get the table columns...
@@ -6729,7 +6744,7 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       return [_dataSource numberOfRowsInTableView:self];
     }
-  else
+  else if([_tableColumns count] > 0)
     {
       NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
       GSKeyValueBinding *theBinding;
@@ -6742,6 +6757,10 @@ For a more detailed explanation, -setSortDescriptors:. */
         }
 
       // FIXME
+      return 0;
+    }
+  else
+    {
       return 0;
     }
 }

@@ -125,6 +125,7 @@ APPKIT_EXPORT_CLASS
   BOOL               _allowsColumnReordering;
   BOOL               _autoresizesAllColumnsToFit;
   BOOL               _selectingColumns;
+  BOOL               _usesAlternatingRowBackgroundColors;
   NSText            *_textObject;
   NSInteger          _editedRow;
   NSInteger          _editedColumn;
