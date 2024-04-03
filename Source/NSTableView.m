@@ -6742,7 +6742,7 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       return [_dataSource numberOfRowsInTableView:self];
     }
-  else
+  else if([_tableColumns count] > 0)
     {
       NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
       GSKeyValueBinding *theBinding;
@@ -6755,6 +6755,10 @@ For a more detailed explanation, -setSortDescriptors:. */
         }
 
       // FIXME
+      return 0;
+    }
+  else
+    {
       return 0;
     }
 }
