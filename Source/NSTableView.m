@@ -96,9 +96,17 @@ typedef struct _tableViewFlags
   unsigned int emptySelection:1;
   unsigned int multipleSelection:1;
   unsigned int columnSelection:1;
-  unsigned int _unused:26;
+  unsigned int unknown1:1;
+  unsigned int columnAutosave:1;
+  unsigned int alternatingRowBackgroundColors:1;
+  unsigned int unknown2:3;
+  unsigned int _unused:20;
 #else
-  unsigned int _unused:26;
+  unsigned int _unused:20;
+  unsigned int unknown2:3;
+  unsigned int alternatingRowBackgroundColors:1;
+  unsigned int columnAutosave:1;
+  unsigned int unknown1:1;
   unsigned int columnSelection:1;
   unsigned int multipleSelection:1;
   unsigned int emptySelection:1;
@@ -2560,13 +2568,16 @@ static void computeNewSelection
 
 - (void) setUsesAlternatingRowBackgroundColors: (BOOL)useAlternatingRowColors
 {
-  // FIXME
+  if (_usesAlternatingRowBackgroundColors != useAlternatingRowColors)
+  {
+    _usesAlternatingRowBackgroundColors = useAlternatingRowColors;
+    [self reloadData];
+  }
 }
 
 - (BOOL) usesAlternatingRowBackgroundColors
 {
-  // FIXME
-  return NO;
+  return _usesAlternatingRowBackgroundColors;
 }
 
 - (void)setSelectionHighlightStyle: (NSTableViewSelectionHighlightStyle)s
@@ -5678,6 +5689,8 @@ This method is deprecated, use -columnIndexesInRect:. */
           [self setDrawsGrid: tableViewFlags.drawsGrid];
           [self setAllowsColumnResizing: tableViewFlags.columnResizing];
           [self setAllowsColumnReordering: tableViewFlags.columnOrdering];
+          [self setAutosaveTableColumns: tableViewFlags.columnAutosave];
+          [self setUsesAlternatingRowBackgroundColors: tableViewFlags.alternatingRowBackgroundColors];
         }
  
       // get the table columns...
