@@ -5505,6 +5505,8 @@ This method is deprecated, use -columnIndexesInRect:. */
       tableViewFlags.drawsGrid = [self drawsGrid]; 
       tableViewFlags.columnResizing = [self allowsColumnResizing];
       tableViewFlags.columnOrdering = [self allowsColumnReordering];
+      tableViewFlags.columnAutosave = [self autosaveTableColumns];
+      tableViewFlags.alternatingRowBackgroundColors = [self usesAlternatingRowBackgroundColors];
       
       memcpy((void *)&vFlags,(void *)&tableViewFlags,sizeof(unsigned int));
 
