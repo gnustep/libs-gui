@@ -629,6 +629,22 @@
           [self setContentView: cv];
           RELEASE(cv);
         }
+
+      [self setBorderColor: [NSColor clearColor]];
+      if ([aDecoder containsValueForKey: @"NSBorderColor2"])
+        {
+          NSColor *color = [aDecoder decodeObjectForKey: @"NSBorderColor2"];
+          if (color != nil)
+            [self setBorderColor:color];
+        }
+
+      [self setFillColor:[NSColor clearColor]];
+      if ([aDecoder containsValueForKey: @"NSFillColor2"])
+        {
+          NSColor *color = [aDecoder decodeObjectForKey:@"NSFillColor2"];
+          if (color != nil)
+            [self setFillColor:color];
+        }
     }
   else
     {
