@@ -1339,6 +1339,8 @@ APPKIT_EXPORT_CLASS
 		 clipRect: (NSRect)clipRect
 		   inView: (NSView *)view;
 
+- (BOOL) isBoxOpaque: (NSBox *)box;
+
 - (void) drawBoxInClipRect: (NSRect)clipRect
 		   boxType: (NSBoxType)boxType
 		borderType: (NSBorderType)borderType

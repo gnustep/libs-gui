@@ -3475,6 +3475,18 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+- (BOOL) isBoxOpaque: (NSBox *)box
+{
+  if ([box boxType] == NSBoxCustom)
+    {
+      return ![box isTransparent];
+    }
+  else
+    {
+      return YES;
+    }
+}
+
 - (void) drawBoxInClipRect: (NSRect)clipRect
 		   boxType: (NSBoxType)boxType
 		borderType: (NSBorderType)borderType
