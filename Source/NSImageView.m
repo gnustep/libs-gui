@@ -308,6 +308,12 @@ static Class imageCellClass;
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
+  if (![self isEditable])
+    {
+      [[self nextResponder] mouseDown:theEvent];
+      return;
+    }
+
   if ([self initiatesDrag])
     {
       NSPasteboard *pboard;
