@@ -340,7 +340,15 @@ static Class imageCellClass;
 	    }
 	}
     }
-  [super mouseDown: theEvent];
+    
+  if (![self isEditable] && [self nextResponder] != nil)
+    {
+      [[self nextResponder] mouseDown:theEvent];
+    }
+  else
+    {
+      [super mouseDown: theEvent];
+    }
 }
 
 - (NSDragOperation) draggingSourceOperationMaskForLocal: (BOOL)isLocal
