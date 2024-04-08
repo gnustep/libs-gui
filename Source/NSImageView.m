@@ -308,7 +308,6 @@ static Class imageCellClass;
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-
   if ([self initiatesDrag])
     {
       NSPasteboard *pboard;
