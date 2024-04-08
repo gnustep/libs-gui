@@ -308,11 +308,6 @@ static Class imageCellClass;
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  if (![self isEditable])
-    {
-      [[self nextResponder] mouseDown:theEvent];
-      return;
-    }
 
   if ([self initiatesDrag])
     {
@@ -346,7 +341,15 @@ static Class imageCellClass;
 	    }
 	}
     }
-  [super mouseDown: theEvent];
+    
+  if (![self isEditable] && [self nextResponder] != nil)
+    {
+      [[self nextResponder] mouseDown:theEvent];
+    }
+  else
+    {
+      [super mouseDown: theEvent];
+    }
 }
 
 - (NSDragOperation) draggingSourceOperationMaskForLocal: (BOOL)isLocal
