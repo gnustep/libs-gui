@@ -2395,8 +2395,7 @@ didStartElement: (NSString*)elementName
       mask.flags.highlighted              = [[attributes objectForKey: @"highlighted"] boolValue];
       mask.flags.disabled                 = ([attributes objectForKey: @"enabled"] ?
                                              [[attributes objectForKey: @"enabled"] boolValue] == NO : NO);
-      mask.flags.editable                 = ([attributes objectForKey: @"editable"] ?
-                                             [[attributes objectForKey: @"editable"] boolValue] : YES);
+      mask.flags.editable                 = [[attributes objectForKey: @"editable"] boolValue];
       mask.flags.vCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
       mask.flags.hCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
       mask.flags.bordered                 = [[borderStyle lowercaseString] containsString: @"border"];
