@@ -1641,7 +1641,7 @@
       // style and border.
       bFlags2 |= [self showsBorderOnlyWhileMouseInside] ? 0x8 : 0;
       bFlags2 |= (([self bezelStyle] & 0x7) | (([self bezelStyle] & 0x18) << 2));
-      bFlags2 |= [self keyEquivalentModifierMask] << 8;
+      bFlags2 |= [self keyEquivalentModifierMask] & NSDeviceIndependentModifierFlagsMask;
 
       switch ([self imageScaling])
 	{
@@ -1805,7 +1805,7 @@
           bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
           [self setShowsBorderOnlyWhileMouseInside: (bFlags2 & 0x8)];
           [self setBezelStyle: (bFlags2 & 0x7) | ((bFlags2 & 0x20) >> 2)];
-          [self setKeyEquivalentModifierMask: ((bFlags2 >> 8) & 
+          [self setKeyEquivalentModifierMask: (bFlags2 & 
                                                NSDeviceIndependentModifierFlagsMask)];
 
 	  switch ((bFlags2 >> 6) & 3)
