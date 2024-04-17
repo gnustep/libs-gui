@@ -171,7 +171,6 @@ static NSString *ApplicationClass = nil;
 @implementation GSXib5KeyedUnarchiver
 
 // Singleton dictionary that holds any cached XIB data...  cells, etc.
-static NSMutableDictionary *CachedXibDictionary = nil;
 static NSDictionary *XmlTagToObjectClassMap = nil;
 static NSArray      *XmlTagsNotStacked = nil;
 static NSArray      *XmlTagsToSkip = nil;
@@ -209,7 +208,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"resources",
                             @"NSMutableArray", @"segments",
                             @"NSMutableArray", @"objectValues",
-			  //                            @"NSMutableArray", @"prototypeCellViews",
+			    @"NSMutableArray", @"prototypeCellViews",
                             @"NSMutableArray", @"allowedToolbarItems",
                             @"NSMutableArray", @"defaultToolbarItems",
                             @"NSMutableArray", @"rowTemplates",
@@ -454,7 +453,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeTransitionStyle:", @"NSTransitionStyle",
 	       @"decodeShadowOffsetHoriz:", @"NSShadowHoriz",
 	       @"decodeShadowOffsetVert:", @"NSShadowVert",
-	       @"decodePrototypeCellViews:", @"NSPrototypeCellViews",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -3005,12 +3003,6 @@ didStartElement: (NSString*)elementName
 {
   NSSize size = [self decodeSizeForKey: @"offset"];
   return [NSNumber numberWithFloat: size.height];
-}
-
-- (id) decodePrototypeCellViews: (GSXibElement *)element
-{
-  NSLog(@"element = %@", currentElement);
-  return [NSArray array];
 }
 
 - (id) _decodePlacementForObject: (id)obj
