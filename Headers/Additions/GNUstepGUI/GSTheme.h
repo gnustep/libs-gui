@@ -1336,10 +1336,6 @@ APPKIT_EXPORT_CLASS
 					inView: (NSView *)view
 			      selectingColumns: (BOOL)selectingColumns;
 
-- (void) drawTableViewRow: (NSInteger)rowIndex 
-		 clipRect: (NSRect)clipRect
-		   inView: (NSView *)view;
-
 - (BOOL) isBoxOpaque: (NSBox *)box;
 
 - (void) drawTableViewRow: (NSInteger)rowIndex 

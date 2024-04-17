@@ -3385,6 +3385,16 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+- (BOOL) isBoxOpaque: (NSBox *)box
+{
+  if ([box boxType] == NSBoxCustom)
+    {
+      return ![box isTransparent];
+    }
+
+  return YES;
+}
+
 - (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
 		   inView: (NSView *)view
@@ -3486,14 +3496,151 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
-- (BOOL) isBoxOpaque: (NSBox *)box
+- (void) drawOutlineViewRow: (NSInteger)rowIndex 
+		   clipRect: (NSRect)clipRect
+		     inView: (NSView *)view
 {
-  if ([box boxType] == NSBoxCustom)
+  NSOutlineView *outlineView = (NSOutlineView *)view;
+  NSInteger numberOfColumns = [outlineView numberOfColumns];
+  CGFloat *columnOrigins = [outlineView _columnOrigins];
+  NSInteger editedRow = [outlineView editedRow];
+  NSInteger editedColumn = [outlineView editedColumn];
+  NSArray *tableColumns = [outlineView tableColumns];
+  CGFloat indentationPerLevel = [outlineView indentationPerLevel];
+  NSInteger numberOfRows = [outlineView numberOfRows];
+  NSInteger startingColumn;
+  NSInteger endingColumn;
+  NSRect drawingRect;
+  NSCell *imageCell = nil;
+  NSRect imageRect;
+  NSInteger i;
+  CGFloat x_pos;
+  id dataSource = [outlineView dataSource];
+  id delegate = [outlineView delegate];
+  NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
+  
+  if (dataSource == nil)
     {
-      return ![box isTransparent];
+      return;
     }
 
-  return YES;
+  /* Using columnAtPoint: here would make it called twice per row per drawn
+     rect - so we avoid it and do it natively */
+
+  if (rowIndex >= numberOfRows)
+    {
+      return;
+    }
+
+  /* Determine starting column as fast as possible */
+  x_pos = NSMinX (clipRect);
+  i = 0;
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  startingColumn = (i - 1);
+
+  if (startingColumn == -1)
+    startingColumn = 0;
+
+  /* Determine ending column as fast as possible */
+  x_pos = NSMaxX (clipRect);
+  // Nota Bene: we do *not* reset i
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  endingColumn = (i - 1);
+
+  if (endingColumn == -1)
+    endingColumn = numberOfColumns - 1;
+
+  /* Draw the row between startingColumn and endingColumn */
+  for (i = startingColumn; i <= endingColumn; i++)
+    {
+      id item = [outlineView itemAtRow: rowIndex];
+      NSTableColumn *tb = [tableColumns objectAtIndex: i];
+      NSCell *cell = [outlineView preparedCellAtColumn: i row: rowIndex];
+
+      [outlineView _willDisplayCell: cell
+		     forTableColumn: tb
+				row: rowIndex];
+      if (i == editedColumn && rowIndex == editedRow)
+        {
+          [cell _setInEditing: YES];
+          [cell setShowsFirstResponder: YES];
+        }
+      else
+        {
+          [cell setObjectValue: [dataSource outlineView: outlineView
+					    objectValueForTableColumn: tb
+						 byItem: item]];
+        }
+      drawingRect = [outlineView frameOfCellAtColumn: i
+						 row: rowIndex];
+
+      if (tb == outlineTableColumn)
+        {
+          NSImage *image = nil;
+          NSInteger level = 0;
+          CGFloat indentationFactor = 0.0;
+
+          // display the correct arrow...
+          if ([outlineView isItemExpanded: item])
+            {
+              image = [NSImage imageNamed: @"common_ArrowDownH"];
+            }
+          else
+            {
+              image = [NSImage imageNamed: @"common_ArrowRightH"];
+            }
+
+          if (![outlineView isExpandable: item])
+            {
+              image = [[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)];  // revisit this.. memory leak
+            }
+
+          level = [outlineView levelForItem: item];
+          indentationFactor = indentationPerLevel * level;
+          imageCell = [[NSCell alloc] initImageCell: image];
+          imageRect = [outlineView frameOfOutlineCellAtRow: rowIndex];
+
+          if ([delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
+            {
+              [delegate outlineView: outlineView
+			willDisplayOutlineCell: imageCell
+		     forTableColumn: tb
+			       item: item];
+            }
+
+          /* Do not indent if the delegate set the image to nil. */
+          if ([imageCell image])
+            {
+              imageRect.size.width = [image size].width;
+              imageRect.size.height = [image size].height;
+              [imageCell drawWithFrame: imageRect inView: outlineView];
+              drawingRect.origin.x
+                += indentationFactor + imageRect.size.width + 5;
+              drawingRect.size.width
+                -= indentationFactor + imageRect.size.width + 5;
+            }
+          else
+            {
+              drawingRect.origin.x += indentationFactor;
+              drawingRect.size.width -= indentationFactor;
+            }
+
+          RELEASE(imageCell);
+        }
+
+      [cell drawWithFrame: drawingRect inView: outlineView];
+      if (i == editedColumn && rowIndex == editedRow)
+        {
+          [cell _setInEditing: NO];
+          [cell setShowsFirstResponder: NO];
+        }
+    }  
 }
 
 - (void) drawCellViewRow: (NSInteger)rowIndex
@@ -3686,153 +3833,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       // Place the view...
       [view setFrame: drawingRect];
     }
-}
-
-- (void) drawOutlineViewRow: (NSInteger)rowIndex 
-		   clipRect: (NSRect)clipRect
-		     inView: (NSView *)view
-{
-  NSOutlineView *outlineView = (NSOutlineView *)view;
-  NSInteger numberOfColumns = [outlineView numberOfColumns];
-  CGFloat *columnOrigins = [outlineView _columnOrigins];
-  NSInteger editedRow = [outlineView editedRow];
-  NSInteger editedColumn = [outlineView editedColumn];
-  NSArray *tableColumns = [outlineView tableColumns];
-  CGFloat indentationPerLevel = [outlineView indentationPerLevel];
-  NSInteger numberOfRows = [outlineView numberOfRows];
-  NSInteger startingColumn;
-  NSInteger endingColumn;
-  NSRect drawingRect;
-  NSCell *imageCell = nil;
-  NSRect imageRect;
-  NSInteger i;
-  CGFloat x_pos;
-  id dataSource = [outlineView dataSource];
-  id delegate = [outlineView delegate];
-  NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
-  
-  if (dataSource == nil)
-    {
-      return;
-    }
-
-  /* Using columnAtPoint: here would make it called twice per row per drawn
-     rect - so we avoid it and do it natively */
-
-  if (rowIndex >= numberOfRows)
-    {
-      return;
-    }
-
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (clipRect);
-  i = 0;
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (clipRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = numberOfColumns - 1;
-
-  /* Draw the row between startingColumn and endingColumn */
-  for (i = startingColumn; i <= endingColumn; i++)
-    {
-      id item = [outlineView itemAtRow: rowIndex];
-      NSTableColumn *tb = [tableColumns objectAtIndex: i];
-      NSCell *cell = [outlineView preparedCellAtColumn: i row: rowIndex];
-
-      [outlineView _willDisplayCell: cell
-		     forTableColumn: tb
-				row: rowIndex];
-      if (i == editedColumn && rowIndex == editedRow)
-        {
-          [cell _setInEditing: YES];
-          [cell setShowsFirstResponder: YES];
-        }
-      else
-        {
-          [cell setObjectValue: [dataSource outlineView: outlineView
-					    objectValueForTableColumn: tb
-						 byItem: item]];
-        }
-      drawingRect = [outlineView frameOfCellAtColumn: i
-						 row: rowIndex];
-
-      if (tb == outlineTableColumn)
-        {
-          NSImage *image = nil;
-          NSInteger level = 0;
-          CGFloat indentationFactor = 0.0;
-
-          // display the correct arrow...
-          if ([outlineView isItemExpanded: item])
-            {
-              image = [NSImage imageNamed: @"common_ArrowDownH"];
-            }
-          else
-            {
-              image = [NSImage imageNamed: @"common_ArrowRightH"];
-            }
-
-          if (![outlineView isExpandable: item])
-            {
-              image = [[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)];  // revisit this.. memory leak
-            }
-
-          level = [outlineView levelForItem: item];
-          indentationFactor = indentationPerLevel * level;
-          imageCell = [[NSCell alloc] initImageCell: image];
-          imageRect = [outlineView frameOfOutlineCellAtRow: rowIndex];
-
-          if ([delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
-            {
-              [delegate outlineView: outlineView
-			willDisplayOutlineCell: imageCell
-		     forTableColumn: tb
-			       item: item];
-            }
-
-          /* Do not indent if the delegate set the image to nil. */
-          if ([imageCell image])
-            {
-              imageRect.size.width = [image size].width;
-              imageRect.size.height = [image size].height;
-              [imageCell drawWithFrame: imageRect inView: outlineView];
-              drawingRect.origin.x
-                += indentationFactor + imageRect.size.width + 5;
-              drawingRect.size.width
-                -= indentationFactor + imageRect.size.width + 5;
-            }
-          else
-            {
-              drawingRect.origin.x += indentationFactor;
-              drawingRect.size.width -= indentationFactor;
-            }
-
-          RELEASE(imageCell);
-        }
-
-      [cell drawWithFrame: drawingRect inView: outlineView];
-      if (i == editedColumn && rowIndex == editedRow)
-        {
-          [cell _setInEditing: NO];
-          [cell setShowsFirstResponder: NO];
-        }
-    }  
 }
 
 - (void) drawBoxInClipRect: (NSRect)clipRect
