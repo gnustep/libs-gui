@@ -1346,17 +1346,13 @@ APPKIT_EXPORT_CLASS
 		 clipRect: (NSRect)clipRect
 		   inView: (NSView *)view;
 
-- (void) drawTableCellViewRow: (NSInteger)rowIndex
-                     clipRect: (NSRect)clipRect
-                       inView: (NSView *)view;
+- (void) drawCellViewRow: (NSInteger)rowIndex
+                clipRect: (NSRect)clipRect
+                  inView: (id)v;
 
 - (void) drawOutlineViewRow: (NSInteger)rowIndex 
                    clipRect: (NSRect)clipRect
 		     inView: (NSView *)view;
-
-- (void) drawOutlineCellViewRow: (NSInteger)rowIndex
-                       clipRect: (NSRect)clipRect
-                         inView: (NSView *)view;
 
 - (void) drawBoxInClipRect: (NSRect)clipRect
 		   boxType: (NSBoxType)boxType

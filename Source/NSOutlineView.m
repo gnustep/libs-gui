@@ -925,9 +925,9 @@ static NSImage *unexpandable  = nil;
 {
   if (_viewBased)
     {
-      [[GSTheme theme] drawOutlineCellViewRow: rowIndex
-				     clipRect: aRect
-				       inView: self];
+      [[GSTheme theme] drawCellViewRow: rowIndex
+			      clipRect: aRect
+				inView: self];
     }
   else
     {

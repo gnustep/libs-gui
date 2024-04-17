@@ -5056,9 +5056,9 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   if (_viewBased)
     {
-      [[GSTheme theme] drawTableCellViewRow: rowIndex
-				   clipRect: clipRect
-				     inView: self];
+      [[GSTheme theme] drawCellViewRow: rowIndex
+			      clipRect: clipRect
+				inView: self];
     }
   else
     {
