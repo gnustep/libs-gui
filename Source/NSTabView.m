@@ -78,6 +78,7 @@
       ASSIGN(_items, [NSMutableArray array]);
       ASSIGN(_font, [NSFont systemFontOfSize: 0]);
       _selected = nil;
+      _original_nextKeyView = nil;
       //_truncated_label = NO;
     }
 
@@ -738,7 +739,8 @@
 
 - (void) setNextKeyView: (NSView *)nextKeyView
 {
-  _original_nextKeyView = nextKeyView;
+  [_original_nextKeyView autorelease];
+  _original_nextKeyView = [nextKeyView retain];
   if (_selected)
     {
       [[_selected _lastKeyView] setNextKeyView: nextKeyView];
