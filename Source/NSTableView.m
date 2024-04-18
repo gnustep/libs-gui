@@ -5339,7 +5339,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) setDelegate: (id)anObject
 {
   const SEL sel = @selector(tableView:willDisplayCell:forTableColumn:row:);
-
+  const SEL vbsel = @selector(tableView:viewForTableColumn:row:);
+  
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
   _delegate = anObject;
@@ -5357,6 +5358,9 @@ This method is deprecated, use -columnIndexesInRect:. */
   
   /* Cache */
   _del_responds = [_delegate respondsToSelector: sel];
+
+  /* Test to see if it is view based */
+  _viewBased = [_delegate respondsToSelector: vbsel];
 }
 
 - (id) delegate

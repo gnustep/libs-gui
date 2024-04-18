@@ -133,6 +133,13 @@ APPKIT_EXPORT_CLASS
 - (void) setSortDescriptorPrototype: (NSSortDescriptor *)aSortDescriptor;
 - (NSSortDescriptor *) sortDescriptorPrototype;
 #endif
+/*
+ * Title
+ */
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+- (void) setTitle: (NSString *)title;
+- (NSString *) title;
+#endif
 @end
 
 /* Notifications */

@@ -656,6 +656,16 @@ to YES. */
   return _prototypeCellViews;
 }
 
+- (void) setTitle: (NSString *)title
+{
+  [_headerCell setStringValue: title];
+}
+
+- (NSString *) title
+{
+  return [_headerCell stringValue];
+}
+
 - (void) setValue: (id)anObject forKey: (NSString*)aKey
 {
   if ([aKey isEqual: NSValueBinding])
