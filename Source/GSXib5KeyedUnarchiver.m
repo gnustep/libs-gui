@@ -1437,6 +1437,8 @@ didStartElement: (NSString*)elementName
           mask |= NSFunctionKeyMask;
         }
 
+      //This mask is left shifted 8 bits when encoded. When this is used to initialize the element, the mask will be shifted back to the right by 8 bits.
+      mask = (mask << 8);
       object = [NSNumber numberWithUnsignedInt: mask];
     }
 
