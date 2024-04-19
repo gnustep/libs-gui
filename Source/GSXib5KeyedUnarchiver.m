@@ -1395,7 +1395,7 @@ didStartElement: (NSString*)elementName
         // Seems that Apple decided to omit this attribute IF certain default keys alone
         // are applied.  If this key is present WITH NO setting then the following is
         // used for the modifier mask...
-        object = [NSNumber numberWithUnsignedInt: NSCommandKeyMask];
+        object = [NSNumber numberWithUnsignedInt: (NSCommandKeyMask << 8)];
       }
     }
   else
@@ -1437,6 +1437,8 @@ didStartElement: (NSString*)elementName
           mask |= NSFunctionKeyMask;
         }
 
+      //This mask is left shifted 8 bits when encoded. When this is used to initialize the element, the mask will be shifted back to the right by 8 bits.
+      mask = (mask << 8);
       object = [NSNumber numberWithUnsignedInt: mask];
     }
 
