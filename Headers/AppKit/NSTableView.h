@@ -401,7 +401,7 @@ APPKIT_EXPORT_CLASS
 - (void) insertRowsAtIndexes: (NSIndexSet*)indexes withAnimation: (NSTableViewAnimationOptions)animationOptions;
 - (void) removeRowsAtIndexes: (NSIndexSet*)indexes withAnimation: (NSTableViewAnimationOptions)animationOptions;
 - (NSInteger) rowForView: (NSView*)view;
-- (NSView *) makeViewWithIdentifier: (NSUserInterfaceItemIdentifier)identifier owner:(id)owner;
+- (NSView *) makeViewWithIdentifier: (NSUserInterfaceItemIdentifier)identifier owner: (id)owner;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)

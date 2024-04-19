@@ -258,7 +258,6 @@
 @class NSPathComponentCell;
 @class GSDrawTiles;
 @class GSTitleView;
-// @class NSTableCellView;
 
 APPKIT_EXPORT	NSString	*GSSwitch;
 APPKIT_EXPORT   NSString        *GSRadio;
