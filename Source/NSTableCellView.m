@@ -180,7 +180,7 @@
 
 	  if ([coder containsValueForKey: @"NSDraggingImageComponents"])
 	    {
-	      [self setDraggingImageComponents: [coder decodeObjectForKey: @"NSDrawggingImageComponents"]];
+	      [self setDraggingImageComponents: [coder decodeObjectForKey: @"NSDraggingImageComponents"]];
 	    }
 	}
       else
