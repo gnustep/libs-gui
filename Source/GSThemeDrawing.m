@@ -3743,7 +3743,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	      
 	      if (![v isExpandable: item])
 		{
-		  image = [[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)];  // revisit this.. memory leak
+		  image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)]);
 		}
 	      
 	      level = [v levelForItem: item];
