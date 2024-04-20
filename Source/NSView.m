@@ -5281,6 +5281,16 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   }
 }
 
+- (void) setIdentifier: (NSUserInterfaceItemIdentifier) identifier
+{
+  ASSIGN(_identifier, identifier);
+}
+
+- (NSUserInterfaceItemIdentifier) identifier
+{
+  return _identifier;
+}
+
 @end
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)

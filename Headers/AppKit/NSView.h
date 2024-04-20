@@ -37,6 +37,7 @@
 #import <AppKit/NSAppearance.h>
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSResponder.h>
+#import <AppKit/NSUserInterfaceItemIdentification.h>
 #import <AppKit/NSUserInterfaceLayout.h>
 #import <AppKit/NSLayoutConstraint.h>
 
@@ -130,7 +131,7 @@ extern const CGFloat NSViewNoInstrinsicMetric;
 extern const CGFloat NSViewNoIntrinsicMetric;
 
 APPKIT_EXPORT_CLASS
-@interface NSView : NSResponder <NSAppearanceCustomization>
+@interface NSView : NSResponder <NSAppearanceCustomization, NSUserInterfaceItemIdentification>
 {
   NSRect _frame;
   NSRect _bounds;
@@ -197,6 +198,7 @@ PACKAGE_SCOPE
   NSRect _autoresizingFrameError;
   NSShadow *_shadow;
   NSAppearance* _appearance;
+  NSUserInterfaceItemIdentifier _identifier;
 }
 
 /*
