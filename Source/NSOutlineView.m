@@ -689,7 +689,9 @@ static NSImage *unexpandable  = nil;
   CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
   CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
   CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
-  CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
+  
+  // This method is @optional in NSOutlineViewDataSource as of macOS10.0
+  // CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
 
   // Is the data source editable?
   _dataSource_editable = [anObject respondsToSelector:

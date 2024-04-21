@@ -3650,7 +3650,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSInteger numberOfColumns = [v numberOfColumns];
   CGFloat *columnOrigins = [v _columnOrigins];
   NSArray *tableColumns = [v tableColumns];
-  CGFloat indentationPerLevel = 0.0;
   NSInteger numberOfRows = [v numberOfRows];
   NSInteger startingColumn; 
   NSInteger endingColumn;
@@ -3677,7 +3676,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   if ([v isKindOfClass: [NSOutlineView class]])
     {
       outlineTableColumn = [v outlineTableColumn];
-      hasMethod = [delegate respondsToSelector: @selector(outlineView:viewForTableColumn:row:)];
+      hasMethod = [delegate respondsToSelector: @selector(outlineView:viewForTableColumn:item:)];
     }
   else if ([v isKindOfClass: [NSTableView class]])
     {
@@ -3722,6 +3721,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       if ([v isKindOfClass: [NSOutlineView class]])
 	{
 	  id item = [v itemAtRow: rowIndex];
+	  CGFloat indentationPerLevel = [v indentationPerLevel];
 	  
 	  if (tb == outlineTableColumn)
 	    {
@@ -3749,6 +3749,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	      level = [v levelForItem: item];
 	      indentationFactor = indentationPerLevel * level;
 	      imageView = [[NSImageView alloc] init];
+	      [imageView setImage: image];
 	      imageRect = [v frameOfOutlineCellAtRow: rowIndex];
 	      
 	      /* Do not indent if the delegate set the image to nil. */
