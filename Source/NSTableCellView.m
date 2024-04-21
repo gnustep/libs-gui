@@ -201,8 +201,14 @@
 
 - (id) copyWithZone: (NSZone *)zone
 {
-  NSData *d = [NSArchiver archivedDataWithRootObject: self];
-  id copy = [NSUnarchiver unarchiveObjectWithData: d];
+  NSTableCellView *copy = [[NSTableCellView allocWithZone: zone] init];
+
+  [copy setObjectValue: [self objectValue]];
+  [copy setImageView: [self imageView]];
+  [copy setTextField: [self textField]];
+  [copy setDraggingImageComponents: [self draggingImageComponents]];
+  [copy setBackgroundStyle: [self backgroundStyle]];
+  [copy setRowSizeStyle: [self rowSizeStyle]];
 
   return copy;
 }

@@ -6744,7 +6744,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 {
   id result = nil;
   GSKeyValueBinding *theBinding;
-  
+
   theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
 				   forObject: tb];
   if (theBinding != nil)
@@ -6896,7 +6896,7 @@ For a more detailed explanation, -setSortDescriptors:. */
   return [path section];
 }
 
-- (NSView *) makeViewWithIdentifier: (NSUserInterfaceItemIdentifier)identifier owner:(id)owner
+- (NSView *) makeViewWithIdentifier: (NSUserInterfaceItemIdentifier)identifier owner: (id)owner
 {
   NSView *view = [_registeredViews objectForKey: identifier];
 
