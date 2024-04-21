@@ -2158,7 +2158,7 @@ Also returns the child index relative to this parent. */
 {
   NSCell *cell = nil;
 
-  if (_viewBased)
+  if (_viewBased == NO)
     {
       NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
       

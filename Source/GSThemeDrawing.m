@@ -3310,8 +3310,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSIndexSet *selectedRows = [tableView selectedRowIndexes];
   NSIndexSet *selectedColumns = [tableView selectedColumnIndexes];
 
-  // NSColor *backgroundColor = [tableView backgroundColor];
-
   // Set the fill color
   {
     NSColor *selectionColor;
@@ -3383,16 +3381,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  column = [selectedColumns indexGreaterThanIndex: column];
 	}	  
     }
-}
-
-- (BOOL) isBoxOpaque: (NSBox *)box
-{
-  if ([box boxType] == NSBoxCustom)
-    {
-      return ![box isTransparent];
-    }
-
-  return YES;
 }
 
 - (void) drawTableViewRow: (NSInteger)rowIndex 
@@ -3834,6 +3822,16 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       // Place the view...
       [view setFrame: drawingRect];
     }
+}
+
+- (BOOL) isBoxOpaque: (NSBox *)box
+{
+  if ([box boxType] == NSBoxCustom)
+    {
+      return ![box isTransparent];
+    }
+
+  return YES;
 }
 
 - (void) drawBoxInClipRect: (NSRect)clipRect
