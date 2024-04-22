@@ -3745,7 +3745,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	      if ([imageView image])
 		{
 		  imageRect.size.width = [image size].width;
-		  imageRect.size.height = [image size].height;
+		  imageRect.size.height = [ov rowHeight];
 		  
 		  // Place the image...
 		  [imageView setFrame: imageRect];

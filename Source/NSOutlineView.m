@@ -298,6 +298,12 @@ static NSImage *unexpandable  = nil;
 
       // Should only mark the rect below the closed item for redraw
       [self setNeedsDisplay: YES];
+      
+      // If it is view based, then refresh the outline view...
+      if (_viewBased)
+	{
+	  [self reloadData];
+	}
     }
 }
 
@@ -375,6 +381,12 @@ static NSImage *unexpandable  = nil;
 
       // Should only mark the rect below the expanded item for redraw
       [self setNeedsDisplay: YES];
+
+      // If it is view based, then refresh the outline view...
+      if (_viewBased)
+	{
+	  [self reloadData];
+	}
     }
 }
 
@@ -708,6 +720,18 @@ static NSImage *unexpandable  = nil;
  */
 - (void) reloadData
 {
+  // Refresh the views if it is view based...
+  if (_viewBased)
+    {
+      NSEnumerator *en = [[self subviews] objectEnumerator];
+      NSView *v = nil;
+
+      while ((v = [en nextObject]) != nil)
+	{
+	  [v removeFromSuperview];
+	}
+    }
+  
   // release the old array
   if (_items != nil)
     {
@@ -833,7 +857,7 @@ static NSImage *unexpandable  = nil;
     {
       NSImage *image;
 
-      id item = [self itemAtRow:_clickedRow];
+      id item = [self itemAtRow: _clickedRow];
       NSInteger level = [self levelForRow: _clickedRow];
       NSInteger position = 0;
 
@@ -855,7 +879,7 @@ static NSImage *unexpandable  = nil;
 
       if ([self isExpandable:item]
         && location.x >= position
-        && location.x <= position + [image size].width)
+        && location.x <= position + [image size].width + 5)
         {
           BOOL withChildren =
 	    ([theEvent modifierFlags] & NSAlternateKeyMask) ? YES : NO;
