@@ -7138,14 +7138,15 @@ For a more detailed explanation, -setSortDescriptors:. */
     }
 }
 
-- (NSMapTable *) _renderedViewPaths
+- (NSView *) _renderedViewForPath: (NSIndexPath *)path
 {
-  return _renderedViewPaths;
+  return [_renderedViewPaths objectForKey: path];
 }
 
-- (NSMapTable *) _pathsToViews
+- (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path
 {
-  return _pathsToViews;
+  [_renderedViewPaths setObject: view forKey: path];
+  [_pathsToViews setObject: path forKey: view];
 }
 
 @end

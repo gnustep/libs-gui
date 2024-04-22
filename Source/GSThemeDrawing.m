@@ -82,8 +82,8 @@
 		      row: (NSInteger)index;
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
 			     row: (NSInteger)index;
-- (NSMapTable *) _renderedViewPaths;
-- (NSMapTable *) _pathsToViews;
+- (NSView *) _renderedViewForPath: (NSIndexPath *)path;
+- (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path;
 @end
 
 @interface NSTableColumn (Private)
@@ -3703,9 +3703,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       NSTableColumn *tb = [tableColumns objectAtIndex: i];
       NSIndexPath *path = [NSIndexPath indexPathForItem: i
 					      inSection: rowIndex];
-      NSMapTable *paths = [v _renderedViewPaths];
-      NSMapTable *views = [v _pathsToViews];
-      NSView *view = [paths objectForKey: path];
+      NSView *view = [v _renderedViewForPath: path];
 
       if (ov != nil)
 	{
@@ -3784,8 +3782,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		      view = [view copy]; // instantiate the prototype...
 		    }      
 		}
-	      
-	      [paths setObject: view forKey: path];
+
+	      [ov _setRenderedView: view forPath: path];
 	      [ov addSubview: view];
 	    }	  
 	}
@@ -3814,8 +3812,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		}
 	      
 	      // Store the object...
-	      [paths setObject: view forKey: path];
-	      [views setObject: path forKey: view];
+	      [v _setRenderedView: view forPath: path];
 	      [v addSubview: view];      
 	    }
 	}
