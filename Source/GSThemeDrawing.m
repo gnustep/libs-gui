@@ -3386,9 +3386,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 - (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
-		   inView: (NSTableView *)view
+		   inView: (NSTableView *)tableView
 {
-  NSTableView *tableView = (NSTableView *)view;
   // NSInteger numberOfRows = [tableView numberOfRows];
   NSInteger numberOfColumns = [tableView numberOfColumns];
   // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
@@ -3487,9 +3486,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 - (void) drawOutlineViewRow: (NSInteger)rowIndex 
 		   clipRect: (NSRect)clipRect
-		     inView: (NSOutlineView *)view
+		     inView: (NSOutlineView *)outlineView
 {
-  NSOutlineView *outlineView = (NSOutlineView *)view;
   NSInteger numberOfColumns = [outlineView numberOfColumns];
   CGFloat *columnOrigins = [outlineView _columnOrigins];
   NSInteger editedRow = [outlineView editedRow];
