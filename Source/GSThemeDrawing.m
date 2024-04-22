@@ -3661,13 +3661,13 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
   
   // Check the delegate method...
-  if ([v isKindOfClass: [NSOutlineView class]])
+  hasMethod = [delegate respondsToSelector: @selector(outlineView:viewForTableColumn:item:)];
+  if (hasMethod)
     {
       ov = (NSOutlineView *)v;
       outlineTableColumn = [ov outlineTableColumn];
-      hasMethod = [delegate respondsToSelector: @selector(outlineView:viewForTableColumn:item:)];
     }
-  else if ([v isKindOfClass: [NSTableView class]])
+  else
     {
       hasMethod = [delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)];
     }
@@ -3707,7 +3707,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       NSMapTable *views = [v _pathsToViews];
       NSView *view = [paths objectForKey: path];
 
-      if ([v isKindOfClass: [NSOutlineView class]])
+      if (ov != nil)
 	{
 	  id item = [ov itemAtRow: rowIndex];
 	  CGFloat indentationPerLevel = [ov indentationPerLevel];
@@ -3789,7 +3789,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	      [ov addSubview: view];
 	    }	  
 	}
-      else if ([v isKindOfClass: [NSTableView class]])
+      else
 	{
 	  // If the view has been stored use it, if not
 	  // then grab it.
