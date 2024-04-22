@@ -1688,9 +1688,9 @@ Also returns the child index relative to this parent. */
 - (BOOL) _shouldSelectionChange
 {
   if ([_delegate respondsToSelector:
-    @selector (selectionShouldChangeInTableView:)] == YES)
+    @selector (selectionShouldChangeInOutlineView:)] == YES)
     {
-      if ([_delegate selectionShouldChangeInTableView: self] == NO)
+      if ([_delegate selectionShouldChangeInOutlineView: self] == NO)
         {
           return NO;
         }

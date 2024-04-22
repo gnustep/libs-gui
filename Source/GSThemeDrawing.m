@@ -58,6 +58,7 @@
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderCell.h"
 #import "AppKit/NSTableHeaderView.h"
+#import "AppKit/NSTableView.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSTabViewItem.h"
@@ -3385,7 +3386,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 - (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
-		   inView: (NSView *)view
+		   inView: (NSTableView *)view
 {
   NSTableView *tableView = (NSTableView *)view;
   // NSInteger numberOfRows = [tableView numberOfRows];
@@ -3486,7 +3487,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 - (void) drawOutlineViewRow: (NSInteger)rowIndex 
 		   clipRect: (NSRect)clipRect
-		     inView: (NSView *)view
+		     inView: (NSOutlineView *)view
 {
   NSOutlineView *outlineView = (NSOutlineView *)view;
   NSInteger numberOfColumns = [outlineView numberOfColumns];
@@ -3633,7 +3634,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 - (void) drawCellViewRow: (NSInteger)rowIndex
 		clipRect: (NSRect)clipRect
-		  inView: (id)v
+		  inView: (NSTableView *)v
 {
   NSInteger numberOfColumns = [v numberOfColumns];
   CGFloat *columnOrigins = [v _columnOrigins];
@@ -3647,7 +3648,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   id delegate = [v delegate];
   BOOL hasMethod = NO;
   NSTableColumn *outlineTableColumn = nil;
-
+  NSOutlineView *ov = nil;
+  
   // If we have no data source, there is nothing to do...
   if (dataSource == nil)
     {
@@ -3663,7 +3665,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   // Check the delegate method...
   if ([v isKindOfClass: [NSOutlineView class]])
     {
-      outlineTableColumn = [v outlineTableColumn];
+      ov = (NSOutlineView *)v;
+      outlineTableColumn = [ov outlineTableColumn];
       hasMethod = [delegate respondsToSelector: @selector(outlineView:viewForTableColumn:item:)];
     }
   else if ([v isKindOfClass: [NSTableView class]])
@@ -3708,8 +3711,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
       if ([v isKindOfClass: [NSOutlineView class]])
 	{
-	  id item = [v itemAtRow: rowIndex];
-	  CGFloat indentationPerLevel = [v indentationPerLevel];
+	  id item = [ov itemAtRow: rowIndex];
+	  CGFloat indentationPerLevel = [ov indentationPerLevel];
 	  
 	  if (tb == outlineTableColumn)
 	    {
@@ -3720,7 +3723,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	      NSRect imageRect = NSZeroRect;
 	      
 	      // display the correct arrow...
-	      if ([v isItemExpanded: item])
+	      if ([ov isItemExpanded: item])
 		{
 		  image = [NSImage imageNamed: @"common_ArrowDownH"];
 		}
@@ -3729,16 +3732,16 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		  image = [NSImage imageNamed: @"common_ArrowRightH"];
 		}
 	      
-	      if (![v isExpandable: item])
+	      if (![ov isExpandable: item])
 		{
 		  image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)]);
 		}
 	      
-	      level = [v levelForItem: item];
+	      level = [ov levelForItem: item];
 	      indentationFactor = indentationPerLevel * level;
 	      imageView = [[NSImageView alloc] init];
 	      [imageView setImage: image];
-	      imageRect = [v frameOfOutlineCellAtRow: rowIndex];
+	      imageRect = [ov frameOfOutlineCellAtRow: rowIndex];
 	      
 	      /* Do not indent if the delegate set the image to nil. */
 	      if ([imageView image])
@@ -3748,7 +3751,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		  
 		  // Place the image...
 		  [imageView setFrame: imageRect];
-		  [v addSubview: imageView];
+		  [ov addSubview: imageView];
 		  
 		  drawingRect.origin.x
 		    += indentationFactor + imageRect.size.width + 5;
@@ -3768,7 +3771,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	    {
 	      if (hasMethod)
 		{
-		  view = [delegate outlineView: v
+		  view = [delegate outlineView: ov
 			    viewForTableColumn: tb
 					  item: item];
 		}
@@ -3785,7 +3788,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		}
 	      
 	      [paths setObject: view forKey: path];
-	      [v addSubview: view];
+	      [ov addSubview: view];
 	    }	  
 	}
       else if ([v isKindOfClass: [NSTableView class]])
