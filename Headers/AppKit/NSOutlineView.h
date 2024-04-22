@@ -309,7 +309,7 @@ willDisplayOutlineCell: (id)cell
        didAddRowView: (NSTableRowView *)rowView
               forRow: (NSInteger)rowIndex;
 
-- (void) outlineView: (NSTableView *)outlineView
+- (void) outlineView: (NSOutlineView *)outlineView
     didRemoveRowView: (NSTableRowView *)rowView
               forRow: (NSInteger)rowIndex;
 #endif
