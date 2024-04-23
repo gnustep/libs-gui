@@ -3765,7 +3765,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  
 	  if (view == nil)
 	    {
-	      if (hasMethod)
+	      if (hasMethod && ov != nil)
 		{
 		  view = [delegate outlineView: ov
 			    viewForTableColumn: tb
