@@ -169,6 +169,7 @@ static NSString *ApplicationClass = nil;
 
 @implementation GSXib5KeyedUnarchiver
 
+// Singleton dictionary that holds any cached XIB data...  cells, etc.
 static NSDictionary *XmlTagToObjectClassMap = nil;
 static NSArray      *XmlTagsNotStacked = nil;
 static NSArray      *XmlTagsToSkip = nil;
@@ -206,7 +207,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"resources",
                             @"NSMutableArray", @"segments",
                             @"NSMutableArray", @"objectValues",
-                            @"NSMutableArray", @"prototypeCellViews",
+			    @"NSMutableArray", @"prototypeCellViews",
                             @"NSMutableArray", @"allowedToolbarItems",
                             @"NSMutableArray", @"defaultToolbarItems",
                             @"NSMutableArray", @"rowTemplates",
@@ -221,7 +222,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"IBActionConnection", @"action",
                             @"NSNibBindingConnector", @"binding",
                             @"NSWindowTemplate", @"window",
-                            @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             @"NSURL", @"url",
                             @"NSLayoutConstraint", @"constraint",

@@ -39,8 +39,8 @@
 */
 
 #import "config.h"
-#import <Foundation/NSArray.h>
 #import <Foundation/NSArchiver.h>
+#import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSDebug.h>
