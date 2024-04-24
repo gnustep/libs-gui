@@ -1382,21 +1382,9 @@ didStartElement: (NSString*)elementName
   id            object     = nil;
   NSDictionary *attributes = [[element elementForKey: @"keyEquivalentModifierMask"] attributes];
 
-  // ??? SKIP modifier mask processing if BASE64-UTF8 string being used ???
   if (attributes == nil)
     {
-      if (([element elementForKey: @"keyEquivalent"]) &&
-          ([[element elementForKey: @"keyEquivalent"] attributeForKey: @"base64-UTF8"]))
-      {
-        object = [NSNumber numberWithUnsignedInt: 0];
-      }
-    else
-      {
-        // Seems that Apple decided to omit this attribute IF certain default keys alone
-        // are applied.  If this key is present WITH NO setting then the following is
-        // used for the modifier mask...
-        object = [NSNumber numberWithUnsignedInt: NSCommandKeyMask];
-      }
+      return nil;
     }
   else
     {
@@ -2705,7 +2693,12 @@ didStartElement: (NSString*)elementName
         }
 
       // keyEquivalentModifierMask...
-      mask.value |= [[self decodeModifierMaskForElement: element] unsignedIntValue];
+      NSNumber* modifierMask = [self decodeModifierMaskForElement: element];
+
+      if (modifierMask != nil)
+        {
+          mask.value |= [modifierMask unsignedIntValue] << 8;
+        }      
 
       // Return value...
       value = [NSNumber numberWithUnsignedInteger: mask.value];
