@@ -3630,6 +3630,21 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }  
 }
 
+- (id) _prototypeCellViewFromTableColumn: (NSTableColumn *)tb
+{
+  NSArray *protoCellViews = [tb _prototypeCellViews];
+  id view = nil;
+  
+  // it seems there is always one prototype...
+  if ([protoCellViews count] > 0)
+    {
+      view = [protoCellViews objectAtIndex: 0];
+      view = [view copy]; // instantiate the prototype...
+    }
+
+  return view;
+}
+
 - (void) drawCellViewRow: (NSInteger)rowIndex
 		clipRect: (NSRect)clipRect
 		  inView: (NSTableView *)v
@@ -3765,7 +3780,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  
 	  if (view == nil)
 	    {
-	      if (hasMethod && ov != nil)
+	      if (hasMethod)
 		{
 		  view = [delegate outlineView: ov
 			    viewForTableColumn: tb
@@ -3773,18 +3788,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		}
 	      else
 		{
-		  NSArray *protoCellViews = [tb _prototypeCellViews];
-		  
-		  // it seems there is always one prototype...
-		  if ([protoCellViews count] > 0)
-		    {
-		      view = [protoCellViews objectAtIndex: 0];
-		      view = [view copy]; // instantiate the prototype...
-		    }      
+		  view = [self _prototypeCellViewFromTableColumn: tb];
 		}
-
-	      [ov _setRenderedView: view forPath: path];
-	      [ov addSubview: view];
 	    }	  
 	}
       else
@@ -3801,21 +3806,14 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		}
 	      else
 		{
-		  NSArray *protoCellViews = [tb _prototypeCellViews];
-		  
-		  // it seems there is always one prototype...
-		  if ([protoCellViews count] > 0)
-		    {
-		      view = [protoCellViews objectAtIndex: 0];
-		      view = [view copy]; // instantiate the prototype...
-		    }
+		  view = [self _prototypeCellViewFromTableColumn: tb];
 		}
-	      
-	      // Store the object...
-	      [v _setRenderedView: view forPath: path];
-	      [v addSubview: view];      
 	    }
 	}
+
+      // Store the object...
+      [v _setRenderedView: view forPath: path];
+      [v addSubview: view];      
 
       // Place the view...
       [view setFrame: drawingRect];
