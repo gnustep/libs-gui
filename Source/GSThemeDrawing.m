@@ -3386,13 +3386,14 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 - (void) _calculatedStartingColumn: (NSInteger *)startingColumn
 		      endingColumn: (NSInteger *)endingColumn
-	       withNumberOfColumns: (NSInteger)numberOfColumns
+		     withTableView: (NSTableView *)tableView
 			inClipRect: (NSRect)clipRect
-		 withColumnOrigins: (CGFloat *)columnOrigins
   
 {
   CGFloat x_pos = 0.0;
   NSInteger i = 0;
+  NSInteger numberOfColumns = [tableView numberOfColumns];
+  CGFloat *columnOrigins = [tableView _columnOrigins];
   
   /* Using columnAtPoint: here would make it called twice per row per drawn 
      rect - so we avoid it and do it natively */
@@ -3426,11 +3427,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		 clipRect: (NSRect)clipRect
 		   inView: (NSTableView *)tableView
 {
-  // NSInteger numberOfRows = [tableView numberOfRows];
-  NSInteger numberOfColumns = [tableView numberOfColumns];
-  // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
-  // NSColor *backgroundColor = [tableView backgroundColor];
-  CGFloat *columnOrigins = [tableView _columnOrigins];
   NSInteger editedRow = [tableView editedRow];
   NSInteger editedColumn = [tableView editedColumn];
   NSArray *tableColumns = [tableView tableColumns];
@@ -3447,9 +3443,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
   [self _calculatedStartingColumn: &startingColumn
 		     endingColumn: &endingColumn
-		  withNumberOfColumns: numberOfColumns
-		       inClipRect: clipRect
-		withColumnOrigins: columnOrigins];
+		    withTableView: tableView
+		       inClipRect: clipRect];
   
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
@@ -3504,8 +3499,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		   clipRect: (NSRect)clipRect
 		     inView: (NSOutlineView *)outlineView
 {
-  NSInteger numberOfColumns = [outlineView numberOfColumns];
-  CGFloat *columnOrigins = [outlineView _columnOrigins];
   NSInteger editedRow = [outlineView editedRow];
   NSInteger editedColumn = [outlineView editedColumn];
   NSArray *tableColumns = [outlineView tableColumns];
@@ -3536,10 +3529,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
   [self _calculatedStartingColumn: &startingColumn
 		     endingColumn: &endingColumn
-	      withNumberOfColumns: numberOfColumns
-		       inClipRect: clipRect
-		withColumnOrigins: columnOrigins];
-
+		    withTableView: outlineView
+		       inClipRect: clipRect];
+  
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
@@ -3646,8 +3638,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 		clipRect: (NSRect)clipRect
 		  inView: (NSTableView *)v
 {
-  NSInteger numberOfColumns = [v numberOfColumns];
-  CGFloat *columnOrigins = [v _columnOrigins];
   NSArray *tableColumns = [v tableColumns];
   NSInteger numberOfRows = [v numberOfRows];
   NSInteger startingColumn; 
@@ -3685,10 +3675,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
   [self _calculatedStartingColumn: &startingColumn
 		     endingColumn: &endingColumn
-	      withNumberOfColumns: numberOfColumns
-		       inClipRect: clipRect
-  		withColumnOrigins: columnOrigins];
-
+		    withTableView: v
+		       inClipRect: clipRect];
+  
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
