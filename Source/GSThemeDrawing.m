@@ -3384,6 +3384,44 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+- (void) _calculatedStartingColumn: (NSInteger *)startingColumn
+		      endingColumn: (NSInteger *)endingColumn
+	       withNumberOfColumns: (NSInteger)numberOfColumns
+			inClipRect: (NSRect)clipRect
+		 withColumnOrigins: (CGFloat *)columnOrigins
+  
+{
+  CGFloat x_pos = 0.0;
+  NSInteger i = 0;
+  
+  /* Using columnAtPoint: here would make it called twice per row per drawn 
+     rect - so we avoid it and do it natively */
+
+  /* Determine starting column as fast as possible */
+  x_pos = NSMinX (clipRect);
+  i = 0;
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  *startingColumn = (i - 1);
+
+  if (*startingColumn == -1)
+    *startingColumn = 0;
+
+  /* Determine ending column as fast as possible */
+  x_pos = NSMaxX (clipRect);
+  // Nota Bene: we do *not* reset i
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  *endingColumn = (i - 1);
+
+  if (*endingColumn == -1)
+    *endingColumn = numberOfColumns - 1;
+}
+
 - (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
 		   inView: (NSTableView *)tableView
@@ -3402,39 +3440,17 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSRect drawingRect;
   NSCell *cell;
   NSInteger i;
-  CGFloat x_pos;
   const BOOL rowSelected = [[tableView selectedRowIndexes] containsIndex: rowIndex];
   NSColor *tempColor = nil;
   NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
 					  state: GSThemeNormalState];
 
-  /* Using columnAtPoint: here would make it called twice per row per drawn 
-     rect - so we avoid it and do it natively */
-
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (clipRect);
-  i = 0;
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (clipRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = numberOfColumns - 1;
-
+  [self _calculatedStartingColumn: &startingColumn
+		     endingColumn: &endingColumn
+		  withNumberOfColumns: numberOfColumns
+		       inClipRect: clipRect
+		withColumnOrigins: columnOrigins];
+  
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
@@ -3501,7 +3517,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSCell *imageCell = nil;
   NSRect imageRect;
   NSInteger i;
-  CGFloat x_pos;
   id dataSource = [outlineView dataSource];
   id delegate = [outlineView delegate];
   NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
@@ -3519,29 +3534,11 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       return;
     }
 
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (clipRect);
-  i = 0;
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (clipRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = numberOfColumns - 1;
+  [self _calculatedStartingColumn: &startingColumn
+		     endingColumn: &endingColumn
+	      withNumberOfColumns: numberOfColumns
+		       inClipRect: clipRect
+		withColumnOrigins: columnOrigins];
 
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
@@ -3656,7 +3653,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSInteger startingColumn; 
   NSInteger endingColumn;
   NSInteger i;
-  CGFloat x_pos;
   id dataSource = [v dataSource];
   id delegate = [v delegate];
   BOOL hasMethod = NO;
@@ -3686,29 +3682,12 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     {
       hasMethod = [delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)];
     }
-  
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (clipRect);
-  i = 0;
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
 
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (clipRect);
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = numberOfColumns - 1;
+  [self _calculatedStartingColumn: &startingColumn
+		     endingColumn: &endingColumn
+	      withNumberOfColumns: numberOfColumns
+		       inClipRect: clipRect
+  		withColumnOrigins: columnOrigins];
 
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
