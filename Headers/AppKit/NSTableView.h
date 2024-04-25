@@ -102,6 +102,15 @@ typedef enum _NSTableViewRowSizeStyle
 } NSTableViewRowSizeStyle;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+typedef enum _NSTableViewDraggingDestinationFeedbackStyle
+{
+  NSTableViewDraggingDestinationFeedbackStyleNone = 0,
+  NSTableViewDraggingDestinationFeedbackStyleRegular,
+  NSTableViewDraggingDestinationFeedbackStyleSourceList,
+  NSTableViewDraggingDestinationFeedbackStyleGap,
+} NSTableViewDraggingDestinationFeedbackStyle;
+#endif
 
 APPKIT_EXPORT_CLASS
 @interface NSTableView : NSControl <NSUserInterfaceValidations>

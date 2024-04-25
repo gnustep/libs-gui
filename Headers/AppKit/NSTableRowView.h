@@ -25,7 +25,8 @@
 #ifndef _NSTableRowView_h_GNUSTEP_GUI_INCLUDE
 #define _NSTableRowView_h_GNUSTEP_GUI_INCLUDE
 
-#import <AppKit/NSView.h>
+#import <AppKit/NSTableView.h>
+#import <AppKit/NSCell.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 
@@ -34,6 +35,59 @@ extern "C" {
 #endif
 
 @interface NSTableRowView : NSView
+{
+  // Display style...
+  BOOL _emphasized;
+  NSBackgroundStyle _interiorBackgroundStyle;
+  BOOL _floating;
+
+  // Row selection...
+  BOOL _selected;
+  NSTableViewSelectionHighlightStyle _selectionHighlightStyle;
+
+  // Drag and Drop...
+  NSTableViewDraggingDestinationFeedbackStyle _draggingDestinationFeedbackStyle;
+  CGFloat _indentationForDropOperation;
+  BOOL _targetForDropOperation;
+
+  // Row grouping...
+  BOOL _groupRowStyle;
+  NSInteger _numberOfColumns;
+
+  // Overriding row view display characteristics...
+  NSColor *_backgroundColor;
+}
+
+- (BOOL) isEmphasized;
+- (void) setEmphasized: (BOOL)flag;
+
+- (NSBackgroundStyle) interiorBackgroundStyle;
+
+- (BOOL) isFloating;
+- (void) setFloating: (BOOL)flag;
+
+- (BOOL) isSelected;
+- (void) setSelected: (BOOL)flag;
+
+- (NSTableViewSelectionHighlightStyle) selectionHighlightStyle;
+- (void) setSelectionHighlightStyle: (NSTableViewSelectionHighlightStyle) selectionHighlightStyle;
+
+- (NSTableViewDraggingDestinationFeedbackStyle) draggingDestinationFeedbackStyle;
+- (void) setTableViewDraggingDestinationFeedbackStyle: (NSTableViewDraggingDestinationFeedbackStyle) draggingDestinationFeedbackStyle;
+
+- (CGFloat) indentationForDropOperation;
+- (void) setIndentationForDropOperation: (CGFloat)indentationForDropOperation;
+
+- (BOOL) targetForDropOperation;
+- (void) setTargetForDropOperation: (BOOL)flag;
+
+- (BOOL) groupRowStyle;
+- (void) setGroupRowStyle: (BOOL)flag;
+
+- (NSInteger) numberOfColumns;
+
+- (NSColor *) backgroundColor;
+- (void) setBackgroundColor: (NSColor *)color;  
 
 @end
 
