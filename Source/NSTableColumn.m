@@ -73,6 +73,10 @@
 #import "AppKit/NSTableView.h"
 #import "GSBindingHelpers.h"
 
+@interface NSTableView (__NSTableColumnPrivate__)
+- (void) _registerPrototypeViews: (NSArray *)prototypeViews;
+@end
+
 
 /**
   <p>
@@ -510,6 +514,7 @@ to YES. */
       [aCoder encodeObject: _dataCell];
 
       [aCoder encodeObject: _sortDescriptorPrototype];
+      [aCoder encodeObject: _tableView];
       [aCoder encodeObject: _prototypeCellViews];
     }
 }
@@ -580,6 +585,7 @@ to YES. */
       if ([aDecoder containsValueForKey: @"NSPrototypeCellViews"])
 	{
 	  ASSIGN(_prototypeCellViews, [aDecoder decodeObjectForKey: @"NSPrototypeCellViews"]);
+	  [_tableView _registerPrototypeViews: _prototypeCellViews];
 	}
     }
   else
@@ -609,7 +615,9 @@ to YES. */
 
 	  if (version >= 4)
 	    {
+	      _tableView = [aDecoder decodeObject]; // not retained, tableView retains us...
 	      _prototypeCellViews = RETAIN([aDecoder decodeObject]);
+	      [_tableView _registerPrototypeViews: _prototypeCellViews];
 	    }
         }
       else
