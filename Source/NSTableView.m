@@ -6904,6 +6904,7 @@ For a more detailed explanation, -setSortDescriptors:. */
   if (view != nil)
     {
       view = [view copy];
+      [view awakeFromNib];
       [owner awakeFromNib];
     }
   else
