@@ -3495,6 +3495,71 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
+- (NSRect) _drawOutlineTableColumn: (NSTableColumn *)tb
+		       outlineView: (NSOutlineView *)outlineView
+			      item: (id)item
+		       drawingRect: (NSRect)inputRect
+			  rowIndex: (NSInteger)rowIndex
+{
+  NSRect drawingRect = inputRect;
+  NSImage *image = nil;
+  NSInteger level = 0;
+  CGFloat indentationFactor = 0.0;
+  CGFloat indentationPerLevel = [outlineView indentationPerLevel];
+  NSCell *imageCell = nil;
+  NSRect imageRect;
+  id delegate = [outlineView delegate];
+
+  // display the correct arrow...
+  if ([outlineView isItemExpanded: item])
+    {
+      image = [NSImage imageNamed: @"common_ArrowDownH"];
+    }
+  else
+    {
+      image = [NSImage imageNamed: @"common_ArrowRightH"];
+    }
+  
+  if (![outlineView isExpandable: item])
+    {
+      image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)]);
+    }
+  
+  level = [outlineView levelForItem: item];
+  indentationFactor = indentationPerLevel * level;
+  imageCell = [[NSCell alloc] initImageCell: image];
+  imageRect = [outlineView frameOfOutlineCellAtRow: rowIndex];
+  
+  if ([delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
+    {
+      [delegate outlineView: outlineView
+		willDisplayOutlineCell: imageCell
+	     forTableColumn: tb
+		       item: item];
+    }
+  
+  /* Do not indent if the delegate set the image to nil. */
+  if ([imageCell image])
+    {
+      imageRect.size.width = [image size].width;
+      imageRect.size.height = [image size].height;
+      [imageCell drawWithFrame: imageRect inView: outlineView];
+      drawingRect.origin.x
+	+= indentationFactor + imageRect.size.width + 5;
+      drawingRect.size.width
+	-= indentationFactor + imageRect.size.width + 5;
+    }
+  else
+    {
+      drawingRect.origin.x += indentationFactor;
+      drawingRect.size.width -= indentationFactor;
+    }
+  
+  RELEASE(imageCell);
+
+  return drawingRect;
+}
+
 - (void) drawOutlineViewRow: (NSInteger)rowIndex 
 		   clipRect: (NSRect)clipRect
 		     inView: (NSOutlineView *)outlineView
@@ -3502,16 +3567,12 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSInteger editedRow = [outlineView editedRow];
   NSInteger editedColumn = [outlineView editedColumn];
   NSArray *tableColumns = [outlineView tableColumns];
-  CGFloat indentationPerLevel = [outlineView indentationPerLevel];
   NSInteger numberOfRows = [outlineView numberOfRows];
   NSInteger startingColumn;
   NSInteger endingColumn;
   NSRect drawingRect;
-  NSCell *imageCell = nil;
-  NSRect imageRect;
   NSInteger i;
   id dataSource = [outlineView dataSource];
-  id delegate = [outlineView delegate];
   NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
   
   if (dataSource == nil)
@@ -3553,62 +3614,18 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 					    objectValueForTableColumn: tb
 						 byItem: item]];
         }
+
       drawingRect = [outlineView frameOfCellAtColumn: i
 						 row: rowIndex];
 
       if (tb == outlineTableColumn)
         {
-          NSImage *image = nil;
-          NSInteger level = 0;
-          CGFloat indentationFactor = 0.0;
-
-          // display the correct arrow...
-          if ([outlineView isItemExpanded: item])
-            {
-              image = [NSImage imageNamed: @"common_ArrowDownH"];
-            }
-          else
-            {
-              image = [NSImage imageNamed: @"common_ArrowRightH"];
-            }
-
-          if (![outlineView isExpandable: item])
-            {
-              image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)]);
-            }
-
-          level = [outlineView levelForItem: item];
-          indentationFactor = indentationPerLevel * level;
-          imageCell = [[NSCell alloc] initImageCell: image];
-          imageRect = [outlineView frameOfOutlineCellAtRow: rowIndex];
-
-          if ([delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
-            {
-              [delegate outlineView: outlineView
-			willDisplayOutlineCell: imageCell
-		     forTableColumn: tb
-			       item: item];
-            }
-
-          /* Do not indent if the delegate set the image to nil. */
-          if ([imageCell image])
-            {
-              imageRect.size.width = [image size].width;
-              imageRect.size.height = [image size].height;
-              [imageCell drawWithFrame: imageRect inView: outlineView];
-              drawingRect.origin.x
-                += indentationFactor + imageRect.size.width + 5;
-              drawingRect.size.width
-                -= indentationFactor + imageRect.size.width + 5;
-            }
-          else
-            {
-              drawingRect.origin.x += indentationFactor;
-              drawingRect.size.width -= indentationFactor;
-            }
-
-          RELEASE(imageCell);
-        }
+	  drawingRect = [self _drawOutlineTableColumn: tb
+					  outlineView: outlineView
+						 item: item
+					  drawingRect: drawingRect
+					     rowIndex: rowIndex];
+	}
 
       [cell drawWithFrame: drawingRect inView: outlineView];
       if (i == editedColumn && rowIndex == editedRow)
@@ -3691,59 +3708,14 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       if (ov != nil)
 	{
 	  id item = [ov itemAtRow: rowIndex];
-	  CGFloat indentationPerLevel = [ov indentationPerLevel];
 	  
 	  if (tb == outlineTableColumn)
 	    {
-	      NSImage *image = nil;
-	      NSInteger level = 0;
-	      CGFloat indentationFactor = 0.0;
-	      NSImageView *imageView = nil;
-	      NSRect imageRect = NSZeroRect;
-	      
-	      // display the correct arrow...
-	      if ([ov isItemExpanded: item])
-		{
-		  image = [NSImage imageNamed: @"common_ArrowDownH"];
-		}
-	      else
-		{
-		  image = [NSImage imageNamed: @"common_ArrowRightH"];
-		}
-	      
-	      if (![ov isExpandable: item])
-		{
-		  image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)]);
-		}
-	      
-	      level = [ov levelForItem: item];
-	      indentationFactor = indentationPerLevel * level;
-	      imageView = [[NSImageView alloc] init];
-	      [imageView setImage: image];
-	      imageRect = [ov frameOfOutlineCellAtRow: rowIndex];
-	      
-	      /* Do not indent if the delegate set the image to nil. */
-	      if ([imageView image])
-		{
-		  imageRect.size.width = [image size].width;
-		  imageRect.size.height = [ov rowHeight];
-		  
-		  // Place the image...
-		  [imageView setFrame: imageRect];
-		  [ov addSubview: imageView];
-		  
-		  drawingRect.origin.x
-		    += indentationFactor + imageRect.size.width + 5;
-		  drawingRect.size.width
-		    -= indentationFactor + imageRect.size.width + 5;
-		}
-	      else
-		{
-		  drawingRect.origin.x += indentationFactor;
-		  drawingRect.size.width -= indentationFactor;
-		}
-	      
-	      RELEASE(imageView);
+	      drawingRect = [self _drawOutlineTableColumn: tb
+					      outlineView: ov
+						     item: item
+					      drawingRect: drawingRect
+						 rowIndex: rowIndex];	      
 	    }
 	  
 	  if (view == nil)
