@@ -411,6 +411,8 @@ APPKIT_EXPORT_CLASS
 - (void) removeRowsAtIndexes: (NSIndexSet*)indexes withAnimation: (NSTableViewAnimationOptions)animationOptions;
 - (NSInteger) rowForView: (NSView*)view;
 - (NSView *) makeViewWithIdentifier: (NSUserInterfaceItemIdentifier)identifier owner: (id)owner;
+- (NSTableRowView *) rowViewAtRow: (NSInteger)row makeIfNecessary: (BOOL)flag;
+- (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)

@@ -6940,6 +6940,16 @@ For a more detailed explanation, -setSortDescriptors:. */
   return view;
 }
 
+- (NSTableRowView *) rowViewAtRow: (NSInteger)row makeIfNecessary: (BOOL)flag
+{
+  return nil;
+}
+
+- (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag
+{
+  return nil;
+}
+
 - (void) registerNib: (NSNib *)nib
        forIdentifier: (NSUserInterfaceItemIdentifier)identifier
 {

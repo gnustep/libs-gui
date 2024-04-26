@@ -149,20 +149,22 @@
 
 - (BOOL) isNextRowSelected
 {
-  return NO;
+  return _nextRowSelected;
 }
 
 - (void) setNextRowSelected: (BOOL)flag
 {
+  _nextRowSelected = flag;
 }
 
 - (BOOL) isPreviousRowSelected
 {
-  return NO;
+  return _previousRowSelected;
 }
 
 - (void) setPreviousRowSelected: (BOOL)flag
 {
+  _previousRowSelected = flag;
 }
 
 @end

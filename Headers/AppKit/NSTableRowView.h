@@ -56,6 +56,9 @@ extern "C" {
 
   // Overriding row view display characteristics...
   NSColor *_backgroundColor;
+
+  BOOL _nextRowSelected;
+  BOOL _previousRowSelected;
 }
 
 - (BOOL) isEmphasized;
