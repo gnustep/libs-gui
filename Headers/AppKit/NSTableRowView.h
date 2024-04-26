@@ -89,6 +89,22 @@ extern "C" {
 - (NSColor *) backgroundColor;
 - (void) setBackgroundColor: (NSColor *)color;  
 
+- (void) drawBackgroundInRect: (NSRect)dirtyRect;
+
+- (void) drawDraggingDestinationFeedbackInRect: (NSRect)dirtyRect;
+
+- (void) drawSelectionInRect: (NSRect)dirtyRect;
+
+- (void) drawSeparatorInRect: (NSRect)dirtyRect;
+
+- (id) viewAtColumn: (NSInteger)column;
+
+- (BOOL) isNextRowSelected;
+- (void) setNextRowSelected: (BOOL)flag;
+
+- (BOOL) isPreviousRowSelected;
+- (void) setPreviousRowSelected: (BOOL)flag;
+  
 @end
 
 #if	defined(__cplusplus)

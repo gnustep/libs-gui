@@ -126,5 +126,44 @@
   ASSIGN(_backgroundColor, color);
 }
 
+- (void) drawBackgroundInRect: (NSRect)dirtyRect
+{
+}
+
+- (void) drawDraggingDestinationFeedbackInRect: (NSRect)dirtyRect
+{
+}
+
+- (void) drawSelectionInRect: (NSRect)dirtyRect
+{
+}
+
+- (void) drawSeparatorInRect: (NSRect)dirtyRect
+{
+}
+
+- (id) viewAtColumn: (NSInteger)column
+{
+  return nil;
+}
+
+- (BOOL) isNextRowSelected
+{
+  return NO;
+}
+
+- (void) setNextRowSelected: (BOOL)flag
+{
+}
+
+- (BOOL) isPreviousRowSelected
+{
+  return NO;
+}
+
+- (void) setPreviousRowSelected: (BOOL)flag
+{
+}
+
 @end
 
