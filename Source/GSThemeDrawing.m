@@ -3542,7 +3542,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   if ([imageCell image])
     {
       imageRect.size.width = [image size].width;
-      imageRect.size.height = [image size].height;
+      imageRect.size.height = [image size].height + 5;
       [imageCell drawWithFrame: imageRect inView: outlineView];
       drawingRect.origin.x
 	+= indentationFactor + imageRect.size.width + 5;
