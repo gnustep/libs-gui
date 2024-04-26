@@ -55,6 +55,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSNib.h"
+#import "AppKit/NSNibLoading.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableColumn.h"
@@ -6903,7 +6904,8 @@ For a more detailed explanation, -setSortDescriptors:. */
   if (view != nil)
     {
       view = [view copy];
-      // [owner awakeFromNib];
+      [view awakeFromNib];
+      [owner awakeFromNib];
     }
   else
     {
@@ -6948,6 +6950,32 @@ For a more detailed explanation, -setSortDescriptors:. */
 - (NSDictionary *) registeredNibsByIdentifier
 {
   return [_registeredNibs copy];
+}
+
+// Private helper methods...
+
+- (void) _registerPrototypeViews: (NSArray *)prototypeViews
+{
+  NSEnumerator *en = [prototypeViews objectEnumerator];
+  NSView *view = nil;
+
+  while ((view = [en nextObject]) != nil)
+    {
+      NSUserInterfaceItemIdentifier identifier = [view identifier];
+      [_registeredViews setObject: view
+			   forKey: identifier];
+    }
+}
+
+- (NSView *) _renderedViewForPath: (NSIndexPath *)path
+{
+  return [_renderedViewPaths objectForKey: path];
+}
+
+- (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path
+{
+  [_renderedViewPaths setObject: view forKey: path];
+  [_pathsToViews setObject: path forKey: view];
 }
 
 @end /* implementation of NSTableView */
@@ -7136,17 +7164,6 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       return [super valueForKey: aKey];
     }
-}
-
-- (NSView *) _renderedViewForPath: (NSIndexPath *)path
-{
-  return [_renderedViewPaths objectForKey: path];
-}
-
-- (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path
-{
-  [_renderedViewPaths setObject: view forKey: path];
-  [_pathsToViews setObject: path forKey: view];
 }
 
 @end

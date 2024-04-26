@@ -878,8 +878,8 @@ static NSImage *unexpandable  = nil;
       position += _columnOrigins[_clickedColumn];
 
       if ([self isExpandable:item]
-        && location.x >= position
-        && location.x <= position + [image size].width + 5)
+	  && location.x >= position - 5
+	  && location.x <= position + [image size].width + 10)
         {
           BOOL withChildren =
 	    ([theEvent modifierFlags] & NSAlternateKeyMask) ? YES : NO;
