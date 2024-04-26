@@ -6947,7 +6947,10 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag
 {
-  return nil;
+  NSIndexPath *path = [NSIndexPath indexPathForItem: row inSection: column];
+  NSView *view = [_renderedViewPaths objectForKey: path];
+
+  return view;
 }
 
 - (void) registerNib: (NSNib *)nib
