@@ -204,6 +204,9 @@ APPKIT_EXPORT_CLASS
   NSMapTable *_pathsToViews;
   NSMutableDictionary *_registeredNibs;
   NSMutableDictionary *_registeredViews;
+
+  /* NSTableRowView support */
+  NSMutableArray *_rowViews;
 }
 
 /* Data Source */

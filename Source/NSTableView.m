@@ -60,6 +60,7 @@
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderView.h"
+#import "AppKit/NSTableRowView.h"
 #import "AppKit/NSText.h"
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSWindow.h"
@@ -2052,6 +2053,7 @@ static void computeNewSelection
   _pathsToViews = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
   _registeredNibs = [[NSMutableDictionary alloc] init];
   _registeredViews = [[NSMutableDictionary alloc] init];
+  _rowViews = [[NSMutableArray alloc] init];
 }
 
 - (id) initWithFrame: (NSRect)frameRect
@@ -2087,6 +2089,7 @@ static void computeNewSelection
   RELEASE (_pathsToViews);
   RELEASE (_registeredNibs);
   RELEASE (_registeredViews);
+  RELEASE (_rowViews);
   TEST_RELEASE (_headerView);
   TEST_RELEASE (_cornerView);
   if (_autosaveTableColumns == YES)
@@ -6942,7 +6945,17 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSTableRowView *) rowViewAtRow: (NSInteger)row makeIfNecessary: (BOOL)flag
 {
-  return nil;
+  NSTableRowView *rv = [_rowViews objectAtIndex: row];
+
+  if (rv == nil)
+    {
+      if (flag == YES)
+	{
+	  rv = [[NSTableRowView alloc] init];
+	}
+    }
+  
+  return rv;
 }
 
 - (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag
