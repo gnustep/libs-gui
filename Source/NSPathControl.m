@@ -139,7 +139,7 @@ static Class pathCellClass;
   [self setNeedsDisplay];
 }
 
-- (SEL) doubleAction;
+- (SEL) doubleAction
 {
   return [_cell doubleAction];
 }
@@ -210,7 +210,7 @@ static Class pathCellClass;
     }
 }
 
-- (NSArray *) allowedTypes;
+- (NSArray *) allowedTypes
 {
   return [_cell allowedTypes];
 }

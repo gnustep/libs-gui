@@ -26,7 +26,9 @@
  Boston, MA 02110-1301, USA.
  */
 
-#import <Foundation/Foundation.h>
+#import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
+
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 
 @class GSXibElement;

@@ -45,7 +45,7 @@
   return self;
 }
 
-- (void) dealloc;
+- (void) dealloc
 {
   RELEASE(_markerFormat);
   [super dealloc];

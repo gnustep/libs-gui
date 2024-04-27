@@ -147,7 +147,12 @@
 
   if (types == nil)
     {
-      types = [[NSArray alloc] initWithObjects: NSTIFFPboardType, nil];
+      types = [[NSArray alloc] initWithObjects:
+	NSTIFFPboardType,
+#if HAVE_LIBPNG
+	NSPasteboardTypePNG,
+#endif
+	nil];
     }
   
   return types;

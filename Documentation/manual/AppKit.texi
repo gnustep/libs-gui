@@ -98,8 +98,8 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @author Christopher Armstrong
 @page
 @insertcopying
-@contents
 @end titlepage
+@contents
 @end iftex
 
 @c %** Contents of file, one file per chapter

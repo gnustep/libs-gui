@@ -355,6 +355,12 @@ static NSImage *unexpandable  = nil;
 
       // Should only mark the rect below the closed item for redraw
       [self setNeedsDisplay: YES];
+      
+      // If it is view based, then refresh the outline view...
+      if (_viewBased)
+	{
+	  [self reloadData];
+	}
     }
 }
 
@@ -432,6 +438,12 @@ static NSImage *unexpandable  = nil;
 
       // Should only mark the rect below the expanded item for redraw
       [self setNeedsDisplay: YES];
+
+      // If it is view based, then refresh the outline view...
+      if (_viewBased)
+	{
+	  [self reloadData];
+	}
     }
 }
 
@@ -757,9 +769,11 @@ static NSImage *unexpandable  = nil;
       CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
       CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
       CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
-      CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
+ 
+      // This method is @optional in NSOutlineViewDataSource as of macOS10.0
+      // CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
     }
-
+  
   // Is the data source editable?
   _dataSource_editable = [anObject respondsToSelector:
 				@selector(outlineView:setObjectValue:forTableColumn:byItem:)];
@@ -784,6 +798,18 @@ static NSImage *unexpandable  = nil;
  */
 - (void) reloadData
 {
+  // Refresh the views if it is view based...
+  if (_viewBased)
+    {
+      NSEnumerator *en = [[self subviews] objectEnumerator];
+      NSView *v = nil;
+
+      while ((v = [en nextObject]) != nil)
+	{
+	  [v removeFromSuperview];
+	}
+    }
+  
   // release the old array
   if (_items != nil)
     {
@@ -914,7 +940,7 @@ static NSImage *unexpandable  = nil;
     {
       NSImage *image;
 
-      id item = [self itemAtRow:_clickedRow];
+      id item = [self itemAtRow: _clickedRow];
       NSInteger level = [self levelForRow: _clickedRow];
       NSInteger position = 0;
 
@@ -935,10 +961,10 @@ static NSImage *unexpandable  = nil;
       position += _columnOrigins[_clickedColumn];
 
       if ([self isExpandable:item]
-	&& location.x >= position
-	&& location.x <= position + [image size].width)
-	{
-	  BOOL withChildren =
+	  && location.x >= position - 5
+	  && location.x <= position + [image size].width + 10)
+        {
+          BOOL withChildren =
 	    ([theEvent modifierFlags] & NSAlternateKeyMask) ? YES : NO;
 	  if (![self isItemExpanded: item])
 	    {
@@ -1006,9 +1032,18 @@ static NSImage *unexpandable  = nil;
  */
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)aRect
 {
-  [[GSTheme theme] drawOutlineViewRow: rowIndex
-			     clipRect: aRect
-			       inView: self];
+  if (_viewBased)
+    {
+      [[GSTheme theme] drawCellViewRow: rowIndex
+			      clipRect: aRect
+				inView: self];
+    }
+  else
+    {
+      [[GSTheme theme] drawOutlineViewRow: rowIndex
+				 clipRect: aRect
+				   inView: self];
+    }
 }
 
 - (void) drawRect: (NSRect)aRect
@@ -1743,12 +1778,12 @@ Also returns the child index relative to this parent. */
 - (BOOL) _shouldSelectionChange
 {
   if ([_delegate respondsToSelector:
-    @selector (selectionShouldChangeInTableView:)] == YES)
+    @selector (selectionShouldChangeInOutlineView:)] == YES)
     {
-      if ([_delegate selectionShouldChangeInTableView: self] == NO)
-	{
-	  return NO;
-	}
+      if ([_delegate selectionShouldChangeInOutlineView: self] == NO)
+        {
+          return NO;
+        }
     }
 
   return YES;
@@ -2224,19 +2259,24 @@ Also returns the child index relative to this parent. */
 - (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex
 {
   NSCell *cell = nil;
-  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
 
-  if ([_delegate respondsToSelector:
-	@selector(outlineView:dataCellForTableColumn:item:)])
+  if (_viewBased == NO)
     {
-      id item = [self itemAtRow: rowIndex];
-      cell = [_delegate outlineView: self dataCellForTableColumn: tb
-							    item: item];
+      NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+      
+      if ([_delegate respondsToSelector:
+		  @selector(outlineView:dataCellForTableColumn:item:)])
+	{
+	  id item = [self itemAtRow: rowIndex];
+	  cell = [_delegate outlineView: self dataCellForTableColumn: tb
+				   item: item];
+	}
+      if (cell == nil)
+	{
+	  cell = [tb dataCellForRow: rowIndex];
+	}
     }
-  if (cell == nil)
-    {
-      cell = [tb dataCellForRow: rowIndex];
-    }
+  
   return cell;
 }
 

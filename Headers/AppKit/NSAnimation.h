@@ -215,7 +215,7 @@ APPKIT_EXPORT_CLASS
 - (void) setDelegate: (id)delegate;
 
 /** Sets the duration of the animation to a specified number of seconds.
-    If the duration is changed while the animation is running the <i>speed</i>
+    If the duration is changed while the animation is running the <em>speed</em>
     of the animation is not changed but the current progress value is
     (see [-setCurrentprogress]). The new value takes effect at the next
     frame. */

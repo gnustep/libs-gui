@@ -42,6 +42,7 @@
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSMenu.h"
 #import "GSBindingHelpers.h"
+#import "GNUstepGUI/GSTheme.h"
 
 static BOOL usesUserKeyEquivalents = NO;
 static Class imageClass;
@@ -264,7 +265,12 @@ static Class imageClass;
 
 - (NSString*) title
 {
-  return _title;
+  NSString *proposedTitle = _title;
+
+  proposedTitle = [[GSTheme theme] proposedTitle: proposedTitle
+	  			     forMenuItem: self];
+
+  return proposedTitle;
 }
 
 - (BOOL) isSeparatorItem
@@ -644,7 +650,7 @@ static Class imageClass;
       NSString *action;
       NSString *key;
       BOOL isSeparator = NO;
-      int keyMask;
+      NSNumber *keyMask;
 
       if ([aDecoder containsValueForKey: @"NSIsSeparator"])
         {
@@ -697,10 +703,18 @@ static Class imageClass;
           [self setSubmenu: submenu];
         }
 
-      // Set the key mask regardless of whether it is present;
-      // i.e. set it to 0 if it is not present in the nib.
-      keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
-      [self setKeyEquivalentModifierMask: keyMask];
+      // Set the key mask when it is present; or default to NSCommandKeyMask
+      // when not specified
+      keyMask = (NSNumber*)[aDecoder decodeObjectForKey: @"NSKeyEquivModMask"];
+
+      if (keyMask != nil)
+        {
+          [self setKeyEquivalentModifierMask: [keyMask intValue]];
+        }
+      else
+        {
+          [self setKeyEquivalentModifierMask: NSCommandKeyMask];
+        }
 
       if ([aDecoder containsValueForKey: @"NSMnemonicLoc"])
         {

@@ -425,9 +425,6 @@
 {
   if (closeButton == nil)
     {
-      NSSize viewSize;
-      NSSize buttonSize;
-      
       [[GSTheme theme] setName: nil forElement: [closeButton cell] temporary: NO];
       ASSIGN(closeButton, 
              [NSWindow standardWindowButton: 
@@ -440,15 +437,9 @@
       [closeButton setTarget: _owner];
       [closeButton setAction: closeAction];
 
-      viewSize = [self frame].size;
-      buttonSize = [[closeButton image] size];
-      buttonSize = NSMakeSize(buttonSize.width + 3, buttonSize.height + 3);
-
       // Update location
-      [closeButton setFrame:
-        NSMakeRect(viewSize.width - buttonSize.width - 4,
-                   (viewSize.height - buttonSize.height) / 2,
-                   buttonSize.width, buttonSize.height)];
+      [[GSTheme theme] setFrameForCloseButton: closeButton
+      				viewSize: [self frame].size];
 
       [closeButton setAutoresizingMask: NSViewMinXMargin | NSViewMaxYMargin];
     }

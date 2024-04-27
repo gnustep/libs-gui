@@ -1,21 +1,21 @@
 /* Implementation of class NSStoryboardSegue
    Copyright (C) 2020 Free Software Foundation, Inc.
-   
+
    By: Gregory Casamento
    Date: Mon Jan 20 15:57:31 EST 2020
 
    This file is part of the GNUstep Library.
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
-   
+
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -71,23 +71,23 @@
   _sourceController = controller;
 }
 
-+ (instancetype) segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
-                              source: (id)sourceController 
-                         destination: (id)destinationController 
-                      performHandler: (GSStoryboardSeguePerformHandler)performHandler
++ (instancetype) segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier
+			      source: (id)sourceController
+			 destination: (id)destinationController
+		      performHandler: (GSStoryboardSeguePerformHandler)performHandler
 {
   NSStoryboardSegue *segue = [[NSStoryboardSegue alloc] initWithIdentifier: identifier
-                                                                    source: sourceController
-                                                               destination: destinationController];
+								    source: sourceController
+							       destination: destinationController];
   AUTORELEASE(segue);
   [segue _setHandler: performHandler];
 
   return segue;
 }
 
-- (instancetype) initWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
-                             source: (id)sourceController 
-                        destination: (id)destinationController
+- (instancetype) initWithIdentifier: (NSStoryboardSegueIdentifier)identifier
+			     source: (id)sourceController
+			destination: (id)destinationController
 {
   self = [super init];
   if (self != nil)
@@ -116,41 +116,41 @@
   if ([_kind isEqualToString: @"relationship"])
     {
       if ([_relationship isEqualToString: @"window.shadowedContentViewController"])
-        {
-          NSWindow *w = [_sourceController window];
-          NSView *v = [_destinationController view];
-          [w setContentView: v];
-          [w setTitle: [_destinationController title]];
-          [_sourceController showWindow: self];
-        }
+	{
+	  NSWindow *w = [_sourceController window];
+	  NSView *v = [_destinationController view];
+	  [w setContentView: v];
+	  [w setTitle: [_destinationController title]];
+	  [_sourceController showWindow: self];
+	}
       else if ([_relationship isEqualToString: @"splitItems"])
-        {
-          NSView *v = [_destinationController view];
-          NSSplitViewController *svc = (NSSplitViewController *)_sourceController;
-          [[svc splitView] addSubview: v];
-          NSUInteger idx = [[[svc splitView] subviews] count] - 1;
-          NSSplitViewItem *item = [[svc splitViewItems] objectAtIndex: idx];
-          [item setViewController: _destinationController];
-        }
+	{
+	  NSView *v = [_destinationController view];
+	  NSSplitViewController *svc = (NSSplitViewController *)_sourceController;
+	  [[svc splitView] addSubview: v];
+	  NSUInteger idx = [[[svc splitView] subviews] count] - 1;
+	  NSSplitViewItem *item = [[svc splitViewItems] objectAtIndex: idx];
+	  [item setViewController: _destinationController];
+	}
       else if ([_relationship isEqualToString: @"tabItems"])
-        {
-          NSTabViewController *tvc = (NSTabViewController *)_sourceController;
-          NSTabViewItem *item = [NSTabViewItem tabViewItemWithViewController: _destinationController];
-          [tvc addTabViewItem: item]; 
-        }
+	{
+	  NSTabViewController *tvc = (NSTabViewController *)_sourceController;
+	  NSTabViewItem *item = [NSTabViewItem tabViewItemWithViewController: _destinationController];
+	  [tvc addTabViewItem: item];
+	}
     }
   else if ([_kind isEqualToString: @"modal"])
     {
       NSWindow *w = nil;
       if ([_destinationController isKindOfClass: [NSWindowController class]])
-        {
-          w = [_destinationController window];
-        }
+	{
+	  w = [_destinationController window];
+	}
       else
-        {
-          w = [NSWindow windowWithContentViewController: _destinationController];
-          [w setTitle: [_destinationController title]];
-        }
+	{
+	  w = [NSWindow windowWithContentViewController: _destinationController];
+	  [w setTitle: [_destinationController title]];
+	}
       RETAIN(w);
       [w center];
       [NSApp runModalForWindow: w];
@@ -158,28 +158,42 @@
   else if ([_kind isEqualToString: @"show"])
     {
       if ([_destinationController isKindOfClass: [NSWindowController class]])
-        {
-          [_destinationController showWindow: _sourceController];
-        }
+	{
+	  [_destinationController showWindow: _sourceController];
+	}
       else
-        {
-          NSWindow *w = [NSWindow windowWithContentViewController: _destinationController];
-          [w setTitle: [_destinationController title]];
-          [w center];
-          [w orderFrontRegardless];
-          RETAIN(w);
-        }
+	{
+	  NSWindow *w = [NSWindow windowWithContentViewController: _destinationController];
+	  [w setTitle: [_destinationController title]];
+	  [w center];
+	  [w orderFrontRegardless];
+	  RETAIN(w);
+	}
     }
   else if ([_kind isEqualToString: @"popover"])
     {
-      NSPopover *po = [[NSPopover alloc] init];
-      NSRect rect = [_popoverAnchorView frame];
+      if (_popover == nil)
+	{
+	  NSPopover *po = [[NSPopover alloc] init];
+	  NSRect rect = [_popoverAnchorView frame];
 
-      [po setBehavior: _popoverBehavior];
-      [po setContentViewController: _destinationController];
-      [po showRelativeToRect: rect
-                      ofView: _popoverAnchorView
-               preferredEdge: _preferredEdge];      
+	  _popover = po; // weak... since we manually release...
+	  [po setBehavior: _popoverBehavior];
+	  [po setContentViewController: _destinationController];
+	  [po showRelativeToRect: rect
+			  ofView: _popoverAnchorView
+		   preferredEdge: _preferredEdge];
+	}
+      else
+	{
+	  if ([_popover behavior] == NSPopoverBehaviorTransient)
+	    {
+	      [_destinationController dismissController: nil];
+	      [_popover close];
+	      RELEASE(_popover);
+	      _popover = nil;
+	    }
+	}
     }
   else if ([_kind isEqualToString: @"sheet"])
     {

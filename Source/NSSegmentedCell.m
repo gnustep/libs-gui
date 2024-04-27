@@ -298,7 +298,7 @@
   return self;
 }
 
-- (id) copyWithZone: (NSZone *)zone;
+- (id) copyWithZone: (NSZone *)zone
 {
   NSSegmentedCell *c = (NSSegmentedCell *)[super copyWithZone: zone];
   

@@ -108,11 +108,8 @@
     }
   if (hasCloseButton)
     {
-      closeButtonRect = NSMakeRect([self bounds].size.width - [theme titlebarButtonSize] - 
-				   [theme titlebarPaddingRight], [self bounds].size.height - 
-				   [theme titlebarButtonSize] - [theme titlebarPaddingTop], 
-				   [theme titlebarButtonSize], [theme titlebarButtonSize]);
-      [closeButton setFrame: closeButtonRect];
+      NSRect closeButtonFrame = [[GSTheme theme] closeButtonFrameForBounds: [self bounds]];
+      [closeButton setFrame: closeButtonFrame];
     }
   else
     {
@@ -121,10 +118,8 @@
 
   if (hasMiniaturizeButton)
     {
-      miniaturizeButtonRect = NSMakeRect([theme titlebarPaddingLeft], [self bounds].size.height - 
-					 [theme titlebarButtonSize] - [theme titlebarPaddingTop], 
-					 [theme titlebarButtonSize], [theme titlebarButtonSize]);
-      [miniaturizeButton setFrame: miniaturizeButtonRect];
+      NSRect miniaturizeButtonFrame = [[GSTheme theme] miniaturizeButtonFrameForBounds: [self bounds]];
+      [miniaturizeButton setFrame: miniaturizeButtonFrame];
     }
   else
     {

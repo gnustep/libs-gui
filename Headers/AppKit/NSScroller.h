@@ -104,10 +104,33 @@ APPKIT_EXPORT_CLASS
     unsigned control_tint: 3;
     unsigned control_size: 2;
   } _scFlags;
+  NSScrollerStyle _scrollerStyle;
+  NSScrollerKnobStyle _knobStyle;
 }
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 + (NSScrollerStyle)preferredScrollerStyle;
+/** The scroller style. By default, NSScrollerStyleDefault. 
+    If your theme implements other scroller styles, you must override this method. 
+    You may use the ivar _scrollerStyle for this. */
+- (NSScrollerStyle)scrollerStyle;
+/** Sets the scroller style. In the default theme, this must be NSScrollerStyleDefault. 
+    If your theme implements other scroller styles, you must override this method. 
+    You may use the ivar _scrollerStyle for this. */
+- (void)setScrollerStyle:(NSScrollerStyle)style;
+/** The scroller knob style. By default, NSScrollerStyleDefault. 
+    If your theme implements other scroller styles, you must override this method. 
+    You may use the ivar _knobStyle for this. */
+- (NSScrollerKnobStyle)knobStyle;
+/** Sets the scroller knob style. In the default theme, this must be NSScrollerKnobStyleDefault. 
+    If your theme implements other scroller knob styles, you must override this method. 
+    You may use the ivar _scrollerKnobStyle for this. */
+- (void)setKnobStyle:(NSScrollerKnobStyle)style;
+#endif
+#if GS_API_VERSION(013000,GS_API_LATEST)
+/** Shows the scroller if it's an overlay scroller. 
+    If your theme supports overlay scrollers, you must override this method. */
+- (void)flashScroller;
 #endif
 
 //

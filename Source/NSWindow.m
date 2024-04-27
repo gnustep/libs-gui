@@ -5952,6 +5952,30 @@ current key view.<br />
   return nil;
 }
 
+- (void)beginSheet:(NSWindow *)sheet
+ completionHandler:(GSNSWindowDidEndSheetCallbackBlock)handler {
+  // FIXME
+  NSInteger ret;
+
+  [sheet setParentWindow: self];
+  self->_attachedSheet = sheet;
+
+  [[NSNotificationCenter defaultCenter] 
+          postNotificationName: NSWindowWillBeginSheetNotification
+                        object: self];
+  ret = [NSApp runModalForWindow: sheet 
+	      relativeToWindow: self];
+
+  CALL_BLOCK(handler, ret);
+
+  [sheet close];
+  self->_attachedSheet = nil;
+  [sheet setParentWindow: nil];
+  [[NSNotificationCenter defaultCenter] 
+          postNotificationName: NSWindowDidEndSheetNotification
+                        object: self];
+}
+
 - (CGFloat) backingScaleFactor
 {
   return 1.0;

@@ -261,10 +261,13 @@ NSStatusItem.m \
 NSTabView.m \
 NSTabViewController.m \
 NSTabViewItem.m \
+NSTableCellView.m \
 NSTableColumn.m \
 NSTableHeaderView.m \
 NSTableHeaderCell.m \
 NSTableView.m \
+NSTableViewRowAction.m \
+NSTableRowView.m \
 NSText.m \
 NSTextAlternatives.m \
 NSTextAttachment.m \
@@ -580,10 +583,13 @@ NSSwitch.h \
 NSTabView.h \
 NSTabViewController.h \
 NSTabViewItem.h \
+NSTableCellView.h \
 NSTableColumn.h \
 NSTableHeaderCell.h \
 NSTableHeaderView.h \
 NSTableView.h \
+NSTableViewRowAction.h \
+NSTableRowView.h \
 NSText.h \
 NSTextAlternatives.h \
 NSTextAttachment.h \
@@ -700,6 +706,9 @@ libgui-resources_RESOURCE_FILES = Info-gnustep.plist
 
 # Extra DLL exports file
 libgnustep-gui_DLL_DEF = libgnustep-gui.def
+
+# pkg-config file
+libgnustep-gui_PKGCONFIG_FILES = "gnustep-gui.pc"
 
 include GNUmakefile.preamble
 

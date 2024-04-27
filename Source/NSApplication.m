@@ -62,6 +62,7 @@
 
 #import "AppKit/AppKitExceptions.h"
 #import "AppKit/NSAlert.h"
+#import "AppKit/NSAppearance.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSCursor.h"
@@ -3833,6 +3834,26 @@ struct _DelegateWrapper
     }
   return self;
 }
+
+- (NSAppearance*) appearance {
+  return _appearance;
+}
+
+- (void) setAppearance: (NSAppearance*) appearance {
+  ASSIGNCOPY(_appearance, appearance);
+}
+
+- (NSAppearance*) effectiveAppearance {
+  if (_appearance)
+  {
+    return _appearance;
+  }
+  else
+  {
+    return [NSAppearance currentAppearance];
+  }
+}
+
 
 @end /* NSApplication */
 
