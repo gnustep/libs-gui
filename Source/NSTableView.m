@@ -6963,38 +6963,6 @@ For a more detailed explanation, -setSortDescriptors:. */
   return view;
 }
 
-- (NSView *) _delegateInvocationForRowIndex: (NSInteger)rowIndex
-				   inColumn: (NSInteger)columnIndex
-{
-  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
-  NSIndexPath *path = [NSIndexPath indexPathForItem: columnIndex
-					  inSection: rowIndex];
-  NSView *view = [self _renderedViewForPath: path];
-  NSRect drawingRect = [self frameOfCellAtColumn: columnIndex
-					     row: rowIndex];
-  
-  // If the view has been stored use it, if not
-  // then grab it.
-  if (view == nil)
-    {
-      if ([_delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)])
-	{
-	  view = [_delegate tableView: self
-		   viewForTableColumn: tb
-				  row: rowIndex];
-	}
-      else
-	{
-	  view = [self _prototypeCellViewFromTableColumn: tb];
-	}
-    }
-
-  [view setFrame: drawingRect];
-  [self _setRenderedView: view forPath: path];
-
-  return view;
-}
-
 - (NSTableRowView *) rowViewAtRow: (NSInteger)row makeIfNecessary: (BOOL)flag
 {
   NSTableRowView *rv = nil;
@@ -7043,8 +7011,32 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag
 {
-  NSIndexPath *path = [NSIndexPath indexPathForItem: row inSection: column];
-  NSView *view = [_renderedViewPaths objectForKey: path];
+  NSTableColumn *tb = [_tableColumns objectAtIndex: column];
+  NSIndexPath *path = [NSIndexPath indexPathForItem: column
+					  inSection: row];
+  NSView *view = [self _renderedViewForPath: path];
+  NSRect drawingRect = [self frameOfCellAtColumn: column
+					     row: row];
+  
+  // If the view has been stored use it, if not
+  // then grab it.
+  if (view == nil
+      && flag == YES)
+    {
+      if ([_delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)])
+	{
+	  view = [_delegate tableView: self
+		   viewForTableColumn: tb
+				  row: row];
+	}
+      else
+	{
+	  view = [self _prototypeCellViewFromTableColumn: tb];
+	}
+    }
+
+  [view setFrame: drawingRect];
+  [self _setRenderedView: view forPath: path];
 
   return view;
 }

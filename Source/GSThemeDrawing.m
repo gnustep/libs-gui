@@ -82,10 +82,6 @@
 		      row: (NSInteger)index;
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
 			     row: (NSInteger)index;
-- (NSView *) _renderedViewForPath: (NSIndexPath *)path;
-- (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path;
-- (NSView *) _delegateInvocationForRowIndex: (NSInteger)rowIndex
-				   inColumn: (NSInteger)columnIndex;
 @end
 
 @interface NSCell (Private)
@@ -3665,8 +3661,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   for (columnIndex = startingColumn; columnIndex <= endingColumn; columnIndex++)
     {
       id rv = [v rowViewAtRow: rowIndex makeIfNecessary: YES];  
-      NSView *view = [v _delegateInvocationForRowIndex: rowIndex
-					      inColumn: columnIndex];
+      NSView *view = [v viewAtColumn: columnIndex row: rowIndex makeIfNecessary: YES];
 
       // Store the object...
       [v addSubview: rv];

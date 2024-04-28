@@ -132,8 +132,6 @@ static NSImage *unexpandable  = nil;
 @end
 
 @interface NSOutlineView (Private)
-- (NSView *) _delegateInvocationForRowIndex: (NSInteger)rowIndex
-				   inColumn: (NSInteger)columnIndex;
 - (void) _autoCollapse;
 @end
 
@@ -2210,6 +2208,46 @@ Also returns the child index relative to this parent. */
   return cell;
 }
 
+- (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag
+{
+  NSTableColumn *tb = [_tableColumns objectAtIndex: column];
+  NSIndexPath *path = [NSIndexPath indexPathForItem: column
+					  inSection: row];
+  NSView *view = [self _renderedViewForPath: path];
+  NSRect drawingRect = [self frameOfCellAtColumn: column
+					     row: row];
+  id item = [self itemAtRow: row];
+	  
+  if (tb == _outlineTableColumn)
+    {
+      drawingRect = [[GSTheme theme] drawOutlineTableColumn: tb
+						outlineView: self
+						       item: item
+						drawingRect: drawingRect
+						   rowIndex: row];	      
+    }
+  
+  if (view == nil
+      && flag == YES)
+    {
+      if ([_delegate respondsToSelector: @selector(outlineView:viewForTableColumn:item:)])
+	{
+	  view = [_delegate outlineView: self
+		     viewForTableColumn: tb
+				   item: item];
+	}
+      else
+	{
+	  view = [self _prototypeCellViewFromTableColumn: tb];
+	}
+    }
+
+  [view setFrame: drawingRect];
+  [self _setRenderedView: view forPath: path];
+ 
+  return view;
+}
+
 @end
 
 @implementation	NSOutlineView (Private)
@@ -2226,46 +2264,6 @@ Also returns the child index relative to this parent. */
       [self collapseItem: item collapseChildren: YES];
     }
   [autoExpanded removeAllObjects];
-}
-
-- (NSView *) _delegateInvocationForRowIndex: (NSInteger)rowIndex
-				   inColumn: (NSInteger)columnIndex
-{
-  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
-  NSIndexPath *path = [NSIndexPath indexPathForItem: columnIndex
-					  inSection: rowIndex];
-  NSView *view = [self _renderedViewForPath: path];
-  NSRect drawingRect = [self frameOfCellAtColumn: columnIndex
-					     row: rowIndex];
-  id item = [self itemAtRow: rowIndex];
-	  
-  if (tb == _outlineTableColumn)
-    {
-      drawingRect = [[GSTheme theme] drawOutlineTableColumn: tb
-						outlineView: self
-						       item: item
-						drawingRect: drawingRect
-						   rowIndex: rowIndex];	      
-    }
-  
-  if (view == nil)
-    {
-      if ([_delegate respondsToSelector: @selector(outlineView:viewForTableColumn:item:)])
-	{
-	  view = [_delegate outlineView: self
-		     viewForTableColumn: tb
-				   item: item];
-	}
-      else
-	{
-	  view = [self _prototypeCellViewFromTableColumn: tb];
-	}
-    } 
-
-  [view setFrame: drawingRect];
-  [self _setRenderedView: view forPath: path];
- 
-  return view;
 }
 
 @end
