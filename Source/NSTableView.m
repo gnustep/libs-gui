@@ -2374,6 +2374,7 @@ static void computeNewSelection
     {
       [_renderedViewPaths removeAllObjects];
       [_pathsToViews removeAllObjects];
+      [_rowViews removeAllObjects];
     }
   
   [self noteNumberOfRowsChanged];
@@ -6922,13 +6923,13 @@ For a more detailed explanation, -setSortDescriptors:. */
 	  if (loaded)
 	    {
 	      NSEnumerator *en = [tlo objectEnumerator];
-	      id o = nil;
+	      id v = nil;
 	      
-	      while ((o = [en nextObject]) != nil)
+	      while ((v = [en nextObject]) != nil)
 		{
-		  if ([o isKindOfClass: [NSView class]])
+		  if ([v isKindOfClass: [NSView class]])
 		    {
-		      view = o;
+		      view = v;
 		      break;
 		    }
 		}
@@ -6945,13 +6946,44 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSTableRowView *) rowViewAtRow: (NSInteger)row makeIfNecessary: (BOOL)flag
 {
-  NSTableRowView *rv = [_rowViews objectAtIndex: row];
+  NSTableRowView *rv = nil;
 
-  if (rv == nil)
+  if (_viewBased == YES)
     {
-      if (flag == YES)
+      // NSLog(@"_rowViews = %@", _rowViews);
+      if (row < [_rowViews count])
 	{
-	  rv = [[NSTableRowView alloc] init];
+	  rv = [_rowViews objectAtIndex: row];
+	}
+      
+      if (rv == nil)
+	{
+	  if (flag == YES)
+	    {
+	      if ([_delegate respondsToSelector: @selector(tableView:rowViewForRow:)])
+		{
+		  rv = [_delegate tableView: self rowViewForRow: row];
+		}
+	    }
+	  
+	  if (rv == nil)
+	    {
+	      rv = [[NSTableRowView alloc] init];
+	    }
+	  
+	  NSRect cellFrame = [self frameOfCellAtColumn: 0 row: row];
+
+	  CGFloat x = 0.0; // cellFrame.origin.x;
+	  CGFloat y = cellFrame.origin.y;
+	  CGFloat w = [self frame].size.width;
+	  CGFloat h = [self rowHeight];
+	  
+	  NSRect rvFrame = NSMakeRect(x, y, w, h);
+	  NSAutoresizingMaskOptions options = NSViewWidthSizable | NSViewMinYMargin;
+	  
+	  [rv setAutoresizingMask: options];
+	  [rv setFrame: rvFrame];
+	  [_rowViews addObject: rv];
 	}
     }
   

@@ -3698,6 +3698,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
+      id rv = [v rowViewAtRow: rowIndex makeIfNecessary: YES];      
       NSRect drawingRect = [v frameOfCellAtColumn: i
 					      row: rowIndex];
       NSTableColumn *tb = [tableColumns objectAtIndex: i];
@@ -3753,10 +3754,13 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
       // Store the object...
       [v _setRenderedView: view forPath: path];
-      [v addSubview: view];      
+      [v addSubview: rv];
+      [rv addSubview: view];      
 
       // Place the view...
-      [view setFrame: drawingRect];
+      NSRect newRect = drawingRect;
+      newRect.origin.y = 0.0;
+      [view setFrame: newRect];
     }
 }
 
