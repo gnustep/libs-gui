@@ -180,6 +180,10 @@ typedef struct _tableViewFlags
 - (BOOL) _startDragOperationWithEvent:(NSEvent *)theEvent;
 @end
 
+@interface NSTableColumn (Private)
+- (NSArray *) _prototypeCellViews;
+@end
+
 /*
  *  A specific struct and its associated quick sort function
  *  This is used by the -sizeToFit method
@@ -6941,6 +6945,53 @@ For a more detailed explanation, -setSortDescriptors:. */
 	}
     }
   
+  return view;
+}
+
+- (id) _prototypeCellViewFromTableColumn: (NSTableColumn *)tb
+{
+  NSArray *protoCellViews = [tb _prototypeCellViews];
+  id view = nil;
+  
+  // it seems there is always one prototype...
+  if ([protoCellViews count] > 0)
+    {
+      view = [protoCellViews objectAtIndex: 0];
+      view = [view copy]; // instantiate the prototype...
+    }
+
+  return view;
+}
+
+- (NSView *) _delegateInvocationForRowIndex: (NSInteger)rowIndex
+				   inColumn: (NSInteger)columnIndex
+{
+  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+  NSIndexPath *path = [NSIndexPath indexPathForItem: columnIndex
+					  inSection: rowIndex];
+  NSView *view = [self _renderedViewForPath: path];
+  NSRect drawingRect = [self frameOfCellAtColumn: columnIndex
+					     row: rowIndex];
+  
+  // If the view has been stored use it, if not
+  // then grab it.
+  if (view == nil)
+    {
+      if ([_delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)])
+	{
+	  view = [_delegate tableView: self
+		   viewForTableColumn: tb
+				  row: rowIndex];
+	}
+      else
+	{
+	  view = [self _prototypeCellViewFromTableColumn: tb];
+	}
+    }
+
+  [view setFrame: drawingRect];
+  [self _setRenderedView: view forPath: path];
+
   return view;
 }
 

@@ -84,10 +84,8 @@
 			     row: (NSInteger)index;
 - (NSView *) _renderedViewForPath: (NSIndexPath *)path;
 - (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path;
-@end
-
-@interface NSTableColumn (Private)
-- (NSArray *) _prototypeCellViews;
+- (NSView *) _delegateInvocationForRowIndex: (NSInteger)rowIndex
+				   inColumn: (NSInteger)columnIndex;
 @end
 
 @interface NSCell (Private)
@@ -3495,71 +3493,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
-- (NSRect) _drawOutlineTableColumn: (NSTableColumn *)tb
-		       outlineView: (NSOutlineView *)outlineView
-			      item: (id)item
-		       drawingRect: (NSRect)inputRect
-			  rowIndex: (NSInteger)rowIndex
-{
-  NSRect drawingRect = inputRect;
-  NSImage *image = nil;
-  NSInteger level = 0;
-  CGFloat indentationFactor = 0.0;
-  CGFloat indentationPerLevel = [outlineView indentationPerLevel];
-  NSCell *imageCell = nil;
-  NSRect imageRect;
-  id delegate = [outlineView delegate];
-
-  // display the correct arrow...
-  if ([outlineView isItemExpanded: item])
-    {
-      image = [NSImage imageNamed: @"common_ArrowDownH"];
-    }
-  else
-    {
-      image = [NSImage imageNamed: @"common_ArrowRightH"];
-    }
-  
-  if (![outlineView isExpandable: item])
-    {
-      image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)]);
-    }
-  
-  level = [outlineView levelForItem: item];
-  indentationFactor = indentationPerLevel * level;
-  imageCell = [[NSCell alloc] initImageCell: image];
-  imageRect = [outlineView frameOfOutlineCellAtRow: rowIndex];
-  
-  if ([delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
-    {
-      [delegate outlineView: outlineView
-		willDisplayOutlineCell: imageCell
-	     forTableColumn: tb
-		       item: item];
-    }
-  
-  /* Do not indent if the delegate set the image to nil. */
-  if ([imageCell image])
-    {
-      imageRect.size.width = [image size].width;
-      imageRect.size.height = [image size].height + 5;
-      [imageCell drawWithFrame: imageRect inView: outlineView];
-      drawingRect.origin.x
-	+= indentationFactor + imageRect.size.width + 5;
-      drawingRect.size.width
-	-= indentationFactor + imageRect.size.width + 5;
-    }
-  else
-    {
-      drawingRect.origin.x += indentationFactor;
-      drawingRect.size.width -= indentationFactor;
-    }
-  
-  RELEASE(imageCell);
-
-  return drawingRect;
-}
-
 - (void) drawOutlineViewRow: (NSInteger)rowIndex 
 		   clipRect: (NSRect)clipRect
 		     inView: (NSOutlineView *)outlineView
@@ -3620,11 +3553,11 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
       if (tb == outlineTableColumn)
         {
-	  drawingRect = [self _drawOutlineTableColumn: tb
-					  outlineView: outlineView
-						 item: item
-					  drawingRect: drawingRect
-					     rowIndex: rowIndex];
+	  drawingRect = [self drawOutlineTableColumn: tb
+					 outlineView: outlineView
+						item: item
+					 drawingRect: drawingRect
+					    rowIndex: rowIndex];
 	}
 
       [cell drawWithFrame: drawingRect inView: outlineView];
@@ -3636,35 +3569,80 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }  
 }
 
-- (id) _prototypeCellViewFromTableColumn: (NSTableColumn *)tb
+- (NSRect) drawOutlineTableColumn: (NSTableColumn *)tb
+		      outlineView: (NSOutlineView *)outlineView
+			     item: (id)item
+		      drawingRect: (NSRect)inputRect
+			 rowIndex: (NSInteger)rowIndex
 {
-  NSArray *protoCellViews = [tb _prototypeCellViews];
-  id view = nil;
-  
-  // it seems there is always one prototype...
-  if ([protoCellViews count] > 0)
-    {
-      view = [protoCellViews objectAtIndex: 0];
-      view = [view copy]; // instantiate the prototype...
-    }
+  NSRect drawingRect = inputRect;
+  NSImage *image = nil;
+  NSInteger level = 0;
+  CGFloat indentationFactor = 0.0;
+  CGFloat indentationPerLevel = [outlineView indentationPerLevel];
+  NSCell *imageCell = nil;
+  NSRect imageRect;
+  id delegate = [outlineView delegate];
 
-  return view;
+  // display the correct arrow...
+  if ([outlineView isItemExpanded: item])
+    {
+      image = [NSImage imageNamed: @"common_ArrowDownH"];
+    }
+  else
+    {
+      image = [NSImage imageNamed: @"common_ArrowRightH"];
+    }
+  
+  if (![outlineView isExpandable: item])
+    {
+      image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)]);
+    }
+  
+  level = [outlineView levelForItem: item];
+  indentationFactor = indentationPerLevel * level;
+  imageCell = [[NSCell alloc] initImageCell: image];
+  imageRect = [outlineView frameOfOutlineCellAtRow: rowIndex];
+  
+  if ([delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
+    {
+      [delegate outlineView: outlineView
+		willDisplayOutlineCell: imageCell
+	     forTableColumn: tb
+		       item: item];
+    }
+  
+  /* Do not indent if the delegate set the image to nil. */
+  if ([imageCell image])
+    {
+      imageRect.size.width = [image size].width;
+      imageRect.size.height = [image size].height + 5;
+      [imageCell drawWithFrame: imageRect inView: outlineView];
+      drawingRect.origin.x
+	+= indentationFactor + imageRect.size.width + 5;
+      drawingRect.size.width
+	-= indentationFactor + imageRect.size.width + 5;
+    }
+  else
+    {
+      drawingRect.origin.x += indentationFactor;
+      drawingRect.size.width -= indentationFactor;
+    }
+  
+  RELEASE(imageCell);
+
+  return drawingRect;
 }
 
 - (void) drawCellViewRow: (NSInteger)rowIndex
 		clipRect: (NSRect)clipRect
 		  inView: (NSTableView *)v
 {
-  NSArray *tableColumns = [v tableColumns];
   NSInteger numberOfRows = [v numberOfRows];
   NSInteger startingColumn; 
   NSInteger endingColumn;
-  NSInteger i;
+  NSInteger columnIndex;
   id dataSource = [v dataSource];
-  id delegate = [v delegate];
-  BOOL hasMethod = NO;
-  NSTableColumn *outlineTableColumn = nil;
-  NSOutlineView *ov = nil;
   
   // If we have no data source, there is nothing to do...
   if (dataSource == nil)
@@ -3678,87 +3656,24 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       return;
     }
   
-  // Check the delegate method...
-  hasMethod = [delegate respondsToSelector: @selector(outlineView:viewForTableColumn:item:)];
-  if (hasMethod)
-    {
-      ov = (NSOutlineView *)v;
-      outlineTableColumn = [ov outlineTableColumn];
-    }
-  else
-    {
-      hasMethod = [delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)];
-    }
-
   [self _calculatedStartingColumn: &startingColumn
 		     endingColumn: &endingColumn
 		    withTableView: v
 		       inClipRect: clipRect];
   
   /* Draw the row between startingColumn and endingColumn */
-  for (i = startingColumn; i <= endingColumn; i++)
+  for (columnIndex = startingColumn; columnIndex <= endingColumn; columnIndex++)
     {
-      id rv = [v rowViewAtRow: rowIndex makeIfNecessary: YES];      
-      NSRect drawingRect = [v frameOfCellAtColumn: i
-					      row: rowIndex];
-      NSTableColumn *tb = [tableColumns objectAtIndex: i];
-      NSIndexPath *path = [NSIndexPath indexPathForItem: i
-					      inSection: rowIndex];
-      NSView *view = [v _renderedViewForPath: path];
-
-      if (ov != nil)
-	{
-	  id item = [ov itemAtRow: rowIndex];
-	  
-	  if (tb == outlineTableColumn)
-	    {
-	      drawingRect = [self _drawOutlineTableColumn: tb
-					      outlineView: ov
-						     item: item
-					      drawingRect: drawingRect
-						 rowIndex: rowIndex];	      
-	    }
-	  
-	  if (view == nil)
-	    {
-	      if (hasMethod)
-		{
-		  view = [delegate outlineView: ov
-			    viewForTableColumn: tb
-					  item: item];
-		}
-	      else
-		{
-		  view = [self _prototypeCellViewFromTableColumn: tb];
-		}
-	    }	  
-	}
-      else
-	{
-	  // If the view has been stored use it, if not
-	  // then grab it.
-	  if (view == nil)
-	    {
-	      if (hasMethod)
-		{
-		  view = [delegate tableView: v
-				   viewForTableColumn: tb
-					 row: rowIndex];
-		}
-	      else
-		{
-		  view = [self _prototypeCellViewFromTableColumn: tb];
-		}
-	    }
-	}
+      id rv = [v rowViewAtRow: rowIndex makeIfNecessary: YES];  
+      NSView *view = [v _delegateInvocationForRowIndex: rowIndex
+					      inColumn: columnIndex];
 
       // Store the object...
-      [v _setRenderedView: view forPath: path];
       [v addSubview: rv];
       [rv addSubview: view];      
 
       // Place the view...
-      NSRect newRect = drawingRect;
+      NSRect newRect = [view frame];
       newRect.origin.y = 0.0;
       [view setFrame: newRect];
     }

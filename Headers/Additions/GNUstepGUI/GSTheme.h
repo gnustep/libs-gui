@@ -253,6 +253,7 @@
 @class NSPopUpButtonCell;
 @class NSMenuView;
 @class NSProgressIndicator;
+@class NSTableColumn;
 @class NSTableHeaderCell;
 @class NSTableView;
 @class NSTabViewItem;
@@ -1340,6 +1341,12 @@ APPKIT_EXPORT_CLASS
 - (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
 		   inView: (NSTableView *)view;
+
+- (NSRect) drawOutlineTableColumn: (NSTableColumn *)tb
+                      outlineView: (NSOutlineView *)outlineView
+                             item: (id)item
+		      drawingRect: (NSRect)inputRect
+	                 rowIndex: (NSInteger)rowIndex;
 
 - (void) drawCellViewRow: (NSInteger)rowIndex
                 clipRect: (NSRect)clipRect
