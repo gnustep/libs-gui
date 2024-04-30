@@ -3632,13 +3632,13 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 - (void) drawCellViewRow: (NSInteger)rowIndex
 		clipRect: (NSRect)clipRect
-		  inView: (NSTableView *)v
+		  inView: (NSTableView *)tv
 {
-  NSInteger numberOfRows = [v numberOfRows];
+  NSInteger numberOfRows = [tv numberOfRows];
   NSInteger startingColumn; 
   NSInteger endingColumn;
   NSInteger columnIndex;
-  id dataSource = [v dataSource];
+  id dataSource = [tv dataSource];
   
   // If we have no data source, there is nothing to do...
   if (dataSource == nil)
@@ -3654,18 +3654,18 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   
   [self _calculatedStartingColumn: &startingColumn
 		     endingColumn: &endingColumn
-		    withTableView: v
+		    withTableView: tv
 		       inClipRect: clipRect];
   
   /* Draw the row between startingColumn and endingColumn */
   for (columnIndex = startingColumn; columnIndex <= endingColumn; columnIndex++)
     {
-      id rv = [v rowViewAtRow: rowIndex makeIfNecessary: YES];  
-      NSView *view = [v viewAtColumn: columnIndex row: rowIndex makeIfNecessary: YES];
+      id rowView = [tv rowViewAtRow: rowIndex makeIfNecessary: YES];  
+      NSView *view = [tv viewAtColumn: columnIndex row: rowIndex makeIfNecessary: YES];
 
       // Store the object...
-      [v addSubview: rv];
-      [rv addSubview: view];      
+      [tv addSubview: rowView];
+      [rowView addSubview: view];      
 
       // Place the view...
       NSRect newRect = [view frame];
