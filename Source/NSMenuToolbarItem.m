@@ -24,13 +24,25 @@
 
 #import "AppKit/NSMenuToolbarItem.h"
 #import "AppKit/NSMenu.h"
+#import "AppKit/NSImage.h"
 
 @implementation NSMenuToolbarItem
+
+- (instancetype) initWithItemIdentifier: (NSString *)identifier
+{
+  self = [super initWithItemIdentifier: identifier];
+  if (self != nil)
+    {
+      [self setImage: [NSImage imageNamed: @"common_ArrowDown"]];
+      [self setTarget: self];
+      [self setAction: @selector(_showMenu:)];
+    }
+  return self;
+}
 
 - (void) dealloc
 {
   RELEASE(_menu);
-  RELEASE(_itemMenu);
   [super dealloc];
 }
 
@@ -42,6 +54,15 @@
 - (void) setShowsIndicator: (BOOL)flag
 {
   _showsIndicator = flag;
+
+  if (_showsIndicator == YES)
+    {
+      [self setImage: [NSImage imageNamed: @"common_ArrowDown"]];
+    }
+  else
+    {
+      [self setImage: nil];
+    }
 }
 
 - (NSMenu *) menu
@@ -54,14 +75,9 @@
   ASSIGN(_menu, menu);
 }
 
-- (NSMenu *) itemMenu
+- (void) _showMenu: (id)sender
 {
-  return _itemMenu;
-}
-
-- (void) setItemMenu: (NSMenu *)itemMenu
-{
-  ASSIGN(_itemMenu, itemMenu);
+  NSLog(@"menu = %@", _menu);
 }
 
 @end

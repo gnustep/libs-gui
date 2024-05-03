@@ -41,7 +41,6 @@ APPKIT_EXPORT_CLASS
 {
   BOOL _showsIndicator;
   NSMenu *_menu;
-  NSMenu *_itemMenu;
 }
 
 - (BOOL) showsIndicator;
@@ -49,9 +48,6 @@ APPKIT_EXPORT_CLASS
 
 - (NSMenu *) menu;
 - (void) setMenu: (NSMenu *)menu;
-
-- (NSMenu *) itemMenu;
-- (void) setItemMenu: (NSMenu *)itemMenu;
   
 @end
 
