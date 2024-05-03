@@ -6990,18 +6990,6 @@ For a more detailed explanation, -setSortDescriptors:. */
 	      rv = [[NSTableRowView alloc] init];
 	    }
 	  
-	  NSRect cellFrame = [self frameOfCellAtColumn: 0 row: row];
-
-	  CGFloat x = 0.0; // cellFrame.origin.x;
-	  CGFloat y = cellFrame.origin.y;
-	  CGFloat w = [self frame].size.width;
-	  CGFloat h = [self rowHeight];
-	  
-	  NSRect rvFrame = NSMakeRect(x, y, w, h);
-	  NSAutoresizingMaskOptions options = NSViewWidthSizable | NSViewMinYMargin;
-	  
-	  [rv setAutoresizingMask: options];
-	  [rv setFrame: rvFrame];
 	  [_rowViews addObject: rv];
 	}
     }
@@ -7035,6 +7023,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 	}
     }
 
+  // [view setPostsFrameChangedNotifications: NO];
   [view setFrame: drawingRect];
   [self _setRenderedView: view forPath: path];
 

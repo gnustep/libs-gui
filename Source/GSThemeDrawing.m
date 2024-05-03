@@ -3632,13 +3632,13 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 - (void) drawCellViewRow: (NSInteger)rowIndex
 		clipRect: (NSRect)clipRect
-		  inView: (NSTableView *)tv
+		  inView: (NSTableView *)tableView
 {
-  NSInteger numberOfRows = [tv numberOfRows];
+  NSInteger numberOfRows = [tableView numberOfRows];
   NSInteger startingColumn; 
   NSInteger endingColumn;
   NSInteger columnIndex;
-  id dataSource = [tv dataSource];
+  id dataSource = [tableView dataSource];
   
   // If we have no data source, there is nothing to do...
   if (dataSource == nil)
@@ -3654,23 +3654,50 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   
   [self _calculatedStartingColumn: &startingColumn
 		     endingColumn: &endingColumn
-		    withTableView: tv
+		    withTableView: tableView
 		       inClipRect: clipRect];
   
   /* Draw the row between startingColumn and endingColumn */
   for (columnIndex = startingColumn; columnIndex <= endingColumn; columnIndex++)
     {
-      id rowView = [tv rowViewAtRow: rowIndex makeIfNecessary: YES];  
-      NSView *view = [tv viewAtColumn: columnIndex row: rowIndex makeIfNecessary: YES];
-
-      // Store the object...
-      [tv addSubview: rowView];
-      [rowView addSubview: view];      
-
-      // Place the view...
-      NSRect newRect = [view frame];
-      newRect.origin.y = 0.0;
-      [view setFrame: newRect];
+      id rowView = [tableView rowViewAtRow: rowIndex
+			   makeIfNecessary: YES];  
+      NSView *view = [tableView viewAtColumn: columnIndex
+					 row: rowIndex
+			     makeIfNecessary: YES];
+      
+      // If the view is already part of the table, don't re-add it...
+      if ([[tableView subviews] containsObject: rowView] == NO
+	  && rowView != nil)
+	{
+	  NSRect cellFrame = [tableView frameOfCellAtColumn: 0
+							row: rowIndex];
+	  CGFloat x = 0.0;
+	  CGFloat y = cellFrame.origin.y;
+	  CGFloat w = [tableView frame].size.width;
+	  CGFloat h = [tableView rowHeight];
+	  
+	  NSRect rvFrame = NSMakeRect(x, y, w, h);
+	  NSAutoresizingMaskOptions options = NSViewWidthSizable
+	    | NSViewMinYMargin;
+	  
+	  [tableView addSubview: rowView];
+	  [rowView setAutoresizingMask: options];
+	  [rowView setFrame: rvFrame];
+	}
+      
+      // Create the view if needed...
+      if ([[rowView subviews] containsObject: view] == NO
+	  && view != nil)
+	{
+	  // Add the view to the row...
+	  [rowView addSubview: view];
+	  
+	  // Place the view...
+	  NSRect newRect = [view frame];
+	  newRect.origin.y = 0.0;
+	  [view setFrame: newRect];
+	}
     }
 }
 
