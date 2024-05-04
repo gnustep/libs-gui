@@ -26,6 +26,12 @@
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSImage.h"
 
+#import "GNUstepGUI/GSTheme.h"
+
+@interface NSToolbarItem (Private)
+- (NSView *) _backView;
+@end
+
 @implementation NSMenuToolbarItem
 
 - (instancetype) initWithItemIdentifier: (NSString *)identifier
@@ -33,7 +39,7 @@
   self = [super initWithItemIdentifier: identifier];
   if (self != nil)
     {
-      [self setImage: [NSImage imageNamed: @"common_ArrowDown"]];
+      [self setImage: [NSImage imageNamed: @"NSMenuToolbarItem"]];
       [self setTarget: self];
       [self setAction: @selector(_showMenu:)];
     }
@@ -57,7 +63,7 @@
 
   if (_showsIndicator == YES)
     {
-      [self setImage: [NSImage imageNamed: @"common_ArrowDown"]];
+      [self setImage: [NSImage imageNamed: @"NSMenuToolbarItem"]];
     }
   else
     {
@@ -77,7 +83,8 @@
 
 - (void) _showMenu: (id)sender
 {
-  NSLog(@"menu = %@", _menu);
+  [[GSTheme theme] rightMouseDisplay: _menu
+			    forEvent: nil];
 }
 
 @end
