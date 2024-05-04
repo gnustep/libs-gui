@@ -5844,7 +5844,7 @@ other than copy/paste or dragging. */
 			 untilDate: [NSDate distantFuture]
 			 inMode: NSEventTrackingRunLoopMode
 			 dequeue: YES];
-      } while ([currentEvent type] != NSLeftMouseUp && currentEvent != nil);
+      } while ([currentEvent type] != NSLeftMouseUp);
 
     if (gettingPeriodic)
       {
