@@ -22,9 +22,55 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSError.h>
+#import <Foundation/NSString.h>
+
 #import "AppKit/NSFilePromiseProvider.h"
 
 @implementation NSFilePromiseProvider
+
+- (instancetype) initWithFileType: (NSString *)fileType delegate: (id<NSFilePromiseProviderDelegate>)delegate
+{
+  self = [super init];
+
+  if (self != nil)
+    {
+      ASSIGN(_fileType, fileType);
+      _delegate = delegate;
+    }
+  
+  return self;
+}
+
+- (id<NSFilePromiseProviderDelegate>) delegate
+{
+  return _delegate;
+}
+
+- (void) setDelegate: (id<NSFilePromiseProviderDelegate>) delegate
+{
+  _delegate = delegate; // retained by caller...
+}
+
+- (NSString *) fileType
+{
+  return _fileType;
+}
+
+- (void) setFileType: (NSString *)fileType
+{
+  ASSIGN(_fileType, fileType);
+}
+
+- (id) userInfo
+{
+  return _userInfo;
+}
+
+- (void) setUserInfo: (id)userInfo
+{
+  ASSIGN(_userInfo, userInfo);
+}
 
 @end
 

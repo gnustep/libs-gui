@@ -28,15 +28,49 @@
 #import <Foundation/NSObject.h>
 #import <AppKit/AppKitDefines.h>
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
-APPKIT_EXPORT_CLASS    
-@interface NSFilePromiseProvider : NSObject
+@class NSError;
+@class NSFilePromiseProvider;  
+@class NSOperationQueue;
+@class NSString;
+@class NSURL;
 
+DEFINE_BLOCK_TYPE_NO_ARGS(GSFilePromiseProviderCompletionHandler, NSError*);
+
+@protocol NSFilePromiseProviderDelegate
+- (NSString *) filePromiseProvider: (NSFilePromiseProvider *)filePromiseProvider filenameForType: (NSString *)fileType;
+
+- (void)filePromiseProvider:(NSFilePromiseProvider *)filePromiseProvider 
+          writePromiseToURL:(NSURL *)url 
+          completionHandler:(GSFilePromiseProviderCompletionHandler)completionHandler;
+
+- (NSOperationQueue *)operationQueueForFilePromiseProvider:(NSFilePromiseProvider *)filePromiseProvider;
+@end
+  
+APPKIT_EXPORT_CLASS
+@interface NSFilePromiseProvider : NSObject
+{
+  NSString *_fileType;
+  id<NSFilePromiseProviderDelegate> _delegate;
+  id _userInfo;
+}
+
+- (instancetype) initWithFileType: (NSString *)fileType delegate: (id<NSFilePromiseProviderDelegate>)delegate;
+
+- (id<NSFilePromiseProviderDelegate>) delegate;
+- (void) setDelegate: (id<NSFilePromiseProviderDelegate>) delegate;
+
+- (NSString *) fileType;
+- (void) setFileType: (NSString *)fileType;
+
+- (id) userInfo;
+- (void) setUserInfo: (id)userInfo;
+  
 @end
 
 #if	defined(__cplusplus)
