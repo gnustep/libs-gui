@@ -45,11 +45,11 @@ DEFINE_BLOCK_TYPE_NO_ARGS(GSFilePromiseProviderCompletionHandler, NSError*);
 @protocol NSFilePromiseProviderDelegate
 - (NSString *) filePromiseProvider: (NSFilePromiseProvider *)filePromiseProvider filenameForType: (NSString *)fileType;
 
-- (void)filePromiseProvider:(NSFilePromiseProvider *)filePromiseProvider 
-          writePromiseToURL:(NSURL *)url 
-          completionHandler:(GSFilePromiseProviderCompletionHandler)completionHandler;
+- (void)filePromiseProvider: (NSFilePromiseProvider *)filePromiseProvider 
+          writePromiseToURL: (NSURL *)url 
+          completionHandler: (GSFilePromiseProviderCompletionHandler)completionHandler;
 
-- (NSOperationQueue *)operationQueueForFilePromiseProvider:(NSFilePromiseProvider *)filePromiseProvider;
+- (NSOperationQueue *)operationQueueForFilePromiseProvider: (NSFilePromiseProvider *)filePromiseProvider;
 @end
   
 APPKIT_EXPORT_CLASS

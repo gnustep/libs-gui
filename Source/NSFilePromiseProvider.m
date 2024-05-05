@@ -47,7 +47,7 @@
   return _delegate;
 }
 
-- (void) setDelegate: (id<NSFilePromiseProviderDelegate>) delegate
+- (void) setDelegate: (id<NSFilePromiseProviderDelegate>)delegate
 {
   _delegate = delegate; // retained by caller...
 }
