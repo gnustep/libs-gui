@@ -45,6 +45,11 @@
   return self;
 }
 
++ (NSArray *) readableTypesForPasteboard: (NSPasteboard *)pasteboard
+{
+  return nil;
+}
+
 // NSPasteboardReading protocol -- end
 
 - (void) dealloc
