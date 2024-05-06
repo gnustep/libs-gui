@@ -27,8 +27,8 @@
 
 #import <Foundation/NSObject.h>
 
-#import "AppKit/AppKitDefines.h"
-#import "AppKit/NSPasteboard.h"
+#import <AppKit/AppKitDefines.h>
+#import <AppKit/NSPasteboard.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
@@ -44,7 +44,7 @@ extern "C" {
 DEFINE_BLOCK_TYPE(GSFilePromiseReceiverReaderHandler, void, NSURL*, NSError*);
 
 APPKIT_EXPORT_CLASS
-@interface NSFilePromiseReceiver <NSPasteboardReading> : NSObject
+@interface NSFilePromiseReceiver : NSObject <NSPasteboardReading>
 {
   NSArray *_fileNames;
   NSArray *_fileTypes;

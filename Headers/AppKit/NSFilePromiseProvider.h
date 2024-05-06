@@ -27,6 +27,7 @@
 
 #import <Foundation/NSObject.h>
 #import <AppKit/AppKitDefines.h>
+#import <AppKit/NSPasteboard.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
@@ -53,7 +54,7 @@ DEFINE_BLOCK_TYPE_NO_ARGS(GSFilePromiseProviderCompletionHandler, NSError*);
 @end
 
 APPKIT_EXPORT_CLASS
-@interface NSFilePromiseProvider : NSObject
+@interface NSFilePromiseProvider : NSObject <NSPasteboardWriting>
 {
   NSString *_fileType;
   id<NSFilePromiseProviderDelegate> _delegate;
