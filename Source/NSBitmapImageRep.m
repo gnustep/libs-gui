@@ -39,6 +39,7 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSByteOrder.h>
 #import "AppKit/AppKitExceptions.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSGraphicsContext.h"
@@ -1552,6 +1553,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   [self _fillTIFFInfo: &info
      usingCompression: compression
                factor: factor];
+
   if (NSTiffWrite(image, &info, [self bitmapData]) != 0)
     {
       [NSException raise: NSTIFFException format: @"Writing data"];
@@ -2125,6 +2127,8 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     factor = 1;
   info->quality = factor * 100;
   info->error = 0;
+
+  info->bitmapFormat = (uint16_t)_format;
 }
 
 - (void) _premultiply

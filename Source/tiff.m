@@ -64,7 +64,9 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
+#import <Foundation/NSByteOrder.h>
 #import "GSGuiPrivate.h"
+#import <AppKit/NSBitmapImageRep.h>
 
 #include <math.h>
 #include <stdlib.h>
@@ -465,20 +467,42 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
 }
 
 #define WRITE_SCANLINE(sample) \
-	if (TIFFWriteScanline(image, buf, row, sample) != 1) { \
+	if (TIFFWriteScanline(image, bufSwap, row, sample) != 1) { \
 	    error = 1; \
 	    break; \
 	}
+
+#define SWAP16 \
+  uint16_t *inBuf =  (uint16_t*)buf;                                    \
+  uint16_t *outBuf = (uint16_t*)bufSwap;                                \
+  unsigned swapSample;                                                  \
+  for (swapSample = 0; swapSample < scan_line_size / 2; swapSample++)   \
+    {                                                                   \
+      outBuf[swapSample] = GSSwapI16(inBuf[swapSample]);                \
+    }
+
+#define SWAP32 \
+  uint32_t *inBuf =  (uint32_t*)buf;                                    \
+  uint32_t *outBuf = (uint32_t*)bufSwap;                                \
+  unsigned swapSample;                                                  \
+  for (swapSample = 0; swapSample < scan_line_size / 4; swapSample++)   \
+    {                                                                   \
+      outBuf[swapSample] = GSSwapI32(inBuf[swapSample]);                \
+    }
+
 
 int  
 NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 {
   void*	buf = (void*)data;
+  void          *bufSwap = nil;
   uint16_t        sample_info[1];
   int		i;
   unsigned int 	row;
   int           error = 0;
   tmsize_t      scan_line_size;
+  BOOL          swap16 = NO;
+  BOOL          swap32 = NO;
 
   if (info->numImages > 1)
     {
@@ -512,6 +536,21 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
   TIFFSetField(image, TIFFTAG_EXTRASAMPLES, info->extraSamples, sample_info);
   scan_line_size = TIFFScanlineSize(image);
 
+  // check if image endianness is different from Host
+  if (((info->bitmapFormat & NSBitmapFormatSixteenBitBigEndian) != 0) != (NSHostByteOrder() == NS_BigEndian))
+    {
+      swap16 = YES;
+    }
+  else if (((info->bitmapFormat & NSBitmapFormatThirtyTwoBitBigEndian) != 0) != (NSHostByteOrder() == NS_BigEndian))
+    {
+      swap32 = YES;
+    }
+
+  if (swap16 || swap32)
+    {
+      bufSwap = malloc(scan_line_size); // sizeof(unsigned char)
+    }
+
   switch (info->photoInterp) 
     {
       case PHOTOMETRIC_MINISBLACK:
@@ -520,6 +559,18 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	  {
 	    for (row = 0; row < info->height; ++row) 
 	      {
+                if (swap16)
+                  {
+                    SWAP16
+                  }
+                else if (swap32)
+                  {
+                    SWAP32
+                  }
+                else
+                  {
+                    bufSwap = buf;
+                  }
 		WRITE_SCANLINE(0)
 		buf += scan_line_size;
 	      }
@@ -530,6 +581,18 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	      {
 		for (row = 0; row < info->height; ++row) 
 		  {
+                    if (swap16)
+                      {
+                        SWAP16
+                      }
+                    else if (swap32)
+                      {
+                        SWAP32
+                      }
+                    else
+                      {
+                        bufSwap = buf;
+                      }
 		    WRITE_SCANLINE(i)
 		    buf += scan_line_size;
 		  }
@@ -542,6 +605,18 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	  {
 	    for (row = 0; row < info->height; ++row) 
 	      {
+                if (swap16)
+                  {
+                    SWAP16
+                  }
+                else if (swap32)
+                  {
+                    SWAP32
+                  }
+                else
+                  {
+                    bufSwap = buf;
+                  }
 		WRITE_SCANLINE(0)
 		buf += scan_line_size;
 	      }
@@ -552,6 +627,18 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	      {
 		for (row = 0; row < info->height; ++row) 
 		  {
+                    if (swap16)
+                      {
+                        SWAP16
+                      }
+                    else if (swap32)
+                      {
+                        SWAP32
+                      }
+                    else
+                      {
+                        bufSwap = buf;
+                      }
 		    WRITE_SCANLINE(i)
 		    buf += scan_line_size;
 		  }
@@ -569,6 +656,10 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
   // Write out the directory as there may be more images comming
   TIFFWriteDirectory(image);
   TIFFFlush(image);
+  if (swap16 || swap32)
+    {
+      free(bufSwap);
+    }
 
   return error;
 }
@@ -684,5 +775,3 @@ int NSTiffIsCodecConfigured(unsigned int codec)
   }
 #endif
 }
-
-
