@@ -33,8 +33,8 @@
     classes for general reading/writing of tiff files.
 */
 
-#ifndef _GNUstep_H_tiff
-#define _GNUstep_H_tiff
+#ifndef _NSIMAGE_TIFF_H
+#define _NSIMAGE_TIFF_H
 
 #include <tiffio.h>
 #include <inttypes.h>
@@ -84,5 +84,5 @@ extern NSTiffColormap* NSTiffGetColormap(TIFF* image);
 
 extern int NSTiffIsCodecConfigured(unsigned int codec);
 
-#endif // _GNUstep_H_tiff
+#endif // _NSIMAGE_TIFF_H
 
