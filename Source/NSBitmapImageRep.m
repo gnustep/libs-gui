@@ -39,7 +39,6 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSValue.h>
-#import <Foundation/NSByteOrder.h>
 #import "AppKit/AppKitExceptions.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSGraphicsContext.h"
@@ -2078,6 +2077,9 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   info->height = _pixelsHigh;
   info->bitsPerSample = _bitsPerSample;
   info->samplesPerPixel = _numColors;
+  info->isBigEndian = NO;
+  info->is16Bit = NO;
+  info->is32Bit = NO;
 
   // resolution/density
   info->xdpi = 0;
@@ -2128,7 +2130,26 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   info->quality = factor * 100;
   info->error = 0;
 
-  info->bitmapFormat = (uint16_t)_format;
+  if ((_format & NSBitmapFormatSixteenBitBigEndian) != 0)
+    {
+      info->isBigEndian = YES;
+      info->is16Bit = YES;
+    }
+  else if ((_format & NSBitmapFormatSixteenBitLittleEndian) != 0)
+    {
+      info->isBigEndian = NO;
+      info->is16Bit = YES;
+    }
+  else if ((_format & NSBitmapFormatThirtyTwoBitBigEndian) != 0)
+    {
+      info->isBigEndian = YES;
+      info->is32Bit = YES;
+    }
+  else if ((_format & NSBitmapFormatThirtyTwoBitLittleEndian) != 0)
+    {
+      info->isBigEndian = NO;
+      info->is32Bit = YES;
+    }
 }
 
 - (void) _premultiply

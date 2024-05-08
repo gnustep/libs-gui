@@ -501,8 +501,7 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
   unsigned int 	row;
   int           error = 0;
   tmsize_t      scan_line_size;
-  BOOL          swap16 = NO;
-  BOOL          swap32 = NO;
+  BOOL          swapByteOrder = NO;
 
   if (info->numImages > 1)
     {
@@ -537,16 +536,12 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
   scan_line_size = TIFFScanlineSize(image);
 
   // check if image endianness is different from Host
-  if (((info->bitmapFormat & NSBitmapFormatSixteenBitBigEndian) != 0) != (NSHostByteOrder() == NS_BigEndian))
+  if ((info->isBigEndian != 0) != (NSHostByteOrder() == NS_BigEndian))
     {
-      swap16 = YES;
-    }
-  else if (((info->bitmapFormat & NSBitmapFormatThirtyTwoBitBigEndian) != 0) != (NSHostByteOrder() == NS_BigEndian))
-    {
-      swap32 = YES;
+      swapByteOrder = YES;
     }
 
-  if (swap16 || swap32)
+  if (swapByteOrder)
     {
       bufSwap = malloc(scan_line_size); // sizeof(unsigned char)
     }
@@ -559,11 +554,11 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	  {
 	    for (row = 0; row < info->height; ++row) 
 	      {
-                if (swap16)
+                if (swapByteOrder && info->is16Bit)
                   {
                     SWAP16
                   }
-                else if (swap32)
+                else if (swapByteOrder && info->is32Bit)
                   {
                     SWAP32
                   }
@@ -581,11 +576,11 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	      {
 		for (row = 0; row < info->height; ++row) 
 		  {
-                    if (swap16)
+                    if (swapByteOrder && info->is16Bit)
                       {
                         SWAP16
                       }
-                    else if (swap32)
+                    else if (swapByteOrder && info->is32Bit)
                       {
                         SWAP32
                       }
@@ -605,11 +600,11 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	  {
 	    for (row = 0; row < info->height; ++row) 
 	      {
-                if (swap16)
+                if (swapByteOrder && info->is16Bit)
                   {
                     SWAP16
                   }
-                else if (swap32)
+                else if (swapByteOrder && info->is32Bit)
                   {
                     SWAP32
                   }
@@ -627,11 +622,11 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	      {
 		for (row = 0; row < info->height; ++row) 
 		  {
-                    if (swap16)
+                    if (swapByteOrder && info->is16Bit)
                       {
                         SWAP16
                       }
-                    else if (swap32)
+                    else if (swapByteOrder && info->is32Bit)
                       {
                         SWAP32
                       }
@@ -656,7 +651,7 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
   // Write out the directory as there may be more images comming
   TIFFWriteDirectory(image);
   TIFFFlush(image);
-  if (swap16 || swap32)
+  if (swapByteOrder)
     {
       free(bufSwap);
     }

@@ -57,7 +57,9 @@ typedef struct {
     int     error;
     float   xdpi;
     float   ydpi;
-    uint16_t bitmapFormat;  /* NSBitmapFormat*/
+  short    isBigEndian;
+  short    is16Bit;
+  short    is32Bit;
 } NSTiffInfo; 
 
 typedef struct {
