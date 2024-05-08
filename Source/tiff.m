@@ -540,7 +540,8 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
   scan_line_size = TIFFScanlineSize(image);
 
   // check if image endianness is different from Host
-  if ((info->isBigEndian != 0) != (NSHostByteOrder() == NS_BigEndian))
+  if ((info->isBigEndian != 0) != (NSHostByteOrder() == NS_BigEndian) &&
+      (info->is16Bit || info->is32Bit))
     {
       swapByteOrder = YES;
     }
