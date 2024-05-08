@@ -466,29 +466,33 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
   return error;
 }
 
+#define SWAP_LINE_ENDIANNESS						\
+  if (info->is16Bit)							\
+    {									\
+       uint16_t *inBuf =  (uint16_t*)buf;				\
+       uint16_t *outBuf = (uint16_t*)bufSwap;				\
+       unsigned swapSample;						\
+       for (swapSample = 0; swapSample < scan_line_size / 2; swapSample++) \
+	 {								\
+	   outBuf[swapSample] = GSSwapI16(inBuf[swapSample]);		\
+	 }								\
+    }									\
+  else if (info->is32Bit)						\
+    {									\
+       uint32_t *inBuf =  (uint32_t*)buf;                               \
+       uint32_t *outBuf = (uint32_t*)bufSwap;				\
+       unsigned swapSample;						\
+       for (swapSample = 0; swapSample < scan_line_size / 4; swapSample++) \
+	 {								\
+	   outBuf[swapSample] = GSSwapI32(inBuf[swapSample]);		\
+	 }								\
+    }
+
 #define WRITE_SCANLINE(sample) \
 	if (TIFFWriteScanline(image, bufSwap, row, sample) != 1) { \
 	    error = 1; \
 	    break; \
 	}
-
-#define SWAP16 \
-  uint16_t *inBuf =  (uint16_t*)buf;                                    \
-  uint16_t *outBuf = (uint16_t*)bufSwap;                                \
-  unsigned swapSample;                                                  \
-  for (swapSample = 0; swapSample < scan_line_size / 2; swapSample++)   \
-    {                                                                   \
-      outBuf[swapSample] = GSSwapI16(inBuf[swapSample]);                \
-    }
-
-#define SWAP32 \
-  uint32_t *inBuf =  (uint32_t*)buf;                                    \
-  uint32_t *outBuf = (uint32_t*)bufSwap;                                \
-  unsigned swapSample;                                                  \
-  for (swapSample = 0; swapSample < scan_line_size / 4; swapSample++)   \
-    {                                                                   \
-      outBuf[swapSample] = GSSwapI32(inBuf[swapSample]);                \
-    }
 
 
 int  
@@ -554,15 +558,11 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	  {
 	    for (row = 0; row < info->height; ++row) 
 	      {
-                if (swapByteOrder && info->is16Bit)
+                if (swapByteOrder)
                   {
-                    SWAP16
+                    SWAP_LINE_ENDIANNESS;
                   }
-                else if (swapByteOrder && info->is32Bit)
-                  {
-                    SWAP32
-                  }
-                else
+		else
                   {
                     bufSwap = buf;
                   }
@@ -576,14 +576,10 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	      {
 		for (row = 0; row < info->height; ++row) 
 		  {
-                    if (swapByteOrder && info->is16Bit)
-                      {
-                        SWAP16
-                      }
-                    else if (swapByteOrder && info->is32Bit)
-                      {
-                        SWAP32
-                      }
+		    if (swapByteOrder)
+		      {
+			SWAP_LINE_ENDIANNESS;
+		      }
                     else
                       {
                         bufSwap = buf;
@@ -600,14 +596,10 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	  {
 	    for (row = 0; row < info->height; ++row) 
 	      {
-                if (swapByteOrder && info->is16Bit)
-                  {
-                    SWAP16
-                  }
-                else if (swapByteOrder && info->is32Bit)
-                  {
-                    SWAP32
-                  }
+		if (swapByteOrder)
+		  {
+		    SWAP_LINE_ENDIANNESS;
+		  }
                 else
                   {
                     bufSwap = buf;
@@ -622,14 +614,10 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	      {
 		for (row = 0; row < info->height; ++row) 
 		  {
-                    if (swapByteOrder && info->is16Bit)
-                      {
-                        SWAP16
-                      }
-                    else if (swapByteOrder && info->is32Bit)
-                      {
-                        SWAP32
-                      }
+		    if (swapByteOrder)
+		      {
+			SWAP_LINE_ENDIANNESS;
+		      }
                     else
                       {
                         bufSwap = buf;
