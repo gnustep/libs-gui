@@ -3,9 +3,9 @@
 
    Functions for dealing with tiff images.
 
-   Copyright (C) 1996,1999-2010, 2017 Free Software Foundation, Inc.
+   Copyright (C) 1996-2024 Free Software Foundation, Inc.
    
-   Author:  Adam Fedor <fedor@colorado.edu>
+   Author:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996
 
    Support for writing tiffs: Richard Frith-Macdonald

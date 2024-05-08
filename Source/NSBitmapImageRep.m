@@ -2,7 +2,7 @@
 
    <abstract>Bitmap image representation.</abstract>
 
-   Copyright (C) 1996-2017 Free Software Foundation, Inc.
+   Copyright (C) 1996-2024 Free Software Foundation, Inc.
    
    Author:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996

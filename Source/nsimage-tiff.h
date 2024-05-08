@@ -3,9 +3,9 @@
 
    Functions for dealing with tiff images
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-2024 Free Software Foundation, Inc.
    
-   Written by:  Adam Fedor <fedor@colorado.edu>
+   Written by:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996
    
    This file is part of the GNUstep GUI Library.
