@@ -1,3 +1,12 @@
+2024-05-07 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add headers
+	* Headers/AppKit/NSFilePromiseProvider.h
+	* Headers/AppKit/NSFilePromiseReceiver.h: Declarations.
+	* Source/GNUmakefile: Add to build
+	* Source/NSFilePromiseProvider.m
+	* Source/NSFilePromiseReceiver.m: Implementation
+
 2024-03-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m: Add support for NSFilenamenPboardType.

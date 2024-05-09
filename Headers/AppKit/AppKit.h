@@ -169,6 +169,8 @@
 #import <AppKit/NSDocumentController.h>
 #import <AppKit/NSDictionaryController.h>
 #import <AppKit/NSDrawer.h>
+#import <AppKit/NSFilePromiseProvider.h>
+#import <AppKit/NSFilePromiseReceiver.h>
 #import <AppKit/NSFileWrapperExtensions.h>
 #import <AppKit/NSFontAssetRequest.h>
 #import <AppKit/NSFontCollection.h>
