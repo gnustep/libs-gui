@@ -27,6 +27,7 @@ NSHighlightedRadioButton = GSRadioSelected;
 GNUstepMenuImage = GSApplicationMenuIcon;
 AppleMenuImage = GSApplicationMenuIcon;
 common_3DArrowRight = GSMenuArrow;
+common_3DArrowRightH = NSHighlightedMenuArrow;
 NSMenuArrow = GSMenuArrow;
 common_2DCheckMark = GSMenuSelected;
 NSMenuCheckmark = GSMenuSelected;

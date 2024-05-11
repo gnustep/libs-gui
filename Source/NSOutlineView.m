@@ -62,6 +62,7 @@
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSWindow.h"
 
+#import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 #include <math.h>
 
@@ -297,6 +298,12 @@ static NSImage *unexpandable  = nil;
 
       // Should only mark the rect below the closed item for redraw
       [self setNeedsDisplay: YES];
+      
+      // If it is view based, then refresh the outline view...
+      if (_viewBased)
+	{
+	  [self reloadData];
+	}
     }
 }
 
@@ -374,6 +381,12 @@ static NSImage *unexpandable  = nil;
 
       // Should only mark the rect below the expanded item for redraw
       [self setNeedsDisplay: YES];
+
+      // If it is view based, then refresh the outline view...
+      if (_viewBased)
+	{
+	  [self reloadData];
+	}
     }
 }
 
@@ -688,7 +701,9 @@ static NSImage *unexpandable  = nil;
   CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
   CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
   CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
-  CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
+  
+  // This method is @optional in NSOutlineViewDataSource as of macOS10.0
+  // CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
 
   // Is the data source editable?
   _dataSource_editable = [anObject respondsToSelector:
@@ -705,6 +720,18 @@ static NSImage *unexpandable  = nil;
  */
 - (void) reloadData
 {
+  // Refresh the views if it is view based...
+  if (_viewBased)
+    {
+      NSEnumerator *en = [[self subviews] objectEnumerator];
+      NSView *v = nil;
+
+      while ((v = [en nextObject]) != nil)
+	{
+	  [v removeFromSuperview];
+	}
+    }
+  
   // release the old array
   if (_items != nil)
     {
@@ -830,7 +857,7 @@ static NSImage *unexpandable  = nil;
     {
       NSImage *image;
 
-      id item = [self itemAtRow:_clickedRow];
+      id item = [self itemAtRow: _clickedRow];
       NSInteger level = [self levelForRow: _clickedRow];
       NSInteger position = 0;
 
@@ -851,8 +878,8 @@ static NSImage *unexpandable  = nil;
       position += _columnOrigins[_clickedColumn];
 
       if ([self isExpandable:item]
-        && location.x >= position
-        && location.x <= position + [image size].width)
+	  && location.x >= position - 5
+	  && location.x <= position + [image size].width + 10)
         {
           BOOL withChildren =
 	    ([theEvent modifierFlags] & NSAlternateKeyMask) ? YES : NO;
@@ -922,136 +949,17 @@ static NSImage *unexpandable  = nil;
  */
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)aRect
 {
-  NSInteger startingColumn;
-  NSInteger endingColumn;
-  NSRect drawingRect;
-  NSCell *imageCell = nil;
-  NSRect imageRect;
-  NSInteger i;
-  CGFloat x_pos;
-
-  if (_dataSource == nil)
+  if (_viewBased)
     {
-      return;
+      [[GSTheme theme] drawCellViewRow: rowIndex
+			      clipRect: aRect
+				inView: self];
     }
-
-  /* Using columnAtPoint: here would make it called twice per row per drawn
-     rect - so we avoid it and do it natively */
-
-  if (rowIndex >= _numberOfRows)
+  else
     {
-      return;
-    }
-
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (aRect);
-  i = 0;
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (aRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = _numberOfColumns - 1;
-
-  /* Draw the row between startingColumn and endingColumn */
-  for (i = startingColumn; i <= endingColumn; i++)
-    {
-      id item = [self itemAtRow: rowIndex];
-      NSTableColumn *tb = [_tableColumns objectAtIndex: i];
-      NSCell *cell = [self preparedCellAtColumn: i row: rowIndex];
-
-      [self _willDisplayCell: cell
-            forTableColumn: tb
-            row: rowIndex];
-      if (i == _editedColumn && rowIndex == _editedRow)
-        {
-          [cell _setInEditing: YES];
-          [cell setShowsFirstResponder: YES];
-        }
-      else
-        {
-          [cell setObjectValue: [_dataSource outlineView: self
-                                             objectValueForTableColumn: tb
-                                                  byItem: item]];
-        }
-      drawingRect = [self frameOfCellAtColumn: i
-                          row: rowIndex];
-
-      if (tb == _outlineTableColumn)
-        {
-          NSImage *image = nil;
-          NSInteger level = 0;
-          CGFloat indentationFactor = 0.0;
-          // float originalWidth = drawingRect.size.width;
-
-          // display the correct arrow...
-          if ([self isItemExpanded: item])
-            {
-              image = expanded;
-            }
-          else
-            {
-              image = collapsed;
-            }
-
-          if (![self isExpandable: item])
-            {
-              image = unexpandable;
-            }
-
-          level = [self levelForItem: item];
-          indentationFactor = _indentationPerLevel * level;
-          imageCell = [[NSCell alloc] initImageCell: image];
-          imageRect = [self frameOfOutlineCellAtRow: rowIndex];
-
-          if ([_delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
-            {
-              [_delegate outlineView: self
-                         willDisplayOutlineCell: imageCell
-                         forTableColumn: tb
-                         item: item];
-            }
-
-          /* Do not indent if the delegate set the image to nil. */
-          if ([imageCell image])
-            {
-              imageRect.size.width = [image size].width;
-              imageRect.size.height = [image size].height;
-              [imageCell drawWithFrame: imageRect inView: self];
-              drawingRect.origin.x
-                += indentationFactor + imageRect.size.width + 5;
-              drawingRect.size.width
-                -= indentationFactor + imageRect.size.width + 5;
-            }
-          else
-            {
-              drawingRect.origin.x += indentationFactor;
-              drawingRect.size.width -= indentationFactor;
-            }
-
-          RELEASE(imageCell);
-        }
-
-      [cell drawWithFrame: drawingRect inView: self];
-      if (i == _editedColumn && rowIndex == _editedRow)
-        {
-          [cell _setInEditing: NO];
-          [cell setShowsFirstResponder: NO];
-        }
+      [[GSTheme theme] drawOutlineViewRow: rowIndex
+				 clipRect: aRect
+				   inView: self];
     }
 }
 
@@ -1804,9 +1712,9 @@ Also returns the child index relative to this parent. */
 - (BOOL) _shouldSelectionChange
 {
   if ([_delegate respondsToSelector:
-    @selector (selectionShouldChangeInTableView:)] == YES)
+    @selector (selectionShouldChangeInOutlineView:)] == YES)
     {
-      if ([_delegate selectionShouldChangeInTableView: self] == NO)
+      if ([_delegate selectionShouldChangeInOutlineView: self] == NO)
         {
           return NO;
         }
@@ -2273,19 +2181,24 @@ Also returns the child index relative to this parent. */
 - (NSCell *) preparedCellAtColumn: (NSInteger)columnIndex row: (NSInteger)rowIndex
 {
   NSCell *cell = nil;
-  NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
 
-  if ([_delegate respondsToSelector:
-        @selector(outlineView:dataCellForTableColumn:item:)])
+  if (_viewBased == NO)
     {
-      id item = [self itemAtRow: rowIndex];
-      cell = [_delegate outlineView: self dataCellForTableColumn: tb
-                                                            item: item];
+      NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+      
+      if ([_delegate respondsToSelector:
+		  @selector(outlineView:dataCellForTableColumn:item:)])
+	{
+	  id item = [self itemAtRow: rowIndex];
+	  cell = [_delegate outlineView: self dataCellForTableColumn: tb
+				   item: item];
+	}
+      if (cell == nil)
+	{
+	  cell = [tb dataCellForRow: rowIndex];
+	}
     }
-  if (cell == nil)
-    {
-      cell = [tb dataCellForRow: rowIndex];
-    }
+  
   return cell;
 }
 

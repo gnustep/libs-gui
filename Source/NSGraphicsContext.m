@@ -320,6 +320,7 @@ NSGraphicsContext	*GSCurrentContext(void)
   DESTROY(focus_stack);
   DESTROY(context_data);
   DESTROY(context_info);
+  DESTROY(_shadow);
   [super dealloc];
 }
 
@@ -345,12 +346,12 @@ NSGraphicsContext	*GSCurrentContext(void)
        * be protected from other threads.
        */
       [contextLock lock];
-      methods = [[classMethodTable objectForKey: [self class]] pointerValue];
+      methods = [[classMethodTable objectForKey: (id<NSCopying>)[self class]] pointerValue];
       if (methods == 0)
         {
           methods = [[self class] _initializeMethodTable];
           [classMethodTable setObject: [NSValue valueWithPointer: methods]
-                            forKey: [self class]];
+                            forKey: (id<NSCopying>)[self class]];
         }
       [contextLock unlock];
     }
@@ -359,7 +360,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 
 - (id) initWithGraphicsPort: (void *)port 
-                    flipped: (BOOL)flag;
+                    flipped: (BOOL)flag
 {
   self = [self init];
   if (self != nil)
@@ -513,6 +514,17 @@ NSGraphicsContext	*GSCurrentContext(void)
     context and/or buffer should be. */
 + (void) handleExposeRect: (NSRect)rect forDriver: (void *)driver
 {
+}
+
+/* Private method for handling shadows */
+- (void) setShadow: (NSShadow *)shadow
+{
+  ASSIGN(_shadow, shadow);
+}
+
+- (NSShadow *) shadow
+{
+  return _shadow;
 }
 
 @end

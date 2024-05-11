@@ -464,18 +464,7 @@
 
 - (BOOL) isOpaque
 {
-  // FIXME: Depends on theme; if always returning NO is a performance hit
-  // we can check if GSTheme is going to draw an old-style opaque box
-  // or not.
-  return NO;
-  // if (_box_type == NSBoxCustom)
-  //   {
-  //     return !_transparent;
-  //   }
-  // else
-  //   {
-  //     return YES;
-  //   }
+  return [[GSTheme theme] isBoxOpaque: self];
 }
 
 - (NSColor*) fillColor
@@ -628,6 +617,22 @@
           NSView *cv = [NSView new];
           [self setContentView: cv];
           RELEASE(cv);
+        }
+
+      [self setBorderColor: [NSColor clearColor]];
+      if ([aDecoder containsValueForKey: @"NSBorderColor2"])
+        {
+          NSColor *color = [aDecoder decodeObjectForKey: @"NSBorderColor2"];
+          if (color != nil)
+            [self setBorderColor:color];
+        }
+
+      [self setFillColor:[NSColor clearColor]];
+      if ([aDecoder containsValueForKey: @"NSFillColor2"])
+        {
+          NSColor *color = [aDecoder decodeObjectForKey:@"NSFillColor2"];
+          if (color != nil)
+            [self setFillColor:color];
         }
     }
   else

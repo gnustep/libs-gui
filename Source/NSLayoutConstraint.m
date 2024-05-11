@@ -261,7 +261,7 @@ static NSMutableArray *activeConstraints = nil;
                     attribute: (NSLayoutAttribute)secondAttribute 
                    multiplier: (CGFloat)multiplier
                      constant: (CGFloat)constant
-                     priority: (CGFloat)priority;
+                     priority: (CGFloat)priority
 {
   self = [super init];
   if (self != nil)
@@ -620,15 +620,15 @@ static NSMutableArray *activeConstraints = nil;
 
 @implementation NSWindow (NSConstraintBasedLayoutCoreMethods)
 
+- (void) updateConstraintsIfNeeded
+{
+  [[self contentView] updateConstraintsForSubtreeIfNeeded];
+}
+
 - (void) layoutIfNeeded
 {
   [self updateConstraintsIfNeeded];
   [[self contentView] _layoutViewAndSubViews];
-}
-
-- (void) updateConstraintsIfNeeded
-{
-  [[self contentView] updateConstraintsForSubtreeIfNeeded];
 }
 
 - (void) _bootstrapAutoLayout

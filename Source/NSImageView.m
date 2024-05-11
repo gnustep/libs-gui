@@ -69,6 +69,18 @@ static Class imageCellClass;
   usedCellClass = factoryId ? factoryId : imageCellClass;
 }
 
++ (instancetype) imageViewWithImage: (NSImage *)image
+{
+  NSImageView *imageView = AUTORELEASE([[NSImageView alloc] init]);
+
+  [imageView setImage: image];
+
+  return imageView;
+}
+
+//
+// Instance methods
+//
 
 - (id) initWithFrame: (NSRect)aFrame
 {
@@ -340,7 +352,15 @@ static Class imageCellClass;
 	    }
 	}
     }
-  [super mouseDown: theEvent];
+    
+  if (![self isEditable] && [self nextResponder] != nil)
+    {
+      [[self nextResponder] mouseDown:theEvent];
+    }
+  else
+    {
+      [super mouseDown: theEvent];
+    }
 }
 
 - (NSDragOperation) draggingSourceOperationMaskForLocal: (BOOL)isLocal

@@ -169,6 +169,7 @@ static NSString *ApplicationClass = nil;
 
 @implementation GSXib5KeyedUnarchiver
 
+// Singleton dictionary that holds any cached XIB data...  cells, etc.
 static NSDictionary *XmlTagToObjectClassMap = nil;
 static NSArray      *XmlTagsNotStacked = nil;
 static NSArray      *XmlTagsToSkip = nil;
@@ -206,7 +207,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSMutableArray", @"resources",
                             @"NSMutableArray", @"segments",
                             @"NSMutableArray", @"objectValues",
-                            @"NSMutableArray", @"prototypeCellViews",
+			    @"NSMutableArray", @"prototypeCellViews",
                             @"NSMutableArray", @"allowedToolbarItems",
                             @"NSMutableArray", @"defaultToolbarItems",
                             @"NSMutableArray", @"rowTemplates",
@@ -221,7 +222,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"IBActionConnection", @"action",
                             @"NSNibBindingConnector", @"binding",
                             @"NSWindowTemplate", @"window",
-                            @"NSView", @"tableCellView",
                             @"IBUserDefinedRuntimeAttribute5", @"userDefinedRuntimeAttribute",
                             @"NSURL", @"url",
                             @"NSLayoutConstraint", @"constraint",
@@ -287,6 +287,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"initialItem", @"NSSelectedTabViewItem",
                                            @"allowsExpansionToolTips", @"NSControlAllowsExpansionToolTips",
                                            @"segments", @"NSSegmentImages",
+                                           @"label", @"NSSegmentItemLabel",
+                                           @"image", @"NSSegmentItemImage",
                                            @"editable", @"NSIsEditable",
                                            @"objectValues", @"NSPopUpListData",
                                            @"maxNumberOfRows", @"NSMaxNumberOfGridRows",
@@ -324,7 +326,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"beginningViews", @"NSStackViewBeginningContainer",  // NSStackView
                                            @"middleViews", @"NSStackViewMiddleContainer",
                                            @"endViews", @"NSStackViewEndContainer",
-					   @"collectionViewLayout", @"NSCollectionViewLayout",
+                                           @"collectionViewLayout", @"NSCollectionViewLayout",
+                                           @"shadow", @"NSViewShadow",
+                                           @"blurRadius", @"NSShadowBlurRadius",
+                                           @"color", @"NSShadowColor",
                                            nil];
           RETAIN(XmlKeyMapTable);
 
@@ -445,6 +450,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeSecondAttribute:", @"NSSecondAttribute",
                @"decodeRelation:", @"NSRelation",
                @"decodeTransitionStyle:", @"NSTransitionStyle",
+	       @"decodeShadowOffsetHoriz:", @"NSShadowHoriz",
+	       @"decodeShadowOffsetVert:", @"NSShadowVert",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -870,10 +877,12 @@ didStartElement: (NSString*)elementName
               // Need to store element for making the connections...
               [self addConnection: element];
             }
+          /*
           else if ([XmlConstraintRecordTags containsObject: elementName])
             {
               [self objectForXib: element]; // decode the constraint...
             }
+          */
         }
       else
         {
@@ -1373,21 +1382,9 @@ didStartElement: (NSString*)elementName
   id            object     = nil;
   NSDictionary *attributes = [[element elementForKey: @"keyEquivalentModifierMask"] attributes];
 
-  // ??? SKIP modifier mask processing if BASE64-UTF8 string being used ???
   if (attributes == nil)
     {
-      if (([element elementForKey: @"keyEquivalent"]) &&
-          ([[element elementForKey: @"keyEquivalent"] attributeForKey: @"base64-UTF8"]))
-      {
-        object = [NSNumber numberWithUnsignedInt: 0];
-      }
-    else
-      {
-        // Seems that Apple decided to omit this attribute IF certain default keys alone
-        // are applied.  If this key is present WITH NO setting then the following is
-        // used for the modifier mask...
-        object = [NSNumber numberWithUnsignedInt: NSCommandKeyMask];
-      }
+      return nil;
     }
   else
     {
@@ -2386,8 +2383,7 @@ didStartElement: (NSString*)elementName
       mask.flags.highlighted              = [[attributes objectForKey: @"highlighted"] boolValue];
       mask.flags.disabled                 = ([attributes objectForKey: @"enabled"] ?
                                              [[attributes objectForKey: @"enabled"] boolValue] == NO : NO);
-      mask.flags.editable                 = ([attributes objectForKey: @"editable"] ?
-                                             [[attributes objectForKey: @"editable"] boolValue] : YES);
+      mask.flags.editable                 = [[attributes objectForKey: @"editable"] boolValue];
       mask.flags.vCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
       mask.flags.hCentered                = [[attributes objectForKey: @"alignment"] isEqualToString: @"center"];
       mask.flags.bordered                 = [[borderStyle lowercaseString] containsString: @"border"];
@@ -2697,7 +2693,12 @@ didStartElement: (NSString*)elementName
         }
 
       // keyEquivalentModifierMask...
-      mask.value |= [[self decodeModifierMaskForElement: element] unsignedIntValue];
+      NSNumber* modifierMask = [self decodeModifierMaskForElement: element];
+
+      if (modifierMask != nil)
+        {
+          mask.value |= [modifierMask unsignedIntValue] << 8;
+        }      
 
       // Return value...
       value = [NSNumber numberWithUnsignedInteger: mask.value];
@@ -2982,6 +2983,18 @@ didStartElement: (NSString*)elementName
   return num;  
 }
 
+- (id) decodeShadowOffsetHoriz: (GSXibElement *)element
+{
+  NSSize size = [self decodeSizeForKey: @"offset"];
+  return [NSNumber numberWithFloat: size.width];
+}
+
+- (id) decodeShadowOffsetVert: (GSXibElement *)element
+{
+  NSSize size = [self decodeSizeForKey: @"offset"];
+  return [NSNumber numberWithFloat: size.height];
+}
+
 - (id) _decodePlacementForObject: (id)obj
 {
   NSGridRowAlignment alignment = NSGridCellPlacementNone;
@@ -3184,13 +3197,13 @@ didStartElement: (NSString*)elementName
   if (toolTipString != nil)
     {
       if ([object respondsToSelector: @selector(setToolTip:)])
-	{
-	  [object setToolTip: toolTipString];
-	}
+        {
+          [object setToolTip: toolTipString];
+        }
       else if ([object respondsToSelector: @selector(setHeaderToolTip:)])
-	{
-	  [object setHeaderToolTip: toolTipString];
-	}
+        {
+          [object setHeaderToolTip: toolTipString];
+        }
     }
 }
 

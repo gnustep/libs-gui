@@ -146,7 +146,7 @@
   _maximumNumberOfRows = maxRows;
 }
 
-- (NSUInteger) maximumNumberOfRows;
+- (NSUInteger) maximumNumberOfRows
 {
   return _maximumNumberOfRows;
 }

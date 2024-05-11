@@ -61,32 +61,32 @@
   return NO;  
 }
 
-- (void) gotoPosterFrame: (id)sender;
+- (void) gotoPosterFrame: (id)sender
 {
   //FIXME
 }
 
-- (void) gotoBeginning: (id)sender;
+- (void) gotoBeginning: (id)sender
 {
   //FIXME
 }
 
-- (void) gotoEnd: (id)sender;
+- (void) gotoEnd: (id)sender
 {
   //FIXME
 }
 
-- (void) stepForward: (id)sender;
+- (void) stepForward: (id)sender
 {
   //FIXME
 }
 
-- (void) stepBack: (id)sender;
+- (void) stepBack: (id)sender
 {
   //FIXME
 }
 
-- (void) setRate: (float)rate;
+- (void) setRate: (float)rate
 {
   _rate = rate;
 }
@@ -168,17 +168,17 @@
   return [self bounds];
 }
 
-- (void) resizeWithMagnification: (float)magnification;
+- (void) resizeWithMagnification: (float)magnification
 {
   //FIXME
 }
-- (NSSize) sizeForMagnification: (float)magnification;
+- (NSSize) sizeForMagnification: (float)magnification
 {
   //FIXME
   return NSMakeSize(0, 0);
 }
 
-- (void) setEditable: (BOOL)editable;
+- (void) setEditable: (BOOL)editable
 {
   _flags.editable = editable;
 }

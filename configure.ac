@@ -431,6 +431,11 @@ AS_IF([test "x$enable_imagemagick" = "xyes"], [
     ],
     [AC_DEFINE([HAVE_IMAGEMAGICK], [0], [Don't have ImageMagick])])
 ])
+AS_IF([test "x$enable_imagemagick" = "xyes"], [
+   PKG_CHECK_MODULES([MAGICKCORE], [MagickCore >= 7],
+   [AC_DEFINE([MAGICKCORE_7_OR_NEWER], [1], [MagickCore >= 7])],
+   [AC_DEFINE([MAGICKCORE_7_OR_NEWER], [0], [MagickCore < 7])])
+])
 
 #--------------------------------------------------------------------
 # Check for International Components for Unicode
@@ -635,6 +640,12 @@ fi
 AC_SUBST(WARN_FLAGS)
 
 #--------------------------------------------------------------------
+# Get the Cflags and Libs values for gnustep-gui.pc
+#--------------------------------------------------------------------
+AC_SUBST(GUIFLAGS, `gnustep-config --objc-flags`)
+AC_SUBST(GUILIBS, `gnustep-config --gui-libs`)
+
+#--------------------------------------------------------------------
 # Record the version
 #--------------------------------------------------------------------
 AC_MSG_CHECKING(for the version of gnustep-gui we are compiling)
@@ -673,5 +684,5 @@ static double rint(double a)     \
 #endif
 ])
 
-AC_CONFIG_FILES([config.make gui.make Headers/Additions/GNUstepGUI/GSVersion.h])
+AC_CONFIG_FILES([config.make gui.make Source/gnustep-gui.pc Headers/Additions/GNUstepGUI/GSVersion.h])
 AC_OUTPUT

@@ -1999,7 +1999,7 @@ static  NSMapTable              *mimeMap = NULL;
           Protocol      *p = @protocol(GSPasteboardSvr);
 
 	  [conn enableMultipleThreads];
-          [conn setReplyTimeout:2.0];
+          [conn setReplyTimeout: 30.0];
           [(id)the_server setProtocolForProxy: p];
 	  [[NSNotificationCenter defaultCenter]
 	    addObserver: self

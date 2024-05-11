@@ -39,8 +39,8 @@
 */
 
 #import "config.h"
-#import <Foundation/NSArray.h>
 #import <Foundation/NSArchiver.h>
+#import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSDebug.h>
@@ -52,6 +52,21 @@
 #import "AppKit/NSNib.h"
 #import "AppKit/NSNibLoading.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
+
+
+@implementation NSObject (NSNibLoading)
+
+- (void) awakeFromNib
+{
+  // empty implementation, so that all objects respond...
+}
+
+- (void) prepareForInterfaceBuilder
+{
+  // empty implementation, so that all objects respond...
+}
+
+@end
 
 @implementation NSNib
 

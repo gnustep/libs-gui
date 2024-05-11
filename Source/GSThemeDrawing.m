@@ -33,6 +33,7 @@
 
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
+#import "AppKit/NSButton.h"
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
@@ -42,8 +43,10 @@
 #import "AppKit/NSColorWell.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSImageView.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSMenuItemCell.h"
+#import "AppKit/NSOutlineView.h"
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSProgressIndicator.h"
@@ -51,9 +54,11 @@
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSTableView.h"
+#import "AppKit/NSTableCellView.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderCell.h"
 #import "AppKit/NSTableHeaderView.h"
+#import "AppKit/NSTableView.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSTabViewItem.h"
@@ -62,6 +67,7 @@
 #import "AppKit/NSPathCell.h"
 #import "AppKit/NSPathControl.h"
 #import "AppKit/NSPathComponentCell.h"
+
 #import "GNUstepGUI/GSToolbarView.h"
 #import "GNUstepGUI/GSTitleView.h"
 
@@ -76,6 +82,12 @@
 		      row: (NSInteger)index;
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
 			     row: (NSInteger)index;
+- (NSView *) _renderedViewForPath: (NSIndexPath *)path;
+- (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path;
+@end
+
+@interface NSTableColumn (Private)
+- (NSArray *) _prototypeCellViews;
 @end
 
 @interface NSCell (Private)
@@ -3298,7 +3310,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSInteger numberOfColumns = [tableView numberOfColumns];
   NSIndexSet *selectedRows = [tableView selectedRowIndexes];
   NSIndexSet *selectedColumns = [tableView selectedColumnIndexes];
-  NSColor *backgroundColor = [tableView backgroundColor];
 
   // Set the fill color
   {
@@ -3309,18 +3320,10 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
     if (selectionColor == nil)
       {
-	// Switch to the alternate color of the backgroundColor is white.
-	if([backgroundColor isEqual: [NSColor whiteColor]])
-	  {
-	    selectionColor = [NSColor colorWithCalibratedRed: 0.86
-						       green: 0.92
-							blue: 0.99
-						       alpha: 1.0];
-	  }
-	else
-	  {
-	    selectionColor = [NSColor whiteColor];
-	  }
+	selectionColor = [NSColor colorWithCalibratedRed: 0.86
+						   green: 0.92
+						    blue: 0.99
+						   alpha: 1.0];
       }
     [selectionColor set];
   }
@@ -3381,31 +3384,17 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
-- (void) drawTableViewRow: (NSInteger)rowIndex 
-		 clipRect: (NSRect)clipRect
-		   inView: (NSView *)view
+- (void) _calculatedStartingColumn: (NSInteger *)startingColumn
+		      endingColumn: (NSInteger *)endingColumn
+		     withTableView: (NSTableView *)tableView
+			inClipRect: (NSRect)clipRect
+  
 {
-  NSTableView *tableView = (NSTableView *)view;
-  // NSInteger numberOfRows = [tableView numberOfRows];
+  CGFloat x_pos = 0.0;
+  NSInteger i = 0;
   NSInteger numberOfColumns = [tableView numberOfColumns];
-  // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
-  // NSColor *backgroundColor = [tableView backgroundColor];
   CGFloat *columnOrigins = [tableView _columnOrigins];
-  NSInteger editedRow = [tableView editedRow];
-  NSInteger editedColumn = [tableView editedColumn];
-  NSArray *tableColumns = [tableView tableColumns];
-  NSInteger startingColumn; 
-  NSInteger endingColumn;
-  NSTableColumn *tb;
-  NSRect drawingRect;
-  NSCell *cell;
-  NSInteger i;
-  CGFloat x_pos;
-  const BOOL rowSelected = [[tableView selectedRowIndexes] containsIndex: rowIndex];
-  NSColor *tempColor = nil;
-  NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
-					  state: GSThemeNormalState];
-
+  
   /* Using columnAtPoint: here would make it called twice per row per drawn 
      rect - so we avoid it and do it natively */
 
@@ -3416,10 +3405,10 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     {
       i++;
     }
-  startingColumn = (i - 1);
+  *startingColumn = (i - 1);
 
-  if (startingColumn == -1)
-    startingColumn = 0;
+  if (*startingColumn == -1)
+    *startingColumn = 0;
 
   /* Determine ending column as fast as possible */
   x_pos = NSMaxX (clipRect);
@@ -3428,11 +3417,35 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     {
       i++;
     }
-  endingColumn = (i - 1);
+  *endingColumn = (i - 1);
 
-  if (endingColumn == -1)
-    endingColumn = numberOfColumns - 1;
+  if (*endingColumn == -1)
+    *endingColumn = numberOfColumns - 1;
+}
 
+- (void) drawTableViewRow: (NSInteger)rowIndex 
+		 clipRect: (NSRect)clipRect
+		   inView: (NSTableView *)tableView
+{
+  NSInteger editedRow = [tableView editedRow];
+  NSInteger editedColumn = [tableView editedColumn];
+  NSArray *tableColumns = [tableView tableColumns];
+  NSInteger startingColumn; 
+  NSInteger endingColumn;
+  NSTableColumn *tb;
+  NSRect drawingRect;
+  NSCell *cell;
+  NSInteger i;
+  const BOOL rowSelected = [[tableView selectedRowIndexes] containsIndex: rowIndex];
+  NSColor *tempColor = nil;
+  NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
+					  state: GSThemeNormalState];
+
+  [self _calculatedStartingColumn: &startingColumn
+		     endingColumn: &endingColumn
+		    withTableView: tableView
+		       inClipRect: clipRect];
+  
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
@@ -3480,6 +3493,281 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       if (i == editedColumn && rowIndex == editedRow)
 	[cell _setInEditing: NO];
     }
+}
+
+- (NSRect) _drawOutlineTableColumn: (NSTableColumn *)tb
+		       outlineView: (NSOutlineView *)outlineView
+			      item: (id)item
+		       drawingRect: (NSRect)inputRect
+			  rowIndex: (NSInteger)rowIndex
+{
+  NSRect drawingRect = inputRect;
+  NSImage *image = nil;
+  NSInteger level = 0;
+  CGFloat indentationFactor = 0.0;
+  CGFloat indentationPerLevel = [outlineView indentationPerLevel];
+  NSCell *imageCell = nil;
+  NSRect imageRect;
+  id delegate = [outlineView delegate];
+
+  // display the correct arrow...
+  if ([outlineView isItemExpanded: item])
+    {
+      image = [NSImage imageNamed: @"common_ArrowDownH"];
+    }
+  else
+    {
+      image = [NSImage imageNamed: @"common_ArrowRightH"];
+    }
+  
+  if (![outlineView isExpandable: item])
+    {
+      image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)]);
+    }
+  
+  level = [outlineView levelForItem: item];
+  indentationFactor = indentationPerLevel * level;
+  imageCell = [[NSCell alloc] initImageCell: image];
+  imageRect = [outlineView frameOfOutlineCellAtRow: rowIndex];
+  
+  if ([delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
+    {
+      [delegate outlineView: outlineView
+		willDisplayOutlineCell: imageCell
+	     forTableColumn: tb
+		       item: item];
+    }
+  
+  /* Do not indent if the delegate set the image to nil. */
+  if ([imageCell image])
+    {
+      imageRect.size.width = [image size].width;
+      imageRect.size.height = [image size].height + 5;
+      [imageCell drawWithFrame: imageRect inView: outlineView];
+      drawingRect.origin.x
+	+= indentationFactor + imageRect.size.width + 5;
+      drawingRect.size.width
+	-= indentationFactor + imageRect.size.width + 5;
+    }
+  else
+    {
+      drawingRect.origin.x += indentationFactor;
+      drawingRect.size.width -= indentationFactor;
+    }
+  
+  RELEASE(imageCell);
+
+  return drawingRect;
+}
+
+- (void) drawOutlineViewRow: (NSInteger)rowIndex 
+		   clipRect: (NSRect)clipRect
+		     inView: (NSOutlineView *)outlineView
+{
+  NSInteger editedRow = [outlineView editedRow];
+  NSInteger editedColumn = [outlineView editedColumn];
+  NSArray *tableColumns = [outlineView tableColumns];
+  NSInteger numberOfRows = [outlineView numberOfRows];
+  NSInteger startingColumn;
+  NSInteger endingColumn;
+  NSRect drawingRect;
+  NSInteger i;
+  id dataSource = [outlineView dataSource];
+  NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
+  
+  if (dataSource == nil)
+    {
+      return;
+    }
+
+  /* Using columnAtPoint: here would make it called twice per row per drawn
+     rect - so we avoid it and do it natively */
+
+  if (rowIndex >= numberOfRows)
+    {
+      return;
+    }
+
+  [self _calculatedStartingColumn: &startingColumn
+		     endingColumn: &endingColumn
+		    withTableView: outlineView
+		       inClipRect: clipRect];
+  
+  /* Draw the row between startingColumn and endingColumn */
+  for (i = startingColumn; i <= endingColumn; i++)
+    {
+      id item = [outlineView itemAtRow: rowIndex];
+      NSTableColumn *tb = [tableColumns objectAtIndex: i];
+      NSCell *cell = [outlineView preparedCellAtColumn: i row: rowIndex];
+
+      [outlineView _willDisplayCell: cell
+		     forTableColumn: tb
+				row: rowIndex];
+      if (i == editedColumn && rowIndex == editedRow)
+        {
+          [cell _setInEditing: YES];
+          [cell setShowsFirstResponder: YES];
+        }
+      else
+        {
+          [cell setObjectValue: [dataSource outlineView: outlineView
+					    objectValueForTableColumn: tb
+						 byItem: item]];
+        }
+
+      drawingRect = [outlineView frameOfCellAtColumn: i
+						 row: rowIndex];
+
+      if (tb == outlineTableColumn)
+        {
+	  drawingRect = [self _drawOutlineTableColumn: tb
+					  outlineView: outlineView
+						 item: item
+					  drawingRect: drawingRect
+					     rowIndex: rowIndex];
+	}
+
+      [cell drawWithFrame: drawingRect inView: outlineView];
+      if (i == editedColumn && rowIndex == editedRow)
+        {
+          [cell _setInEditing: NO];
+          [cell setShowsFirstResponder: NO];
+        }
+    }  
+}
+
+- (id) _prototypeCellViewFromTableColumn: (NSTableColumn *)tb
+{
+  NSArray *protoCellViews = [tb _prototypeCellViews];
+  id view = nil;
+  
+  // it seems there is always one prototype...
+  if ([protoCellViews count] > 0)
+    {
+      view = [protoCellViews objectAtIndex: 0];
+      view = [view copy]; // instantiate the prototype...
+    }
+
+  return view;
+}
+
+- (void) drawCellViewRow: (NSInteger)rowIndex
+		clipRect: (NSRect)clipRect
+		  inView: (NSTableView *)v
+{
+  NSArray *tableColumns = [v tableColumns];
+  NSInteger numberOfRows = [v numberOfRows];
+  NSInteger startingColumn; 
+  NSInteger endingColumn;
+  NSInteger i;
+  id dataSource = [v dataSource];
+  id delegate = [v delegate];
+  BOOL hasMethod = NO;
+  NSTableColumn *outlineTableColumn = nil;
+  NSOutlineView *ov = nil;
+  
+  // If we have no data source, there is nothing to do...
+  if (dataSource == nil)
+    {
+      return;
+    }
+
+  // If the rowIndex is greater than the numberOfRows, done...
+  if (rowIndex >= numberOfRows)
+    {
+      return;
+    }
+  
+  // Check the delegate method...
+  hasMethod = [delegate respondsToSelector: @selector(outlineView:viewForTableColumn:item:)];
+  if (hasMethod)
+    {
+      ov = (NSOutlineView *)v;
+      outlineTableColumn = [ov outlineTableColumn];
+    }
+  else
+    {
+      hasMethod = [delegate respondsToSelector: @selector(tableView:viewForTableColumn:row:)];
+    }
+
+  [self _calculatedStartingColumn: &startingColumn
+		     endingColumn: &endingColumn
+		    withTableView: v
+		       inClipRect: clipRect];
+  
+  /* Draw the row between startingColumn and endingColumn */
+  for (i = startingColumn; i <= endingColumn; i++)
+    {
+      NSRect drawingRect = [v frameOfCellAtColumn: i
+					      row: rowIndex];
+      NSTableColumn *tb = [tableColumns objectAtIndex: i];
+      NSIndexPath *path = [NSIndexPath indexPathForItem: i
+					      inSection: rowIndex];
+      NSView *view = [v _renderedViewForPath: path];
+
+      if (ov != nil)
+	{
+	  id item = [ov itemAtRow: rowIndex];
+	  
+	  if (tb == outlineTableColumn)
+	    {
+	      drawingRect = [self _drawOutlineTableColumn: tb
+					      outlineView: ov
+						     item: item
+					      drawingRect: drawingRect
+						 rowIndex: rowIndex];	      
+	    }
+	  
+	  if (view == nil)
+	    {
+	      if (hasMethod)
+		{
+		  view = [delegate outlineView: ov
+			    viewForTableColumn: tb
+					  item: item];
+		}
+	      else
+		{
+		  view = [self _prototypeCellViewFromTableColumn: tb];
+		}
+	    }	  
+	}
+      else
+	{
+	  // If the view has been stored use it, if not
+	  // then grab it.
+	  if (view == nil)
+	    {
+	      if (hasMethod)
+		{
+		  view = [delegate tableView: v
+				   viewForTableColumn: tb
+					 row: rowIndex];
+		}
+	      else
+		{
+		  view = [self _prototypeCellViewFromTableColumn: tb];
+		}
+	    }
+	}
+
+      // Store the object...
+      [v _setRenderedView: view forPath: path];
+      [v addSubview: view];      
+
+      // Place the view...
+      [view setFrame: drawingRect];
+    }
+}
+
+- (BOOL) isBoxOpaque: (NSBox *)box
+{
+  if ([box boxType] == NSBoxCustom)
+    {
+      return ![box isTransparent];
+    }
+
+  return YES;
 }
 
 - (void) drawBoxInClipRect: (NSRect)clipRect

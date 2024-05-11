@@ -73,7 +73,7 @@ add comments above this one
 /* File: ../Source/NSDocument.m:1694 */
 /* File: ../Source/NSDocument.m:1696 */
 /* File: ../Source/NSFontPanel.m:696 */
-"Revert" = "Ritorna a com'era prima";
+"Revert" = "Ripristina";
 
 /* File: ../Source/GSHelpManagerPanel.m:70 */
 /* File: ../Source/NSHelpPanel.m:154 */
@@ -90,12 +90,9 @@ add comments above this one
 "Unknown" = "Sconosciuto";
 
 /* File: ../Source/NSPrintPanel.m:643 */
-/* Flag: untranslated */
 /* File: ../Source/NSPrintPanel.m:774 */
-/* Flag: untranslated */
 /* File: ../Source/NSPrintPanel.m:781 */
-/* Flag: untranslated */
-"Manual" = "Manual";
+"Manual" = "Manuale";
 
 /* File: ../Source/NSSavePanel.m:1321 */
 /* Flag: untranslated */
@@ -122,7 +119,7 @@ add comments above this one
 /* File: ../Source/NSDocument.m:646 */
 /* Comment: Error description */
 "Could not create data for type."
-  = "Impossibile generare i dati per il tipo dati.";
+  = "Impossibile generare i dati per il tipo.";
 
 /* File: ../Source/NSDocument.m:925 */
 /* Comment: Error description */
@@ -140,8 +137,7 @@ add comments above this one
 "Code Point" = "Code Point";
 
 /* File: ../Source/GSCharacterPanel.m:203 */
-/* Flag: untranslated */
-"Unicode Block" = "Unicode Block";
+"Unicode Block" = "Blocco Unicode";
 
 /* File: ../Source/GSInfoPanel.m:339 */
 /* Flag: untranslated */
@@ -155,8 +151,7 @@ add comments above this one
 
 /* File: ../Source/NSAttributedString.m:865 */
 /* Comment: Error description */
-/* Flag: untranslated */
-"Could not load data." = "Could not load data.";
+"Could not load data." = "Impossibile caricare i dati.";
 
 /* File: ../Source/NSAttributedString.m:1035 */
 /* Comment: Error description */
@@ -164,8 +159,7 @@ add comments above this one
 "No type specified for data." = "No type specified for data.";
 
 /* File: ../Source/NSColorPanel.m:294 */
-/* Flag: untranslated */
-"Opacity" = "Opacity";
+"Opacity" = "Opacit\U00E0";
 
 /* File: ../Source/NSColorSpace.m:147 */
 /* Comment: color space */
@@ -190,11 +184,11 @@ add comments above this one
 
 /* File: ../Source/NSDocumentController.m:1852 */
 /* Flag: untranslated */
-"Clear List" = "Clear List";
+"Clear List" = "Pulisci Lista";
 
 /* File: ../Source/NSFontPanel.m:241 */
 /* Flag: untranslated */
-"Multiple fonts selected" = "Multiple fonts selected";
+"Multiple fonts selected" = "Pi\U00F9 caratteri selezionati";
 
 /* File: ../Source/NSFontPanel.m:553 */
 /* Flag: untranslated */
@@ -256,7 +250,7 @@ add comments above this one
 
 /* File: ../Source/NSSavePanel.m:243 */
 /* Flag: untranslated */
-"Show Hidden Files" = "Show Hidden Files";
+"Show Hidden Files" = "Mostra Archivi nascosti";
 
 /* File: ../Source/NSSavePanel.m:278 */
 /* Flag: untranslated */
@@ -290,19 +284,19 @@ add comments above this one
 
 /* File: ../Source/NSPathControl.m:389 */
 /* Flag: untranslated */
-"Choose..." = "Choose...";
+"Choose..." = "Scegli...";
 
 /* File: ../Source/NSSearchFieldCell.m:556 */
 /* Flag: untranslated */
-"Recent searches" = "Recent searches";
+"Recent searches" = "Ricerche recenti";
 
 /* File: ../Source/NSSearchFieldCell.m:563 */
 /* Flag: untranslated */
-"Recent search item" = "Recent search item";
+"Recent search item" = "Elemento di ricerca recente";
 
 /* File: ../Source/NSSearchFieldCell.m:570 */
 /* Flag: untranslated */
-"Clear recent searches" = "Clear recent searches";
+"Clear recent searches" = "Pulire ricerche recenti";
 
 /* File: ../Source/NSSearchFieldCell.m:578 */
 /* Flag: untranslated */
@@ -348,7 +342,7 @@ add comments above this one
 /*** Strings from ../Source/Functions.m ***/
 /* File: ../Source/Functions.m:94 */
 "Cannot load the main model file '%@'"
-  = "Non \U00E8 possibile caricare il model file principale '%@'";
+  = "Non \U00E8 possibile caricare il file modello principale '%@'";
 
 
 /*** Strings from ../Source/GSInfoPanel.m ***/

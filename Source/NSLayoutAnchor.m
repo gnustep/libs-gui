@@ -86,7 +86,7 @@
                                        constant: c];
 }
 
-- (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c;
+- (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c
 {
   return [NSLayoutConstraint constraintWithItem: _item
                                       attribute: NSLayoutAttributeLeft

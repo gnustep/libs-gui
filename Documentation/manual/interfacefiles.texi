@@ -25,10 +25,26 @@
 @chapter Interface Files
 
 @cindex interface files, definition
-@dfn{Interface files} are used to store your applications graphical user interface. It's separation means that you can modify it more easily than other interface generation mechanisms, such as code generators, which generate code that makes it hard to modify the interface or requires you to rewrite your own code. The advantage of a separate interface file is that you can change the interface without having to recompile one bit of code (in most instances). 
+@dfn{Interface files} are used to store your applications graphical user interface. This separation means that you can modify it more easily than other interface generation mechanisms, such as code generators, that make it hard to modify the interface or requires you to rewrite your own code. The advantage of a separate interface file is that you can change the interface without having to recompile one bit of code (in most instances). 
 
-@cindex nibs
-Interface files are often referred to as "nib" files.@footnote{This is a throwback to the origin's of the GNUstep framework, where it's API specification (OpenStep) was based on NeXTStep, which used "nib" files (NeXT Inteface Builder) to store interfaces.} These are not the same as those appearing on NeXT and MacOS X systems, and are completely incompatible (tagged XML nib's may change this in future). This section is very important to understanding key concepts in the AppKit, especially with regards to manipulation of your user interface. It is strongly recommended you do not skip this section, and refer back to it if you do not understand anything, even if you don't intend to use Gorm (also not recommended).
+@cindex nibs (and other models)
+Interface files are often referred to as "nib" (or, more generally, model) files.@footnote{This is a throwback to the origin's of the GNUstep framework, when it's API specification (OpenStep) was based on NeXTStep, which used typedstream "nib" files (NeXT Inteface Builder) to store interfaces.} XML nib files after 10.2.x are usable by GNUstep, early nib files are ``typedstream'' style nibs which cannot be read by GNUstep.  The framework can read other formats as detailed below. This section is very important to understanding key concepts in the AppKit, especially with regards to manipulation of your user interface. It is strongly recommended you do not skip this section, and refer back to it if you do not understand anything, even if you don't intend to use Gorm (also not recommended).
+
+The different types of models which are usable by GNUstep are:
+@table @code
+@item .gorm
+.gorm files are the native format that is used by GNUstep, these are encoded and decoded in the Foundation / AppKit classes themselves.  This is Gorm's native format.
+
+@item .gmodel
+.gmodel files are .plist based model files that are usually created using the deprecated nib2gmodel tool.  Interestingly, the .gmodel format is structally similar to the .nib XML format even though it predates it by several years.  These files can be loaded, but not saved by Gorm.
+
+@item .nib
+.nib files that are 10.2.x+ are readable by GNUstep and also in Gorm.  XML nib files are referential models as everything is contained in a master array and referred to by other objects.  These files can be loaded, but not saved by Gorm.  These are different than typedstream .nib files which are entirely binary.  The issue with reading typedstream nibs is that the format is not well documented.
+
+@item .xib
+.xib files are the XML based model file created by Xcode and InterfaceBuilder 3+.  These model files are a ``compositional'' XML model as opposed the XML nib files which ae ``referential'' the difference is that in a xib, for instance, a view XML object contains all of its subviews.  In an XML nib, they are referred to in a master array.  XIB files can be loaded and (experimentally) saved in the Gorm application.
+
+@end table
 
 @section Using Gorm
 @cindex Gorm
@@ -58,7 +74,7 @@ Connections has three panes: the outlets, actions and object connections that yo
 Lets you modify the size using numbers, and the resizing data for this object (the springs at the bottom). See the Gorm manual for more details on this pane.
 
 @item Help
-Help related to this object type. Still being completed.
+Help related to this object type. This inspector is used to specify the ToolTip associated with the selected item.
 
 @item Custom class
 Let's you set the class for this object manually (NOTE: this only appears for some objects where it is possible to set a custom class).

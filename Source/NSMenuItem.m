@@ -650,7 +650,7 @@ static Class imageClass;
       NSString *action;
       NSString *key;
       BOOL isSeparator = NO;
-      int keyMask;
+      NSNumber *keyMask;
 
       if ([aDecoder containsValueForKey: @"NSIsSeparator"])
         {
@@ -703,10 +703,18 @@ static Class imageClass;
           [self setSubmenu: submenu];
         }
 
-      // Set the key mask regardless of whether it is present;
-      // i.e. set it to 0 if it is not present in the nib.
-      keyMask = [aDecoder decodeIntForKey: @"NSKeyEquivModMask"];
-      [self setKeyEquivalentModifierMask: keyMask];
+      // Set the key mask when it is present; or default to NSCommandKeyMask
+      // when not specified
+      keyMask = (NSNumber*)[aDecoder decodeObjectForKey: @"NSKeyEquivModMask"];
+
+      if (keyMask != nil)
+        {
+          [self setKeyEquivalentModifierMask: [keyMask intValue]];
+        }
+      else
+        {
+          [self setKeyEquivalentModifierMask: NSCommandKeyMask];
+        }
 
       if ([aDecoder containsValueForKey: @"NSMnemonicLoc"])
         {

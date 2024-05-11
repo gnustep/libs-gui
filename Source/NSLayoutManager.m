@@ -1337,11 +1337,11 @@ has the same y origin and height as the line frag rect it is in.
   return NO;
 }
 
-- (void) setAllowsNonContiguousLayout: (BOOL)flag;
+- (void) setAllowsNonContiguousLayout: (BOOL)flag
 {
 }
 
-- (BOOL) hasNonContiguousLayout;
+- (BOOL) hasNonContiguousLayout
 {
   return NO;
 }

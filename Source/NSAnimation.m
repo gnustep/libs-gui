@@ -992,7 +992,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
   _NSANIMATION_UNLOCK;
 }
 
-- (void) animatorStep: (NSTimeInterval) elapsedTime;
+- (void) animatorStep: (NSTimeInterval) elapsedTime
 {
   NSAnimationProgress progress;
   _NSANIMATION_LOCKING_SETUP;
@@ -1200,7 +1200,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
   _NSANIMATION_UNLOCK;
 }
 
-- (float) actualFrameRate;
+- (float) actualFrameRate
 { 
   float r;
   _NSANIMATION_LOCKING_SETUP;

@@ -56,7 +56,7 @@ APPKIT_EXPORT_CLASS
 - (NSSize) minimumItemSize;
 
 - (void) setMaximumItemSize: (NSSize)maxSize;
-- (NSSize) maximumItemSize;;
+- (NSSize) maximumItemSize;
 
 - (void) setMargins: (NSEdgeInsets)insets;
 - (NSEdgeInsets) margins;

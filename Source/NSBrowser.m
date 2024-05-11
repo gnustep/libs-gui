@@ -458,7 +458,7 @@ static BOOL browserUseBezels;
     }
 }
 
-/** <p>Returns the index path of the selected item, or nil if there is
+/** Returns the index path of the selected item, or nil if there is
     no selection.
 */
 - (NSIndexPath *) selectionIndexPath
@@ -1131,8 +1131,9 @@ static BOOL browserUseBezels;
   return _firstVisibleColumn;
 }
 
-/** <p>Returns the number of columns visible.</p>
-    <p>See Also: -firstVisibleColumn -lastVisibleColumn</p>*/
+/** Returns the number of columns visible.
+
+  <p>See Also: -firstVisibleColumn -lastVisibleColumn</p> */
 - (NSInteger) numberOfVisibleColumns
 {
   NSInteger num;

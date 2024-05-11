@@ -1831,6 +1831,28 @@ GSOppositeEdge(NSRectEdge edge)
     }
 }
 
+- (NSScrollerStyle)scrollerStyle {
+  return _scrollerStyle;
+}
+
+- (void)setScrollerStyle:(NSScrollerStyle)style {
+  [[self horizontalScroller] setScrollerStyle:style];
+  [[self verticalScroller] setScrollerStyle:style];
+  _scrollerStyle = style;
+}
+- (NSScrollerKnobStyle)scrollerKnobStyle {
+  return _scrollerKnobStyle;
+}
+- (void)setScrollerKnobStyle:(NSScrollerKnobStyle)style {
+  [[self horizontalScroller] setKnobStyle:style];
+  [[self verticalScroller] setKnobStyle:style];
+  _scrollerKnobStyle = style;
+}
+- (void)flashScrollers {
+  [[self horizontalScroller] flashScroller];
+  [[self verticalScroller] flashScroller];
+}
+
 @end
 
 @implementation NSScrollView (GSPrivate)

@@ -64,6 +64,9 @@ APPKIT_EXPORT_CLASS
 - (BOOL)allowsCutCopyPaste;
 - (void)setAllowsCutCopyPaste:(BOOL)flag;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
++ (instancetype) imageViewWithImage: (NSImage *)image;
+#endif
 
 @end
 

@@ -369,6 +369,7 @@ typedef NSInteger GSLayoutViewAttribute;
       newConstraint = [GSCSConstraint constraintWithLeftVariable: firstItemConstraintVariable operator: GSCSConstraintOperatorLessThanOrEqual rightConstant: [constraint constant]];
       break;
     case NSLayoutRelationEqual:
+    default:
       newConstraint =  [GSCSConstraint constraintWithLeftVariable: firstItemConstraintVariable operator: GSCSConstraintOperatorEqual rightConstant: [constraint constant]];
       break;
     case NSLayoutRelationGreaterThanOrEqual:

@@ -120,11 +120,13 @@ Startup your shell and source GNUstep.sh from your GNUstep installation (if it's
 > cd ~
 > mkdir firstapp
 > cd firstapp
-> . /usr/lib/GNUstep/System/Library/Makefiles/GNUstep.sh
+> . /usr/GNUstep/System/Library/Makefiles/GNUstep.sh
 >
 @end smallexample
 
-In the above, we simply created a new directory under our home directory called @file{firstapp}, changed into it and sourced our GNUstep installation (which in this case is under @file{/usr/lib}@footnote{Replace @file{/usr/lib} with the path to your GNUstep installation}).
+Your prefix could be different than this example.
+
+In the above, we simply created a new directory under our home directory called @file{firstapp}, changed into it and sourced our GNUstep installation (which in this case is under @file{/usr/GNUstep}@footnote{Replace @file{/usr/GNUstep} with the path to your GNUstep installation}).
 
 Next we will create our makefile. Using your favourite editor, create a file called @file{GNUmakefile} (the case is important). In this case we're using @command{vim}:
 @smallexample

@@ -54,7 +54,7 @@ include $(GNUSTEP_MAKEFILES)/application.make
 
 @file{common.make} and @file{application.make} are necessary to build an application, and need to be at the beginning and end respectively to the Makefile to operate properly. The @file{GNUmakefile.preamble} and @file{GNUmakefile.postamble} are optional, and permit you to define extra rules for building your application. You can include those lines without those files containing anything. Templates for those files also exist with the source code for gnustep-gui, which can simply be copied into your project and modified accordingly.
 
-The table below describes the makefile variables that you can set to control the output of the make process. Note that @var{appname} refers to the application name that you set with @code{APP_NAME}. It is case sensistive and so are file names. Also, most of the variables listed below are optional if you wish to get a program to compile, but it is recommend you make use of them where appropriate. Where variables ask for flags and compiler options, they should be in the format that @command{gcc} expects, as it is the only compiler currently used with GNUstep. Many variables also take more than one parameter. They are usually separated by a space, and line breaks with a backslash. Please refer to the @cite{GNUstep Makefile Manual} for more details.
+The table below describes the makefile variables that you can set to control the output of the make process. Note that @var{appname} refers to the application name that you set with @code{APP_NAME}. It is case sensistive and so are file names. Also, most of the variables listed below are optional if you wish to get a program to compile, but it is recommend you make use of them where appropriate. Where variables ask for flags and compiler options, they should be in the format that @command{gcc} or @command{clang} expects, these the only compilers currently used with GNUstep. Many variables also take more than one parameter. They are usually separated by a space, and line breaks with a backslash. Please refer to the @cite{GNUstep Makefile Manual} for more details.
 
 @cindex makefiles, components
 @table @code
@@ -87,7 +87,7 @@ A version number for your application.
 [Optional] This is where you list your C++ files (*.cpp, *.cc) to be compiled into your programme. It takes the same form as @code{@var{appname}_OBJC_FILES}.
 
 @item @var{appname}_OBJCC_FILES
-[Optional] This is where you list your Objective-C++ files (*.mm) to be compiled into your programme. It takes the same form as the @code{@var{appname}_OBJC_FILES}.@footnote{You will need gcc 4.1 or higher to compile Objective-C++ programmes. This feature of the gcc compiler is quite new and has not been well tested.}
+[Optional] This is where you list your Objective-C++ files (*.mm) to be compiled into your programme. It takes the same form as the @code{@var{appname}_OBJC_FILES}.@footnote{You will need either clang or gcc 4.1 or higher to compile Objective-C++ programmes.}
 
 @item @var{appname}_RESOURCE_FILES
 [Recommended] Here you list the @dfn{resource files} that are to be included with your application, including your application property list, interface file(s) and other images, data, etc. You can also list directories here, which should be added recursively (e.g. @file{.gorm} files are actually a directory containing three files, used to describe your interface).
