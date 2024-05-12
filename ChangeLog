@@ -1,3 +1,8 @@
+2024-05-12  Adam Fox <adam.fox@keysight.com>
+
+	* Source/NSParagraphStyle.m (+defaultParagraphStyle): Restore
+	tabs in default paragraph style and move it to -init.
+
 2024-03-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m: Add support for NSFilenamenPboardType.
