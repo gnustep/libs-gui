@@ -214,7 +214,6 @@ static NSParagraphStyle	*defaultStyle = nil;
   if (defaultStyle == nil)
     {
       NSParagraphStyle	*style = [[self alloc] init];
-      /*
       int		i;
 
       for (i = 0; i < 12; i++)
@@ -226,7 +225,6 @@ static NSParagraphStyle	*defaultStyle = nil;
           [style->_tabStops addObject: tab];
           RELEASE(tab);
         }
-      */
       defaultStyle = style;
     }
   return defaultStyle;
