@@ -1,7 +1,8 @@
-2024-05-12  Adam Fox <adam.fox@keysight.com>
+2024-05-13  Adam Fox <adam.fox@keysight.com>
 
-	* Source/NSParagraphStyle.m (+defaultParagraphStyle): Restore
-	tabs in default paragraph style and move it to -init.
+	* Source/NSParagraphStyle.m (-init): Apply the old default
+	tab stop behavior from +defaultParagraphStyle to -init,
+	and therefore also to +defaultParagraphStyle.
 
 2024-03-18 Fred Kiefer <FredKiefer@gmx.de>
 
