@@ -70,6 +70,7 @@
 #import "AppKit/NSView.h"
 
 #import "GSCodingFlags.h"
+#import "GSScene.h"
 
 #define DEBUG_XIB5 0
 

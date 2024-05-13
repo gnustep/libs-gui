@@ -32,21 +32,21 @@
 extern "C" {
 #endif
 
-@class NSArray;
+@class NSMutableArray;
 @class NSString;
 
 @interface GSScene : NSObject <NSCoding, NSCopying>
 {
   NSString *_sceneID;
-  NSArray *_objects;
+  NSMutableArray *_objects;
   NSPoint _canvasLocation;
 }
 
 - (NSString *) sceneID;
 - (void) setSceneID: (NSString *)sceneID;
 
-- (NSArray *) objects;
-- (void) setObjects: (NSArray *)objects;
+- (NSMutableArray *) objects;
+- (void) setObjects: (NSMutableArray *)objects;
 
 - (NSPoint) canvasLocation;
 - (void) setCanvasLocation: (NSPoint)point;

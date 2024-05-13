@@ -57,14 +57,14 @@
   ASSIGN(_sceneID, sceneID);
 }
 
-- (NSArray *) objects
+- (NSMutableArray *) objects
 {
   return _objects;
 }
 
-- (void) setObjects: (NSArray *)objects
+- (void) setObjects: (NSMutableArray *)objects
 {
-  ASSIGNCOPY(_objects, objects);
+  ASSIGN(_objects, objects);
 }
 
 - (NSPoint) canvasLocation
