@@ -488,11 +488,19 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	 }								\
     }
 
-#define WRITE_SCANLINE(sample) \
-	if (TIFFWriteScanline(image, bufSwap, row, sample) != 1) { \
-	    error = 1; \
-	    break; \
-	}
+#define WRITE_SCANLINE(sample)					   \
+  if (swapByteOrder)						   \
+    {								   \
+      SWAP_LINE_ENDIANNESS;					   \
+    }								   \
+  else								   \
+    {								   \
+      bufSwap = buf;						   \
+    }								   \
+  if (TIFFWriteScanline(image, bufSwap, row, sample) != 1) {	   \
+    error = 1;							   \
+    break;							   \
+  }
 
 
 int  
@@ -559,14 +567,6 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	  {
 	    for (row = 0; row < info->height; ++row) 
 	      {
-                if (swapByteOrder)
-                  {
-                    SWAP_LINE_ENDIANNESS;
-                  }
-		else
-                  {
-                    bufSwap = buf;
-                  }
 		WRITE_SCANLINE(0)
 		buf += scan_line_size;
 	      }
@@ -577,14 +577,6 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	      {
 		for (row = 0; row < info->height; ++row) 
 		  {
-		    if (swapByteOrder)
-		      {
-			SWAP_LINE_ENDIANNESS;
-		      }
-                    else
-                      {
-                        bufSwap = buf;
-                      }
 		    WRITE_SCANLINE(i)
 		    buf += scan_line_size;
 		  }
@@ -597,14 +589,6 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	  {
 	    for (row = 0; row < info->height; ++row) 
 	      {
-		if (swapByteOrder)
-		  {
-		    SWAP_LINE_ENDIANNESS;
-		  }
-                else
-                  {
-                    bufSwap = buf;
-                  }
 		WRITE_SCANLINE(0)
 		buf += scan_line_size;
 	      }
@@ -615,14 +599,6 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 	      {
 		for (row = 0; row < info->height; ++row) 
 		  {
-		    if (swapByteOrder)
-		      {
-			SWAP_LINE_ENDIANNESS;
-		      }
-                    else
-                      {
-                        bufSwap = buf;
-                      }
 		    WRITE_SCANLINE(i)
 		    buf += scan_line_size;
 		  }
