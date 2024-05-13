@@ -2,9 +2,11 @@
 
    <abstract>ImageMagick image representation.</abstract>
 
-   Copyright (C) 2011 Free Software Foundation, Inc.
+   Copyright (C) 2011-2024 Free Software Foundation, Inc.
    
    Author:  Eric Wasylishen <ewasylishen@gmail.com>
+            Riccardo Mottola
+
    Date: June 2011
    
    This file is part of the GNUstep Application Kit Library.
@@ -130,6 +132,7 @@
   ExceptionInfo *exception = AcquireExceptionInfo();
   ImageInfo *imageinfo = CloneImageInfo(NULL);
   Image *images, *image;
+  char signature[32];
   
   // Set the background color to transparent
   // (otherwise SVG's are rendered against a white background by default)
@@ -138,6 +141,14 @@
 #else
   QueryColorDatabase("none", &imageinfo->background_color, exception);
 #endif
+
+  bzero(signature, 32);
+  [data getBytes:signature range:NSMakeRange([data length]-18, 18)];
+  if (strncmp(signature, "TRUEVISION-XFILE.", 17) == 0)
+    {
+      NSWarnLog(@"Targa file detected!, giving a magick hint...");
+      strcpy(imageinfo->magick, "TGA");
+    }
 
   images = BlobToImage(imageinfo, [data bytes], [data length], exception);
 
