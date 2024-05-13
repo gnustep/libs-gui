@@ -300,7 +300,7 @@ static NSParagraphStyle	*defaultStyle = nil;
 
           tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType
                                    location: (i + 1) * 28.0];
-          [style->_tabStops addObject: tab];
+          [_tabStops addObject: tab];
           RELEASE(tab);
         }
     }
