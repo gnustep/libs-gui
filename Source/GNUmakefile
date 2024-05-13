@@ -346,7 +346,6 @@ GSToolTips.m \
 GSToolbarView.m \
 GSToolbarCustomizationPalette.m \
 GSStandardWindowDecorationView.m \
-GSStoryboardTransform.m \
 GSWindowDecorationView.m \
 GSPrinting.m \
 GSPrintOperation.m \
