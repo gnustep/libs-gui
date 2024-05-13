@@ -40,33 +40,35 @@
 #include <inttypes.h>
 
 /* Structure to store common information about a tiff. */
-typedef struct {
-    uint16_t  numImages;	      /* number of images in tiff */
-    uint16_t  imageNumber;      /* number of current image */
-    uint32_t  subfileType;
-    uint32_t  width;
-    uint32_t  height;
-    uint16_t bitsPerSample;    /* number of bits per data channel */
-    uint16_t samplesPerPixel;  /* number of channels per pixel */
-    uint16_t planarConfig;     /* meshed or separate */
-    uint16_t photoInterp;      /* photometric interpretation of bitmap data, */
-    uint16_t compression;
-    uint16_t extraSamples;     /* Alpha */
-    int     assocAlpha;
-    int     quality;	      /* compression quality (for jpeg) 1 to 255 */
-    int     error;
-    float   xdpi;
-    float   ydpi;
-  char    isBigEndian;
-  char    is16Bit;
-  char    is32Bit;
+typedef struct
+{
+  uint16_t  numImages;	      /* number of images in tiff */
+  uint16_t  imageNumber;      /* number of current image */
+  uint32_t  subfileType;
+  uint32_t  width;
+  uint32_t  height;
+  uint16_t  bitsPerSample;    /* number of bits per data channel */
+  uint16_t  samplesPerPixel;  /* number of channels per pixel */
+  uint16_t  planarConfig;     /* meshed or separate */
+  uint16_t  photoInterp;      /* photometric interpretation of bitmap data, */
+  uint16_t  compression;
+  uint16_t  extraSamples;     /* Alpha */
+  int       assocAlpha;
+  int       quality;	      /* compression quality (for jpeg) 1 to 255 */
+  int       error;
+  float     xdpi;
+  float     ydpi;
+  char      isBigEndian;      /* meaningful only for 16 & 32 bit depths */
+  char      is16Bit;
+  char      is32Bit;
 } NSTiffInfo; 
 
-typedef struct {
-    uint32_t size;
-    uint16_t *red;
-    uint16_t *green;
-    uint16_t *blue;
+typedef struct
+{
+  uint32_t size;
+  uint16_t *red;
+  uint16_t *green;
+  uint16_t *blue;
 } NSTiffColormap;
 
 typedef char* realloc_data_callback(char* data, long size);

@@ -80,13 +80,14 @@
 typedef tsize_t tmsize_t;
 #endif
 
-typedef struct {
-  char* data;
+typedef struct
+{
+  char  *data;
   long  size;
   long  position;
   char  mode;
-  char **outdata;
-  long *outposition;
+  char  **outdata;
+  long  *outposition;
 } chandle_t;
 
 static int tiff_error_handler_set = 0;
@@ -506,9 +507,9 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
 int  
 NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 {
-  void*	buf = (void*)data;
+  void          *buf = (void*)data;
   void          *bufSwap = nil;
-  uint16_t        sample_info[1];
+  uint16_t      sample_info[1];
   int		i;
   unsigned int 	row;
   int           error = 0;
