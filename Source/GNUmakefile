@@ -307,7 +307,9 @@ GSDisplayServer.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
 GSMemoryPanel.m \
+GSScene.m \
 GSSlideView.m \
+GSStoryboardLoader.m \
 GSTextStorage.m \
 GSTrackingRect.m \
 GSServicesManager.m \

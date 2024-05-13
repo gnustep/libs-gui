@@ -35,6 +35,7 @@
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSNib.h"
+#import "AppKit/NSNibLoading.h"
 #import "AppKit/NSStoryboard.h"
 #import "AppKit/NSWindowController.h"
 #import "AppKit/NSViewController.h"
@@ -42,7 +43,7 @@
 #import "AppKit/NSNibDeclarations.h"
 
 #import "GNUstepGUI/GSModelLoaderFactory.h"
-#import "GSStoryboardTransform.h"
+#import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 #import "GSFastEnumeration.h"
 
 static NSStoryboard *__mainStoryboard = nil;
@@ -110,10 +111,32 @@ static NSStoryboard *__mainStoryboard = nil;
   self = [super init];
   if (self != nil)
     {
-      NSString *path = [bundle pathForResource: name
-                                        ofType: @"storyboard"];
-      NSData *data = [NSData dataWithContentsOfFile: path];
-      _transform = [[GSStoryboardTransform alloc] initWithData: data];
+      BOOL success = NO;
+      
+      success = [bundle loadNibFile: name
+		  externalNameTable: nil
+			   withZone: NSDefaultMallocZone()];
+
+      if (success)
+	{
+	}
+      /*
+      if (unarchiver != nil)
+	{
+	  NSArray *rootObjects;
+	  IBObjectContainer *objects;
+	  
+	  NSDebugLLog(@"XIB", @"Invoking unarchiver");
+	  [unarchiver setObjectZone: zone];
+	  rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
+	  objects = [unarchiver decodeObjectForKey: @"IBDocument.Objects"];
+	  NSDebugLLog(@"XIB", @"rootObjects %@", rootObjects);
+	  [self awake: rootObjects
+		inContainer: objects
+		withContext: context];
+	  loaded = YES;	  
+	}
+      */
     }
   return self;
 }
@@ -142,7 +165,7 @@ static NSStoryboard *__mainStoryboard = nil;
 // Instance methods...
 - (void) dealloc
 {
-  RELEASE(_transform);
+  RELEASE(_scenes);
   [super dealloc];
 }
 
@@ -158,7 +181,7 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block
 {
-  return [self instantiateControllerWithIdentifier: [_transform initialViewControllerId]
+  return [self instantiateControllerWithIdentifier: @"" // [_transform initialViewControllerId]
                                            creator: block];
 }
 
@@ -172,6 +195,8 @@ static NSStoryboard *__mainStoryboard = nil;
                                    creator: (NSStoryboardControllerCreator)block
 {
   id result = nil;
+
+  /*
   NSMutableArray *topLevelObjects = [NSMutableArray arrayWithCapacity: 5];
   NSDictionary *table = [NSDictionary dictionaryWithObjectsAndKeys: topLevelObjects,
                                       NSNibTopLevelObjects,
@@ -260,6 +285,8 @@ static NSStoryboard *__mainStoryboard = nil;
     {
       CALL_BLOCK(block, self);
     }
+  */
+
   return result;
 }
 @end

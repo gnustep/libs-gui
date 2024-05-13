@@ -33,7 +33,9 @@
 extern "C" {
 #endif
 
-@class NSString, NSBundle, NSMutableDictionary;
+@class NSBundle;
+@class NSMutableDictionary;
+@class NSString;
   
 typedef NSString *NSStoryboardName;
 typedef NSString *NSStoryboardSceneIdentifier;
@@ -43,7 +45,7 @@ DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 APPKIT_EXPORT_CLASS
 @interface NSStoryboard : NSObject
 {
-  id _transform;
+  NSMutableDictionary *_scenes;
 }
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)

@@ -68,11 +68,41 @@
 #endif
 }
 
++ (BOOL) checkStoryboard: (NSData *)data
+{
+#if GNUSTEP_BASE_HAVE_LIBXML
+  // Ensure we have a storyboard...first see if we can parse the XML...
+  NSXMLDocument *document = [[NSXMLDocument alloc] initWithData: data
+                                                        options: 0
+                                                          error: NULL];
+  if (document == nil)
+    {
+      return NO;
+    }
+  else
+    {
+      // Test to see if this is an Xcode 5 XIB...
+      NSArray *nodes = [document nodesForXPath: @"/scene" error: NULL];
+
+      // Need at LEAST ONE scene node...we should find something a bit more
+      // specific to check here...
+      return [nodes count] != 0;
+    }
+#else
+  // We now default to checking XIB 5 versions
+  return YES;
+#endif
+}
+
 + (NSKeyedUnarchiver *) unarchiverForReadingWithData: (NSData *)data
 {
   NSKeyedUnarchiver *unarchiver = nil;
 
-  if ([self checkXib5: data])
+  if ([self checkStoryboard: data])
+    {
+      unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
+    }
+  else if ([self checkXib5: data])
     {
       unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
     }
@@ -80,6 +110,7 @@
     {
       unarchiver = [[GSXibKeyedUnarchiver alloc] initForReadingWithData: data];
     }
+  
   return AUTORELEASE(unarchiver);
 }
 

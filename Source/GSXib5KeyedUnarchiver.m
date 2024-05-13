@@ -68,6 +68,7 @@
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSToolbarItem.h"
 #import "AppKit/NSView.h"
+
 #import "GSCodingFlags.h"
 
 #define DEBUG_XIB5 0
@@ -229,6 +230,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSStackViewContainer", @"beginningViews",
                             @"NSStackViewContainer", @"middleViews",
                             @"NSStackViewContainer", @"endViews",
+			    @"GSScene", @"scene",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
