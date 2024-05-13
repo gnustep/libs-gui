@@ -231,6 +231,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSStackViewContainer", @"middleViews",
                             @"NSStackViewContainer", @"endViews",
 			    @"GSScene", @"scene",
+			    @"NSMutableArray", @"scenes",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
