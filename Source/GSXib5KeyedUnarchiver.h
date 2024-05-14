@@ -41,6 +41,7 @@
   GSXibElement        *_orderedObjects;
   GSXibElement        *_flattenedProperties;
   GSXibElement        *_runtimeAttributes;
+  GSXibElement        *_scenes;
   NSMutableDictionary *_orderedObjectsDict;
   NSArray             *_resources;
 }

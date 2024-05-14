@@ -35,10 +35,13 @@
  */
 
 #import <Foundation/NSXMLDocument.h>
+
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 #import "GNUstepGUI/GSXibElement.h"
 #import "GNUstepGUI/GSNibLoading.h"
+
 #import "GSXib5KeyedUnarchiver.h"
+#import "GSStoryboardKeyedUnarchiver.h"
 
 @implementation GSXibKeyedUnarchiver
 
@@ -49,6 +52,7 @@
   NSXMLDocument *document = [[NSXMLDocument alloc] initWithData: data
                                                         options: 0
                                                           error: NULL];
+
   if (document == nil)
     {
       return NO;
@@ -63,6 +67,7 @@
       return [documentNodes count] != 0;
     }
 #else
+
   // We now default to checking XIB 5 versions
   return YES;
 #endif
@@ -75,6 +80,7 @@
   NSXMLDocument *document = [[NSXMLDocument alloc] initWithData: data
                                                         options: 0
                                                           error: NULL];
+
   if (document == nil)
     {
       return NO;
@@ -82,15 +88,16 @@
   else
     {
       // Test to see if this is an Xcode 5 XIB...
-      NSArray *nodes = [document nodesForXPath: @"/scene" error: NULL];
+      NSArray *nodes = [document nodesForXPath: @"/scenes" error: NULL];
 
       // Need at LEAST ONE scene node...we should find something a bit more
       // specific to check here...
       return [nodes count] != 0;
     }
 #else
+
   // We now default to checking XIB 5 versions
-  return YES;
+  return NO;
 #endif
 }
 
@@ -100,7 +107,7 @@
 
   if ([self checkStoryboard: data])
     {
-      unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
+      unarchiver = [[GSStoryboardKeyedUnarchiver alloc] initForReadingWithData: data];
     }
   else if ([self checkXib5: data])
     {
