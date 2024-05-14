@@ -747,11 +747,6 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                                                            @"connectionRecords", @"key",
                                                                            nil]];
 
-  _scenes              = [[GSXibElement alloc] initWithType: @"array"
-					      andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
-									     @"scenes", @"key",
-									   nil]];
-
   // objectRecords...
   [_objectRecords setElement: _orderedObjects forKey: @"orderedObjects"];
 

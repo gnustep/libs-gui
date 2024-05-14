@@ -32,7 +32,9 @@ extern "C" {
 #endif
 
 @interface GSStoryboardKeyedUnarchiver : GSXib5KeyedUnarchiver
-
+{
+    GSXibElement        *_scenes;
+}
 @end
 
 #if	defined(__cplusplus)

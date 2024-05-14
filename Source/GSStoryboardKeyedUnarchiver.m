@@ -22,9 +22,23 @@
    Boston, MA 02110 USA.
 */
 
+#import "GNUstepGUI/GSXibElement.h"
+#import "GNUstepGUI/GSNibLoading.h"
+
 #import "GSStoryboardKeyedUnarchiver.h"
 
 @implementation GSStoryboardKeyedUnarchiver
+
+- (void) _initCommon
+{
+  [super _initCommon];
+  
+  _scenes = [[GSXibElement alloc] initWithType: @"array"
+				 andAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+								@"scenes", @"key",
+							      nil]];
+
+}
 
 @end
 
