@@ -2,7 +2,7 @@
 
    <abstract>Bitmap image representation.</abstract>
 
-   Copyright (C) 1996-2017 Free Software Foundation, Inc.
+   Copyright (C) 1996-2024 Free Software Foundation, Inc.
    
    Author:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996
@@ -1552,6 +1552,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   [self _fillTIFFInfo: &info
      usingCompression: compression
                factor: factor];
+
   if (NSTiffWrite(image, &info, [self bitmapData]) != 0)
     {
       [NSException raise: NSTIFFException format: @"Writing data"];
@@ -2076,6 +2077,9 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
   info->height = _pixelsHigh;
   info->bitsPerSample = _bitsPerSample;
   info->samplesPerPixel = _numColors;
+  info->isBigEndian = NO;
+  info->is16Bit = NO;
+  info->is32Bit = NO;
 
   // resolution/density
   info->xdpi = 0;
@@ -2125,6 +2129,27 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     factor = 1;
   info->quality = factor * 100;
   info->error = 0;
+
+  if ((_format & NSBitmapFormatSixteenBitBigEndian) != 0)
+    {
+      info->isBigEndian = YES;
+      info->is16Bit = YES;
+    }
+  else if ((_format & NSBitmapFormatSixteenBitLittleEndian) != 0)
+    {
+      info->isBigEndian = NO;
+      info->is16Bit = YES;
+    }
+  else if ((_format & NSBitmapFormatThirtyTwoBitBigEndian) != 0)
+    {
+      info->isBigEndian = YES;
+      info->is32Bit = YES;
+    }
+  else if ((_format & NSBitmapFormatThirtyTwoBitLittleEndian) != 0)
+    {
+      info->isBigEndian = NO;
+      info->is32Bit = YES;
+    }
 }
 
 - (void) _premultiply
