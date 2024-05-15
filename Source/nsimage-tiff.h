@@ -3,9 +3,9 @@
 
    Functions for dealing with tiff images
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-2024 Free Software Foundation, Inc.
    
-   Written by:  Adam Fedor <fedor@colorado.edu>
+   Written by:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996
    
    This file is part of the GNUstep GUI Library.
@@ -33,37 +33,42 @@
     classes for general reading/writing of tiff files.
 */
 
-#ifndef _GNUstep_H_tiff
-#define _GNUstep_H_tiff
+#ifndef _NSIMAGE_TIFF_H
+#define _NSIMAGE_TIFF_H
 
 #include <tiffio.h>
 #include <inttypes.h>
 
 /* Structure to store common information about a tiff. */
-typedef struct {
-    uint16_t  numImages;	      /* number of images in tiff */
-    uint16_t  imageNumber;      /* number of current image */
-    uint32_t  subfileType;
-    uint32_t  width;
-    uint32_t  height;
-    uint16_t bitsPerSample;    /* number of bits per data channel */
-    uint16_t samplesPerPixel;  /* number of channels per pixel */
-    uint16_t planarConfig;     /* meshed or separate */
-    uint16_t photoInterp;      /* photometric interpretation of bitmap data, */
-    uint16_t compression;
-    uint16_t extraSamples;     /* Alpha */
-    int     assocAlpha;
-    int     quality;	      /* compression quality (for jpeg) 1 to 255 */
-    int     error;
-    float   xdpi;
-    float   ydpi;
+typedef struct
+{
+  uint16_t  numImages;	      /* number of images in tiff */
+  uint16_t  imageNumber;      /* number of current image */
+  uint32_t  subfileType;
+  uint32_t  width;
+  uint32_t  height;
+  uint16_t  bitsPerSample;    /* number of bits per data channel */
+  uint16_t  samplesPerPixel;  /* number of channels per pixel */
+  uint16_t  planarConfig;     /* meshed or separate */
+  uint16_t  photoInterp;      /* photometric interpretation of bitmap data, */
+  uint16_t  compression;
+  uint16_t  extraSamples;     /* Alpha */
+  int       assocAlpha;
+  int       quality;	      /* compression quality (for jpeg) 1 to 255 */
+  int       error;
+  float     xdpi;
+  float     ydpi;
+  char      isBigEndian;      /* meaningful only for 16 & 32 bit depths */
+  char      is16Bit;
+  char      is32Bit;
 } NSTiffInfo; 
 
-typedef struct {
-    uint32_t size;
-    uint16_t *red;
-    uint16_t *green;
-    uint16_t *blue;
+typedef struct
+{
+  uint32_t size;
+  uint16_t *red;
+  uint16_t *green;
+  uint16_t *blue;
 } NSTiffColormap;
 
 typedef char* realloc_data_callback(char* data, long size);
@@ -81,5 +86,5 @@ extern NSTiffColormap* NSTiffGetColormap(TIFF* image);
 
 extern int NSTiffIsCodecConfigured(unsigned int codec);
 
-#endif // _GNUstep_H_tiff
+#endif // _NSIMAGE_TIFF_H
 
