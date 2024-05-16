@@ -15,6 +15,12 @@
 	* Source/NSTableView.m: Update to use NSTableRowView
 	when it is view-based.
 
+2024-05-13  Adam Fox <adam.fox@keysight.com>
+
+	* Source/NSParagraphStyle.m (-init): Apply the old default
+	tab stop behavior from +defaultParagraphStyle to -init,
+	and therefore also to +defaultParagraphStyle.
+
 2024-03-18 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m: Add support for NSFilenamenPboardType.

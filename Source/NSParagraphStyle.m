@@ -214,19 +214,6 @@ static NSParagraphStyle	*defaultStyle = nil;
   if (defaultStyle == nil)
     {
       NSParagraphStyle	*style = [[self alloc] init];
-      /*
-      int		i;
-
-      for (i = 0; i < 12; i++)
-        {
-          NSTextTab	*tab;
-
-          tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType
-                                   location: (i + 1) * 28.0];
-          [style->_tabStops addObject: tab];
-          RELEASE(tab);
-        }
-      */
       defaultStyle = style;
     }
   return defaultStyle;
@@ -292,6 +279,8 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   if ((self = [super init]))
     {
+      int i;
+    
       _alignment = NSNaturalTextAlignment;
       //_firstLineHeadIndent = 0.0;
       //_headIndent = 0.0;
@@ -304,6 +293,16 @@ static NSParagraphStyle	*defaultStyle = nil;
       _baseDirection = NSWritingDirectionNaturalDirection;
       _tabStops = [[NSMutableArray allocWithZone: [self zone]] 
                       initWithCapacity: 12];
+
+      for (i = 0; i < 12; i++)
+        {
+          NSTextTab *tab;
+
+          tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType
+                                   location: (i + 1) * 28.0];
+          [_tabStops addObject: tab];
+          RELEASE(tab);
+        }
     }
   return self;
 }
