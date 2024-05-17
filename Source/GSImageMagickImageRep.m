@@ -143,7 +143,7 @@
   QueryColorDatabase("none", &imageinfo->background_color, exception);
 #endif
 
-  bzero(signature, 32);
+  memset(signature, 0, 32);
   [data getBytes: signature range: NSMakeRange([data length] - 18, 18)];
   if (strncmp(signature, "TRUEVISION-XFILE.", 17) == 0)
     {
