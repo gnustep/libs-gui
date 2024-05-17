@@ -131,7 +131,8 @@
 
   ExceptionInfo *exception = AcquireExceptionInfo();
   ImageInfo *imageinfo = CloneImageInfo(NULL);
-  Image *images, *image;
+  Image *images;
+  Image *image;
   char signature[32];
   
   // Set the background color to transparent
@@ -143,7 +144,7 @@
 #endif
 
   bzero(signature, 32);
-  [data getBytes:signature range:NSMakeRange([data length]-18, 18)];
+  [data getBytes: signature range: NSMakeRange([data length] - 18, 18)];
   if (strncmp(signature, "TRUEVISION-XFILE.", 17) == 0)
     {
       NSWarnLog(@"Targa file detected!, giving a magick hint...");
