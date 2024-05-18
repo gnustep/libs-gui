@@ -53,11 +53,7 @@
                                                         options: 0
                                                           error: NULL];
 
-  if (document == nil)
-    {
-      return NO;
-    }
-  else
+  if (document)
     {
       // Test to see if this is an Xcode 5 XIB...
       NSArray *documentNodes = [document nodesForXPath: @"/document" error: NULL];
@@ -66,6 +62,8 @@
       // specific to check here...
       return [documentNodes count] != 0;
     }
+
+  return NO;
 #else
 
   // We now default to checking XIB 5 versions
@@ -81,11 +79,7 @@
                                                         options: 0
                                                           error: NULL];
 
-  if (document == nil)
-    {
-      return NO;
-    }
-  else
+  if (document)
     {
       // Test to see if this is an Xcode 5 XIB...
       NSArray *nodes = [document nodesForXPath: @"/scenes" error: NULL];
@@ -94,11 +88,10 @@
       // specific to check here...
       return [nodes count] != 0;
     }
-#else
+#endif
 
   // We now default to checking XIB 5 versions
   return NO;
-#endif
 }
 
 + (NSKeyedUnarchiver *) unarchiverForReadingWithData: (NSData *)data

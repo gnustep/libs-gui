@@ -332,6 +332,7 @@ GSGormLoading.m \
 GSIconManager.m \
 GSImageMagickImageRep.m \
 GSNibLoading.m \
+GSScenes.m \
 GSTheme.m \
 GSThemeDrawing.m \
 GSThemeInspector.m \

@@ -81,6 +81,7 @@
 
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
+  NSLog(@"Decoding GSScene");
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSSceneID"])

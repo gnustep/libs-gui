@@ -70,6 +70,7 @@
 #import "AppKit/NSView.h"
 
 #import "GSCodingFlags.h"
+#import "GSScenes.h"
 #import "GSScene.h"
 
 #define DEBUG_XIB5 0
@@ -231,8 +232,8 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSStackViewContainer", @"beginningViews",
                             @"NSStackViewContainer", @"middleViews",
                             @"NSStackViewContainer", @"endViews",
-			    @"GSScene", @"scene",
-			    @"NSMutableArray", @"scenes",
+			  //  @"GSScene", @"scene",
+			  //  @"NSMutableArray", @"scenes",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
@@ -242,7 +243,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           XmlTagsToSkip = [NSArray arrayWithObject: @"dependencies"];
           RETAIN(XmlTagsToSkip);
 
-          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", nil];
+          ClassNamePrefixes = [NSArray arrayWithObjects: @"NS", @"IB", @"GS", nil];
           RETAIN(ClassNamePrefixes);
 
           XmlReferenceAttributes = [NSArray arrayWithObjects: @"headerView", @"initialItem",

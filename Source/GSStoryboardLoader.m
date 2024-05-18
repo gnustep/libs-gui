@@ -184,13 +184,17 @@
 
 	  if (unarchiver != nil)
 	    {
+	      NSArray *rootObjects;
               IBObjectContainer *objects;
 
 	      NSDebugLLog(@"XIB", @"Invoking unarchiver");
 	      [unarchiver setObjectZone: zone];
-              // rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
+              rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
               objects = [unarchiver decodeObjectForKey: @"IBDocument.Objects"];
-              NSLog(@"objects %@", objects);
+
+	      // NSLog(@"root objects %@", rootObjects);
+	      // NSLog(@"objects %@", objects);
+	      
 	      /*
 	      [self awake: rootObjects
 		    inContainer: objects
