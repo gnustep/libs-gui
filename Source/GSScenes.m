@@ -26,5 +26,57 @@
 
 @implementation GSScenes
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _scenes = [[NSMutableArray alloc] init];
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_scenes);
+  [super dealloc];
+}
+
+- (NSMutableArray *)scenes
+{
+  return _scenes;
+}
+
+- (void) setScenes: (NSMutableArray *)scenes
+{
+  ASSIGN(_scenes, scenes);
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+  NSLog(@"GSScenes...");
+  if ([coder allowsKeyedCoding] == YES)
+    {
+      if ([coder containsValueForKey: @"GSScenes"])
+	{
+	  [self setScenes: [coder decodeObjectForKey: @"GSScenes"]];
+	}
+    }
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+}
+
+- (id) copyWithZone: (NSZone *)zone
+{
+  GSScenes *scenes = [[GSScenes allocWithZone: zone] init];
+
+  [scenes setScenes: [[self scenes] copyWithZone: zone]];
+
+  return scenes;
+}
+
 @end
 

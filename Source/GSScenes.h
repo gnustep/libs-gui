@@ -26,12 +26,19 @@
 #define _GSScenes_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSKeyedArchiver.h>
 
 #if	defined(__cplusplus)
 extern "C" {
 #endif
 
-@interface GSScenes : NSObject
+@interface GSScenes : NSObject <NSCoding, NSCopying>
+{
+  NSMutableArray *_scenes;
+}
+
+- (NSMutableArray *) scenes;
+- (void) setScenes: (NSMutableArray *)scenes;
 
 @end
 
