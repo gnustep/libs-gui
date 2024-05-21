@@ -125,6 +125,8 @@
   return bmp;
 }
 
+#define SIGNATURE_LENGTH 18
+
 + (NSArray*) imageRepsWithData: (NSData *)data allImages: (BOOL)allImages
 {
   NSMutableArray *reps = [NSMutableArray array];
@@ -133,7 +135,7 @@
   ImageInfo *imageinfo = CloneImageInfo(NULL);
   Image *images;
   Image *image;
-  char signature[32];
+  char signature[SIGNATURE_LENGTH];
   
   // Set the background color to transparent
   // (otherwise SVG's are rendered against a white background by default)
@@ -143,7 +145,7 @@
   QueryColorDatabase("none", &imageinfo->background_color, exception);
 #endif
 
-  memset(signature, 0, 32);
+  memset(signature, 0, SIGNATURE_LENGTH);
   [data getBytes: signature range: NSMakeRange([data length] - 18, 18)];
   if (strncmp(signature, "TRUEVISION-XFILE.", 17) == 0)
     {
