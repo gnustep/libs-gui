@@ -1,3 +1,11 @@
+2024-05-26 Fred Kiefer <FredKiefer@gmx.de>
+
+        * ChangeLog: Update for new release
+	* ANNOUNCE:
+	* NEWS:
+	* Documentation/news.texi: Update of release notes for 0.31.0.
+	* Version: bump to 0.31.0
+
 2024-05-13  Adam Fox <adam.fox@keysight.com>
 
 	* Source/NSParagraphStyle.m (-init): Apply the old default
