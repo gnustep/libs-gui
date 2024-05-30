@@ -1,3 +1,10 @@
+2024-05-30 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSDisplayServer.m:
+	* Source/NSGraphicsContext.m:
+	* Source/NSWorkspace.m:
+	Avoid using old gnustep_global_lock (removed from base)
+
 2024-05-26 Fred Kiefer <FredKiefer@gmx.de>
 
         * ChangeLog: Update for new release
