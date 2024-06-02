@@ -14,6 +14,21 @@
 	NSTableRowView implementation.
 	* Source/NSTableView.m: Update to use NSTableRowView
 	when it is view-based.
+  
+2024-05-30 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSDisplayServer.m:
+	* Source/NSGraphicsContext.m:
+	* Source/NSWorkspace.m:
+	Avoid using old gnustep_global_lock (removed from base)
+
+2024-05-26 Fred Kiefer <FredKiefer@gmx.de>
+
+  * ChangeLog: Update for new release
+	* ANNOUNCE:
+	* NEWS:
+	* Documentation/news.texi: Update of release notes for 0.31.0.
+	* Version: bump to 0.31.0
 
 2024-05-13  Adam Fox <adam.fox@keysight.com>
 

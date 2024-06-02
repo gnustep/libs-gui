@@ -35,7 +35,7 @@
 #import <Foundation/NSRunLoop.h>
 #import <Foundation/NSThread.h>
 #import <Foundation/NSValue.h>
-#import <GNUstepBase/GSLock.h>
+#import <Foundation/NSLock.h>
 
 #import "AppKit/NSAnimation.h"
 #import "AppKit/NSApplication.h"
@@ -418,7 +418,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
         (BOOL (*)(id,SEL,NSAnimation*)) NULL;
       
       _isThreaded = NO;
-      _isAnimatingLock = [GSLazyRecursiveLock new];
+      _isAnimatingLock = [NSRecursiveLock new];
     }
   return self;
 }
@@ -430,7 +430,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
   c->_progressMarks = GSIArrayCopyWithZone(_progressMarks, zone);
   c->_animator = nil;
   c->_isANewAnimatorNeeded = YES;
-  c->_isAnimatingLock = [GSLazyRecursiveLock new];
+  c->_isAnimatingLock = [NSRecursiveLock new];
   return c;
 }
 

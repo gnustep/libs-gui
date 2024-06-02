@@ -9,6 +9,48 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.31.0}
+
+This version adds view based cell support for NSTableView and NSOutlineView.
+Plus the usual bunch of bug fixes.
+
+@itemize @bullet
+@item Add TGA detection for ImageMagick extension.
+@item Correct endianess swapping for saving 16 and 32 bit TIFF images.
+@item NSParagraphStyle restore old behaviour to have default tab stops.
+@item Documentation updates.
+@item A fix for autogsdoc documentation creation.
+@item Improve theming for many classes.
+@item Correct keyEquivalentModifierMask decoding in XIB files.
+@item Add imageViewWithImage: to NSImageView.
+@item Add implementation of NSUserInterfaceItemIdentifier to NSView.
+@item Fix NSImageView intercepting mouse events when not editable
+@item Move NSBox method isOpaque to GSTheme.
+@item Many decoding improvements.
+@item Fix compiler warnings.
+@item Generate and install a gnustep-gui.pc file.
+@item Add support for NSFilenamenPboardType in NSTextView.
+@item Add support for NSPasteboardTypePNG in NSBitmapImageRep if the libpng is present.
+@item Add support for ImageMagick >= 7.0
+@item Increase pasteboard timeout to 30 seconds.
+@item Add NSAppearance implementation.
+@item Make PACKAGE_SCOPE public on MinGW.
+@item Started implementing NSShadow.
+@item Move awakeFromNib implementation to NSObject instead of NSView.
+@item Changes for libGIF 5.2 and later.
+@item Update NSViewController with lifeCycle methods.
+@item Avoid accessing instance variables in inline functions when compiling with MSVC.
+@item Add method removeAllItems to NSMenu.
+@item Add badge handling to NSDockTile.
+@item More improvements to layout constraints.
+@item Add implementation of NSDictionaryController.
+@item Add implementation of the NSCollectionView classes.
+@item Improve NSDrawer opening.
+@item Improver CI pipeline.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.30.0}
 
 This version adds parsing support for layout constraints, compilation with MSVC
@@ -48,11 +90,8 @@ and many new classes. Plus the usual bunch of bug fixes.
 @item Support ImageMagick version >= 7.
 @item Add github workflow.
 @item Add icon for speech synthesizer.
-@item 
-@item 
 @end itemize
 
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.29.0}
 

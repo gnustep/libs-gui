@@ -131,6 +131,7 @@ static NSImage	*multipleFiles = nil;
 static NSImage	*unknownApplication = nil;
 static NSImage	*unknownTool = nil;
 
+static NSLock   *classLock = nil;
 static NSLock   *mlock = nil;
 
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
@@ -598,26 +599,22 @@ static NSDictionary		*urlPreferences = nil;
 {
   if (self == [NSWorkspace class])
     {
-      static BOOL	beenHere = NO;
-      NSFileManager	*mgr = [NSFileManager defaultManager];
-      NSString		*service;
-      NSData		*data;
-      NSDictionary	*dict;
-
       [self setVersion: 1];
-
-      [gnustep_global_lock lock];
-      if (beenHere == YES)
+      if (classLock)
 	{
-	  [gnustep_global_lock unlock];
 	  return;
 	}
-
-      beenHere = YES;
+      classLock = [NSLock new];
       mlock = [NSLock new];
 
       NS_DURING
 	{
+	  NSFileManager	*mgr = [NSFileManager defaultManager];
+	  NSString	*service;
+	  NSData	*data;
+	  NSDictionary	*dict;
+
+
 	  service = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, 
 	    NSUserDomainMask, YES) objectAtIndex: 0]
 	    stringByAppendingPathComponent: @"Services"];
@@ -675,12 +672,9 @@ static NSDictionary		*urlPreferences = nil;
 	}
       NS_HANDLER
 	{
-	  [gnustep_global_lock unlock];
 	  [localException raise];
 	}
       NS_ENDHANDLER
-
-      [gnustep_global_lock unlock];
     }
 }
 
@@ -698,14 +692,14 @@ static NSDictionary		*urlPreferences = nil;
 {
   if (sharedWorkspace == nil)
     {
-      [gnustep_global_lock lock];
+      [classLock lock];
       if (sharedWorkspace == nil)
 	{
 	  sharedWorkspace =
 		(NSWorkspace*)NSAllocateObject(self, 0, NSDefaultMallocZone());
 	  [sharedWorkspace init];
 	}
-      [gnustep_global_lock unlock];
+      [classLock unlock];
     }
   return sharedWorkspace;
 }
