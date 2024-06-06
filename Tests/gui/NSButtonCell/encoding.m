@@ -82,4 +82,6 @@ int main()
     found, expect);
   
   END_SET("NSButtonCell encoding tests")
+
+  return 0;
 }
