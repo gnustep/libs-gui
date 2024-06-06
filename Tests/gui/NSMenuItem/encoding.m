@@ -62,4 +62,6 @@ int main()
     [encodedKeyMask intValue], NSShiftKeyMask)
 
   END_SET("NSMenuItem key equivalent mask")
+
+  return 0;
 }
