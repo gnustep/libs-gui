@@ -9,6 +9,17 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.31.1}
+
+This is a bugfix release
+
+@itemize @bullet
+@item Fix bug decoding menu items (breaking archive)
+@item Remove use of deprecated lock from base library
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.31.0}
 
 This version adds view based cell support for NSTableView and NSOutlineView.
@@ -48,8 +59,6 @@ Plus the usual bunch of bug fixes.
 @item Improve NSDrawer opening.
 @item Improver CI pipeline.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.30.0}
 

@@ -15,6 +15,19 @@
 	* Source/NSTableView.m: Update to use NSTableRowView
 	when it is view-based.
   
+2024-06-05 Richard Frith-Macdonald <rfm@gnu.org>
+
+        * ChangeLog: Update for new release
+	* ANNOUNCE:
+	* NEWS:
+	* Documentation/news.texi: Update of release notes for 0.31.1.
+	* Version: bump to 0.31.1
+
+2024-06-03 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenuitem.m:
+	Fix bug in decoding of archived menu item modifier mask.
+
 2024-05-30 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSDisplayServer.m:
