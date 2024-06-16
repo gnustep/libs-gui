@@ -6969,7 +6969,6 @@ For a more detailed explanation, -setSortDescriptors:. */
 
   if (_viewBased == YES)
     {
-      // NSLog(@"_rowViews = %@", _rowViews);
       if (row < [_rowViews count])
 	{
 	  rv = [_rowViews objectAtIndex: row];
@@ -6983,11 +6982,10 @@ For a more detailed explanation, -setSortDescriptors:. */
 		{
 		  rv = [_delegate tableView: self rowViewForRow: row];
 		}
-	    }
-	  
-	  if (rv == nil)
-	    {
-	      rv = [[NSTableRowView alloc] init];
+	      if (rv == nil)
+		{
+		  rv = [[NSTableRowView alloc] init];
+		}	      
 	    }
 	  
 	  [_rowViews addObject: rv];
@@ -7023,7 +7021,6 @@ For a more detailed explanation, -setSortDescriptors:. */
 	}
     }
 
-  // [view setPostsFrameChangedNotifications: NO];
   [view setFrame: drawingRect];
   [self _setRenderedView: view forPath: path];
 
