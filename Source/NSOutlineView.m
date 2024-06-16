@@ -185,7 +185,6 @@ static NSImage *unexpandable  = nil;
  if (self != nil)
    {
      [self _initOutlineDefaults];
-     //_outlineTableColumn = nil;
    }
 
   return self;
@@ -2208,70 +2207,6 @@ Also returns the child index relative to this parent. */
   return cell;
 }
 
-- (NSRect) _drawOutlineCell: (NSTableColumn *)tb
-		       item: (id)item
-		drawingRect: (NSRect)inputRect
-		   rowIndex: (NSInteger)rowIndex
-{
-  NSRect drawingRect = inputRect;
-  NSImage *image = nil;
-  NSInteger level = 0;
-  CGFloat indentationFactor = 0.0;
-  CGFloat indentationPerLevel = [self indentationPerLevel];
-  NSCell *imageCell = nil;
-  NSRect imageRect;
-  id delegate = [self delegate];
-
-  // display the correct arrow...
-  if ([self isItemExpanded: item])
-    {
-      image = [NSImage imageNamed: @"common_ArrowDownH"];
-    }
-  else
-    {
-      image = [NSImage imageNamed: @"common_ArrowRightH"];
-    }
-
-  if (![self isExpandable: item])
-    {
-      image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)]);
-    }
-
-  level = [self levelForItem: item];
-  indentationFactor = indentationPerLevel * level;
-  imageCell = [[NSCell alloc] initImageCell: image];
-  imageRect = [self frameOfOutlineCellAtRow: rowIndex];
-
-  if ([delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
-    {
-      [delegate outlineView: self
-		willDisplayOutlineCell: imageCell
-	     forTableColumn: tb
-		       item: item];
-    }
-
-  /* Do not indent if the delegate set the image to nil. */
-  if ([imageCell image])
-    {
-      imageRect.size.width = [image size].width;
-      imageRect.size.height = [image size].height + 5;
-      [imageCell drawWithFrame: imageRect inView: self];
-      drawingRect.origin.x
-	+= indentationFactor + imageRect.size.width + 5;
-      drawingRect.size.width
-	-= indentationFactor + imageRect.size.width + 5;
-    }
-  else
-    {
-      drawingRect.origin.x += indentationFactor;
-      drawingRect.size.width -= indentationFactor;
-    }
-
-  RELEASE(imageCell);
-
-  return drawingRect;
-}
-
 - (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag
 {
   NSTableColumn *tb = [_tableColumns objectAtIndex: column];
@@ -2284,12 +2219,13 @@ Also returns the child index relative to this parent. */
 
   if (tb == _outlineTableColumn)
     {
-      drawingRect = [self _drawOutlineCell: tb
-				      item: item
-			       drawingRect: drawingRect
-				  rowIndex: row];
+      drawingRect = [[GSTheme theme] drawOutlineCell: tb
+					 outlineView: self
+						item: item
+					 drawingRect: drawingRect
+					    rowIndex: row];
     }
-
+  
   if (view == nil
       && flag == YES)
     {
