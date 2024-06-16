@@ -1,4 +1,4 @@
-2024-05-03 Gregory John Casamento <greg.casamento@gmail.com>
+2024-06-07 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add new methods
 	for rendering view-based outline/table views.
