@@ -3667,8 +3667,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 			     makeIfNecessary: YES];
       
       // If the view is already part of the table, don't re-add it...
-      if ([[tableView subviews] containsObject: rowView] == NO
-	  && rowView != nil)
+      if (rowView != nil
+	  && [[tableView subviews] containsObject: rowView] == NO)
 	{
 	  NSRect cellFrame = [tableView frameOfCellAtColumn: 0
 							row: rowIndex];
