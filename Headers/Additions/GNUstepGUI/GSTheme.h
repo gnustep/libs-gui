@@ -1342,12 +1342,6 @@ APPKIT_EXPORT_CLASS
 		 clipRect: (NSRect)clipRect
 		   inView: (NSTableView *)view;
 
-- (NSRect) drawOutlineTableColumn: (NSTableColumn *)tb
-                      outlineView: (NSOutlineView *)outlineView
-                             item: (id)item
-		      drawingRect: (NSRect)inputRect
-	                 rowIndex: (NSInteger)rowIndex;
-
 - (void) drawCellViewRow: (NSInteger)rowIndex
                 clipRect: (NSRect)clipRect
                   inView: (NSTableView *)v;
