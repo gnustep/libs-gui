@@ -37,7 +37,7 @@
 
 2024-05-26 Fred Kiefer <FredKiefer@gmx.de>
 
-        * ChangeLog: Update for new release
+  * ChangeLog: Update for new release
 	* ANNOUNCE:
 	* NEWS:
 	* Documentation/news.texi: Update of release notes for 0.31.0.
