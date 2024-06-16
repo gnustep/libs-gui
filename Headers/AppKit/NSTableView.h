@@ -206,7 +206,7 @@ APPKIT_EXPORT_CLASS
   NSMutableDictionary *_registeredViews;
 
   /* NSTableRowView support */
-  NSMutableArray *_rowViews;
+  NSMutableDictionary *_rowViews;
 }
 
 /* Data Source */

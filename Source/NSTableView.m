@@ -2057,7 +2057,7 @@ static void computeNewSelection
   _pathsToViews = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
   _registeredNibs = [[NSMutableDictionary alloc] init];
   _registeredViews = [[NSMutableDictionary alloc] init];
-  _rowViews = [[NSMutableArray alloc] init];
+  _rowViews = [[NSMutableDictionary alloc] init];
 }
 
 - (id) initWithFrame: (NSRect)frameRect
@@ -6969,11 +6969,9 @@ For a more detailed explanation, -setSortDescriptors:. */
 
   if (_viewBased == YES)
     {
-      if (row < [_rowViews count])
-	{
-	  rv = [_rowViews objectAtIndex: row];
-	}
+      NSNumber *aRow = [NSNumber numberWithInteger: row];
       
+      rv = [_rowViews objectForKey: aRow];
       if (rv == nil)
 	{
 	  if (flag == YES)
@@ -6984,11 +6982,12 @@ For a more detailed explanation, -setSortDescriptors:. */
 		}
 	      if (rv == nil)
 		{
-		  rv = [[NSTableRowView alloc] init];
+		  rv = AUTORELEASE([[NSTableRowView alloc] init]);
 		}	      
 	    }
 	  
-	  [_rowViews addObject: rv];
+	  [_rowViews setObject: rv
+			forKey: aRow];
 	}
     }
   

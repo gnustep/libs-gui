@@ -3677,8 +3677,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	}
       
       // Create the view if needed...
-      if ([[rowView subviews] containsObject: view] == NO
-	  && view != nil)
+      if (view != nil &&
+	  [[rowView subviews] containsObject: view] == NO)
 	{
 	  // Add the view to the row...
 	  [rowView addSubview: view];
