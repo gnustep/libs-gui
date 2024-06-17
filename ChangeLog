@@ -1,3 +1,20 @@
+2024-06-07 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add new methods
+	for rendering view-based outline/table views.
+	* Headers/AppKit/NSTableRowView.h: Add implementation
+	* Headers/AppKit/NSTableView.h: Add references to
+	NSTableRowView.h
+	* Source/GSThemeDrawing.m: Factor out NSTableView and
+	NSOutlineView rendering so that GSThemeDrawing methods
+	are as minimal as possible.
+	* Source/NSOutlineView.m: Refactor to use new methods
+	to generate NSTableRowView when it is view-based.
+	* Source/NSTableRowView.m: Add implementation of
+	NSTableRowView implementation.
+	* Source/NSTableView.m: Update to use NSTableRowView
+	when it is view-based.
+
 2024-06-05 Richard Frith-Macdonald <rfm@gnu.org>
 
         * ChangeLog: Update for new release
@@ -20,7 +37,7 @@
 
 2024-05-26 Fred Kiefer <FredKiefer@gmx.de>
 
-        * ChangeLog: Update for new release
+	* ChangeLog: Update for new release
 	* ANNOUNCE:
 	* NEWS:
 	* Documentation/news.texi: Update of release notes for 0.31.0.
