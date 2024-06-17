@@ -5060,14 +5060,119 @@ This method is deprecated, use -columnIndexesInRect:. */
 /* 
  * Drawing 
  */
+- (void) _calculatedStartingColumn: (NSInteger *)startingColumn
+		      endingColumn: (NSInteger *)endingColumn
+			inClipRect: (NSRect)clipRect
+  
+{
+  CGFloat x_pos = 0.0;
+  NSInteger i = 0;
+  NSInteger numberOfColumns = [self numberOfColumns];
+  CGFloat *columnOrigins = [self _columnOrigins];
+  
+  /* Using columnAtPoint: here would make it called twice per row per drawn 
+     rect - so we avoid it and do it natively */
+
+  /* Determine starting column as fast as possible */
+  x_pos = NSMinX (clipRect);
+  i = 0;
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  *startingColumn = (i - 1);
+
+  if (*startingColumn == -1)
+    *startingColumn = 0;
+
+  /* Determine ending column as fast as possible */
+  x_pos = NSMaxX (clipRect);
+  // Nota Bene: we do *not* reset i
+  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
+    {
+      i++;
+    }
+  *endingColumn = (i - 1);
+
+  if (*endingColumn == -1)
+    *endingColumn = numberOfColumns - 1;
+}
+
+- (void) _drawCellViewRow: (NSInteger)rowIndex
+		 clipRect: (NSRect)clipRect
+{
+  NSInteger numberOfRows = [self numberOfRows];
+  NSInteger startingColumn; 
+  NSInteger endingColumn;
+  NSInteger columnIndex;
+  id dataSource = [self dataSource];
+  
+  // If we have no data source, there is nothing to do...
+  if (dataSource == nil)
+    {
+      return;
+    }
+
+  // If the rowIndex is greater than the numberOfRows, done...
+  if (rowIndex >= numberOfRows)
+    {
+      return;
+    }
+  
+  [self _calculatedStartingColumn: &startingColumn
+		     endingColumn: &endingColumn
+		       inClipRect: clipRect];
+  
+  /* Draw the row between startingColumn and endingColumn */
+  for (columnIndex = startingColumn; columnIndex <= endingColumn; columnIndex++)
+    {
+      id rowView = [self rowViewAtRow: rowIndex
+		      makeIfNecessary: YES];  
+      NSView *view = [self viewAtColumn: columnIndex
+				    row: rowIndex
+			makeIfNecessary: YES];
+      
+      // If the view is already part of the table, don't re-add it...
+      if (rowView != nil
+	  && [[self subviews] containsObject: rowView] == NO)
+	{
+	  NSRect cellFrame = [self frameOfCellAtColumn: 0
+						   row: rowIndex];
+	  CGFloat x = 0.0;
+	  CGFloat y = cellFrame.origin.y;
+	  CGFloat w = [self frame].size.width;
+	  CGFloat h = [self rowHeight];
+	  
+	  NSRect rvFrame = NSMakeRect(x, y, w, h);
+	  NSAutoresizingMaskOptions options = NSViewWidthSizable
+	    | NSViewMinYMargin;
+	  
+	  [self addSubview: rowView];
+	  [rowView setAutoresizingMask: options];
+	  [rowView setFrame: rvFrame];
+	}
+      
+      // Create the view if needed...
+      if (view != nil &&
+	  [[rowView subviews] containsObject: view] == NO)
+	{
+	  // Add the view to the row...
+	  [rowView addSubview: view];
+	  
+	  // Place the view...
+	  NSRect newRect = [view frame];
+	  newRect.origin.y = 0.0;
+	  [view setFrame: newRect];
+	}
+    }
+}
 
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)clipRect
 {
   if (_viewBased)
     {
-      [[GSTheme theme] drawCellViewRow: rowIndex
-			      clipRect: clipRect
-				inView: self];
+      [self _drawCellViewRow: rowIndex
+		    clipRect: clipRect];
     }
   else
     {

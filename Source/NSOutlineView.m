@@ -139,6 +139,8 @@ static NSImage *unexpandable  = nil;
 - (NSView *) _renderedViewForPath: (NSIndexPath *)path;
 - (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path;
 - (id) _prototypeCellViewFromTableColumn: (NSTableColumn *)tb;
+- (void) _drawCellViewRow: (NSInteger)rowIndex
+		 clipRect: (NSRect)clipRect;
 @end
 
 @implementation NSOutlineView
@@ -956,9 +958,8 @@ static NSImage *unexpandable  = nil;
 {
   if (_viewBased)
     {
-      [[GSTheme theme] drawCellViewRow: rowIndex
-			      clipRect: aRect
-				inView: self];
+      [self _drawCellViewRow: rowIndex
+		    clipRect: aRect];
     }
   else
     {

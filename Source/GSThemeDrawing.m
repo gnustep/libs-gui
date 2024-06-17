@@ -82,6 +82,9 @@
 		      row: (NSInteger)index;
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
 			     row: (NSInteger)index;
+- (void) _calculatedStartingColumn: (NSInteger *)startingColumn
+		      endingColumn: (NSInteger *)endingColumn
+			inClipRect: (NSRect)clipRect;
 @end
 
 @interface NSCell (Private)
@@ -3378,45 +3381,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     }
 }
 
-- (void) _calculatedStartingColumn: (NSInteger *)startingColumn
-		      endingColumn: (NSInteger *)endingColumn
-		     withTableView: (NSTableView *)tableView
-			inClipRect: (NSRect)clipRect
-  
-{
-  CGFloat x_pos = 0.0;
-  NSInteger i = 0;
-  NSInteger numberOfColumns = [tableView numberOfColumns];
-  CGFloat *columnOrigins = [tableView _columnOrigins];
-  
-  /* Using columnAtPoint: here would make it called twice per row per drawn 
-     rect - so we avoid it and do it natively */
-
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (clipRect);
-  i = 0;
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  *startingColumn = (i - 1);
-
-  if (*startingColumn == -1)
-    *startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (clipRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  *endingColumn = (i - 1);
-
-  if (*endingColumn == -1)
-    *endingColumn = numberOfColumns - 1;
-}
-
 - (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
 		   inView: (NSTableView *)tableView
@@ -3435,10 +3399,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
 					  state: GSThemeNormalState];
 
-  [self _calculatedStartingColumn: &startingColumn
-		     endingColumn: &endingColumn
-		    withTableView: tableView
-		       inClipRect: clipRect];
+  [tableView _calculatedStartingColumn: &startingColumn
+			  endingColumn: &endingColumn
+			    inClipRect: clipRect];
   
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
@@ -3567,7 +3530,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSRect drawingRect;
   NSInteger i;
   id dataSource = [outlineView dataSource];
-  
+  NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
+
   if (dataSource == nil)
     {
       return;
@@ -3581,10 +3545,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       return;
     }
 
-  [self _calculatedStartingColumn: &startingColumn
-		     endingColumn: &endingColumn
-		    withTableView: outlineView
-		       inClipRect: clipRect];
+  [outlineView _calculatedStartingColumn: &startingColumn
+			    endingColumn: &endingColumn
+			      inClipRect: clipRect];
   
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
@@ -3611,6 +3574,15 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       drawingRect = [outlineView frameOfCellAtColumn: i
 						 row: rowIndex];
 
+      if (tb == outlineTableColumn)
+        {
+	  drawingRect = [self drawOutlineCell: tb
+				  outlineView: outlineView
+					 item: item
+				  drawingRect: drawingRect
+				     rowIndex: rowIndex];
+	}
+      
       [cell drawWithFrame: drawingRect inView: outlineView];
       if (i == editedColumn && rowIndex == editedRow)
         {
@@ -3618,77 +3590,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
           [cell setShowsFirstResponder: NO];
         }
     }  
-}
-
-- (void) drawCellViewRow: (NSInteger)rowIndex
-		clipRect: (NSRect)clipRect
-		  inView: (NSTableView *)tableView
-{
-  NSInteger numberOfRows = [tableView numberOfRows];
-  NSInteger startingColumn; 
-  NSInteger endingColumn;
-  NSInteger columnIndex;
-  id dataSource = [tableView dataSource];
-  
-  // If we have no data source, there is nothing to do...
-  if (dataSource == nil)
-    {
-      return;
-    }
-
-  // If the rowIndex is greater than the numberOfRows, done...
-  if (rowIndex >= numberOfRows)
-    {
-      return;
-    }
-  
-  [self _calculatedStartingColumn: &startingColumn
-		     endingColumn: &endingColumn
-		    withTableView: tableView
-		       inClipRect: clipRect];
-  
-  /* Draw the row between startingColumn and endingColumn */
-  for (columnIndex = startingColumn; columnIndex <= endingColumn; columnIndex++)
-    {
-      id rowView = [tableView rowViewAtRow: rowIndex
-			   makeIfNecessary: YES];  
-      NSView *view = [tableView viewAtColumn: columnIndex
-					 row: rowIndex
-			     makeIfNecessary: YES];
-      
-      // If the view is already part of the table, don't re-add it...
-      if (rowView != nil
-	  && [[tableView subviews] containsObject: rowView] == NO)
-	{
-	  NSRect cellFrame = [tableView frameOfCellAtColumn: 0
-							row: rowIndex];
-	  CGFloat x = 0.0;
-	  CGFloat y = cellFrame.origin.y;
-	  CGFloat w = [tableView frame].size.width;
-	  CGFloat h = [tableView rowHeight];
-	  
-	  NSRect rvFrame = NSMakeRect(x, y, w, h);
-	  NSAutoresizingMaskOptions options = NSViewWidthSizable
-	    | NSViewMinYMargin;
-	  
-	  [tableView addSubview: rowView];
-	  [rowView setAutoresizingMask: options];
-	  [rowView setFrame: rvFrame];
-	}
-      
-      // Create the view if needed...
-      if (view != nil &&
-	  [[rowView subviews] containsObject: view] == NO)
-	{
-	  // Add the view to the row...
-	  [rowView addSubview: view];
-	  
-	  // Place the view...
-	  NSRect newRect = [view frame];
-	  newRect.origin.y = 0.0;
-	  [view setFrame: newRect];
-	}
-    }
 }
 
 - (BOOL) isBoxOpaque: (NSBox *)box
