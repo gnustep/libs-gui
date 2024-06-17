@@ -7123,10 +7123,11 @@ For a more detailed explanation, -setSortDescriptors:. */
 	{
 	  view = [self _prototypeCellViewFromTableColumn: tb];
 	}
+      
+      [self _setRenderedView: view forPath: path];
     }
 
   [view setFrame: drawingRect];
-  [self _setRenderedView: view forPath: path];
 
   return view;
 }
