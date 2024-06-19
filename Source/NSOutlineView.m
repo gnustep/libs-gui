@@ -54,16 +54,20 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSOutlineView.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderView.h"
 #import "AppKit/NSText.h"
 #import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSTreeController.h"
 #import "AppKit/NSWindow.h"
 
 #import "GNUstepGUI/GSTheme.h"
+#import "GSBindingHelpers.h"
 #import "GSGuiPrivate.h"
+
 #include <math.h>
 
 static NSMapTableKeyCallBacks keyCallBacks;
@@ -170,6 +174,11 @@ static NSImage *unexpandable  = nil;
       unexpandable = [[NSImage alloc] initWithSize: [expanded size]];
 #endif
       autoExpanded = [NSMutableSet new];
+
+      // Bindings..
+      [self exposeBinding: NSContentBinding];
+      [self exposeBinding: NSSelectionIndexesBinding];
+      [self exposeBinding: NSSortDescriptorsBinding];
     }
 }
 
@@ -700,18 +709,25 @@ static NSImage *unexpandable  = nil;
  */
 - (void) setDataSource: (id)anObject
 {
+  GSKeyValueBinding *theBinding;
+  
 #define CHECK_REQUIRED_METHOD(selector_name) \
   if (anObject && ![anObject respondsToSelector: @selector(selector_name)]) \
     [NSException raise: NSInternalInconsistencyException \
 		 format: @"data source does not respond to %@", @#selector_name]
 
-  CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
-  CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
-  CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				   forObject: self];
+  if (theBinding == nil)
+    {
+      CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
+      CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
+      CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
 
-  // This method is @optional in NSOutlineViewDataSource as of macOS10.0
-  // CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
-
+      // This method is @optional in NSOutlineViewDataSource as of macOS10.0
+      // CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
+    }
+  
   // Is the data source editable?
   _dataSource_editable = [anObject respondsToSelector:
     @selector(outlineView:setObjectValue:forTableColumn:byItem:)];
@@ -1814,9 +1830,9 @@ Also returns the child index relative to this parent. */
 			      row: (NSInteger) index
 {
   id result = nil;
-
+  
   if ([_dataSource respondsToSelector:
-    @selector(outlineView:objectValueForTableColumn:byItem:)])
+		     @selector(outlineView:objectValueForTableColumn:byItem:)])
     {
       id item = [self itemAtRow: index];
 
@@ -1953,43 +1969,68 @@ Also returns the child index relative to this parent. */
 - (void) _loadDictionaryStartingWith: (id) startitem
 			     atLevel: (NSInteger) level
 {
+  GSKeyValueBinding *theBinding;
   NSInteger num = 0;
   NSInteger i = 0;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
-  NSMutableArray *anarray = nil;
+  NSMutableArray *anarray = nil;    
 
-  /* Check to see if item is expandable and expanded before getting the number
-   * of items. For macos compatibility the topmost item (startitem==nil)
-   * is always considered expandable and must not be checked.
-   * We must load the item only if expanded, otherwise an outline view is not
-   * usable with a big tree structure. For example, an outline view to browse
-   * file system would try to traverse every file/directory on -reloadData.
-   */
-  if ((startitem == nil
-    || [_dataSource outlineView: self isItemExpandable: startitem])
-    && [self isItemExpanded: startitem])
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+				   forObject: self];
+  if (theBinding != nil)
     {
-      num = [_dataSource outlineView: self
-			 numberOfChildrenOfItem: startitem];
+      /* Implement logic to build the internal data structure here using
+       * bindings...
+       */
+      id observedObject = [theBinding observedObject];
+	  
+      if ([observedObject isKindOfClass: [NSTreeController class]])
+	{
+	  NSTreeController *tc = (NSTreeController *)observedObject;
+	  NSString *leafKeyPath = [tc leafKeyPath];
+	  NSString *childrenKeyPath = [tc childrenKeyPath];
+	  NSString *countKeyPath = [tc countKeyPath];
+
+	  NSLog(@"leafKeyPath = %@", leafKeyPath);
+	  NSLog(@"childrenKeyPath = %@", childrenKeyPath);
+	  NSLog(@"countKeyPath = %@", countKeyPath);
+	}
     }
-
-  if (num > 0)
+  else
     {
-      anarray = [NSMutableArray array];
-      NSMapInsert(_itemDict, sitem, anarray);
-    }
-
-  NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
-
-  for (i = 0; i < num; i++)
-    {
-      id anitem = [_dataSource outlineView: self
-			       child: i
-			       ofItem: startitem];
-
-      [anarray addObject: anitem];
-      [self _loadDictionaryStartingWith: anitem
-	    atLevel: level + 1];
+      /* Check to see if item is expandable and expanded before getting the number
+       * of items. For macos compatibility the topmost item (startitem==nil)
+       * is always considered expandable and must not be checked.
+       * We must load the item only if expanded, otherwise an outline view is not
+       * usable with a big tree structure. For example, an outline view to browse
+       * file system would try to traverse every file/directory on -reloadData.
+       */
+      if ((startitem == nil
+	   || [_dataSource outlineView: self isItemExpandable: startitem])
+	  && [self isItemExpanded: startitem])
+	{
+	  num = [_dataSource outlineView: self
+		  numberOfChildrenOfItem: startitem];
+	}
+      
+      if (num > 0)
+	{
+	  anarray = [NSMutableArray array];
+	  NSMapInsert(_itemDict, sitem, anarray);
+	}
+      
+      NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
+      
+      for (i = 0; i < num; i++)
+	{
+	  id anitem = [_dataSource outlineView: self
+					 child: i
+					ofItem: startitem];
+	  
+	  [anarray addObject: anitem];
+	  [self _loadDictionaryStartingWith: anitem
+				    atLevel: level + 1];
+	}
     }
 }
 
