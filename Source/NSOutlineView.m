@@ -1994,6 +1994,35 @@ Also returns the child index relative to this parent. */
 	  NSLog(@"leafKeyPath = %@", leafKeyPath);
 	  NSLog(@"childrenKeyPath = %@", childrenKeyPath);
 	  NSLog(@"countKeyPath = %@", countKeyPath);
+
+	  if (startitem == nil)
+	    {
+	      NSArray *items = (NSArray *)[theBinding destinationValue];
+	      NSLog(@"items = %@", items);
+
+	      num = [items count];	      
+	    }
+
+	  if (num > 0)
+	    {
+	      anarray = [NSMutableArray array];
+	      NSMapInsert(_itemDict, sitem, anarray);
+	    }
+	  
+	  NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
+
+	  /*
+	  for (i = 0; i < num; i++)
+	    {
+	      id anitem = [_dataSource outlineView: self
+					     child: i
+					    ofItem: startitem];
+	      
+	      [anarray addObject: anitem];
+	      [self _loadDictionaryStartingWith: anitem
+					atLevel: level + 1];
+	    }
+	  */
 	}
     }
   else
