@@ -40,7 +40,7 @@
 #import <Foundation/NSMapTable.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSValueTransformer.h>
-#import <GNUstepBase/GSLock.h>
+#import <Foundation/NSLock.h>
 
 #import "AppKit/NSKeyValueBinding.h"
 #import "GSBindingHelpers.h"
@@ -145,7 +145,7 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
 {
   if (self == [GSKeyValueBinding class])
     {
-      bindingLock = [GSLazyRecursiveLock new];
+      bindingLock = [NSRecursiveLock new];
       classTable = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
           NSObjectMapValueCallBacks, 128);
       objectTable = NSCreateMapTable(NSNonRetainedObjectMapKeyCallBacks,
