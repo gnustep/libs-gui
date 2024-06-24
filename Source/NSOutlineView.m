@@ -177,6 +177,7 @@ static NSImage *unexpandable  = nil;
 
       // Bindings..
       [self exposeBinding: NSContentBinding];
+      // [self exposeBinding: NSContentArrayBinding];
       [self exposeBinding: NSSelectionIndexesBinding];
       [self exposeBinding: NSSortDescriptorsBinding];
     }
@@ -1830,15 +1831,27 @@ Also returns the child index relative to this parent. */
 			      row: (NSInteger) index
 {
   id result = nil;
-  
-  if ([_dataSource respondsToSelector:
-		     @selector(outlineView:objectValueForTableColumn:byItem:)])
-    {
-      id item = [self itemAtRow: index];
 
-      result = [_dataSource outlineView: self
-			    objectValueForTableColumn: tb
-			    byItem: item];
+  // If we have content binding the data source is used only
+  // like a delegate
+  GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+						      forObject: tb];
+  if (theBinding != nil)
+    {
+      NSLog(@"theBinding = %@", theBinding);
+      result = [_items objectAtIndex: index];
+    }
+  else
+    {
+      if ([_dataSource respondsToSelector:
+		    @selector(outlineView:objectValueForTableColumn:byItem:)])
+	{
+	  id item = [self itemAtRow: index];
+	  
+	  result = [_dataSource outlineView: self
+				objectValueForTableColumn: tb
+				     byItem: item];
+	}
     }
 
   return result;
@@ -1991,9 +2004,9 @@ Also returns the child index relative to this parent. */
 	  NSString *childrenKeyPath = [tc childrenKeyPath];
 	  NSString *countKeyPath = [tc countKeyPath];
 
-	  NSLog(@"leafKeyPath = %@", leafKeyPath);
-	  NSLog(@"childrenKeyPath = %@", childrenKeyPath);
-	  NSLog(@"countKeyPath = %@", countKeyPath);
+	  // NSLog(@"leafKeyPath = %@", leafKeyPath);
+	  // NSLog(@"childrenKeyPath = %@", childrenKeyPath);
+	  // NSLog(@"countKeyPath = %@", countKeyPath);
 
 	  if (startitem == nil)
 	    {
@@ -2094,6 +2107,7 @@ Also returns the child index relative to this parent. */
   id object;
   id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
+  // NSLog(@"openItem: %@", item);
   // open the item...
   if (item != nil)
     {

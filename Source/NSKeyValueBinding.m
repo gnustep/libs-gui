@@ -141,6 +141,21 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
 
 @implementation GSKeyValueBinding
 
++ (void) _printObjectTable
+{
+  NSArray *keys = NSAllMapTableKeys(objectTable);
+  id k = nil;
+  NSEnumerator *en = [keys objectEnumerator];
+
+  NSLog(@"==== objectTable contents ====");
+  while ((k = [en nextObject]) != nil)
+    {
+      id v = NSMapGet(objectTable, k);
+      NSLog(@"k = %@, v = %@", k, v);
+    }
+  NSLog(@"END: objectTable contents ====");
+}
+
 + (void) initialize
 {
   if (self == [GSKeyValueBinding class])
@@ -192,8 +207,12 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   if (!objectTable)
     return nil;
 
+  // NSLog(@"+++ called with %@, %@", binding, anObject);
+  // [self _printObjectTable];
+  
   [bindingLock lock];
   bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)anObject);
+  // NSLog(@"+++ Bindings found for %@ => %@", anObject, bindings);
   if (bindings != nil)
     {
       theBinding = (GSKeyValueBinding*)[bindings objectForKey: binding];

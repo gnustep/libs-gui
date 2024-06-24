@@ -37,6 +37,7 @@
 
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTreeController.h"
+#import "AppKit/NSTreeNode.h"
 
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
@@ -47,7 +48,8 @@
 {
   if (self == [NSTreeController class])
     {
-      [self exposeBinding: NSContentArrayBinding];
+      // [self exposeBinding: NSContentArrayBinding];
+      [self exposeBinding: NSContentBinding];
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
 	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }
@@ -164,7 +166,7 @@
   return [temp sortedArrayUsingDescriptors: _sortDescriptors];
 }
 
-- (id) arrangedObjects
+- (NSTreeNode *) arrangedObjects
 {
   if (_arranged_objects == nil)
     {
@@ -178,8 +180,10 @@
   NSLog(@"---- rearrangeObjects");
   [self willChangeValueForKey: @"arrangedObjects"];
   DESTROY(_arranged_objects);
+  NSLog(@"-- _content = %@", _content);
   _arranged_objects = [[GSObservableArray alloc]
 			  initWithArray: [self arrangeObjects: _content]];
+  NSLog(@"-- _arranged_objects = %@", _arranged_objects);  
   [self didChangeValueForKey: @"arrangedObjects"];
 }
 

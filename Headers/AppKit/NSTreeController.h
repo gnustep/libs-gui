@@ -47,7 +47,7 @@ APPKIT_EXPORT_CLASS
   NSString *_countKeyPath;
   NSString *_leafKeyPath;
   NSArray *_sortDescriptors;
-  NSArray *_arranged_objects;
+  NSTreeNode *_arranged_objects;
   NSMutableArray *_selection_index_paths;
 
   BOOL _alwaysUsesMultipleValuesMarker;
@@ -113,7 +113,7 @@ APPKIT_EXPORT_CLASS
 /**
  * All objects managed by this tree controller.
  */
-- (id) arrangedObjects;
+- (NSTreeNode *) arrangedObjects;
 
 /**
  * An NSArray containing all selected objects.
