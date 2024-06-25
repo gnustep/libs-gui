@@ -1834,7 +1834,7 @@ Also returns the child index relative to this parent. */
 
   // If we have content binding the data source is used only
   // like a delegate
-  GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+  GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
 						      forObject: tb];
   if (theBinding != nil)
     {
@@ -1982,7 +1982,7 @@ Also returns the child index relative to this parent. */
 - (void) _loadDictionaryStartingWith: (id) startitem
 			     atLevel: (NSInteger) level
 {
-  GSKeyValueBinding *theBinding;
+  GSKeyValueBinding *theBinding = nil;
   NSInteger num = 0;
   NSInteger i = 0;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
@@ -1992,50 +1992,52 @@ Also returns the child index relative to this parent. */
 				   forObject: self];
   if (theBinding != nil)
     {
+      id observedObject = [theBinding observedObject];
+      NSTreeController *tc = (NSTreeController *)observedObject;
+      NSArray *children = nil;
+      // NSString *leafKeyPath = [tc leafKeyPath];
+      
       /* Implement logic to build the internal data structure here using
        * bindings...
        */
-      id observedObject = [theBinding observedObject];
-	  
+  	  
       if ([observedObject isKindOfClass: [NSTreeController class]])
 	{
-	  NSTreeController *tc = (NSTreeController *)observedObject;
-	  NSString *leafKeyPath = [tc leafKeyPath];
-	  NSString *childrenKeyPath = [tc childrenKeyPath];
-	  NSString *countKeyPath = [tc countKeyPath];
-
-	  // NSLog(@"leafKeyPath = %@", leafKeyPath);
-	  // NSLog(@"childrenKeyPath = %@", childrenKeyPath);
-	  // NSLog(@"countKeyPath = %@", countKeyPath);
-
 	  if (startitem == nil)
 	    {
-	      NSArray *items = (NSArray *)[theBinding destinationValue];
-	      NSLog(@"items = %@", items);
+	      NSTreeNode *node = (NSTreeNode *)[theBinding destinationValue];
+	      NSDictionary *representedObject = [node representedObject];
 
-	      num = [items count];	      
+	      children = [representedObject objectForKey: @"children"];
+	      num = [children count];
+	    }
+	  else
+	    {
+	      NSString *childrenKeyPath = [tc childrenKeyPath];
+	      NSString *countKeyPath = [tc countKeyPath];
+	      NSNumber *n = [sitem valueForKeyPath: countKeyPath];
+
+	      num = [n integerValue];
+	      children = [sitem valueForKeyPath: childrenKeyPath];
 	    }
 
 	  if (num > 0)
 	    {
-	      anarray = [NSMutableArray array];
+	      anarray = [NSMutableArray arrayWithCapacity: num];
 	      NSMapInsert(_itemDict, sitem, anarray);
 	    }
 	  
 	  NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
 
-	  /*
 	  for (i = 0; i < num; i++)
 	    {
-	      id anitem = [_dataSource outlineView: self
-					     child: i
-					    ofItem: startitem];
-	      
+	      id anitem = [children objectAtIndex: i];
+
+	      NSLog(@"anitem = %@, level = %d", anitem, level);
 	      [anarray addObject: anitem];
 	      [self _loadDictionaryStartingWith: anitem
 					atLevel: level + 1];
 	    }
-	  */
 	}
     }
   else
@@ -2057,7 +2059,7 @@ Also returns the child index relative to this parent. */
       
       if (num > 0)
 	{
-	  anarray = [NSMutableArray array];
+	  anarray = [NSMutableArray arrayWithCapacity: num];
 	  NSMapInsert(_itemDict, sitem, anarray);
 	}
       

@@ -29,6 +29,7 @@
 
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSIndexPath.h>
 #import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSKeyValueObserving.h>
@@ -41,6 +42,7 @@
 
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
+#import "GSControllerTreeProxy.h"
 
 @implementation NSTreeController
 
@@ -48,7 +50,7 @@
 {
   if (self == [NSTreeController class])
     {
-      // [self exposeBinding: NSContentArrayBinding];
+      [self exposeBinding: NSContentArrayBinding];
       [self exposeBinding: NSContentBinding];
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
 	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
@@ -177,13 +179,17 @@
 
 - (void) rearrangeObjects
 {
-  NSLog(@"---- rearrangeObjects");
   [self willChangeValueForKey: @"arrangedObjects"];
   DESTROY(_arranged_objects);
-  NSLog(@"-- _content = %@", _content);
-  _arranged_objects = [[GSObservableArray alloc]
-			  initWithArray: [self arrangeObjects: _content]];
-  NSLog(@"-- _arranged_objects = %@", _arranged_objects);  
+
+  if ([_content isKindOfClass: [NSArray class]])
+    {
+      NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject: _content
+									   forKey: @"children"];
+      _arranged_objects = [[GSControllerTreeProxy alloc] initWithRepresentedObject: dictionary
+								    withController: self];
+    }
+  
   [self didChangeValueForKey: @"arrangedObjects"];
 }
 

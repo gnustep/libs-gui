@@ -303,6 +303,7 @@ NSWindowController.m \
 NSWorkspace.m \
 GSAnimator.m \
 GSAutocompleteWindow.m \
+GSControllerTreeProxy.m \
 GSDisplayServer.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
