@@ -1995,12 +1995,10 @@ Also returns the child index relative to this parent. */
       id observedObject = [theBinding observedObject];
       NSTreeController *tc = (NSTreeController *)observedObject;
       NSArray *children = nil;
-      // NSString *leafKeyPath = [tc leafKeyPath];
-      
+
       /* Implement logic to build the internal data structure here using
        * bindings...
-       */
-  	  
+       */  	  
       if ([observedObject isKindOfClass: [NSTreeController class]])
 	{
 	  if (startitem == nil)
@@ -2015,10 +2013,17 @@ Also returns the child index relative to this parent. */
 	    {
 	      NSString *childrenKeyPath = [tc childrenKeyPath];
 	      NSString *countKeyPath = [tc countKeyPath];
-	      NSNumber *n = [sitem valueForKeyPath: countKeyPath];
+	      NSNumber *countValue = [sitem valueForKeyPath: countKeyPath];
+	      NSString *leafKeyPath = [tc leafKeyPath];	      
+	      NSNumber *leafValue = [sitem valueForKeyPath: leafKeyPath];
+	      BOOL leaf = [leafValue boolValue];
 
-	      num = [n integerValue];
-	      children = [sitem valueForKeyPath: childrenKeyPath];
+	      if (leaf == NO
+		  && [self isItemExpanded: startitem])
+		{
+		  num = [countValue integerValue];
+		  children = [sitem valueForKeyPath: childrenKeyPath];
+		}
 	    }
 
 	  if (num > 0)
@@ -2033,7 +2038,7 @@ Also returns the child index relative to this parent. */
 	    {
 	      id anitem = [children objectAtIndex: i];
 
-	      NSLog(@"anitem = %@, level = %d", anitem, level);
+	      NSLog(@"-- anitem = %@, level = %ld", anitem, level);
 	      [anarray addObject: anitem];
 	      [self _loadDictionaryStartingWith: anitem
 					atLevel: level + 1];
@@ -2070,7 +2075,7 @@ Also returns the child index relative to this parent. */
 	  id anitem = [_dataSource outlineView: self
 					 child: i
 					ofItem: startitem];
-	  
+	  NSLog(@"++ anitem = %@, level = %ld", anitem, level);
 	  [anarray addObject: anitem];
 	  [self _loadDictionaryStartingWith: anitem
 				    atLevel: level + 1];
