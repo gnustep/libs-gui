@@ -158,7 +158,6 @@
       if ([aDecoder containsValueForKey: @"NSBinding"])
         {
           ASSIGN(_binding, [aDecoder decodeObjectForKey: @"NSBinding"]);
-	  NSLog(@"_binding = %@", _binding);
         }
       if ([aDecoder containsValueForKey: @"NSKeyPath"])
         {

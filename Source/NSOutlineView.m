@@ -1834,12 +1834,19 @@ Also returns the child index relative to this parent. */
 
   // If we have content binding the data source is used only
   // like a delegate
-  GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
-						      forObject: tb];
-  if (theBinding != nil)
+  // GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
+  //						      forObject: tb];
+  NSDictionary *info = [GSKeyValueBinding infoForBinding: NSValueBinding forObject: tb];
+  if (info != nil)
     {
-      NSLog(@"theBinding = %@", theBinding);
-      result = [_items objectAtIndex: index];
+      id theItem = [_items objectAtIndex: index];
+      NSString *ikp = [info objectForKey: @"NSObservedKeyPath"];
+      NSString *keyPath = [ikp stringByRemovingFirstKeyPath];
+
+      // NSLog(@"info = %@, ikp = %@, keyPath = %@", info, ikp, keyPath);
+      
+      result = [theItem valueForKeyPath: keyPath];
+      // NSLog(@"result = %@", result);
     }
   else
     {
@@ -2038,7 +2045,6 @@ Also returns the child index relative to this parent. */
 	    {
 	      id anitem = [children objectAtIndex: i];
 
-	      NSLog(@"-- anitem = %@, level = %ld", anitem, level);
 	      [anarray addObject: anitem];
 	      [self _loadDictionaryStartingWith: anitem
 					atLevel: level + 1];
@@ -2075,7 +2081,6 @@ Also returns the child index relative to this parent. */
 	  id anitem = [_dataSource outlineView: self
 					 child: i
 					ofItem: startitem];
-	  NSLog(@"++ anitem = %@, level = %ld", anitem, level);
 	  [anarray addObject: anitem];
 	  [self _loadDictionaryStartingWith: anitem
 				    atLevel: level + 1];
@@ -2356,6 +2361,11 @@ Also returns the child index relative to this parent. */
       [self collapseItem: item collapseChildren: YES];
     }
   [autoExpanded removeAllObjects];
+}
+
+- (void) awakeFromNib
+{
+  [self reloadData];
 }
 
 @end
