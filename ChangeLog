@@ -1,3 +1,21 @@
+2024-06-27 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSTreeController.h: Update header
+	* Headers/AppKit/NSTreeNode.h: Update header
+	* Source/GNUmakefile: Add new class
+	* Source/GSBindingHelpers.h: Add NSString category
+	* Source/GSControllerTreeProxy.[hm]: Proxy class
+	for NSTreeController, a subclass of NSTreeNode.
+	* Source/GSThemeDrawing.m: Optimize code a bit and
+	add changes for binfings.
+	* Source/GSXib5KeyedUnarchiver.m: Add support for new keys
+	on NSTreeController.
+	* Source/NSKeyValueBinding.m: Add new methods to
+	GSKeyValueBinding
+	* Source/NSOutlineView.m: Add support for bindings.
+	* Source/NSTreeController.m: Implement new methods.
+	* Source/NSTreeNode.m: Implement new methods
+
 2024-06-07 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add new methods
