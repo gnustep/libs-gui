@@ -451,7 +451,7 @@ static NSImage *unexpandable  = nil;
 - (BOOL) isExpandable: (id)item
 {
   BOOL result = NO;
-  GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+  GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSContentBinding
 						      forObject: self];
   if (theBinding != nil)
     {
@@ -492,14 +492,14 @@ static NSImage *unexpandable  = nil;
 
 	  leaf = [leafValue boolValue];
 	}
-      
+
       result = !leaf; // if item is a leaf, it's not expandable...
     }
   else if (item != nil)
     {
       result = [_dataSource outlineView: self isItemExpandable: item];
     }
-  
+
   return result;
 }
 
@@ -757,7 +757,7 @@ static NSImage *unexpandable  = nil;
 - (void) setDataSource: (id)anObject
 {
   GSKeyValueBinding *theBinding;
-  
+
 #define CHECK_REQUIRED_METHOD(selector_name) \
   if (anObject && ![anObject respondsToSelector: @selector(selector_name)]) \
     [NSException raise: NSInternalInconsistencyException \
@@ -774,7 +774,7 @@ static NSImage *unexpandable  = nil;
       // This method is @optional in NSOutlineViewDataSource as of macOS10.0
       // CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
     }
-  
+
   // Is the data source editable?
   _dataSource_editable = [anObject respondsToSelector:
     @selector(outlineView:setObjectValue:forTableColumn:byItem:)];
@@ -1898,7 +1898,7 @@ Also returns the child index relative to this parent. */
 		    @selector(outlineView:objectValueForTableColumn:byItem:)])
 	{
 	  id item = [self itemAtRow: index];
-	  
+
 	  result = [_dataSource outlineView: self
 				objectValueForTableColumn: tb
 				     byItem: item];
@@ -2037,9 +2037,9 @@ Also returns the child index relative to this parent. */
   NSInteger num = 0;
   NSInteger i = 0;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
-  NSMutableArray *anarray = nil;    
+  NSMutableArray *anarray = nil;
 
-  theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
 				   forObject: self];
   if (theBinding != nil)
     {
@@ -2049,7 +2049,7 @@ Also returns the child index relative to this parent. */
 
       /* Implement logic to build the internal data structure here using
        * bindings...
-       */  	  
+       */
       if ([observedObject isKindOfClass: [NSTreeController class]])
 	{
 	  if (startitem == nil)
@@ -2086,7 +2086,7 @@ Also returns the child index relative to this parent. */
 	      anarray = [NSMutableArray arrayWithCapacity: num];
 	      NSMapInsert(_itemDict, sitem, anarray);
 	    }
-	  
+
 	  NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
 
 	  for (i = 0; i < num; i++)
@@ -2115,15 +2115,15 @@ Also returns the child index relative to this parent. */
 	  num = [_dataSource outlineView: self
 		  numberOfChildrenOfItem: startitem];
 	}
-      
+
       if (num > 0)
 	{
 	  anarray = [NSMutableArray arrayWithCapacity: num];
 	  NSMapInsert(_itemDict, sitem, anarray);
 	}
-      
+
       NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
-      
+
       for (i = 0; i < num; i++)
 	{
 	  id anitem = [_dataSource outlineView: self
@@ -2370,7 +2370,7 @@ Also returns the child index relative to this parent. */
 					 drawingRect: drawingRect
 					    rowIndex: row];
     }
-  
+
   if (view == nil
       && flag == YES)
     {

@@ -136,7 +136,7 @@
     {
       return self;
     }
-  
+
   while ((component = [en nextObject]) != nil)
     {
       if (i > 0)
@@ -174,21 +174,6 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
     NSDictionary *bindings);
 
 @implementation GSKeyValueBinding
-
-+ (void) _printObjectTable
-{
-  NSArray *keys = NSAllMapTableKeys(objectTable);
-  id k = nil;
-  NSEnumerator *en = [keys objectEnumerator];
-
-  NSLog(@"==== objectTable contents ====");
-  while ((k = [en nextObject]) != nil)
-    {
-      id v = NSMapGet(objectTable, k);
-      NSLog(@"k = %@, v = %@", k, v);
-    }
-  NSLog(@"END: objectTable contents ====");
-}
 
 + (void) initialize
 {

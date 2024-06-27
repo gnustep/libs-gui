@@ -44,7 +44,6 @@
   BOOL inReverseSet;
 }
 
-+ (void) _printObjectTable;
 + (void) exposeBinding: (NSString *)binding forClass: (Class)clazz;
 + (NSArray *) exposedBindingsForClass: (Class)clazz;
 + (GSKeyValueBinding *) getBinding: (NSString *)binding 

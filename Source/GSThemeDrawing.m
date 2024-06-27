@@ -3286,7 +3286,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     {
       endingRow = numberOfRows - 1;
     }
-  // NSLog(@"drawRect : %d-%d", startingRow, endingRow);
+  // NSLog(@"drawRect : %ld-%ld", startingRow, endingRow);
   {
     SEL sel = @selector(drawRow:clipRect:);
     void (*imp)(id, SEL, NSInteger, NSRect);
