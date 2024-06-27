@@ -450,11 +450,57 @@ static NSImage *unexpandable  = nil;
  */
 - (BOOL) isExpandable: (id)item
 {
-  if (item == nil)
+  BOOL result = NO;
+  GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+						      forObject: self];
+  if (theBinding != nil)
     {
-      return NO;
+      BOOL leaf = YES;
+      id observedObject = [theBinding observedObject];
+      NSTreeController *tc = (NSTreeController *)observedObject;
+      NSString *leafKeyPath = [tc leafKeyPath];
+
+      if (leafKeyPath == nil)
+	{
+	  NSString *countKeyPath = [tc countKeyPath];
+
+	  if (countKeyPath == nil)
+	    {
+	      NSString *childrenKeyPath = [tc childrenKeyPath];
+
+	      if (childrenKeyPath == nil)
+		{
+		  result = NO;
+		}
+	      else
+		{
+		  id children = [item valueForKeyPath: childrenKeyPath];
+
+		  leaf = ([children count] > 0);
+		}
+	    }
+	  else
+	    {
+	      NSNumber *countValue = [item valueForKeyPath: countKeyPath];
+
+	      leaf = ([countValue integerValue] > 0);
+	    }
+	}
+      else
+	{
+	  NSNumber *leafValue = [item valueForKeyPath: leafKeyPath];
+
+	  leaf = [leafValue boolValue];
+	}
+      
+      result = !leaf; // if item is a leaf, it's not expandable...
     }
-  return [_dataSource outlineView: self isItemExpandable: item];
+  else if (item != nil)
+    {
+      result = [_dataSource outlineView: self isItemExpandable: item];
+    }
+  
+  return result;
 }
 
 /**
@@ -1834,8 +1880,6 @@ Also returns the child index relative to this parent. */
 
   // If we have content binding the data source is used only
   // like a delegate
-  // GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
-  //						      forObject: tb];
   NSDictionary *info = [GSKeyValueBinding infoForBinding: NSValueBinding forObject: tb];
   if (info != nil)
     {
@@ -1843,10 +1887,10 @@ Also returns the child index relative to this parent. */
       NSString *ikp = [info objectForKey: @"NSObservedKeyPath"];
       NSString *keyPath = [ikp stringByRemovingFirstKeyPath];
 
-      // NSLog(@"info = %@, ikp = %@, keyPath = %@", info, ikp, keyPath);
-      
+      // Here we are getting the last part of the keyPath since elsewhere in this class
+      // we are recursively storing the contents of arrangedObjects (for example) to
+      // display it as an outline in _loadDictionaryStartingWith:atLevel:.
       result = [theItem valueForKeyPath: keyPath];
-      // NSLog(@"result = %@", result);
     }
   else
     {
@@ -2013,21 +2057,25 @@ Also returns the child index relative to this parent. */
 	      NSTreeNode *node = (NSTreeNode *)[theBinding destinationValue];
 	      NSDictionary *representedObject = [node representedObject];
 
+	      /* Per the documentation 10.4/5+ uses NSTreeNode as the return value for
+	       * the contents of this tree node consists of a dictionary with a single
+	       * key of "children".   This is per the tests for this at
+	       * https://github.com/gcasa/NSTreeController_test.  Specifically it returns
+	       * _NSControllerTreeProxy.  The equivalent of that class in GNUstep is
+	       * GSTreeControllerProxy.
+	       */
 	      children = [representedObject objectForKey: @"children"];
 	      num = [children count];
 	    }
 	  else
 	    {
-	      NSString *childrenKeyPath = [tc childrenKeyPath];
-	      NSString *countKeyPath = [tc countKeyPath];
-	      NSNumber *countValue = [sitem valueForKeyPath: countKeyPath];
-	      NSString *leafKeyPath = [tc leafKeyPath];	      
-	      NSNumber *leafValue = [sitem valueForKeyPath: leafKeyPath];
-	      BOOL leaf = [leafValue boolValue];
-
-	      if (leaf == NO
+	      if ([self isExpandable: startitem] // leaf == NO
 		  && [self isItemExpanded: startitem])
 		{
+		  NSString *childrenKeyPath = [tc childrenKeyPath];
+		  NSString *countKeyPath = [tc countKeyPath];
+		  NSNumber *countValue = [sitem valueForKeyPath: countKeyPath];
+
 		  num = [countValue integerValue];
 		  children = [sitem valueForKeyPath: childrenKeyPath];
 		}
@@ -2060,9 +2108,9 @@ Also returns the child index relative to this parent. */
        * usable with a big tree structure. For example, an outline view to browse
        * file system would try to traverse every file/directory on -reloadData.
        */
-      if ((startitem == nil
-	   || [_dataSource outlineView: self isItemExpandable: startitem])
-	  && [self isItemExpanded: startitem])
+      if (startitem == nil
+	  || ([self isExpandable: startitem] // [_dataSource outlineView: self isItemExpandable: startitem])
+	      && [self isItemExpanded: startitem]))
 	{
 	  num = [_dataSource outlineView: self
 		  numberOfChildrenOfItem: startitem];
