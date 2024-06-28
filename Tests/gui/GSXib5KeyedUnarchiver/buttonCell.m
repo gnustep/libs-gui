@@ -10,49 +10,60 @@
 
 int main()
 {
-	START_SET("GSXib5KeyedUnarchiver NSButtonCell tests")
+  START_SET("GSXib5KeyedUnarchiver NSButtonCell tests")
 
   NS_DURING
-  {
-    [NSApplication sharedApplication];
-  }
+    {
+      [NSApplication sharedApplication];
+    }
   NS_HANDLER
-  {
-    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
-      SKIP("It looks like GNUstep backend is not yet installed")
-  }
+    {
+      if ([[localException name]
+	isEqualToString: NSInternalInconsistencyException ])
+	{
+	  SKIP("It looks like GNUstep backend is not yet installed")
+	}
+    }
   NS_ENDHANDLER
 
-  NSData* data = [NSData dataWithContentsOfFile:@"ButtonCell.xib"];
-  GSXibKeyedUnarchiver* unarchiver = [GSXibKeyedUnarchiver unarchiverForReadingWithData:data];
+  NSData		*data;
+  GSXibKeyedUnarchiver	*unarchiver;
+  NSArray		*rootObjects;
+  NSEnumerator		*enumerator;
+  NSMatrix		*matrix;
+  id			element;
 
-  NSArray *rootObjects;
+  data = [NSData dataWithContentsOfFile: @"ButtonCell.xib"];
+  unarchiver = [GSXibKeyedUnarchiver unarchiverForReadingWithData:data];
   rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
 
-  NSMatrix* matrix;
-
-  for (id element in rootObjects) {
-      if ([element isKindOfClass:[NSMatrix class]]) {
+  enumerator = [rootObjects objectEnumerator];
+  while ((element = [enumerator nextObject]) != nil)
+    {
+      if ([element isKindOfClass: [NSMatrix class]])
+	{
           matrix = (NSMatrix*)element;
           break;
-      }
-  }
+	}
+    }
 
-  PASS(matrix != nil, "Top-level NSMatrix was found");
+  PASS(matrix != nil, "Top-level NSMatrix was found")
 
-  NSArray* cells = [matrix cells];
+  NSArray	*cells = [matrix cells];
 
   // <modifierMask key="keyEquivalentModifierMask" shift="YES"/> node
-  PASS_MODIFIER(0, NSShiftKeyMask);
+  PASS_MODIFIER(0, NSShiftKeyMask)
 
   // <modifierMask key="keyEquivalentModifierMask" command="YES"/> node
-  PASS_MODIFIER(1, NSCommandKeyMask);
+  PASS_MODIFIER(1, NSCommandKeyMask)
 
   // <modifierMask key="keyEquivalentModifierMask" />
-  PASS_MODIFIER(2, 0);
+  PASS_MODIFIER(2, 0)
 
   // Unlike NSMenuItem, the default for NSButtonCell is 0
-  PASS_MODIFIER(3, 0);
+  PASS_MODIFIER(3, 0)
   
-	END_SET("GSXib5KeyedUnarchiver NSButtonCell tests")
+  END_SET("GSXib5KeyedUnarchiver NSButtonCell tests")
+
+  return 0;
 }

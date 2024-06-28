@@ -123,7 +123,6 @@ GSCurrentServer(void)
 {
   if (serverLock == nil)
     {
-      [gnustep_global_lock lock];
       if (serverLock == nil)
         {
           serverLock = [NSRecursiveLock new];
@@ -132,7 +131,6 @@ GSCurrentServer(void)
           windowmaps = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
                                         NSNonOwnedPointerMapValueCallBacks, 20);
         }
-      [gnustep_global_lock unlock];
     }
 }
 

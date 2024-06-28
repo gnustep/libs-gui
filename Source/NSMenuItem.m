@@ -650,7 +650,6 @@ static Class imageClass;
       NSString *action;
       NSString *key;
       BOOL isSeparator = NO;
-      NSNumber *keyMask;
 
       if ([aDecoder containsValueForKey: @"NSIsSeparator"])
         {
@@ -703,13 +702,13 @@ static Class imageClass;
           [self setSubmenu: submenu];
         }
 
-      // Set the key mask when it is present; or default to NSCommandKeyMask
-      // when not specified
-      keyMask = (NSNumber*)[aDecoder decodeObjectForKey: @"NSKeyEquivModMask"];
-
-      if (keyMask != nil)
-        {
-          [self setKeyEquivalentModifierMask: [keyMask intValue]];
+      /* Set the key mask when it is present; or default to NSCommandKeyMask
+       * when not specified
+       */
+      if ([aDecoder containsValueForKey: @"NSKeyEquivModMask"])
+	{
+          [self setKeyEquivalentModifierMask: 
+	    [aDecoder decodeIntegerForKey: @"NSKeyEquivModMask"]];
         }
       else
         {
