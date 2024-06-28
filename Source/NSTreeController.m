@@ -168,12 +168,6 @@
   return f;
 }
 
-- (NSArray*) arrangeObjects: (NSArray*)obj
-{
-  NSArray *temp = obj;
-  return [temp sortedArrayUsingDescriptors: _sortDescriptors];
-}
-
 - (NSTreeNode *) arrangedObjects
 {
   if (_arranged_objects == nil)
