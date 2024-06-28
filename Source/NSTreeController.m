@@ -3,10 +3,10 @@
 
    The tree controller class.
 
-   Copyright (C) 2012 Free Software Foundation, Inc.
+   Copyright (C) 2012, 2024 Free Software Foundation, Inc.
 
    Author:  Gregory Casamento <greg.casamento@gmail.com>
-   Date: 2012
+   Date: 2012, 2024
 
    This file is part of the GNUstep GUI Library.
 
@@ -98,8 +98,14 @@
 
 - (BOOL) addSelectionIndexPaths: (NSArray *)indexPaths
 {
-  // FIXME
-  return NO;
+  BOOL f = [self commitEditing];
+
+  if (YES == f)
+    {
+      [_selection_index_paths addObjectsFromArray: indexPaths];
+    }
+
+  return f;
 }
 
 - (BOOL) alwaysUsesMultipleValuesMarker
@@ -520,9 +526,20 @@
 
 - (id) copyWithZone: (NSZone*)zone
 {
-  NSData *data = [NSArchiver archivedDataWithRootObject: self];
-  id result = [NSUnarchiver unarchiveObjectWithData: data];
-  return result;
+  id copy = [[NSTreeController allocWithZone: zone] initWithContent: [self content]];
+
+  if (copy != nil)
+    {
+      [copy setChildrenKeyPath: [self childrenKeyPath]];
+      [copy setCountKeyPath: [self countKeyPath]];
+      [copy setLeafKeyPath: [self leafKeyPath]];
+
+      [copy setAvoidsEmptySelection: [self avoidsEmptySelection]];
+      [copy setPreservesSelection: [self preservesSelection]];
+      [copy setSelectsInsertedObjects: [self selectsInsertedObjects]];
+    }
+  
+  return copy;
 }
 
 @end
