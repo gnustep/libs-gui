@@ -28,10 +28,6 @@
 
 #import "GNUstepGUI/GSTheme.h"
 
-@interface NSToolbarItem (Private)
-- (NSView *) _backView;
-@end
-
 @implementation NSMenuToolbarItem
 
 - (instancetype) initWithItemIdentifier: (NSString *)identifier
