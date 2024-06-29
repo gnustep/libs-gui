@@ -180,6 +180,7 @@ NSStoryboardSegue.m \
 NSMagnificationGestureRecognizer.m \
 NSMatrix.m \
 NSMenu.m \
+NSMenuToolbarItem.m \
 NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
@@ -497,6 +498,7 @@ NSMediaLibraryBrowserController.h \
 NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
+NSMenuToolbarItem.h \
 NSMenuView.h \
 NSMovie.h \
 NSMovieView.h \
