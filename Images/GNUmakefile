@@ -90,6 +90,7 @@ Images_RESOURCE_FILES = \
  common_Info.tiff\
  common_LeftTabStop.tiff \
  common_LibraryFolder.tiff \
+ common_MenuToolbarItem.tiff \
  common_MiniWindowTile.tiff \
  common_Miniaturize.tiff \
  common_MiniaturizeH.tiff \

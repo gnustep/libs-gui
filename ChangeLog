@@ -1,3 +1,15 @@
+2024-05-04 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add NSMenuToolbarItem.h
+	* Headers/AppKit/NSMenuToolbarItem.h: Declarations
+	for NSMenuToolbarItem.
+	* Images/GNUmakefile: Add new image
+	* Images/nsmapping.strings: Add image mapping
+	* MISSING: Remove this class from the list
+	* Source/GNUmakefile: Add class to build
+	* Source/NSMenuToolbarItem.m: Implementation of
+	NSMenuToolbarItem.
+  
 2024-06-07 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add new methods
