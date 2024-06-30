@@ -122,40 +122,6 @@
 
 @end
 
-@implementation NSString (PrivatePathExtension)
-
-- (NSString *) stringByRemovingFirstKeyPath
-{
-  NSArray *components = [self componentsSeparatedByString: @"."];
-  NSString *result = @"";
-  NSEnumerator *en = [components objectEnumerator];
-  NSString *component = nil;
-  NSUInteger i = 0;
-
-  if ([components count] == 1)
-    {
-      return self;
-    }
-
-  while ((component = [en nextObject]) != nil)
-    {
-      if (i > 0)
-	{
-	  result = [result stringByAppendingString: component];
-	  if ([[components lastObject] isEqual: component] == NO)
-	    {
-	      result = [result stringByAppendingString: @"."];
-	    }
-	}
-
-      i++;
-    }
-
-  return result;
-}
-
-@end
-
 static NSRecursiveLock *bindingLock = nil;
 static NSMapTable *classTable = NULL;      //available bindings
 static NSMapTable *objectTable = NULL;     //bound bindings
