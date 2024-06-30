@@ -1873,36 +1873,6 @@ Also returns the child index relative to this parent. */
 			@selector(outlineView:writeItems:toPasteboard:)];
 }
 
-- (NSString *) _stringByRemovingFirstKeyPath: (NSString *)path
-{
-  NSArray *components = [path componentsSeparatedByString: @"."];
-  NSString *result = @"";
-  NSEnumerator *en = [components objectEnumerator];
-  NSString *component = nil;
-  NSUInteger i = 0;
-
-  if ([components count] == 1)
-    {
-      return path;
-    }
-
-  while ((component = [en nextObject]) != nil)
-    {
-      if (i > 0)
-	{
-	  result = [result stringByAppendingString: component];
-	  if ([[components lastObject] isEqual: component] == NO)
-	    {
-	      result = [result stringByAppendingString: @"."];
-	    }
-	}
-
-      i++;
-    }
-
-  return result;
-}
-
 - (id) _objectValueForTableColumn: (NSTableColumn *)tb
 			      row: (NSInteger) index
 {
@@ -1915,7 +1885,8 @@ Also returns the child index relative to this parent. */
     {
       id theItem = [_items objectAtIndex: index];
       NSString *ikp = [info objectForKey: @"NSObservedKeyPath"];
-      NSString *keyPath = [self _stringByRemovingFirstKeyPath: ikp];
+      NSUInteger location = [ikp rangeOfString: @"."].location;
+      NSString *keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
 
       // Here we are getting the last part of the keyPath since elsewhere in this class
       // we are recursively storing the contents of arrangedObjects (for example) to
