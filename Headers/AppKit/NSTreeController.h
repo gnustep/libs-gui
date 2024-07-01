@@ -143,56 +143,79 @@ APPKIT_EXPORT_CLASS
 
 /**
  * Key value path for the flag which gives the count for the children
- * of this node.  The path indicated her must be key-value compliant.
+ * of this node.  The path indicated here must be key-value compliant.
+ * If count is enabled, then add:, addChild:, remove:, removeChild:
+ * and insert: are disabled.  This key path is option since it can
+ * be determined by the array of children retuned by the
+ * childKeyPath.  The mode the tree controller is in when this is
+ * not specified is called "object" mode.
  */
 - (NSString*) countKeyPath;
 
 /**
  * Key value path for the flag which determins that this is a leaf.
- * The path indicated her must be key-value compliant.
+ * The path indicated here must be key-value compliant.  This
+ * key path is optional as it can be determined by the children
+ * returned by the childrenKeyPath.
  */
 - (NSString*) leafKeyPath;
 
 /**
  * Adds a child to the current selection using the newObject method.
+ * If the tree controller is in "object" mode, then newObject is called
+ * to add a new node.
  */
 - (void) addChild: (id)sender;
 
 /**
  * Adds a new objeect to the tree usin the newObject method.
+ * If the tree controller is in "object" mode, then newObject is called
+ * to add a new node.
  */
 - (void) add: (id)sender;
 
 /**
  * Inserts a child using the newObject method.  This method
  * will fail if canInsertChild returns NO.
+ * If the tree controller is in "object" mode, then newObject is called
+ * to add a new node.
  */
 - (void) insertChild: (id)sender;
 
 /**
  * Inserts and object using the newObject method at the specified indexPath.
+ * If the tree controller is in "object" mode, then newObject is called
+ * to add a new node.
  */
 - (void) insertObject: (id)object atArrangedObjectIndexPath: (NSIndexPath *)indexPath;
 
 /**
  * Inserts objects into arranged objects at the specified indexPaths.  These arrays are
  * expected to be parallel and have the same number of objects.
+ * This method will only function if the tree controller is in
+ * "object" mode.
  */
 - (void) insertObjects: (NSArray *)objects atArrangedObjectIndexPaths: (NSArray *)indexPaths;
 
 /**
  * Insert an object created by newObject into arranged objects.
+ * This method will only function if the tree controller is in
+ * "object" mode.
  */
 - (void) insertObject: (id)object atArrangedObjectIndexPath: (NSIndexPath *)indexPath;
 
 /**
  * Inserts objects into arranged objects at the specified indexPaths.  These arrays are
  * expected to be parallel and have the same number of objects.
+ * This method will only function if the tree controller is in
+ * "object" mode.
  */
 - (void) insertObjects: (NSArray *)objects atArrangedObjectIndexPaths: (NSArray *)indexPaths;
 
 /**
  * Insert an object created by newObject into arranged objects.
+ * This method will only function if the tree controller is in
+ * "object" mode.
  */
 - (void) insert: (id)sender;
 
@@ -205,6 +228,8 @@ APPKIT_EXPORT_CLASS
 
 /**
  * Removes object at the specified indexPath.
+ * This method will only function if the tree controller is in
+ * "object" mode.
  */
 - (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath *)indexPath;
 
@@ -234,7 +259,8 @@ APPKIT_EXPORT_CLASS
 - (void) removeSelectionIndexPaths: (NSArray *)indexPaths;
 
 /**
- * Remove the currently selected object
+ * Remove the currently selected object. This method will only
+ * function if the tree controller is in "object" mode.
  */
 - (void) remove: (id)sender;
 
