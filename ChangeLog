@@ -1,4 +1,4 @@
-2024-06-27 Gregory John Casamento <greg.casamento@gmail.com>
+2024-06-30 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSTreeController.h: Update header
 	* Headers/AppKit/NSTreeNode.h: Update header
@@ -16,7 +16,7 @@
 	* Source/NSTreeController.m: Implement new methods.
 	* Source/NSTreeNode.m: Implement new methods
 
-2024-05-04 Gregory John Casamento <greg.casamento@gmail.com>
+2024-06-28 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKit.h: Add NSMenuToolbarItem.h
 	* Headers/AppKit/NSMenuToolbarItem.h: Declarations
