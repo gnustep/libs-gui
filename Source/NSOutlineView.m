@@ -2070,15 +2070,30 @@ Also returns the child index relative to this parent. */
 	    }
 	  else
 	    {
+	      /* Per the documentation in NSTreeController, we can determine everything
+	       * from whether there are children present on a given node.  See
+	       * the documentation for NSTreeController for more info.
+	       */
 	      if ([self isExpandable: startitem] // leaf == NO
 		  && [self isItemExpanded: startitem])
 		{
 		  NSString *childrenKeyPath = [tc childrenKeyPath];
-		  NSString *countKeyPath = [tc countKeyPath];
-		  NSNumber *countValue = [sitem valueForKeyPath: countKeyPath];
 
-		  num = [countValue integerValue];
-		  children = [sitem valueForKeyPath: childrenKeyPath];
+		  if (childrenKeyPath != nil)
+		    {
+		      NSString *countKeyPath = [tc countKeyPath];
+
+		      children = [sitem valueForKeyPath: childrenKeyPath];
+		      if (countKeyPath == nil)
+			{
+			  num = [children count]; // get the count directly...
+			}
+		      else
+			{
+			  NSNumber *countValue = [sitem valueForKeyPath: countKeyPath];
+			  num = [countValue integerValue];
+			}		      
+		    }
 		}
 	    }
 
