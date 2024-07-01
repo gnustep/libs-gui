@@ -2063,7 +2063,7 @@ Also returns the child index relative to this parent. */
 	       * key of "children".   This is per the tests for this at
 	       * https://github.com/gcasa/NSTreeController_test.  Specifically it returns
 	       * _NSControllerTreeProxy.  The equivalent of that class in GNUstep is
-	       * GSTreeControllerProxy.
+	       * GSControllerTreeProxy.
 	       */
 	      children = [representedObject objectForKey: @"children"];
 	      num = [children count];
