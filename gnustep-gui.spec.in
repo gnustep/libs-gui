@@ -10,11 +10,12 @@ URL: http://www.gnustep.org/
 
 %description 
 The GNUstep gui Library is a powerful library of graphical user interface
-classes written completely in the Objective-C language; the classes are
-based upon the OpenStep specification, and provide the user with a
-traditional nextstep-like look and feel.  The classes include graphical
-objects such as windows, menus, buttons, text fields, popup lists, browsers,
-scrollviews, splitviews, fonts, colors, images, events, pasteboards,... This
-package includes development headers too.  You need the corresponding
-backend library package (gnustep-back) to use this package.
+classes written completely in the Objective-C language; the classes are based
+on Cocoa (formerly OPENSTEP), and provide the user with a themable environment.
+While the default look and feel resembles NeXTSTEP, this can be changed.  
+The classes include graphical objects such as windows, menus, buttons, 
+text fields, popup lists, browsers, scrollviews, splitviews, fonts, colors, 
+images, events, pasteboards,... This package includes development headers too.  
+You need the corresponding backend library package (gnustep-back) to use 
+this package.
 
