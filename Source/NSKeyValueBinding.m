@@ -192,8 +192,12 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   if (!objectTable)
     return nil;
 
+  // NSLog(@"+++ called with %@, %@", binding, anObject);
+  // [self _printObjectTable];
+  
   [bindingLock lock];
   bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)anObject);
+  // NSLog(@"+++ Bindings found for %@ => %@", anObject, bindings);
   if (bindings != nil)
     {
       theBinding = (GSKeyValueBinding*)[bindings objectForKey: binding];
@@ -319,6 +323,11 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   DESTROY(info);
   src = nil; 
   [super dealloc];
+}
+
+- (id) observedObject
+{
+  return [info objectForKey: NSObservedObjectKey];
 }
 
 - (id) destinationValue

@@ -248,4 +248,10 @@
     }
 }
 
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"<%@> _representedObject = %@, _childNode = %@, _parentNode = %@",
+		   [super description], _representedObject, _childNodes, _parentNode];
+}
+
 @end

@@ -1,13 +1,13 @@
-/* 
-   NSTreeController.h
+ /*
+   NSTreeController.m
 
    The tree controller class.
 
-   Copyright (C) 2012 Free Software Foundation, Inc.
+   Copyright (C) 2012, 2024 Free Software Foundation, Inc.
 
    Author:  Gregory Casamento <greg.casamento@gmail.com>
-   Date: 2012
-   
+   Date: 2012, 2024
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -22,54 +22,73 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
-/* 
-   NSTreeController.h
+*/
 
-   The tree controller class.
-
-   Copyright (C) 2012 Free Software Foundation, Inc.
-
-   Author:  Gregory Casamento <greg.casamento@gmail.com>
-   Date: 2012
-   
-   This file is part of the GNUstep GUI Library.
-
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
-   Boston, MA 02110-1301, USA.
-*/ 
-
+#import <Foundation/NSArchiver.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSIndexPath.h>
+#import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSSortDescriptor.h>
 
-#import <AppKit/NSTreeController.h>
-#import <AppKit/NSTreeNode.h>
+#import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSTreeController.h"
+#import "AppKit/NSTreeNode.h"
+
+#import "GSBindingHelpers.h"
+#import "GSFastEnumeration.h"
+#import "GSControllerTreeProxy.h"
 
 @implementation NSTreeController
 
++ (void) initialize
+{
+  if (self == [NSTreeController class])
+    {
+      [self exposeBinding: NSContentArrayBinding];
+      [self exposeBinding: NSContentBinding];
+      [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
+	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
+    }
+}
+
+- (void) _initDefaults
+{
+  _childrenKeyPath = nil;
+  _countKeyPath = nil;
+  _leafKeyPath = nil;
+  _sortDescriptors = nil;
+  _selection_index_paths = [[NSMutableArray alloc] init];
+
+  _canInsert = YES;
+  _canInsertChild = YES;
+  _canAddChild = YES;
+
+  [self setObjectClass: [NSMutableDictionary class]];
+}
+
 - (id) initWithContent: (id)content
 {
+  NSLog(@"Content = %@", content);
   if ((self = [super initWithContent: content]) != nil)
     {
+      [self _initDefaults];
     }
+
+  return self;
+}
+
+- (id) init
+{
+  NSMutableArray *array = [[NSMutableArray alloc] init];
+
+  self = [self initWithContent: array];
+  RELEASE(array);
   
   return self;
 }
@@ -80,13 +99,20 @@
   RELEASE(_countKeyPath);
   RELEASE(_leafKeyPath);
   RELEASE(_sortDescriptors);
+  RELEASE(_arranged_objects);
   [super dealloc];
 }
 
-- (BOOL) addSelectionIndexPaths: (NSArray*)indexPaths
+- (BOOL) addSelectionIndexPaths: (NSArray *)indexPaths
 {
-  // FIXME
-  return NO;
+  BOOL f = [self commitEditing];
+
+  if (YES == f)
+    {
+      [_selection_index_paths addObjectsFromArray: indexPaths];
+    }
+
+  return f;
 }
 
 - (BOOL) alwaysUsesMultipleValuesMarker
@@ -99,22 +125,19 @@
   return _avoidsEmptySelection;
 }
 
-- (BOOL) canAddChid
+- (BOOL) canAddChild
 {
-  // FIXME
-  return NO;
+  return _canAddChild;
 }
 
 - (BOOL) canInsert
 {
-  // FIXME
-  return NO;
+  return _canInsert;
 }
 
 - (BOOL) canInsertChild
 {
-  // FIXME
-  return NO;
+  return _canInsertChild;
 }
 
 - (BOOL) preservesSelection
@@ -127,31 +150,56 @@
   return _selectsInsertedObjects;
 }
 
-- (BOOL) setSelectionIndexPath: (NSIndexPath*)indexPath
+- (BOOL) setSelectionIndexPath: (NSIndexPath *)indexPath
 {
-  // FIXME
-  return NO;
+  BOOL f = [self commitEditing];
+
+  if (YES == f)
+    {
+      [_selection_index_paths addObject: indexPath];
+    }
+  
+  return f;
 }
 
-- (BOOL) setSelectionIndexPaths: (NSArray*)indexPaths
+- (BOOL) setSelectionIndexPaths: (NSArray *)indexPaths
 {
-  // FIXME
-  return NO;
+  BOOL f = [self commitEditing];
+
+  if (YES == f)
+    {
+      NSMutableArray *mutable_index_paths = [NSMutableArray arrayWithArray: indexPaths];
+      ASSIGN(_selection_index_paths, mutable_index_paths);
+    }
+  
+  return f;
 }
 
-- (id) arrangedObjects
+- (NSTreeNode *) arrangedObjects
 {
-  // FIXME
-  return nil;
+  if (_arranged_objects == nil)
+    {
+      [self rearrangeObjects];
+    }
+  return _arranged_objects;
 }
 
-- (id) content
+- (void) rearrangeObjects
 {
-  // FIXME
-  return [super content];
+  [self willChangeValueForKey: @"arrangedObjects"];
+  DESTROY(_arranged_objects);
+
+  if ([_content isKindOfClass: [NSArray class]])
+    {
+      NSMutableDictionary *dictionary = [GSControllerTreeProxy dictionaryWithChildren: _content];
+      _arranged_objects = [[GSControllerTreeProxy alloc] initWithRepresentedObject: dictionary
+								    withController: self];
+    }
+  
+  [self didChangeValueForKey: @"arrangedObjects"];
 }
 
-- (NSArray*) selectedObjects
+- (NSArray *) selectedObjects
 {
   // FIXME
   return [super selectedObjects];
@@ -189,15 +237,42 @@
   return _leafKeyPath;
 }
 
-- (void) addChild: (id)sender
-{
-  // FIXME
-}
-
 - (void) add: (id)sender
 {
-  // FIXME
-  [super add: sender];
+  if ([self canAddChild]
+      && [self countKeyPath] == nil)
+    {
+      id newObject = [self newObject];
+
+      if (newObject != nil)
+	{
+	  NSMutableArray *newContent = [NSMutableArray arrayWithArray: [self content]];
+	  GSControllerTreeProxy *node = [[GSControllerTreeProxy alloc]
+					  initWithRepresentedObject: newObject
+						     withController: self];
+
+	  [newContent addObject: node];
+	  [self setContent: newContent];
+	  RELEASE(newObject);
+	}
+    }
+}
+
+- (void) addChild: (id)obj
+{
+  if ([self canAddChild]
+      && [self countKeyPath] == nil)
+    {
+    }
+}
+
+- (void) remove: (id)sender
+{
+  if ([self canRemove]
+      && [self countKeyPath] == nil)
+    {
+      [self removeObject: [self content]];
+    }
 }
 
 - (void) insertChild: (id)sender
@@ -220,11 +295,6 @@
   // FIXME
 }
 
-- (void) rearrangeObjects
-{
-  // FIXME
-}
-
 - (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath*)indexPath
 {
   // FIXME
@@ -238,12 +308,6 @@
 - (void) removeSelectionIndexPaths: (NSArray*)indexPaths
 {
   // FIXME
-}
-
-- (void) remove: (id)sender
-{
-  // FIXME
-  [super remove: sender];
 }
 
 - (void) setAlwaysUsesMultipleValuesMarker: (BOOL)flag
@@ -263,8 +327,8 @@
 
 - (void) setContent: (id)content
 {
-  // FIXME
   [super setContent: content];
+  [self rearrangeObjects];
 }
 
 - (void) setCountKeyPath: (NSString*)path
@@ -272,7 +336,7 @@
   ASSIGN(_countKeyPath, path);
 }
 
-- (void) setLeafPathKey: (NSString*)key
+- (void) setLeafKeyPath: (NSString*)key
 {
   ASSIGN(_leafKeyPath, key);
 }
@@ -294,20 +358,17 @@
 
 - (NSString*) childrenKeyPathForNode: (NSTreeNode*)node
 {
-  // FIXME
-  return nil;
+  return _childrenKeyPath;
 }
 
 - (NSString*) countKeyPathForNode: (NSTreeNode*)node
 {
-  // FIXME
-  return nil;
+  return _countKeyPath;
 }
 
 - (NSString*) leafKeyPathForNode: (NSTreeNode*)node
 {
-  // FIXME
-  return nil;
+  return _leafKeyPath;
 }
 
 - (void) moveNode: (NSTreeNode*)node toIndexPath: (NSIndexPath*)indexPath
@@ -326,19 +387,168 @@
   return nil;
 }
 
+
+- (void) bind: (NSString *)binding
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding isEqual: NSContentArrayBinding])
+    {
+      GSKeyValueBinding *kvb;
+
+      [self unbind: binding];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"content"
+					      withName: binding
+					      toObject: anObject
+					   withKeyPath: keyPath
+					       options: options
+					    fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
+    }
+  else
+    {
+      [super bind: binding
+	 toObject: anObject
+      withKeyPath: keyPath
+	  options: options];
+    }
+}
+
 - (id) initWithCoder: (NSCoder*)coder
 {
+  self = [super initWithCoder: coder];
+
+  if (self != nil)
+    {
+      [self _initDefaults]; // set up default values...
+      if ([coder allowsKeyedCoding])
+	{
+	  // These names do not stick to convention.  Usually it would be
+	  // NS* or NSTreeController* so they must be overriden in
+	  // GSXib5KeyedUnarchver.
+	  if ([coder containsValueForKey: @"NSTreeContentChildrenKey"])
+	    {
+	      [self setChildrenKeyPath:
+		      [coder decodeObjectForKey: @"NSTreeContentChildrenKey"]];
+	    }
+	  if ([coder containsValueForKey: @"NSTreeContentCountKey"])
+	    {
+	      [self setCountKeyPath:
+		      [coder decodeObjectForKey: @"NSTreeContentCountKey"]];
+	    }
+	  if ([coder containsValueForKey: @"NSTreeContentLeafKey"])
+	    {
+	      [self setLeafKeyPath:
+		      [coder decodeObjectForKey: @"NSTreeContentLeafKey"]];
+	    }
+
+	  // Since we don't inherit from NSArrayController these are decoded here
+	  // as well.
+	  if ([coder containsValueForKey: @"NSAvoidsEmptySelection"])
+	    {
+	      [self setAvoidsEmptySelection:
+		    [coder decodeBoolForKey: @"NSAvoidsEmptySelection"]];
+	    }
+	  if ([coder containsValueForKey: @"NSPreservesSelection"])
+	    {
+	      [self setPreservesSelection:
+		      [coder decodeBoolForKey: @"NSPreservesSelection"]];
+	    }
+	  if ([coder containsValueForKey: @"NSSelectsInsertedObjects"])
+	    {
+	      [self setSelectsInsertedObjects:
+		      [coder decodeBoolForKey: @"NSSelectsInsertedObjects"]];
+	    }
+	}
+    }
+  else
+    {
+      id obj = nil;
+      BOOL f = NO;
+
+      obj = [coder decodeObject];
+      [self setChildrenKeyPath: obj];
+      obj = [coder decodeObject];
+      [self setCountKeyPath: obj];
+      obj = [coder decodeObject];
+      [self setLeafKeyPath: obj];
+
+      [coder decodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+      [self setAvoidsEmptySelection: f];
+      [coder decodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+      [self setPreservesSelection: f];
+      [coder decodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+      [self setSelectsInsertedObjects: f];
+    }
+
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder*)coder
 {
-  // Do nothing...
+  [super encodeWithCoder: coder];
+  if ([coder allowsKeyedCoding])
+    {
+      [coder encodeObject: _childrenKeyPath
+		   forKey: @"NSTreeContentChildrenKey"];
+      [coder encodeObject: _countKeyPath
+		   forKey: @"NSTreeContentCountKey"];
+      [coder encodeObject: _leafKeyPath
+		   forKey: @"NSTreeContentLeafKey"];
+
+
+      [coder encodeBool: _avoidsEmptySelection
+		 forKey: @"NSAvoidsEmptySelection"];
+      [coder encodeBool: _preservesSelection
+		 forKey: @"NSPreservesSelection"];
+      [coder encodeBool: _selectsInsertedObjects
+		 forKey: @"NSSelectsInsertedObjects"];
+    }
+  else
+    {
+      id obj = nil;
+      BOOL f = NO;
+
+      obj = [self childrenKeyPath];
+      [coder encodeObject: obj];
+      obj = [self countKeyPath];
+      [coder encodeObject: obj];
+      obj = [self leafKeyPath];
+      [coder encodeObject: obj];
+
+      f = [self avoidsEmptySelection];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+      f = [self preservesSelection];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+      f = [self selectsInsertedObjects];
+      [coder encodeValueOfObjCType: @encode(BOOL)
+				at: &f];
+    }
 }
 
 - (id) copyWithZone: (NSZone*)zone
 {
-  return [self retain];
+  id copy = [[NSTreeController allocWithZone: zone] initWithContent: [self content]];
+
+  if (copy != nil)
+    {
+      [copy setChildrenKeyPath: [self childrenKeyPath]];
+      [copy setCountKeyPath: [self countKeyPath]];
+      [copy setLeafKeyPath: [self leafKeyPath]];
+
+      [copy setAvoidsEmptySelection: [self avoidsEmptySelection]];
+      [copy setPreservesSelection: [self preservesSelection]];
+      [copy setSelectsInsertedObjects: [self selectsInsertedObjects]];
+    }
+  
+  return copy;
 }
 
 @end
