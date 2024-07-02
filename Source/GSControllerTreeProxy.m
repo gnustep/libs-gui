@@ -33,6 +33,13 @@
 
 @implementation GSControllerTreeProxy
 
++ (NSMutableDictionary *) dictionaryWithChildren: (NSMutableArray *)children
+{
+  NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject: children
+								       forKey: @"children"];
+  return dictionary;
+}
+
 - (instancetype) initWithRepresentedObject: (id)representedObject
 			    withController: (id)controller
 {
@@ -46,10 +53,15 @@
 
 - (NSUInteger) count
 {
-  NSDictionary *ro = [self representedObject];
-  NSArray *children = [ro objectForKey: @"children"];
-
+  NSArray *children = [[self representedObject] objectForKey: @"children"];
   return [children count];
+}
+
+- (NSMutableArray *) childNodes
+{
+  NSDictionary *ro = [self representedObject];
+  NSMutableArray *children = [ro objectForKey: @"children"];
+  return children;
 }
 
 - (id) value

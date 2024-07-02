@@ -38,10 +38,13 @@ extern "C" {
   NSTreeController *_controller;
 }
 
++ (NSMutableDictionary *) dictionaryWithChildren: (NSMutableArray *)children;
+
 - (instancetype) initWithRepresentedObject: (id)representedObject
 			    withController: (id)controller;
 - (NSUInteger) count;
-  
+
+- (NSMutableArray *) childNodes;
 @end
 
 #if	defined(__cplusplus)

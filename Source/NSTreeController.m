@@ -57,20 +57,27 @@
     }
 }
 
+- (void) _initDefaults
+{
+  _childrenKeyPath = nil;
+  _countKeyPath = nil;
+  _leafKeyPath = nil;
+  _sortDescriptors = nil;
+  _selection_index_paths = [[NSMutableArray alloc] init];
+
+  _canInsert = YES;
+  _canInsertChild = YES;
+  _canAddChild = YES;
+
+  [self setObjectClass: [NSMutableDictionary class]];
+}
+
 - (id) initWithContent: (id)content
 {
   NSLog(@"Content = %@", content);
   if ((self = [super initWithContent: content]) != nil)
     {
-      _childrenKeyPath = nil;
-      _countKeyPath = nil;
-      _leafKeyPath = nil;
-      _sortDescriptors = nil;
-      _selection_index_paths = [[NSMutableArray alloc] init];
-
-      _canInsert = YES;
-      _canInsertChild = YES;
-      _canAddChild = YES;
+      [self _initDefaults];
     }
 
   return self;
@@ -184,8 +191,7 @@
 
   if ([_content isKindOfClass: [NSArray class]])
     {
-      NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject: _content
-									   forKey: @"children"];
+      NSMutableDictionary *dictionary = [GSControllerTreeProxy dictionaryWithChildren: _content];
       _arranged_objects = [[GSControllerTreeProxy alloc] initWithRepresentedObject: dictionary
 								    withController: self];
     }
@@ -233,29 +239,37 @@
 
 - (void) add: (id)sender
 {
-  if ([self canAddChild])
+  if ([self canAddChild]
+      && [self countKeyPath] == nil)
     {
-      id new = [self newObject];
+      id newObject = [self newObject];
 
-      [self addChild: new];
-      RELEASE(new);
+      if (newObject != nil)
+	{
+	  NSMutableArray *newContent = [NSMutableArray arrayWithArray: [self content]];
+	  GSControllerTreeProxy *node = [[GSControllerTreeProxy alloc]
+					  initWithRepresentedObject: newObject
+						     withController: self];
+
+	  [newContent addObject: node];
+	  [self setContent: newContent];
+	  RELEASE(newObject);
+	}
     }
 }
 
 - (void) addChild: (id)obj
 {
-  GSKeyValueBinding *theBinding;
-
-  [self setContent: obj];
-  theBinding = [GSKeyValueBinding getBinding: NSContentObjectBinding
-				   forObject: self];
-  if (theBinding != nil)
-    [theBinding reverseSetValueFor: @"content"];
+  if ([self canAddChild]
+      && [self countKeyPath] == nil)
+    {
+    }
 }
 
 - (void) remove: (id)sender
 {
-  if ([self canRemove])
+  if ([self canRemove]
+      && [self countKeyPath] == nil)
     {
       [self removeObject: [self content]];
     }
@@ -408,6 +422,7 @@
 
   if (self != nil)
     {
+      [self _initDefaults]; // set up default values...
       if ([coder allowsKeyedCoding])
 	{
 	  // These names do not stick to convention.  Usually it would be

@@ -281,6 +281,9 @@ APPKIT_EXPORT_CLASS
 
 /**
  * Sets the count key path.  This needs to be key-value compliant.
+ * Setting this key path will disable add:, addChild:, remove:,
+ * removeChild:, and insert: methods.  If this is not specified,
+ * the tree controller is in "object" mode.
  */
 - (void) setCountKeyPath: (NSString *)path;
 
@@ -332,34 +335,10 @@ APPKIT_EXPORT_CLASS
 - (void) moveNodes: (NSArray *)nodes toIndexPath: (NSIndexPath *)startingIndexPath;
 
 /**
- * Array containing all selected nodes
+ * Set the descriptors by which the content of this tree controller
+ * is sorted.
  */
 - (void) setSortDescriptors: (NSArray *)descriptors;
-
-/**
- * children key path for the given NSTreeNode.
- */
-- (NSString*) childrenKeyPathForNode: (NSTreeNode *)node;
-
-/**
- * count key path for the given NSTreeNode.
- */
-- (NSString*) countKeyPathForNode: (NSTreeNode *)node;
-
-/**
- * leaf key path for the given NSTreeNode.
- */
-- (NSString*) leafKeyPathForNode: (NSTreeNode *)node;
-
-/**
- * Moves node to given indexPath
- */
-- (void) moveNode: (NSTreeNode *)node toIndexPath: (NSIndexPath *)indexPath;
-
-/**
- * Move nodes to position at startingIndexPath
- */
-- (void) moveNodes: (NSArray *)nodes toIndexPath: (NSIndexPath *)startingIndexPath;
 
 /**
  * Array containing all selected nodes
