@@ -458,15 +458,15 @@ static NSImage *unexpandable  = nil;
       BOOL leaf = YES;
       id observedObject = [theBinding observedObject];
       NSTreeController *tc = (NSTreeController *)observedObject;
-      NSString *leafKeyPath = [tc leafKeyPath];
+      NSString *leafKeyPath = [tc leafKeyPathForNode: item];
 
       if (leafKeyPath == nil)
 	{
-	  NSString *countKeyPath = [tc countKeyPath];
+	  NSString *countKeyPath = [tc countKeyPathForNode: item];
 
 	  if (countKeyPath == nil)
 	    {
-	      NSString *childrenKeyPath = [tc childrenKeyPath];
+	      NSString *childrenKeyPath = [tc childrenKeyPathForNode: item];
 
 	      if (childrenKeyPath == nil)
 		{
@@ -2077,11 +2077,11 @@ Also returns the child index relative to this parent. */
 	      if ([self isExpandable: startitem] // leaf == NO
 		  && [self isItemExpanded: startitem])
 		{
-		  NSString *childrenKeyPath = [tc childrenKeyPath];
+		  NSString *childrenKeyPath = [tc childrenKeyPathForNode: startitem];
 
 		  if (childrenKeyPath != nil)
 		    {
-		      NSString *countKeyPath = [tc countKeyPath];
+		      NSString *countKeyPath = [tc countKeyPathForNode: startitem];
 
 		      children = [sitem valueForKeyPath: childrenKeyPath];
 		      if (countKeyPath == nil)

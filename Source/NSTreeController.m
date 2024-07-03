@@ -263,6 +263,19 @@
   if ([self canAddChild]
       && [self countKeyPath] == nil)
     {
+      id newObject = [self newObject];
+
+      if (newObject != nil)
+	{
+	  NSMutableArray *newContent = [NSMutableArray arrayWithArray: [self content]];
+	  GSControllerTreeProxy *node = [[GSControllerTreeProxy alloc]
+					  initWithRepresentedObject: newObject
+						     withController: self];
+
+	  [newContent addObject: node];
+	  [self setContent: newContent];
+	  RELEASE(newObject);
+	}
     }
 }
 
