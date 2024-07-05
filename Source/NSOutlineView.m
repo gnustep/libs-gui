@@ -2056,6 +2056,13 @@ Also returns the child index relative to this parent. */
       NSTreeController *tc = (NSTreeController *)observedObject;
       NSArray *children = nil;
 
+      /* If there is a binding present, then allow it to be editable
+       * by default as editability of cells is determined in the
+       * NSTableColumn class based on the binding there for the
+       * editable property as defined in IB.
+       */
+      _dataSource_editable = YES;
+
       /* Implement logic to build the internal data structure here using
        * bindings...
        */
