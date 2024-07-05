@@ -2083,6 +2083,8 @@ static void computeNewSelection
 {
   [self abortEditing];
 
+  [GSKeyValueBinding unbindAllForObject: self];
+
   RELEASE (_gridColor);
   RELEASE (_backgroundColor);
   RELEASE (_tableColumns);

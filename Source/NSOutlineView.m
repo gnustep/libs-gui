@@ -204,6 +204,8 @@ static NSImage *unexpandable  = nil;
 
 - (void) dealloc
 {
+  [GSKeyValueBinding unbindAllForObject: self];
+  
   RELEASE(_items);
   RELEASE(_expandedItems);
 
@@ -773,12 +775,18 @@ static NSImage *unexpandable  = nil;
 
       // This method is @optional in NSOutlineViewDataSource as of macOS10.0
       // CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
+
+      // Is the data source editable?
+      _dataSource_editable = [anObject respondsToSelector:
+				    @selector(outlineView:setObjectValue:forTableColumn:byItem:)];
     }
-
-  // Is the data source editable?
-  _dataSource_editable = [anObject respondsToSelector:
-    @selector(outlineView:setObjectValue:forTableColumn:byItem:)];
-
+  else
+    {
+      /* Based on testing on macOS, this should default to YES if there is a binding...
+       */
+      _dataSource_editable = YES;
+    }
+  
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
   [self tile];
@@ -2056,7 +2064,6 @@ Also returns the child index relative to this parent. */
 	  if (startitem == nil)
 	    {
 	      NSTreeNode *node = (NSTreeNode *)[theBinding destinationValue];
-	      NSDictionary *representedObject = [node representedObject];
 
 	      /* Per the documentation 10.4/5+ uses NSTreeNode as the return value for
 	       * the contents of this tree node consists of a dictionary with a single
@@ -2065,7 +2072,7 @@ Also returns the child index relative to this parent. */
 	       * _NSControllerTreeProxy.  The equivalent of that class in GNUstep is
 	       * GSControllerTreeProxy.
 	       */
-	      children = [representedObject objectForKey: @"children"];
+	      children = [node children];
 	      num = [children count];
 	    }
 	  else

@@ -44,7 +44,7 @@ extern "C" {
 			    withController: (id)controller;
 - (NSUInteger) count;
 
-- (NSMutableArray *) childNodes;
+- (NSMutableArray *) children;
 @end
 
 #if	defined(__cplusplus)

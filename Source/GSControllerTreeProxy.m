@@ -57,7 +57,7 @@
   return [children count];
 }
 
-- (NSMutableArray *) childNodes
+- (NSMutableArray *) children
 {
   NSDictionary *ro = [self representedObject];
   NSMutableArray *children = [ro objectForKey: @"children"];
