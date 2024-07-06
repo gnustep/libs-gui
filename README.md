@@ -51,7 +51,7 @@ Please log bug reports on the [GitHub issues page][2].
 
 Happy hacking!
 
-Copyright (C) 2005 Free Software Foundation
+Copyright (C) 2005, 2924 Free Software Foundation
 
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright
