@@ -45,6 +45,11 @@ extern "C" {
 - (NSUInteger) count;
 
 - (NSMutableArray *) children;
+
+- (id) value;
+
+- (void) setValue: (id)value;
+
 @end
 
 #if	defined(__cplusplus)

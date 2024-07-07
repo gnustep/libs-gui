@@ -66,7 +66,13 @@
 
 - (id) value
 {
-  return nil;
+  return [_representedObject objectForKey: @"value"];
+}
+
+- (void) setValue: (id)value
+{
+  [_representedObject setObject: value
+			 forKey: @"value"];
 }
 
 @end
