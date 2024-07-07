@@ -177,7 +177,7 @@ static NSImage *unexpandable  = nil;
 
       // Bindings..
       [self exposeBinding: NSContentBinding];
-      // [self exposeBinding: NSContentArrayBinding];
+      [self exposeBinding: NSContentArrayBinding];
       [self exposeBinding: NSSelectionIndexesBinding];
       [self exposeBinding: NSSortDescriptorsBinding];
     }

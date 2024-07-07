@@ -49,6 +49,7 @@
 #import "AppKit/NSCell.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSFont.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSMatrix.h"
@@ -56,9 +57,10 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSBezierPath.h"
-#import "GNUstepGUI/GSTheme.h"
 
+#import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
+#import "GSBindingHelpers.h"
 
 /* Cache */
 static CGFloat scrollerWidth; // == [NSScroller scrollerWidth]
@@ -2448,6 +2450,12 @@ static BOOL browserUseBezels;
           titleCell = [GSBrowserTitleCell new];
         }
       
+      // Bindings..
+      [self exposeBinding: NSContentBinding];
+      [self exposeBinding: NSContentValuesBinding];
+      [self exposeBinding: NSSelectionIndexesBinding];
+      [self exposeBinding: NSSortDescriptorsBinding];
+
       [self _themeDidActivate: nil];
     }
 }
@@ -2530,6 +2538,8 @@ static BOOL browserUseBezels;
 
 - (void) dealloc
 {
+  [GSKeyValueBinding unbindAllForObject: self];
+
   [[NSNotificationCenter defaultCenter] removeObserver: self];
 
   if ([titleCell controlView] == self)
