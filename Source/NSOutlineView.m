@@ -1921,15 +1921,32 @@ Also returns the child index relative to this parent. */
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (NSInteger) index
 {
-  if ([_dataSource respondsToSelector:
-    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
+  // If we have content binding the data source is used only
+  // like a delegate
+  NSDictionary *info = [GSKeyValueBinding infoForBinding: NSValueBinding forObject: tb];
+  if (info != nil)
     {
-      id item = [self itemAtRow: index];
+      id theItem = [_items objectAtIndex: index];
+      NSString *ikp = [info objectForKey: @"NSObservedKeyPath"];
+      NSUInteger location = [ikp rangeOfString: @"."].location;
+      NSString *keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
 
-      [_dataSource outlineView: self
-		   setObjectValue: value
-		   forTableColumn: tb
-		   byItem: item];
+      // Set the value on the keyPath.
+      [theItem setValue: value
+	     forKeyPath: keyPath];
+    }
+  else
+    {
+      if ([_dataSource respondsToSelector:
+		    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
+	{
+	  id item = [self itemAtRow: index];
+	  
+	  [_dataSource outlineView: self
+		    setObjectValue: value
+		    forTableColumn: tb
+			    byItem: item];
+	}
     }
 }
 
