@@ -2139,7 +2139,7 @@ Also returns the child index relative to this parent. */
        * file system would try to traverse every file/directory on -reloadData.
        */
       if (startitem == nil
-	  || ([self isExpandable: startitem] // [_dataSource outlineView: self isItemExpandable: startitem])
+	  || ([self isExpandable: startitem]
 	      && [self isItemExpanded: startitem]))
 	{
 	  num = [_dataSource outlineView: self
@@ -2439,11 +2439,6 @@ Also returns the child index relative to this parent. */
       [self collapseItem: item collapseChildren: YES];
     }
   [autoExpanded removeAllObjects];
-}
-
-- (void) awakeFromNib
-{
-  [self reloadData];
 }
 
 @end
