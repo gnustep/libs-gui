@@ -1892,7 +1892,7 @@ Also returns the child index relative to this parent. */
   if (info != nil)
     {
       id theItem = [_items objectAtIndex: index];
-      NSString *ikp = [info objectForKey: @"NSObservedKeyPath"];
+      NSString *ikp = [info objectForKey: NSObservedKeyPathKey];
       NSUInteger location = [ikp rangeOfString: @"."].location;
       NSString *keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
 
@@ -1927,7 +1927,7 @@ Also returns the child index relative to this parent. */
   if (info != nil)
     {
       id theItem = [_items objectAtIndex: index];
-      NSString *ikp = [info objectForKey: @"NSObservedKeyPath"];
+      NSString *ikp = [info objectForKey: NSObservedKeyPathKey];
       NSUInteger location = [ikp rangeOfString: @"."].location;
       NSString *keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
 

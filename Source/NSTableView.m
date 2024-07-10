@@ -6883,8 +6883,21 @@ For a more detailed explanation, -setSortDescriptors:. */
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (NSInteger) index
 {
-  if ([_dataSource respondsToSelector:
-		  @selector(tableView:setObjectValue:forTableColumn:row:)])
+  GSKeyValueBinding *theBinding;
+
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding 
+				   forObject: tb];
+  if (theBinding != nil)
+    {
+      NSDictionary *info = [GSKeyValueBinding infoForBinding: NSValueBinding
+						   forObject: tb];
+      id obj = [(NSArray *)[theBinding destinationValue]
+		   objectAtIndex: index];
+      NSString *keyPath = [info objectForKey: NSObservedKeyPathKey];
+      [obj setValue: value forKeyPath: keyPath];
+    }
+  else if ([_dataSource respondsToSelector:
+		       @selector(tableView:setObjectValue:forTableColumn:row:)])
     {
       [_dataSource tableView: self
 	      setObjectValue: value
