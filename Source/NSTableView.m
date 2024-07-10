@@ -6878,7 +6878,7 @@ For a more detailed explanation, -setSortDescriptors:. */
   
   return result;
 }
-
+ 
 - (void) _setObjectValue: (id)value
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (NSInteger) index
