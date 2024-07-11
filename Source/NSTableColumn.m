@@ -97,6 +97,7 @@
       [self setVersion: 4];
       [self exposeBinding: NSValueBinding];
       [self exposeBinding: NSEnabledBinding];
+      [self exposeBinding: NSEditableBinding];
     }
 }
 
@@ -661,6 +662,10 @@ to YES. */
     {
       // FIXME
     }
+  else if ([aKey isEqual: NSEditableBinding])
+    {
+      // FIXME
+    }
   else
     {
       [super setValue: anObject forKey: aKey];
@@ -674,6 +679,11 @@ to YES. */
       return nil;
     }
   else if ([aKey isEqual: NSEnabledBinding])
+    {
+      // FIXME
+      return [NSNumber numberWithBool: YES];
+    }
+  else if ([aKey isEqual: NSEditableBinding])
     {
       // FIXME
       return [NSNumber numberWithBool: YES];
