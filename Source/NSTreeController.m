@@ -90,7 +90,7 @@
 
   self = [self initWithContent: array];
   RELEASE(array);
-  
+
   return self;
 }
 
@@ -159,7 +159,7 @@
     {
       [_selection_index_paths addObject: indexPath];
     }
-  
+
   return f;
 }
 
@@ -172,7 +172,7 @@
       NSMutableArray *mutable_index_paths = [NSMutableArray arrayWithArray: indexPaths];
       ASSIGN(_selection_index_paths, mutable_index_paths);
     }
-  
+
   return f;
 }
 
@@ -196,7 +196,7 @@
       _arranged_objects = [[GSControllerTreeProxy alloc] initWithRepresentedObject: dictionary
 								    withController: self];
     }
-  
+
   [self didChangeValueForKey: @"arrangedObjects"];
 }
 
@@ -286,12 +286,12 @@
   NSUInteger pos = 0;
   NSMutableArray *children = [_arranged_objects mutableChildNodes];
   NSUInteger lastIndex = 0;
-  
+
   for (pos = 0; pos < length - 1; pos++)
     {
       NSUInteger i = [indexPath indexAtPosition: pos];
       id node = [children objectAtIndex: i];
-      
+
       children = [node valueForKeyPath: _childrenKeyPath];
     }
 
@@ -309,7 +309,7 @@
   else
     {
       NSUInteger i = 0;
-      
+
       FOR_IN(id, object, objects)
 	{
 	  NSIndexPath *indexPath = [indexPaths objectAtIndex: i];
@@ -329,12 +329,31 @@
 
 - (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath*)indexPath
 {
-  // FIXME
+  NSUInteger length = [indexPath length];
+  NSUInteger pos = 0;
+  NSMutableArray *children = [_arranged_objects mutableChildNodes];
+  NSUInteger lastIndex = 0;
+
+  for (pos = 0; pos < length - 1; pos++)
+    {
+      NSUInteger i = [indexPath indexAtPosition: pos];
+      id node = [children objectAtIndex: i];
+
+      children = [node valueForKeyPath: _childrenKeyPath];
+    }
+
+  lastIndex = [indexPath indexAtPosition: length - 1];
+  [children removeObjectAtIndex: lastIndex];
+  [self rearrangeObjects];
 }
 
 - (void) removeObjectsAtArrangedObjectIndexPaths: (NSArray*)indexPaths
 {
-  // FIXME
+  FOR_IN(NSIndexPath*, indexPath, indexPaths)
+    {
+      [self removeObjectAtArrangedObjectIndexPath: indexPath];
+    }
+  END_FOR_IN(indexPaths);
 }
 
 - (void) removeSelectionIndexPaths: (NSArray*)indexPaths
@@ -579,7 +598,7 @@
       [copy setPreservesSelection: [self preservesSelection]];
       [copy setSelectsInsertedObjects: [self selectsInsertedObjects]];
     }
-  
+
   return copy;
 }
 
