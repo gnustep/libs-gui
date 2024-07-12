@@ -359,6 +359,7 @@
 - (void) removeSelectionIndexPaths: (NSArray*)indexPaths
 {
   // FIXME
+  [self removeObjectsAtArrangedObjectIndexPaths: indexPaths];
 }
 
 - (void) setAlwaysUsesMultipleValuesMarker: (BOOL)flag
