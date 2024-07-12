@@ -297,6 +297,7 @@
 
   lastIndex = [indexPath indexAtPosition: length - 1];
   [children insertObject: object atIndex: lastIndex];
+  [self rearrangeObjects];
 }
 
 - (void) insertObjects: (NSArray*)objects atArrangedObjectIndexPaths: (NSArray*)indexPaths
