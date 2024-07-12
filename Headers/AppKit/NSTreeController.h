@@ -165,14 +165,14 @@ APPKIT_EXPORT_CLASS
  * If the tree controller is in "object" mode, then newObject is called
  * to add a new node.
  */
-- (void) addChild: (id)sender;
+- (IBAction) addChild: (id)sender;
 
 /**
  * Adds a new objeect to the tree usin the newObject method.
  * If the tree controller is in "object" mode, then newObject is called
  * to add a new node.
  */
-- (void) add: (id)sender;
+- (IBAction) add: (id)sender;
 
 /**
  * Inserts a child using the newObject method.  This method
@@ -180,7 +180,7 @@ APPKIT_EXPORT_CLASS
  * If the tree controller is in "object" mode, then newObject is called
  * to add a new node.
  */
-- (void) insertChild: (id)sender;
+- (IBAction) insertChild: (id)sender;
 
 /**
  * Inserts and object using the newObject method at the specified indexPath.
@@ -217,7 +217,7 @@ APPKIT_EXPORT_CLASS
  * This method will only function if the tree controller is in
  * "object" mode.
  */
-- (void) insert: (id)sender;
+- (IBAction) insert: (id)sender;
 
 /**
  * Causes the controller to re-sort and rearrange the objects.  This method
@@ -262,7 +262,7 @@ APPKIT_EXPORT_CLASS
  * Remove the currently selected object. This method will only
  * function if the tree controller is in "object" mode.
  */
-- (void) remove: (id)sender;
+- (IBAction) remove: (id)sender;
 
 /**
  * Sets the flag to always use multiple values marker.

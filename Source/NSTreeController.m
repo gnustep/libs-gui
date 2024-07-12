@@ -32,6 +32,7 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSIndexPath.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSSortDescriptor.h>
@@ -237,7 +238,7 @@
   return _leafKeyPath;
 }
 
-- (void) add: (id)sender
+- (IBAction) add: (id)sender
 {
   if ([self canAddChild]
       && [self countKeyPath] == nil)
@@ -258,28 +259,13 @@
     }
 }
 
-- (void) addChild: (id)obj
+- (IBAction) addChild: (id)sender
 {
-  if ([self canAddChild]
-      && [self countKeyPath] == nil)
-    {
-      id newObject = [self newObject];
-
-      if (newObject != nil)
-	{
-	  NSMutableArray *newContent = [NSMutableArray arrayWithArray: [self content]];
-	  GSControllerTreeProxy *node = [[GSControllerTreeProxy alloc]
-					  initWithRepresentedObject: newObject
-						     withController: self];
-
-	  [newContent addObject: node];
-	  [self setContent: newContent];
-	  RELEASE(newObject);
-	}
-    }
+  // FIXME
+  [self add: sender];
 }
 
-- (void) remove: (id)sender
+- (IBAction) remove: (id)sender
 {
   if ([self canRemove]
       && [self countKeyPath] == nil)
@@ -288,24 +274,56 @@
     }
 }
 
-- (void) insertChild: (id)sender
+- (IBAction) insertChild: (id)sender
 {
   // FIXME
+  [self add: sender];
 }
 
 - (void) insertObject: (id)object atArrangedObjectIndexPath: (NSIndexPath*)indexPath
 {
-  // FIXME
+  NSUInteger length = [indexPath length];
+  NSUInteger pos = 0;
+  NSMutableArray *children = [_arranged_objects mutableChildNodes];
+  NSUInteger lastIndex = 0;
+  
+  for (pos = 0; pos < length - 1; pos++)
+    {
+      NSUInteger i = [indexPath indexAtPosition: pos];
+      id node = [children objectAtIndex: i];
+      
+      children = [node valueForKeyPath: _childrenKeyPath];
+    }
+
+  lastIndex = [indexPath indexAtPosition: length - 1];
+  [children insertObject: object atIndex: lastIndex];
 }
 
 - (void) insertObjects: (NSArray*)objects atArrangedObjectIndexPaths: (NSArray*)indexPaths
 {
-  // FIXME
+  if ([objects count] != [indexPaths count])
+    {
+      return;
+    }
+  else
+    {
+      NSUInteger i = 0;
+      
+      FOR_IN(id, object, objects)
+	{
+	  NSIndexPath *indexPath = [indexPaths objectAtIndex: i];
+
+	  [self insertObject: object atArrangedObjectIndexPath: indexPath];
+	  i++;
+	}
+      END_FOR_IN(objects);
+    }
 }
 
-- (void) insert: (id)sender
+- (IBAction) insert: (id)sender
 {
   // FIXME
+  [self add: sender];
 }
 
 - (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath*)indexPath

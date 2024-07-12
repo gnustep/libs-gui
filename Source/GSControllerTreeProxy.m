@@ -57,6 +57,7 @@
   return [children count];
 }
 
+// This is here so that when the path is specified as "children" it responds
 - (NSMutableArray *) children
 {
   NSDictionary *ro = [self representedObject];
@@ -73,6 +74,17 @@
 {
   [_representedObject setObject: value
 			 forKey: @"value"];
+}
+
+// These return the value in the cases where the parent class method is called...
+- (NSArray *) childNodes
+{
+  return [self children];
+}
+
+- (NSArray *) mutableChildNodes
+{
+  return [self children];
 }
 
 @end
