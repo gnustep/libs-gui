@@ -34,6 +34,7 @@
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 #import <AppKit/NSObjectController.h>
+#import <AppKit/NSNibDeclarations.h>
 
 @class NSString;
 @class NSArray;
