@@ -206,34 +206,34 @@
   return [super selectedObjects];
 }
 
-- (NSIndexPath*) selectionIndexPath
+- (NSIndexPath *) selectionIndexPath
 {
   // FIXME
   return nil;
 }
 
-- (NSArray*) selectionIndexPaths
+- (NSArray *) selectionIndexPaths
 {
   // FIXME
   return nil;
 }
 
-- (NSArray*) sortDescriptors
+- (NSArray *) sortDescriptors
 {
   return _sortDescriptors;
 }
 
-- (NSString*) childrenKeyPath
+- (NSString *) childrenKeyPath
 {
   return _childrenKeyPath;
 }
 
-- (NSString*) countKeyPath
+- (NSString *) countKeyPath
 {
   return _countKeyPath;;
 }
 
-- (NSString*) leafKeyPath
+- (NSString *) leafKeyPath
 {
   return _leafKeyPath;
 }
@@ -280,7 +280,7 @@
   [self add: sender];
 }
 
-- (void) insertObject: (id)object atArrangedObjectIndexPath: (NSIndexPath*)indexPath
+- (void) insertObject: (id)object atArrangedObjectIndexPath: (NSIndexPath *)indexPath
 {
   NSUInteger length = [indexPath length];
   NSUInteger pos = 0;
@@ -300,7 +300,7 @@
   [self rearrangeObjects];
 }
 
-- (void) insertObjects: (NSArray*)objects atArrangedObjectIndexPaths: (NSArray*)indexPaths
+- (void) insertObjects: (NSArray *)objects atArrangedObjectIndexPaths: (NSArray *)indexPaths
 {
   if ([objects count] != [indexPaths count])
     {
@@ -327,7 +327,7 @@
   [self add: sender];
 }
 
-- (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath*)indexPath
+- (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath *)indexPath
 {
   NSUInteger length = [indexPath length];
   NSUInteger pos = 0;
@@ -347,7 +347,7 @@
   [self rearrangeObjects];
 }
 
-- (void) removeObjectsAtArrangedObjectIndexPaths: (NSArray*)indexPaths
+- (void) removeObjectsAtArrangedObjectIndexPaths: (NSArray *)indexPaths
 {
   FOR_IN(NSIndexPath*, indexPath, indexPaths)
     {
@@ -356,7 +356,7 @@
   END_FOR_IN(indexPaths);
 }
 
-- (void) removeSelectionIndexPaths: (NSArray*)indexPaths
+- (void) removeSelectionIndexPaths: (NSArray *)indexPaths
 {
   // FIXME
   [self removeObjectsAtArrangedObjectIndexPaths: indexPaths];
@@ -372,7 +372,7 @@
   _avoidsEmptySelection = flag;
 }
 
-- (void) setChildrenKeyPath: (NSString*)path
+- (void) setChildrenKeyPath: (NSString *)path
 {
   ASSIGN(_childrenKeyPath, path);
 }
@@ -383,12 +383,12 @@
   [self rearrangeObjects];
 }
 
-- (void) setCountKeyPath: (NSString*)path
+- (void) setCountKeyPath: (NSString *)path
 {
   ASSIGN(_countKeyPath, path);
 }
 
-- (void) setLeafKeyPath: (NSString*)key
+- (void) setLeafKeyPath: (NSString *)key
 {
   ASSIGN(_leafKeyPath, key);
 }
@@ -403,37 +403,37 @@
   _selectsInsertedObjects = flag;
 }
 
-- (void) setSortDescriptors: (NSArray*)descriptors
+- (void) setSortDescriptors: (NSArray *)descriptors
 {
   ASSIGN(_sortDescriptors, descriptors);
 }
 
-- (NSString*) childrenKeyPathForNode: (NSTreeNode*)node
+- (NSString *) childrenKeyPathForNode: (NSTreeNode *)node
 {
   return _childrenKeyPath;
 }
 
-- (NSString*) countKeyPathForNode: (NSTreeNode*)node
+- (NSString *) countKeyPathForNode: (NSTreeNode *)node
 {
   return _countKeyPath;
 }
 
-- (NSString*) leafKeyPathForNode: (NSTreeNode*)node
+- (NSString *) leafKeyPathForNode: (NSTreeNode *)node
 {
   return _leafKeyPath;
 }
 
-- (void) moveNode: (NSTreeNode*)node toIndexPath: (NSIndexPath*)indexPath
+- (void) moveNode: (NSTreeNode *)node toIndexPath: (NSIndexPath *)indexPath
 {
   // FIXME
 }
 
-- (void) moveNodes: (NSArray*)nodes toIndexPath: (NSIndexPath*)startingIndexPath
+- (void) moveNodes: (NSArray *)nodes toIndexPath: (NSIndexPath *)startingIndexPath
 {
   // FIXME
 }
 
-- (NSArray*) selectedNodes
+- (NSArray *) selectedNodes
 {
   // FIXME
   return nil;
@@ -468,7 +468,7 @@
     }
 }
 
-- (id) initWithCoder: (NSCoder*)coder
+- (id) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
 
@@ -541,7 +541,7 @@
   return self;
 }
 
-- (void) encodeWithCoder: (NSCoder*)coder
+- (void) encodeWithCoder: (NSCoder *)coder
 {
   [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
@@ -585,7 +585,7 @@
     }
 }
 
-- (id) copyWithZone: (NSZone*)zone
+- (id) copyWithZone: (NSZone *)zone
 {
   id copy = [[NSTreeController allocWithZone: zone] initWithContent: [self content]];
 

@@ -119,28 +119,28 @@ APPKIT_EXPORT_CLASS
 /**
  * An NSArray containing all selected objects.
  */
-- (NSArray*) selectedObjects;
+- (NSArray *) selectedObjects;
 
 /**
  * The index path of the first selected object.
  */
-- (NSIndexPath*) selectionIndexPath;
+- (NSIndexPath *) selectionIndexPath;
 
 /**
  * An array containing all of the currently selected objects.
  */
-- (NSArray*) selectionIndexPaths;
+- (NSArray *) selectionIndexPaths;
 
 /**
  * An array containing sort descriptors used to arrange content.
  */
-- (NSArray*) sortDescriptors;
+- (NSArray *) sortDescriptors;
 
 /**
  * Key path for children of the node.  This key must be key value
  * compliant.
  */
-- (NSString*) childrenKeyPath;
+- (NSString *) childrenKeyPath;
 
 /**
  * Key value path for the flag which gives the count for the children
@@ -151,7 +151,7 @@ APPKIT_EXPORT_CLASS
  * childKeyPath.  The mode the tree controller is in when this is
  * not specified is called "object" mode.
  */
-- (NSString*) countKeyPath;
+- (NSString *) countKeyPath;
 
 /**
  * Key value path for the flag which determins that this is a leaf.
@@ -159,7 +159,7 @@ APPKIT_EXPORT_CLASS
  * key path is optional as it can be determined by the children
  * returned by the childrenKeyPath.
  */
-- (NSString*) leafKeyPath;
+- (NSString *) leafKeyPath;
 
 /**
  * Adds a child to the current selection using the newObject method.
@@ -313,17 +313,17 @@ APPKIT_EXPORT_CLASS
 /**
  * children key path for the given NSTreeNode.
  */
-- (NSString*) childrenKeyPathForNode: (NSTreeNode *)node;
+- (NSString *) childrenKeyPathForNode: (NSTreeNode *)node;
 
 /**
  * count key path for the given NSTreeNode.
  */
-- (NSString*) countKeyPathForNode: (NSTreeNode *)node;
+- (NSString *) countKeyPathForNode: (NSTreeNode *)node;
 
 /**
  * leaf key path for the given NSTreeNode.
  */
-- (NSString*) leafKeyPathForNode: (NSTreeNode *)node;
+- (NSString *) leafKeyPathForNode: (NSTreeNode *)node;
 
 /**
  * Moves node to given indexPath
@@ -344,7 +344,7 @@ APPKIT_EXPORT_CLASS
 /**
  * Array containing all selected nodes
  */
-- (NSArray*) selectedNodes;
+- (NSArray *) selectedNodes;
 #endif // 10_5
 
 @end
