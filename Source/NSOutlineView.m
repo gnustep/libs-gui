@@ -145,6 +145,9 @@ static NSImage *unexpandable  = nil;
 - (id) _prototypeCellViewFromTableColumn: (NSTableColumn *)tb;
 - (void) _drawCellViewRow: (NSInteger)rowIndex
 		 clipRect: (NSRect)clipRect;
+- (void) _applyBindingsToCell: (NSCell *)cell
+	       forTableColumn: (NSTableColumn *)tb
+			  row: (NSInteger)index;
 @end
 
 @implementation NSOutlineView
@@ -1837,37 +1840,13 @@ Also returns the child index relative to this parent. */
   return YES;
 }
 
-- (void) _willDisplayCell: (NSCell*)cell
+- (void) _willDisplayCell: (NSCell *)cell
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index
 {
-  GSKeyValueBinding *theBinding;
-
-  theBinding = [GSKeyValueBinding getBinding: NSEditableBinding
-				   forObject: tb];
-  if (theBinding != nil)
-    {
-      id result = nil;
-      BOOL flag = NO;
-      
-      result = [(NSArray *)[theBinding destinationValue]
-		   objectAtIndex: index];
-      flag = [result boolValue];
-      [cell setEditable: flag];
-    }
-
-  theBinding = [GSKeyValueBinding getBinding: NSEnabledBinding
-				   forObject: tb];
-  if (theBinding != nil)
-    {
-      id result = nil;
-      BOOL flag = NO;
-      
-      result = [(NSArray *)[theBinding destinationValue]
-		   objectAtIndex: index];
-      flag = [result boolValue];
-      [cell setEnabled: flag];
-    }
+  [self _applyBindingsToCell: cell
+	      forTableColumn: tb
+			 row: index];
 
   if (_del_responds)
     {

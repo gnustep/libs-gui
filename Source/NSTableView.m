@@ -6857,9 +6857,9 @@ For a more detailed explanation, -setSortDescriptors:. */
     }
 }
 
-- (void) _willDisplayCell: (NSCell*)cell
-	   forTableColumn: (NSTableColumn *)tb
-		      row: (NSInteger)index
+- (void) _applyBindingsToCell: (NSCell *)cell
+	       forTableColumn: (NSTableColumn *)tb
+			  row: (NSInteger)index
 {
   GSKeyValueBinding *theBinding;
 
@@ -6887,7 +6887,16 @@ For a more detailed explanation, -setSortDescriptors:. */
 		   objectAtIndex: index];
       flag = [result boolValue];
       [cell setEnabled: flag];
-    }
+    }  
+}
+
+- (void) _willDisplayCell: (NSCell*)cell
+	   forTableColumn: (NSTableColumn *)tb
+		      row: (NSInteger)index
+{
+  [self _applyBindingsToCell: cell
+	      forTableColumn: tb
+			 row: index];
   
   if (_del_responds)
     {
