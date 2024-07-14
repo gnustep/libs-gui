@@ -6861,6 +6861,21 @@ For a more detailed explanation, -setSortDescriptors:. */
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index
 {
+  GSKeyValueBinding *theBinding;
+
+  theBinding = [GSKeyValueBinding getBinding: NSEditableBinding
+				   forObject: tb];
+  if (theBinding != nil)
+    {
+      id result = nil;
+      BOOL flag = NO;
+      
+      result = [(NSArray *)[theBinding destinationValue]
+		   objectAtIndex: index];
+      flag = [result boolValue];
+      [cell setEditable: flag];
+    }
+  
   if (_del_responds)
     {
       [_delegate tableView: self
