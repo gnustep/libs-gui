@@ -6875,6 +6875,19 @@ For a more detailed explanation, -setSortDescriptors:. */
       flag = [result boolValue];
       [cell setEditable: flag];
     }
+
+  theBinding = [GSKeyValueBinding getBinding: NSEnabledBinding
+				   forObject: tb];
+  if (theBinding != nil)
+    {
+      id result = nil;
+      BOOL flag = NO;
+      
+      result = [(NSArray *)[theBinding destinationValue]
+		   objectAtIndex: index];
+      flag = [result boolValue];
+      [cell setEnabled: flag];
+    }
   
   if (_del_responds)
     {

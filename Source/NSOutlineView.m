@@ -1855,7 +1855,20 @@ Also returns the child index relative to this parent. */
       flag = [result boolValue];
       [cell setEditable: flag];
     }
-  
+
+  theBinding = [GSKeyValueBinding getBinding: NSEnabledBinding
+				   forObject: tb];
+  if (theBinding != nil)
+    {
+      id result = nil;
+      BOOL flag = NO;
+      
+      result = [(NSArray *)[theBinding destinationValue]
+		   objectAtIndex: index];
+      flag = [result boolValue];
+      [cell setEnabled: flag];
+    }
+
   if (_del_responds)
     {
       id item = [self itemAtRow: index];
