@@ -6890,7 +6890,11 @@ For a more detailed explanation, -setSortDescriptors:. */
       [cell setEnabled: flag];
     }
 
-  // Font bindings...
+  /* Font bindings... According to Apple documentation, if the
+   * font binding is available, then name, size, and other
+   * font related bindings are ignored.  Otherwise they are
+   * used
+   */
   theBinding = [GSKeyValueBinding getBinding: NSFontBinding
 				   forObject: tb];
   if (theBinding != nil)
