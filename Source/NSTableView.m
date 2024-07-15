@@ -6861,8 +6861,9 @@ For a more detailed explanation, -setSortDescriptors:. */
 	       forTableColumn: (NSTableColumn *)tb
 			  row: (NSInteger)index
 {
-  GSKeyValueBinding *theBinding;
-
+  GSKeyValueBinding *theBinding = nil;
+  NSFont *font = nil;
+  
   theBinding = [GSKeyValueBinding getBinding: NSEditableBinding
 				   forObject: tb];
   if (theBinding != nil)
@@ -6887,7 +6888,49 @@ For a more detailed explanation, -setSortDescriptors:. */
 		   objectAtIndex: index];
       flag = [result boolValue];
       [cell setEnabled: flag];
-    }  
+    }
+
+  // Font bindings...
+  theBinding = [GSKeyValueBinding getBinding: NSFontBinding
+				   forObject: tb];
+  if (theBinding != nil)
+    {
+      font = [(NSArray *)[theBinding destinationValue]
+		 objectAtIndex: index];
+    }
+  else
+    {
+      NSString *fontName = nil;
+      CGFloat fontSize = 0.0;
+
+      theBinding = [GSKeyValueBinding getBinding: NSFontNameBinding
+				       forObject: tb];
+      if (theBinding != nil)
+	{
+	  fontName = [(NSArray *)[theBinding destinationValue]
+			 objectAtIndex: index];
+	}
+
+      if (fontName != nil)
+	{
+	  theBinding = [GSKeyValueBinding getBinding: NSFontSizeBinding
+					   forObject: tb];
+	  if (theBinding != nil)
+	    {
+	      id num = [(NSArray *)[theBinding destinationValue]
+			   objectAtIndex: index];
+	      fontSize = [num doubleValue];
+	    }
+
+	  font = [NSFont fontWithName: fontName
+				 size: fontSize];
+	}
+    }
+
+  if (font != nil)
+    {
+      [cell setFont: font];
+    }
 }
 
 - (void) _willDisplayCell: (NSCell*)cell

@@ -98,6 +98,9 @@
       [self exposeBinding: NSValueBinding];
       [self exposeBinding: NSEnabledBinding];
       [self exposeBinding: NSEditableBinding];
+      [self exposeBinding: NSFontBinding];
+      [self exposeBinding: NSFontNameBinding];
+      [self exposeBinding: NSFontSizeBinding];
     }
 }
 
