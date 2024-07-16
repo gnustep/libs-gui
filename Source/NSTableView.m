@@ -6713,6 +6713,26 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (void) _postSelectionDidChangeNotification
 {
+  NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
+  GSKeyValueBinding *theBinding;
+  
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+				   forObject: tb];
+
+  // If there is a binding, send the indexes back
+  if (theBinding != nil)
+    {
+      id observedObject = [theBinding observedObject];
+
+      // Set the selection indexes on the controller...
+      theBinding = [GSKeyValueBinding getBinding: NSSelectionIndexesBinding
+				       forObject: observedObject];
+      if (theBinding != nil)
+	{
+	  [theBinding reverseSetValue: _selectedRows];
+	}
+    }
+
   [nc postNotificationName: NSTableViewSelectionDidChangeNotification
       object: self];
 }

@@ -147,6 +147,7 @@
   if (self == [NSArrayController class])
     {
       [self exposeBinding: NSContentArrayBinding];
+      [self exposeBinding: NSSelectionIndexesBinding];
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
 	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }
