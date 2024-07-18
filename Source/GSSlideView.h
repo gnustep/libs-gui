@@ -5,7 +5,7 @@
 
    Copyright (C) 2002 Free Software Foundation, Inc.
 
-   Written By: <author name="Enrico Sersale"><email>enrico@imago.ro</email></author>
+   Written By: Enrico Sersale
    Date: Jan 2002
    
    This file is part of the GNU Objective C User Interface library.

@@ -5,8 +5,8 @@
 
    Copyright (C) 2002, 2009 Free Software Foundation, Inc.
 
-   Written by:  Enrico Sersale <enrico@imago.ro>,
-                  Stefan Bidigaray <stefanbidi@gmail.com>
+   Written by:  Enrico Sersale
+                Stefan Bidigaray <stefanbidi@gmail.com>
    Date: Jul 2002, Jun 2009
    
    This file is part of the GNUstep GUI Library.
