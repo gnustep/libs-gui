@@ -53,6 +53,7 @@
     {
       [self exposeBinding: NSContentArrayBinding];
       [self exposeBinding: NSContentBinding];
+      [self exposeBinding: NSSelectionIndexPathsBinding];
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
 	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
     }

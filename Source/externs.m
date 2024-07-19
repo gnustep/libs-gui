@@ -711,6 +711,7 @@ APPKIT_DECLARE NSString *NSSelectedObjectBinding = @"selectedObject";
 APPKIT_DECLARE NSString *NSSelectedTagBinding = @"selectedTag";
 APPKIT_DECLARE NSString *NSSelectedValueBinding = @"selectedValue";
 APPKIT_DECLARE NSString *NSSelectionIndexesBinding = @"selectionIndexes";
+APPKIT_DECLARE NSString *NSSelectionIndexPathsBinding = @"selectionIndexPaths";
 APPKIT_DECLARE NSString *NSSortDescriptorsBinding = @"sortDescriptors";
 APPKIT_DECLARE NSString *NSTextColorBinding = @"textColor";
 APPKIT_DECLARE NSString *NSTitleBinding = @"title";

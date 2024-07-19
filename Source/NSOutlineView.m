@@ -62,6 +62,7 @@
 #import "AppKit/NSText.h"
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSTreeController.h"
+#import "AppKit/NSTreeNode.h"
 #import "AppKit/NSWindow.h"
 
 #import "GNUstepGUI/GSTheme.h"
@@ -211,6 +212,7 @@ static NSImage *unexpandable  = nil;
   
   RELEASE(_items);
   RELEASE(_expandedItems);
+  RELEASE(_selectedIndexPaths);
 
   NSFreeMapTable(_itemDict);
   NSFreeMapTable(_levelOfItems);
@@ -1716,6 +1718,38 @@ Also returns the child index relative to this parent. */
 @end /* implementation of NSOutlineView */
 
 @implementation NSOutlineView (NotificationRequestMethods)
+
+- (void) _indexPathsFromSelectedRows
+{
+  NSUInteger index = [_selectedRows firstIndex];
+  NSUInteger count = 0;
+  
+  [_selectedIndexPaths removeAllObjects];
+  while (index != NSNotFound)
+    {
+      id item = [_items objectAtIndex: index];
+
+      if ([item respondsToSelector: @selector(indexPath)])
+	{
+	  NSIndexPath *path = [item indexPath];
+
+	  [_selectedIndexPaths addObject: path];
+	  count++;
+	}
+
+      index = [_selectedRows indexGreaterThanIndex: index];
+    }
+
+  // According to tests and observation, if none of the
+  // objects respond to indexPath, then we need return the
+  // root object
+  if (count == 0)
+    {
+      NSIndexPath *path = [NSIndexPath indexPathWithIndex: 0];
+      [_selectedIndexPaths addObject: path];
+    }
+}
+
 /*
  * (NotificationRequestMethods)
  */
@@ -1725,12 +1759,34 @@ Also returns the child index relative to this parent. */
 	NSOutlineViewSelectionIsChangingNotification
       object: self];
 }
+
 - (void) _postSelectionDidChangeNotification
 {
-  [nc postNotificationName:
-	NSOutlineViewSelectionDidChangeNotification
-      object: self];
+  NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
+  GSKeyValueBinding *theBinding;
+  
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+				   forObject: tb];
+
+  // If there is a binding, send the indexes back
+  if (theBinding != nil)
+    {
+      id observedObject = [theBinding observedObject];
+
+      // Set the selection indexes on the controller...
+      theBinding = [GSKeyValueBinding getBinding: NSSelectionIndexPathsBinding
+				       forObject: observedObject];
+      if (theBinding != nil)
+	{
+	  [self _indexPathsFromSelectedRows];
+	  [theBinding reverseSetValue: _selectedIndexPaths];
+	}
+    }
+  
+  [nc postNotificationName: NSOutlineViewSelectionDidChangeNotification
+		    object: self];
 }
+
 - (void) _postColumnDidMoveNotificationWithOldIndex: (NSInteger) oldIndex
 					   newIndex: (NSInteger) newIndex
 {
@@ -1776,7 +1832,7 @@ Also returns the child index relative to this parent. */
 - (BOOL) _shouldSelectRow: (NSInteger)rowIndex
 {
   id item = [self itemAtRow: rowIndex];
-
+  
   if ([_delegate respondsToSelector:
     @selector (outlineView:shouldSelectItem:)] == YES)
     {
@@ -1973,6 +2029,7 @@ Also returns the child index relative to this parent. */
 			       64);
   _items = [[NSMutableArray alloc] init];
   _expandedItems = [[NSMutableArray alloc] init];
+  _selectedIndexPaths = [[NSMutableArray alloc] init];
   _levelOfItems = NSCreateMapTable(keyCallBacks,
 				   NSObjectMapValueCallBacks,
 				   64);
@@ -2103,7 +2160,7 @@ Also returns the child index relative to this parent. */
 	       * _NSControllerTreeProxy.  The equivalent of that class in GNUstep is
 	       * GSControllerTreeProxy.
 	       */
-	      children = [node children];
+	      children = [node mutableChildNodes];
 	      num = [children count];
 	    }
 	  else
