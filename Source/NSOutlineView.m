@@ -1832,7 +1832,7 @@ Also returns the child index relative to this parent. */
 - (BOOL) _shouldSelectRow: (NSInteger)rowIndex
 {
   id item = [self itemAtRow: rowIndex];
-  
+
   if ([_delegate respondsToSelector:
     @selector (outlineView:shouldSelectItem:)] == YES)
     {
