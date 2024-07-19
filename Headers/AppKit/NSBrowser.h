@@ -42,6 +42,7 @@
 @class NSEvent;
 @class NSMatrix;
 @class NSScroller;
+@class NSViewController;
 //@class NSBox;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
@@ -355,6 +356,29 @@ canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
         inColumn: (NSInteger)column
        withEvent: (NSEvent *)event;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (id) browser: (NSBrowser *)browser
+         child: (NSInteger)index
+        ofItem: (id)item;
+- (BOOL) browser: (NSBrowser *)browser
+      isLeafItem: (id)item;
+- (BOOL) browser: (NSBrowser *)browser
+  shouldEditItem: (id)item;
+- (id) browser: (NSBrowser *)browser
+       objectValueForItem: (id)item;
+- (id) browser: (NSBrowser *)browser
+       setObjectValue: (id)object
+       forItem: (id)item;
+- (id) rootItemForBrowser: (NSBrowser *)browser;
+- (NSViewController *) browser: (NSBrowser *)browser
+                       previewViewControllerForLeafItem: (id)item;
+- (NSViewController *) browser: (NSBrowser *)browser
+                       headerViewControllerForItem: (id)item;
+- (void) browser: (NSBrowser *)browser
+         didChangeLastColumn: (NSInteger)oldLastColumn
+        toColumn: (NSInteger)column;
+#endif
+
 @end
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
