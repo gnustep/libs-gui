@@ -201,22 +201,51 @@
   [self didChangeValueForKey: @"arrangedObjects"];
 }
 
+- (id) _objectAtIndexPath: (NSIndexPath *)indexPath
+{
+  NSUInteger length = [indexPath length];
+  NSUInteger pos = 0;
+  NSMutableArray *children = [_arranged_objects mutableChildNodes];
+  NSUInteger lastIndex = 0;
+  id obj = nil;
+  
+  for (pos = 0; pos < length - 1; pos++)
+    {
+      NSUInteger i = [indexPath indexAtPosition: pos];
+      id node = [children objectAtIndex: i];
+
+      children = [node valueForKeyPath: _childrenKeyPath];
+    }
+
+  lastIndex = [indexPath indexAtPosition: length - 1];
+  obj = [children objectAtIndex: lastIndex];
+
+  return obj;
+}
+
 - (NSArray *) selectedObjects
 {
-  // FIXME
-  return [super selectedObjects];
+  NSMutableArray *selectedObjects = [NSMutableArray array];
+  NSEnumerator *en = [_selection_index_paths objectEnumerator];
+  NSIndexPath *path = nil;
+
+  while ((path = [en nextObject]) != nil)
+    {
+      id obj = [self _objectAtIndexPath: path];
+      [selectedObjects addObject: obj];
+    }
+
+  return selectedObjects;
 }
 
 - (NSIndexPath *) selectionIndexPath
 {
-  // FIXME
-  return nil;
+  return [_selection_index_paths objectAtIndex: 0];
 }
 
 - (NSArray *) selectionIndexPaths
 {
-  // FIXME
-  return nil;
+  return _selection_index_paths;
 }
 
 - (NSArray *) sortDescriptors
@@ -254,6 +283,7 @@
 						     withController: self];
 
 	  [newContent addObject: node];
+
 	  [self setContent: newContent];
 	  RELEASE(newObject);
 	}
@@ -262,8 +292,10 @@
 
 - (IBAction) addChild: (id)sender
 {
-  // FIXME
-  [self add: sender];
+  NSIndexPath *p = [self selectionIndexPath];
+  id newObject = [self newObject];
+
+  [self insertObject: newObject atArrangedObjectIndexPath: p];
 }
 
 - (IBAction) remove: (id)sender
@@ -277,55 +309,61 @@
 
 - (IBAction) insertChild: (id)sender
 {
-  // FIXME
-  [self add: sender];
+  [self addChild: sender];
 }
 
 - (void) insertObject: (id)object atArrangedObjectIndexPath: (NSIndexPath *)indexPath
 {
-  NSUInteger length = [indexPath length];
-  NSUInteger pos = 0;
-  NSMutableArray *children = [_arranged_objects mutableChildNodes];
-  NSUInteger lastIndex = 0;
-
-  for (pos = 0; pos < length - 1; pos++)
+  if ([self canAddChild]
+      && [self countKeyPath] == nil)
     {
-      NSUInteger i = [indexPath indexAtPosition: pos];
-      id node = [children objectAtIndex: i];
-
-      children = [node valueForKeyPath: _childrenKeyPath];
+      NSUInteger length = [indexPath length];
+      NSUInteger pos = 0;
+      NSMutableArray *children = [_arranged_objects mutableChildNodes];
+      NSUInteger lastIndex = 0;
+      
+      for (pos = 0; pos < length - 1; pos++)
+	{
+	  NSUInteger i = [indexPath indexAtPosition: pos];
+	  id node = [children objectAtIndex: i];
+	  
+	  children = [node valueForKeyPath: _childrenKeyPath];
+	}
+      
+      lastIndex = [indexPath indexAtPosition: length - 1];
+      [children insertObject: object atIndex: lastIndex];
+      [self rearrangeObjects];
     }
-
-  lastIndex = [indexPath indexAtPosition: length - 1];
-  [children insertObject: object atIndex: lastIndex];
-  [self rearrangeObjects];
 }
 
 - (void) insertObjects: (NSArray *)objects atArrangedObjectIndexPaths: (NSArray *)indexPaths
 {
-  if ([objects count] != [indexPaths count])
-    {
-      return;
-    }
-  else
-    {
-      NSUInteger i = 0;
-
-      FOR_IN(id, object, objects)
+  if ([self canAddChild]
+      && [self countKeyPath] == nil)
+    {  
+      if ([objects count] != [indexPaths count])
 	{
-	  NSIndexPath *indexPath = [indexPaths objectAtIndex: i];
-
-	  [self insertObject: object atArrangedObjectIndexPath: indexPath];
-	  i++;
+	  return;
 	}
-      END_FOR_IN(objects);
+      else
+	{
+	  NSUInteger i = 0;
+	  
+	  FOR_IN(id, object, objects)
+	    {
+	      NSIndexPath *indexPath = [indexPaths objectAtIndex: i];
+	      
+	      [self insertObject: object atArrangedObjectIndexPath: indexPath];
+	      i++;
+	    }
+	  END_FOR_IN(objects);
+	}
     }
 }
 
 - (IBAction) insert: (id)sender
 {
-  // FIXME
-  [self add: sender];
+  [self addChild: sender];
 }
 
 - (void) removeObjectAtArrangedObjectIndexPath: (NSIndexPath *)indexPath
@@ -359,7 +397,6 @@
 
 - (void) removeSelectionIndexPaths: (NSArray *)indexPaths
 {
-  // FIXME
   [self removeObjectsAtArrangedObjectIndexPaths: indexPaths];
 }
 
@@ -437,7 +474,7 @@
 - (NSArray *) selectedNodes
 {
   // FIXME
-  return nil;
+  return [self selectedObjects];
 }
 
 
