@@ -100,6 +100,9 @@ APPKIT_EXPORT_CLASS
   int _lastVisibleColumn;
   NSString *_columnsAutosaveName;
   NSBrowserColumnResizingType _columnResizing;
+
+  BOOL _itemBasedDelegate;
+  id _lastItemLoaded;
 }
 
 //
@@ -357,6 +360,8 @@ canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
        withEvent: (NSEvent *)event;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (NSInteger) browser: (NSBrowser *)browser
+              numberOfChildrenOfItem: (id)item;
 - (id) browser: (NSBrowser *)browser
          child: (NSInteger)index
         ofItem: (id)item;
