@@ -76,7 +76,6 @@
 
 - (id) initWithContent: (id)content
 {
-  NSLog(@"Content = %@", content);
   if ((self = [super initWithContent: content]) != nil)
     {
       [self _initDefaults];
