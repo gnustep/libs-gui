@@ -245,7 +245,7 @@ static BOOL browserUseBezels;
 @interface NSBrowser (Private)
 - (NSString *) _getTitleOfColumn: (NSInteger)column;
 - (void) _performLoadOfColumn: (NSInteger)column;
-- (void) _performLoadOfItem: (id)item;
+- (void) _performLoadOfItem: (id)item forColumn: (NSInteger)column;
 - (void) _remapColumnSubviews: (BOOL)flag;
 - (void) _setColumnTitlesNeedDisplay;
 - (NSBorderType) _resolvedBorderType;
@@ -954,7 +954,7 @@ static BOOL browserUseBezels;
 
   if (_itemBasedDelegate == YES)
     {
-      [self _performLoadOfItem: _lastItemLoaded];
+      [self _performLoadOfItem: _lastItemLoaded forColumn: i];
     }
   else
     {
@@ -2257,55 +2257,55 @@ static BOOL browserUseBezels;
 		  @selector(browser:numberOfChildrenOfItem:)])
     {
       _itemBasedDelegate = YES;
-    }
 
-  if ([anObject respondsToSelector:
-		  @selector(browser:numberOfRowsInColumn:)])
-    {
-      flag = YES;
-      if (![anObject respondsToSelector:
-			 @selector(browser:willDisplayCell:atRow:column:)])
-	[NSException raise: NSBrowserIllegalDelegateException
-		     format: @"(Passive) Delegate does not respond to %s\n",
-		     GSNameFromSelector
-		       (@selector(browser:willDisplayCell:atRow:column:))];
-    }
-
-  if ([anObject respondsToSelector:
-		  @selector(browser:createRowsForColumn:inMatrix:)])
-    {
-      _passiveDelegate = NO;
-
-      /* If flag is already set
-	 then the delegate must respond to both methods.  */
-      if (flag)
-	{
-	  [NSException raise: NSBrowserIllegalDelegateException
-		       format: @"Delegate responds to both %s and %s\n",
-		       GSNameFromSelector
-			 (@selector(browser:numberOfRowsInColumn:)),
-		       GSNameFromSelector
-			 (@selector(browser:createRowsForColumn:inMatrix:))];
-	}
-
-      flag = YES;
-    }
-
-  if (!flag && anObject)
-    [NSException raise: NSBrowserIllegalDelegateException
-		 format: @"Delegate does not respond to %s or %s\n",
-		 GSNameFromSelector
-		   (@selector(browser:numberOfRowsInColumn:)),
-		 GSNameFromSelector
-		   (@selector(browser:createRowsForColumn:inMatrix:))];
-
-  _browserDelegate = anObject;
-
-  // Get the root object after all checks have been done, if it's item based.
-  if (_itemBasedDelegate)
-    {
+      // Get the root object after all checks have been done, if it's item based.
       _lastItemLoaded = [_browserDelegate rootItemForBrowser: self];
     }
+  else
+    {
+      if ([anObject respondsToSelector:
+		     @selector(browser:numberOfRowsInColumn:)])
+	{
+	  flag = YES;
+	  if (![anObject respondsToSelector:
+			  @selector(browser:willDisplayCell:atRow:column:)])
+	    [NSException raise: NSBrowserIllegalDelegateException
+			format: @"(Passive) Delegate does not respond to %s\n",
+			 GSNameFromSelector
+			 (@selector(browser:willDisplayCell:atRow:column:))];
+	}
+      
+      if ([anObject respondsToSelector:
+		     @selector(browser:createRowsForColumn:inMatrix:)])
+	{
+	  _passiveDelegate = NO;
+	  
+	  /* If flag is already set
+	     then the delegate must respond to both methods.  */
+	  if (flag)
+	    {
+	      [NSException raise: NSBrowserIllegalDelegateException
+			  format: @"Delegate responds to both %s and %s\n",
+			   GSNameFromSelector
+			   (@selector(browser:numberOfRowsInColumn:)),
+			   GSNameFromSelector
+			   (@selector(browser:createRowsForColumn:inMatrix:))];
+	    }
+	  
+	  flag = YES;
+	}
+      
+      if (!flag && anObject)
+	[NSException raise: NSBrowserIllegalDelegateException
+		    format: @"Delegate does not respond to %s or %s\n",
+		     GSNameFromSelector
+		     (@selector(browser:numberOfRowsInColumn:)),
+		     GSNameFromSelector
+		     (@selector(browser:createRowsForColumn:inMatrix:))];
+    }
+
+  _browserDelegate = anObject;
+  NSLog(@"_browserDelegate = %@", _browserDelegate);  
 }
 
 
@@ -3279,7 +3279,126 @@ static BOOL browserUseBezels;
 }
 
 - (void) _performLoadOfItem: (id)item
+		  forColumn: (NSInteger)column
 {
+  NSBrowserColumn *bc;
+  NSScrollView *sc;
+  NSMatrix *matrix;
+  NSInteger i, rows, cols;
+
+  // Ask the delegate for the number of rows
+  rows = [_browserDelegate browser: self numberOfChildrenOfItem: item];
+  cols = 1;
+  
+  bc = [_browserColumns objectAtIndex: column];
+
+  if (!(sc = [bc columnScrollView]))
+    return;
+
+  matrix = [bc columnMatrix];
+
+  if (_reusesColumns && matrix)
+    {
+      [matrix renewRows: rows columns: cols];
+
+      // Mark all the cells as unloaded
+      for (i = 0; i < rows; i++)
+	{
+	  [[matrix cellAtRow: i column: 0] setLoaded: NO];
+	}
+    }
+  else
+    {
+      NSRect matrixRect = {{0, 0}, {100, 100}};
+      NSSize matrixIntercellSpace = {0, 0};
+
+      // create a new col matrix
+      matrix = [[_browserMatrixClass alloc]
+		   initWithFrame: matrixRect
+		   mode: NSListModeMatrix
+		   prototype: _browserCellPrototype
+		   numberOfRows: rows
+		   numberOfColumns: cols];
+      [matrix setIntercellSpacing: matrixIntercellSpace];
+      [matrix setAllowsEmptySelection: _allowsEmptySelection];
+      [matrix setAutoscroll: YES];
+
+      // Set up background colors.
+      [matrix setBackgroundColor: [self backgroundColor]];
+      [matrix setDrawsBackground: YES];
+
+      if (!_allowsMultipleSelection)
+	{
+	  [matrix setMode: NSRadioModeMatrix];
+	}
+      [matrix setTarget: self];
+      [matrix setAction: @selector(doClick:)];
+      [matrix setDoubleAction: @selector(doDoubleClick:)];
+
+      // set new col matrix and release old
+      [bc setColumnMatrix: matrix];
+      RELEASE (matrix);
+    }
+  [sc setDocumentView: matrix];
+
+  // Loading for item based delegate
+  {
+    // Now loop through the cells and load each one
+    id aCell = nil;
+
+    for (i = 0; i < rows; i++)
+      {
+	aCell = [matrix cellAtRow: i column: 0];
+	if (![aCell isLoaded])
+	  {
+	    BOOL leaf = YES;
+	    id val = nil;
+	    id child = nil;
+	    
+	    child = [_browserDelegate browser: self child: i ofItem: _lastItemLoaded];
+	    leaf = [_browserDelegate browser: self isLeafItem: child];
+	    val = [_browserDelegate browser: self objectValueForItem: child];
+	    [aCell setLeaf: leaf];
+	    [aCell setStringValue: val];
+	    [aCell setLoaded: YES];
+
+	    _lastItemLoaded = child;
+	  }
+      }
+  }
+
+  [bc setIsLoaded: YES];
+
+  if (column > _lastColumnLoaded)
+    {
+      _lastColumnLoaded = column;
+    }
+
+  /* Determine the height of a cell in the matrix, and set that as the
+     cellSize of the matrix.  */
+  {
+    NSSize cs, ms;
+    NSBrowserCell *b = [matrix cellAtRow: 0  column: 0];
+
+    if (b != nil)
+      {
+	ms = [b cellSize];
+      }
+    else
+      {
+	ms = [matrix cellSize];
+      }
+
+    cs = [sc contentSize];
+    ms.width = cs.width;
+    [matrix setCellSize: ms];
+  }
+
+  // Get the title even when untitled, as this may change later.
+  [self setTitle: [self _getTitleOfColumn: column] ofColumn: column];
+
+  // Mark for redisplay
+  [self displayColumn: column];
 }
 
 /* Loads column 'column' (asking the delegate). */
