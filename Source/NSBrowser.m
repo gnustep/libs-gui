@@ -3281,15 +3281,14 @@ static BOOL browserUseBezels;
 - (void) _performLoadOfItem: (id)item
 		  forColumn: (NSInteger)column
 {
-  NSBrowserColumn *bc;
-  NSScrollView *sc;
-  NSMatrix *matrix;
-  NSInteger i, rows, cols;
-
-  // Ask the delegate for the number of rows
-  rows = [_browserDelegate browser: self numberOfChildrenOfItem: item];
-  cols = 1;
+  NSBrowserColumn *bc = nil;
+  NSScrollView *sc = nil;
+  NSMatrix *matrix = nil;
+  NSInteger i = 0, rows = 0, cols = 1;
+  id child = nil;
   
+  // Ask the delegate for the number of rows for a given item...
+  rows = [_browserDelegate browser: self numberOfChildrenOfItem: item];
   bc = [_browserColumns objectAtIndex: column];
 
   if (!(sc = [bc columnScrollView]))
@@ -3341,37 +3340,30 @@ static BOOL browserUseBezels;
     }
   [sc setDocumentView: matrix];
 
-  // Loading for item based delegate
-  {
-    // Now loop through the cells and load each one
-    id aCell = nil;
-
-    for (i = 0; i < rows; i++)
-      {
-	aCell = [matrix cellAtRow: i column: 0];
-	if (![aCell isLoaded])
-	  {
-	    BOOL leaf = YES;
-	    id val = nil;
-	    id child = nil;
-	    
-	    child = [_browserDelegate browser: self child: i ofItem: _lastItemLoaded];
-	    leaf = [_browserDelegate browser: self isLeafItem: child];
-	    val = [_browserDelegate browser: self objectValueForItem: child];
-	    [aCell setLeaf: leaf];
-	    [aCell setStringValue: val];
-	    [aCell setLoaded: YES];
-
-	    _lastItemLoaded = child;
-	  }
-      }
-  }
+  // Iterate over the rows...
+  for (i = 0; i < rows; i++)
+    {
+      id aCell = [matrix cellAtRow: i column: 0];
+      if (![aCell isLoaded])
+	{
+	  BOOL leaf = YES;
+	  id val = nil;
+	  
+	  child = [_browserDelegate browser: self child: i ofItem: _lastItemLoaded];
+	  leaf = [_browserDelegate browser: self isLeafItem: child];
+	  val = [_browserDelegate browser: self objectValueForItem: child];
+	  [aCell setLeaf: leaf];
+	  [aCell setStringValue: val];
+	  [aCell setLoaded: YES];
+	}
+    }
 
   [bc setIsLoaded: YES];
 
   if (column > _lastColumnLoaded)
     {
       _lastColumnLoaded = column;
+      _lastItemLoaded = child;
     }
 
   /* Determine the height of a cell in the matrix, and set that as the
