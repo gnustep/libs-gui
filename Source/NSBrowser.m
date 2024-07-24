@@ -1226,7 +1226,21 @@ static BOOL browserUseBezels;
   selectedCells = [[matrix selectedCells] copy];
 
   // Perform the data load
-  [self _performLoadOfColumn: column];
+  if (_itemBasedDelegate == YES)
+    {
+      if (column == 0)
+	{
+	  _lastItemLoaded = [_browserDelegate rootItemForBrowser: self];
+	}
+
+      [self _performLoadOfItem: _lastItemLoaded
+		     forColumn: column];
+    }
+  else
+    {
+      [self _performLoadOfColumn: column];
+    }
+
   // set last column loaded
   [self setLastColumn: column];
 
@@ -2305,7 +2319,6 @@ static BOOL browserUseBezels;
     }
 
   _browserDelegate = anObject;
-  NSLog(@"_browserDelegate = %@", _browserDelegate);  
 }
 
 
