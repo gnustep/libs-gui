@@ -1,3 +1,10 @@
+2024-07-25 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSBrowser.h: Add declarations for
+	10.6 delegate methods for item-based browsers.
+	* Source/NSBrowser.m: Add support for 10.6 item-based
+	delegate methods.
+
 2024-06-28 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/AppKit.h: Add NSMenuToolbarItem.h
