@@ -17,7 +17,7 @@
    Author:  Gregory Casamento <greg.casamento@gmail.com>
    Date: July 2024
    Note: Added support for 10.6+ delegate methods.
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -2269,12 +2269,12 @@ static BOOL browserUseBezels;
 			 GSNameFromSelector
 			 (@selector(browser:willDisplayCell:atRow:column:))];
 	}
-      
+
       if ([anObject respondsToSelector:
 		     @selector(browser:createRowsForColumn:inMatrix:)])
 	{
 	  _passiveDelegate = NO;
-	  
+
 	  /* If flag is already set
 	     then the delegate must respond to both methods.  */
 	  if (flag)
@@ -2286,10 +2286,10 @@ static BOOL browserUseBezels;
 			   GSNameFromSelector
 			   (@selector(browser:createRowsForColumn:inMatrix:))];
 	    }
-	  
+
 	  flag = YES;
 	}
-      
+
       if (!flag && anObject)
 	[NSException raise: NSBrowserIllegalDelegateException
 		    format: @"Delegate does not respond to %s or %s\n",
@@ -2537,7 +2537,7 @@ static BOOL browserUseBezels;
 
   // Item based delegate, 10.6+
   _itemBasedDelegate = NO;
-  
+
   [[NSNotificationCenter defaultCenter]
     addObserver: self
     selector: @selector(_themeDidActivate:)
@@ -2561,7 +2561,7 @@ static BOOL browserUseBezels;
   RELEASE(_horizontalScroller);
   RELEASE(_browserColumns);
   TEST_RELEASE(_charBuffer);
-  
+
   [super dealloc];
 }
 
@@ -3279,7 +3279,7 @@ static BOOL browserUseBezels;
   NSInteger i, rows, cols;
   id child = nil;
   id item = nil;
-  
+
   if (_itemBasedDelegate)
     {
       if (column == 0)
@@ -3300,13 +3300,13 @@ static BOOL browserUseBezels;
 		  if (selectedCells != nil && [selectedCells count] > 0)
 		    {
 		      id cell = [selectedCells objectAtIndex: 0];
-		  
+
 		      item = [cell objectValue];
 		    }
 		}
 	    }
 	}
-      
+
       // Ask the delegate for the number of rows for a given item...
       rows = [_browserDelegate browser: self numberOfChildrenOfItem: item];
       cols = 1;
@@ -3385,7 +3385,7 @@ static BOOL browserUseBezels;
 	    {
 	      BOOL leaf = YES;
 	      id val = nil;
-	      
+
 	      child = [_browserDelegate browser: self child: i ofItem: item];
 	      leaf = [_browserDelegate browser: self isLeafItem: child];
 	      val = [_browserDelegate browser: self objectValueForItem: child];
