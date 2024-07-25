@@ -14,7 +14,10 @@
    Date: September 2000
    Author:  Fred Kiefer <FredKiefer@gmx.de>
    Date: September 2002
-
+   Author:  Gregory Casamento <greg.casamento@gmail.com>
+   Date: July 2024
+   Note: Added support for 10.6+ delegate methods.
+   
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -34,14 +37,17 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <math.h>                  // (float)rintf(float x)
+#include <math.h>
 #import "config.h"
+
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSIndexPath.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
+
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
 #import "AppKit/AppKitExceptions.h"
@@ -56,8 +62,8 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSBezierPath.h"
-#import "GNUstepGUI/GSTheme.h"
 
+#import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
 /* Cache */
@@ -245,7 +251,6 @@ static BOOL browserUseBezels;
 @interface NSBrowser (Private)
 - (NSString *) _getTitleOfColumn: (NSInteger)column;
 - (void) _performLoadOfColumn: (NSInteger)column;
-- (void) _performLoadOfItem: (id)item forColumn: (NSInteger)column;
 - (void) _remapColumnSubviews: (BOOL)flag;
 - (void) _setColumnTitlesNeedDisplay;
 - (NSBorderType) _resolvedBorderType;
@@ -952,15 +957,7 @@ static BOOL browserUseBezels;
       i = 0;
     }
 
-  if (_itemBasedDelegate == YES)
-    {
-      [self _performLoadOfItem: _lastItemLoaded forColumn: i];
-    }
-  else
-    {
-      [self _performLoadOfColumn: i];
-    }
-
+  [self _performLoadOfColumn: i];
   [self setLastColumn: i];
 
   _isLoaded = YES;
@@ -1226,20 +1223,7 @@ static BOOL browserUseBezels;
   selectedCells = [[matrix selectedCells] copy];
 
   // Perform the data load
-  if (_itemBasedDelegate == YES)
-    {
-      if (column == 0)
-	{
-	  _lastItemLoaded = [_browserDelegate rootItemForBrowser: self];
-	}
-
-      [self _performLoadOfItem: _lastItemLoaded
-		     forColumn: column];
-    }
-  else
-    {
-      [self _performLoadOfColumn: column];
-    }
+  [self _performLoadOfColumn: column];
 
   // set last column loaded
   [self setLastColumn: column];
@@ -2271,9 +2255,6 @@ static BOOL browserUseBezels;
 		  @selector(browser:numberOfChildrenOfItem:)])
     {
       _itemBasedDelegate = YES;
-
-      // Get the root object after all checks have been done, if it's item based.
-      _lastItemLoaded = [_browserDelegate rootItemForBrowser: self];
     }
   else
     {
@@ -2556,8 +2537,7 @@ static BOOL browserUseBezels;
 
   // Item based delegate, 10.6+
   _itemBasedDelegate = NO;
-  _lastItemLoaded = nil;
-
+  
   [[NSNotificationCenter defaultCenter]
     addObserver: self
     selector: @selector(_themeDidActivate:)
@@ -2581,7 +2561,7 @@ static BOOL browserUseBezels;
   RELEASE(_horizontalScroller);
   RELEASE(_browserColumns);
   TEST_RELEASE(_charBuffer);
-
+  
   [super dealloc];
 }
 
@@ -3006,7 +2986,6 @@ static BOOL browserUseBezels;
 
       // Item based delegate, 10.6+
       _itemBasedDelegate = NO;
-      _lastItemLoaded = nil;
 
       // Horizontal scroller
       _scrollerRect.origin.x = bs.width;
@@ -3291,121 +3270,6 @@ static BOOL browserUseBezels;
     }
 }
 
-- (void) _performLoadOfItem: (id)item
-		  forColumn: (NSInteger)column
-{
-  NSBrowserColumn *bc = nil;
-  NSScrollView *sc = nil;
-  NSMatrix *matrix = nil;
-  NSInteger i = 0, rows = 0, cols = 1;
-  id child = nil;
-  
-  // Ask the delegate for the number of rows for a given item...
-  rows = [_browserDelegate browser: self numberOfChildrenOfItem: item];
-  bc = [_browserColumns objectAtIndex: column];
-
-  if (!(sc = [bc columnScrollView]))
-    return;
-
-  matrix = [bc columnMatrix];
-
-  if (_reusesColumns && matrix)
-    {
-      [matrix renewRows: rows columns: cols];
-
-      // Mark all the cells as unloaded
-      for (i = 0; i < rows; i++)
-	{
-	  [[matrix cellAtRow: i column: 0] setLoaded: NO];
-	}
-    }
-  else
-    {
-      NSRect matrixRect = {{0, 0}, {100, 100}};
-      NSSize matrixIntercellSpace = {0, 0};
-
-      // create a new col matrix
-      matrix = [[_browserMatrixClass alloc]
-		   initWithFrame: matrixRect
-		   mode: NSListModeMatrix
-		   prototype: _browserCellPrototype
-		   numberOfRows: rows
-		   numberOfColumns: cols];
-      [matrix setIntercellSpacing: matrixIntercellSpace];
-      [matrix setAllowsEmptySelection: _allowsEmptySelection];
-      [matrix setAutoscroll: YES];
-
-      // Set up background colors.
-      [matrix setBackgroundColor: [self backgroundColor]];
-      [matrix setDrawsBackground: YES];
-
-      if (!_allowsMultipleSelection)
-	{
-	  [matrix setMode: NSRadioModeMatrix];
-	}
-      [matrix setTarget: self];
-      [matrix setAction: @selector(doClick:)];
-      [matrix setDoubleAction: @selector(doDoubleClick:)];
-
-      // set new col matrix and release old
-      [bc setColumnMatrix: matrix];
-      RELEASE (matrix);
-    }
-  [sc setDocumentView: matrix];
-
-  // Iterate over the rows...
-  for (i = 0; i < rows; i++)
-    {
-      id aCell = [matrix cellAtRow: i column: 0];
-      if (![aCell isLoaded])
-	{
-	  BOOL leaf = YES;
-	  id val = nil;
-	  
-	  child = [_browserDelegate browser: self child: i ofItem: _lastItemLoaded];
-	  leaf = [_browserDelegate browser: self isLeafItem: child];
-	  val = [_browserDelegate browser: self objectValueForItem: child];
-	  [aCell setLeaf: leaf];
-	  [aCell setStringValue: val];
-	  [aCell setLoaded: YES];
-	}
-    }
-
-  [bc setIsLoaded: YES];
-
-  if (column > _lastColumnLoaded)
-    {
-      _lastColumnLoaded = column;
-      _lastItemLoaded = child;
-    }
-
-  /* Determine the height of a cell in the matrix, and set that as the
-     cellSize of the matrix.  */
-  {
-    NSSize cs, ms;
-    NSBrowserCell *b = [matrix cellAtRow: 0  column: 0];
-
-    if (b != nil)
-      {
-	ms = [b cellSize];
-      }
-    else
-      {
-	ms = [matrix cellSize];
-      }
-
-    cs = [sc contentSize];
-    ms.width = cs.width;
-    [matrix setCellSize: ms];
-  }
-
-  // Get the title even when untitled, as this may change later.
-  [self setTitle: [self _getTitleOfColumn: column] ofColumn: column];
-
-  // Mark for redisplay
-  [self displayColumn: column];
-}
-
 /* Loads column 'column' (asking the delegate). */
 - (void) _performLoadOfColumn: (NSInteger)column
 {
@@ -3413,8 +3277,41 @@ static BOOL browserUseBezels;
   NSScrollView *sc;
   NSMatrix *matrix;
   NSInteger i, rows, cols;
+  id child = nil;
+  id item = nil;
+  
+  if (_itemBasedDelegate)
+    {
+      if (column == 0)
+	{
+	  item = [_browserDelegate rootItemForBrowser: self];
+	}
+      else
+	{
+	  NSInteger col = column > 1 ? column - 1 : column;
 
-  if (_passiveDelegate)
+	  bc = [_browserColumns objectAtIndex: col];
+	  if (bc != nil)
+	    {
+	      matrix = [bc columnMatrix];
+	      if (matrix != nil)
+		{
+		  NSArray *selectedCells = [matrix selectedCells];
+		  if (selectedCells != nil && [selectedCells count] > 0)
+		    {
+		      id cell = [selectedCells objectAtIndex: 0];
+		  
+		      item = [cell objectValue];
+		    }
+		}
+	    }
+	}
+      
+      // Ask the delegate for the number of rows for a given item...
+      rows = [_browserDelegate browser: self numberOfChildrenOfItem: item];
+      cols = 1;
+    }
+  else if (_passiveDelegate)
     {
       // Ask the delegate for the number of rows
       rows = [_browserDelegate browser: self numberOfRowsInColumn: column];
@@ -3477,8 +3374,28 @@ static BOOL browserUseBezels;
     }
   [sc setDocumentView: matrix];
 
-  // Loading is different based upon passive/active delegate
-  if (_passiveDelegate)
+  // Loading is different based upon item/passive/active delegate
+  if (_itemBasedDelegate)
+    {
+      // Iterate over the children for the item....
+      for (i = 0; i < rows; i++)
+	{
+	  id aCell = [matrix cellAtRow: i column: 0];
+	  if (![aCell isLoaded])
+	    {
+	      BOOL leaf = YES;
+	      id val = nil;
+	      
+	      child = [_browserDelegate browser: self child: i ofItem: item];
+	      leaf = [_browserDelegate browser: self isLeafItem: child];
+	      val = [_browserDelegate browser: self objectValueForItem: child];
+	      [aCell setLeaf: leaf];
+	      [aCell setObjectValue: val];
+	      [aCell setLoaded: YES];
+	    }
+	}
+    }
+  else if (_passiveDelegate)
     {
       // Now loop through the cells and load each one
       id aCell;

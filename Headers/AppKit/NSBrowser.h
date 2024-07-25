@@ -37,13 +37,13 @@
 @class NSArray;
 @class NSIndexPath;
 @class NSIndexSet;
+@class NSMutableDictionary;
 
 @class NSCell;
 @class NSEvent;
 @class NSMatrix;
 @class NSScroller;
 @class NSViewController;
-//@class NSBox;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 enum _NSBrowserColumnResizingType
@@ -63,7 +63,6 @@ APPKIT_EXPORT_CLASS
   Class _browserMatrixClass;
   NSString *_pathSeparator;
   
-  //NSBox *_horizontalScrollerBox;
   NSScroller *_horizontalScroller;
   NSTimeInterval _lastKeyPressed;
   NSString *_charBuffer;
@@ -102,7 +101,6 @@ APPKIT_EXPORT_CLASS
   NSBrowserColumnResizingType _columnResizing;
 
   BOOL _itemBasedDelegate;
-  id _lastItemLoaded;
 }
 
 //
