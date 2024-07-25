@@ -3288,7 +3288,7 @@ static BOOL browserUseBezels;
 	}
       else
 	{
-	  NSInteger col = column > 1 ? column - 1 : column;
+	  NSInteger col = column > 0 ? column - 1 : column;
 
 	  bc = [_browserColumns objectAtIndex: col];
 	  if (bc != nil)
