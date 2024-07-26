@@ -48,26 +48,27 @@
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
 
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
-#import "AppKit/AppKitExceptions.h"
-#import "AppKit/NSScroller.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSFont.h"
-#import "AppKit/NSScrollView.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSMatrix.h"
+#import "AppKit/NSScroller.h"
+#import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableHeaderCell.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSViewController.h"
 #import "AppKit/NSWindow.h"
-#import "AppKit/NSBezierPath.h"
 
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
 /* Cache */
-static CGFloat scrollerWidth; // == [NSScroller scrollerWidth]
+static CGFloat scrollerWidth;
 static NSTextFieldCell *titleCell;
 static CGFloat browserColumnSeparation;
 static CGFloat browserVerticalPadding;
@@ -251,6 +252,7 @@ static BOOL browserUseBezels;
 @interface NSBrowser (Private)
 - (NSString *) _getTitleOfColumn: (NSInteger)column;
 - (void) _performLoadOfColumn: (NSInteger)column;
+- (id) _itemForColumn: (NSInteger)column;
 - (void) _remapColumnSubviews: (BOOL)flag;
 - (void) _setColumnTitlesNeedDisplay;
 - (NSBorderType) _resolvedBorderType;
@@ -1627,13 +1629,26 @@ static BOOL browserUseBezels;
 	    inRect: (NSRect)aRect
 	  ofColumn: (NSInteger)column
 {
+  NSViewController *vc = nil;
+  NSView *cv = nil;
+
   if (!_isTitled || !NSBR_COLUMN_IS_VISIBLE(column))
     return;
 
-//  [titleCell setControlView: self];
+  if (_itemBasedDelegate == YES)
+    {
+      SEL sel = @selector(browser:headerViewControllerForItem:);
+      if ([_browserDelegate respondsToSelector: sel])
+	{
+	  id item = [self _itemForColumn: column];
+	  vc = [_browserDelegate browser: self headerViewControllerForItem: item];
+	  cv = [vc view];
+	}
+    }
+
   [titleCell setStringValue: title];
   [titleCell drawWithFrame: aRect inView: self];
-  [titleCell setControlView: nil];
+  [titleCell setControlView: cv];
 }
 
 /** <p>Returns the height of column titles. The Nextish look returns 21.</p>
@@ -3270,6 +3285,41 @@ static BOOL browserUseBezels;
     }
 }
 
+- (id) _itemForColumn: (NSInteger)column
+{
+  id item = nil;
+
+  if (column == 0)
+    {
+      item = [_browserDelegate rootItemForBrowser: self];
+    }
+  else
+    {
+      NSInteger col = column > 0 ? column - 1 : column;
+      NSBrowserColumn *bc;
+
+      bc = [_browserColumns objectAtIndex: col];
+      if (bc != nil)
+	{
+	  NSMatrix *matrix;
+
+	  matrix = [bc columnMatrix];
+	  if (matrix != nil)
+	    {
+	      NSArray *selectedCells = [matrix selectedCells];
+	      if (selectedCells != nil && [selectedCells count] > 0)
+		{
+		  id cell = [selectedCells objectAtIndex: 0];
+
+		  item = [cell objectValue];
+		}
+	    }
+	}
+    }
+
+  return item;
+}
+
 /* Loads column 'column' (asking the delegate). */
 - (void) _performLoadOfColumn: (NSInteger)column
 {
@@ -3282,30 +3332,7 @@ static BOOL browserUseBezels;
 
   if (_itemBasedDelegate)
     {
-      if (column == 0)
-	{
-	  item = [_browserDelegate rootItemForBrowser: self];
-	}
-      else
-	{
-	  NSInteger col = column > 0 ? column - 1 : column;
-
-	  bc = [_browserColumns objectAtIndex: col];
-	  if (bc != nil)
-	    {
-	      matrix = [bc columnMatrix];
-	      if (matrix != nil)
-		{
-		  NSArray *selectedCells = [matrix selectedCells];
-		  if (selectedCells != nil && [selectedCells count] > 0)
-		    {
-		      id cell = [selectedCells objectAtIndex: 0];
-
-		      item = [cell objectValue];
-		    }
-		}
-	    }
-	}
+      item = [self _itemForColumn: column];
 
       // Ask the delegate for the number of rows for a given item...
       rows = [_browserDelegate browser: self numberOfChildrenOfItem: item];
