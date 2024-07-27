@@ -1629,7 +1629,6 @@ static BOOL browserUseBezels;
 	    inRect: (NSRect)aRect
 	  ofColumn: (NSInteger)column
 {
-  NSViewController *vc = nil;
   NSView *cv = nil;
 
   if (!_isTitled || !NSBR_COLUMN_IS_VISIBLE(column))
@@ -1641,6 +1640,7 @@ static BOOL browserUseBezels;
       if ([_browserDelegate respondsToSelector: sel])
 	{
 	  id item = [self _itemForColumn: column];
+	  NSViewController *vc = nil;
 	  vc = [_browserDelegate browser: self headerViewControllerForItem: item];
 	  cv = [vc view];
 	}
