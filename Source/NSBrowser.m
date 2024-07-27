@@ -37,7 +37,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <math.h>
+#include <math.h> // (float)rintf(float x}
 #import "config.h"
 
 #import <Foundation/NSArray.h>
@@ -68,7 +68,7 @@
 #import "GSGuiPrivate.h"
 
 /* Cache */
-static CGFloat scrollerWidth;
+static CGFloat scrollerWidth; // == [NSScroller scrollerWidth];
 static NSTextFieldCell *titleCell;
 static CGFloat browserColumnSeparation;
 static CGFloat browserVerticalPadding;
