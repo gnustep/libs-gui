@@ -3534,15 +3534,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSInteger i;
   id dataSource = [outlineView dataSource];
   NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
-  GSKeyValueBinding *theBinding = nil;
-
-  theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
-				   forObject: outlineView];
-  
-  if (dataSource == nil && theBinding == nil)
-    {
-      return;
-    }
 
   /* Using columnAtPoint: here would make it called twice per row per drawn
      rect - so we avoid it and do it natively */

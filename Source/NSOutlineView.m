@@ -1032,6 +1032,16 @@ static NSImage *unexpandable  = nil;
  */
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)aRect
 {
+  GSKeyValueBinding *theBinding = nil;
+
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+				   forObject: self];
+  
+  if (_dataSource == nil && theBinding == nil)
+    {
+      return;
+    }
+  
   if (_viewBased)
     {
       [self _drawCellViewRow: rowIndex
