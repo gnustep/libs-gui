@@ -3310,7 +3310,6 @@ byExtendingSelection: (BOOL)flag
       NSString *string;
       id newObjectValue = nil;
       BOOL validatedOK = YES;
-      GSKeyValueBinding *theBinding = nil;
 
       // Avoid potential recursive sequences...
       _isValidating = YES;
@@ -3327,6 +3326,7 @@ byExtendingSelection: (BOOL)flag
 			 errorDescription: &error] == YES)
 	    {
 	      NSTableColumn *tb;
+	      GSKeyValueBinding *theBinding = nil;
 
 	      [_editedCell setObjectValue: newObjectValue];
 	      tb = [_tableColumns objectAtIndex: _editedColumn];
@@ -3366,6 +3366,7 @@ byExtendingSelection: (BOOL)flag
       if (validatedOK)
 	{
 	  NSTableColumn *tb;
+	  GSKeyValueBinding *theBinding = nil;
 
 	  [_editedCell setStringValue: string];
 	  tb = [_tableColumns objectAtIndex: _editedColumn];

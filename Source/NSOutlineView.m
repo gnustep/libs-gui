@@ -2278,7 +2278,6 @@ Also returns the child index relative to this parent. */
   id object;
   id sitem = (item == nil) ? (id)[NSNull null] : (id)item;
 
-  // NSLog(@"openItem: %@", item);
   // open the item...
   if (item != nil)
     {
