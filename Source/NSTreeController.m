@@ -224,15 +224,14 @@
 - (NSArray *) selectedObjects
 {
   NSMutableArray *selectedObjects = [NSMutableArray array];
-  NSEnumerator *en = [_selection_index_paths objectEnumerator];
-  NSIndexPath *path = nil;
 
-  while ((path = [en nextObject]) != nil)
+  FOR_IN(NSIndexPath*, path, _selection_index_paths)
     {
       id obj = [self _objectAtIndexPath: path];
       [selectedObjects addObject: obj];
     }
-
+  END_FOR_IN(_selection_index_paths);
+  
   return selectedObjects;
 }
 
