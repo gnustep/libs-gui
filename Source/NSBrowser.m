@@ -2267,8 +2267,13 @@ static BOOL browserUseBezels;
   _itemBasedDelegate = NO;
 
   if ([anObject respondsToSelector:
-		  @selector(browser:numberOfChildrenOfItem:)])
+		  @selector(browser:numberOfChildrenOfItem:)]
+      && [anObject respondsToSelector:
+		    @selector(browser:child:ofItem:)]
+      && [anObject respondsToSelector:
+		    @selector(browser:isLeafItem:)])
     {
+      _passiveDelegate = NO;
       _itemBasedDelegate = YES;
     }
   else
