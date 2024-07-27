@@ -359,7 +359,7 @@ canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 - (NSInteger) browser: (NSBrowser *)browser
-              numberOfChildrenOfItem: (id)item;
+numberOfChildrenOfItem: (id)item;
 - (id) browser: (NSBrowser *)browser
          child: (NSInteger)index
         ofItem: (id)item;
@@ -368,17 +368,17 @@ canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
 - (BOOL) browser: (NSBrowser *)browser
   shouldEditItem: (id)item;
 - (id) browser: (NSBrowser *)browser
-       objectValueForItem: (id)item;
+objectValueForItem: (id)item;
 - (id) browser: (NSBrowser *)browser
-       setObjectValue: (id)object
+setObjectValue: (id)object
        forItem: (id)item;
 - (id) rootItemForBrowser: (NSBrowser *)browser;
 - (NSViewController *) browser: (NSBrowser *)browser
-                       previewViewControllerForLeafItem: (id)item;
+previewViewControllerForLeafItem: (id)item;
 - (NSViewController *) browser: (NSBrowser *)browser
-                       headerViewControllerForItem: (id)item;
+   headerViewControllerForItem: (id)item;
 - (void) browser: (NSBrowser *)browser
-         didChangeLastColumn: (NSInteger)oldLastColumn
+didChangeLastColumn: (NSInteger)oldLastColumn
         toColumn: (NSInteger)column;
 #endif
 
