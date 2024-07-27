@@ -35,19 +35,21 @@
 
 + (NSMutableDictionary *) dictionaryWithChildren: (NSMutableArray *)children
 {
-  NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject: children
-								       forKey: @"children"];
-  return dictionary;
+  return [NSMutableDictionary dictionaryWithObject: children
+					    forKey: @"children"];
 }
 
-- (instancetype) initWithRepresentedObject: (id)representedObject
-			    withController: (id)controller
+- (instancetype) initWithContent: (id)content
+		  withController: (id)controller
 {
-  self = [super initWithRepresentedObject: representedObject];
+  self = [super initWithRepresentedObject:
+		  [GSControllerTreeProxy
+		    dictionaryWithChildren: content]];
   if (self != nil)
     {
       ASSIGN(_controller, controller);
     }
+
   return self;
 }
 

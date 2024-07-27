@@ -192,9 +192,8 @@
 
   if ([_content isKindOfClass: [NSArray class]])
     {
-      NSMutableDictionary *dictionary = [GSControllerTreeProxy dictionaryWithChildren: _content];
-      _arranged_objects = [[GSControllerTreeProxy alloc] initWithRepresentedObject: dictionary
-								    withController: self];
+      _arranged_objects = [[GSControllerTreeProxy alloc] initWithContent: _content
+							  withController: self];
     }
 
   [self didChangeValueForKey: @"arrangedObjects"];
@@ -278,8 +277,8 @@
 	{
 	  NSMutableArray *newContent = [NSMutableArray arrayWithArray: [self content]];
 	  GSControllerTreeProxy *node = [[GSControllerTreeProxy alloc]
-					  initWithRepresentedObject: newObject
-						     withController: self];
+					  initWithContent: newObject
+					   withController: self];
 
 	  [newContent addObject: node];
 
@@ -294,7 +293,10 @@
   NSIndexPath *p = [self selectionIndexPath];
   id newObject = [self newObject];
 
-  [self insertObject: newObject atArrangedObjectIndexPath: p];
+  if (p != nil)
+    {
+      [self insertObject: newObject atArrangedObjectIndexPath: p];
+    }
 }
 
 - (IBAction) remove: (id)sender

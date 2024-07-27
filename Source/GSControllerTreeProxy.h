@@ -40,8 +40,9 @@ extern "C" {
 
 + (NSMutableDictionary *) dictionaryWithChildren: (NSMutableArray *)children;
 
-- (instancetype) initWithRepresentedObject: (id)representedObject
-			    withController: (id)controller;
+- (instancetype) initWithContent: (id)content
+                  withController: (id)controller;
+
 - (NSUInteger) count;
 
 - (NSMutableArray *) children;
