@@ -1,3 +1,60 @@
+2024-06-28 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add NSMenuToolbarItem.h
+	* Headers/AppKit/NSMenuToolbarItem.h: Declarations
+	for NSMenuToolbarItem.
+	* Images/GNUmakefile: Add new image
+	* Images/nsmapping.strings: Add image mapping
+	* MISSING: Remove this class from the list
+	* Source/GNUmakefile: Add class to build
+	* Source/NSMenuToolbarItem.m: Implementation of
+	NSMenuToolbarItem.
+  
+2024-06-07 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add new methods
+	for rendering view-based outline/table views.
+	* Headers/AppKit/NSTableRowView.h: Add implementation
+	* Headers/AppKit/NSTableView.h: Add references to
+	NSTableRowView.h
+	* Source/GSThemeDrawing.m: Factor out NSTableView and
+	NSOutlineView rendering so that GSThemeDrawing methods
+	are as minimal as possible.
+	* Source/NSOutlineView.m: Refactor to use new methods
+	to generate NSTableRowView when it is view-based.
+	* Source/NSTableRowView.m: Add implementation of
+	NSTableRowView implementation.
+	* Source/NSTableView.m: Update to use NSTableRowView
+	when it is view-based.
+
+2024-06-05 Richard Frith-Macdonald <rfm@gnu.org>
+
+        * ChangeLog: Update for new release
+	* ANNOUNCE:
+	* NEWS:
+	* Documentation/news.texi: Update of release notes for 0.31.1.
+	* Version: bump to 0.31.1
+
+2024-06-03 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenuitem.m:
+	Fix bug in decoding of archived menu item modifier mask.
+
+2024-05-30 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSDisplayServer.m:
+	* Source/NSGraphicsContext.m:
+	* Source/NSWorkspace.m:
+	Avoid using old gnustep_global_lock (removed from base)
+
+2024-05-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* ChangeLog: Update for new release
+	* ANNOUNCE:
+	* NEWS:
+	* Documentation/news.texi: Update of release notes for 0.31.0.
+	* Version: bump to 0.31.0
+
 2024-05-13  Adam Fox <adam.fox@keysight.com>
 
 	* Source/NSParagraphStyle.m (-init): Apply the old default

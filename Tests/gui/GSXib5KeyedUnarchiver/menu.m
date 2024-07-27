@@ -9,56 +9,67 @@
 
 int main()
 {
-	START_SET("GSXib5KeyedUnarchiver NSMenu tests")
+  START_SET("GSXib5KeyedUnarchiver NSMenu tests")
 
   NS_DURING
-  {
-    [NSApplication sharedApplication];
-  }
+    {
+      [NSApplication sharedApplication];
+    }
   NS_HANDLER
-  {
-    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
-      SKIP("It looks like GNUstep backend is not yet installed")
-  }
-  NS_ENDHANDLER
+    {
+      if ([[localException name]
+	isEqualToString: NSInternalInconsistencyException ])
+	{
+	  SKIP("It looks like GNUstep backend is not yet installed")
+	}
+    }
+  NS_ENDHANDLER;
+    
+  NSData		*data;
+  GSXibKeyedUnarchiver	*unarchiver;
+  NSArray 		*rootObjects;
+  NSEnumerator		*enumerator;
+  id			element;
+  NSMenu		*menu;
 
-  NSData* data = [NSData dataWithContentsOfFile:@"Menu.xib"];
-  GSXibKeyedUnarchiver* unarchiver = [GSXibKeyedUnarchiver unarchiverForReadingWithData:data];
-
-  NSArray *rootObjects;
+  data = [NSData dataWithContentsOfFile:@"Menu.xib"];
+  unarchiver = [GSXibKeyedUnarchiver unarchiverForReadingWithData:data];
   rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
+  enumerator = [rootObjects objectEnumerator];
 
-  NSMenu* menu;
-
-  for (id element in rootObjects) {
-      if ([element isKindOfClass:[NSMenu class]]) {
+  while ((element = [enumerator nextObject]) != nil)
+     {
+      if ([element isKindOfClass: [NSMenu class]])
+	{
           menu = (NSMenu*)element;
           break;
-      }
-  }
+	}
+    }
 
-  PASS(menu != nil, "Top-level NSMenu was found");
+  PASS(menu != nil, "Top-level NSMenu was found")
 
 
   // Empty <modifierMask key="keyEquivalentModifierMask"/> node
-  PASS_MODIFIER(0, 0);
+  PASS_MODIFIER(0, 0)
   // <modifierMask key="keyEquivalentModifierMask" shift="YES"/>
-  PASS_MODIFIER(1, NSShiftKeyMask);
+  PASS_MODIFIER(1, NSShiftKeyMask)
   // <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-  PASS_MODIFIER(2, NSCommandKeyMask);
+  PASS_MODIFIER(2, NSCommandKeyMask)
   // <modifierMask key="keyEquivalentModifierMask" option="YES"/>
-  PASS_MODIFIER(3, NSAlternateKeyMask);
+  PASS_MODIFIER(3, NSAlternateKeyMask)
   // No modifierMask element
-  PASS_MODIFIER(4, NSCommandKeyMask);
+  PASS_MODIFIER(4, NSCommandKeyMask)
   // No modifierMask element and no keyEquivalent attribute
-  PASS_MODIFIER(5, NSCommandKeyMask);
+  PASS_MODIFIER(5, NSCommandKeyMask)
 
   // no modfierMask
-  PASS_MODIFIER(6, NSCommandKeyMask);
+  PASS_MODIFIER(6, NSCommandKeyMask)
   // empty modifierMask
-  PASS_MODIFIER(7, 0);
+  PASS_MODIFIER(7, 0)
   // explicit modifier mask
-  PASS_MODIFIER(8, NSCommandKeyMask);
+  PASS_MODIFIER(8, NSCommandKeyMask)
   
-	END_SET("GSXib5KeyedUnarchiver NSMenu tests")
+  END_SET("GSXib5KeyedUnarchiver NSMenu tests")
+
+  return 0;
 }

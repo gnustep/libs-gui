@@ -16,24 +16,27 @@
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
-  NSArray **testObjects;
-  BOOL success = NO;
-  NSFileManager *mgr = [NSFileManager defaultManager];
-  NSString *path = [mgr currentDirectoryPath];
-  NSBundle *bundle = [[NSBundle alloc] initWithPath: path];
+  NSAutoreleasePool	*arp = [NSAutoreleasePool new];
+  NSArray		**testObjects = NULL;
+  BOOL 			success = NO;
+  NSFileManager		*mgr = [NSFileManager defaultManager];
+  NSString 		*path = [mgr currentDirectoryPath];
+  NSBundle 		*bundle = [[NSBundle alloc] initWithPath: path];
 
   START_SET("NSNibLoading GNUstep basic")
 
   NS_DURING
-  {
-    [NSApplication sharedApplication];
-  }
+    {
+      [NSApplication sharedApplication];
+    }
   NS_HANDLER
-  {
-    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
-       SKIP("It looks like GNUstep backend is not yet installed")
-  }
+    {
+      if ([[localException name]
+	isEqualToString: NSInternalInconsistencyException])
+	{
+	  SKIP("It looks like GNUstep backend is not yet installed")
+	}
+    }
   NS_ENDHANDLER
 
   if ([[path lastPathComponent] isEqualToString: @"obj"])
@@ -49,19 +52,22 @@ int main()
                                owner: [NSApplication sharedApplication]
                      topLevelObjects: testObjects];
       
-      PASS(success == YES, ".gorm file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+      PASS(success == YES, ".gorm file was loaded properly"
+	" using loadNibNamed:owner:topLevelObjects:");
       
       success = [bundle loadNibNamed: @"Test-xib"
                                owner: [NSApplication sharedApplication]
                      topLevelObjects: testObjects];
       
-      PASS(success == YES, ".xib file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+      PASS(success == YES, ".xib file was loaded properly"
+	" using loadNibNamed:owner:topLevelObjects:");
       
       success = [bundle loadNibNamed: @"Test-nib"
                                owner: [NSApplication sharedApplication]
                      topLevelObjects: testObjects];
       
-      PASS(success == YES, ".nib file was loaded properly using loadNibNamed:owner:topLevelObjects:");
+      PASS(success == YES, ".nib file was loaded properly"
+	" using loadNibNamed:owner:topLevelObjects:");
     }
   NS_HANDLER
     {

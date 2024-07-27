@@ -4,7 +4,7 @@
 
    Copyright (C) 1999, 2005 Free Software Foundation, Inc.
 
-   Author:  Enrico Sersale <enrico@imago.ro>
+   Author:  Enrico Sersale
    Date: Dec 1999
    Modified:  Fred Kiefer <FredKiefer@gmx.de>
    Date: January 2001

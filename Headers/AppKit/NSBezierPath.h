@@ -3,7 +3,7 @@
 
    Copyright (C) 1999, 2005 Free Software Foundation, Inc.
 
-   Author:  Enrico Sersale <enrico@imago.ro>
+   Author:  Enrico Sersale
    Date: Dec 1999
    
    This file is part of the GNUstep GUI Library.
