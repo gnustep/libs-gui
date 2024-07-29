@@ -38,7 +38,7 @@
 {
   NSMutableDictionary *dict =
     [NSMutableDictionary dictionaryWithObject:
-	       [NSMutableArray arrayWithArray: children]
+	       [NSMutableArray arrayWithArray: content]
 				       forKey: @"children"];
 
   self = [super initWithRepresentedObject: dict];

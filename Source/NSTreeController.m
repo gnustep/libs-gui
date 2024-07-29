@@ -332,6 +332,8 @@
       
       lastIndex = [indexPath indexAtPosition: length - 1];
       [children insertObject: object atIndex: lastIndex];
+
+      NSLog(@"children = %@, class = %@", children, [children className]);
       [self rearrangeObjects];
     }
 }
