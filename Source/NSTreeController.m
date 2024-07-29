@@ -231,7 +231,7 @@
       [selectedObjects addObject: obj];
     }
   END_FOR_IN(_selection_index_paths);
-  
+
   return selectedObjects;
 }
 

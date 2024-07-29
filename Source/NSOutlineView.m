@@ -1789,6 +1789,10 @@ Also returns the child index relative to this parent. */
       if (theBinding != nil)
 	{
 	  [self _indexPathsFromSelectedRows];
+	  if ([observedObject respondsToSelector: @selector(setSelectionIndexPaths:)])
+	    {
+	      [observedObject setSelectionIndexPaths: _selectedIndexPaths];
+	    }
 	  [theBinding reverseSetValue: _selectedIndexPaths];
 	}
     }

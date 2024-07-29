@@ -33,18 +33,15 @@
 
 @implementation GSControllerTreeProxy
 
-+ (NSMutableDictionary *) dictionaryWithChildren: (NSMutableArray *)children
-{
-  return [NSMutableDictionary dictionaryWithObject: children
-					    forKey: @"children"];
-}
-
 - (instancetype) initWithContent: (id)content
 		  withController: (id)controller
 {
-  self = [super initWithRepresentedObject:
-		  [GSControllerTreeProxy
-		    dictionaryWithChildren: content]];
+  NSMutableDictionary *dict =
+    [NSMutableDictionary dictionaryWithObject:
+	       [NSMutableArray arrayWithArray: children]
+				       forKey: @"children"];
+
+  self = [super initWithRepresentedObject: dict];
   if (self != nil)
     {
       ASSIGN(_controller, controller);

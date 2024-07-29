@@ -32,7 +32,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSSortDescriptor.h>
 
-#import <AppKit/NSTreeNode.h>
+#import "AppKit/NSTreeNode.h"
 
 @interface NSTreeNode (Private)
 - (NSMutableArray*) _childNodes;

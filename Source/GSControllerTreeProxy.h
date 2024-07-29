@@ -38,8 +38,6 @@ extern "C" {
   NSTreeController *_controller;
 }
 
-+ (NSMutableDictionary *) dictionaryWithChildren: (NSMutableArray *)children;
-
 - (instancetype) initWithContent: (id)content
                   withController: (id)controller;
 
