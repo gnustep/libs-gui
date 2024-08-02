@@ -47,6 +47,7 @@
 
 - (void) _setParentNode: (NSTreeNode*)parentNode
 {
+  NSLog(@"parentNode = %@", parentNode);
   _parentNode = parentNode;
 }
 
@@ -154,12 +155,13 @@
 
 - (NSIndexPath*) indexPath
 {
+  NSLog(@"In %@", NSStringFromSelector(_cmd));
   if (_parentNode != nil)
     {
       NSIndexPath *path;
       NSUInteger index;
 
-      index = [_parentNode->_childNodes indexOfObject: self];
+      index = [[_parentNode childNodes] indexOfObject: self];
       path = [_parentNode indexPath];
       if (path != nil)
         {
@@ -169,6 +171,8 @@
         {
           return [NSIndexPath indexPathWithIndex: index];
         }
+
+      NSLog(@"index = %ld", index);
     }
   else
     {

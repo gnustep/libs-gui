@@ -34,9 +34,11 @@
 #import <Foundation/NSKeyedArchiver.h>
 #import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSKeyValueObserving.h>
+#import <Foundation/NSNotification.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSSortDescriptor.h>
 
+#import "AppKit/NSOutlineView.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTreeController.h"
 #import "AppKit/NSTreeNode.h"
@@ -44,6 +46,21 @@
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
 #import "GSControllerTreeProxy.h"
+
+@interface NSOutlineView (__NSTreeController_private__)
+
+- (NSArray *) _selectedIndexPaths;
+
+@end
+
+@implementation NSOutlineView (__NSTreeController_private__)
+
+- (NSArray *) _selectedIndexPaths
+{
+  return _selectedIndexPaths;
+}
+
+@end
 
 @implementation NSTreeController
 
@@ -101,6 +118,7 @@
   RELEASE(_leafKeyPath);
   RELEASE(_sortDescriptors);
   RELEASE(_arranged_objects);
+
   [super dealloc];
 }
 
@@ -321,7 +339,7 @@
       NSUInteger pos = 0;
       NSMutableArray *children = [_arranged_objects mutableChildNodes];
       NSUInteger lastIndex = 0;
-      
+
       for (pos = 0; pos < length - 1; pos++)
 	{
 	  NSUInteger i = [indexPath indexAtPosition: pos];
@@ -333,7 +351,6 @@
       lastIndex = [indexPath indexAtPosition: length - 1];
       [children insertObject: object atIndex: lastIndex];
 
-      NSLog(@"children = %@, class = %@", children, [children className]);
       [self rearrangeObjects];
     }
 }

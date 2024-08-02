@@ -151,6 +151,18 @@ static NSImage *unexpandable  = nil;
 			  row: (NSInteger)index;
 @end
 
+@interface NSTreeNode (Private_NSOutlineView)
+- (void) _setParentNode: (NSTreeNode*)parentNode;
+@end
+
+@implementation NSTreeNode (Private_NSOutlineView)
+
+- (void) _setParentNode: (NSTreeNode*)parentNode
+{
+  _parentNode = parentNode;
+}
+
+@end
 @implementation NSOutlineView
 
 // Initialize the class when it is loaded
@@ -1755,7 +1767,7 @@ Also returns the child index relative to this parent. */
   // root object
   if (count == 0)
     {
-      NSIndexPath *path = [NSIndexPath indexPathWithIndex: 0];
+      NSIndexPath *path = [NSIndexPath indexPathWithIndex: 1];
       [_selectedIndexPaths addObject: path];
     }
 }
@@ -1796,7 +1808,7 @@ Also returns the child index relative to this parent. */
 	  [theBinding reverseSetValue: _selectedIndexPaths];
 	}
     }
-  
+
   [nc postNotificationName: NSOutlineViewSelectionDidChangeNotification
 		    object: self];
 }
@@ -2183,7 +2195,7 @@ Also returns the child index relative to this parent. */
 	       * from whether there are children present on a given node.  See
 	       * the documentation for NSTreeController for more info.
 	       */
-	      if ([self isExpandable: startitem] // leaf == NO
+	      if ([self isExpandable: startitem]
 		  && [self isItemExpanded: startitem])
 		{
 		  NSString *childrenKeyPath = [tc childrenKeyPathForNode: startitem];
@@ -2218,6 +2230,10 @@ Also returns the child index relative to this parent. */
 	    {
 	      id anitem = [children objectAtIndex: i];
 
+	      if ([anitem respondsToSelector: @selector(_setParentNode:)])
+		{
+		  [anitem _setParentNode: startitem];
+		}
 	      [anarray addObject: anitem];
 	      [self _loadDictionaryStartingWith: anitem
 					atLevel: level + 1];
