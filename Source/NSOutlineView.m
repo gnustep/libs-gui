@@ -1742,48 +1742,47 @@ Also returns the child index relative to this parent. */
 
 @implementation NSOutlineView (NotificationRequestMethods)
 
-- (void) _buildIndexPathStartingWithItem: (id)startitem
-			    matchingItem: (id)item
-				intoPath: (NSIndexPath **)path
+- (NSIndexPath *) _findIndexPathForItem: (id)item
+			     parentItem: (id)pItem
 {
-  id sitem = (startitem == nil) ?
-    (id)[NSNull null] : (id)startitem;
-  NSArray *children = NSMapGet(_itemDict, sitem);
-  NSUInteger index = 0;
+  id parentItem = (pItem == nil) ? (id)[NSNull null] : (id)pItem;
+  NSArray *children = NSMapGet(_itemDict, parentItem);
+  NSInteger childCount = [children count];
 
-  // If the item is 0 it is the root, so add it...
-  if(startitem == nil)
+  if (item == pItem)
     {
-      *path = [NSIndexPath indexPathWithIndex: 0];
+      return [NSIndexPath indexPathWithIndex: 0];
     }
 
-  // Iterate over the children to find the item...
-  FOR_IN(id, child, children)
+  for (NSInteger index = 0; index < childCount; index++)
     {
-      if (item == child)
-	{
-	  break;
-	}
-	  
-      index++;
-      [self _buildIndexPathStartingWithItem: child
-			       matchingItem: item
-				   intoPath: path];
+      id childItem = [children objectAtIndex: index];
       
-      *path = [*path indexPathByAddingIndex: index];      
+      if (childItem == item)
+	{
+	  return [NSIndexPath indexPathWithIndex: index];
+	}
+      else
+	{
+	  NSIndexPath *foundPath = [self _findIndexPathForItem: item
+						    parentItem: childItem];
+
+	  if (foundPath != nil)
+	    {
+	      return [foundPath indexPathByAddingIndex: index];
+	    }
+	}
     }
-  END_FOR_IN(children);
+
+  return nil;
 }
 
 - (NSIndexPath *) _indexPathForItem: (id)item
 {
-  NSIndexPath *path = nil;
-
-  [self _buildIndexPathStartingWithItem: nil
-			   matchingItem: item
-			       intoPath: &path];
-
-  return path;
+  id rootItem = [self itemAtRow: 0];
+  NSLog(@"rootItem = %@", rootItem);
+  return [self _findIndexPathForItem: item
+			  parentItem: rootItem];
 }
 
 - (void) _indexPathsFromSelectedRows
