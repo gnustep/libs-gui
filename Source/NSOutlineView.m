@@ -67,6 +67,7 @@
 
 #import "GNUstepGUI/GSTheme.h"
 #import "GSBindingHelpers.h"
+#import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
 
 #include <math.h>
@@ -1741,35 +1742,87 @@ Also returns the child index relative to this parent. */
 
 @implementation NSOutlineView (NotificationRequestMethods)
 
+- (void) _buildIndexPathStartingWithItem: (id)startitem
+			    matchingItem: (id)item
+				intoPath: (NSIndexPath **)path
+{
+  id sitem = (startitem == nil) ?
+    (id)[NSNull null] : (id)startitem;
+  NSArray *children = NSMapGet(_itemDict, sitem);
+  NSUInteger index = 0;
+
+  // If the item is 0 it is the root, so add it...
+  if(startitem == nil)
+    {
+      *path = [NSIndexPath indexPathWithIndex: 0];
+    }
+
+  // Iterate over the children to find the item...
+  FOR_IN(id, child, children)
+    {
+      if (item == child)
+	{
+	  break;
+	}
+	  
+      index++;
+      [self _buildIndexPathStartingWithItem: child
+			       matchingItem: item
+				   intoPath: path];
+      
+      *path = [*path indexPathByAddingIndex: index];      
+    }
+  END_FOR_IN(children);
+}
+
+- (NSIndexPath *) _indexPathForItem: (id)item
+{
+  NSIndexPath *path = nil;
+
+  [self _buildIndexPathStartingWithItem: nil
+			   matchingItem: item
+			       intoPath: &path];
+
+  return path;
+}
+
 - (void) _indexPathsFromSelectedRows
 {
   NSUInteger index = [_selectedRows firstIndex];
-  NSUInteger count = 0;
-  
+
+  // Regenerate the array...
   [_selectedIndexPaths removeAllObjects];
   while (index != NSNotFound)
     {
       id item = [_items objectAtIndex: index];
+      NSIndexPath *path = nil;
 
       if ([item respondsToSelector: @selector(indexPath)])
 	{
-	  NSIndexPath *path = [item indexPath];
-
-	  [_selectedIndexPaths addObject: path];
-	  count++;
+	  path = [item indexPath];
 	}
+      else
+	{
+	  path = [self _indexPathForItem: item];
+	}
+
+      NSLog(@"*** path = %@", path);
+      [_selectedIndexPaths addObject: path];
 
       index = [_selectedRows indexGreaterThanIndex: index];
     }
-
+  
   // According to tests and observation, if none of the
-  // objects respond to indexPath, then we need return the
-  // root object
-  if (count == 0)
+  // objects respond to and we can't get the indices from
+  // the above calculation, then we need return the
+  // root object.
+  /*
+  if ([_selectedIndexPaths count] == 0)
     {
       NSIndexPath *path = [NSIndexPath indexPathWithIndex: 1];
       [_selectedIndexPaths addObject: path];
     }
+  */
 }
 
 /*
