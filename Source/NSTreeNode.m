@@ -47,7 +47,6 @@
 
 - (void) _setParentNode: (NSTreeNode*)parentNode
 {
-  NSLog(@"parentNode = %@", parentNode);
   _parentNode = parentNode;
 }
 

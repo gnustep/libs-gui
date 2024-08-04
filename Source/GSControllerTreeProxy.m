@@ -81,7 +81,7 @@
   return [self children];
 }
 
-- (NSArray *) mutableChildNodes
+- (NSMutableArray *) mutableChildNodes
 {
   return [self children];
 }

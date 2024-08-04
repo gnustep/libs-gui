@@ -192,11 +192,11 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
   if (!objectTable)
     return nil;
 
-  NSDebugLog(@"+++ called with %@, %@", binding, anObject);
+  NSDebugLLog(@"NSBinding", @"+++ called with %@, %@", binding, anObject);
   [bindingLock lock];
   bindings = (NSMutableDictionary *)NSMapGet(objectTable, (void *)anObject);
 
-  NSDebugLog(@"+++ Bindings found for %@ => %@", anObject, bindings);
+  NSDebugLLog(@"NSBinding", @"+++ Bindings found for %@ => %@", anObject, bindings);
   if (bindings != nil)
     {
       theBinding = (GSKeyValueBinding*)[bindings objectForKey: binding];

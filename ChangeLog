@@ -7,7 +7,7 @@
 	* Source/GSControllerTreeProxy.[hm]: Proxy class
 	for NSTreeController, a subclass of NSTreeNode.
 	* Source/GSThemeDrawing.m: Optimize code a bit and
-	add changes for binfings.
+	add changes for bindings.
 	* Source/GSXib5KeyedUnarchiver.m: Add support for new keys
 	on NSTreeController.
 	* Source/NSKeyValueBinding.m: Add new methods to
