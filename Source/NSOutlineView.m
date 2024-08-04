@@ -1749,11 +1749,6 @@ Also returns the child index relative to this parent. */
   NSArray *children = NSMapGet(_itemDict, parentItem);
   NSInteger childCount = [children count];
 
-  if (item == pItem)
-    {
-      return [NSIndexPath indexPathWithIndex: 0];
-    }
-
   for (NSInteger index = 0; index < childCount; index++)
     {
       id childItem = [children objectAtIndex: index];
@@ -1779,8 +1774,7 @@ Also returns the child index relative to this parent. */
 
 - (NSIndexPath *) _indexPathForItem: (id)item
 {
-  id rootItem = [self itemAtRow: 0];
-  NSLog(@"rootItem = %@", rootItem);
+  id rootItem = nil;
   return [self _findIndexPathForItem: item
 			  parentItem: rootItem];
 }
@@ -1805,7 +1799,6 @@ Also returns the child index relative to this parent. */
 	  path = [self _indexPathForItem: item];
 	}
 
-      NSLog(@"*** path = %@", path);
       [_selectedIndexPaths addObject: path];
 
       index = [_selectedRows indexGreaterThanIndex: index];
