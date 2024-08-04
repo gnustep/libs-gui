@@ -222,7 +222,7 @@ static NSImage *unexpandable  = nil;
 - (void) dealloc
 {
   [GSKeyValueBinding unbindAllForObject: self];
-  
+
   RELEASE(_items);
   RELEASE(_expandedItems);
   RELEASE(_selectedIndexPaths);
@@ -804,7 +804,7 @@ static NSImage *unexpandable  = nil;
        */
       _dataSource_editable = YES;
     }
-  
+
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
   [self tile];
@@ -1047,14 +1047,14 @@ static NSImage *unexpandable  = nil;
 {
   GSKeyValueBinding *theBinding = nil;
 
-  theBinding = [GSKeyValueBinding getBinding: NSContentBinding 
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
 				   forObject: self];
-  
+
   if (_dataSource == nil && theBinding == nil)
     {
       return;
     }
-  
+
   if (_viewBased)
     {
       [self _drawCellViewRow: rowIndex
@@ -1754,7 +1754,7 @@ Also returns the child index relative to this parent. */
   NSUInteger length = [self length];
   NSUInteger indexes[length + 1];
   NSUInteger i = 0;
-  
+
   [self getIndexes: indexes];
 
   // Iterate over existing indexes...
@@ -1780,7 +1780,7 @@ Also returns the child index relative to this parent. */
   for (NSInteger index = 0; index < childCount; index++)
     {
       id childItem = [children objectAtIndex: index];
-      
+
       if (childItem == item)
 	{
 	  return [NSIndexPath indexPathWithIndex: index];
@@ -1831,7 +1831,7 @@ Also returns the child index relative to this parent. */
 
       index = [_selectedRows indexGreaterThanIndex: index];
     }
-  
+
   // According to tests and observation, if none of the
   // objects respond to and we can't get the indices from
   // the above calculation, then we need return the
@@ -1859,7 +1859,7 @@ Also returns the child index relative to this parent. */
 {
   NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
   GSKeyValueBinding *theBinding;
-  
+
   theBinding = [GSKeyValueBinding getBinding: NSValueBinding
 				   forObject: tb];
 
@@ -2103,7 +2103,7 @@ Also returns the child index relative to this parent. */
 		    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
 	{
 	  id item = [self itemAtRow: index];
-	  
+
 	  [_dataSource outlineView: self
 		    setObjectValue: value
 		    forTableColumn: tb
@@ -2286,7 +2286,7 @@ Also returns the child index relative to this parent. */
 			{
 			  NSNumber *countValue = [sitem valueForKeyPath: countKeyPath];
 			  num = [countValue integerValue];
-			}		      
+			}
 		    }
 		}
 	    }

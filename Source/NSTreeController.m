@@ -224,7 +224,7 @@
   NSMutableArray *children = [_arranged_objects mutableChildNodes];
   NSUInteger lastIndex = 0;
   id obj = nil;
-  
+
   for (pos = 0; pos < length - 1; pos++)
     {
       NSUInteger i = [indexPath indexAtPosition: pos];
@@ -335,21 +335,25 @@
   if ([self canAddChild]
       && [self countKeyPath] == nil)
     {
-      NSUInteger length = [indexPath length];
+      NSUInteger length = [indexPath length] - 1;
       NSUInteger pos = 0;
       NSMutableArray *children = [_arranged_objects mutableChildNodes];
       NSUInteger lastIndex = 0;
 
-      for (pos = 0; pos < length - 1; pos++)
+      for (pos = 0; pos < length; pos++)
 	{
 	  NSUInteger i = [indexPath indexAtPosition: pos];
 	  id node = [children objectAtIndex: i];
-	  
+
 	  children = [node valueForKeyPath: _childrenKeyPath];
 	}
-      
-      lastIndex = [indexPath indexAtPosition: length - 1];
-      [children insertObject: object atIndex: lastIndex + 1];
+
+      lastIndex = [indexPath indexAtPosition: length];
+
+      id child = [children objectAtIndex: lastIndex];
+
+      children = [child valueForKeyPath: _childrenKeyPath];
+      [children addObject: object];
 
       [self rearrangeObjects];
     }
@@ -359,7 +363,7 @@
 {
   if ([self canAddChild]
       && [self countKeyPath] == nil)
-    {  
+    {
       if ([objects count] != [indexPaths count])
 	{
 	  return;
@@ -367,11 +371,11 @@
       else
 	{
 	  NSUInteger i = 0;
-	  
+
 	  FOR_IN(id, object, objects)
 	    {
 	      NSIndexPath *indexPath = [indexPaths objectAtIndex: i];
-	      
+
 	      [self insertObject: object atArrangedObjectIndexPath: indexPath];
 	      i++;
 	    }
