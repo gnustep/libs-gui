@@ -1748,8 +1748,9 @@ Also returns the child index relative to this parent. */
   id parentItem = (pItem == nil) ? (id)[NSNull null] : (id)pItem;
   NSArray *children = NSMapGet(_itemDict, parentItem);
   NSInteger childCount = [children count];
-
-  for (NSInteger index = 0; index < childCount; index++)
+  NSInteger index = 0;
+  
+  for (index = 0; index < childCount; index++)
     {
       id childItem = [children objectAtIndex: index];
 
