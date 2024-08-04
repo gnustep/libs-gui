@@ -349,7 +349,7 @@
 	}
       
       lastIndex = [indexPath indexAtPosition: length - 1];
-      [children insertObject: object atIndex: lastIndex];
+      [children insertObject: object atIndex: lastIndex + 1];
 
       [self rearrangeObjects];
     }

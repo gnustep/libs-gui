@@ -1740,6 +1740,34 @@ Also returns the child index relative to this parent. */
 
 @end /* implementation of NSOutlineView */
 
+@interface NSIndexPath (__NSOutlineView__Prepend__)
+
+- (NSIndexPath *) _indexPathByPrependingIndex: (NSUInteger)index;
+
+@end
+
+@implementation NSIndexPath (__NSOutlineView__Prepend__)
+
+- (NSIndexPath *) _indexPathByPrependingIndex: (NSUInteger)index
+{
+  NSIndexPath *newPath = [NSIndexPath indexPathWithIndex: index];
+  NSUInteger length = [self length];
+  NSUInteger indexes[length + 1];
+  NSUInteger i = 0;
+  
+  [self getIndexes: indexes];
+
+  // Iterate over existing indexes...
+  for (i = 0; i < length; i++)
+    {
+      newPath = [newPath indexPathByAddingIndex: indexes[i]];
+    }
+
+  return newPath;
+}
+
+@end
+
 @implementation NSOutlineView (NotificationRequestMethods)
 
 - (NSIndexPath *) _findIndexPathForItem: (id)item
@@ -1764,7 +1792,7 @@ Also returns the child index relative to this parent. */
 
 	  if (foundPath != nil)
 	    {
-	      return [foundPath indexPathByAddingIndex: index];
+	      return [foundPath _indexPathByPrependingIndex: index];
 	    }
 	}
     }
