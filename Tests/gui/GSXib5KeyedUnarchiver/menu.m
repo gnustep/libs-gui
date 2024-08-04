@@ -23,9 +23,9 @@ int main()
 	  SKIP("It looks like GNUstep backend is not yet installed")
 	}
     }
-  NS_ENDHANDLER
-
-  NSData		*data 
+  NS_ENDHANDLER;
+    
+  NSData		*data;
   GSXibKeyedUnarchiver	*unarchiver;
   NSArray 		*rootObjects;
   NSEnumerator		*enumerator;
@@ -35,7 +35,7 @@ int main()
   data = [NSData dataWithContentsOfFile:@"Menu.xib"];
   unarchiver = [GSXibKeyedUnarchiver unarchiverForReadingWithData:data];
   rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
-  enumerator = [rootObjects objectenumerator];
+  enumerator = [rootObjects objectEnumerator];
 
   while ((element = [enumerator nextObject]) != nil)
      {
