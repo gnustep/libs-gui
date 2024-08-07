@@ -1785,6 +1785,7 @@ static BOOL _isAutolaunchChecked = NO;
 	  /*
 	   * Try to handle events for this session, discarding others.
 	   */
+    	  [theSession->window orderFrontRegardless];
 	  code = [self runModalSession: theSession];
 	  if (code == NSRunContinuesResponse)
 	    {
