@@ -1819,18 +1819,6 @@ Also returns the child index relative to this parent. */
 
       index = [_selectedRows indexGreaterThanIndex: index];
     }
-
-  // According to tests and observation, if none of the
-  // objects respond to and we can't get the indices from
-  // the above calculation, then we need return the
-  // root object.
-  /*
-  if ([_selectedIndexPaths count] == 0)
-    {
-      NSIndexPath *path = [NSIndexPath indexPathWithIndex: 1];
-      [_selectedIndexPaths addObject: path];
-    }
-  */
 }
 
 /*

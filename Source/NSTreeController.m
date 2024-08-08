@@ -47,21 +47,6 @@
 #import "GSFastEnumeration.h"
 #import "GSControllerTreeProxy.h"
 
-@interface NSOutlineView (__NSTreeController_private__)
-
-- (NSArray *) _selectedIndexPaths;
-
-@end
-
-@implementation NSOutlineView (__NSTreeController_private__)
-
-- (NSArray *) _selectedIndexPaths
-{
-  return _selectedIndexPaths;
-}
-
-@end
-
 @implementation NSTreeController
 
 + (void) initialize
