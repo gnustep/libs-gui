@@ -335,10 +335,9 @@
   if ([self canAddChild]
       && [self countKeyPath] == nil)
     {
-      NSUInteger length = [indexPath length] - 1;
+      NSUInteger length = [indexPath length];
       NSUInteger pos = 0;
       NSMutableArray *children = [_arranged_objects mutableChildNodes];
-      NSUInteger lastIndex = 0;
 
       for (pos = 0; pos < length; pos++)
 	{
@@ -348,11 +347,6 @@
 	  children = [node valueForKeyPath: _childrenKeyPath];
 	}
 
-      lastIndex = [indexPath indexAtPosition: length];
-
-      id child = [children objectAtIndex: lastIndex];
-
-      children = [child valueForKeyPath: _childrenKeyPath];
       [children addObject: object];
 
       [self rearrangeObjects];

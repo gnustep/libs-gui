@@ -154,7 +154,6 @@
 
 - (NSIndexPath*) indexPath
 {
-  NSLog(@"In %@", NSStringFromSelector(_cmd));
   if (_parentNode != nil)
     {
       NSIndexPath *path;
@@ -170,8 +169,6 @@
         {
           return [NSIndexPath indexPathWithIndex: index];
         }
-
-      NSLog(@"index = %ld", index);
     }
   else
     {
