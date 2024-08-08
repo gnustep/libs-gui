@@ -1677,7 +1677,7 @@ static BOOL _isAutolaunchChecked = NO;
           [theWindow center];
       [theWindow setLevel: NSModalPanelWindowLevel];
     }
-  [theWindow orderFrontRegardless];
+  
   if ([self isActive] == YES)
     {
       if ([theWindow canBecomeKeyWindow] == YES)
@@ -1689,6 +1689,7 @@ static BOOL _isAutolaunchChecked = NO;
 	  [theWindow makeMainWindow];
 	}
     }
+  [theWindow orderFrontRegardless];
 
   return theSession;
 }
