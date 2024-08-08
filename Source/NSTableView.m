@@ -3326,16 +3326,11 @@ byExtendingSelection: (BOOL)flag
 			 errorDescription: &error] == YES)
 	    {
 	      NSTableColumn *tb;
-	      GSKeyValueBinding *theBinding = nil;
 
 	      [_editedCell setObjectValue: newObjectValue];
 	      tb = [_tableColumns objectAtIndex: _editedColumn];
 
-	      theBinding = [GSKeyValueBinding getBinding: NSValueBinding
-				   forObject: tb];
-
-	      if (_dataSource_editable
-		  || theBinding != nil)
+	      if (_dataSource_editable)
 		{
 		  [self _setObjectValue: newObjectValue
 			 forTableColumn: tb
@@ -3366,18 +3361,13 @@ byExtendingSelection: (BOOL)flag
       if (validatedOK)
 	{
 	  NSTableColumn *tb;
-	  GSKeyValueBinding *theBinding = nil;
 
 	  [_editedCell setStringValue: string];
 	  tb = [_tableColumns objectAtIndex: _editedColumn];
 
-	  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
-					   forObject: tb];
-
-	  if (_dataSource_editable
-	      || theBinding != nil)
+	  if (_dataSource_editable)
 	    {
-	      [self _setObjectValue: string // newObjectValue
+	      [self _setObjectValue: string
 		     forTableColumn: tb
 				row: _editedRow];
 	    }
