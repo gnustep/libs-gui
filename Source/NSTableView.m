@@ -183,6 +183,8 @@ typedef struct _tableViewFlags
 
 @interface NSTableColumn (Private)
 - (NSArray *) _prototypeCellViews;
+- (void) _applyBindingsToCell: (NSCell *)cell
+			atRow: (NSInteger)index;
 @end
 
 /*
@@ -6875,94 +6877,12 @@ For a more detailed explanation, -setSortDescriptors:. */
       return [cell isEditable];
     }
 }
-
-- (void) _applyBindingsToCell: (NSCell *)cell
-	       forTableColumn: (NSTableColumn *)tb
-			  row: (NSInteger)index
-{
-  GSKeyValueBinding *theBinding = nil;
-  NSFont *font = nil;
-  
-  theBinding = [GSKeyValueBinding getBinding: NSEditableBinding
-				   forObject: tb];
-  if (theBinding != nil)
-    {
-      id result = nil;
-      BOOL flag = NO;
-      
-      result = [(NSArray *)[theBinding destinationValue]
-		   objectAtIndex: index];
-      flag = [result boolValue];
-      [cell setEditable: flag];
-    }
-
-  theBinding = [GSKeyValueBinding getBinding: NSEnabledBinding
-				   forObject: tb];
-  if (theBinding != nil)
-    {
-      id result = nil;
-      BOOL flag = NO;
-      
-      result = [(NSArray *)[theBinding destinationValue]
-		   objectAtIndex: index];
-      flag = [result boolValue];
-      [cell setEnabled: flag];
-    }
-
-  /* Font bindings... According to Apple documentation, if the
-   * font binding is available, then name, size, and other
-   * font related bindings are ignored.  Otherwise they are
-   * used
-   */
-  theBinding = [GSKeyValueBinding getBinding: NSFontBinding
-				   forObject: tb];
-  if (theBinding != nil)
-    {
-      font = [(NSArray *)[theBinding destinationValue]
-		 objectAtIndex: index];
-    }
-  else
-    {
-      NSString *fontName = nil;
-      CGFloat fontSize = 0.0;
-
-      theBinding = [GSKeyValueBinding getBinding: NSFontNameBinding
-				       forObject: tb];
-      if (theBinding != nil)
-	{
-	  fontName = [(NSArray *)[theBinding destinationValue]
-			 objectAtIndex: index];
-	}
-
-      if (fontName != nil)
-	{
-	  theBinding = [GSKeyValueBinding getBinding: NSFontSizeBinding
-					   forObject: tb];
-	  if (theBinding != nil)
-	    {
-	      id num = [(NSArray *)[theBinding destinationValue]
-			   objectAtIndex: index];
-	      fontSize = [num doubleValue];
-	    }
-
-	  font = [NSFont fontWithName: fontName
-				 size: fontSize];
-	}
-    }
-
-  if (font != nil)
-    {
-      [cell setFont: font];
-    }
-}
-
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index
 {
-  [self _applyBindingsToCell: cell
-	      forTableColumn: tb
-			 row: index];
+  [tb _applyBindingsToCell: cell
+		     atRow: index];
   
   if (_del_responds)
     {

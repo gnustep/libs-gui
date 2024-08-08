@@ -147,9 +147,11 @@ static NSImage *unexpandable  = nil;
 - (id) _prototypeCellViewFromTableColumn: (NSTableColumn *)tb;
 - (void) _drawCellViewRow: (NSInteger)rowIndex
 		 clipRect: (NSRect)clipRect;
+@end
+
+@interface NSTableColumn (Private)
 - (void) _applyBindingsToCell: (NSCell *)cell
-	       forTableColumn: (NSTableColumn *)tb
-			  row: (NSInteger)index;
+			atRow: (NSInteger)index;
 @end
 
 @interface NSTreeNode (Private_NSOutlineView)
@@ -1985,9 +1987,8 @@ Also returns the child index relative to this parent. */
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index
 {
-  [self _applyBindingsToCell: cell
-	      forTableColumn: tb
-			 row: index];
+  [tb _applyBindingsToCell: cell
+		     atRow: index];
 
   if (_del_responds)
     {

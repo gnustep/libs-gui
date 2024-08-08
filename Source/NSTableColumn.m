@@ -654,6 +654,85 @@ to YES. */
   return [_headerCell stringValue];
 }
 
+- (void) _applyBindingsToCell: (NSCell *)cell
+			atRow: (NSInteger)index
+{
+  GSKeyValueBinding *theBinding = nil;
+  NSFont *font = nil;
+  
+  theBinding = [GSKeyValueBinding getBinding: NSEditableBinding
+				   forObject: self];
+  if (theBinding != nil)
+    {
+      id result = nil;
+      BOOL flag = NO;
+      
+      result = [(NSArray *)[theBinding destinationValue]
+		   objectAtIndex: index];
+      flag = [result boolValue];
+      [cell setEditable: flag];
+    }
+
+  theBinding = [GSKeyValueBinding getBinding: NSEnabledBinding
+				   forObject: self];
+  if (theBinding != nil)
+    {
+      id result = nil;
+      BOOL flag = NO;
+      
+      result = [(NSArray *)[theBinding destinationValue]
+		   objectAtIndex: index];
+      flag = [result boolValue];
+      [cell setEnabled: flag];
+    }
+
+  /* Font bindings... According to Apple documentation, if the
+   * font binding is available, then name, size, and other
+   * font related bindings are ignored.  Otherwise they are
+   * used
+   */
+  theBinding = [GSKeyValueBinding getBinding: NSFontBinding
+				   forObject: self];
+  if (theBinding != nil)
+    {
+      font = [(NSArray *)[theBinding destinationValue]
+		 objectAtIndex: index];
+    }
+  else
+    {
+      NSString *fontName = nil;
+      CGFloat fontSize = 0.0;
+
+      theBinding = [GSKeyValueBinding getBinding: NSFontNameBinding
+				       forObject: self];
+      if (theBinding != nil)
+	{
+	  fontName = [(NSArray *)[theBinding destinationValue]
+			 objectAtIndex: index];
+	}
+
+      if (fontName != nil)
+	{
+	  theBinding = [GSKeyValueBinding getBinding: NSFontSizeBinding
+					   forObject: self];
+	  if (theBinding != nil)
+	    {
+	      id num = [(NSArray *)[theBinding destinationValue]
+			   objectAtIndex: index];
+	      fontSize = [num doubleValue];
+	    }
+
+	  font = [NSFont fontWithName: fontName
+				 size: fontSize];
+	}
+    }
+
+  if (font != nil)
+    {
+      [cell setFont: font];
+    }
+}
+
 - (void) setValue: (id)anObject forKey: (NSString*)aKey
 {
   if ([aKey isEqual: NSValueBinding])
@@ -667,7 +746,8 @@ to YES. */
     }
   else if ([aKey isEqual: NSEditableBinding])
     {
-      // FIXME
+      NSNumber *v = [anObject valueForKey: NSEditableBinding];
+      _is_editable = [v boolValue];
     }
   else
     {
@@ -688,8 +768,7 @@ to YES. */
     }
   else if ([aKey isEqual: NSEditableBinding])
     {
-      // FIXME
-      return [NSNumber numberWithBool: YES];
+      return [NSNumber numberWithBool: _is_editable];
     }
   else
     {
