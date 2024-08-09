@@ -32,7 +32,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSSortDescriptor.h>
 
-#import <AppKit/NSTreeNode.h>
+#import "AppKit/NSTreeNode.h"
 
 @interface NSTreeNode (Private)
 - (NSMutableArray*) _childNodes;
@@ -159,7 +159,7 @@
       NSIndexPath *path;
       NSUInteger index;
 
-      index = [_parentNode->_childNodes indexOfObject: self];
+      index = [[_parentNode childNodes] indexOfObject: self];
       path = [_parentNode indexPath];
       if (path != nil)
         {
@@ -246,6 +246,12 @@
                                                       recursively: YES];
         }
     }
+}
+
+- (NSString *) description
+{
+  return [NSString stringWithFormat: @"<%@> _representedObject = %@, _childNode = %@, _parentNode = %@",
+		   [super description], _representedObject, _childNodes, _parentNode];
 }
 
 @end

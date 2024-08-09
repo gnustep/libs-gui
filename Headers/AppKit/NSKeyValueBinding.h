@@ -126,6 +126,7 @@ APPKIT_EXPORT NSString *NSSelectedObjectBinding;
 APPKIT_EXPORT NSString *NSSelectedTagBinding;
 APPKIT_EXPORT NSString *NSSelectedValueBinding;
 APPKIT_EXPORT NSString *NSSelectionIndexesBinding;
+APPKIT_EXPORT NSString *NSSelectionIndexPathsBinding;
 APPKIT_EXPORT NSString *NSSortDescriptorsBinding;
 APPKIT_EXPORT NSString *NSTextColorBinding;
 APPKIT_EXPORT NSString *NSTitleBinding;
