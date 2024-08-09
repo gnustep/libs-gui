@@ -223,8 +223,6 @@ static NSImage *unexpandable  = nil;
 
 - (void) dealloc
 {
-  [GSKeyValueBinding unbindAllForObject: self];
-
   RELEASE(_items);
   RELEASE(_expandedItems);
   RELEASE(_selectedIndexPaths);
