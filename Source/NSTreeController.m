@@ -103,7 +103,8 @@
   RELEASE(_leafKeyPath);
   RELEASE(_sortDescriptors);
   RELEASE(_arranged_objects);
-
+  RELEASE(_selection_index_paths);
+  
   [super dealloc];
 }
 
