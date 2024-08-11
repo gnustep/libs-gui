@@ -6786,6 +6786,7 @@ For a more detailed explanation, -setSortDescriptors:. */
       return [cell isEditable];
     }
 }
+
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index

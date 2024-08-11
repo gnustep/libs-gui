@@ -660,19 +660,7 @@ to YES. */
   GSKeyValueBinding *theBinding = nil;
   NSFont *font = nil;
   
-  theBinding = [GSKeyValueBinding getBinding: NSEditableBinding
-				   forObject: self];
-  if (theBinding != nil)
-    {
-      id result = nil;
-      BOOL flag = NO;
-      
-      result = [(NSArray *)[theBinding destinationValue]
-		   objectAtIndex: index];
-      flag = [result boolValue];
-      [cell setEditable: flag];
-    }
-
+  [cell setEditable: _is_editable];
   theBinding = [GSKeyValueBinding getBinding: NSEnabledBinding
 				   forObject: self];
   if (theBinding != nil)
