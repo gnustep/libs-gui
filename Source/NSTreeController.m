@@ -271,24 +271,9 @@
 
 - (IBAction) add: (id)sender
 {
-  if ([self canAddChild]
-      && [self countKeyPath] == nil)
-    {
-      id newObject = [self newObject];
-
-      if (newObject != nil)
-	{
-	  NSMutableArray *newContent = [NSMutableArray arrayWithArray: [self content]];
-	  GSControllerTreeProxy *node = [[GSControllerTreeProxy alloc]
-					  initWithContent: newObject
-					   withController: self];
-
-	  [newContent addObject: node];
-
-	  [self setContent: newContent];
-	  RELEASE(newObject);
-	}
-    }
+  NSIndexPath *p = [NSIndexPath indexPathWithIndex: 0];
+  id newObject = [self newObject];
+  [self insertObject: newObject atArrangedObjectIndexPath: p];
 }
 
 - (IBAction) addChild: (id)sender
@@ -299,6 +284,7 @@
   if (p != nil)
     {
       [self insertObject: newObject atArrangedObjectIndexPath: p];
+      RELEASE(newObject);
     }
 }
 
@@ -307,7 +293,11 @@
   if ([self canRemove]
       && [self countKeyPath] == nil)
     {
-      [self removeObject: [self content]];
+      if ([_selection_index_paths count] > 0)
+	{
+	  NSIndexPath *p = [_selection_index_paths objectAtIndex: 0];
+	  [self removeObjectAtArrangedObjectIndexPath: p];
+	}
     }
 }
 
@@ -325,7 +315,7 @@
       NSUInteger pos = 0;
       NSMutableArray *children = [_arranged_objects mutableChildNodes];
 
-      for (pos = 0; pos < length; pos++)
+      for (pos = 0; pos < length - 1; pos++)
 	{
 	  NSUInteger i = [indexPath indexAtPosition: pos];
 	  id node = [children objectAtIndex: i];
