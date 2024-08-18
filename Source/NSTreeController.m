@@ -161,7 +161,8 @@
 
   if (YES == f)
     {
-      [_selection_index_paths addObject: indexPath];
+      NSMutableArray *mutable_index_paths = [NSMutableArray arrayWithObject: indexPath];
+      ASSIGN(_selection_index_paths, mutable_index_paths);      
     }
 
   return f;
@@ -241,17 +242,21 @@
 
 - (NSIndexPath *) selectionIndexPath
 {
-  return [_selection_index_paths objectAtIndex: 0];
+  if ([_selection_index_paths count] > 0)
+    {
+      return [_selection_index_paths objectAtIndex: 0];
+    }
+  return nil;
 }
 
 - (NSArray *) selectionIndexPaths
 {
-  return _selection_index_paths;
+  return [_selection_index_paths copy];
 }
 
 - (NSArray *) sortDescriptors
 {
-  return _sortDescriptors;
+  return [_sortDescriptors copy];
 }
 
 - (NSString *) childrenKeyPath
@@ -261,7 +266,7 @@
 
 - (NSString *) countKeyPath
 {
-  return _countKeyPath;;
+  return _countKeyPath;
 }
 
 - (NSString *) leafKeyPath
@@ -274,6 +279,7 @@
   NSIndexPath *p = [NSIndexPath indexPathWithIndex: 0];
   id newObject = [self newObject];
   [self insertObject: newObject atArrangedObjectIndexPath: p];
+  RELEASE(newObject);
 }
 
 - (IBAction) addChild: (id)sender
@@ -295,7 +301,7 @@
     {
       if ([_selection_index_paths count] > 0)
 	{
-	  NSIndexPath *p = [_selection_index_paths objectAtIndex: 0];
+	  NSIndexPath *p = [self selectionIndexPath];
 	  [self removeObjectAtArrangedObjectIndexPath: p];
 	}
     }

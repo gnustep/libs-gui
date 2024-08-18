@@ -225,7 +225,6 @@ static NSImage *unexpandable  = nil;
 {
   RELEASE(_items);
   RELEASE(_expandedItems);
-  RELEASE(_selectedIndexPaths);
 
   NSFreeMapTable(_itemDict);
   NSFreeMapTable(_levelOfItems);
@@ -1788,17 +1787,16 @@ Also returns the child index relative to this parent. */
 
 - (NSIndexPath *) _indexPathForItem: (id)item
 {
-  id rootItem = nil;
   return [self _findIndexPathForItem: item
-			  parentItem: rootItem];
+			  parentItem: nil];
 }
 
-- (void) _indexPathsFromSelectedRows
+- (NSArray *) _indexPathsFromSelectedRows
 {
   NSUInteger index = [_selectedRows firstIndex];
-
+  NSMutableArray *result = [[NSMutableArray alloc] init];
+  
   // Regenerate the array...
-  [_selectedIndexPaths removeAllObjects];
   while (index != NSNotFound)
     {
       id item = [_items objectAtIndex: index];
@@ -1813,10 +1811,12 @@ Also returns the child index relative to this parent. */
 	  path = [self _indexPathForItem: item];
 	}
 
-      [_selectedIndexPaths addObject: path];
+      [result addObject: path];
 
       index = [_selectedRows indexGreaterThanIndex: index];
     }
+  
+  return result;
 }
 
 /*
@@ -1847,12 +1847,12 @@ Also returns the child index relative to this parent. */
 				       forObject: observedObject];
       if (theBinding != nil)
 	{
-	  [self _indexPathsFromSelectedRows];
+	  NSArray *paths = [self _indexPathsFromSelectedRows];
 	  if ([observedObject respondsToSelector: @selector(setSelectionIndexPaths:)])
 	    {
-	      [observedObject setSelectionIndexPaths: _selectedIndexPaths];
+	      [observedObject setSelectionIndexPaths: paths]; 
 	    }
-	  [theBinding reverseSetValue: _selectedIndexPaths];
+	  [theBinding reverseSetValue: paths];
 	}
     }
 
@@ -2101,7 +2101,6 @@ Also returns the child index relative to this parent. */
 			       64);
   _items = [[NSMutableArray alloc] init];
   _expandedItems = [[NSMutableArray alloc] init];
-  _selectedIndexPaths = [[NSMutableArray alloc] init];
   _levelOfItems = NSCreateMapTable(keyCallBacks,
 				   NSObjectMapValueCallBacks,
 				   64);

@@ -3532,7 +3532,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSInteger endingColumn;
   NSRect drawingRect;
   NSInteger i;
-  id dataSource = [outlineView dataSource];
   NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
 
   /* Using columnAtPoint: here would make it called twice per row per drawn
