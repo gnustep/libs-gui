@@ -42,7 +42,7 @@
 @class NSEvent;
 @class NSMatrix;
 @class NSScroller;
-//@class NSBox;
+@class NSViewController;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 enum _NSBrowserColumnResizingType
@@ -62,7 +62,6 @@ APPKIT_EXPORT_CLASS
   Class _browserMatrixClass;
   NSString *_pathSeparator;
   
-  //NSBox *_horizontalScrollerBox;
   NSScroller *_horizontalScroller;
   NSTimeInterval _lastKeyPressed;
   NSString *_charBuffer;
@@ -99,6 +98,8 @@ APPKIT_EXPORT_CLASS
   int _lastVisibleColumn;
   NSString *_columnsAutosaveName;
   NSBrowserColumnResizingType _columnResizing;
+
+  BOOL _itemBasedDelegate;
 }
 
 //
@@ -355,6 +356,31 @@ canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
         inColumn: (NSInteger)column
        withEvent: (NSEvent *)event;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (NSInteger) browser: (NSBrowser *)browser
+numberOfChildrenOfItem: (id)item;
+- (id) browser: (NSBrowser *)browser
+         child: (NSInteger)index
+        ofItem: (id)item;
+- (BOOL) browser: (NSBrowser *)browser
+      isLeafItem: (id)item;
+- (BOOL) browser: (NSBrowser *)browser
+  shouldEditItem: (id)item;
+- (id) browser: (NSBrowser *)browser
+objectValueForItem: (id)item;
+- (id) browser: (NSBrowser *)browser
+setObjectValue: (id)object
+       forItem: (id)item;
+- (id) rootItemForBrowser: (NSBrowser *)browser;
+- (NSViewController *) browser: (NSBrowser *)browser
+previewViewControllerForLeafItem: (id)item;
+- (NSViewController *) browser: (NSBrowser *)browser
+   headerViewControllerForItem: (id)item;
+- (void) browser: (NSBrowser *)browser
+didChangeLastColumn: (NSInteger)oldLastColumn
+        toColumn: (NSInteger)column;
+#endif
+
 @end
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
