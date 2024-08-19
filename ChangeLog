@@ -1,4 +1,4 @@
-2024-06-30 Gregory John Casamento <greg.casamento@gmail.com>
+2024-08-18 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSTreeController.h: Update header
 	* Headers/AppKit/NSTreeNode.h: Update header
@@ -15,6 +15,13 @@
 	* Source/NSOutlineView.m: Add support for bindings.
 	* Source/NSTreeController.m: Implement new methods.
 	* Source/NSTreeNode.m: Implement new methods
+
+2024-07-25 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSBrowser.h: Add declarations for
+	10.6 delegate methods for item-based browsers.
+	* Source/NSBrowser.m: Add support for 10.6 item-based
+	delegate methods.
 
 2024-06-28 Gregory John Casamento <greg.casamento@gmail.com>
 
