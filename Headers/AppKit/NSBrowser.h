@@ -37,7 +37,6 @@
 @class NSArray;
 @class NSIndexPath;
 @class NSIndexSet;
-@class NSMutableDictionary;
 
 @class NSCell;
 @class NSEvent;
