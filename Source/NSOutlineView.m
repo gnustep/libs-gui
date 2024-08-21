@@ -2048,15 +2048,13 @@ Also returns the child index relative to this parent. */
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (NSInteger) index
 {
+  NSString *keyPath = [tb _keyPathForValueBinding];
+
   // If we have content binding the data source is used only
   // like a delegate
-  NSDictionary *info = [GSKeyValueBinding infoForBinding: NSValueBinding forObject: tb];
-  if (info != nil)
+  if (keyPath != nil)
     {
       id theItem = [_items objectAtIndex: index];
-      NSString *ikp = [info objectForKey: NSObservedKeyPathKey];
-      NSUInteger location = [ikp rangeOfString: @"."].location;
-      NSString *keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
 
       // Set the value on the keyPath.
       [theItem setValue: value
