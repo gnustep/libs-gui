@@ -185,6 +185,7 @@ typedef struct _tableViewFlags
 - (NSArray *) _prototypeCellViews;
 - (void) _applyBindingsToCell: (NSCell *)cell
 			atRow: (NSInteger)index;
+- (NSString *) _keyPathForValueBinding;
 @end
 
 /*
@@ -6831,28 +6832,17 @@ For a more detailed explanation, -setSortDescriptors:. */
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (NSInteger) index
 {
-  GSKeyValueBinding *theBinding;
-
-  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
-				   forObject: tb];
-  if (theBinding != nil)
+  NSString *keyPath = [tb _keyPathForValueBinding];
+  if (keyPath != nil)
     {
       NSArray *items = [[theBinding observedObject] arrangedObjects];
       if (items != nil)
 	{
-	  NSDictionary *info = [GSKeyValueBinding infoForBinding: NSValueBinding
-						       forObject: tb];
-	  if (info != nil)
-	    {
-	      NSString *ikp = [info objectForKey: NSObservedKeyPathKey];
-	      NSUInteger location = [ikp rangeOfString: @"."].location;
-	      NSString *keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
-	      id obj = [items objectAtIndex: index];
+	  id obj = [items objectAtIndex: index];
 
-	      if (obj != nil)
-		{
-		  [obj setValue: value forKeyPath: keyPath];
-		}
+	  if (obj != nil)
+	    {
+	      [obj setValue: value forKeyPath: keyPath];
 	    }
 	}
     }
