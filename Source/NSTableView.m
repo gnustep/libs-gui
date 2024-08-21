@@ -6832,17 +6832,24 @@ For a more detailed explanation, -setSortDescriptors:. */
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (NSInteger) index
 {
-  NSString *keyPath = [tb _keyPathForValueBinding];
-  if (keyPath != nil)
+  GSKeyValueBinding *theBinding;
+
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+				   forObject: tb];
+  if (theBinding != nil)
     {
       NSArray *items = [[theBinding observedObject] arrangedObjects];
       if (items != nil)
 	{
-	  id obj = [items objectAtIndex: index];
-
-	  if (obj != nil)
+	  NSString *keyPath = [tb _keyPathForValueBinding];
+	  if (keyPath != nil)
 	    {
-	      [obj setValue: value forKeyPath: keyPath];
+	      id obj = [items objectAtIndex: index];
+
+	      if (obj != nil)
+		{
+		  [obj setValue: value forKeyPath: keyPath];
+		}
 	    }
 	}
     }
