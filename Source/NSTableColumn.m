@@ -750,8 +750,10 @@ to YES. */
     }
   else if ([aKey isEqual: NSEditableBinding])
     {
-      NSNumber *v = [anObject valueForKey: NSEditableBinding];
-      _is_editable = [v boolValue];
+      if ([anObject isKindOfClass: [NSNumber class]])
+	{
+	  _is_editable = [anObject boolValue];
+	}
     }
   else
     {

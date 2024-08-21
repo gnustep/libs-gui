@@ -2062,6 +2062,7 @@ static void computeNewSelection
   _registeredNibs = [[NSMutableDictionary alloc] init];
   _registeredViews = [[NSMutableDictionary alloc] init];
   _rowViews = [[NSMutableDictionary alloc] init];
+  _dataSource_editable = YES;
 }
 
 - (id) initWithFrame: (NSRect)frameRect
@@ -6838,14 +6839,13 @@ For a more detailed explanation, -setSortDescriptors:. */
 				   forObject: tb];
   if (theBinding != nil)
     {
-      NSArray *items = [[theBinding observedObject] arrangedObjects];
-      if (items != nil)
+      NSString *keyPath = [tb _keyPathForValueBinding];
+      if (keyPath != nil)
 	{
-	  NSString *keyPath = [tb _keyPathForValueBinding];
-	  if (keyPath != nil)
+	  NSArray *items = [[theBinding observedObject] arrangedObjects];
+	  if (items != nil)
 	    {
 	      id obj = [items objectAtIndex: index];
-
 	      if (obj != nil)
 		{
 		  [obj setValue: value forKeyPath: keyPath];
