@@ -152,6 +152,7 @@ static NSImage *unexpandable  = nil;
 @interface NSTableColumn (Private)
 - (void) _applyBindingsToCell: (NSCell *)cell
 			atRow: (NSInteger)index;
+- (NSString *) _keyPathForValueBinding;
 @end
 
 @interface NSTreeNode (Private_NSOutlineView)
@@ -2020,20 +2021,11 @@ Also returns the child index relative to this parent. */
 			      row: (NSInteger) index
 {
   id result = nil;
+  NSString *keyPath = [tb _keyPathForValueBinding];
 
-  // If we have content binding the data source is used only
-  // like a delegate
-  NSDictionary *info = [GSKeyValueBinding infoForBinding: NSValueBinding forObject: tb];
-  if (info != nil)
+  if (keyPath != nil)
     {
       id theItem = [_items objectAtIndex: index];
-      NSString *ikp = [info objectForKey: NSObservedKeyPathKey];
-      NSUInteger location = [ikp rangeOfString: @"."].location;
-      NSString *keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
-
-      // Here we are getting the last part of the keyPath since elsewhere in this class
-      // we are recursively storing the contents of arrangedObjects (for example) to
-      // display it as an outline in _loadDictionaryStartingWith:atLevel:.
       result = [theItem valueForKeyPath: keyPath];
     }
   else

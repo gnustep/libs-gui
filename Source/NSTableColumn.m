@@ -654,6 +654,22 @@ to YES. */
   return [_headerCell stringValue];
 }
 
+- (NSString *) _keyPathForValueBinding
+{
+  NSString *keyPath = nil;
+  NSDictionary *info = [GSKeyValueBinding infoForBinding: NSValueBinding
+					       forObject: self];
+  if (info != nil)
+    {
+      NSString *ikp = [info objectForKey: NSObservedKeyPathKey];
+      NSUInteger location = [ikp rangeOfString: @"."].location;
+
+      keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
+    }
+
+  return keyPath;
+}
+
 - (void) _applyBindingsToCell: (NSCell *)cell
 			atRow: (NSInteger)index
 {
