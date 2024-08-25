@@ -6842,24 +6842,15 @@ For a more detailed explanation, -setSortDescriptors:. */
       NSString *keyPath = [tb _keyPathForValueBinding];
       if (keyPath != nil)
 	{
-	  id array = [theBinding destinationValue];
-	  id obj = [array objectAtIndex: index];
-	  NSMutableArray *newArray = [NSMutableArray arrayWithArray: array];
-
-	  NSLog(@"array = %@", array);
-	  NSLog(@"array class = %@", [array class]);
-	  NSLog(@"obj = %@", obj);
-	  NSLog(@"class = %@", NSStringFromClass([obj class]));
-
-	  [newArray replaceObjectAtIndex: index withObject: value];
-	  [theBinding reverseSetValue: newArray];
-	  
-	  //	  obj = value;
-	  /*
-	  if (obj != nil)
+	  NSArray *items = [[theBinding observedObject] arrangedObjects];
+	  if (items != nil)
 	    {
-	      [obj setValue: value forKeyPath: keyPath];
-	    }*/
+	      id obj = [items objectAtIndex: index];
+	      if (obj != nil)
+		{
+		  [obj setValue: value forKeyPath: keyPath];
+		}
+	    }
 	}
     }
   else if ([_dataSource respondsToSelector:
