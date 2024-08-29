@@ -1,3 +1,8 @@
+2024-08-29 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSBundleAdditions.m: Quick fix for .gorm loading
+	not returning top level objects.
+
 2024-08-18 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSTreeController.h: Update header

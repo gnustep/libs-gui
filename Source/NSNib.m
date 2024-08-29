@@ -209,7 +209,7 @@
   // add the necessary things to the table...
   [externalNameTable setObject: owner forKey: NSNibOwner];
 
-  if (topLevelObjects != 0)
+  if (topLevelObjects != NULL)
     {
       *topLevelObjects = [NSMutableArray array];
       [externalNameTable setObject: *topLevelObjects
