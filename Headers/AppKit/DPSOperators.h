@@ -591,7 +591,6 @@ name(GSCTXT *ctxt, type1 var1, type2 var2, type3 var3, type4 var4, type5 var5, t
     (ctxt, @selector(name: : : : : : : :), var1, var2, var3, var4, var5, var6, var7, var8); \
 }
 #endif // _MSVC_VER
-/** </ignore> */
 
 /* ----------------------------------------------------------------------- */
 /* Color operations */
@@ -819,6 +818,7 @@ DPS_METHOD_8(DPSdissolve, CGFloat, x, CGFloat, y, CGFloat, w, CGFloat, h, NSInte
 
 DPS_METHOD_2(GSDrawImage, NSRect, rect, void *, imageref)
 
+/** </ignore> */
 
 /* ----------------------------------------------------------------------- */
 /* Postscript Client functions */
