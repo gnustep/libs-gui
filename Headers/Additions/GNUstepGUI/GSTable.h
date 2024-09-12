@@ -171,6 +171,7 @@
   </section>
   </unit>
 */
+APPKIT_EXPORT_CLASS
 @interface GSTable: NSView
 {
   int _numberOfRows;
