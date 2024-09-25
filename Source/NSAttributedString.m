@@ -1183,7 +1183,7 @@ documentAttributes: (NSDictionary **)dict
           NSRange newEffRange;
           NSUInteger len = [self length];
 
-          while ((effRange.location > 0) && style && textLists)
+          while (effRange.location > 0)
             {
               style = [self attribute: NSParagraphStyleAttributeName
                             atIndex: effRange.location - 1
@@ -1196,11 +1196,13 @@ documentAttributes: (NSDictionary **)dict
                     {
                       effRange.location = newEffRange.location;
                       effRange.length += newEffRange.length;
+                      continue;
                     }
                 }
+              break;
             }
 
-          while (NSMaxRange(effRange) < len && style && textLists) 
+          while (NSMaxRange(effRange) < len) 
             {
               style = [self attribute: NSParagraphStyleAttributeName
                             atIndex: NSMaxRange(effRange)
@@ -1212,8 +1214,10 @@ documentAttributes: (NSDictionary **)dict
                   if ((textLists != nil) && [textLists containsObject: list])
                     {
                       effRange.length += newEffRange.length;
+                      continue;
                     }
                 }
+              break;
             }
 
           return effRange;
