@@ -621,7 +621,12 @@ static NSParagraphStyle	*defaultStyle = nil;
   C(_headerLevel);
 #undef C
 
-  return [_tabStops isEqualToArray: other->_tabStops];
+#define C(x) if (![x isEqualToArray: other->x]) return NO;
+  C(_tabStops);
+  C(_textLists);
+#undef C
+
+  return YES;
 }
 
 - (NSUInteger) hash
