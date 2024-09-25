@@ -303,6 +303,8 @@ static NSParagraphStyle	*defaultStyle = nil;
           [_tabStops addObject: tab];
           RELEASE(tab);
         }
+      
+      ASSIGN(_textLists, [NSArray array]);
     }
   return self;
 }
@@ -493,6 +495,9 @@ static NSParagraphStyle	*defaultStyle = nil;
       [aCoder decodeValueOfObjCType: @encode(float) at: &_minimumLineHeight];
       [aCoder decodeValueOfObjCType: @encode(float) at: &_paragraphSpacing];
       [aCoder decodeValueOfObjCType: @encode(float) at: &_tailIndent];
+      
+      // Text lists were not included for non-keyed encoding, use a default
+      ASSIGN(_textLists, [NSArray array]);
       
       /*
        *	Tab stops don't conform to NSCoding - so we do it the long way.
