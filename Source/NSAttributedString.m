@@ -1101,10 +1101,9 @@ documentAttributes: (NSDictionary **)dict
     {
       return 0;
     }
-  
-  NSRange subRange = NSMakeRange(listRange.location, location - listRange.location + 1);
-  NSUInteger length = NSMaxRange(subRange);
-  unichar buffer[length];
+
+  NSRange subRange = NSMakeRange(listRange.location, location-listRange.location+1);
+  unichar buffer[subRange.length];
   
   [[self string] getCharacters: buffer range: subRange];
   
@@ -1112,12 +1111,12 @@ documentAttributes: (NSDictionary **)dict
   
   NSUInteger itemNumber = 1;
   NSUInteger index;
-  for (index=1; index<length; index++)
+  for (index=1; index<subRange.length; index++)
     {
       if ([newlineCharacterSet characterIsMember: buffer[index-1]])
         {
           NSParagraphStyle *style = [self attribute: NSParagraphStyleAttributeName
-            atIndex: listRange.location + index
+            atIndex: subRange.location + index
             effectiveRange: NULL];
           
           NSArray *textLists = [style textLists];
