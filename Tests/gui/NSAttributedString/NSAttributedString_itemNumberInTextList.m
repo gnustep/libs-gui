@@ -41,19 +41,19 @@ int main(int argc, char **argv)
   [storage appendAttributedString: 
     [[NSMutableAttributedString alloc] initWithString: @"item 3\n" attributes: attrs1]];
     
-  NSUInteger index4A = [storage length];
+  NSUInteger index4 = [storage length];
   [storage appendAttributedString: 
-    [[NSMutableAttributedString alloc] initWithString: @"item 4A\n" attributes: attrs2]];
+    [[NSMutableAttributedString alloc] initWithString: @"subitem 1\n" attributes: attrs2]];
   
-  NSUInteger index4B = [storage length];
-  [storage appendAttributedString: 
-    [[NSMutableAttributedString alloc] initWithString: @"item 4B\n" attributes: attrs2]];
-    
   NSUInteger index5 = [storage length];
   [storage appendAttributedString: 
-    [[NSMutableAttributedString alloc] initWithString: @"item 5\n" attributes: attrs1]];
-  
+    [[NSMutableAttributedString alloc] initWithString: @"subitem 2\n" attributes: attrs2]];
+    
   NSUInteger index6 = [storage length];
+  [storage appendAttributedString: 
+    [[NSMutableAttributedString alloc] initWithString: @"item 4\n" attributes: attrs1]];
+  
+  NSUInteger index7 = [storage length];
   [storage appendAttributedString: 
     [[NSMutableAttributedString alloc] initWithString: @"extra text\n" attributes: attrs3]];
   
@@ -61,15 +61,15 @@ int main(int argc, char **argv)
   pass([storage itemNumberInTextList: list1 atIndex: index2] == 2, "Index with CR+LF sequence");
   pass([storage itemNumberInTextList: list1 atIndex: index3 - 1] == 2, "Index on boundary");
   pass([storage itemNumberInTextList: list1 atIndex: index3] == 3, "Index for third list item");
-  pass([storage itemNumberInTextList: list1 atIndex: index4A] == 4, "Index for fourth list item, A");
-  pass([storage itemNumberInTextList: list1 atIndex: index4B] == 4, "Index for fourth list item, B");
-  pass([storage itemNumberInTextList: list1 atIndex: index5] == 5, "Index for fifth list item");
+  pass([storage itemNumberInTextList: list1 atIndex: index4] == 3, "Index for third list item (sublist 1)");
+  pass([storage itemNumberInTextList: list1 atIndex: index5] == 3, "Index for third list item (sublist 2");
+  pass([storage itemNumberInTextList: list1 atIndex: index6] == 4, "Index for fifth list item");
   
-  pass([storage itemNumberInTextList: list2 atIndex: index4A] == 1, "Index for first sublist item");  
-  pass([storage itemNumberInTextList: list2 atIndex: index4B] == 2, "Index for second sublist item");
+  pass([storage itemNumberInTextList: list2 atIndex: index4] == 1, "Index for first sublist item");  
+  pass([storage itemNumberInTextList: list2 atIndex: index5] == 2, "Index for second sublist item");
   
   pass([storage itemNumberInTextList: list2 atIndex: index1] == 0, "Index in other list is zero");
-  pass([storage itemNumberInTextList: list1 atIndex: index6] == 0, "Index in nonlist is zero");
+  pass([storage itemNumberInTextList: list1 atIndex: index7] == 0, "Index in nonlist is zero");
   
   END_SET("NSAttributedString itemNumberInTextList:atIndex: category method");
   

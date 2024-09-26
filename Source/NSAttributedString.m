@@ -1110,7 +1110,6 @@ documentAttributes: (NSDictionary **)dict
   
   NSCharacterSet *newlineCharacterSet = [NSCharacterSet newlineCharacterSet];
   
-  BOOL isNested = NO;
   NSUInteger itemNumber = 1;
   NSUInteger index;
   for (index=1; index<length; index++)
@@ -1125,12 +1124,6 @@ documentAttributes: (NSDictionary **)dict
           if ([list isEqual: [textLists lastObject]])
             {
               itemNumber++;
-              isNested = NO;
-            }
-          else if (!isNested && [textLists containsObject: list]) 
-            {
-              itemNumber++;
-              isNested = YES;
             }
           
           if (buffer[index-1] == '\r' && buffer[index] == '\n')
