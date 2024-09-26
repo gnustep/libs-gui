@@ -63,7 +63,7 @@ int main(int argc, char **argv)
   pass([storage itemNumberInTextList: list1 atIndex: index3] == 3, "Index for third list item");
   pass([storage itemNumberInTextList: list1 atIndex: index4] == 3, "Index for third list item (sublist 1)");
   pass([storage itemNumberInTextList: list1 atIndex: index5] == 3, "Index for third list item (sublist 2");
-  pass([storage itemNumberInTextList: list1 atIndex: index6] == 4, "Index for fifth list item");
+  pass([storage itemNumberInTextList: list1 atIndex: index6] == 4, "Index for fourth list item");
   
   pass([storage itemNumberInTextList: list2 atIndex: index4] == 1, "Index for first sublist item");  
   pass([storage itemNumberInTextList: list2 atIndex: index5] == 2, "Index for second sublist item");
