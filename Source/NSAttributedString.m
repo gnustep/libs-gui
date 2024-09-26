@@ -53,6 +53,7 @@
 #import "AppKit/NSFont.h"
 #import "AppKit/NSFontDescriptor.h"
 #import "AppKit/NSFontManager.h"
+#import "AppKit/NSTextList.h"
 // For the colour name spaces
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSTextTable.h"
@@ -1095,20 +1096,51 @@ documentAttributes: (NSDictionary **)dict
 - (NSInteger) itemNumberInTextList: (NSTextList *)list
                            atIndex: (NSUInteger)location
 {
-  NSParagraphStyle *style = [self attribute: NSParagraphStyleAttributeName
-                                  atIndex: location
-                                  effectiveRange: NULL];
-  if (style != nil)
+  NSRange listRange = [self rangeOfTextList: list atIndex: location];
+  if (listRange.location == NSNotFound)
     {
-      NSArray *textLists = [style textLists];
-
-      if (textLists != nil)
+      return 0;
+    }
+  
+  NSRange subRange = NSMakeRange(listRange.location, location - listRange.location + 1);
+  NSUInteger length = NSMaxRange(subRange);
+  unichar buffer[length];
+  
+  [[self string] getCharacters: buffer range: subRange];
+  
+  NSCharacterSet *newlineCharacterSet = [NSCharacterSet newlineCharacterSet];
+  
+  BOOL isNested = NO;
+  NSUInteger itemNumber = 1;
+  NSUInteger index;
+  for (index=1; index<length; index++)
+    {
+      if ([newlineCharacterSet characterIsMember: buffer[index-1]])
         {
-          return [textLists indexOfObject: list];
+          NSParagraphStyle *style = [self attribute: NSParagraphStyleAttributeName
+            atIndex: listRange.location + index
+            effectiveRange: NULL];
+          
+          NSArray *textLists = [style textLists];
+          if ([list isEqual: [textLists lastObject]])
+            {
+              itemNumber++;
+              isNested = NO;
+            }
+          else if (!isNested && [textLists containsObject: list]) 
+            {
+              itemNumber++;
+              isNested = YES;
+            }
+          
+          if (buffer[index-1] == '\r' && buffer[index] == '\n')
+            {
+              index++;
+            }
         }
     }
-
-  return NSNotFound;
+  
+  return itemNumber;
 }
 
 - (NSRange) rangeOfTextBlock: (NSTextBlock *)block
