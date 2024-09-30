@@ -1990,61 +1990,33 @@ static void autoresize(CGFloat oldContainerSize,
 		       BOOL maxMarginFlexible)
 {
   const CGFloat change = newContainerSize - oldContainerSize;
-  const CGFloat oldContentSize = *contentSizeInOut;
-  const CGFloat oldContentPosition = *contentPositionInOut;
-  CGFloat flexibleSpace = 0.0;
 
-  // See how much flexible space we have to distrube the change over
+  if (change == 0.0)
+    return;
 
+  // Size
   if (sizeFlexible)
-    flexibleSpace += oldContentSize;
-
-  if (minMarginFlexible)
-    flexibleSpace += oldContentPosition;
-
-  if (maxMarginFlexible)
-    flexibleSpace += oldContainerSize - oldContentPosition - oldContentSize;
-
-
-  if (flexibleSpace <= 0.0)
     {
-      /**
-       * In this code path there is no flexible space so we divide 
-       * the available space equally among the flexible portions of the view
-       */
-      int subdivisions = (sizeFlexible ? 1 : 0) +
-	(minMarginFlexible ? 1 : 0) +
-	(maxMarginFlexible ? 1 : 0);
-
-      if (subdivisions > 0)
+      if (maxMarginFlexible || minMarginFlexible)
 	{
-	  const CGFloat changePerOption = change / subdivisions;
-	  
-	  if (sizeFlexible)
-	    { 
-	      *contentSizeInOut += changePerOption;
-	    }
-	  if (minMarginFlexible)
-	    {
-	      *contentPositionInOut += changePerOption;
-	    }
+	  *contentSizeInOut += (change / 2);
+	}
+      else
+	{
+	  *contentSizeInOut += change;
 	}
     }
-  else
-    {
-      /**
-       * In this code path we distribute the change proportionately
-       * over the flexible spaces
-       */
-      const CGFloat changePerPoint = change / flexibleSpace;
 
-      if (sizeFlexible)
-	{ 
-          *contentSizeInOut += changePerPoint * oldContentSize;
-	}
-      if (minMarginFlexible)
+  // Position
+  if (minMarginFlexible)
+    {
+      if (maxMarginFlexible || sizeFlexible)
 	{
-	  *contentPositionInOut += changePerPoint * oldContentPosition;
+	  *contentPositionInOut += change / 2;
+	}
+      else
+	{
+	  *contentPositionInOut += change;
 	}
     }
 }
