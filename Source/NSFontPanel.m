@@ -109,10 +109,6 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 	{
 	  *contentSizeInOut += change;
 	}
-      if (newContainerSize < *contentSizeInOut)
-	{
-	  *contentSizeInOut = newContainerSize;
-	}
     }
 
   // Position
