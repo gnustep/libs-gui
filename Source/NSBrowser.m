@@ -263,6 +263,10 @@ static BOOL browserUseBezels;
 - (void) _themeDidActivate: (NSNotification*)notification;
 @end
 
+// Category to handle bindings
+@interface NSBrowser (GSBindingsPrivate)
+@end
+
 //
 // NSBrowser implementation
 //
@@ -3691,6 +3695,91 @@ static BOOL browserUseBezels;
 - (void) _themeDidActivate: (NSNotification*)notification
 {
   [self tile];
+}
+
+@end
+
+@implementation NSBrowser (GSBindingsPrivate)
+
+/* Private methods to handle bindings */
+
+- (void) setValue: (id)anObject forKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSContentBinding])
+    {
+      // Reload data
+      // [self reloadData];
+      NSDebugLLog(@"NSBinding", @"Setting browser view content to %@", anObject);
+    }
+  else if ([aKey isEqual: NSContentValuesBinding])
+    {
+      // Reload data
+      // [self reloadData];
+      NSDebugLLog(@"NSBinding", @"Setting browser view content values to %@", anObject);
+    }
+  else if ([aKey isEqual: NSSelectionIndexesBinding])
+    {
+      /*
+      if (_selectingColumns)
+	{
+	  if (nil == anObject)
+	    {
+	      // [self _unselectAllColumns];
+	    }
+	  else
+	    {
+	      return [self selectColumnIndexes: anObject
+			  byExtendingSelection: NO];
+	    }
+	}
+      else
+	{
+	  if (nil == anObject)
+	    {
+	      [self _unselectAllRows];
+	    }
+	  else
+	    {
+	      return [self selectRowIndexes: anObject
+		       byExtendingSelection: NO];
+	    }
+	}
+      */
+    }
+  else
+    {
+      [super setValue: anObject forKey: aKey];
+    }
+}
+
+- (id) valueForKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSContentBinding])
+    {
+      return nil;
+    }
+  else if ([aKey isEqual: NSContentValuesBinding])
+    {
+      return nil;
+    }
+  else if ([aKey isEqual: NSSelectionIndexesBinding])
+    {
+      /*
+      if (_selectingColumns)
+	{
+	  return nil; // [self selectedColumnIndexes];
+	}
+      else
+	{
+	  return nil; // [self selectedRowIndexes];
+	}
+      */
+      return nil; // temporary...
+    }
+  else
+    {
+      return [super valueForKey: aKey];
+    }
 }
 
 @end
