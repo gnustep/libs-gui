@@ -3381,29 +3381,46 @@ static BOOL browserUseBezels;
 
       if (theBinding != nil)
 	{
+	  id observedObject = [theBinding observedObject];
+	  NSArray *children = nil;
+	  
 	  rows = 0;
-	  if (item == nil)
+	  if ([observedObject isKindOfClass: [NSTreeController class]])
 	    {
-	      rows = [[item mutableChildNodes] count];
-	    }
-	  else
-	    {
-	      NSTreeController *tc = [theBinding observedObject];
-	      NSString *childrenKeyPath = [tc childrenKeyPathForNode: item];
+	      NSTreeController *tc = (NSTreeController *)observedObject;	  
 
-	      if (childrenKeyPath != nil)
+	      if (item == nil)
 		{
-		  NSString *countKeyPath = [tc countKeyPathForNode: item];
-		  NSArray *children = [item valueForKeyPath: childrenKeyPath];
+		  NSTreeNode *node = (NSTreeNode *)[theBinding destinationValue];
 
-		  if (countKeyPath == nil)
+		  /* Per the documentation 10.4/5+ uses NSTreeNode as the return value for
+		   * the contents of this tree node consists of a dictionary with a single
+		   * key of "children".   This is per the tests for this at
+		   * https://github.com/gcasa/NSTreeController_test.  Specifically it returns
+		   * _NSControllerTreeProxy.  The equivalent of that class in GNUstep is
+		   * GSControllerTreeProxy.
+		   */
+		  children = [node mutableChildNodes];
+		  rows = [children count];
+		}
+	      else
+		{
+		  NSString *childrenKeyPath = [tc childrenKeyPathForNode: item];
+
+		  if (childrenKeyPath != nil)
 		    {
-		      rows = [children count]; // get the count directly...
-		    }
-		  else
-		    {
-		      NSNumber *countValue = [item valueForKeyPath: countKeyPath];
-		      rows = [countValue integerValue];
+		      NSString *countKeyPath = [tc countKeyPathForNode: item];
+
+		      children = [item valueForKeyPath: childrenKeyPath];
+		      if (countKeyPath == nil)
+			{
+			  rows = [children count]; // get the count directly...
+			}
+		      else
+			{
+			  NSNumber *countValue = [item valueForKeyPath: countKeyPath];
+			  rows = [countValue integerValue];
+			}
 		    }
 		}
 	    }
@@ -3708,13 +3725,19 @@ static BOOL browserUseBezels;
   if ([aKey isEqual: NSContentBinding])
     {
       // Reload data
-      // [self reloadData];
+      _passiveDelegate = NO;
+      _itemBasedDelegate = YES;
+
+      [self loadColumnZero];
       NSDebugLLog(@"NSBinding", @"Setting browser view content to %@", anObject);
     }
   else if ([aKey isEqual: NSContentValuesBinding])
     {
       // Reload data
-      // [self reloadData];
+      _passiveDelegate = NO;
+      _itemBasedDelegate = YES;
+
+      [self loadColumnZero];
       NSDebugLLog(@"NSBinding", @"Setting browser view content values to %@", anObject);
     }
   else if ([aKey isEqual: NSSelectionIndexesBinding])
