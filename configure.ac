@@ -273,7 +273,16 @@ if test "$have_tiff" = yes; then
     GRAPHIC_LFLAGS="$with_tiff_library $GRAPHIC_LFLAGS"
     GRAPHIC_CFLAGS="$with_tiff_include $GRAPHIC_CFLAGS"
   else
-    have_tiff=no
+    PKG_CHECK_MODULES(
+      [TIFF],
+      [libtiff-4],
+      [
+        GRAPHIC_LFLAGS="$TIFF_LIBS $GRAPHIC_LFLAGS"
+        GRAPHIC_CFLAGS="$TIFF_CFLAGS $GRAPHIC_CFLAGS"
+      ],
+      [
+        have_tiff=no
+      ])
   fi
 fi
 
