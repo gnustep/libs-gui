@@ -42,7 +42,7 @@ typedef struct _GSCellFlags {
   unsigned int        disabled:1;
   unsigned int        editable:1;
 
-  NSCellType          type:2;
+  unsigned int        type:2;
   unsigned int        vCentered:1;
   unsigned int        hCentered:1;
 
@@ -57,7 +57,7 @@ typedef struct _GSCellFlags {
   unsigned int        invalidObjectValue:1;
 
   unsigned int        invalidFont:1;
-  NSLineBreakMode     lineBreakMode:3;
+  unsigned int        lineBreakMode:3;
 
   unsigned int        weakTargetHelperFlag:1;
   unsigned int        allowsAppearanceEffects:1;
@@ -84,7 +84,7 @@ typedef struct _GSCellFlags {
   unsigned int        singleLineMode:1;
   unsigned int        allowsAppearanceEffects:1;
   unsigned int        weakTargetHelperFlag:1;
-  NSLineBreakMode     lineBreakMode:3;
+  unsigned int        lineBreakMode:3;
   unsigned int        invalidFont:1;
   unsigned int        invalidObjectValue:1;
   unsigned int        isLeaf:1;
@@ -96,7 +96,7 @@ typedef struct _GSCellFlags {
   unsigned int        bordered:1;
   unsigned int        hCentered:1;
   unsigned int        vCentered:1;
-  NSCellType          type:2;
+  unsigned int        type:2;
   unsigned int        editable:1;
   unsigned int        disabled:1;
   unsigned int        highlighted:1;

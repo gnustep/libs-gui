@@ -2195,7 +2195,6 @@ Also returns the child index relative to this parent. */
   if (theBinding != nil)
     {
       id observedObject = [theBinding observedObject];
-      NSTreeController *tc = (NSTreeController *)observedObject;
       NSArray *children = nil;
 
       /* If there is a binding present, then allow it to be editable
@@ -2210,6 +2209,8 @@ Also returns the child index relative to this parent. */
        */
       if ([observedObject isKindOfClass: [NSTreeController class]])
 	{
+	  NSTreeController *tc = (NSTreeController *)observedObject;
+
 	  if (startitem == nil)
 	    {
 	      NSTreeNode *node = (NSTreeNode *)[theBinding destinationValue];
