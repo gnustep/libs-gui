@@ -165,8 +165,30 @@
 
   if (owner != nil && aNibName != nil)
     {
-      NSDictionary	*table = [NSDictionary dictionaryWithObject: owner forKey: NSNibOwner];
+      NSDictionary	*table = nil;
+      NSMutableArray    *tlo = nil;
 
+      // Based on the arguments above, set up the table appropriately...
+      if (owner != nil)
+	{
+	  if (topLevelObjects != NULL)
+	    {
+	      // Here we initialize the array, it is sent in using the dictionary.
+	      // In the code below it is pulled back out and assigned to the
+	      // reference in the arguments.
+	      tlo = [NSMutableArray array];
+	      table = [NSDictionary dictionaryWithObjectsAndKeys:
+				      owner, NSNibOwner,
+				    tlo, NSNibTopLevelObjects,
+				    nil];
+	    }
+	  else
+	    {
+	      table = [NSDictionary dictionaryWithObject: owner forKey: NSNibOwner];
+	    }
+	}
+
+      // Attempt to load the model file...
       success = [self loadNibFile: aNibName
                       externalNameTable: table
                          withZone: [owner zone]];

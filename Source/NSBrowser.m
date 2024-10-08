@@ -66,6 +66,7 @@
 
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
+#import "GSBindingHelpers.h"
 
 /* Cache */
 static CGFloat scrollerWidth; // == [NSScroller scrollerWidth];
@@ -2569,6 +2570,8 @@ static BOOL browserUseBezels;
 
 - (void) dealloc
 {
+  [GSKeyValueBinding unbindAllForObject: self];
+
   [[NSNotificationCenter defaultCenter] removeObserver: self];
 
   if ([titleCell controlView] == self)

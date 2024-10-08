@@ -1,3 +1,26 @@
+2024-08-29 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSBundleAdditions.m: Quick fix for .gorm loading
+	not returning top level objects.
+
+2024-08-18 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSTreeController.h: Update header
+	* Headers/AppKit/NSTreeNode.h: Update header
+	* Source/GNUmakefile: Add new class
+	* Source/GSBindingHelpers.h: Add NSString category
+	* Source/GSControllerTreeProxy.[hm]: Proxy class
+	for NSTreeController, a subclass of NSTreeNode.
+	* Source/GSThemeDrawing.m: Optimize code a bit and
+	add changes for bindings.
+	* Source/GSXib5KeyedUnarchiver.m: Add support for new keys
+	on NSTreeController.
+	* Source/NSKeyValueBinding.m: Add new methods to
+	GSKeyValueBinding
+	* Source/NSOutlineView.m: Add support for bindings.
+	* Source/NSTreeController.m: Implement new methods.
+	* Source/NSTreeNode.m: Implement new methods
+
 2024-07-25 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSBrowser.h: Add declarations for
@@ -16,7 +39,7 @@
 	* Source/GNUmakefile: Add class to build
 	* Source/NSMenuToolbarItem.m: Implementation of
 	NSMenuToolbarItem.
-  
+
 2024-06-07 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/Additions/GNUstepGUI/GSTheme.h: Add new methods

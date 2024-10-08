@@ -3,7 +3,7 @@
    <abstract>Simple box view that can display a border and title
    </abstract>
 
-   Copyright (C) 1996-2015 Free Software Foundation, Inc.
+   Copyright (C) 1996-2024 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -41,6 +41,7 @@
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSTheme.h"
+#import "GSGuiPrivate.h"
 
 #include <math.h>
 
@@ -637,10 +638,12 @@
     }
   else
     {
+      NSInteger tempInt;
+
         [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
         _offsets = [aDecoder decodeSize];
-        [aDecoder decodeValueOfObjCType: @encode(int)
-                                     at: &_border_type];
+	decode_NSInteger(aDecoder, &tempInt);
+	_border_type = tempInt;
         [aDecoder decodeValueOfObjCType: @encode(int) 
                                      at: &_title_position];
 

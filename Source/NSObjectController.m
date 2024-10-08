@@ -99,6 +99,8 @@
 {
   if (self == [NSObjectController class])
     {
+      [self setVersion: 1];
+
       [self exposeBinding: NSContentObjectBinding];
       [self setKeys: [NSArray arrayWithObject: @"editable"] 
             triggerChangeNotificationsForDependentKey: @"canAdd"];
@@ -155,11 +157,13 @@
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
       [coder encodeValueOfObjCType: @encode(BOOL) at: &_automatically_prepares_content];
       [coder encodeConditionalObject: _managed_proxy];
+      [coder encodeObject: NSStringFromClass([self objectClass])];
     }
 }
 
 - (id) initWithCoder: (NSCoder *)coder
-{ 
+{
+  int version = [coder versionForClassName: @"NSObjectController"];
   if ((self = [super initWithCoder: coder]) != nil)
     {
       if ([self automaticallyPreparesContent])
@@ -190,6 +194,11 @@
 	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
 	  [coder decodeValueOfObjCType: @encode(BOOL) at: &_automatically_prepares_content];
 	  ASSIGN(_managed_proxy, [coder decodeObject]);
+	  if (version > 0)
+	    {
+	      NSString *className = [coder decodeObject];
+	      [self setObjectClass: NSClassFromString(className)];
+	    }
 	}
     }
 

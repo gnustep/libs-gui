@@ -330,6 +330,9 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"shadow", @"NSViewShadow",
                                            @"blurRadius", @"NSShadowBlurRadius",
                                            @"color", @"NSShadowColor",
+					   @"childrenKeyPath", @"NSTreeContentChildrenKey", // NSTreeController
+					   @"countKeyPath", @"NSTreeContentCountKey",
+					   @"leafKeyPath", @"NSTreeContentLeafKey",					 
                                            nil];
           RETAIN(XmlKeyMapTable);
 
