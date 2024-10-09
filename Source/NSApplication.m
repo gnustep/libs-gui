@@ -2543,7 +2543,8 @@ image.</p><p>See Also: -applicationIconImage</p>
                   [_hidden addObject: win];
                   [win orderOut: self];
                 }
-            }
+	    }
+	  [[_main_menu itemWithTitle:@"Hide"] setTitle:@"Unhide"];
 	  _app_is_hidden = YES;
 	  
 	  if (YES == [[NSUserDefaults standardUserDefaults]
@@ -2590,6 +2591,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 	  [self miniaturizeAll: sender];
 	}
     }
+  else
+    {
+      [self unhide: sender];
+    }
 #endif
 }
 
@@ -2606,6 +2611,7 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (void) unhide: (id)sender
 {
+  [[_main_menu itemWithTitle:@"Unhide"] setTitle:@"Hide"];
   if (_app_is_hidden)
     {
       [self unhideWithoutActivation];
