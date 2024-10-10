@@ -56,10 +56,13 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSMatrix.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableHeaderCell.h"
+#import "AppKit/NSTreeController.h"
+#import "AppKit/NSTreeNode.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSWindow.h"
@@ -258,6 +261,10 @@ static BOOL browserUseBezels;
 - (void) _setColumnTitlesNeedDisplay;
 - (NSBorderType) _resolvedBorderType;
 - (void) _themeDidActivate: (NSNotification*)notification;
+@end
+
+// Category to handle bindings
+@interface NSBrowser (GSBindingsPrivate)
 @end
 
 //
@@ -2262,62 +2269,73 @@ static BOOL browserUseBezels;
 - (void) setDelegate: (id)anObject
 {
   BOOL flag = NO;
+  GSKeyValueBinding *theBinding;
 
-  /* Default to YES for nil delegate.  */
-  _passiveDelegate = YES;
-  _itemBasedDelegate = NO;
-
-  if ([anObject respondsToSelector:
-		  @selector(browser:numberOfChildrenOfItem:)]
-      && [anObject respondsToSelector:
-		    @selector(browser:child:ofItem:)]
-      && [anObject respondsToSelector:
-		    @selector(browser:isLeafItem:)])
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				   forObject: self];
+  if (theBinding != nil)
     {
       _passiveDelegate = NO;
       _itemBasedDelegate = YES;
     }
   else
     {
-      if ([anObject respondsToSelector:
-		     @selector(browser:numberOfRowsInColumn:)])
-	{
-	  flag = YES;
-	  if (![anObject respondsToSelector:
-			  @selector(browser:willDisplayCell:atRow:column:)])
-	    [NSException raise: NSBrowserIllegalDelegateException
-			format: @"(Passive) Delegate does not respond to %s\n",
-			 GSNameFromSelector
-			 (@selector(browser:willDisplayCell:atRow:column:))];
-	}
+      /* Default to YES for nil delegate.  */
+      _passiveDelegate = YES;
+      _itemBasedDelegate = NO;
 
       if ([anObject respondsToSelector:
-		     @selector(browser:createRowsForColumn:inMatrix:)])
+		     @selector(browser:numberOfChildrenOfItem:)]
+	  && [anObject respondsToSelector:
+			@selector(browser:child:ofItem:)]
+	  && [anObject respondsToSelector:
+			@selector(browser:isLeafItem:)])
 	{
 	  _passiveDelegate = NO;
-
-	  /* If flag is already set
-	     then the delegate must respond to both methods.  */
-	  if (flag)
+	  _itemBasedDelegate = YES;
+	}
+      else
+	{
+	  if ([anObject respondsToSelector:
+			 @selector(browser:numberOfRowsInColumn:)])
 	    {
-	      [NSException raise: NSBrowserIllegalDelegateException
-			  format: @"Delegate responds to both %s and %s\n",
-			   GSNameFromSelector
-			   (@selector(browser:numberOfRowsInColumn:)),
-			   GSNameFromSelector
-			   (@selector(browser:createRowsForColumn:inMatrix:))];
+	      flag = YES;
+	      if (![anObject respondsToSelector:
+			      @selector(browser:willDisplayCell:atRow:column:)])
+		[NSException raise: NSBrowserIllegalDelegateException
+			    format: @"(Passive) Delegate does not respond to %s\n",
+			     GSNameFromSelector
+			     (@selector(browser:willDisplayCell:atRow:column:))];
 	    }
 
-	  flag = YES;
-	}
+	  if ([anObject respondsToSelector:
+			 @selector(browser:createRowsForColumn:inMatrix:)])
+	    {
+	      _passiveDelegate = NO;
 
-      if (!flag && anObject)
-	[NSException raise: NSBrowserIllegalDelegateException
-		    format: @"Delegate does not respond to %s or %s\n",
-		     GSNameFromSelector
-		     (@selector(browser:numberOfRowsInColumn:)),
-		     GSNameFromSelector
-		     (@selector(browser:createRowsForColumn:inMatrix:))];
+	      /* If flag is already set
+		 then the delegate must respond to both methods.  */
+	      if (flag)
+		{
+		  [NSException raise: NSBrowserIllegalDelegateException
+			      format: @"Delegate responds to both %s and %s\n",
+			       GSNameFromSelector
+			       (@selector(browser:numberOfRowsInColumn:)),
+			       GSNameFromSelector
+			       (@selector(browser:createRowsForColumn:inMatrix:))];
+		}
+
+	      flag = YES;
+	    }
+
+	  if (!flag && anObject)
+	    [NSException raise: NSBrowserIllegalDelegateException
+			format: @"Delegate does not respond to %s or %s\n",
+			 GSNameFromSelector
+			 (@selector(browser:numberOfRowsInColumn:)),
+			 GSNameFromSelector
+			 (@selector(browser:createRowsForColumn:inMatrix:))];
+	}
     }
 
   _browserDelegate = anObject;
@@ -2486,6 +2504,10 @@ static BOOL browserUseBezels;
 	}
 
       [self _themeDidActivate: nil];
+
+      // Bindings...
+      [self exposeBinding: NSContentBinding];
+      [self exposeBinding: NSContentValuesBinding];
     }
 }
 
@@ -3299,7 +3321,18 @@ static BOOL browserUseBezels;
 
   if (column == 0)
     {
-      item = [_browserDelegate rootItemForBrowser: self];
+      GSKeyValueBinding *theBinding;
+      theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				       forObject: self];
+
+      if (theBinding != nil)
+	{
+	  item = [_browserDelegate rootItemForBrowser: self];
+	}
+      else
+	{
+	  item = nil; // [NSNull null];
+	}
     }
   else
     {
@@ -3340,10 +3373,67 @@ static BOOL browserUseBezels;
 
   if (_itemBasedDelegate)
     {
+      GSKeyValueBinding *theBinding;
+      theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				       forObject: self];
+
       item = [self _itemForColumn: column];
 
-      // Ask the delegate for the number of rows for a given item...
-      rows = [_browserDelegate browser: self numberOfChildrenOfItem: item];
+      if (theBinding != nil)
+	{
+	  id observedObject = [theBinding observedObject];
+	  NSArray *children = nil;
+	  
+	  rows = 0;
+	  if ([observedObject isKindOfClass: [NSTreeController class]])
+	    {
+	      NSTreeController *tc = (NSTreeController *)observedObject;	  
+
+	      if (item == nil)
+		{
+		  NSTreeNode *node = (NSTreeNode *)[theBinding destinationValue];
+
+		  if (node != nil)
+		    {
+		      /* Per the documentation 10.4/5+ uses NSTreeNode as the return value for
+		       * the contents of this tree node consists of a dictionary with a single
+		       * key of "children".   This is per the tests for this at
+		       * https://github.com/gcasa/NSTreeController_test.  Specifically it returns
+		       * _NSControllerTreeProxy.  The equivalent of that class in GNUstep is
+		       * GSControllerTreeProxy.
+		       */
+		      children = [node mutableChildNodes];
+		      rows = [children count];
+		      item = node;
+		    }
+		}
+	      else
+		{
+		  NSString *childrenKeyPath = [tc childrenKeyPathForNode: item];
+
+		  if (childrenKeyPath != nil)
+		    {
+		      NSString *countKeyPath = [tc countKeyPathForNode: item];
+
+		      children = [item valueForKeyPath: childrenKeyPath];
+		      if (countKeyPath == nil)
+			{
+			  rows = [children count]; // get the count directly...
+			}
+		      else
+			{
+			  NSNumber *countValue = [item valueForKeyPath: countKeyPath];
+			  rows = [countValue integerValue];
+			}
+		    }
+		}
+	    }
+	}
+      else
+	{
+	  // Ask the delegate for the number of rows for a given item...
+	  rows = [_browserDelegate browser: self numberOfChildrenOfItem: item];
+	}
       cols = 1;
     }
   else if (_passiveDelegate)
@@ -3410,23 +3500,60 @@ static BOOL browserUseBezels;
   [sc setDocumentView: matrix];
 
   // Loading is different based upon item/passive/active delegate
-  if (_itemBasedDelegate)
+  if (_itemBasedDelegate && item != nil)
     {
-      // Iterate over the children for the item....
-      for (i = 0; i < rows; i++)
-	{
-	  id aCell = [matrix cellAtRow: i column: 0];
-	  if (![aCell isLoaded])
-	    {
-	      BOOL leaf = YES;
-	      id val = nil;
+      GSKeyValueBinding *valueBinding;
 
-	      child = [_browserDelegate browser: self child: i ofItem: item];
-	      leaf = [_browserDelegate browser: self isLeafItem: child];
-	      val = [_browserDelegate browser: self objectValueForItem: child];
-	      [aCell setLeaf: leaf];
-	      [aCell setObjectValue: val];
-	      [aCell setLoaded: YES];
+      valueBinding = [GSKeyValueBinding getBinding: NSContentValuesBinding
+					 forObject: self];
+      if (valueBinding != nil)
+	{
+	  NSTreeController *tc = [valueBinding observedObject];
+	  NSString *childrenKeyPath = [tc childrenKeyPathForNode: item];
+
+	  if (childrenKeyPath != nil)
+	    {
+	      NSString *leafKeyPath = [tc leafKeyPathForNode: item];
+	      NSArray *children = [item valueForKeyPath: childrenKeyPath];
+
+	      // Iterate over the children for the item....
+	      for (i = 0; i < rows; i++)
+		{
+		  id aCell = [matrix cellAtRow: i column: 0];
+		  if (![aCell isLoaded])
+		    {
+		      BOOL leaf = YES;
+		      id val = nil;
+		      NSNumber *leafBool = [child valueForKeyPath: leafKeyPath];
+
+		      child = [children objectAtIndex: i];
+		      leaf = [leafBool boolValue];
+		      val = [child valueForKeyPath: @"value"]; // temporary
+		      [aCell setLeaf: leaf];
+		      [aCell setObjectValue: val];
+		      [aCell setLoaded: YES];
+		    }
+		}
+	    }
+	}
+      else
+	{
+	  // Iterate over the children for the item....
+	  for (i = 0; i < rows; i++)
+	    {
+	      id aCell = [matrix cellAtRow: i column: 0];
+	      if (![aCell isLoaded])
+		{
+		  BOOL leaf = YES;
+		  id val = nil;
+
+		  child = [_browserDelegate browser: self child: i ofItem: item];
+		  leaf = [_browserDelegate browser: self isLeafItem: child];
+		  val = [_browserDelegate browser: self objectValueForItem: child];
+		  [aCell setLeaf: leaf];
+		  [aCell setObjectValue: val];
+		  [aCell setLoaded: YES];
+		}
 	    }
 	}
     }
@@ -3589,6 +3716,97 @@ static BOOL browserUseBezels;
 - (void) _themeDidActivate: (NSNotification*)notification
 {
   [self tile];
+}
+
+@end
+
+@implementation NSBrowser (GSBindingsPrivate)
+
+/* Private methods to handle bindings */
+
+- (void) setValue: (id)anObject forKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSContentBinding])
+    {
+      // Reload data
+      _passiveDelegate = NO;
+      _itemBasedDelegate = YES;
+
+      [self loadColumnZero];
+      NSDebugLLog(@"NSBinding", @"Setting browser view content to %@", anObject);
+    }
+  else if ([aKey isEqual: NSContentValuesBinding])
+    {
+      // Reload data
+      _passiveDelegate = NO;
+      _itemBasedDelegate = YES;
+
+      [self loadColumnZero];
+      NSDebugLLog(@"NSBinding", @"Setting browser view content values to %@", anObject);
+    }
+  else if ([aKey isEqual: NSSelectionIndexesBinding])
+    {
+      /*
+      if (_selectingColumns)
+	{
+	  if (nil == anObject)
+	    {
+	      // [self _unselectAllColumns];
+	    }
+	  else
+	    {
+	      return [self selectColumnIndexes: anObject
+			  byExtendingSelection: NO];
+	    }
+	}
+      else
+	{
+	  if (nil == anObject)
+	    {
+	      [self _unselectAllRows];
+	    }
+	  else
+	    {
+	      return [self selectRowIndexes: anObject
+		       byExtendingSelection: NO];
+	    }
+	}
+      */
+    }
+  else
+    {
+      [super setValue: anObject forKey: aKey];
+    }
+}
+
+- (id) valueForKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSContentBinding])
+    {
+      return nil;
+    }
+  else if ([aKey isEqual: NSContentValuesBinding])
+    {
+      return nil;
+    }
+  else if ([aKey isEqual: NSSelectionIndexesBinding])
+    {
+      /*
+      if (_selectingColumns)
+	{
+	  return nil; // [self selectedColumnIndexes];
+	}
+      else
+	{
+	  return nil; // [self selectedRowIndexes];
+	}
+      */
+      return nil; // temporary...
+    }
+  else
+    {
+      return [super valueForKey: aKey];
+    }
 }
 
 @end
