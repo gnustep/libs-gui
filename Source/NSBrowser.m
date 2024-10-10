@@ -3393,15 +3393,19 @@ static BOOL browserUseBezels;
 		{
 		  NSTreeNode *node = (NSTreeNode *)[theBinding destinationValue];
 
-		  /* Per the documentation 10.4/5+ uses NSTreeNode as the return value for
-		   * the contents of this tree node consists of a dictionary with a single
-		   * key of "children".   This is per the tests for this at
-		   * https://github.com/gcasa/NSTreeController_test.  Specifically it returns
-		   * _NSControllerTreeProxy.  The equivalent of that class in GNUstep is
-		   * GSControllerTreeProxy.
-		   */
-		  children = [node mutableChildNodes];
-		  rows = [children count];
+		  if (node != nil)
+		    {
+		      /* Per the documentation 10.4/5+ uses NSTreeNode as the return value for
+		       * the contents of this tree node consists of a dictionary with a single
+		       * key of "children".   This is per the tests for this at
+		       * https://github.com/gcasa/NSTreeController_test.  Specifically it returns
+		       * _NSControllerTreeProxy.  The equivalent of that class in GNUstep is
+		       * GSControllerTreeProxy.
+		       */
+		      children = [node mutableChildNodes];
+		      rows = [children count];
+		      item = node;
+		    }
 		}
 	      else
 		{
@@ -3496,7 +3500,7 @@ static BOOL browserUseBezels;
   [sc setDocumentView: matrix];
 
   // Loading is different based upon item/passive/active delegate
-  if (_itemBasedDelegate)
+  if (_itemBasedDelegate && item != nil)
     {
       GSKeyValueBinding *valueBinding;
 
