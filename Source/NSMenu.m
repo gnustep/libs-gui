@@ -1068,7 +1068,7 @@ static BOOL menuBarVisible = YES;
 
 	      if ([item hasSubmenu])
                 {
-                  [[item submenu] _updateSubmenu];
+                  [[item submenu] update];
                 }
 
               [self _autoenableItem: item];
