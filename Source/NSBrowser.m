@@ -3777,35 +3777,6 @@ static BOOL browserUseBezels;
       [self loadColumnZero];
       NSDebugLLog(@"NSBinding", @"Setting browser view content values to %@", anObject);
     }
-  else if ([aKey isEqual: NSSelectionIndexesBinding])
-    {
-      /*
-      if (_selectingColumns)
-	{
-	  if (nil == anObject)
-	    {
-	      // [self _unselectAllColumns];
-	    }
-	  else
-	    {
-	      return [self selectColumnIndexes: anObject
-			  byExtendingSelection: NO];
-	    }
-	}
-      else
-	{
-	  if (nil == anObject)
-	    {
-	      [self _unselectAllRows];
-	    }
-	  else
-	    {
-	      return [self selectRowIndexes: anObject
-		       byExtendingSelection: NO];
-	    }
-	}
-      */
-    }
   else
     {
       [super setValue: anObject forKey: aKey];
@@ -3821,20 +3792,6 @@ static BOOL browserUseBezels;
   else if ([aKey isEqual: NSContentValuesBinding])
     {
       return nil;
-    }
-  else if ([aKey isEqual: NSSelectionIndexesBinding])
-    {
-      /*
-      if (_selectingColumns)
-	{
-	  return nil; // [self selectedColumnIndexes];
-	}
-      else
-	{
-	  return nil; // [self selectedRowIndexes];
-	}
-      */
-      return nil; // temporary...
     }
   else
     {
