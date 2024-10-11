@@ -2269,76 +2269,63 @@ static BOOL browserUseBezels;
 - (void) setDelegate: (id)anObject
 {
   BOOL flag = NO;
-  /*
-  GSKeyValueBinding *theBinding;
 
-  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
-				   forObject: self];
-  if (theBinding != nil)
+  /* Default to YES for nil delegate.  */
+  _passiveDelegate = YES;
+  _itemBasedDelegate = NO;
+
+  if ([anObject respondsToSelector:
+		 @selector(browser:numberOfChildrenOfItem:)]
+      && [anObject respondsToSelector:
+		    @selector(browser:child:ofItem:)]
+      && [anObject respondsToSelector:
+		    @selector(browser:isLeafItem:)])
     {
       _passiveDelegate = NO;
       _itemBasedDelegate = YES;
     }
   else
     {
-  */
-      /* Default to YES for nil delegate.  */
-      _passiveDelegate = YES;
-      _itemBasedDelegate = NO;
+      if ([anObject respondsToSelector:
+		     @selector(browser:numberOfRowsInColumn:)])
+	{
+	  flag = YES;
+	  if (![anObject respondsToSelector:
+			  @selector(browser:willDisplayCell:atRow:column:)])
+	    [NSException raise: NSBrowserIllegalDelegateException
+			format: @"(Passive) Delegate does not respond to %s\n",
+			 GSNameFromSelector
+			 (@selector(browser:willDisplayCell:atRow:column:))];
+	}
 
       if ([anObject respondsToSelector:
-		     @selector(browser:numberOfChildrenOfItem:)]
-	  && [anObject respondsToSelector:
-			@selector(browser:child:ofItem:)]
-	  && [anObject respondsToSelector:
-			@selector(browser:isLeafItem:)])
+		     @selector(browser:createRowsForColumn:inMatrix:)])
 	{
 	  _passiveDelegate = NO;
-	  _itemBasedDelegate = YES;
-	}
-      else
-	{
-	  if ([anObject respondsToSelector:
-			 @selector(browser:numberOfRowsInColumn:)])
+
+	  /* If flag is already set
+	     then the delegate must respond to both methods.  */
+	  if (flag)
 	    {
-	      flag = YES;
-	      if (![anObject respondsToSelector:
-			      @selector(browser:willDisplayCell:atRow:column:)])
-		[NSException raise: NSBrowserIllegalDelegateException
-			    format: @"(Passive) Delegate does not respond to %s\n",
-			     GSNameFromSelector
-			     (@selector(browser:willDisplayCell:atRow:column:))];
+	      [NSException raise: NSBrowserIllegalDelegateException
+			  format: @"Delegate responds to both %s and %s\n",
+			   GSNameFromSelector
+			   (@selector(browser:numberOfRowsInColumn:)),
+			   GSNameFromSelector
+			   (@selector(browser:createRowsForColumn:inMatrix:))];
 	    }
 
-	  if ([anObject respondsToSelector:
-			 @selector(browser:createRowsForColumn:inMatrix:)])
-	    {
-	      _passiveDelegate = NO;
-
-	      /* If flag is already set
-		 then the delegate must respond to both methods.  */
-	      if (flag)
-		{
-		  [NSException raise: NSBrowserIllegalDelegateException
-			      format: @"Delegate responds to both %s and %s\n",
-			       GSNameFromSelector
-			       (@selector(browser:numberOfRowsInColumn:)),
-			       GSNameFromSelector
-			       (@selector(browser:createRowsForColumn:inMatrix:))];
-		}
-
-	      flag = YES;
-	    }
-
-	  if (!flag && anObject)
-	    [NSException raise: NSBrowserIllegalDelegateException
-			format: @"Delegate does not respond to %s or %s\n",
-			 GSNameFromSelector
-			 (@selector(browser:numberOfRowsInColumn:)),
-			 GSNameFromSelector
-			 (@selector(browser:createRowsForColumn:inMatrix:))];
+	  flag = YES;
 	}
-      // }
+
+      if (!flag && anObject)
+	[NSException raise: NSBrowserIllegalDelegateException
+		    format: @"Delegate does not respond to %s or %s\n",
+		     GSNameFromSelector
+		     (@selector(browser:numberOfRowsInColumn:)),
+		     GSNameFromSelector
+		     (@selector(browser:createRowsForColumn:inMatrix:))];
+    }
 
   _browserDelegate = anObject;
 }
@@ -3036,7 +3023,7 @@ static BOOL browserUseBezels;
       // Item based delegate, 10.6+
       _itemBasedDelegate = NO;
       _columnDictionary = [[NSMutableDictionary alloc] init];
-      
+
       // Horizontal scroller
       _scrollerRect.origin.x = bs.width;
       _scrollerRect.origin.y = bs.height;
@@ -3327,7 +3314,7 @@ static BOOL browserUseBezels;
   theBinding = [GSKeyValueBinding getBinding: NSContentBinding
 				   forObject: self];
   // NSNumber *colNum = nil;
-  
+
   if (column == 0)
     {
       if (theBinding != nil)
@@ -3356,10 +3343,10 @@ static BOOL browserUseBezels;
 	      if (selectedCells != nil && [selectedCells count] > 0)
 		{
 		  id cell = [selectedCells objectAtIndex: 0];
-		  
+
 		  if (theBinding != nil)
 		    {
-		      NSNumber *colNum = [NSNumber numberWithInteger: col];			 
+		      NSNumber *colNum = [NSNumber numberWithInteger: col];
 		      NSArray *array = [_columnDictionary objectForKey: colNum];
 		      if ([array count] > 0)
 			{
@@ -3407,14 +3394,14 @@ static BOOL browserUseBezels;
   NSNumber *colNum = nil;
   NSTreeController *tc = nil;
   NSArray *children = nil;
-  
+
   if (_itemBasedDelegate)
     {
       GSKeyValueBinding *theBinding;
 
       theBinding = [GSKeyValueBinding getBinding: NSContentBinding
 				       forObject: self];
-      
+
       item = [self _itemForColumn: column];
       if (theBinding != nil)
 	{
@@ -3424,7 +3411,7 @@ static BOOL browserUseBezels;
 	  colNum = [NSNumber numberWithInteger: column];
 	  if ([observedObject isKindOfClass: [NSTreeController class]])
 	    {
-	      tc = (NSTreeController *)observedObject;	  
+	      tc = (NSTreeController *)observedObject;
 
 	      if (item == nil)
 		{
@@ -3550,8 +3537,8 @@ static BOOL browserUseBezels;
       if (childrenKeyPath != nil)
 	{
 	  NSString *leafKeyPath = [tc leafKeyPathForNode: item];
-	  NSString *keyPath = [self _keyPathForValueBinding];      
-	  
+	  NSString *keyPath = [self _keyPathForValueBinding];
+
 	  // Iterate over the children for the item....
 	  for (i = 0; i < rows; i++)
 	    {
@@ -3561,7 +3548,7 @@ static BOOL browserUseBezels;
 		  BOOL leaf = YES;
 		  id val = nil;
 		  NSNumber *leafBool = [child valueForKeyPath: leafKeyPath];
-		  
+
 		  child = [children objectAtIndex: i];
 		  leaf = [leafBool boolValue];
 
@@ -3575,7 +3562,7 @@ static BOOL browserUseBezels;
 		    {
 		      val = [child description]; // per documentation.
 		    }
-		  
+
 		  [aCell setLeaf: leaf];
 		  [aCell setObjectValue: val];
 		  [aCell setLoaded: YES];
