@@ -2269,6 +2269,7 @@ static BOOL browserUseBezels;
 - (void) setDelegate: (id)anObject
 {
   BOOL flag = NO;
+  /*
   GSKeyValueBinding *theBinding;
 
   theBinding = [GSKeyValueBinding getBinding: NSContentBinding
@@ -2280,6 +2281,7 @@ static BOOL browserUseBezels;
     }
   else
     {
+  */
       /* Default to YES for nil delegate.  */
       _passiveDelegate = YES;
       _itemBasedDelegate = NO;
@@ -2336,7 +2338,7 @@ static BOOL browserUseBezels;
 			 GSNameFromSelector
 			 (@selector(browser:createRowsForColumn:inMatrix:))];
 	}
-    }
+      // }
 
   _browserDelegate = anObject;
 }
@@ -2580,6 +2582,7 @@ static BOOL browserUseBezels;
 
   // Item based delegate, 10.6+
   _itemBasedDelegate = NO;
+  _columnDictionary = [[NSMutableDictionary alloc] init];
 
   [[NSNotificationCenter defaultCenter]
     addObserver: self
@@ -2605,6 +2608,7 @@ static BOOL browserUseBezels;
   RELEASE(_pathSeparator);
   RELEASE(_horizontalScroller);
   RELEASE(_browserColumns);
+  RELEASE(_columnDictionary);
   TEST_RELEASE(_charBuffer);
 
   [super dealloc];
@@ -3031,7 +3035,8 @@ static BOOL browserUseBezels;
 
       // Item based delegate, 10.6+
       _itemBasedDelegate = NO;
-
+      _columnDictionary = [[NSMutableDictionary alloc] init];
+      
       // Horizontal scroller
       _scrollerRect.origin.x = bs.width;
       _scrollerRect.origin.y = bs.height;
@@ -3318,13 +3323,13 @@ static BOOL browserUseBezels;
 - (id) _itemForColumn: (NSInteger)column
 {
   id item = nil;
-
+  GSKeyValueBinding *theBinding;
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				   forObject: self];
+  // NSNumber *colNum = nil;
+  
   if (column == 0)
     {
-      GSKeyValueBinding *theBinding;
-      theBinding = [GSKeyValueBinding getBinding: NSContentBinding
-				       forObject: self];
-
       if (theBinding != nil)
 	{
 	  item = [_browserDelegate rootItemForBrowser: self];
@@ -3351,8 +3356,21 @@ static BOOL browserUseBezels;
 	      if (selectedCells != nil && [selectedCells count] > 0)
 		{
 		  id cell = [selectedCells objectAtIndex: 0];
-
-		  item = [cell objectValue];
+		  
+		  if (theBinding != nil)
+		    {
+		      NSNumber *colNum = [NSNumber numberWithInteger: col];			 
+		      NSArray *array = [_columnDictionary objectForKey: colNum];
+		      if ([array count] > 0)
+			{
+			  NSInteger row = [self selectedRowInColumn: col];
+			  item = [array objectAtIndex: row];
+			}
+		    }
+		  else
+		    {
+		      item = [cell objectValue];
+		    }
 		}
 	    }
 	}
@@ -3361,33 +3379,52 @@ static BOOL browserUseBezels;
   return item;
 }
 
+- (NSString *) _keyPathForValueBinding
+{
+  NSString *keyPath = nil;
+  NSDictionary *info = [GSKeyValueBinding infoForBinding: NSContentValuesBinding
+					       forObject: self];
+  if (info != nil)
+    {
+      NSString *ikp = [info objectForKey: NSObservedKeyPathKey];
+      NSUInteger location = [ikp rangeOfString: @"."].location;
+
+      keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
+    }
+
+  return keyPath;
+}
+
 /* Loads column 'column' (asking the delegate). */
 - (void) _performLoadOfColumn: (NSInteger)column
 {
-  NSBrowserColumn *bc;
-  NSScrollView *sc;
-  NSMatrix *matrix;
-  NSInteger i, rows, cols;
+  NSBrowserColumn *bc = nil;
+  NSScrollView *sc = nil;
+  NSMatrix *matrix = nil;
+  NSInteger i = 0, rows = 0, cols = 0;
   id child = nil;
   id item = nil;
-
+  NSNumber *colNum = nil;
+  NSTreeController *tc = nil;
+  NSArray *children = nil;
+  
   if (_itemBasedDelegate)
     {
       GSKeyValueBinding *theBinding;
+
       theBinding = [GSKeyValueBinding getBinding: NSContentBinding
 				       forObject: self];
-
+      
       item = [self _itemForColumn: column];
-
       if (theBinding != nil)
 	{
 	  id observedObject = [theBinding observedObject];
-	  NSArray *children = nil;
-	  
+
 	  rows = 0;
+	  colNum = [NSNumber numberWithInteger: column];
 	  if ([observedObject isKindOfClass: [NSTreeController class]])
 	    {
-	      NSTreeController *tc = (NSTreeController *)observedObject;	  
+	      tc = (NSTreeController *)observedObject;	  
 
 	      if (item == nil)
 		{
@@ -3426,6 +3463,12 @@ static BOOL browserUseBezels;
 			  rows = [countValue integerValue];
 			}
 		    }
+		}
+
+	      // If the node has children, add them to the column...
+	      if (children != nil)
+		{
+		  [_columnDictionary setObject: children forKey: colNum];
 		}
 	    }
 	}
@@ -3500,39 +3543,42 @@ static BOOL browserUseBezels;
   [sc setDocumentView: matrix];
 
   // Loading is different based upon item/passive/active delegate
-  if (_itemBasedDelegate && item != nil)
+  if (_itemBasedDelegate == YES) //  && item != nil && tc != nil)
     {
-      GSKeyValueBinding *valueBinding;
+      NSString *childrenKeyPath = [tc childrenKeyPathForNode: item];
 
-      valueBinding = [GSKeyValueBinding getBinding: NSContentValuesBinding
-					 forObject: self];
-      if (valueBinding != nil)
+      if (childrenKeyPath != nil)
 	{
-	  NSTreeController *tc = [valueBinding observedObject];
-	  NSString *childrenKeyPath = [tc childrenKeyPathForNode: item];
-
-	  if (childrenKeyPath != nil)
+	  NSString *leafKeyPath = [tc leafKeyPathForNode: item];
+	  NSString *keyPath = [self _keyPathForValueBinding];      
+	  
+	  // Iterate over the children for the item....
+	  for (i = 0; i < rows; i++)
 	    {
-	      NSString *leafKeyPath = [tc leafKeyPathForNode: item];
-	      NSArray *children = [item valueForKeyPath: childrenKeyPath];
-
-	      // Iterate over the children for the item....
-	      for (i = 0; i < rows; i++)
+	      id aCell = [matrix cellAtRow: i column: 0];
+	      if (![aCell isLoaded])
 		{
-		  id aCell = [matrix cellAtRow: i column: 0];
-		  if (![aCell isLoaded])
-		    {
-		      BOOL leaf = YES;
-		      id val = nil;
-		      NSNumber *leafBool = [child valueForKeyPath: leafKeyPath];
+		  BOOL leaf = YES;
+		  id val = nil;
+		  NSNumber *leafBool = [child valueForKeyPath: leafKeyPath];
+		  
+		  child = [children objectAtIndex: i];
+		  leaf = [leafBool boolValue];
 
-		      child = [children objectAtIndex: i];
-		      leaf = [leafBool boolValue];
-		      val = [child valueForKeyPath: @"value"]; // temporary
-		      [aCell setLeaf: leaf];
-		      [aCell setObjectValue: val];
-		      [aCell setLoaded: YES];
+		  // If a content values binding is present, it uses that key path,
+		  // but if one isn't it uses the description... per documentation.
+		  if (keyPath != nil)
+		    {
+		      val = [child valueForKeyPath: keyPath];
 		    }
+		  else
+		    {
+		      val = [child description]; // per documentation.
+		    }
+		  
+		  [aCell setLeaf: leaf];
+		  [aCell setObjectValue: val];
+		  [aCell setLoaded: YES];
 		}
 	    }
 	}
