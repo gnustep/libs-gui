@@ -3,7 +3,6 @@
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSValue.h>
 
-#include <AppKit/NSApplication.h>
 #include "GSCodingFlags.h"
 
 int main()
@@ -13,16 +12,6 @@ int main()
 
     START_SET("GSCodingFlags GNUstep CellFlags Union")
     
-    NS_DURING
-    {
-      [NSApplication sharedApplication];
-    }
-    NS_HANDLER
-    {
-      if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
-        SKIP("It looks like GNUstep backend is not yet installed")
-    }
-    NS_ENDHANDLER
     // first make sure flags translate to values
     mask.flags.state = 1;
     mask.flags.selectable = 1;
