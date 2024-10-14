@@ -36,10 +36,13 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSText.h"
+
+#import "GSBindingHelpers.h"
 
 @implementation NSTextFieldCell
 
@@ -47,6 +50,7 @@
 {
   if (self == [NSTextFieldCell class])
     {
+      [self exposeBinding: NSValueBinding];      
       [self setVersion: 2];
     }
 }
