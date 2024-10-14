@@ -3759,23 +3759,15 @@ static BOOL browserUseBezels;
 
 - (void) setValue: (id)anObject forKey: (NSString*)aKey
 {
-  if ([aKey isEqual: NSContentBinding])
+  if ([aKey isEqual: NSContentBinding]
+      || [aKey isEqual: NSContentValuesBinding])
     {
       // Reload data
       _passiveDelegate = NO;
       _itemBasedDelegate = YES;
 
       [self loadColumnZero];
-      NSDebugLLog(@"NSBinding", @"Setting browser view content to %@", anObject);
-    }
-  else if ([aKey isEqual: NSContentValuesBinding])
-    {
-      // Reload data
-      _passiveDelegate = NO;
-      _itemBasedDelegate = YES;
-
-      [self loadColumnZero];
-      NSDebugLLog(@"NSBinding", @"Setting browser view content values to %@", anObject);
+      NSDebugLLog(@"NSBinding", @"Setting browser view content/values to %@", anObject);
     }
   else
     {
@@ -3785,11 +3777,8 @@ static BOOL browserUseBezels;
 
 - (id) valueForKey: (NSString*)aKey
 {
-  if ([aKey isEqual: NSContentBinding])
-    {
-      return nil;
-    }
-  else if ([aKey isEqual: NSContentValuesBinding])
+  if ([aKey isEqual: NSContentBinding]
+      || [aKey isEqual: NSContentValuesBinding])
     {
       return nil;
     }
