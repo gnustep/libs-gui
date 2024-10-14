@@ -42,9 +42,9 @@ int main()
     mask.flags = (GSCellFlags){0};
     // now make sure values translate to flags
 #if GS_WORDS_BIGENDIAN == 1
-    mask.value = 0b00000001001000000000110100000001;
+    mask.value = 0b00010010000000000001110000001001;
 #else
-    mask.value = 0b00000001001000000000110100000001;
+    mask.value = 0b10010000001110000000000001001000;
 #endif
 
     pass(mask.flags.state = 1, "state is correctly set");
