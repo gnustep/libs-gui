@@ -3537,7 +3537,7 @@ static BOOL browserUseBezels;
       if (childrenKeyPath != nil)
 	{
 	  NSString *leafKeyPath = [tc leafKeyPathForNode: item];
-	  NSString *keyPath = [self _keyPathForValueBinding];
+	  NSString *valueKeyPath = [self _keyPathForValueBinding];
 
 	  // Iterate over the children for the item....
 	  for (i = 0; i < rows; i++)
@@ -3554,9 +3554,9 @@ static BOOL browserUseBezels;
 
 		  // If a content values binding is present, it uses that key path,
 		  // but if one isn't it uses the description... per documentation.
-		  if (keyPath != nil)
+		  if (valueKeyPath != nil)
 		    {
-		      val = [child valueForKeyPath: keyPath];
+		      val = [child valueForKeyPath: valueKeyPath];
 		    }
 		  else
 		    {
