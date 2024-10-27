@@ -383,7 +383,8 @@ static BOOL menuBarVisible = YES;
 
 - (BOOL) _isVisible
 {
-  return [_aWindow isVisible] || [_bWindow isVisible];
+  BOOL isVisible = [_aWindow isVisible] || [_bWindow isVisible];
+  return [[GSTheme theme] proposedVisibility: isVisible forMenu: self];
 }
 
 - (BOOL) _isMain
