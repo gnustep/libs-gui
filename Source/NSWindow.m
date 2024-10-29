@@ -2109,10 +2109,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (BOOL) showsResizeIndicator
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-        "showsResizeIndicator", "NSWindow");
-  return YES;
+  return ([self styleMask] & NSResizableWindowMask) ? YES : NO;
 }
 
 - (void) setShowsResizeIndicator: (BOOL)show
