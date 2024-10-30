@@ -1,3 +1,8 @@
+2024-10-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSLayoutAnchor.h: Add missing include that is required after a change in base.
+	* Source/NSTableView.m: Forward declare new methods.
+
 2024-08-29 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSBundleAdditions.m: Quick fix for .gorm loading

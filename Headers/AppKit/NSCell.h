@@ -167,6 +167,9 @@ enum {
   NSCellHitTrackableArea = 4
 };
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+typedef NSUInteger NSCellHitResult;
+#endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 enum {
@@ -492,9 +495,16 @@ APPKIT_EXPORT_CLASS
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 - (NSBackgroundStyle)backgroundStyle;
 - (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+- (NSCellHitResult)hitTestForEvent:(NSEvent *)event
+                       inRect:(NSRect)cellFrame
+                       ofView:(NSView *)controlView;
+#else
 - (NSUInteger)hitTestForEvent:(NSEvent *)event
                        inRect:(NSRect)cellFrame
                        ofView:(NSView *)controlView;
+#endif
 #endif
 
 //

@@ -162,6 +162,9 @@ typedef struct _tableViewFlags
 - (BOOL) _isCellEditableColumn: (NSInteger)columnIndex
 			   row: (NSInteger)rowIndex;
 - (NSInteger) _numRows;
+- (CGFloat*) _columnOrigins;
+- (NSView*)  _renderedViewForPath: (NSIndexPath*)path;
+- (void) _setRenderedView: (NSView*)view forPath: (NSIndexPath*)path;
 @end
 
 @interface NSTableView (SelectionHelper)

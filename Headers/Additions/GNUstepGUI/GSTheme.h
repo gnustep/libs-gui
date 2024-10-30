@@ -1569,6 +1569,12 @@ withRepeatedImage: (NSImage*)image
 - (void) organizeMenu: (NSMenu *)menu
 	 isHorizontal: (BOOL)horizontal;
 
+/**
+ * Used by the theme to override the proposed menu visibility.  The default
+ * implementation simply returns the proposed visibility unmodified.
+ */
+- (BOOL) proposedVisibility: (BOOL)visible
+	 forMenu: (NSMenu *) menu;
 @end 
 
 @interface GSTheme (OpenSavePanels)
