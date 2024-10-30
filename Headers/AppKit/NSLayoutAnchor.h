@@ -27,6 +27,7 @@
 #import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
