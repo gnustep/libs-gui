@@ -1,3 +1,8 @@
+2024-10-31 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: fix -laterDate: conditionals to be true
+	only when file date has been updated (returned value != receiver).
+
 2024-10-29 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSLayoutAnchor.h: Add missing include that is required after a change in base.
