@@ -2551,7 +2551,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 	  if (menuItem)
 	    {
 	      [menuItem setAction:@selector(unhide:)];
-	      [menuItem setTitle:_(@"Unhide")];
+	      [menuItem setTitle:_(@"Show")];
 	    }
 
 	  _app_is_hidden = YES;
@@ -2618,7 +2618,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   id<NSMenuItem> menuItem = [sender isKindOfClass:[NSMenuItem class]]
 			      ? sender
-			      : [_main_menu itemWithTitle:_(@"Unhide")];
+			      : [_main_menu itemWithTitle:_(@"Show")];
   if (menuItem)
     {
       [menuItem setAction:@selector(hide:)];
