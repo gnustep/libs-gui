@@ -2496,6 +2496,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 	  NSDictionary  	*info;
 	  NSWindow		*win;
 	  NSEnumerator  	*iter;
+          id<NSMenuItem>  	menuItem;
 
 	  [nc postNotificationName: NSApplicationWillHideNotification
 	                    object: self];
@@ -2543,7 +2544,16 @@ image.</p><p>See Also: -applicationIconImage</p>
                   [_hidden addObject: win];
                   [win orderOut: self];
                 }
-            }
+	    }
+	  menuItem = [sender isKindOfClass:[NSMenuItem class]]
+		       ? sender
+		       : [_main_menu itemWithTitle:_(@"Hide")];
+	  if (menuItem)
+	    {
+	      [menuItem setAction:@selector(unhide:)];
+	      [menuItem setTitle:_(@"Show")];
+	    }
+
 	  _app_is_hidden = YES;
 	  
 	  if (YES == [[NSUserDefaults standardUserDefaults]
@@ -2606,6 +2616,14 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (void) unhide: (id)sender
 {
+  id<NSMenuItem> menuItem = [sender isKindOfClass:[NSMenuItem class]]
+			      ? sender
+			      : [_main_menu itemWithTitle:_(@"Show")];
+  if (menuItem)
+    {
+      [menuItem setAction:@selector(hide:)];
+      [menuItem setTitle:_(@"Hide")];
+    }
   if (_app_is_hidden)
     {
       [self unhideWithoutActivation];
