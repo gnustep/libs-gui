@@ -3319,9 +3319,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
     if (selectionColor == nil)
       {
-	selectionColor = [NSColor colorWithCalibratedRed: 0.86
-						   green: 0.92
-						    blue: 0.99
+	selectionColor = [NSColor colorWithCalibratedRed: 1.0
+						   green: 1.0
+						    blue: 1.0
 						   alpha: 1.0];
       }
     [selectionColor set];
