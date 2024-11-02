@@ -359,6 +359,11 @@
           [self setBezelStyle: [aDecoder decodeIntForKey: 
                                              @"NSTextBezelStyle"]];
         }
+      if ([aDecoder containsValueForKey: @"NSPlaceholderString"])
+        {
+          [self setPlaceholderString: [aDecoder decodeObjectForKey: 
+                                             @"NSPlaceholderString"]];
+        }
     }
   else
     {
