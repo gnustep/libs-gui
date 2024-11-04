@@ -1796,7 +1796,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
       if (object)
       {
         // Check for attributed string type and return actual string instead..
-        if ([object isKindOfClass :[NSAttributedString class]])
+        if ([object isKindOfClass: [NSAttributedString class]])
 	  {
             object = [object string];
 	  }
