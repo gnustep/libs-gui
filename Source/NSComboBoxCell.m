@@ -1775,23 +1775,39 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     }
   else
     {
+      id object = nil;
+      
       if (_dataSource == nil)
         {
-	  NSLog(@"%@: No data source currently specified", self);
-	  return nil;
-	}
-      else if ([_dataSource respondsToSelector: 
-			   @selector(comboBox:objectValueForItemAtIndex:)])
+          NSLog(@"%@: No data source currently specified", self);
+        }
+      else if ([_dataSource respondsToSelector:
+                @selector(comboBox:objectValueForItemAtIndex:)])
         {
-	  return [[_dataSource comboBox: (NSComboBox *)[self controlView] 
-			       objectValueForItemAtIndex: index] description];
-	}
-      else if ([_dataSource respondsToSelector: 
-				@selector(comboBoxCell:objectValueForItemAtIndex:)])
+          object = [_dataSource comboBox: (NSComboBox *)[self controlView]
+               objectValueForItemAtIndex: index];
+        }
+      else if ([_dataSource respondsToSelector:
+                @selector(comboBoxCell:objectValueForItemAtIndex:)])
         {
-	  return [[_dataSource comboBoxCell: self
-			      objectValueForItemAtIndex: index] description];
-	}
+          object = [_dataSource comboBoxCell: self objectValueForItemAtIndex: index];
+        }
+      
+      if (object)
+      {
+        // Check for attributed string type and return actual string instead..
+        if ([object isKindOfClass :[NSAttributedString class]])
+	  {
+            object = [object string];
+	  }
+        else
+	  {
+            object = [object description];
+	  }
+        
+        // Return the request object...
+        return object;
+      }
     }
 
   return nil;
