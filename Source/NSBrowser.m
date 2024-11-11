@@ -3317,7 +3317,7 @@ static BOOL browserUseBezels;
 
   if (column == 0)
     {
-      if (theBinding != nil)
+      if (theBinding == nil)
 	{
 	  item = [_browserDelegate rootItemForBrowser: self];
 	}
