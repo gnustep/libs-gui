@@ -3313,8 +3313,6 @@ static BOOL browserUseBezels;
   GSKeyValueBinding *theBinding;
   theBinding = [GSKeyValueBinding getBinding: NSContentBinding
 				   forObject: self];
-  // NSNumber *colNum = nil;
-
   if (column == 0)
     {
       if (theBinding == nil)
