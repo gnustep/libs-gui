@@ -21,20 +21,14 @@ int main()
     mask.flags.useUserKeyEquivalent = 1;
     mask.flags.truncateLastLine = 1;
 
-#if GS_WORDS_BIGENDIAN == 1
-    pass(mask.value == 0b00010010000000000001110000001001, "mask.flags translates to mask.value");
-#else
     pass(mask.value == 0b10010000001110000000000001001000, "mask.flags translates to mask.value");
-#endif
+
     // reset mask
     mask.value = 0;
     mask.flags = (GSCellFlags){0};
+
     // now make sure values translate to flags
-#if GS_WORDS_BIGENDIAN == 1
-    mask.value = 0b00010010000000000001110000001001;
-#else
     mask.value = 0b10010000001110000000000001001000;
-#endif
 
     pass(mask.flags.state == 1, "state is correctly set");
     pass(mask.flags.selectable == 1, "selectable is correctly set");

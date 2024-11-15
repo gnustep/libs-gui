@@ -287,8 +287,11 @@ static CGFloat default_miter_limit = 10.0;
 
 - (void) dealloc
 {
-  GSIArrayEmpty(_pathElements);
-  NSZoneFree([self zone], _pathElements);
+  if (_pathElements != NULL)
+    {
+      GSIArrayEmpty(_pathElements);
+      NSZoneFree([self zone], _pathElements);
+    }
 
   if (_cacheImage != nil)
     RELEASE(_cacheImage);
