@@ -688,7 +688,7 @@ static NSString *_placeholderItem = nil;
   NSRect itemFrame = NSMakeRect (0,0,0,0);
   NSInteger index;
   NSUInteger count = [_items count];
-  CGFloat x = _horizontalMargin;
+  CGFloat x = 0;
   CGFloat y = -_itemSize.height;
 
   if (_maxNumberOfColumns > 0 && _maxNumberOfRows > 0)
@@ -700,7 +700,7 @@ static NSString *_placeholderItem = nil;
     {
       if (index % _numberOfColumns == 0)
 	{
-	  x = _horizontalMargin;
+	  x = 0;
 	  y += _verticalMargin + _itemSize.height;
 	}
 
