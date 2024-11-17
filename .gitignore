@@ -18,6 +18,10 @@ Source/Info-gnustep.plist
 Tests/gui/*/GNUmakefile
 Tools/speech/GSSpeechServer.app
 Tools/speech_recognizer/GSSpeechRecognitionServer.app
+Tools/sound/AudioOutput.nssound
+Tools/sound/Sndfile.nssound
+Tools/video/VideoFile.nsmovie
+Tools/video/VideoOutput.nsmovie
 *~
 *.nssound
 *.nsmovie
