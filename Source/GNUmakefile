@@ -373,7 +373,8 @@ GSCSLinearExpression.m \
 GSCSStrength.m \
 GSCSEditInfo.m \
 GSCSEditVariableManager.m \
-GSCSTableau.m
+GSCSTableau.m \
+GSColorSliderCell.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
