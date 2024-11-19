@@ -37,6 +37,7 @@
 @class NSArray;
 @class NSIndexPath;
 @class NSIndexSet;
+@class NSMutableDictionary;
 
 @class NSCell;
 @class NSEvent;
@@ -100,6 +101,7 @@ APPKIT_EXPORT_CLASS
   NSBrowserColumnResizingType _columnResizing;
 
   BOOL _itemBasedDelegate;
+  NSMutableDictionary *_columnDictionary;
 }
 
 //
