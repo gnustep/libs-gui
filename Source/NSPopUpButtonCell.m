@@ -654,7 +654,6 @@ static NSImage *_pbc_image[5];
       [_menuItem setImage: nil];
     }
 
-  //[super setMenuItem: item];
   ASSIGN(_menuItem, item);
 
   if ([_menuItem image] == nil)
@@ -1321,7 +1320,7 @@ static NSImage *_pbc_image[5];
     }
   else
     {
-      NSInteger flag;
+      NSInteger flag, pullsDown;
       id<NSMenuItem> selectedItem;
       int version = [aDecoder versionForClassName: 
                                   @"NSPopUpButtonCell"];
@@ -1336,8 +1335,7 @@ static NSImage *_pbc_image[5];
       [self setMenu: nil];
       [self setMenu: menu];
       selectedItem = [aDecoder decodeObject];
-      decode_NSInteger(aDecoder, &flag);
-      [self setPullsDown: flag];
+      decode_NSInteger(aDecoder, &pullsDown);
       decode_NSInteger(aDecoder, &flag);
       [self setPreferredEdge: flag];
       decode_NSInteger(aDecoder, &flag);
@@ -1347,6 +1345,7 @@ static NSImage *_pbc_image[5];
       decode_NSInteger(aDecoder, &flag);
       [self setArrowPosition: flag];
       [self setMenuItem: (NSMenuItem *)selectedItem];
+      [self setPullsDown: pullsDown];
 
       if (version < 2)
         {
