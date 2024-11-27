@@ -609,6 +609,7 @@ static NSImage *_pbc_image[5];
 
       if (_pbcFlags.preferredEdge == NSMaxYEdge)
         {
+	  NSLog(@"\tDOWN ARROW!!!!!!");
           return _pbc_image[1];
         }
       else if (_pbcFlags.preferredEdge == NSMaxXEdge)
@@ -1336,16 +1337,17 @@ static NSImage *_pbc_image[5];
       [self setMenu: menu];
       selectedItem = [aDecoder decodeObject];
       decode_NSInteger(aDecoder, &flag);
-      _pbcFlags.pullsDown = flag;
+      [self setPullsDown: flag];
       decode_NSInteger(aDecoder, &flag);
-      _pbcFlags.preferredEdge = flag;
+      [self setPreferredEdge: flag];
       decode_NSInteger(aDecoder, &flag);
-      _pbcFlags.usesItemFromMenu = flag;
+      [self setUsesItemFromMenu: flag];
       decode_NSInteger(aDecoder, &flag);
-      _pbcFlags.altersStateOfSelectedItem = flag;
+      [self setAltersStateOfSelectedItem: flag];
       decode_NSInteger(aDecoder, &flag);
-      _pbcFlags.arrowPosition = flag;
-      
+      [self setArrowPosition: flag];
+      [self setMenuItem: (NSMenuItem *)selectedItem];
+
       if (version < 2)
         {
           int i;
@@ -1371,6 +1373,22 @@ static NSImage *_pbc_image[5];
           [self setArrowPosition: NSPopUpArrowAtCenter];
         }
       [self selectItem: selectedItem];
+
+      NSEnumerator *menuItemEnumerator;
+      NSMenuItem *menuItem;
+
+      // FIXME: This special handling is needed bacause the NSClassSwapper
+      // might have replaced the cell, but the items still refere to it.
+      menuItemEnumerator = [[menu itemArray] objectEnumerator];
+
+      while ((menuItem = [menuItemEnumerator nextObject]) != nil)
+	{
+	  if (sel_isEqual([menuItem action], @selector(_popUpItemAction:))
+	      && ([menuItem target] != self))
+	    {
+	      [menuItem setTarget: self];
+	    }
+	}
     }
 
   return self;
