@@ -607,9 +607,10 @@ static NSImage *_pbc_image[5];
           return nil;
         }
 
+      NSLog(@"Arrow position = %d", [self arrowPosition]);
       if (_pbcFlags.preferredEdge == NSMaxYEdge)
         {
-	  NSLog(@"\tDOWN ARROW!!!!!!");
+	  NSLog(@"\tDOWN ARROW!!!!!! %d", [self arrowPosition]);
           return _pbc_image[1];
         }
       else if (_pbcFlags.preferredEdge == NSMaxXEdge)
@@ -1320,7 +1321,7 @@ static NSImage *_pbc_image[5];
     }
   else
     {
-      NSInteger flag, pullsDown;
+      NSInteger flag;
       id<NSMenuItem> selectedItem;
       int version = [aDecoder versionForClassName: 
                                   @"NSPopUpButtonCell"];
@@ -1335,6 +1336,18 @@ static NSImage *_pbc_image[5];
       [self setMenu: nil];
       [self setMenu: menu];
       selectedItem = [aDecoder decodeObject];
+      decode_NSInteger(aDecoder, &flag);
+      _pbcFlags.pullsDown = flag;
+      decode_NSInteger(aDecoder, &flag);
+      _pbcFlags.preferredEdge = flag;
+      decode_NSInteger(aDecoder, &flag);
+      _pbcFlags.usesItemFromMenu = flag;
+      decode_NSInteger(aDecoder, &flag);
+      _pbcFlags.altersStateOfSelectedItem = flag;
+      decode_NSInteger(aDecoder, &flag);
+      _pbcFlags.arrowPosition = flag;
+      /*
+      selectedItem = [aDecoder decodeObject];
       decode_NSInteger(aDecoder, &pullsDown);
       decode_NSInteger(aDecoder, &flag);
       [self setPreferredEdge: flag];
@@ -1344,8 +1357,16 @@ static NSImage *_pbc_image[5];
       [self setAltersStateOfSelectedItem: flag];
       decode_NSInteger(aDecoder, &flag);
       [self setArrowPosition: flag];
+      */
+      /*
+      if (_pbcFlags.pullsDown)
+	{
+	  [self setPreferredEdge: NSMinYEdge];
+	}
+      */
+      // [self setMenuItem: nil];
       [self setMenuItem: (NSMenuItem *)selectedItem];
-      [self setPullsDown: pullsDown];
+      // [self setPullsDown: pullsDown];
 
       if (version < 2)
         {
