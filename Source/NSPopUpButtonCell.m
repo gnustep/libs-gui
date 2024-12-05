@@ -607,8 +607,10 @@ static NSImage *_pbc_image[5];
           return nil;
         }
 
+      NSLog(@"Arrow position = %d", [self arrowPosition]);
       if (_pbcFlags.preferredEdge == NSMaxYEdge)
         {
+	  NSLog(@"\tDOWN ARROW!!!!!! %d", [self arrowPosition]);
           return _pbc_image[1];
         }
       else if (_pbcFlags.preferredEdge == NSMaxXEdge)
@@ -653,7 +655,6 @@ static NSImage *_pbc_image[5];
       [_menuItem setImage: nil];
     }
 
-  //[super setMenuItem: item];
   ASSIGN(_menuItem, item);
 
   if ([_menuItem image] == nil)
@@ -1345,7 +1346,28 @@ static NSImage *_pbc_image[5];
       _pbcFlags.altersStateOfSelectedItem = flag;
       decode_NSInteger(aDecoder, &flag);
       _pbcFlags.arrowPosition = flag;
-      
+      /*
+      selectedItem = [aDecoder decodeObject];
+      decode_NSInteger(aDecoder, &pullsDown);
+      decode_NSInteger(aDecoder, &flag);
+      [self setPreferredEdge: flag];
+      decode_NSInteger(aDecoder, &flag);
+      [self setUsesItemFromMenu: flag];
+      decode_NSInteger(aDecoder, &flag);
+      [self setAltersStateOfSelectedItem: flag];
+      decode_NSInteger(aDecoder, &flag);
+      [self setArrowPosition: flag];
+      */
+      /*
+      if (_pbcFlags.pullsDown)
+	{
+	  [self setPreferredEdge: NSMinYEdge];
+	}
+      */
+      // [self setMenuItem: nil];
+      [self setMenuItem: (NSMenuItem *)selectedItem];
+      // [self setPullsDown: pullsDown];
+
       if (version < 2)
         {
           int i;
@@ -1371,6 +1393,22 @@ static NSImage *_pbc_image[5];
           [self setArrowPosition: NSPopUpArrowAtCenter];
         }
       [self selectItem: selectedItem];
+
+      NSEnumerator *menuItemEnumerator;
+      NSMenuItem *menuItem;
+
+      // FIXME: This special handling is needed bacause the NSClassSwapper
+      // might have replaced the cell, but the items still refere to it.
+      menuItemEnumerator = [[menu itemArray] objectEnumerator];
+
+      while ((menuItem = [menuItemEnumerator nextObject]) != nil)
+	{
+	  if (sel_isEqual([menuItem action], @selector(_popUpItemAction:))
+	      && ([menuItem target] != self))
+	    {
+	      [menuItem setTarget: self];
+	    }
+	}
     }
 
   return self;
