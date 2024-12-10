@@ -287,14 +287,21 @@ static CGFloat default_miter_limit = 10.0;
 
 - (void) dealloc
 {
-  GSIArrayEmpty(_pathElements);
-  NSZoneFree([self zone], _pathElements);
+  if (_pathElements)
+    {
+      GSIArrayEmpty(_pathElements);
+      NSZoneFree([self zone], _pathElements);
+    }
 
-  if (_cacheImage != nil)
-    RELEASE(_cacheImage);
+  if (_cacheImage)
+    {
+      RELEASE(_cacheImage);
+    }
 
-  if (_dash_pattern != NULL)
-    NSZoneFree([self zone], _dash_pattern);
+  if (_dash_pattern)
+    {
+      NSZoneFree([self zone], _dash_pattern);
+    }
 
   [super dealloc];
 }
@@ -2066,22 +2073,36 @@ static int winding_curve(double_point from, double_point to, double_point c1,
 //
 // NSCopying Protocol
 //
-- (id)copyWithZone:(NSZone *)zone
+- (id) copyWithZone: (NSZone *)zone
 {
-  NSBezierPath *path = (NSBezierPath*)NSCopyObject (self, 0, zone);
+  NSBezierPath	*path = (NSBezierPath*)NSCopyObject(self, 0, zone);
+
+  /* Get the zone actually usd by the copy so we can use it consistently.
+   */
+  zone = [path zone];
 
   if (_cachesBezierPath && _cacheImage)
-      path->_cacheImage = [_cacheImage copy];
+    {
+      // FIXME ... should this retain rather than copy?
+      path->_cacheImage = [_cacheImage copyWithZone: zone];
+    }
+  else
+    {
+      path->_cacheImage = nil;
+    }
 
-  if (_dash_pattern != NULL)
+  if (_dash_pattern)
     {
       CGFloat *pattern = NSZoneMalloc(zone, _dash_count * sizeof(CGFloat));
 
       memcpy(pattern, _dash_pattern, _dash_count * sizeof(CGFloat));
-      _dash_pattern = pattern;
+      path->_dash_pattern = pattern;
     }
 
-  path->_pathElements = GSIArrayCopyWithZone(_pathElements, zone);
+  if (_pathElements)
+    {
+      path->_pathElements = GSIArrayCopyWithZone(_pathElements, zone);
+    }
 
   return path;
 }
