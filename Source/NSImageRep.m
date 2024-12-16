@@ -210,6 +210,10 @@ implement, so we can't do that. */
   Class rep;
   NSData* data;
 
+  // Not worth trying to load an empty file
+  if (nil == filename)
+    return nil;
+
   // Is the file extension already the file type?
   ext = [filename pathExtension];
   if (!ext)
