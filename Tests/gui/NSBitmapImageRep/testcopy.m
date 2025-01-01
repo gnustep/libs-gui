@@ -32,6 +32,9 @@ int main()
   pass([copy1Bitmap bitmapData] != [copy2Bitmap bitmapData],
        "Copied bitmaps have a different image data pointer - could cause image data corruption.");
   
+  DESTROY(copy1Bitmap);
+  DESTROY(copy2Bitmap);
+  DESTROY(origBitmap);
   [arp release];
   return 0;
 }
