@@ -700,6 +700,7 @@ int main(int argc, char **argv)
 		PAUSE
 	}
 
+	DESTROY(p);
 	DESTROY(arp);
 
 	return 0;

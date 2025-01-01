@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 {
   CREATE_AUTORELEASE_POOL(arp);
   NSRect f = NSMakeRect(0,0,100,100);
-  NSView *v = [[NSView alloc] initWithFrame: f];
+  NSView *v = AUTORELEASE([[NSView alloc] initWithFrame: f]);
   int passed = 1;
 
   if (!NSEqualRects([v visibleRect], f))

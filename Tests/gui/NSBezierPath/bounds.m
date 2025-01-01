@@ -161,7 +161,7 @@ int main(int argc, char **argv)
   }
 
 //	printf("bounds=%@\n",NSStringFromRect([p bounds]));
-
+  DESTROY(p);
   DESTROY(arp);
 
   return 0;
