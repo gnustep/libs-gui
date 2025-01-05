@@ -783,6 +783,15 @@ APPKIT_EXPORT_CLASS
  */
 - (NSString*) license;
 
+/**
+ * Returns YES if in dark mode, and NO, if not.  The reasoning behind this
+ * is that some applications may display on the screen in dark mode, but
+ * print with the colors reversed.  This method allows GUI and the backend
+ * to understand when we are using a dark theme and render accordingly when
+ * printing.  The default is NO, as the default theme is not a dark theme.
+ */
+- (BOOL) isDarkMode;
+
 @end
 
 /**
