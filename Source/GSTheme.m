@@ -1341,7 +1341,8 @@ typedef	struct {
 
 - (BOOL) isDarkMode
 {
-  return NO;
+  return [[[self infoDictionary] objectForKey: @"GSThemeDarkMode"]
+	   isEqualToString: @"YES"];
 }
 
 @end
