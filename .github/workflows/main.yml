@@ -33,6 +33,10 @@ env:
     libcurl4-gnutls-dev
     libgmp-dev
     libcairo2-dev
+    libjpeg-dev
+    libtiff-dev
+    libpng-dev
+    libicns-dev
 
   # packages for GCC Objective-C runtime
   APT_PACKAGES_gcc: >-
