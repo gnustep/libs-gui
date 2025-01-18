@@ -44,8 +44,7 @@ install_libobjc2() {
 install_libdispatch() {
     echo "::group::libdispatch"
     cd $DEPS_PATH
-    # will reference upstream after https://github.com/apple/swift-corelibs-libdispatch/pull/534 is merged
-    git clone -q -b system-blocksruntime https://github.com/ngrewe/swift-corelibs-libdispatch.git libdispatch
+    git clone -q -b system-blocksruntime https://github.com/swiftlang/swift-corelibs-libdispatch.gitlibdispatch
     mkdir libdispatch/build
     cd libdispatch/build
     # -Wno-error=void-pointer-to-int-cast to work around build error in queue.c due to -Werror
