@@ -77,10 +77,10 @@ install_gnustep_base() {
 mkdir -p $DEPS_PATH
 
 # Windows MSVC toolchain uses tools-windows-msvc scripts to install non-GNUstep dependencies
-#if [ "$LIBRARY_COMBO" = "ng-gnu-gnu" -a "$IS_WINDOWS_MSVC" != "true" ]; then
-#    install_libobjc2
+if [ "$LIBRARY_COMBO" = "ng-gnu-gnu" -a "$IS_WINDOWS_MSVC" != "true" ]; then
+    install_libobjc2
 #    install_libdispatch
-#fi
+fi
 
 install_gnustep_make
 install_gnustep_base
