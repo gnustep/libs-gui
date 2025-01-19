@@ -3545,7 +3545,7 @@ static BOOL browserUseBezels;
 		{
 		  BOOL leaf = YES;
 		  id val = nil;
-		  NSNumber *leafBool = nil; // [child valueForKeyPath: leafKeyPath];
+		  NSNumber *leafBool = nil;
 
 		  child = [children objectAtIndex: i];
 		  leafBool = [child valueForKeyPath: leafKeyPath];
