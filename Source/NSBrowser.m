@@ -16,7 +16,7 @@
    Date: September 2002
    Author:  Gregory Casamento <greg.casamento@gmail.com>
    Date: July 2024
-   Note: Added support for 10.6+ delegate methods.
+   Note: Added support for 10.6+ delegate methods. Added bindings support
 
    This file is part of the GNUstep GUI Library.
 
@@ -3545,9 +3545,10 @@ static BOOL browserUseBezels;
 		{
 		  BOOL leaf = YES;
 		  id val = nil;
-		  NSNumber *leafBool = [child valueForKeyPath: leafKeyPath];
+		  NSNumber *leafBool = nil; // [child valueForKeyPath: leafKeyPath];
 
 		  child = [children objectAtIndex: i];
+		  leafBool = [child valueForKeyPath: leafKeyPath];
 		  leaf = [leafBool boolValue];
 
 		  // If a content values binding is present, it uses that key path,
