@@ -286,14 +286,6 @@
     }
 }
 
-- (void) _updateFieldEditor: (NSText*)textObject
-{
-  [super _updateFieldEditor: textObject];
-  [textObject setDrawsBackground: _textfieldcell_draws_background];
-  [textObject setBackgroundColor: _background_color];
-  [textObject setTextColor: _text_color];
-}
-
 - (BOOL) isOpaque
 {
   if (_textfieldcell_draws_background == NO 
