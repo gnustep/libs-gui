@@ -8,7 +8,7 @@
    Date: 1996
    Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: November 1999
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -23,10 +23,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #import "config.h"
 #import <Foundation/NSNotification.h>
@@ -36,10 +36,13 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSText.h"
+
+#import "GSBindingHelpers.h"
 
 @implementation NSTextFieldCell
 
@@ -47,6 +50,7 @@
 {
   if (self == [NSTextFieldCell class])
     {
+      [self exposeBinding: NSValueBinding];
       [self setVersion: 2];
     }
 }
@@ -87,7 +91,7 @@
 }
 
 //
-// Modifying Graphic Attributes 
+// Modifying Graphic Attributes
 //
 - (void) setBackgroundColor: (NSColor *)aColor
 {
@@ -199,25 +203,25 @@
   return textObject;
 }
 
-- (void) _drawBackgroundWithFrame: (NSRect)cellFrame 
-                           inView: (NSView*)controlView
+- (void) _drawBackgroundWithFrame: (NSRect)cellFrame
+			   inView: (NSView*)controlView
 {
   if (_textfieldcell_draws_background)
     {
       if ([self isEnabled])
-        {
-          [_background_color set];
-        }
+	{
+	  [_background_color set];
+	}
       else
-        {
-          [[NSColor controlBackgroundColor] set];
-        }
+	{
+	  [[NSColor controlBackgroundColor] set];
+	}
       NSRectFill([self drawingRectForBounds: cellFrame]);
-    }     
+    }
 }
 
-- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
-                                    inView: (NSView*)controlView
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
+				    inView: (NSView*)controlView
 {
   // FIXME: Should use the bezel style if set.
   [super _drawBorderAndBackgroundWithFrame: cellFrame inView: controlView];
@@ -233,16 +237,16 @@
       NSRect titleRect;
 
       /* Make sure we are a text cell; titleRect might return an incorrect
-         rectangle otherwise. Note that the type could be different if the
-         user has set an image on us, which we just ignore (OS X does so as
-         well). */
+	 rectangle otherwise. Note that the type could be different if the
+	 user has set an image on us, which we just ignore (OS X does so as
+	 well). */
       _cell.type = NSTextCellType;
       titleRect = [self titleRectForBounds: cellFrame];
       [[self _drawAttributedString] drawInRect: titleRect];
     }
 }
 
-/* 
+/*
    Attributed string that will be displayed.
  */
 - (NSAttributedString*) _drawAttributedString
@@ -254,31 +258,31 @@
     {
       attrStr = [self placeholderAttributedString];
       if ((attrStr == nil) || ([[attrStr string] length] == 0))
-        {
-          NSString *string;
-          NSDictionary *attributes;
-          NSMutableDictionary *newAttribs;
-      
-          string = [self placeholderString];
-          if (string == nil)
-            {
-              return nil;
-            }
+	{
+	  NSString *string;
+	  NSDictionary *attributes;
+	  NSMutableDictionary *newAttribs;
 
-          attributes = [self _nonAutoreleasedTypingAttributes];
-          newAttribs = [NSMutableDictionary 
-                           dictionaryWithDictionary: attributes];
-          [newAttribs setObject: [NSColor disabledControlTextColor]
-                      forKey: NSForegroundColorAttributeName];
-          
-          return AUTORELEASE([[NSAttributedString alloc]
-                                 initWithString: string
-                                 attributes: newAttribs]);
-        }
+	  string = [self placeholderString];
+	  if (string == nil)
+	    {
+	      return nil;
+	    }
+
+	  attributes = [self _nonAutoreleasedTypingAttributes];
+	  newAttribs = [NSMutableDictionary
+			   dictionaryWithDictionary: attributes];
+	  [newAttribs setObject: [NSColor disabledControlTextColor]
+		      forKey: NSForegroundColorAttributeName];
+
+	  return AUTORELEASE([[NSAttributedString alloc]
+				 initWithString: string
+				 attributes: newAttribs]);
+	}
       else
-        {
-          return attrStr;
-        }
+	{
+	  return attrStr;
+	}
     }
   else
     {
@@ -288,12 +292,12 @@
 
 - (BOOL) isOpaque
 {
-  if (_textfieldcell_draws_background == NO 
-      || _background_color == nil 
+  if (_textfieldcell_draws_background == NO
+      || _background_color == nil
       || [_background_color alphaComponent] < 1.0)
     return NO;
   else
-    return YES;   
+    return YES;
 }
 
 //
@@ -311,9 +315,9 @@
       [aCoder encodeObject: [self textColor] forKey: @"NSTextColor"];
       [aCoder encodeBool: [self drawsBackground] forKey: @"NSDrawsBackground"];
       if ([self isBezeled])
-        {
-          [aCoder encodeInt: [self bezelStyle] forKey: @"NSTextBezelStyle"];
-        }
+	{
+	  [aCoder encodeInt: [self bezelStyle] forKey: @"NSTextBezelStyle"];
+	}
     }
   else
     {
@@ -329,53 +333,53 @@
   self = [super initWithCoder: aDecoder];
   if (self == nil)
     return self;
- 
+
   if ([aDecoder allowsKeyedCoding])
     {
       if ([aDecoder containsValueForKey: @"NSBackgroundColor"])
-        {
-          [self setBackgroundColor: [aDecoder decodeObjectForKey: 
-                                                  @"NSBackgroundColor"]];
-        }
+	{
+	  [self setBackgroundColor: [aDecoder decodeObjectForKey:
+						  @"NSBackgroundColor"]];
+	}
       if ([aDecoder containsValueForKey: @"NSTextColor"])
-        {
-          [self setTextColor: [aDecoder decodeObjectForKey: @"NSTextColor"]];
-        }
+	{
+	  [self setTextColor: [aDecoder decodeObjectForKey: @"NSTextColor"]];
+	}
       if ([aDecoder containsValueForKey: @"NSDrawsBackground"])
-        {
-          [self setDrawsBackground: [aDecoder decodeBoolForKey: 
-                                                  @"NSDrawsBackground"]];
-        }
+	{
+	  [self setDrawsBackground: [aDecoder decodeBoolForKey:
+						  @"NSDrawsBackground"]];
+	}
       if ([aDecoder containsValueForKey: @"NSTextBezelStyle"])
-        {
-          [self setBezelStyle: [aDecoder decodeIntForKey: 
-                                             @"NSTextBezelStyle"]];
-        }
+	{
+	  [self setBezelStyle: [aDecoder decodeIntForKey:
+					     @"NSTextBezelStyle"]];
+	}
       if ([aDecoder containsValueForKey: @"NSPlaceholderString"])
-        {
-          [self setPlaceholderString: [aDecoder decodeObjectForKey: 
-                                             @"NSPlaceholderString"]];
-        }
+	{
+	  [self setPlaceholderString: [aDecoder decodeObjectForKey:
+					     @"NSPlaceholderString"]];
+	}
     }
   else
     {
       BOOL tmp;
 
       if ([aDecoder versionForClassName:@"NSTextFieldCell"] < 2)
-        {
-          /* Replace the old default _action_mask with the new default one
-             if it's set. There isn't really a way to modify this value
-             on an NSTextFieldCell encoded in a .gorm file. The old default value
-             causes problems with newer NSTableViews which uses this to discern 
-             whether it should trackMouse:inRect:ofView:untilMouseUp: or not.
-             This also disables the action from being sent on an uneditable and
-             unselectable text fields.
-          */
-          if (_action_mask == NSLeftMouseUpMask)
-            {
-              _action_mask = NSKeyUpMask | NSKeyDownMask;
-            }
-        }
+	{
+	  /* Replace the old default _action_mask with the new default one
+	     if it's set. There isn't really a way to modify this value
+	     on an NSTextFieldCell encoded in a .gorm file. The old default value
+	     causes problems with newer NSTableViews which uses this to discern
+	     whether it should trackMouse:inRect:ofView:untilMouseUp: or not.
+	     This also disables the action from being sent on an uneditable and
+	     unselectable text fields.
+	  */
+	  if (_action_mask == NSLeftMouseUpMask)
+	    {
+	      _action_mask = NSKeyUpMask | NSKeyDownMask;
+	    }
+	}
 
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_background_color];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_text_color];
