@@ -64,25 +64,25 @@ APPKIT_EXPORT_CLASS
   // Attributes
   @private
   // link info.
-  NSDataLinkNumber      linkNumber;
-  NSDataLinkDisposition disposition;
-  NSDataLinkUpdateMode  updateMode;
+  NSDataLinkNumber      _linkNumber;
+  NSDataLinkDisposition _disposition;
+  NSDataLinkUpdateMode  _updateMode;
 
   // info about the source.
-  NSDate                *lastUpdateTime;
-  NSString              *sourceApplicationName;
-  NSString              *sourceFilename;
-  NSSelection           *sourceSelection;
-  id                    sourceManager;
+  NSDate                *_lastUpdateTime;
+  NSString              *_sourceApplicationName;
+  NSString              *_sourceFilename;
+  NSSelection           *_sourceSelection;
+  id                    _sourceManager;
 
   // info about the destination
-  NSString              *destinationApplicationName;
-  NSString              *destinationFilename;
-  NSSelection           *destinationSelection;
-  id                    destinationManager;
+  NSString              *_destinationApplicationName;
+  NSString              *_destinationFilename;
+  NSSelection           *_destinationSelection;
+  id                    _destinationManager;
   
   // types.
-  NSArray               *types;
+  NSArray               *_types;
 
   // other flags
   struct __linkFlags {
