@@ -590,6 +590,26 @@ AC_SUBST(RECOGNIZER_BASE_CFLAGS)
 AC_SUBST(RECOGNIZER_ENGINE_CLASS)
 
 #--------------------------------------------------------------------
+# NSMovie
+#--------------------------------------------------------------------
+AC_ARG_ENABLE(video, 
+  [  --disable-video          Disable video],,
+  enable_video=yes)
+# Initialize to nothing...
+BUILD_VIDEO=
+
+# Check for the headers...
+AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
+AC_CHECK_HEADERS(libavformat/avformat.h, have_format=yes, have_format=no)
+AC_CHECK_HEADERS(SDL2/SDL.h, have_sdl=yes, have_sdl=no)
+
+# Only if we have both and enabled, then build video
+if test $have_codec = yes -a $have_format -a $have_sdl -a $enable_video = yes; then
+   BUILD_VIDEO="video"
+fi
+AC_SUBST(BUILD_VIDEO)
+
+#--------------------------------------------------------------------
 # Find CUPS
 #--------------------------------------------------------------------
 GSCUPS_CFLAGS=
