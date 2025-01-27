@@ -51,21 +51,6 @@
   [super dealloc];
 }
 
-- (BOOL) isEqual: (id)anObject
-{
-  if (anObject == self)
-    {
-      return YES;
-    }
-  if (anObject == nil || [anObject isKindOfClass: [NSTextList class]] == NO)
-    {
-      return NO;
-    }
-
-  return ([anObject listOptions] == _listOptions) 
-    && [_markerFormat isEqualToString: [anObject markerFormat]];
-}
-
 - (unsigned int) listOptions
 {
   return _listOptions;
