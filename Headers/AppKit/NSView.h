@@ -157,7 +157,7 @@ PACKAGE_SCOPE
   void *_previousKeyView;
   CGFloat _alphaValue;
 
-@public
+PACKAGE_SCOPE
   /*
    * Flags for internal use by NSView and it's subclasses.
    */
@@ -176,6 +176,7 @@ PACKAGE_SCOPE
                                         /* backing flush when drawn     */
   } _rFlags;
 
+@protected
   BOOL _is_rotated_from_base;
   BOOL _is_rotated_or_scaled_from_base;
   BOOL _post_frame_changes;
@@ -199,6 +200,7 @@ PACKAGE_SCOPE
   NSShadow *_shadow;
   NSAppearance* _appearance;
   NSUserInterfaceItemIdentifier _identifier;
+
 }
 
 /*
