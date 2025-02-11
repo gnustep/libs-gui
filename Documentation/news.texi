@@ -26,7 +26,7 @@ Plus the usual bunch of bug fixes.
 @item Make some ivars in NSView protected instead of package scoped.
 @item Fix CI pipeline.
 @item Revert _updateFieldEditor: on NSTextFieldCell.
-@item GSTheme bug fix by Tom Sheffler <tom.sheffler@gmail.com>.
+@item GSTheme bug fix by Tom Sheffler <tom.sheffler@@gmail.com>.
 @item Fix memory leaks in test code.
 @item Don't load nil filename in NSImageRep.
 @item Prevent flickering in NSClipView. 
