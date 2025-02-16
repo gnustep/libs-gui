@@ -1,11 +1,10 @@
-#
-#  Makefile for TextConverters bundles
+#  GNUmakefile.postamble
 #
 #  Copyright (C) 2001 Free Software Foundation, Inc.
 #
-#  Author: Adam Fedor <fedor@gnu.org>
+#  Author: Philippe C.D. Robert <prh@3dkit.org>
 #
-#  This file is part of the GNUstep GUI Library.
+#  This file is part of GNUstep
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -23,11 +22,10 @@
 #  Free Software Foundation, 51 Franklin Street, Fifth Floor, 
 #  Boston, MA 02110-1301, USA.
 
-PACKAGE_NAME = gnustep-gui
-include $(GNUSTEP_MAKEFILES)/common.make
-#
-# The list of subproject directories
-#
-SUBPROJECTS = RTF DOCX
+BISON_FLAGS = -p GSRTF --output=rtfGrammar.tab.m --defines=rtfGrammar.tab.h
+BISON = BISON_SIMPLE=bison.simple bison
 
-include $(GNUSTEP_MAKEFILES)/aggregate.make
+# Rule not enabled because not every system has bison installed...
+# FIXME add configure check for bison?
+#rtfGrammar.tab.m: rtfGrammar.y
+#	$(BISON) $(BISON_FLAGS) $<

@@ -1,12 +1,11 @@
+#   GNUmakefile
 #
-#  Makefile for TextConverters bundles
+#   Copyright (C) 2001 Free Software Foundation, Inc.
 #
-#  Copyright (C) 2001 Free Software Foundation, Inc.
+#   Author: Adam Fedor <fedor@gnu.org>
 #
-#  Author: Adam Fedor <fedor@gnu.org>
-#
-#  This file is part of the GNUstep GUI Library.
-#
+#   This file is part of GNUstep 
+#   
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -25,9 +24,24 @@
 
 PACKAGE_NAME = gnustep-gui
 include $(GNUSTEP_MAKEFILES)/common.make
-#
-# The list of subproject directories
-#
-SUBPROJECTS = RTF DOCX
 
-include $(GNUSTEP_MAKEFILES)/aggregate.make
+BUNDLE_NAME 		= DOCXConverter
+BUNDLE_INSTALL_DIR	=$(GNUSTEP_BUNDLES)/TextConverters
+
+DOCXConverter_OBJC_FILES = DOCXConsumer.m DOCXProducer.m
+
+DOCXConverter_PRINCIPAL_CLASS = DOCXConsumer
+
+ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+DOCXConverter_BUNDLE_LIBS += -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
+endif
+ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+DOCXConverter_BUNDLE_LIBS += -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
+endif
+
+-include GNUmakefile.preamble
+
+include $(GNUSTEP_MAKEFILES)/bundle.make
+
+-include GNUmakefile.postamble
+
