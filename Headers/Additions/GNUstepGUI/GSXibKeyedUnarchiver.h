@@ -48,6 +48,8 @@ APPKIT_EXPORT_CLASS
 
 + (BOOL) checkXib5: (NSData *)data;
 
++ (BOOL) checkStoryboard: (NSData *)data;
+
 + (NSKeyedUnarchiver *) unarchiverForReadingWithData: (NSData *)data;
 
 - (void) _initCommon;
