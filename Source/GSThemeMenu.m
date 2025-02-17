@@ -418,5 +418,11 @@
   [[menu menuRepresentation] update];
   [menu sizeToFit];
 }
+
+- (BOOL) proposedVisibility: (BOOL)visible
+	 forMenu: (NSMenu *) menu
+{
+  return visible;
+}
 @end
 

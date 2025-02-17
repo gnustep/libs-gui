@@ -1752,7 +1752,19 @@
         }
       if ([aDecoder containsValueForKey: @"NSAlternateContents"])
         {
-          [self setAlternateTitle: [aDecoder decodeObjectForKey: @"NSAlternateContents"]];
+	  id alternateContents = [aDecoder decodeObjectForKey: @"NSAlternateContents"];
+          if ([alternateContents isKindOfClass:[NSString class]]) 
+	    {
+              [self setAlternateTitle:alternateContents];
+	    }
+          else if ([alternateContents isKindOfClass:[NSImage class]]) 
+	    {
+              [self setAlternateImage:alternateContents];
+	    }
+          else 
+	    {
+	      NSLog(@"Invalid class for NSAlternateContents: %@", [alternateContents class]);
+            }
         }
       if ([aDecoder containsValueForKey: @"NSButtonFlags"])
         {

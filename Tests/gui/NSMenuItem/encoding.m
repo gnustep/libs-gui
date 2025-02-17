@@ -10,7 +10,7 @@ int main()
   START_SET("NSMenuItem key equivalent mask")
 
   NSString		*mask = @"NSKeyEquivModMask";
-  NSMenuItem		*item = [[NSMenuItem alloc] init];
+  NSMenuItem		*item = AUTORELEASE([[NSMenuItem alloc] init]);
   NSMutableData		*data = [NSMutableData data];
   NSNumber		*encodedKeyMask;
   NSError		*error = nil;
@@ -23,7 +23,8 @@ int main()
 
   item.keyEquivalentModifierMask = NSShiftKeyMask;
 
-  archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData: data];
+  archiver = AUTORELEASE(
+    [[NSKeyedArchiver alloc] initForWritingWithMutableData: data]);
 
   [archiver encodeRootObject: item];
   [archiver finishEncoding];

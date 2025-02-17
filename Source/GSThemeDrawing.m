@@ -44,6 +44,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSImageView.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSMenuItemCell.h"
 #import "AppKit/NSOutlineView.h"
@@ -70,6 +71,7 @@
 
 #import "GNUstepGUI/GSToolbarView.h"
 #import "GNUstepGUI/GSTitleView.h"
+#import "GSBindingHelpers.h"
 
 /* a border width of 5 gives a reasonable compromise between Cocoa metrics and looking good */
 /* 7.0 gives us the NeXT Look (which is 8 pix wide including the shadow) */
@@ -3284,7 +3286,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     {
       endingRow = numberOfRows - 1;
     }
-  //  NSLog(@"drawRect : %d-%d", startingRow, endingRow);
+  // NSLog(@"drawRect : %ld-%ld", startingRow, endingRow);
   {
     SEL sel = @selector(drawRow:clipRect:);
     void (*imp)(id, SEL, NSInteger, NSRect);
@@ -3317,9 +3319,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
     if (selectionColor == nil)
       {
-	selectionColor = [NSColor colorWithCalibratedRed: 0.86
-						   green: 0.92
-						    blue: 0.99
+	selectionColor = [NSColor colorWithCalibratedRed: 1.0
+						   green: 1.0
+						    blue: 1.0
 						   alpha: 1.0];
       }
     [selectionColor set];
@@ -3408,6 +3410,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     {
       const BOOL columnSelected = [tableView isColumnSelected: i];
       const BOOL cellSelected = (rowSelected || columnSelected);
+
       tb = [tableColumns objectAtIndex: i];
       cell = [tb dataCellForRow: rowIndex];
       [tableView _willDisplayCell: cell
@@ -3529,13 +3532,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSInteger endingColumn;
   NSRect drawingRect;
   NSInteger i;
-  id dataSource = [outlineView dataSource];
   NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
-
-  if (dataSource == nil)
-    {
-      return;
-    }
 
   /* Using columnAtPoint: here would make it called twice per row per drawn
      rect - so we avoid it and do it natively */
@@ -3566,9 +3563,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
         }
       else
         {
-          [cell setObjectValue: [dataSource outlineView: outlineView
-					    objectValueForTableColumn: tb
-						 byItem: item]];
+	  id value = [outlineView _objectValueForTableColumn: tb
+							 row: rowIndex];
+	  [cell setObjectValue: value];
         }
 
       drawingRect = [outlineView frameOfCellAtColumn: i

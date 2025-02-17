@@ -54,16 +54,22 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSOutlineView.h"
 #import "AppKit/NSScroller.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderView.h"
 #import "AppKit/NSText.h"
 #import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSTreeController.h"
+#import "AppKit/NSTreeNode.h"
 #import "AppKit/NSWindow.h"
 
 #import "GNUstepGUI/GSTheme.h"
+#import "GSBindingHelpers.h"
+#import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
+
 #include <math.h>
 
 static NSMapTableKeyCallBacks keyCallBacks;
@@ -143,6 +149,24 @@ static NSImage *unexpandable  = nil;
 		 clipRect: (NSRect)clipRect;
 @end
 
+@interface NSTableColumn (Private)
+- (void) _applyBindingsToCell: (NSCell *)cell
+			atRow: (NSInteger)index;
+- (NSString *) _keyPathForValueBinding;
+@end
+
+@interface NSTreeNode (Private_NSOutlineView)
+- (void) _setParentNode: (NSTreeNode*)parentNode;
+@end
+
+@implementation NSTreeNode (Private_NSOutlineView)
+
+- (void) _setParentNode: (NSTreeNode*)parentNode
+{
+  _parentNode = parentNode;
+}
+
+@end
 @implementation NSOutlineView
 
 // Initialize the class when it is loaded
@@ -170,6 +194,12 @@ static NSImage *unexpandable  = nil;
       unexpandable = [[NSImage alloc] initWithSize: [expanded size]];
 #endif
       autoExpanded = [NSMutableSet new];
+
+      // Bindings..
+      [self exposeBinding: NSContentBinding];
+      [self exposeBinding: NSContentArrayBinding];
+      [self exposeBinding: NSSelectionIndexesBinding];
+      [self exposeBinding: NSSortDescriptorsBinding];
     }
 }
 
@@ -440,11 +470,57 @@ static NSImage *unexpandable  = nil;
  */
 - (BOOL) isExpandable: (id)item
 {
-  if (item == nil)
+  BOOL result = NO;
+  GSKeyValueBinding *theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+						      forObject: self];
+  if (theBinding != nil)
     {
-      return NO;
+      BOOL leaf = YES;
+      id observedObject = [theBinding observedObject];
+      NSTreeController *tc = (NSTreeController *)observedObject;
+      NSString *leafKeyPath = [tc leafKeyPathForNode: item];
+
+      if (leafKeyPath == nil)
+	{
+	  NSString *countKeyPath = [tc countKeyPathForNode: item];
+
+	  if (countKeyPath == nil)
+	    {
+	      NSString *childrenKeyPath = [tc childrenKeyPathForNode: item];
+
+	      if (childrenKeyPath == nil)
+		{
+		  result = NO;
+		}
+	      else
+		{
+		  id children = [item valueForKeyPath: childrenKeyPath];
+
+		  leaf = ([children count] > 0);
+		}
+	    }
+	  else
+	    {
+	      NSNumber *countValue = [item valueForKeyPath: countKeyPath];
+
+	      leaf = ([countValue integerValue] > 0);
+	    }
+	}
+      else
+	{
+	  NSNumber *leafValue = [item valueForKeyPath: leafKeyPath];
+
+	  leaf = [leafValue boolValue];
+	}
+
+      result = !leaf; // if item is a leaf, it's not expandable...
     }
-  return [_dataSource outlineView: self isItemExpandable: item];
+  else if (item != nil)
+    {
+      result = [_dataSource outlineView: self isItemExpandable: item];
+    }
+
+  return result;
 }
 
 /**
@@ -700,21 +776,34 @@ static NSImage *unexpandable  = nil;
  */
 - (void) setDataSource: (id)anObject
 {
+  GSKeyValueBinding *theBinding;
+
 #define CHECK_REQUIRED_METHOD(selector_name) \
   if (anObject && ![anObject respondsToSelector: @selector(selector_name)]) \
     [NSException raise: NSInternalInconsistencyException \
 		 format: @"data source does not respond to %@", @#selector_name]
 
-  CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
-  CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
-  CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				   forObject: self];
+  if (theBinding == nil)
+    {
+      CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
+      CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
+      CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
 
-  // This method is @optional in NSOutlineViewDataSource as of macOS10.0
-  // CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
+      // This method is @optional in NSOutlineViewDataSource as of macOS10.0
+      // CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
 
-  // Is the data source editable?
-  _dataSource_editable = [anObject respondsToSelector:
-    @selector(outlineView:setObjectValue:forTableColumn:byItem:)];
+      // Is the data source editable?
+      _dataSource_editable = [anObject respondsToSelector:
+				    @selector(outlineView:setObjectValue:forTableColumn:byItem:)];
+    }
+  else
+    {
+      /* Based on testing on macOS, this should default to YES if there is a binding...
+       */
+      _dataSource_editable = YES;
+    }
 
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
@@ -956,6 +1045,16 @@ static NSImage *unexpandable  = nil;
  */
 - (void) drawRow: (NSInteger)rowIndex clipRect: (NSRect)aRect
 {
+  GSKeyValueBinding *theBinding = nil;
+
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				   forObject: self];
+
+  if (_dataSource == nil && theBinding == nil)
+    {
+      return;
+    }
+
   if (_viewBased)
     {
       [self _drawCellViewRow: rowIndex
@@ -1642,6 +1741,85 @@ Also returns the child index relative to this parent. */
 @end /* implementation of NSOutlineView */
 
 @implementation NSOutlineView (NotificationRequestMethods)
+
+- (NSIndexPath *) _findIndexPathForItem: (id)item
+			     parentItem: (id)pItem
+{
+  id parentItem = (pItem == nil) ? (id)[NSNull null] : (id)pItem;
+  NSArray *children = NSMapGet(_itemDict, parentItem);
+  NSInteger childCount = [children count];
+  NSInteger index = 0;
+  
+  for (index = 0; index < childCount; index++)
+    {
+      id childItem = [children objectAtIndex: index];
+
+      if (childItem == item)
+	{
+	  return [NSIndexPath indexPathWithIndex: index];
+	}
+      else
+	{
+	  NSIndexPath *foundPath = [self _findIndexPathForItem: item
+						    parentItem: childItem];
+
+	  if (foundPath != nil)
+	    {
+	      NSIndexPath *newPath = [NSIndexPath indexPathWithIndex: index];
+	      NSUInteger length = [foundPath length];
+	      NSUInteger indexes[length + 1];
+	      NSUInteger i = 0;
+
+	      [foundPath getIndexes: indexes];
+
+	      // Iterate over existing indexes...
+	      for (i = 0; i < length; i++)
+		{
+		  newPath = [newPath indexPathByAddingIndex: indexes[i]];
+		}
+
+	      return newPath;
+	    }
+	}
+    }
+
+  return nil;
+}
+
+- (NSIndexPath *) _indexPathForItem: (id)item
+{
+  return [self _findIndexPathForItem: item
+			  parentItem: nil];
+}
+
+- (NSArray *) _indexPathsFromSelectedRows
+{
+  NSUInteger index = [_selectedRows firstIndex];
+  NSMutableArray *result = [[NSMutableArray alloc] init];
+  
+  // Regenerate the array...
+  while (index != NSNotFound)
+    {
+      id item = [_items objectAtIndex: index];
+      NSIndexPath *path = nil;
+
+      if ([item respondsToSelector: @selector(indexPath)])
+	{
+	  path = [item indexPath];
+	}
+      else
+	{
+	  path = [self _indexPathForItem: item];
+	}
+
+      [result addObject: path];
+
+      index = [_selectedRows indexGreaterThanIndex: index];
+    }
+  
+  return result;
+}
+
 /*
  * (NotificationRequestMethods)
  */
@@ -1651,12 +1829,38 @@ Also returns the child index relative to this parent. */
 	NSOutlineViewSelectionIsChangingNotification
       object: self];
 }
+
 - (void) _postSelectionDidChangeNotification
 {
-  [nc postNotificationName:
-	NSOutlineViewSelectionDidChangeNotification
-      object: self];
+  NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
+  GSKeyValueBinding *theBinding;
+
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+				   forObject: tb];
+
+  // If there is a binding, send the indexes back
+  if (theBinding != nil)
+    {
+      id observedObject = [theBinding observedObject];
+
+      // Set the selection indexes on the controller...
+      theBinding = [GSKeyValueBinding getBinding: NSSelectionIndexPathsBinding
+				       forObject: observedObject];
+      if (theBinding != nil)
+	{
+	  NSArray *paths = [self _indexPathsFromSelectedRows];
+	  if ([observedObject respondsToSelector: @selector(setSelectionIndexPaths:)])
+	    {
+	      [observedObject setSelectionIndexPaths: paths]; 
+	    }
+	  [theBinding reverseSetValue: paths];
+	}
+    }
+
+  [nc postNotificationName: NSOutlineViewSelectionDidChangeNotification
+		    object: self];
 }
+
 - (void) _postColumnDidMoveNotificationWithOldIndex: (NSInteger) oldIndex
 					   newIndex: (NSInteger) newIndex
 {
@@ -1766,10 +1970,13 @@ Also returns the child index relative to this parent. */
   return YES;
 }
 
-- (void) _willDisplayCell: (NSCell*)cell
+- (void) _willDisplayCell: (NSCell *)cell
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (NSInteger)index
 {
+  [tb _applyBindingsToCell: cell
+		     atRow: index];
+
   if (_del_responds)
     {
       id item = [self itemAtRow: index];
@@ -1814,15 +2021,24 @@ Also returns the child index relative to this parent. */
 			      row: (NSInteger) index
 {
   id result = nil;
+  NSString *keyPath = [tb _keyPathForValueBinding];
 
-  if ([_dataSource respondsToSelector:
-    @selector(outlineView:objectValueForTableColumn:byItem:)])
+  if (keyPath != nil)
     {
-      id item = [self itemAtRow: index];
+      id theItem = [_items objectAtIndex: index];
+      result = [theItem valueForKeyPath: keyPath];
+    }
+  else
+    {
+      if ([_dataSource respondsToSelector:
+		    @selector(outlineView:objectValueForTableColumn:byItem:)])
+	{
+	  id item = [self itemAtRow: index];
 
-      result = [_dataSource outlineView: self
-			    objectValueForTableColumn: tb
-			    byItem: item];
+	  result = [_dataSource outlineView: self
+				objectValueForTableColumn: tb
+				     byItem: item];
+	}
     }
 
   return result;
@@ -1832,15 +2048,30 @@ Also returns the child index relative to this parent. */
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (NSInteger) index
 {
-  if ([_dataSource respondsToSelector:
-    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
-    {
-      id item = [self itemAtRow: index];
+  NSString *keyPath = [tb _keyPathForValueBinding];
 
-      [_dataSource outlineView: self
-		   setObjectValue: value
-		   forTableColumn: tb
-		   byItem: item];
+  // If we have content binding the data source is used only
+  // like a delegate
+  if (keyPath != nil)
+    {
+      id theItem = [_items objectAtIndex: index];
+
+      // Set the value on the keyPath.
+      [theItem setValue: value
+	     forKeyPath: keyPath];
+    }
+  else
+    {
+      if ([_dataSource respondsToSelector:
+		    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
+	{
+	  id item = [self itemAtRow: index];
+
+	  [_dataSource outlineView: self
+		    setObjectValue: value
+		    forTableColumn: tb
+			    byItem: item];
+	}
     }
 }
 
@@ -1953,43 +2184,132 @@ Also returns the child index relative to this parent. */
 - (void) _loadDictionaryStartingWith: (id) startitem
 			     atLevel: (NSInteger) level
 {
+  GSKeyValueBinding *theBinding = nil;
   NSInteger num = 0;
   NSInteger i = 0;
   id sitem = (startitem == nil) ? (id)[NSNull null] : (id)startitem;
   NSMutableArray *anarray = nil;
 
-  /* Check to see if item is expandable and expanded before getting the number
-   * of items. For macos compatibility the topmost item (startitem==nil)
-   * is always considered expandable and must not be checked.
-   * We must load the item only if expanded, otherwise an outline view is not
-   * usable with a big tree structure. For example, an outline view to browse
-   * file system would try to traverse every file/directory on -reloadData.
-   */
-  if ((startitem == nil
-    || [_dataSource outlineView: self isItemExpandable: startitem])
-    && [self isItemExpanded: startitem])
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				   forObject: self];
+  if (theBinding != nil)
     {
-      num = [_dataSource outlineView: self
-			 numberOfChildrenOfItem: startitem];
+      id observedObject = [theBinding observedObject];
+      NSArray *children = nil;
+
+      /* If there is a binding present, then allow it to be editable
+       * by default as editability of cells is determined in the
+       * NSTableColumn class based on the binding there for the
+       * editable property as defined in IB.
+       */
+      _dataSource_editable = YES;
+
+      /* Implement logic to build the internal data structure here using
+       * bindings...
+       */
+      if ([observedObject isKindOfClass: [NSTreeController class]])
+	{
+	  NSTreeController *tc = (NSTreeController *)observedObject;
+
+	  if (startitem == nil)
+	    {
+	      NSTreeNode *node = (NSTreeNode *)[theBinding destinationValue];
+
+	      /* Per the documentation 10.4/5+ uses NSTreeNode as the return value for
+	       * the contents of this tree node consists of a dictionary with a single
+	       * key of "children".   This is per the tests for this at
+	       * https://github.com/gcasa/NSTreeController_test.  Specifically it returns
+	       * _NSControllerTreeProxy.  The equivalent of that class in GNUstep is
+	       * GSControllerTreeProxy.
+	       */
+	      children = [node mutableChildNodes];
+	      num = [children count];
+	    }
+	  else
+	    {
+	      /* Per the documentation in NSTreeController, we can determine everything
+	       * from whether there are children present on a given node.  See
+	       * the documentation for NSTreeController for more info.
+	       */
+	      if ([self isExpandable: startitem]
+		  && [self isItemExpanded: startitem])
+		{
+		  NSString *childrenKeyPath = [tc childrenKeyPathForNode: startitem];
+
+		  if (childrenKeyPath != nil)
+		    {
+		      NSString *countKeyPath = [tc countKeyPathForNode: startitem];
+
+		      children = [sitem valueForKeyPath: childrenKeyPath];
+		      if (countKeyPath == nil)
+			{
+			  num = [children count]; // get the count directly...
+			}
+		      else
+			{
+			  NSNumber *countValue = [sitem valueForKeyPath: countKeyPath];
+			  num = [countValue integerValue];
+			}
+		    }
+		}
+	    }
+
+	  if (num > 0)
+	    {
+	      anarray = [NSMutableArray arrayWithCapacity: num];
+	      NSMapInsert(_itemDict, sitem, anarray);
+	    }
+
+	  NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
+
+	  for (i = 0; i < num; i++)
+	    {
+	      id anitem = [children objectAtIndex: i];
+
+	      if ([anitem respondsToSelector: @selector(_setParentNode:)])
+		{
+		  [anitem _setParentNode: startitem];
+		}
+	      [anarray addObject: anitem];
+	      [self _loadDictionaryStartingWith: anitem
+					atLevel: level + 1];
+	    }
+	}
     }
-
-  if (num > 0)
+  else
     {
-      anarray = [NSMutableArray array];
-      NSMapInsert(_itemDict, sitem, anarray);
-    }
+      /* Check to see if item is expandable and expanded before getting the number
+       * of items. For macos compatibility the topmost item (startitem==nil)
+       * is always considered expandable and must not be checked.
+       * We must load the item only if expanded, otherwise an outline view is not
+       * usable with a big tree structure. For example, an outline view to browse
+       * file system would try to traverse every file/directory on -reloadData.
+       */
+      if (startitem == nil
+	  || ([self isExpandable: startitem]
+	      && [self isItemExpanded: startitem]))
+	{
+	  num = [_dataSource outlineView: self
+		  numberOfChildrenOfItem: startitem];
+	}
 
-  NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
+      if (num > 0)
+	{
+	  anarray = [NSMutableArray arrayWithCapacity: num];
+	  NSMapInsert(_itemDict, sitem, anarray);
+	}
 
-  for (i = 0; i < num; i++)
-    {
-      id anitem = [_dataSource outlineView: self
-			       child: i
-			       ofItem: startitem];
+      NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInteger: level]);
 
-      [anarray addObject: anitem];
-      [self _loadDictionaryStartingWith: anitem
-	    atLevel: level + 1];
+      for (i = 0; i < num; i++)
+	{
+	  id anitem = [_dataSource outlineView: self
+					 child: i
+					ofItem: startitem];
+	  [anarray addObject: anitem];
+	  [self _loadDictionaryStartingWith: anitem
+				    atLevel: level + 1];
+	}
     }
 }
 
@@ -2226,7 +2546,7 @@ Also returns the child index relative to this parent. */
 					 drawingRect: drawingRect
 					    rowIndex: row];
     }
-  
+
   if (view == nil
       && flag == YES)
     {

@@ -864,7 +864,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
       attr = [mgr fileAttributesAtPath: _disabledPath
 			  traverseLink: YES];
       mod = [attr objectForKey: NSFileModificationDate];
-      if (_disabledStamp == nil || [_disabledStamp laterDate: mod] == mod)
+      if (_disabledStamp == nil
+	|| [_disabledStamp laterDate: mod] != _disabledStamp)
 	{
 	  NSData	*data;
 	  id		plist = nil;
@@ -895,7 +896,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
       attr = [mgr fileAttributesAtPath: _servicesPath
 			  traverseLink: YES];
       mod = [attr objectForKey: NSFileModificationDate];
-      if (_servicesStamp == nil || [_servicesStamp laterDate: mod] == mod)
+      if (_servicesStamp == nil
+	|| [_servicesStamp laterDate: mod] != _servicesStamp)
 	{
 	  NSData	*data;
 	  id		plist = nil;

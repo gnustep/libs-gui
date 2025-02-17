@@ -32,6 +32,7 @@
 
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSCoder.h>
+#import "AppKit/AppKitDefines.h"
 #include "GNUstepBase/GSConfig.h"
 #include <math.h>
 
@@ -40,7 +41,7 @@
  * Should be only used inside the gnustep-gui library.  Implemented
  * in Source/NSApplication.m
  */
-NSBundle *GSGuiBundle (void);
+APPKIT_EXPORT NSBundle *GSGuiBundle (void);
 
 /*
  * Localize a message of the gnustep-gui library.  
