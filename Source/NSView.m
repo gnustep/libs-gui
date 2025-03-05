@@ -5172,6 +5172,8 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (void) layout
 {
+  _needsLayout = NO;
+
   GSAutoLayoutEngine *engine = [self _layoutEngine];
   if (!engine)
     {
@@ -5307,7 +5309,6 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   if (_needsLayout)
     {
       [self layout];
-      _needsLayout = NO;
     }
 
   NSArray *subviews = [self subviews];
