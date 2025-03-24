@@ -221,54 +221,57 @@
 		{
 		  result = [[NSWorkspace sharedWorkspace] openFile: file
 						   withApplication: viewer];
-	          return;
 		}
 	    }
 
-	  if (result == NO)
-	    {
-	      NSHelpPanel	*panel;
-	      NSTextView	*tv;
-	      id		object = nil;
+	  // external viewer succeeded
+	  if (result)
+	    return;
 
-	      panel = [NSHelpPanel sharedHelpPanel];
-	      tv = [(NSScrollView*)[panel contentView] documentView];
-	      if (ext == nil  
+	  // fallback to internal viewer
+	  {
+	    NSHelpPanel	*panel;
+	    NSTextView	*tv;
+	    id		object = nil;
+
+	    panel = [NSHelpPanel sharedHelpPanel];
+	    tv = [(NSScrollView*)[panel contentView] documentView];
+	    if (ext == nil
 		|| [ext isEqualToString: @""]	 
 		|| [ext isEqualToString: @"txt"] 
 		|| [ext isEqualToString: @"text"])
-		{
-		  object = [NSString stringWithContentsOfFile: file];
-		}
-	      else if ([ext isEqualToString: @"rtf"])
-		{
-		  NSData *data = [NSData dataWithContentsOfFile: file];
+	      {
+		object = [NSString stringWithContentsOfFile: file];
+	      }
+	    else if ([ext isEqualToString: @"rtf"])
+	      {
+		NSData *data = [NSData dataWithContentsOfFile: file];
 		  
-		  object = [[NSAttributedString alloc] initWithRTF: data
-		    documentAttributes: 0];
-		  AUTORELEASE (object);
-		}
-	      else if ([ext isEqualToString: @"rtfd"])
-		{
-		  NSFileWrapper *wrapper;
+		object = [[NSAttributedString alloc] initWithRTF: data
+					      documentAttributes: 0];
+		AUTORELEASE (object);
+	      }
+	    else if ([ext isEqualToString: @"rtfd"])
+	      {
+		NSFileWrapper *wrapper;
 		  
-		  wrapper = [[NSFileWrapper alloc] initWithPath: file];
-		  AUTORELEASE (wrapper);
-		  object = [[NSAttributedString alloc]
-		    initWithRTFDFileWrapper: wrapper
-		    documentAttributes: 0];
-		  AUTORELEASE (object);
-		}
+		wrapper = [[NSFileWrapper alloc] initWithPath: file];
+		AUTORELEASE (wrapper);
+		object = [[NSAttributedString alloc]
+			   initWithRTFDFileWrapper: wrapper
+				documentAttributes: 0];
+		AUTORELEASE (object);
+	      }
 	      
-	      if (object != nil)
-		{
-		  [[tv textStorage] setAttributedString: object];
-		  [tv sizeToFit];
-		}
-	      [tv setNeedsDisplay: YES];
-	      [panel makeKeyAndOrderFront: self];
-	      return;
-	    }
+	    if (object != nil)
+	      {
+		[[tv textStorage] setAttributedString: object];
+		[tv sizeToFit];
+	      }
+	    [tv setNeedsDisplay: YES];
+	    [panel makeKeyAndOrderFront: self];
+	    return;
+	  }
 	}
     }
   
