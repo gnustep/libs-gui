@@ -219,8 +219,8 @@
 		}
 	      if (viewer != nil)
 		{
-		  result = [[NSWorkspace sharedWorkspace] openFile: file
-						   withApplication: viewer];
+		  result = [ws openFile: file
+			       withApplication: viewer];
 		}
 	    }
 
