@@ -213,6 +213,34 @@
 
 	  if ([viewer isEqual: @"NSHelpPanel"] == NO)
 	    {
+	      if (viewer && [viewer length] > 0)
+		{
+		  NSBundle *appBundle = [ws bundleForApp: viewer];
+		  NSArray *types;
+		  NSMutableArray *extensions = [NSMutableArray array];
+
+		  types = [appBundle objectForInfoDictionaryKey:@"NSTypes"];
+		  if (types)
+		    {
+		      NSUInteger i;
+
+		      for (i = 0; i < [types count]; i++)
+			{
+			  NSArray *unixExtensions;
+			  NSUInteger j;
+
+			  unixExtensions = [[types objectAtIndex: i] objectForKey:@"NSUnixExtensions"];
+			  for (j = 0; j < [unixExtensions count]; j++)
+			    [extensions addObject: [[unixExtensions objectAtIndex:j] lowercaseString]];
+			}
+		    }
+
+		  if (![extensions containsObject:[ext lowercaseString]])
+		    {
+		      NSWarnLog(@"Designated viewer %@ is not registered for %@", viewer, ext);
+		      viewer = nil;
+		    }
+		}
 	      if ([viewer length] == 0)
 		{
 	          viewer = [ws getBestAppInRole: @"Viewer" forExtension: ext];
