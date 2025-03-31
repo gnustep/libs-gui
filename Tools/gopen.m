@@ -100,7 +100,8 @@ main(int argc, char** argv, char **env_c)
   
   if (filetoopen)
     {
-      exists = [fm fileExistsAtPath: arg isDirectory: &isDir];
+      filetoopen = absolutePath(fm, filetoopen);
+      exists = [fm fileExistsAtPath: filetoopen isDirectory: &isDir];
       if (exists == NO)
 	{
 	  if ([filetoopen hasPrefix: @"/"] == NO
@@ -111,7 +112,6 @@ main(int argc, char** argv, char **env_c)
 	}
       else
 	{
-	  filetoopen = absolutePath(fm, filetoopen);
 	  [workspace openFile: filetoopen
 	      withApplication: application];
 	}
