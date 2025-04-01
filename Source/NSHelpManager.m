@@ -215,27 +215,16 @@
 	    {
 	      if (viewer && [viewer length] > 0)
 		{
-		  NSBundle *appBundle = [ws bundleForApp: viewer];
-		  NSArray *types;
-		  NSMutableArray *extensions = [NSMutableArray array];
+		  NSDictionary *apps =  [ws infoForExtension: ext];
+		  NSDictionary *appInfo;
 
-		  types = [appBundle objectForInfoDictionaryKey:@"NSTypes"];
-		  if (types)
-		    {
-		      NSUInteger i;
+		  // Let's try to be lenient if Viewer was set instead of Viewer.app
+		  if ([[viewer pathExtension] length] == 0)
+		    viewer = [viewer stringByAppendingPathExtension: @"app"];
+		  appInfo = [apps objectForKey: viewer];
 
-		      for (i = 0; i < [types count]; i++)
-			{
-			  NSArray *unixExtensions;
-			  NSUInteger j;
-
-			  unixExtensions = [[types objectAtIndex: i] objectForKey:@"NSUnixExtensions"];
-			  for (j = 0; j < [unixExtensions count]; j++)
-			    [extensions addObject: [[unixExtensions objectAtIndex:j] lowercaseString]];
-			}
-		    }
-
-		  if (![extensions containsObject:[ext lowercaseString]])
+		  // We ingore the role, supposing both Editor and Viewer are fine
+		  if (nil == appInfo)
 		    {
 		      NSWarnLog(@"Designated viewer %@ is not registered for %@", viewer, ext);
 		      viewer = nil;
