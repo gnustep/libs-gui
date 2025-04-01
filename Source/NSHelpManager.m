@@ -220,7 +220,7 @@
 
 		  // Let's try to be lenient if Viewer was set instead of Viewer.app
 		  if ([[viewer pathExtension] length] == 0)
-		    viewer = [viewer stringByAppendingPathExtension:@"app"];
+		    viewer = [viewer stringByAppendingPathExtension: @"app"];
 		  appInfo = [apps objectForKey: viewer];
 
 		  // We ingore the role, supposing both Editor and Viewer are fine
