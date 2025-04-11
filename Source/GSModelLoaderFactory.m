@@ -50,7 +50,7 @@
 
 + (float) priority
 {
-  return 0.0;
+  return FLT_MAX;
 }
 
 - (BOOL) loadModelData: (NSData *)data
