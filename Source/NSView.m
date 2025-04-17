@@ -2830,8 +2830,13 @@ in the main thread.
 
 - (void) _setNeedsDisplayInRect_real: (NSValue *)v
 {
-  NSRect invalidRect = [v rectValue];
+  NSRect invalidRect;
   NSView *currentView = _super_view;
+
+  if (nil == v)
+    return;
+
+  invalidRect = [v rectValue];
 
   /*
    *	Limit to bounds, combine with old _invalidRect, and then check to see
