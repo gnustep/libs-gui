@@ -1,3 +1,7 @@
+2025-04-30 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSColorSpace.h: Add NSColorSpaceModel* enumerated values.
+
 2025-02-11 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* ANNOUNCE:
