@@ -1339,6 +1339,12 @@ typedef	struct {
   return [[self infoDictionary] objectForKey: @"GSThemeLicense"];
 }
 
+- (BOOL) isDarkMode
+{
+  return [[[self infoDictionary] objectForKey: @"GSThemeDarkMode"]
+	   isEqualToString: @"YES"];
+}
+
 @end
 
 @implementation	GSTheme (Private)
