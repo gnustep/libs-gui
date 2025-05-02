@@ -356,6 +356,8 @@ GSModelLoaderFactory.m \
 GSGormLoader.m \
 GSGModelLoader.m \
 GSNibLoader.m \
+GSStoryboardLoader.m \
+GSStoryboardLoading.m \
 GSXibElement.m \
 GSXibLoader.m \
 GSXibLoading.m \
