@@ -28,7 +28,8 @@ include ../config.make
 
 include ../Version
 
-SUBPROJECTS = $(BUILD_SPEECH) $(BUILD_SOUND) $(BUILD_SPEECH_RECOGNIZER)
+SUBPROJECTS = $(BUILD_SPEECH) $(BUILD_SOUND) $(BUILD_SPEECH_RECOGNIZER) \
+	$(BUILD_VIDEO)
 TOOL_NAME = make_services set_show_service gopen gclose gcloseall
 SERVICE_NAME = GSspell
 
