@@ -110,7 +110,7 @@
       
       if (type == NSLeftMouseUp)
         {
-	  if ([theEvent clickCount] == 2)
+	  if ([theEvent clickCount] >= 2)
 	    {
 	      if (delegate != nil && [delegate respondsToSelector: 
 		@selector(textView:doubleClickedOnCell:inRect:)])
@@ -167,7 +167,7 @@
       
       if (type == NSLeftMouseDown)
         { 
-	  if ([theEvent clickCount] == 2)
+	  if ([theEvent clickCount] >= 2)
 	    {
               if (delegate != nil)
                 {
