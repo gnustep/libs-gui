@@ -44,7 +44,13 @@ typedef enum _NSColorSpaceModel
   NSRGBColorSpaceModel,
   NSCMYKColorSpaceModel,
   NSLABColorSpaceModel,
-  NSDeviceNColorSpaceModel
+  NSDeviceNColorSpaceModel,
+  NSColorSpaceModelUnknown = NSUnknownColorSpaceModel,
+  NSColorSpaceModelGray = NSGrayColorSpaceModel,
+  NSColorSpaceModelRGB = NSRGBColorSpaceModel,
+  NSColorSpaceModelCMYK = NSCMYKColorSpaceModel,
+  NSColorSpaceModelLAB = NSLABColorSpaceModel,
+  NSColorSpaceModelDeviceN = NSDeviceNColorSpaceModel
 } NSColorSpaceModel;
 
 APPKIT_EXPORT_CLASS
