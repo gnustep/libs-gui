@@ -612,68 +612,82 @@
   if ([docNodes count] > 0)
     {
       NSXMLElement *docNode = [docNodes objectAtIndex: 0];
-      NSArray *array = [docNode nodesForXPath: @"//scene" error: NULL];
-      NSArray *firstResponderIdNodes = [docNode nodesForXPath: @"//objects/customObject[@sceneMemberID =\"firstResponder\"]/@id"
-                                                        error: NULL];
-      NSString *firstResponderId = @"-1";
 
-      if([firstResponderIdNodes count] > 0)
-        {
-          firstResponderId = [[firstResponderIdNodes objectAtIndex: 0] stringValue];
-        }
-      
-      // Set initial view controller...
-      ASSIGN(_initialViewControllerId, [[docNode attributeForName: @"initialViewController"] stringValue]);             
-      FOR_IN(NSXMLElement*, e, array) 
-        {
-          NSXMLElement *doc = [[NSXMLElement alloc] initWithName: @"document"];
-          NSArray *children = [e children];
-          NSXMLDocument *document = nil;
-          NSString *sceneId = [[e attributeForName: @"sceneID"] stringValue]; 
-          NSString *controllerId = nil;
-          // Move children...
-          FOR_IN(NSXMLElement*, child, children)
-            {
-              if ([[child name] isEqualToString: @"point"] == YES)
-                continue; // go on if it's a point element, we don't use that in the app...
-              
-              NSArray *subnodes = [child nodesForXPath: @"//application" error: NULL];
-              NSXMLNode *appNode = [subnodes objectAtIndex: 0];
-              [self processChild: child
-                         withDoc: doc
-                     withAppNode: appNode
-                         sceneId: sceneId
-                firstResponderId: firstResponderId];
-              
-              // fix other custom objects
-              document = [[NSXMLDocument alloc] initWithRootElement: doc]; 
-              controllerId = [self controllerIdWithDocument: document];
-              controllerId = (controllerId != nil) ? controllerId : APPLICATION;
-              RELEASE(doc);
-              
-              // Create document...
-              [_scenesMap setObject: document
-                             forKey: sceneId];
-              
-              // Map controllerId's to scenes...
-              if (controllerId != nil)
-                {
-                  [_controllerMap setObject: sceneId
-                                     forKey: controllerId];
+      if (docNode != nil)
+	{
+	  NSArray *array = [docNode nodesForXPath: @"//scene" error: NULL];
+	  NSArray *firstResponderIdNodes = [docNode nodesForXPath: @"//objects/customObject[@sceneMemberID =\"firstResponder\"]/@id"
+							    error: NULL];
+	  NSString *firstResponderId = @"-1";
+	  NSXMLNode *initialViewControllerNode = [docNode attributeForName: @"initialViewController"];
+	  
+	  if([firstResponderIdNodes count] > 0)
+	    {
+	      firstResponderId = [[firstResponderIdNodes objectAtIndex: 0] stringValue];
+	    }
 
-                  [self processSegues: document
-                      forControllerId: controllerId];
-                }
-              RELEASE(document);
-            }
-          END_FOR_IN(children);
-        }
-      END_FOR_IN(array);
+	  // Set initial view controller...
+	  if (initialViewControllerNode != nil)
+	    {
+	      ASSIGN(_initialViewControllerId, [[docNode attributeForName: @"initialViewController"] stringValue]);
+	    }
+	  
+	  FOR_IN(NSXMLElement*, e, array) 
+	    {
+	      NSXMLElement *doc = [[NSXMLElement alloc] initWithName: @"document"];
+	      NSArray *children = [e children];
+	      NSXMLDocument *document = nil;
+	      NSString *sceneId = [[e attributeForName: @"sceneID"] stringValue]; 
+	      NSString *controllerId = nil;
+	      // Move children...
+	      FOR_IN(NSXMLElement*, child, children)
+		{
+		  if ([[child name] isEqualToString: @"point"] == YES)
+		    continue; // go on if it's a point element, we don't use that in the app...
+		  
+		  NSArray *subnodes = [child nodesForXPath: @"//application" error: NULL];
+		    NSXMLNode *appNode = [subnodes objectAtIndex: 0];
+		  [self processChild: child
+			     withDoc: doc
+			 withAppNode: appNode
+			     sceneId: sceneId
+		    firstResponderId: firstResponderId];
+		  
+		  // fix other custom objects
+		  document = [[NSXMLDocument alloc] initWithRootElement: doc]; 
+		  controllerId = [self controllerIdWithDocument: document];
+		  controllerId = (controllerId != nil) ? controllerId : APPLICATION;
+		  RELEASE(doc);
+		  
+		  // Create document...
+		  [_scenesMap setObject: document
+				 forKey: sceneId];
+		  
+		  // Map controllerId's to scenes...
+		  if (controllerId != nil)
+		    {
+		      [_controllerMap setObject: sceneId
+					 forKey: controllerId];
+		      
+		      [self processSegues: document
+			  forControllerId: controllerId];
+		    }
+		  RELEASE(document);
+		}
+	      END_FOR_IN(children);
+	    }
+	  END_FOR_IN(array);
+	}
+      else
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		      format: @"No document element found in storyboard file"];
+	}
     }
   else
     {
       [NSException raise: NSInternalInconsistencyException
-                  format: @"No document element found in storyboard file"];
+		  format: @"Document node returned nil"];
     }
 }
 

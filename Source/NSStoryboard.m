@@ -164,8 +164,13 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
 {
-  return [self instantiateControllerWithIdentifier: identifier
-                                           creator: nil];
+  if (identifier != nil)
+    {
+      return [self instantiateControllerWithIdentifier: identifier
+					       creator: nil];
+    }
+
+  return nil;
 }
 
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
