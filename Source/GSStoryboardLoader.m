@@ -187,15 +187,18 @@
 	    {
 	      NSArray *rootObjects;
               IBObjectContainer *objects;
-
+	      IBScenesContainer *scenes;
+	      
 	      NSDebugLLog(@"Storyboard", @"Invoking unarchiver");
 	      [unarchiver setObjectZone: zone];
               rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
               objects = [unarchiver decodeObjectForKey: @"IBDocument.Objects"];
-
-	      // NSLog(@"root objects %@", rootObjects);
-	      // NSLog(@"objects %@", objects);
+	      scenes = [unarchiver decodeObjectForkey: @"IBDocument.Scenes"];
 	      
+	      NSLog(@"root objects = %@", rootObjects);
+	      NSLog(@"objects = %@", objects);
+	      NSLog(@"scenes = %@", scenes)
+
 	      /*
 	      [self awake: rootObjects
 		    inContainer: objects

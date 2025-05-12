@@ -68,6 +68,7 @@ APPKIT_EXPORT_CLASS
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBClassDescriber: NSObject
 {
   NSMutableArray *referencedPartialClassDescriptions;
@@ -208,6 +209,13 @@ APPKIT_EXPORT_CLASS
 - (void) setValue: (id)value;
 - (id) value;
 
+@end
+
+APPKIT_EXPORT_CLASS
+@interface IBScenesContaienr : NSObject <NSCoding>
+{
+  IBMutableOrderedSet *_sceneRecords;
+}
 @end
 
 #endif
