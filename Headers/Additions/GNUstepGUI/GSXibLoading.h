@@ -33,6 +33,7 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSKeyedArchiver.h>
+
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 
 @class NSString, NSDictionary, NSArray, NSMutableDictionary, NSMutableArray;
@@ -42,11 +43,13 @@
 
 // Hack: This allows the class name FirstResponder in NSCustomObject and
 // correctly returns nil as the corresponding object.
+APPKIT_EXPORT_CLASS
 @interface FirstResponder: NSObject
 {
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBClassDescriptionSource: NSObject
 {
   NSString *majorKey;
@@ -54,6 +57,7 @@
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBPartialClassDescription: NSObject
 {
   NSString *className;
@@ -70,6 +74,7 @@
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBConnection: NSObject <NSCoding>
 {
   NSString *label;
@@ -84,23 +89,27 @@
 - (void) establishConnection;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBActionConnection: IBConnection
 {
   NSString *trigger;
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBOutletConnection: IBConnection
 {
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBBindingConnection: IBConnection
 {
   NSNibBindingConnector *connector;
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBConnectionRecord: NSObject
 {
   IBConnection *connection;
@@ -109,6 +118,7 @@
 - (IBConnection *) connection;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBToolTipAttribute: NSObject
 {
   NSString *name;
@@ -117,6 +127,7 @@
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBInitialTabViewItemAttribute: NSObject
 {
   NSString *name;
@@ -125,6 +136,7 @@
 }
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBObjectRecord: NSObject
 {
   id objectID;
@@ -137,6 +149,7 @@
 - (id) objectID;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBMutableOrderedSet: NSObject
 {
   NSArray *orderedObjects;
@@ -145,6 +158,7 @@
 - (id) objectWithObjectID: (id)objID;
 @end
 
+APPKIT_EXPORT_CLASS
 @interface IBObjectContainer: NSObject <NSCoding>
 {
   NSMutableArray *connectionRecords;

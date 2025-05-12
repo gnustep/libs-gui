@@ -39,6 +39,7 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSNib.h"
+
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSXibLoading.h"
@@ -122,9 +123,9 @@
       return;
     }
 
-  NSDebugLLog(@"XIB", @"First object %@", [rootObjects objectAtIndex: 0]);
-  NSDebugLLog(@"XIB", @"Second object %@", [rootObjects objectAtIndex: 1]);
-  NSDebugLLog(@"XIB", @"Third object %@", [rootObjects objectAtIndex: 2]);
+  NSDebugLLog(@"Storyboard", @"First object %@", [rootObjects objectAtIndex: 0]);
+  NSDebugLLog(@"Storyboard", @"Second object %@", [rootObjects objectAtIndex: 1]);
+  NSDebugLLog(@"Storyboard", @"Third object %@", [rootObjects objectAtIndex: 2]);
   // Use the owner as first root object
   [(NSCustomObject*)[rootObjects objectAtIndex: 0] setRealObject: owner];
 
@@ -187,7 +188,7 @@
 	      NSArray *rootObjects;
               IBObjectContainer *objects;
 
-	      NSDebugLLog(@"XIB", @"Invoking unarchiver");
+	      NSDebugLLog(@"Storyboard", @"Invoking unarchiver");
 	      [unarchiver setObjectZone: zone];
               rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
               objects = [unarchiver decodeObjectForKey: @"IBDocument.Objects"];
@@ -231,7 +232,7 @@
   NSFileManager	*mgr = [NSFileManager defaultManager];
   BOOL isDir = NO;
 
-  NSDebugLLog(@"XIB", @"Loading Storyboard `%@'...\n", fileName);
+  NSDebugLLog(@"Storyboard", @"Loading Storyboard `%@'...\n", fileName);
   if ([mgr fileExistsAtPath: fileName isDirectory: &isDir])
     {
       if (isDir == NO)
@@ -247,6 +248,7 @@
     {
       NSLog(@"Storyboard file specified %@, could not be found.", fileName);
     }
+
   return nil;
 }
 

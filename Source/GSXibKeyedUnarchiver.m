@@ -98,11 +98,12 @@
 {
   NSKeyedUnarchiver *unarchiver = nil;
 
-  if ([self checkStoryboard: data])
-    {
-      unarchiver = [[GSStoryboardKeyedUnarchiver alloc] initForReadingWithData: data];
-    }
-  else if ([self checkXib5: data])
+  // if ([self checkStoryboard: data])
+  //  {
+  //    unarchiver = [[GSStoryboardKeyedUnarchiver alloc] initForReadingWithData: data];
+  //  }
+  // else
+  if ([self checkXib5: data])
     {
       unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
     }

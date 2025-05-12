@@ -111,32 +111,17 @@ static NSStoryboard *__mainStoryboard = nil;
   self = [super init];
   if (self != nil)
     {
-      BOOL success = NO;
-      
-      success = [bundle loadNibFile: name
-		  externalNameTable: nil
-			   withZone: NSDefaultMallocZone()];
+      NSString *path = [bundle pathForResource: name
+					ofType: @"storyboard"];
+      _data = [NSData dataWithContentsOfFile: path];
 
-      if (success)
+      if (_data != nil)
 	{
 	}
-      /*
-      if (unarchiver != nil)
+      else
 	{
-	  NSArray *rootObjects;
-	  IBObjectContainer *objects;
-	  
-	  NSDebugLLog(@"XIB", @"Invoking unarchiver");
-	  [unarchiver setObjectZone: zone];
-	  rootObjects = [unarchiver decodeObjectForKey: @"IBDocument.RootObjects"];
-	  objects = [unarchiver decodeObjectForKey: @"IBDocument.Objects"];
-	  NSDebugLLog(@"XIB", @"rootObjects %@", rootObjects);
-	  [self awake: rootObjects
-		inContainer: objects
-		withContext: context];
-	  loaded = YES;	  
+	  NSLog(@"Failed to load storyboard with name \"%@\" at \"%@.\"", name, path);
 	}
-      */
     }
   return self;
 }

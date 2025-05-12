@@ -34,6 +34,7 @@ extern "C" {
 #endif
 
 @class NSBundle;
+@class NSData;
 @class NSMutableDictionary;
 @class NSString;
   
@@ -45,6 +46,7 @@ DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
 APPKIT_EXPORT_CLASS
 @interface NSStoryboard : NSObject
 {
+  NSData *_data;
   NSMutableDictionary *_scenes;
 }
 

@@ -233,7 +233,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                             @"NSStackViewContainer", @"middleViews",
                             @"NSStackViewContainer", @"endViews",
 			  //  @"GSScene", @"scene",
-			  //  @"NSMutableArray", @"scenes",
+			    @"NSMutableArray", @"scenes",
                             nil];
           RETAIN(XmlTagToObjectClassMap);
 
@@ -704,7 +704,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // Parse the XML data
           [theParser parse];
 
-          // Decode optional resources
+          // Decode optional resourcess
           _resources = RETAIN([self decodeObjectForKey: @"resources"]);
         }
       NS_HANDLER
