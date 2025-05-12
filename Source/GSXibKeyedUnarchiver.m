@@ -35,10 +35,13 @@
  */
 
 #import <Foundation/NSXMLDocument.h>
+
 #import "GNUstepGUI/GSXibKeyedUnarchiver.h"
 #import "GNUstepGUI/GSXibElement.h"
 #import "GNUstepGUI/GSNibLoading.h"
+
 #import "GSXib5KeyedUnarchiver.h"
+#import "GSStoryboardKeyedUnarchiver.h"
 
 @implementation GSXibKeyedUnarchiver
 
@@ -49,11 +52,8 @@
   NSXMLDocument *document = [[NSXMLDocument alloc] initWithData: data
                                                         options: 0
                                                           error: NULL];
-  if (document == nil)
-    {
-      return NO;
-    }
-  else
+
+  if (document)
     {
       // Test to see if this is an Xcode 5 XIB...
       NSArray *documentNodes = [document nodesForXPath: @"/document" error: NULL];
@@ -62,16 +62,47 @@
       // specific to check here...
       return [documentNodes count] != 0;
     }
+
+  return NO;
 #else
+
   // We now default to checking XIB 5 versions
   return YES;
 #endif
+}
+
++ (BOOL) checkStoryboard: (NSData *)data
+{
+#if GNUSTEP_BASE_HAVE_LIBXML
+  // Ensure we have a storyboard...first see if we can parse the XML...
+  NSXMLDocument *document = [[NSXMLDocument alloc] initWithData: data
+                                                        options: 0
+                                                          error: NULL];
+
+  if (document)
+    {
+      // Test to see if this is an Xcode 5 XIB...
+      NSArray *nodes = [document nodesForXPath: @"/scenes" error: NULL];
+
+      // Need at LEAST ONE scene node...we should find something a bit more
+      // specific to check here...
+      return [nodes count] != 0;
+    }
+#endif
+
+  // We now default to checking XIB 5 versions
+  return NO;
 }
 
 + (NSKeyedUnarchiver *) unarchiverForReadingWithData: (NSData *)data
 {
   NSKeyedUnarchiver *unarchiver = nil;
 
+  // if ([self checkStoryboard: data])
+  //  {
+  //    unarchiver = [[GSStoryboardKeyedUnarchiver alloc] initForReadingWithData: data];
+  //  }
+  // else
   if ([self checkXib5: data])
     {
       unarchiver = [[GSXib5KeyedUnarchiver alloc] initForReadingWithData: data];
@@ -80,6 +111,7 @@
     {
       unarchiver = [[GSXibKeyedUnarchiver alloc] initForReadingWithData: data];
     }
+  
   return AUTORELEASE(unarchiver);
 }
 

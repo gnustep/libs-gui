@@ -309,7 +309,9 @@ GSDisplayServer.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
 GSMemoryPanel.m \
+GSScene.m \
 GSSlideView.m \
+GSStoryboardLoader.m \
 GSTextStorage.m \
 GSTrackingRect.m \
 GSServicesManager.m \
@@ -332,6 +334,7 @@ GSGormLoading.m \
 GSIconManager.m \
 GSImageMagickImageRep.m \
 GSNibLoading.m \
+GSScenes.m \
 GSTheme.m \
 GSThemeDrawing.m \
 GSThemeInspector.m \
@@ -346,7 +349,7 @@ GSToolTips.m \
 GSToolbarView.m \
 GSToolbarCustomizationPalette.m \
 GSStandardWindowDecorationView.m \
-GSStoryboardTransform.m \
+GSStoryboardKeyedUnarchiver.m \
 GSWindowDecorationView.m \
 GSPrinting.m \
 GSPrintOperation.m \
