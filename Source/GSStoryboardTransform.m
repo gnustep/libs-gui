@@ -1,21 +1,21 @@
 /* Implementation of class GSStoryboardTransform
    Copyright (C) 2020 Free Software Foundation, Inc.
-   
+
    By: Gregory John Casamento
    Date: Sat 04 Jul 2020 03:48:15 PM EDT
 
    This file is part of the GNUstep Library.
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
-   
+
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -47,7 +47,7 @@
 #define APPLICATION @"application"
 
 @interface NSStoryboardSegue (__private__)
-- (void) _setDestinationController: (id)controller; 
+- (void) _setDestinationController: (id)controller;
 - (void) _setSourceController: (id)controller;
 @end
 
@@ -230,30 +230,30 @@
   if ([_sender respondsToSelector: @selector(shouldPerformSegueWithIdentifier:sender:)])
     {
       should = [_sender shouldPerformSegueWithIdentifier: _identifier
-                                                  sender: _sender];
+						  sender: _sender];
     }
 
   if (should)
     {
       id destCon = [_storyboardSegue destinationController];
       if ([destCon isKindOfClass: [NSString class]])
-        {
-          // resolve the destination controller
-          destCon = [_storyboard instantiateControllerWithIdentifier: destCon];
-          [_storyboardSegue _setDestinationController: destCon];  // replace with actual controller...
-        }
-      [_storyboardSegue _setSourceController: _sender]; 
-      
+	{
+	  // resolve the destination controller
+	  destCon = [_storyboard instantiateControllerWithIdentifier: destCon];
+	  [_storyboardSegue _setDestinationController: destCon];  // replace with actual controller...
+	}
+      [_storyboardSegue _setSourceController: _sender];
+
       if (_sender != nil &&
-          [_sender respondsToSelector: @selector(performSegueWithIdentifier:sender:)])
-        {
-          [_sender performSegueWithIdentifier: _identifier
-                                       sender: _sender];
-        }
+	  [_sender respondsToSelector: @selector(performSegueWithIdentifier:sender:)])
+	{
+	  [_sender performSegueWithIdentifier: _identifier
+				       sender: _sender];
+	}
       else
-        {
-          [_storyboardSegue perform];
-        }
+	{
+	  [_storyboardSegue perform];
+	}
     }
 }
 
@@ -276,29 +276,29 @@
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSTarget"])
-        {
-          [self setTarget: [coder decodeObjectForKey: @"NSTarget"]];
-        }
+	{
+	  [self setTarget: [coder decodeObjectForKey: @"NSTarget"]];
+	}
       if ([coder containsValueForKey: @"NSSelector"])
-        {
-          [self setSelector: [coder decodeObjectForKey: @"NSSelector"]];
-        }
+	{
+	  [self setSelector: [coder decodeObjectForKey: @"NSSelector"]];
+	}
       if ([coder containsValueForKey: @"NSSender"])
-        {
-          [self setSender: [coder decodeObjectForKey: @"NSSender"]];
-        }
+	{
+	  [self setSender: [coder decodeObjectForKey: @"NSSender"]];
+	}
       if ([coder containsValueForKey: @"NSIdentifier"])
-        {
-          [self setIdentifier: [coder decodeObjectForKey: @"NSIdentifier"]];
-        }
+	{
+	  [self setIdentifier: [coder decodeObjectForKey: @"NSIdentifier"]];
+	}
       if ([coder containsValueForKey: @"NSKind"])
-        {
-          [self setKind: [coder decodeObjectForKey: @"NSKind"]];
-        }
+	{
+	  [self setKind: [coder decodeObjectForKey: @"NSKind"]];
+	}
       if ([coder containsValueForKey: @"NSPopoverAnchorView"])
-        {
-          [self setPopoverAnchorView: [coder decodeObjectForKey: @"NSPopoverAnchorView"]];
-        }
+	{
+	  [self setPopoverAnchorView: [coder decodeObjectForKey: @"NSPopoverAnchorView"]];
+	}
     }
   return self;
 }
@@ -334,9 +334,9 @@
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSStoryboardName"])
-        {
-          [self setStoryboardName: [coder decodeObjectForKey: @"NSStoryboardName"]];
-        }
+	{
+	  [self setStoryboardName: [coder decodeObjectForKey: @"NSStoryboardName"]];
+	}
     }
   return self;
 }
@@ -349,7 +349,7 @@
 - (id) instantiate
 {
   NSStoryboard *sb = [NSStoryboard storyboardWithName: _storyboardName
-                                               bundle: [NSBundle mainBundle]];
+					       bundle: [NSBundle mainBundle]];
   return [sb instantiateInitialController];
 }
 
@@ -363,13 +363,13 @@
   if (self != nil)
     {
       NSXMLDocument *xml = [[NSXMLDocument alloc] initWithData: data
-                                                       options: 0
-                                                         error: NULL];
-      
+						       options: 0
+							 error: NULL];
+
       _scenesMap = [[NSMutableDictionary alloc] initWithCapacity: 10];
       _controllerMap = [[NSMutableDictionary alloc] initWithCapacity: 10];
       _identifierToSegueMap = [[NSMutableDictionary alloc] initWithCapacity: 10];
-      
+
       [self processStoryboard: xml];
       RELEASE(xml);
     }
@@ -402,27 +402,27 @@
 }
 
 - (NSXMLElement *) createCustomObjectWithId: (NSString *)ident
-                                   userLabel: (NSString *)userLabel
-                                 customClass: (NSString *)className
+				   userLabel: (NSString *)userLabel
+				 customClass: (NSString *)className
 {
   NSXMLElement *customObject =
     [[NSXMLElement alloc] initWithName: @"customObject"];
   NSXMLNode *idValue =
     [NSXMLNode attributeWithName: @"id"
-                     stringValue: ident];
+		     stringValue: ident];
   NSXMLNode *usrLabel =
     [NSXMLNode attributeWithName: @"userLabel"
-                     stringValue: userLabel];
+		     stringValue: userLabel];
   NSXMLNode *customCls =
     [NSXMLNode attributeWithName: @"customClass"
-                     stringValue: className];
-  
+		     stringValue: className];
+
   [customObject addAttribute: idValue];
   [customObject addAttribute: usrLabel];
   [customObject addAttribute: customCls];
 
   AUTORELEASE(customObject);
-  
+
   return customObject;
 }
 
@@ -434,82 +434,82 @@
 }
 
 - (void) addStandardObjects: (NSXMLElement *)objects
-                classString: (NSString *) customClassString
-                connections: (NSXMLNode *)appCons
-           firstResponderId: (NSString *)firstResponderId
+		classString: (NSString *) customClassString
+		connections: (NSXMLNode *)appCons
+	   firstResponderId: (NSString *)firstResponderId
 {
   NSXMLElement *customObject = nil;
-  
-  customObject = 
+
+  customObject =
     [self createCustomObjectWithId: @"-3"
-                         userLabel: @"Application"
-                       customClass: @"NSObject"];
+			 userLabel: @"Application"
+		       customClass: @"NSObject"];
   [objects insertChild: customObject
-               atIndex: 0];
-  customObject = 
+	       atIndex: 0];
+  customObject =
     [self createCustomObjectWithId: firstResponderId
-                         userLabel: @"First Responder"
-                       customClass: @"FirstResponder"];
+			 userLabel: @"First Responder"
+		       customClass: @"FirstResponder"];
   [objects insertChild: customObject
-               atIndex: 0];
+	       atIndex: 0];
   customObject =
     [self createCustomObjectWithId: @"-2"
-                         userLabel: @"File's Owner"
-                       customClass: customClassString];
+			 userLabel: @"File's Owner"
+		       customClass: customClassString];
   if (appCons != nil)
     {
       [customObject addChild: appCons];
     }
   [objects insertChild: customObject
-               atIndex: 0]; 
+	       atIndex: 0];
 }
 
 - (void) processChild: (NSXMLElement *)objects
-              withDoc: (NSXMLElement *)doc
-          withAppNode: (NSXMLNode *)appNode
-              sceneId: (NSString *)sceneId
+	      withDoc: (NSXMLElement *)doc
+	  withAppNode: (NSXMLNode *)appNode
+	      sceneId: (NSString *)sceneId
      firstResponderId: (NSString *)firstResponderId
 {
   NSString *customClassString = nil;
   NSXMLNode *appCons = nil;
-  
+
   if (appNode != nil)
     {
       NSArray *appConsArr = [appNode nodesForXPath: @"connections" error: NULL];
-      
+
       appCons = [appConsArr objectAtIndex: 0];
       if (appCons != nil)
-        {
-          [appCons detach];
-        }
-      
+	{
+	  [appCons detach];
+	}
+
       // Assign application scene...
       ASSIGN(_applicationSceneId, sceneId);
       [_controllerMap setObject: _applicationSceneId
-                         forKey: APPLICATION];
-      
+			 forKey: APPLICATION];
+
       // Move all application children to objects...
-      NSArray *appChildren = [appNode children];      
+      NSArray *appChildren = [appNode children];
       FOR_IN(NSXMLElement*, ae, appChildren)
-        [ae detach];
-        [objects addChild: ae];
+	[ae detach];
+	[objects addChild: ae];
       END_FOR_IN(appChildren);
-      
+
       // Remove the appNode
       [appNode detach];
-      
+
       // create a customObject entry for NSApplication reference...
       NSXMLNode *appCustomClass = [(NSXMLElement *)appNode
-                                      attributeForName: @"customClass"];
+				      attributeForName: @"customClass"];
       customClassString = ([appCustomClass stringValue] == nil) ?
-        @"NSApplication" : [appCustomClass stringValue];
+	@"NSApplication" : [appCustomClass stringValue];
     }
-  
+
   [self addStandardObjects: objects
-               classString: customClassString
-               connections: appCons
-          firstResponderId: firstResponderId];
-  
+	       classString: customClassString
+	       connections: appCons
+	  firstResponderId: firstResponderId];
+
   // Add it to the document
   [objects detach];
   [doc addChild: objects];
@@ -526,10 +526,10 @@
       NSString *className = NSStringFromClass(cls);
       NSString *classNameNoNamespace = [className substringFromIndex: 2];
       NSString *xmlClassName = [NSString stringWithFormat: @"%@%@",
-                                         [[classNameNoNamespace substringToIndex: 1] lowercaseString],
-                                         [classNameNoNamespace substringFromIndex: 1]];
+					 [[classNameNoNamespace substringToIndex: 1] lowercaseString],
+					 [classNameNoNamespace substringFromIndex: 1]];
       NSString *lowerCaseName = [xmlClassName lowercaseString];
-      
+
       [result addObject: xmlClassName];
       [result addObject: lowerCaseName];
     }
@@ -537,9 +537,9 @@
 
   return result;
 }
-   
+
 - (NSArray *) findSubclassesOf: (Class)clz
-                    inDocument: (NSXMLDocument *)document
+		    inDocument: (NSXMLDocument *)document
 {
   NSArray *result = nil;
   NSArray *xmlClassNames = [self subclassesOfClass: clz];
@@ -547,11 +547,11 @@
   FOR_IN(NSString*, xmlClassName, xmlClassNames)
     {
       NSString *xpath = [NSString stringWithFormat: @"//%@",xmlClassName];
-      result = [document nodesForXPath: xpath error: NULL];      
+      result = [document nodesForXPath: xpath error: NULL];
       if ([result count] > 0)
-        {
-          break;
-        }
+	{
+	  break;
+	}
     }
   END_FOR_IN(xmlClassNames);
 
@@ -562,46 +562,46 @@
 {
   NSString *controllerId = nil;
   NSArray *windowControllers = [self findSubclassesOf: [NSWindowController class]
-                                           inDocument: document];
+					   inDocument: document];
   NSArray *viewControllers = [self findSubclassesOf: [NSViewController class]
-                                         inDocument: document];
+					 inDocument: document];
   NSArray *controllerPlaceholders = [document nodesForXPath: @"//controllerPlaceholder"
-                                                      error: NULL];
-  
+						      error: NULL];
+
   if ([windowControllers count] > 0)
     {
       NSXMLElement *ce = [windowControllers objectAtIndex: 0];
       NSXMLNode *attr = [ce attributeForName: @"id"];
       controllerId = [attr stringValue];
-      
+
       FOR_IN(NSXMLElement*, o, windowControllers)
-        {
-          NSXMLElement *objects = (NSXMLElement *)[o parent];
-          NSArray *windows = [o nodesForXPath: @"//window" error: NULL];
-          FOR_IN(NSXMLNode*, w, windows)
-            {
-              [w detach];
-              [objects addChild: w];
-            }
-          END_FOR_IN(windows);
-        }
+	{
+	  NSXMLElement *objects = (NSXMLElement *)[o parent];
+	  NSArray *windows = [o nodesForXPath: @"//window" error: NULL];
+	  FOR_IN(NSXMLNode*, w, windows)
+	    {
+	      [w detach];
+	      [objects addChild: w];
+	    }
+	  END_FOR_IN(windows);
+	}
       END_FOR_IN(windowControllers);
     }
-  
+
   if ([viewControllers count] > 0)
     {
       NSXMLElement *ce = [viewControllers objectAtIndex: 0];
       NSXMLNode *attr = [ce attributeForName: @"id"];
       controllerId = [attr stringValue];
     }
-  
+
   if ([controllerPlaceholders count] > 0)
     {
       NSXMLElement *ce = [controllerPlaceholders objectAtIndex: 0];
       NSXMLNode *attr = [ce attributeForName: @"id"];
       controllerId = [attr stringValue];
     }
-  
+
   return controllerId;
 }
 
@@ -620,7 +620,7 @@
 							    error: NULL];
 	  NSString *firstResponderId = @"-1";
 	  NSXMLNode *initialViewControllerNode = [docNode attributeForName: @"initialViewController"];
-	  
+
 	  if([firstResponderIdNodes count] > 0)
 	    {
 	      firstResponderId = [[firstResponderIdNodes objectAtIndex: 0] stringValue];
@@ -631,20 +631,20 @@
 	    {
 	      ASSIGN(_initialViewControllerId, [[docNode attributeForName: @"initialViewController"] stringValue]);
 	    }
-	  
-	  FOR_IN(NSXMLElement*, e, array) 
+
+	  FOR_IN(NSXMLElement*, e, array)
 	    {
 	      NSXMLElement *doc = [[NSXMLElement alloc] initWithName: @"document"];
 	      NSArray *children = [e children];
 	      NSXMLDocument *document = nil;
-	      NSString *sceneId = [[e attributeForName: @"sceneID"] stringValue]; 
+	      NSString *sceneId = [[e attributeForName: @"sceneID"] stringValue];
 	      NSString *controllerId = nil;
 	      // Move children...
 	      FOR_IN(NSXMLElement*, child, children)
 		{
 		  if ([[child name] isEqualToString: @"point"] == YES)
 		    continue; // go on if it's a point element, we don't use that in the app...
-		  
+
 		  NSArray *subnodes = [child nodesForXPath: @"//application" error: NULL];
 		    NSXMLNode *appNode = [subnodes objectAtIndex: 0];
 		  [self processChild: child
@@ -652,23 +652,23 @@
 			 withAppNode: appNode
 			     sceneId: sceneId
 		    firstResponderId: firstResponderId];
-		  
+
 		  // fix other custom objects
-		  document = [[NSXMLDocument alloc] initWithRootElement: doc]; 
+		  document = [[NSXMLDocument alloc] initWithRootElement: doc];
 		  controllerId = [self controllerIdWithDocument: document];
 		  controllerId = (controllerId != nil) ? controllerId : APPLICATION;
 		  RELEASE(doc);
-		  
+
 		  // Create document...
 		  [_scenesMap setObject: document
 				 forKey: sceneId];
-		  
+
 		  // Map controllerId's to scenes...
 		  if (controllerId != nil)
 		    {
 		      [_controllerMap setObject: sceneId
 					 forKey: controllerId];
-		      
+
 		      [self processSegues: document
 			  forControllerId: controllerId];
 		    }
@@ -700,51 +700,51 @@
       NSXMLNode *a = [docElem attributeForName: @"processed"];
       NSString *value = [a stringValue];
       if (value != nil)
-        {
-          return YES;
-        }
+	{
+	  return YES;
+	}
       else
-        {
-          NSXMLNode *new_attr = [NSXMLNode attributeWithName: @"processed"
-                                                      stringValue: @"true"];
-          [docElem addAttribute: new_attr];
-        }
+	{
+	  NSXMLNode *new_attr = [NSXMLNode attributeWithName: @"processed"
+						      stringValue: @"true"];
+	  [docElem addAttribute: new_attr];
+	}
     }
   return NO;
 }
 
 - (NSXMLElement *) createStoryboardProxyElementWithSelector: (NSString *)selector
-                                                     target: (NSString *)dst
-                                            segueIdentifier: (NSString *)ident
-                                                     sender: (NSString *)src
-                                                       kind: (NSString *)kind
-                                                 anchorView: (NSString *)anchorView
+						     target: (NSString *)dst
+					    segueIdentifier: (NSString *)ident
+						     sender: (NSString *)src
+						       kind: (NSString *)kind
+						 anchorView: (NSString *)anchorView
 {
   NSXMLElement *sbproxy = [NSXMLElement elementWithName: @"storyboardSeguePerformAction"];
 
   NSXMLNode *pselector
     = [NSXMLNode attributeWithName: @"selector"
-                       stringValue: selector];
+		       stringValue: selector];
   NSXMLNode *ptarget
     = [NSXMLNode attributeWithName: @"target"
-                       stringValue: dst];
+		       stringValue: dst];
   NSString *pident_value = [[NSUUID UUID] UUIDString];
   NSXMLNode *pident
     = [NSXMLNode attributeWithName: @"id"
-                       stringValue: pident_value];
+		       stringValue: pident_value];
   NSXMLNode *psegueIdent
     = [NSXMLNode attributeWithName: @"identifier"
-                       stringValue: ident];
+		       stringValue: ident];
   NSXMLNode *psender
     = [NSXMLNode attributeWithName: @"sender"
-                       stringValue: src];
+		       stringValue: src];
   NSXMLNode *pkind
     = [NSXMLNode attributeWithName: @"kind"
-                       stringValue: kind];
+		       stringValue: kind];
   NSXMLNode *panchorview
     = [NSXMLNode attributeWithName: @"popoverAnchorView"
-                       stringValue: anchorView];
-  
+		       stringValue: anchorView];
+
   [sbproxy addAttribute: pselector];
   [sbproxy addAttribute: ptarget];
   [sbproxy addAttribute: pident];
@@ -757,123 +757,123 @@
 }
 
 - (NSMapTable *) processConnections: (NSArray *)connectionsArray
-                        withObjects: (NSXMLElement *)objects
-                       controllerId: (NSString *)src
+			withObjects: (NSXMLElement *)objects
+		       controllerId: (NSString *)src
 {
   NSMapTable *mapTable = [NSMapTable strongToWeakObjectsMapTable];
-  
+
   FOR_IN (NSXMLElement*, connections, connectionsArray)
     {
       NSArray *children = [connections children]; // there should be only one per set.
-      
+
       FOR_IN (NSXMLElement*, obj, children)
-        if ([[obj name] isEqualToString: @"segue"])
-          {
-            // get the information from the segue.
-            id connections_parent = [[obj parent] parent];
-            id segue_parent = connections; // [obj parent];
-            NSString *connections_parent_name = [connections_parent name];
-            NSXMLNode *attr = [obj attributeForName: @"destination"];
-            NSString *dst = [attr stringValue];
-            attr = [obj attributeForName: @"kind"];
-            NSString *kind =  [attr stringValue];
-            attr = [obj attributeForName: @"relationship"];
-            NSString *rel = [attr stringValue];
-            attr = [obj attributeForName: @"id"];
-            NSString *uid = [attr stringValue];
-            attr = [obj attributeForName: @"identifier"];
-            NSString *ident = [attr stringValue];
-            if (ident == nil)
-              {
-                ident = [[NSUUID UUID] UUIDString];
-              }
-            attr = [obj attributeForName: @"popoverAnchorView"];
-            NSString *av = [attr stringValue];
-            attr = [obj attributeForName: @"popoverBehavior"];
-            NSString *pb = [attr stringValue];
-            NSPopoverBehavior behavior = NSPopoverBehaviorApplicationDefined; 
-            if ([pb isEqualToString: @"a"])
-              {
-                behavior = NSPopoverBehaviorApplicationDefined; 
-              }
-            else if ([pb isEqualToString: @"t"])
-              {
-                behavior = NSPopoverBehaviorTransient;
-              }
-            else if ([pb isEqualToString: @"s"])
-              {
-                behavior = NSPopoverBehaviorSemitransient;
-              }
-            
-            attr = [obj attributeForName: @"preferredEdge"];
-            NSString *pe = [attr stringValue];
-            NSRectEdge edge = NSMinXEdge;
-            if ([pe isEqualToString: @"maxY"])
-              {
-                edge = NSMaxYEdge;
-              }
-            else if ([pe isEqualToString: @"minY"])
-              {
-                edge = NSMinYEdge;
-              }
-            else if ([pe isEqualToString: @"maxX"])
-              {
-                edge = NSMaxXEdge;
-              }
-            else if ([pe isEqualToString: @"minX"])
-              {
-                edge = NSMinXEdge;
-              }
-            [obj detach]; // segue can't be in the archive since it doesn't conform to NSCoding
-            
-            // Create proxy object to invoke methods on the window controller
-            NSXMLElement *sbproxy =  [self createStoryboardProxyElementWithSelector: @"doAction:"
-                                                                             target: dst
-                                                                    segueIdentifier: ident
-                                                                             sender: src
-                                                                               kind: kind
-                                                                         anchorView: av];
-            
-            NSUInteger count = [[objects children] count];
-            [objects insertChild: sbproxy
-                         atIndex: count - 1];
-            
-            // add action to parent ONLY if it is NOT a controller..
-            if (![[self subclassesOfClass: [NSWindowController class]] containsObject: connections_parent_name] &&
-                ![[self subclassesOfClass: [NSViewController class]] containsObject: connections_parent_name])
-              {              
-                // Create action...
-                NSXMLElement *action = [NSXMLElement elementWithName: @"action"];
-                NSXMLNode *selector
-                  = [NSXMLNode attributeWithName: @"selector"
-                                     stringValue: @"doAction:"];
-                NSXMLNode *target
-                  = [NSXMLNode attributeWithName: @"target"
-                                     stringValue: [[sbproxy attributeForName: @"id"] stringValue]];
-                NSXMLNode *controller_ident
-                  = [NSXMLNode attributeWithName: @"id"
-                                     stringValue: uid]; 
-                [action addAttribute: selector];
-                [action addAttribute: target];
-                [action addAttribute: controller_ident];
-                [segue_parent addChild: action];
-              }
-            
-            // Create the segue...
-            NSStoryboardSegue *ss = [[NSStoryboardSegue alloc] initWithIdentifier: ident
-                                                                           source: src
-                                                                      destination: dst];
-            [ss _setKind: kind];
-            [ss _setRelationship: rel];
-            [ss _setPopoverBehavior: behavior];
-            [ss _setPreferredEdge: edge];
-              
-            // Add to maptable...
-            [mapTable setObject: ss
-                         forKey: ident];
-            
-          } // only process segue objects...
-      END_FOR_IN(children);          
+	if ([[obj name] isEqualToString: @"segue"])
+	  {
+	    // get the information from the segue.
+	    id connections_parent = [[obj parent] parent];
+	    id segue_parent = connections; // [obj parent];
+	    NSString *connections_parent_name = [connections_parent name];
+	    NSXMLNode *attr = [obj attributeForName: @"destination"];
+	    NSString *dst = [attr stringValue];
+	    attr = [obj attributeForName: @"kind"];
+	    NSString *kind =  [attr stringValue];
+	    attr = [obj attributeForName: @"relationship"];
+	    NSString *rel = [attr stringValue];
+	    attr = [obj attributeForName: @"id"];
+	    NSString *uid = [attr stringValue];
+	    attr = [obj attributeForName: @"identifier"];
+	    NSString *ident = [attr stringValue];
+	    if (ident == nil)
+	      {
+		ident = [[NSUUID UUID] UUIDString];
+	      }
+	    attr = [obj attributeForName: @"popoverAnchorView"];
+	    NSString *av = [attr stringValue];
+	    attr = [obj attributeForName: @"popoverBehavior"];
+	    NSString *pb = [attr stringValue];
+	    NSPopoverBehavior behavior = NSPopoverBehaviorApplicationDefined;
+	    if ([pb isEqualToString: @"a"])
+	      {
+		behavior = NSPopoverBehaviorApplicationDefined;
+	      }
+	    else if ([pb isEqualToString: @"t"])
+	      {
+		behavior = NSPopoverBehaviorTransient;
+	      }
+	    else if ([pb isEqualToString: @"s"])
+	      {
+		behavior = NSPopoverBehaviorSemitransient;
+	      }
+
+	    attr = [obj attributeForName: @"preferredEdge"];
+	    NSString *pe = [attr stringValue];
+	    NSRectEdge edge = NSMinXEdge;
+	    if ([pe isEqualToString: @"maxY"])
+	      {
+		edge = NSMaxYEdge;
+	      }
+	    else if ([pe isEqualToString: @"minY"])
+	      {
+		edge = NSMinYEdge;
+	      }
+	    else if ([pe isEqualToString: @"maxX"])
+	      {
+		edge = NSMaxXEdge;
+	      }
+	    else if ([pe isEqualToString: @"minX"])
+	      {
+		edge = NSMinXEdge;
+	      }
+	    [obj detach]; // segue can't be in the archive since it doesn't conform to NSCoding
+
+	    // Create proxy object to invoke methods on the window controller
+	    NSXMLElement *sbproxy =  [self createStoryboardProxyElementWithSelector: @"doAction:"
+									     target: dst
+								    segueIdentifier: ident
+									     sender: src
+									       kind: kind
+									 anchorView: av];
+
+	    NSUInteger count = [[objects children] count];
+	    [objects insertChild: sbproxy
+			 atIndex: count - 1];
+
+	    // add action to parent ONLY if it is NOT a controller..
+	    if (![[self subclassesOfClass: [NSWindowController class]] containsObject: connections_parent_name] &&
+		![[self subclassesOfClass: [NSViewController class]] containsObject: connections_parent_name])
+	      {
+		// Create action...
+		NSXMLElement *action = [NSXMLElement elementWithName: @"action"];
+		NSXMLNode *selector
+		  = [NSXMLNode attributeWithName: @"selector"
+				     stringValue: @"doAction:"];
+		NSXMLNode *target
+		  = [NSXMLNode attributeWithName: @"target"
+				     stringValue: [[sbproxy attributeForName: @"id"] stringValue]];
+		NSXMLNode *controller_ident
+		  = [NSXMLNode attributeWithName: @"id"
+				     stringValue: uid];
+		[action addAttribute: selector];
+		[action addAttribute: target];
+		[action addAttribute: controller_ident];
+		[segue_parent addChild: action];
+	      }
+
+	    // Create the segue...
+	    NSStoryboardSegue *ss = [[NSStoryboardSegue alloc] initWithIdentifier: ident
+									   source: src
+								      destination: dst];
+	    [ss _setKind: kind];
+	    [ss _setRelationship: rel];
+	    [ss _setPopoverBehavior: behavior];
+	    [ss _setPreferredEdge: edge];
+
+	    // Add to maptable...
+	    [mapTable setObject: ss
+			 forKey: ident];
+
+	  } // only process segue objects...
+      END_FOR_IN(children);
     } // iterate over connection objs
   END_FOR_IN(connectionsArray);
 
@@ -887,15 +887,15 @@
   if (!processed)
     {
       NSArray *array = [xml nodesForXPath: @"//objects[1]"
-                                    error: NULL];
+				    error: NULL];
       NSXMLElement *objects = [array objectAtIndex: 0]; // get the "objects" section
       NSArray *connectionsArray = [xml nodesForXPath: @"//connections"
-                                               error: NULL];
+					       error: NULL];
       NSMapTable *mapTable = [self processConnections: connectionsArray
-                                          withObjects: objects
-                                         controllerId: identifier];           
+					  withObjects: objects
+					 controllerId: identifier];
       [_identifierToSegueMap setObject: mapTable
-                                forKey: identifier];                  
+				forKey: identifier];
     }
 }
 
