@@ -590,6 +590,26 @@ AC_SUBST(RECOGNIZER_BASE_CFLAGS)
 AC_SUBST(RECOGNIZER_ENGINE_CLASS)
 
 #--------------------------------------------------------------------
+# NSMovie / NSMovieView
+#--------------------------------------------------------------------
+AC_ARG_ENABLE(movie, 
+  [  --disable-movie          Disable NSMovie/NSMovieView functionality],,
+  enable_movie=yes)
+BUILD_MOVIE=
+
+# has pocketsphinx, for speech recognition.
+AC_CHECK_LIB(avcodec, avcodec_find_decoder, have_avcodec=yes, have_avcodec=no)
+AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
+if test $have_avcodec = yes -a $have_codec = yes -a $enable_movie = yes; then
+   AC_DEFINE(HAVE_AVCODEC,1,[Define if you have avcodec for NSMovie])
+#  AC_DEFINE(HAVE_AVCODEC,1)
+   MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale`
+   MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale`
+fi
+AC_SUBST(MOVIE_BASE_LIBS)
+AC_SUBST(MOVIE_BASE_CFLAGS)
+
+#--------------------------------------------------------------------
 # Find CUPS
 #--------------------------------------------------------------------
 GSCUPS_CFLAGS=

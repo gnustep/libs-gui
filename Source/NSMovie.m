@@ -140,7 +140,7 @@ NSString *_writeDataToTempFile(NSData *data)
 - (void) dealloc
 {
   _tmp = NO;
-  [[NSFileManager defaultManager] removeFileAtPath: [_url path] error: nil];
+  [[NSFileManager defaultManager] removeFileAtPath: [_url path] handler: nil];
   TEST_RELEASE(_url);
   TEST_RELEASE(_movie);
   

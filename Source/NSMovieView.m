@@ -39,6 +39,8 @@
 #import "AppKit/NSMovieView.h"
 #import "AppKit/NSPasteboard.h"
 
+#import "config.h"
+
 @implementation NSMovieView
 
 // private method to display frames...
@@ -50,8 +52,9 @@
 
 - (void) _prepareDecoder
 {
+#ifdef HAVE_AVCODEC  
   NSString *moviePath = [[_movie URL] path];
-  
+
   _formatContext = avformat_alloc_context();
   if (avformat_open_input(&_formatContext, [moviePath UTF8String], NULL, NULL) != 0) return;
   if (avformat_find_stream_info(_formatContext, NULL) < 0) return;
@@ -86,11 +89,12 @@
   _swsCtx = sws_getContext(_codecContext->width, _codecContext->height, _codecContext->pix_fmt,
 			   _codecContext->width, _codecContext->height, AV_PIX_FMT_RGB24,
 			   SWS_BILINEAR, NULL, NULL, NULL);
-
+#endif
 }
 
 - (void) _decodeAndDisplayNextFrame
 {
+#ifdef HAVE_AVCODEC  
   AVPacket packet;
 
   av_init_packet(&packet);
@@ -132,6 +136,7 @@
 	}
     av_packet_unref(&packet);
   }
+#endif
 }
 
 - (void) drawRect: (NSRect)dirtyRect
@@ -178,12 +183,14 @@
       _decodeTimer = nil;
     }
   
+#ifdef HAVE_AVCODEC    
   if (_avframe) av_frame_free(&_avframe);
   if (_avframeRGB) av_frame_free(&_avframeRGB);
   if (_buffer) av_free(_buffer);
   if (_codecContext) avcodec_free_context(&_codecContext);
   if (_formatContext) avformat_close_input(&_formatContext);
   if (_swsCtx) sws_freeContext(_swsCtx);
+#endif  
 }
 
 - (BOOL) isPlaying

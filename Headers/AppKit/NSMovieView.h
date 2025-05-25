@@ -32,10 +32,14 @@
 
 #import <AppKit/NSView.h>
 
+#import "config.h"
+
+#ifdef HAVE_AVCODEC
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
 #include <libavutil/imgutils.h>
+#endif
 
 @class NSMovie;
 
@@ -66,11 +70,13 @@ APPKIT_EXPORT_CLASS
 
     // libav specific...
     NSImage *_currentFrame;
+#ifdef HAVE_AVCODEC
     AVFormatContext *_formatContext;
     AVCodecContext *_codecContext;
     AVFrame *_avframe;
     AVFrame *_avframeRGB;
     struct SwsContext *_swsCtx;
+#endif
     int _videoStreamIndex;
     uint8_t *_buffer;
 }
