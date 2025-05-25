@@ -41,8 +41,9 @@ APPKIT_EXPORT_CLASS
 @interface NSMovie : NSObject <NSCopying, NSCoding> 
 {
   @private
-    NSData*  _movie;
-    NSURL*   _url;
+    NSData*   _movie;
+    NSURL*    _url;
+    BOOL      _tmp;
 }
 
 + (NSArray*) movieUnfilteredFileTypes;

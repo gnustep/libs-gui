@@ -32,6 +32,11 @@
 
 #import <AppKit/NSView.h>
 
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libswscale/swscale.h>
+#include <libavutil/imgutils.h>
+
 @class NSMovie;
 
 typedef enum {
@@ -56,6 +61,18 @@ APPKIT_EXPORT_CLASS
       unsigned int editable: 1;
       unsigned int reserved: 24;
     } _flags;
+    BOOL _playing;
+    NSTimer *_decodeTimer;
+
+    // libav specific...
+    NSImage *_currentFrame;
+    AVFormatContext *_formatContext;
+    AVCodecContext *_codecContext;
+    AVFrame *_avframe;
+    AVFrame *_avframeRGB;
+    struct SwsContext *_swsCtx;
+    int _videoStreamIndex;
+    uint8_t *_buffer;
 }
 
 - (void) setMovie: (NSMovie*)movie;

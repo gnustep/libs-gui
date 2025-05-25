@@ -30,20 +30,38 @@
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSURL.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSUUID.h>
+
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSPasteboard.h"
+
+NSString *_writeDataToTempFile(NSData *data)
+{
+  NSString *tempDirectory = NSTemporaryDirectory();
+  NSString *filename = [NSString stringWithFormat: @"tmpfile-%@.dat", [[NSUUID UUID] UUIDString]];
+  NSString *filepath = [tempDirectory stringByAppendingPathComponent: filename];
+  NSError *error = nil;
+
+  BOOL success = [data writeToFile: filepath options: NSDataWritingAtomic error: &error];
+  if (success)
+    {
+      return nil;
+    }
+  
+  return filepath;
+}
 
 @implementation NSMovie
 
 + (NSArray*) movieUnfilteredFileTypes
 {
-  return [NSArray arrayWithObject: @"mov"];
+  return [NSArray arrayWithObjects: @"mp4", @"mov", @"avi", @"flv", @"mkv", @"webm", nil ];
 }
 
 + (NSArray*) movieUnfilteredPasteboardTypes
 {
-  // FIXME
-  return [NSArray arrayWithObject: @"QuickTimeMovie"];
+  return [self movieUnfilteredFileTypes];
 }
 
 + (BOOL) canInitWithPasteboard: (NSPasteboard*)pasteboard
@@ -61,31 +79,33 @@
       RELEASE(self);
       return nil;
     }
-  
-  [super init];
-  ASSIGN(_movie, movie);
 
+  self = [super init];
+  if (self != nil)
+    {
+      NSString *filepath = _writeDataToTempFile(_movie);
+
+      _url = [NSURL fileURLWithPath: filepath];
+      _tmp = YES;
+      ASSIGN(_movie, movie);
+    }
+  
   return self;
 }
 
 - (id) initWithMovie: (void*)movie
 {
-  //FIXME
-
-  return self;
+  return [self initWithData: movie];
 }
 
 - (id) initWithURL: (NSURL*)url byReference: (BOOL)byRef
 {
-  NSData* data = [url resourceDataUsingCache: YES];
-
-  self = [self initWithData: data];
-
-  if (byRef)
+  self = [super init];
+  if (self != nil)
     {
       ASSIGN(_url, url);
     }
-
+  
   return self;
 }
 
@@ -94,12 +114,11 @@
   NSString *type;
   NSData* data;
 
-  type = [pasteboard availableTypeFromArray: 
-			 [object_getClass(self) movieUnfilteredPasteboardTypes]];
+  type =
+    [pasteboard availableTypeFromArray: 
+		  [object_getClass(self) movieUnfilteredPasteboardTypes]];
   if (type == nil)
     {
-      //NSArray *array = [pasteboard propertyListForType: NSFilenamesPboardType];
-      // FIXME
       data = nil;
     }
   else 
@@ -120,9 +139,11 @@
 
 - (void) dealloc
 {
+  _tmp = NO;
+  [[NSFileManager defaultManager] removeFileAtPath: [_url path] error: nil];
   TEST_RELEASE(_url);
   TEST_RELEASE(_movie);
-    
+  
   [super dealloc];
 }
 
