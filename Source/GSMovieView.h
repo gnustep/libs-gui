@@ -53,6 +53,7 @@ APPKIT_EXPORT_CLASS
   struct SwsContext *_swsCtx;
 #endif
   int _videoStreamIndex;
+  int _audioStreamIndex;
   uint8_t *_buffer;
   NSTimer *_decodeTimer;
 }
