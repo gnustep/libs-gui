@@ -44,10 +44,41 @@
 
 @implementation GSMovieView
 
-// private method to display frames...
+- (instancetype) initWithFrame: (NSRect)frame
+{
+  self = [super initWithFrame: frame];
+  if (self != nil)
+    {      
+      _videoStreamIndex = -1;
+      _decodeTimer = nil;
+      _currentFrame = nil;
+      _buffer = NULL;
+      _swsCtx = NULL;
+      _avframe = NULL;
+      _avframeRGB = NULL;
+      _codecContext = NULL;
+      _formatContext = NULL;
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  [self stop: nil];
+  RELEASE(_currentFrame);
+  [super dealloc];
+}
+
+- (void) resetDecoder
+{
+  [self stop: nil];
+  RELEASE(_currentFrame);
+  _videoStreamIndex = -1;
+}
+
 - (void) updateImage: (NSImage *)image
 {
-  _currentFrame = image;
+  ASSIGN(_currentFrame, image);
   [self setNeedsDisplay:YES];
 }
 
@@ -122,13 +153,16 @@
 						  colorSpaceName: NSCalibratedRGBColorSpace
 						     bytesPerRow: _avframeRGB->linesize[0]
 						    bitsPerPixel: 24];
-	      
-	      NSImage *image = [[NSImage alloc] initWithSize:NSMakeSize(_codecContext->width, _codecContext->height)];
+	      NSSize imageSize = NSMakeSize(_codecContext->width, _codecContext->height);
+	      NSImage *image = [[NSImage alloc] initWithSize: imageSize];
+
 	      [image addRepresentation:rep];
-	      
 	      [self performSelectorOnMainThread: @selector(updateImage:)
 				     withObject: image
 				  waitUntilDone: NO];
+	      // AUTORELEASE(image);
+	      AUTORELEASE(rep);
+	      
 	      break;
 	    }
 	}
@@ -147,6 +181,7 @@
 
 - (void) setMovie: (NSMovie*)movie
 {
+  [self resetDecoder];
   [super setMovie: movie];
   [self prepareDecoder];
 }
@@ -172,37 +207,44 @@
   if (_decodeTimer)
     {
       [_decodeTimer invalidate];
+      RELEASE(_decodeTimer);
       _decodeTimer = nil;
     }
   
   if (_avframe)
     {
       av_frame_free(&_avframe);
+      _avframe = NULL;
     }
   
   if (_avframeRGB)
     {
       av_frame_free(&_avframeRGB);
+      _avframeRGB = NULL;
     }
 
   if (_buffer)
     {
       av_free(_buffer);
+      _buffer = NULL;
     }
 
   if (_codecContext)
     {
       avcodec_free_context(&_codecContext);
+      _codecContext = NULL;
     }
 
   if (_formatContext)
     {
       avformat_close_input(&_formatContext);
+      _formatContext = NULL;
     }
 
   if (_swsCtx)
     {
       sws_freeContext(_swsCtx);
+      _swsCtx = NULL;
     }
 }
 
