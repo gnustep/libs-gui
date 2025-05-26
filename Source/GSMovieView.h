@@ -4,8 +4,8 @@
 
    Copyright <copy>(C) 2003 Free Software Foundation, Inc.</copy>
 
-   Author: Fred Kiefer <FredKiefer@gmx.de>
-   Date: March 2003
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
+   Date: May 2025
 
    This file is part of the GNUstep GUI Library.
 
