@@ -39,14 +39,19 @@
 #import "AppKit/NSImageRep.h"
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSPasteboard.h"
+#import "AppKit/NSSound.h"
 
 #import "GSMovieView.h"
 
+#include <libswresample/swresample.h>
+
 @interface FFmpegAudioPlayer : NSObject
 {
-  AVCodecContext *audioCodecCtx;
-  AVFrame *audioFrame;
-  SwrContext *swrCtx;
+  AVCodecContext *_audioCodecCtx;
+  AVFrame *_audioFrame;
+  SwrContext *_swrCtx;
+  NSMutableData *_audioBuffer;
+  NSSound *_sound;
 }
 
 - (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx streamIndex:(int)audioStreamIndex;
@@ -55,6 +60,7 @@
 @end
 
 @implementation FFmpegAudioPlayer
+
 - (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx streamIndex:(int)audioStreamIndex
 {
   AVCodecParameters *audioPar = formatCtx->streams[audioStreamIndex]->codecpar;
@@ -64,24 +70,24 @@
       NSLog(@"Audio codec not found.");
       return;
     }
-  audioCodecCtx = avcodec_alloc_context3(audioCodec);
-  avcodec_parameters_to_context(audioCodecCtx, audioPar);
-  if (avcodec_open2(audioCodecCtx, audioCodec, NULL) < 0)
+  _audioCodecCtx = avcodec_alloc_context3(audioCodec);
+  avcodec_parameters_to_context(_audioCodecCtx, audioPar);
+  if (avcodec_open2(_audioCodecCtx, audioCodec, NULL) < 0)
     {
-      NSLog(@"Failed to open audio codec.");
+      NSLog(@"Failed to open _audio codec.");
       return;
     }
 
-  audioFrame = av_frame_alloc();
-  swrCtx = swr_alloc_set_opts(NULL,
+  _audioFrame = av_frame_alloc();
+  _swrCtx = swr_alloc_set_opts(NULL,
 			      AV_CH_LAYOUT_STEREO,
 			      AV_SAMPLE_FMT_S16,
-			      audioCodecCtx->sample_rate,
-			      audioCodecCtx->channel_layout,
-			      audioCodecCtx->sample_fmt,
-			      audioCodecCtx->sample_rate,
+			      _audioCodecCtx->sample_rate,
+			      _audioCodecCtx->channel_layout,
+			      _audioCodecCtx->sample_fmt,
+			      _audioCodecCtx->sample_rate,
 			      0, NULL);
-  swr_init(swrCtx);
+  swr_init(_swrCtx);
 
   NSLog(@"Audio codec: %s, Sample rate: %d, Channels: %d",
 	audioCodec->name,
@@ -91,27 +97,27 @@
 
 - (void)decodeAudioPacket:(AVPacket *)packet
 {
-  if (!audioCodecCtx || !swrCtx) return;
-  if (avcodec_send_packet(audioCodecCtx, packet) < 0) return;
-  while (avcodec_receive_frame(audioCodecCtx, audioFrame) == 0)
+  if (!_audioCodecCtx || !_swrCtx) return;
+  if (avcodec_send_packet(_audioCodecCtx, packet) < 0) return;
+  while (avcodec_receive_frame(_audioCodecCtx, _audioFrame) == 0)
     {
-      int outSamples = audioFrame->nb_samples;
+      int outSamples = _audioFrame->nb_samples;
       int outBytes = av_samples_get_buffer_size(NULL, 2, outSamples, AV_SAMPLE_FMT_S16, 1);
       uint8_t *outBuf = (uint8_t *)malloc(outBytes);
       uint8_t *outPtrs[] = { outBuf };
       
-      swr_convert(swrCtx, outPtrs, outSamples,
-		  (const uint8_t **)audioFrame->data, outSamples);
+      swr_convert(_swrCtx, outPtrs, outSamples,
+		  (const uint8_t **)_audioFrame->data, outSamples);
       
-      [audioBuffer appendBytes:outBuf length:outBytes];
+      [_audioBuffer appendBytes:outBuf length:outBytes];
       free(outBuf);
     }
 }
 
 - (void)finalizeAndPlayBuffer
 {
-  int sampleRate = audioCodecCtx->sample_rate;
-  int outBytes = (int)[audioBuffer length];
+  int sampleRate = _audioCodecCtx->sample_rate;
+  int outBytes = (int)[_audioBuffer length];
   int byteRate = sampleRate * 2 * 2;
   int blockAlign = 2 * 2;
   
@@ -133,19 +139,20 @@
   
   [wav appendBytes:"data" length:4];
   [wav appendBytes:&outBytes length:4];
-  [wav appendData:audioBuffer];
+  [wav appendData:_audioBuffer];
   
-  sound = [[NSSound alloc] initWithData:wav];
-  [sound play];
+  _sound = [[NSSound alloc] initWithData:wav];
+  [_sound play];
 }
 
 - (void)dealloc
 {
-  if (audioFrame) av_frame_free(&audioFrame);
-  if (audioCodecCtx) avcodec_free_context(&audioCodecCtx);
-  if (swrCtx) swr_free(&swrCtx);
+  if (_audioFrame) av_frame_free(&_audioFrame);
+  if (_audioCodecCtx) avcodec_free_context(&_audioCodecCtx);
+  if (_swrCtx) swr_free(&_swrCtx);
   [super dealloc];
 }
+
 @end
 
 @implementation GSMovieView
@@ -178,19 +185,19 @@
 
 - (void)logStreamMetadata
 {
-  AVStream *vs = formatContext->streams[videoStreamIndex];
-  double duration = (double)formatContext->duration / AV_TIME_BASE;
+  AVStream *vs = _formatContext->streams[_videoStreamIndex];
+  double duration = (double)_formatContext->duration / AV_TIME_BASE;
   NSString *info = [NSString stringWithFormat:@"Video: %dx%d %@ %.2fs",
-			     codecContext->width,
-			     codecContext->height,
-			     [NSString stringWithUTF8String:avcodec_get_name(codecContext->codec_id)],
+			     _codecContext->width,
+			     _codecContext->height,
+			     [NSString stringWithUTF8String:avcodec_get_name(_codecContext->codec_id)],
 			     duration];
-  [metadataLabel setStringValue:info];
+  // [_metadataLabel setStringValue:info];
   NSLog(@"%@", info);
 
-  if (audioStreamIndex != -1)
+  if (_audioStreamIndex != -1)
     {
-      AVCodecParameters *ap = formatContext->streams[audioStreamIndex]->codecpar;
+      AVCodecParameters *ap = _formatContext->streams[_audioStreamIndex]->codecpar;
       NSLog(@"Audio codec: %s, sample rate: %d, channels: %d",
 	    avcodec_get_name(ap->codec_id),
 	    ap->sample_rate,
@@ -224,12 +231,11 @@
   _audioStreamIndex = -1;
   for (int i = 0; i < _formatContext->nb_streams; i++)
     {
-      AVMediaType type = formatContext->streams[i]->codecpar->codec_type;
-      if (type == AVMEDIA_TYPE_VIDEO && _videoStreamIndex == -1)
+      if (_formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO && _videoStreamIndex == -1)
 	{
 	  _videoStreamIndex = i;
 	}
-      else if (type == AVMEDIA_TYPE_AUDIO && _audioStreamIndex == -1)
+      else if (_formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO && _audioStreamIndex == -1)
 	{
 	  _audioStreamIndex = i;
 	}
@@ -255,6 +261,8 @@
   _swsCtx = sws_getContext(_codecContext->width, _codecContext->height, _codecContext->pix_fmt,
 			   _codecContext->width, _codecContext->height, AV_PIX_FMT_RGB24,
 			   SWS_BILINEAR, NULL, NULL, NULL);
+
+  [self logStreamMetadata];
 }
 
 - (void) decodeAndDisplayNextFrame
