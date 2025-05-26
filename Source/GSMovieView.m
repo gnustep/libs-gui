@@ -126,7 +126,7 @@
 	      NSImage *image = [[NSImage alloc] initWithSize:NSMakeSize(_codecContext->width, _codecContext->height)];
 	      [image addRepresentation:rep];
 	      
-	      [self performSelectorOnMainThread: @selector(_updateImage:)
+	      [self performSelectorOnMainThread: @selector(updateImage:)
 				     withObject: image
 				  waitUntilDone: NO];
 	      break;

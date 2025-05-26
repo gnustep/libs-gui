@@ -26,6 +26,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import "config.h"
+
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSTimer.h>
@@ -45,14 +47,16 @@
 
 @implementation NSMovieView
 
-- (id) initWithFrame: (NSRect)frame
-{
 #ifdef HAVE_AVCODEC
-  return [[GSMovieView alloc] initWithFrame: frame];
-#else
-  return nil;
-#endif
++ (id) allocWithZone: (NSZone *)zone
+{
+  if (self == [NSMovieView class])
+    {
+      return [GSMovieView allocWithZone: zone];
+    }
+  return [super allocWithZone: zone];
 }
+#endif
 
 - (void) setMovie: (NSMovie*)movie
 {
