@@ -60,50 +60,184 @@ APPKIT_EXPORT_CLASS
   } _flags;
 }
 
+/**
+ * Set the movie to be displayed in the view.
+ */
 - (void) setMovie: (NSMovie*)movie;
+
+/**
+ * Get the current movie displayed in the view.
+ */
 - (NSMovie*) movie;
 
+/**
+ * Start movie playback.
+ */
 - (void) start: (id)sender;
+
+/**
+ * Stop movie playback.
+ */
 - (void) stop: (id)sender;
+
+/**
+ * Check whether the movie is currently playing.
+ */
 - (BOOL) isPlaying;
 
+/**
+ * Go to the movie's poster frame.
+ */
 - (void) gotoPosterFrame: (id)sender;
+
+/**
+ * Move to the beginning of the movie.
+ */
 - (void) gotoBeginning: (id)sender;
+
+/**
+ * Move to the end of the movie.
+ */
 - (void) gotoEnd: (id)sender;
+
+/**
+ * Step forward one frame in the movie.
+ */
 - (void) stepForward: (id)sender;
+
+/**
+ * Step backward one frame in the movie.
+ */
 - (void) stepBack: (id)sender;
 
+/**
+ * Set the playback rate for the movie.
+ */
 - (void) setRate: (float)rate;
+
+/**
+ * Get the current playback rate.
+ */
 - (float) rate;
 
+/**
+ * Set the playback volume.
+ */
 - (void) setVolume: (float)volume;
+
+/**
+ * Get the current playback volume.
+ */
 - (float) volume;
+
+/**
+ * Mute or unmute the playback.
+ */
 - (void) setMuted: (BOOL)mute;
+
+/**
+ * Return whether the playback is muted.
+ */
 - (BOOL) isMuted;
 
+/**
+ * Set the loop mode for playback.
+ */
 - (void) setLoopMode: (NSQTMovieLoopMode)mode;
+
+/**
+ * Get the current loop mode.
+ */
 - (NSQTMovieLoopMode) loopMode;
+
+/**
+ * Set whether only the selected portion should play.
+ */
 - (void) setPlaysSelectionOnly: (BOOL)flag;
+
+/**
+ * Return whether only the selection is played.
+ */
 - (BOOL) playsSelectionOnly;
+
+/**
+ * Set whether to play every frame regardless of timing.
+ */
 - (void) setPlaysEveryFrame: (BOOL)flag;
+
+/**
+ * Return whether every frame is being played.
+ */
 - (BOOL) playsEveryFrame;
 
+/**
+ * Show or hide the movie controller and optionally adjust view size.
+ */
 - (void) showController: (BOOL)show adjustingSize: (BOOL)adjustSize;
+
+/**
+ * Get a pointer to the movie controller.
+ */
 - (void*) movieController;
+
+/**
+ * Check whether the controller is currently visible.
+ */
 - (BOOL) isControllerVisible;
 
+/**
+ * Get the rectangle in which the movie is displayed.
+ */
 - (NSRect) movieRect;
+
+/**
+ * Resize the view based on a magnification factor.
+ */
 - (void) resizeWithMagnification: (float)magnification;
+
+/**
+ * Calculate the size of the view at a given magnification.
+ */
 - (NSSize) sizeForMagnification: (float)magnification;
 
+/**
+ * Set whether the movie view is editable.
+ */
 - (void) setEditable: (BOOL)editable;
+
+/**
+ * Return whether the movie view is editable.
+ */
 - (BOOL) isEditable;
 
+/**
+ * Cut the selected movie content.
+ */
 - (void) cut: (id)sender;
+
+/**
+ * Copy the selected movie content.
+ */
 - (void) copy: (id)sender;
+
+/**
+ * Paste movie content from the pasteboard.
+ */
 - (void) paste: (id)sender;
+
+/**
+ * Clear the selected movie content.
+ */
 - (void) clear: (id)sender;
+
+/**
+ * Undo the last operation.
+ */
 - (void) undo: (id)sender;
+
+/**
+ * Select all content in the movie view.
+ */
 - (void) selectAll: (id)sender;
 
 @end
