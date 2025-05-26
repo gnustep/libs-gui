@@ -172,6 +172,7 @@
       _avframeRGB = NULL;
       _codecContext = NULL;
       _formatContext = NULL;
+      _audioPlayer = [[FFmpegAudioPlayer alloc] init];
     }
   return self;
 }
@@ -180,6 +181,7 @@
 {
   [self stop: nil];
   RELEASE(_currentFrame);
+  RELEASE(_audioPlayer);
   [super dealloc];
 }
 
@@ -217,6 +219,7 @@
 {
   ASSIGN(_currentFrame, image);
   [self setNeedsDisplay:YES];
+  [_audioPlayer finalizeAndPlayBuffer];
 }
 
 - (void) prepareDecoder
@@ -231,18 +234,25 @@
   _audioStreamIndex = -1;
   for (int i = 0; i < _formatContext->nb_streams; i++)
     {
-      if (_formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO && _videoStreamIndex == -1)
+      if (_formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO
+	  && _videoStreamIndex == -1)
 	{
 	  _videoStreamIndex = i;
 	}
-      else if (_formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO && _audioStreamIndex == -1)
+      else if (_formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO
+	       && _audioStreamIndex == -1)
 	{
 	  _audioStreamIndex = i;
 	}
     }
 
   if (_videoStreamIndex == -1) return;
-
+  if (_audioStreamIndex != -1)
+    {
+      [_audioPlayer prepareAudioWithFormatContext: _formatContext
+				      streamIndex: _audioStreamIndex];
+    }
+  
   AVCodecParameters *codecPar = _formatContext->streams[_videoStreamIndex]->codecpar;
   const AVCodec *codec = avcodec_find_decoder(codecPar->codec_id);
 
@@ -308,6 +318,10 @@
 
 	      break;
 	    }
+	}
+      else if (packet.stream_index == _audioStreamIndex)
+	{
+	  [_audioPlayer decodeAudioPacket: &packet];
 	}
     av_packet_unref(&packet);
   }

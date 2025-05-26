@@ -40,6 +40,7 @@
 
 @class NSImage;
 @class NSTimer;
+@class FFmpegAudioPlayer;
 
 APPKIT_EXPORT_CLASS
 @interface GSMovieView : NSMovieView
@@ -56,6 +57,7 @@ APPKIT_EXPORT_CLASS
   int _audioStreamIndex;
   uint8_t *_buffer;
   NSTimer *_decodeTimer;
+  FFmpegAudioPlayer *_audioPlayer;
 }
 
 - (void) updateImage: (NSImage *)image;
