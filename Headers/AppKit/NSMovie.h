@@ -48,15 +48,44 @@ APPKIT_EXPORT_CLASS
     BOOL      _tmp;
 }
 
+/**
+ * An array of all of the types NSMovie can support.
+ */
 + (NSArray*) movieUnfilteredFileTypes;
+
+/**
+ * An array of all of the pasteboard types NSMovie can support.
+ */
 + (NSArray*) movieUnfilteredPasteboardTypes;
+
+/**
+ * Returns YES, if the object can be initialized with the given pasteboard.
+ */
 + (BOOL) canInitWithPasteboard: (NSPasteboard*)pasteboard;
 
-- (id) initWithMovie: (void*)movie;
-- (id) initWithURL: (NSURL*)url byReference: (BOOL)byRef;
-- (id) initWithPasteboard: (NSPasteboard*)pasteboard;
+/**
+ * Returns an NSMovie with the raw data pointed to by movie.
+ */
+- (instancetype) initWithMovie: (void*)movie;
 
+/**
+ * Returns an NSMovie with the given URL. byRef should be YES if it is by reference.
+ */
+- (instancetype) initWithURL: (NSURL*)url byReference: (BOOL)byRef;
+
+/**
+ * Returns an NSMovie initialized with the pasteboard passed in.
+ */
+- (instancetype) initWithPasteboard: (NSPasteboard*)pasteboard;
+
+/**
+ * Returns the raw data for the movie.
+ */
 - (void*) QTMovie;
+
+/**
+ * Returns the URL of the movie to be played.
+ */
 - (NSURL*) URL;
 
 @end

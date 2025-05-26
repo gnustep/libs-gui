@@ -74,7 +74,7 @@ NSString *_writeDataToTempFile(NSData *data)
   return ([pbTypes firstObjectCommonWithArray: myTypes] != nil);
 }
 
-- (id) initWithData: (NSData *)movie
+- (instancetype) initWithData: (NSData *)movie
 {
   if (movie == nil)
     {
@@ -95,12 +95,12 @@ NSString *_writeDataToTempFile(NSData *data)
   return self;
 }
 
-- (id) initWithMovie: (void*)movie
+- (instancetype) initWithMovie: (void*)movie
 {
   return [self initWithData: movie];
 }
 
-- (id) initWithURL: (NSURL*)url byReference: (BOOL)byRef
+- (instancetype) initWithURL: (NSURL*)url byReference: (BOOL)byRef
 {
   self = [super init];
   if (self != nil)
@@ -111,7 +111,7 @@ NSString *_writeDataToTempFile(NSData *data)
   return self;
 }
 
-- (id) initWithPasteboard: (NSPasteboard*)pasteboard
+- (instancetype) initWithPasteboard: (NSPasteboard*)pasteboard
 {
   NSString *type;
   NSData* data;
@@ -183,7 +183,7 @@ NSString *_writeDataToTempFile(NSData *data)
     }
 }
 
-- (id) initWithCoder: (NSCoder*)aDecoder
+- (instancetype) initWithCoder: (NSCoder*)aDecoder
 {
   if ([aDecoder allowsKeyedCoding])
     {
