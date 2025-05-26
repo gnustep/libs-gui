@@ -39,13 +39,19 @@
 #import "AppKit/NSMovieView.h"
 #import "AppKit/NSPasteboard.h"
 
+#ifdef HAVE_AVCODEC
 #import "GSMovieView.h"
+#endif
 
 @implementation NSMovieView
 
 - (id) initWithFrame: (NSRect)frame
 {
+#ifdef HAVE_AVCODEC
   return [[GSMovieView alloc] initWithFrame: frame];
+#else
+  return nil;
+#endif
 }
 
 - (void) setMovie: (NSMovie*)movie

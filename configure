@@ -663,6 +663,7 @@ GSCUPS_LIBS
 GSCUPS_LDFLAGS
 GSCUPS_CFLAGS
 have_cups
+BUILD_MOVIE
 MOVIE_BASE_CFLAGS
 MOVIE_BASE_LIBS
 RECOGNIZER_ENGINE_CLASS
@@ -6409,7 +6410,7 @@ fi
 
 BUILD_MOVIE=
 
-# has pocketsphinx, for speech recognition.
+# has avcodec
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for avcodec_find_decoder in -lavcodec" >&5
 printf %s "checking for avcodec_find_decoder in -lavcodec... " >&6; }
 if test ${ac_cv_lib_avcodec_avcodec_find_decoder+y}
@@ -6468,10 +6469,11 @@ if test $have_avcodec = yes -a $have_codec = yes -a $enable_movie = yes; then
 
 printf "%s\n" "#define HAVE_AVCODEC 1" >>confdefs.h
 
-#  AC_DEFINE(HAVE_AVCODEC,1)
+   BUILD_MOVIE="yes"
    MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale`
    MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale`
 fi
+
 
 
 
