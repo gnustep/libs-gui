@@ -28,18 +28,9 @@
 
 #ifndef _GNUstep_H_NSMovieView
 #define _GNUstep_H_NSMovieView
+
 #import <AppKit/AppKitDefines.h>
-
 #import <AppKit/NSView.h>
-
-#import "config.h"
-
-#ifdef HAVE_AVCODEC
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libswscale/swscale.h>
-#include <libavutil/imgutils.h>
-#endif
 
 @class NSMovie;
 
@@ -52,33 +43,19 @@ typedef enum {
 APPKIT_EXPORT_CLASS
 @interface NSMovieView : NSView
 {
-  @protected
-    NSMovie* _movie;
-    float _rate;
-    float _volume;
-    struct NSMovieViewFlags {
-      unsigned int muted: 1;
-      unsigned int loopMode: 3;
-      unsigned int plays_selection_only: 1;
-      unsigned int plays_every_frame: 1;
-      unsigned int is_controller_visible: 1;
-      unsigned int editable: 1;
-      unsigned int reserved: 24;
-    } _flags;
-    BOOL _playing;
-    NSTimer *_decodeTimer;
-
-    // libav specific...
-    NSImage *_currentFrame;
-#ifdef HAVE_AVCODEC
-    AVFormatContext *_formatContext;
-    AVCodecContext *_codecContext;
-    AVFrame *_avframe;
-    AVFrame *_avframeRGB;
-    struct SwsContext *_swsCtx;
-#endif
-    int _videoStreamIndex;
-    uint8_t *_buffer;
+  NSMovie* _movie;
+  float _rate;
+  float _volume;
+  BOOL _playing;
+  struct NSMovieViewFlags {
+    unsigned int muted: 1;
+    unsigned int loopMode: 3;
+    unsigned int plays_selection_only: 1;
+    unsigned int plays_every_frame: 1;
+    unsigned int is_controller_visible: 1;
+    unsigned int editable: 1;
+    unsigned int reserved: 24;
+  } _flags;
 }
 
 - (void) setMovie: (NSMovie*)movie;

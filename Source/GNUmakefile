@@ -331,6 +331,7 @@ GSHorizontalTypesetter.m \
 GSGormLoading.m \
 GSIconManager.m \
 GSImageMagickImageRep.m \
+GSMovieView.m \
 GSNibLoading.m \
 GSTheme.m \
 GSThemeDrawing.m \
