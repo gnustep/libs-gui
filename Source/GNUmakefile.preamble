@@ -52,7 +52,7 @@ endif
 ADDITIONAL_OBJCFLAGS = -Wall
 
 # Additional flags to pass to the C compiler
-ADDITIONAL_CFLAGS = $(MOVIE_BASE_CFLAGS)
+ADDITIONAL_CFLAGS += $(MOVIE_BASE_CFLAGS) $(SOUND_CFLAGS)
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers \
@@ -62,7 +62,7 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers \
 # ADDITIONAL_LDFLAGS = 
 
 # Additional library directories the linker should search
-ADDITIONAL_LIB_DIRS = $(MOVIE_BASE_LIBS)
+ADDITIONAL_LIB_DIRS += $(MOVIE_BASE_LIBS) $(SOUND_LIBS)
 
 #
 # Sparc systems cannot load tiff files due to some problem compiling

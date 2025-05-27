@@ -543,8 +543,12 @@ AC_CHECK_HEADERS(ao/ao.h, have_ao=yes, have_ao=no)
 # Only if we have both...
 if test $have_sndfile = yes -a $have_ao = yes -a $enable_sound = yes; then
    BUILD_SOUND="sound"
+   SOUND_LIBS=`pkg-config --libs sndfile ao`
+   SOUND_CFLAGS=`pkg-config --cflags sndfile ao`
 fi
 AC_SUBST(BUILD_SOUND)
+AC_SUBST(SOUND_LIBS)
+AC_SUBST(SOUND_CFLAGS)
 
 #--------------------------------------------------------------------
 # NSSpeechSynthesizer

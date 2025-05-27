@@ -671,6 +671,8 @@ RECOGNIZER_BASE_CFLAGS
 RECOGNIZER_BASE_LIBS
 BUILD_SPEECH_RECOGNIZER
 BUILD_SPEECH
+SOUND_CFLAGS
+SOUND_LIBS
 BUILD_SOUND
 HAVE_ICU
 ICU_CFLAGS
@@ -6196,7 +6198,11 @@ done
 # Only if we have both...
 if test $have_sndfile = yes -a $have_ao = yes -a $enable_sound = yes; then
    BUILD_SOUND="sound"
+   SOUND_LIBS=`pkg-config --libs sndfile ao`
+   SOUND_CFLAGS=`pkg-config --cflags sndfile ao`
 fi
+
+
 
 
 #--------------------------------------------------------------------

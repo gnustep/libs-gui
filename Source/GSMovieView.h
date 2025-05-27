@@ -30,12 +30,15 @@
 #define _GNUstep_H_GSMovieView
 
 #import "config.h"
-
 #import "AppKit/NSMovieView.h"
 
+#include <ao/ao.h>
+
+/* FFmpeg headers */
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
+#include <libswresample/swresample.h>
 #include <libavutil/imgutils.h>
 
 @class NSImage;

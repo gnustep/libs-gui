@@ -50,106 +50,108 @@
   AVCodecContext *_audioCodecCtx;
   AVFrame *_audioFrame;
   SwrContext *_swrCtx;
-  NSMutableData *_audioBuffer;
-  NSSound *_sound;
+  ao_device *_aoDev;
+  ao_sample_format _aoFmt;  
 }
 
-- (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx streamIndex:(int)audioStreamIndex;
+- (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
+			  streamIndex:(int)audioStreamIndex;
 - (void)decodeAudioPacket:(AVPacket *)packet;
 
 @end
 
 @implementation FFmpegAudioPlayer
 
-- (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx streamIndex:(int)audioStreamIndex
+- (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
+                           streamIndex:(int)audioStreamIndex
 {
+  ao_initialize();
+  int driver = ao_default_driver_id();
+
   AVCodecParameters *audioPar = formatCtx->streams[audioStreamIndex]->codecpar;
   AVCodec *audioCodec = avcodec_find_decoder(audioPar->codec_id);
+
   if (!audioCodec)
     {
       NSLog(@"Audio codec not found.");
       return;
     }
+
   _audioCodecCtx = avcodec_alloc_context3(audioCodec);
   avcodec_parameters_to_context(_audioCodecCtx, audioPar);
+
   if (avcodec_open2(_audioCodecCtx, audioCodec, NULL) < 0)
     {
-      NSLog(@"Failed to open _audio codec.");
+      NSLog(@"Failed to open audio codec.");
       return;
     }
 
   _audioFrame = av_frame_alloc();
   _swrCtx = swr_alloc_set_opts(NULL,
-			      AV_CH_LAYOUT_STEREO,
-			      AV_SAMPLE_FMT_S16,
-			      _audioCodecCtx->sample_rate,
-			      _audioCodecCtx->channel_layout,
-			      _audioCodecCtx->sample_fmt,
-			      _audioCodecCtx->sample_rate,
-			      0, NULL);
+                               AV_CH_LAYOUT_STEREO,
+                               AV_SAMPLE_FMT_S16,
+                               _audioCodecCtx->sample_rate,
+                               _audioCodecCtx->channel_layout,
+                               _audioCodecCtx->sample_fmt,
+                               _audioCodecCtx->sample_rate,
+                               0, NULL);
   swr_init(_swrCtx);
 
+  memset(&_aoFmt, 0, sizeof(ao_sample_format));
+  _aoFmt.bits = 16;
+  _aoFmt.channels = 2;
+  _aoFmt.rate = _audioCodecCtx->sample_rate;
+  _aoFmt.byte_format = AO_FMT_NATIVE;
+
+  _aoDev = ao_open_live(driver, &_aoFmt, NULL);
+
+  if (!_aoDev)
+    NSLog(@"Failed to open AO device.");
+
   NSLog(@"Audio codec: %s, Sample rate: %d, Channels: %d",
-	audioCodec->name,
-	audioPar->sample_rate,
-	audioPar->channels);
+        audioCodec->name,
+        audioPar->sample_rate,
+        audioPar->channels);
 }
 
 - (void)decodeAudioPacket:(AVPacket *)packet
 {
-  if (!_audioCodecCtx || !_swrCtx) return;
-  if (avcodec_send_packet(_audioCodecCtx, packet) < 0) return;
+  if (!_audioCodecCtx || !_swrCtx || !_aoDev)
+    return;
+
+  if (avcodec_send_packet(_audioCodecCtx, packet) < 0)
+    return;
+
   while (avcodec_receive_frame(_audioCodecCtx, _audioFrame) == 0)
     {
       int outSamples = _audioFrame->nb_samples;
       int outBytes = av_samples_get_buffer_size(NULL, 2, outSamples, AV_SAMPLE_FMT_S16, 1);
-      uint8_t *outBuf = (uint8_t *)malloc(outBytes);
+      uint8_t *outBuf = (uint8_t *) malloc(outBytes);
       uint8_t *outPtrs[] = { outBuf };
-      
+
       swr_convert(_swrCtx, outPtrs, outSamples,
-		  (const uint8_t **)_audioFrame->data, outSamples);
-      
-      [_audioBuffer appendBytes:outBuf length:outBytes];
+                  (const uint8_t **) _audioFrame->data, outSamples);
+
+      ao_play(_aoDev, (char *) outBuf, outBytes);
       free(outBuf);
     }
 }
 
-- (void)finalizeAndPlayBuffer
-{
-  int sampleRate = _audioCodecCtx->sample_rate;
-  int outBytes = (int)[_audioBuffer length];
-  int byteRate = sampleRate * 2 * 2;
-  int blockAlign = 2 * 2;
-  
-  NSMutableData *wav = [NSMutableData data];
-  [wav appendBytes:"RIFF" length:4];
-  uint32_t chunkSize = 36 + outBytes;
-  [wav appendBytes:&chunkSize length:4];
-  [wav appendBytes:"WAVEfmt " length:8];
-  
-  uint32_t subchunk1Size = 16;
-  [wav appendBytes:&subchunk1Size length:4];
-  uint16_t audioFormat = 1, numChannels = 2, bitsPerSample = 16;
-  [wav appendBytes:&audioFormat length:2];
-  [wav appendBytes:&numChannels length:2];
-  [wav appendBytes:&sampleRate length:4];
-  [wav appendBytes:&byteRate length:4];
-  [wav appendBytes:&blockAlign length:2];
-  [wav appendBytes:&bitsPerSample length:2];
-  
-  [wav appendBytes:"data" length:4];
-  [wav appendBytes:&outBytes length:4];
-  [wav appendData:_audioBuffer];
-  
-  _sound = [[NSSound alloc] initWithData:wav];
-  [_sound play];
-}
-
 - (void)dealloc
 {
-  if (_audioFrame) av_frame_free(&_audioFrame);
-  if (_audioCodecCtx) avcodec_free_context(&_audioCodecCtx);
-  if (_swrCtx) swr_free(&_swrCtx);
+  if (_audioFrame)
+    av_frame_free(&_audioFrame);
+
+  if (_audioCodecCtx)
+    avcodec_free_context(&_audioCodecCtx);
+
+  if (_swrCtx)
+    swr_free(&_swrCtx);
+
+  if (_aoDev)
+    ao_close(_aoDev);
+
+  ao_shutdown();
   [super dealloc];
 }
 
@@ -219,7 +221,7 @@
 {
   ASSIGN(_currentFrame, image);
   [self setNeedsDisplay:YES];
-  [_audioPlayer finalizeAndPlayBuffer];
+  // [_audioPlayer finalizeAndPlayBuffer];
 }
 
 - (void) prepareDecoder
