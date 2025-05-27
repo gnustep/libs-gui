@@ -31,6 +31,7 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSTimer.h>
+#import <Foundation/NSThread.h>
 #import <Foundation/NSURL.h>
 
 #import "AppKit/NSColor.h"
@@ -44,6 +45,7 @@
 #import "GSMovieView.h"
 
 #include <libswresample/swresample.h>
+
 @interface FFmpegAudioPlayer : NSObject
 {
   AVCodecContext *_audioCodecCtx;
@@ -54,48 +56,39 @@
   int64_t _lastPTS;
   int64_t _audioClock;
   AVRational _timeBase;
+  NSMutableArray *_audioPackets;
+  NSThread *_audioThread;
+  BOOL _running;
 }
 
 - (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
                            streamIndex:(int)audioStreamIndex;
 - (void)decodeAudioPacket:(AVPacket *)packet;
+- (void)startAudioThread;
+- (void)stopAudioThread;
+- (void)submitPacket:(AVPacket *)packet;
+
 @end
 
 @implementation FFmpegAudioPlayer
 
-- (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
-                           streamIndex:(int)audioStreamIndex
+- (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx streamIndex:(int)audioStreamIndex
 {
   ao_initialize();
   int driver = ao_default_driver_id();
 
   AVCodecParameters *audioPar = formatCtx->streams[audioStreamIndex]->codecpar;
   AVCodec *audioCodec = avcodec_find_decoder(audioPar->codec_id);
-
-  if (!audioCodec)
-    {
-      NSLog(@"Audio codec not found.");
-      return;
-    }
+  if (!audioCodec) return;
 
   _audioCodecCtx = avcodec_alloc_context3(audioCodec);
   avcodec_parameters_to_context(_audioCodecCtx, audioPar);
-
-  if (avcodec_open2(_audioCodecCtx, audioCodec, NULL) < 0)
-    {
-      NSLog(@"Failed to open audio codec.");
-      return;
-    }
+  if (avcodec_open2(_audioCodecCtx, audioCodec, NULL) < 0) return;
 
   _audioFrame = av_frame_alloc();
-  _swrCtx = swr_alloc_set_opts(NULL,
-                               AV_CH_LAYOUT_STEREO,
-                               AV_SAMPLE_FMT_S16,
-                               _audioCodecCtx->sample_rate,
-                               _audioCodecCtx->channel_layout,
-                               _audioCodecCtx->sample_fmt,
-                               _audioCodecCtx->sample_rate,
-                               0, NULL);
+  _swrCtx = swr_alloc_set_opts(NULL, AV_CH_LAYOUT_STEREO, AV_SAMPLE_FMT_S16, _audioCodecCtx->sample_rate,
+                               _audioCodecCtx->channel_layout, _audioCodecCtx->sample_fmt,
+                               _audioCodecCtx->sample_rate, 0, NULL);
   swr_init(_swrCtx);
 
   memset(&_aoFmt, 0, sizeof(ao_sample_format));
@@ -103,29 +96,67 @@
   _aoFmt.channels = 2;
   _aoFmt.rate = _audioCodecCtx->sample_rate;
   _aoFmt.byte_format = AO_FMT_NATIVE;
-
   _aoDev = ao_open_live(driver, &_aoFmt, NULL);
-
-  if (!_aoDev)
-    NSLog(@"Failed to open AO device.");
 
   _timeBase = formatCtx->streams[audioStreamIndex]->time_base;
   _lastPTS = 0;
   _audioClock = av_gettime();
+  _audioPackets = [[NSMutableArray alloc] init];
+  _running = YES;
+  _audioThread = [[NSThread alloc] initWithTarget:self selector:@selector(audioThreadEntry) object:nil];
+  [_audioThread start];
+}
 
-  NSLog(@"Audio codec: %s, Sample rate: %d, Channels: %d",
-        audioCodec->name,
-        audioPar->sample_rate,
-        audioPar->channels);
+- (void)submitPacket:(AVPacket *)packet
+{
+  NSData *data = [NSData dataWithBytes: packet->data
+				length: packet->size];
+  NSNumber *pts = [NSNumber numberWithInt: (packet->pts)];
+  NSDictionary *dict = @{ @"data": data, @"pts": pts };
+
+  @synchronized (_audioPackets)
+    {
+      [_audioPackets addObject: dict];
+    }
+}
+
+- (void)audioThreadEntry
+{
+  while (_running)
+    {
+      @autoreleasepool {
+        NSDictionary *dict = nil;
+        @synchronized (_audioPackets) {
+          if ([_audioPackets count] > 0)
+            {
+              dict = [[_audioPackets objectAtIndex:0] retain];
+              [_audioPackets removeObjectAtIndex:0];
+            }
+        }
+        if (dict)
+          {
+            NSData *data = dict[@"data"];
+            NSNumber *pts = dict[@"pts"];
+
+            AVPacket packet;
+            av_init_packet(&packet);
+            packet.data = (uint8_t *)data.bytes;
+            packet.size = (int)data.length;
+            packet.pts = pts.longLongValue;
+
+            [self decodeAudioPacket:&packet];
+            [dict release];
+          }
+        else
+          usleep(1000);
+      }
+    }
 }
 
 - (void)decodeAudioPacket:(AVPacket *)packet
 {
-  if (!_audioCodecCtx || !_swrCtx || !_aoDev)
-    return;
-
-  if (avcodec_send_packet(_audioCodecCtx, packet) < 0)
-    return;
+  if (!_audioCodecCtx || !_swrCtx || !_aoDev) return;
+  if (avcodec_send_packet(_audioCodecCtx, packet) < 0) return;
 
   while (avcodec_receive_frame(_audioCodecCtx, _audioFrame) == 0)
     {
@@ -137,25 +168,6 @@
       swr_convert(_swrCtx, outPtrs, outSamples,
                   (const uint8_t **) _audioFrame->data, outSamples);
 
-      int64_t currentPTS = _audioFrame->pts;
-      if (currentPTS != AV_NOPTS_VALUE)
-        {
-          int64_t pts_time = av_rescale_q(currentPTS, _timeBase, (AVRational){1, 1000000});
-          int64_t now = av_gettime();
-
-          if (_lastPTS != 0 && pts_time > _lastPTS)
-            {
-              int64_t expected_delay = pts_time - _lastPTS;
-              int64_t actual_delay = now - _audioClock;
-              int64_t diff = expected_delay - actual_delay;
-              if (diff > 0 && diff < 500000)
-                usleep((useconds_t)diff);
-            }
-
-          _lastPTS = pts_time;
-          _audioClock = av_gettime();
-        }
-
       ao_play(_aoDev, (char *) outBuf, outBytes);
       free(outBuf);
     }
@@ -163,18 +175,16 @@
 
 - (void)dealloc
 {
-  if (_audioFrame)
-    av_frame_free(&_audioFrame);
+  _running = NO;
+  [_audioThread cancel];
+  while (![_audioThread isFinished]) usleep(1000);
+  RELEASE(_audioThread);
 
-  if (_audioCodecCtx)
-    avcodec_free_context(&_audioCodecCtx);
-
-  if (_swrCtx)
-    swr_free(&_swrCtx);
-
-  if (_aoDev)
-    ao_close(_aoDev);
-
+  if (_audioFrame) av_frame_free(&_audioFrame);
+  if (_audioCodecCtx) avcodec_free_context(&_audioCodecCtx);
+  if (_swrCtx) swr_free(&_swrCtx);
+  if (_aoDev) ao_close(_aoDev);
+  [_audioPackets release];
   ao_shutdown();
   [super dealloc];
 }
@@ -245,7 +255,6 @@
 {
   ASSIGN(_currentFrame, image);
   [self setNeedsDisplay:YES];
-  // [_audioPlayer finalizeAndPlayBuffer];
 }
 
 - (void) prepareDecoder
@@ -339,7 +348,6 @@
 	      [self performSelectorOnMainThread: @selector(updateImage:)
 				     withObject: image
 				  waitUntilDone: NO];
-	      // AUTORELEASE(image);
 	      AUTORELEASE(rep);
 
 	      break;
@@ -347,7 +355,7 @@
 	}
       else if (packet.stream_index == _audioStreamIndex)
 	{
-	  [_audioPlayer decodeAudioPacket: &packet];
+	  [_audioPlayer submitPacket: &packet];
 	}
     av_packet_unref(&packet);
   }
