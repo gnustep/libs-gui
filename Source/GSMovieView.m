@@ -44,20 +44,21 @@
 #import "GSMovieView.h"
 
 #include <libswresample/swresample.h>
-
 @interface FFmpegAudioPlayer : NSObject
 {
   AVCodecContext *_audioCodecCtx;
   AVFrame *_audioFrame;
   SwrContext *_swrCtx;
   ao_device *_aoDev;
-  ao_sample_format _aoFmt;  
+  ao_sample_format _aoFmt;
+  int64_t _lastPTS;
+  int64_t _audioClock;
+  AVRational _timeBase;
 }
 
 - (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
-			  streamIndex:(int)audioStreamIndex;
+                           streamIndex:(int)audioStreamIndex;
 - (void)decodeAudioPacket:(AVPacket *)packet;
-
 @end
 
 @implementation FFmpegAudioPlayer
@@ -108,6 +109,10 @@
   if (!_aoDev)
     NSLog(@"Failed to open AO device.");
 
+  _timeBase = formatCtx->streams[audioStreamIndex]->time_base;
+  _lastPTS = 0;
+  _audioClock = av_gettime();
+
   NSLog(@"Audio codec: %s, Sample rate: %d, Channels: %d",
         audioCodec->name,
         audioPar->sample_rate,
@@ -131,6 +136,25 @@
 
       swr_convert(_swrCtx, outPtrs, outSamples,
                   (const uint8_t **) _audioFrame->data, outSamples);
+
+      int64_t currentPTS = _audioFrame->pts;
+      if (currentPTS != AV_NOPTS_VALUE)
+        {
+          int64_t pts_time = av_rescale_q(currentPTS, _timeBase, (AVRational){1, 1000000});
+          int64_t now = av_gettime();
+
+          if (_lastPTS != 0 && pts_time > _lastPTS)
+            {
+              int64_t expected_delay = pts_time - _lastPTS;
+              int64_t actual_delay = now - _audioClock;
+              int64_t diff = expected_delay - actual_delay;
+              if (diff > 0 && diff < 500000)
+                usleep((useconds_t)diff);
+            }
+
+          _lastPTS = pts_time;
+          _audioClock = av_gettime();
+        }
 
       ao_play(_aoDev, (char *) outBuf, outBytes);
       free(outBuf);

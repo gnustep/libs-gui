@@ -33,6 +33,7 @@
 #import "AppKit/NSMovieView.h"
 
 #include <ao/ao.h>
+#include <unistd.h>
 
 /* FFmpeg headers */
 #include <libavcodec/avcodec.h>
@@ -40,6 +41,7 @@
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
 #include <libavutil/imgutils.h>
+#include <libavutil/time.h>
 
 @class NSImage;
 @class NSTimer;
