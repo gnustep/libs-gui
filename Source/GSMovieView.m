@@ -67,10 +67,16 @@
 - (void)startAudioThread;
 - (void)stopAudioThread;
 - (void)submitPacket:(AVPacket *)packet;
+- (int64_t) currentAudioTimeUsec;
 
 @end
 
 @implementation FFmpegAudioPlayer
+
+- (int64_t) currentAudioTimeUsec
+{
+  return _audioClock + (av_rescale_q(_lastPTS, _timeBase, (AVRational){1,1000000}));
+}
 
 - (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx streamIndex:(int)audioStreamIndex
 {
@@ -291,6 +297,7 @@
   AVCodecParameters *codecPar = _formatContext->streams[_videoStreamIndex]->codecpar;
   const AVCodec *codec = avcodec_find_decoder(codecPar->codec_id);
 
+  _videoTimeBase = _formatContext->streams[_videoStreamIndex]->time_base;
   _codecContext = avcodec_alloc_context3(codec);
   avcodec_parameters_to_context(_codecContext, codecPar);
   if (avcodec_open2(_codecContext, codec, NULL) < 0) return;
@@ -358,7 +365,15 @@
 	  [_audioPlayer submitPacket: &packet];
 	}
     av_packet_unref(&packet);
-  }
+
+    // Sync on sound stream...
+    int64_t ptsUsec = av_rescale_q(_avframe->pts, _videoTimeBase, (AVRational){1,1000000});
+    int64_t nowUsec = [_audioPlayer currentAudioTimeUsec];
+    if (ptsUsec > nowUsec)
+      {
+	usleep((unsigned int)(ptsUsec - nowUsec));
+      }
+    }
 }
 
 - (void) drawRect: (NSRect)dirtyRect

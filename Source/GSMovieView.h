@@ -63,6 +63,7 @@ APPKIT_EXPORT_CLASS
   uint8_t *_buffer;
   NSTimer *_decodeTimer;
   FFmpegAudioPlayer *_audioPlayer;
+  AVRational _videoTimeBase;
 }
 
 - (void) updateImage: (NSImage *)image;
