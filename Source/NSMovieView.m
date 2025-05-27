@@ -60,6 +60,25 @@
 }
 #endif
 
+- (instancetype) initWithFrame: (NSRect)frame
+{
+  self = [super initWithFrame: frame];
+  if (self != nil)
+    {
+      _movie = nil;
+      _playing = NO;
+      _rate = 0.0;
+      _volume = 1.0;
+      _flags.muted = NO;
+      _flags.loopMode = NSQTMovieNormalPlayback;
+      _flags.plays_selection_only = NO;
+      _flags.plays_every_frame = YES;
+      _flags.is_controller_visible = YES;
+      _flags.editable = NO;
+    }
+  return self;
+}
+
 - (void) setMovie: (NSMovie*)movie
 {
   ASSIGN(_movie, movie);
@@ -196,6 +215,7 @@
 {
   //FIXME
 }
+
 - (NSSize) sizeForMagnification: (float)magnification
 {
   //FIXME

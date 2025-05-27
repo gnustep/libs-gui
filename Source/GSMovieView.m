@@ -59,6 +59,7 @@
   NSMutableArray *_audioPackets;
   NSThread *_audioThread;
   BOOL _running;
+  float _volume;
 }
 
 - (void)prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
@@ -68,6 +69,7 @@
 - (void)stopAudioThread;
 - (void)submitPacket:(AVPacket *)packet;
 - (int64_t) currentAudioTimeUsec;
+- (void) setVolume: (float)volume;
 
 @end
 
@@ -118,7 +120,9 @@
   NSData *data = [NSData dataWithBytes: packet->data
 				length: packet->size];
   NSNumber *pts = [NSNumber numberWithInt: (packet->pts)];
-  NSDictionary *dict = @{ @"data": data, @"pts": pts };
+  NSDictionary *dict =
+    [NSDictionary dictionaryWithObjectsAndKeys: data, @"data",
+		  pts, @"pts", nil];
 
   @synchronized (_audioPackets)
     {
@@ -130,32 +134,33 @@
 {
   while (_running)
     {
-      @autoreleasepool {
-        NSDictionary *dict = nil;
-        @synchronized (_audioPackets) {
-          if ([_audioPackets count] > 0)
-            {
-              dict = [[_audioPackets objectAtIndex:0] retain];
-              [_audioPackets removeObjectAtIndex:0];
-            }
-        }
-        if (dict)
-          {
-            NSData *data = dict[@"data"];
-            NSNumber *pts = dict[@"pts"];
+      CREATE_AUTORELEASE_POOL(pool);
+      NSDictionary *dict = nil;
+      @synchronized (_audioPackets)
+	{
+	  if ([_audioPackets count] > 0)
+	    {
+	      dict = [[_audioPackets objectAtIndex:0] retain];
+	      [_audioPackets removeObjectAtIndex:0];
+	    }
+	}
 
-            AVPacket packet;
-            av_init_packet(&packet);
-            packet.data = (uint8_t *)data.bytes;
-            packet.size = (int)data.length;
-            packet.pts = pts.longLongValue;
-
-            [self decodeAudioPacket:&packet];
-            [dict release];
-          }
-        else
-          usleep(1000);
-      }
+      // Unpack the data from the dictionary...
+      if (dict)
+	{
+	  NSData *data = [dict objectForKey: @"data"];
+	  NSNumber *pts = [dict objectForKey: @"pts"];
+	  
+	  AVPacket packet;
+	  av_init_packet(&packet);
+	  packet.data = (uint8_t *)[data bytes];
+	  packet.size = (int)[data length];
+	  packet.pts = [pts longLongValue];
+	  
+	  [self decodeAudioPacket:&packet];
+	  RELEASE(dict);
+	}
+      RELEASE(pool);
     }
 }
 
@@ -174,9 +179,23 @@
       swr_convert(_swrCtx, outPtrs, outSamples,
                   (const uint8_t **) _audioFrame->data, outSamples);
 
+      // Apply volume
+      int16_t *samples = (int16_t *)outBuf;
+      for (int i = 0; i < outBytes / 2; ++i)
+	{
+	  samples[i] = samples[i] * _volume;
+	}
+      
       ao_play(_aoDev, (char *) outBuf, outBytes);
       free(outBuf);
     }
+}
+
+- (void)setVolume:(float)volume
+{
+  if (volume < 0.0) volume = 0.0;
+  if (volume > 1.0) volume = 1.0;
+  _volume = volume;
 }
 
 - (void)dealloc
@@ -290,6 +309,7 @@
   if (_videoStreamIndex == -1) return;
   if (_audioStreamIndex != -1)
     {
+      [_audioPlayer setVolume: [super volume]];
       [_audioPlayer prepareAudioWithFormatContext: _formatContext
 				      streamIndex: _audioStreamIndex];
     }
@@ -452,6 +472,19 @@
       sws_freeContext(_swsCtx);
       _swsCtx = NULL;
     }
+}
+
+- (void) setVolume: (float)volume
+{
+  [super setVolume: volume];
+  [_audioPlayer setVolume: volume];
+}
+
+- (NSRect) movieRect
+{
+  return NSMakeRect(0.0, 0.0,
+		    (float)_codecContext->width,
+		    (float)_codecContext->height);
 }
 
 @end
