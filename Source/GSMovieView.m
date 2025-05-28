@@ -288,7 +288,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   if (_aoDev)
     ao_close(_aoDev);
 
-  [_audioPackets release];
+  RELEASE(_audioPackets);
 
   ao_shutdown();
   [super dealloc];
