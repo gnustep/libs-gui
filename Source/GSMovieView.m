@@ -98,13 +98,53 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (void) prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
                            streamIndex:(int)audioStreamIndex;
 - (void) decodeAudioPacket:(AVPacket *)packet;
-- (void) startAudioThread;
-- (void) stopAudioThread;
+- (void) start;
+- (void) stop;
 - (void) setVolume: (float)volume;
 
 @end
 
 @implementation FFmpegAudioPlayer
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _audioCodecCtx = NULL;
+      _audioFrame = NULL;
+      _swrCtx = NULL;
+      _lastPTS = 0;
+      _audioClock = 0;
+      _audioPackets = nil;
+      _audioThread = nil;
+      _running = NO;
+      _volume = 1.0;
+      _started = NO;
+    }
+  return self;
+}
+
+- (void)dealloc
+{
+  [self stop];
+
+  if (_audioFrame)
+    av_frame_free(&_audioFrame);
+
+  if (_audioCodecCtx)
+    avcodec_free_context(&_audioCodecCtx);
+
+  if (_swrCtx)
+    swr_free(&_swrCtx);
+
+  if (_aoDev)
+    ao_close(_aoDev);
+
+  RELEASE(_audioPackets);
+
+  ao_shutdown();
+  [super dealloc];
+}
 
 - (void) prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
                            streamIndex:(int)audioStreamIndex
@@ -156,7 +196,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   _audioClock = av_gettime();
   _audioPackets = [[NSMutableArray alloc] init];
   _running = YES;
-  [self startAudioThread];
+  // [self start];
 }
 
 - (void)audioThreadEntry
@@ -249,13 +289,13 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 }
 
-- (void)startAudioThread
+- (void)start
 {
   _audioThread = [[NSThread alloc] initWithTarget:self selector:@selector(audioThreadEntry) object:nil];
   [_audioThread start];
 }
 
-- (void)stopAudioThread
+- (void)stop
 {
   _running = NO;
   [_audioThread cancel];
@@ -270,28 +310,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   if (volume < 0.0) volume = 0.0;
   if (volume > 1.0) volume = 1.0;
   _volume = volume;
-}
-
-- (void)dealloc
-{
-  [self stopAudioThread];
-
-  if (_audioFrame)
-    av_frame_free(&_audioFrame);
-
-  if (_audioCodecCtx)
-    avcodec_free_context(&_audioCodecCtx);
-
-  if (_swrCtx)
-    swr_free(&_swrCtx);
-
-  if (_aoDev)
-    ao_close(_aoDev);
-
-  RELEASE(_audioPackets);
-
-  ao_shutdown();
-  [super dealloc];
 }
 
 @end
@@ -317,7 +335,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   return self;
 }
 
-
 - (void)dealloc
 {
   [self stop: nil];
@@ -331,51 +348,54 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   DESTROY(_videoPackets);
   // DESTROY(_currentFrame);
-  // DESTROY(_audioPlayer);
+  DESTROY(_audioPlayer);
 
   [super dealloc];
 }
 
-/*
-- (void)logStreamMetadata
+// Overridden methods from the superclass...
+- (BOOL) isPlaying
 {
-  double duration = (double)_formatContext->duration / AV_TIME_BASE;
-  NSString *info = [NSString stringWithFormat:@"Video: %dx%d %@ %.2fs",
-			     _codecContext->width,
-			     _codecContext->height,
-			     [NSString stringWithUTF8String:avcodec_get_name(_codecContext->codec_id)],
-			     duration];
-
-  if (_audioStreamIndex != -1)
-    {
-      AVCodecParameters *ap = _formatContext->streams[_audioStreamIndex]->codecpar;
-      NSString *audioInfo = [NSString stringWithFormat: @"Audio codec: %s, sample rate: %d",
-				      avcodec_get_name(ap->codec_id),
-				      ap->sample_rate];
-      info = [NSString stringWithFormat: @"%@ %@", info, audioInfo];
-    }
-
-    NSLog(@"%@", info);
-}
-*/
-
-- (void) updateImage: (NSImage *)image
-{
-  ASSIGN(_currentFrame, image);
-  [self setNeedsDisplay:YES];
+  return _running;
 }
 
 - (IBAction) start: (id)sender
 {
+  [self setRate: 1.0 / 30.0];
+  [self setVolume: 1.0];
+
   _feedThread = RETAIN([[NSThread alloc] initWithTarget:self selector:@selector(feed) object:nil]);
   [_feedThread start];
+  [_audioPlayer start];
 }
 
 - (IBAction) stop: (id)sender
 {
   [_feedThread cancel];
   [self stop];
+  [_audioPlayer stop];
+
   DESTROY(_feedThread);
+}
+
+- (void) setVolume: (float)volume
+{
+  [super setVolume: volume];
+  [_audioPlayer setVolume: volume];
+}
+
+- (NSRect) movieRect
+{
+  return NSMakeRect(0.0, 0.0,
+		    (float)_videoCodecCtx->width,
+		    (float)_videoCodecCtx->height);
+}
+
+// Video playback methods...
+- (void) updateImage: (NSImage *)image
+{
+  ASSIGN(_currentFrame, image);
+  [self setNeedsDisplay:YES];
 }
 
 - (void) drawRect: (NSRect)dirtyRect
@@ -448,19 +468,18 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   int64_t i = 0;
   while (av_read_frame(formatCtx, &packet) >= 0)
     {
-      // After 100 frames, start the thread...
+      // After 1000 frames, start the thread...
       if (i == 1000)
 	{
 	  [self start];
 	}
       
       if (packet.stream_index == videoStream)
-        [self submitVideoPacket:&packet];
+        [self submitVideoPacket: &packet];
 
-      /*
       if (packet.stream_index == audioStream)
-        [_audioPlayer submitVideoPacket:&packet];      
-      */
+        [_audioPlayer submitPacket: &packet];      
+
       av_packet_unref(&packet);
       i++;
     }
@@ -639,188 +658,5 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       free(rgbData[0]);
     }
 }
-
-/*
-- (void) prepareDecoder
-{
-  NSString *moviePath = [[_movie URL] path];
-
-  _formatContext = avformat_alloc_context();
-  if (avformat_open_input(&_formatContext, [moviePath UTF8String], NULL, NULL) != 0) return;
-  if (avformat_find_stream_info(_formatContext, NULL) < 0) return;
-
-  _videoStreamIndex = -1;
-  _audioStreamIndex = -1;
-  for (int i = 0; i < _formatContext->nb_streams; i++)
-    {
-      if (_formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO
-	  && _videoStreamIndex == -1)
-	{
-	  _videoStreamIndex = i;
-	}
-      else if (_formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO
-	       && _audioStreamIndex == -1)
-	{
-	  _audioStreamIndex = i;
-	}
-    }
-
-  if (_videoStreamIndex == -1) return;
-  if (_audioStreamIndex != -1)
-    {
-      [_audioPlayer setVolume: [super volume]];
-      [_audioPlayer prepareAudioWithFormatContext: _formatContext
-				      streamIndex: _audioStreamIndex];
-    }
-  
-  AVCodecParameters *codecPar = _formatContext->streams[_videoStreamIndex]->codecpar;
-  const AVCodec *codec = avcodec_find_decoder(codecPar->codec_id);
-
-  _videoTimeBase = _formatContext->streams[_videoStreamIndex]->time_base;
-  _codecContext = avcodec_alloc_context3(codec);
-  avcodec_parameters_to_context(_codecContext, codecPar);
-  if (avcodec_open2(_codecContext, codec, NULL) < 0) return;
-
-  _avframe = av_frame_alloc();
-  _avframeRGB = av_frame_alloc();
-
-  int numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, _codecContext->width, _codecContext->height, 1);
-  _buffer = (uint8_t *)av_malloc(numBytes * sizeof(uint8_t));
-  av_image_fill_arrays(_avframeRGB->data, _avframeRGB->linesize, _buffer, AV_PIX_FMT_RGB24,
-		       _codecContext->width, _codecContext->height, 1);
-
-  _swsCtx = sws_getContext(_codecContext->width, _codecContext->height, _codecContext->pix_fmt,
-			   _codecContext->width, _codecContext->height, AV_PIX_FMT_RGB24,
-			   SWS_BILINEAR, NULL, NULL, NULL);
-
-  [self logStreamMetadata];
-}
-
-- (void) decodeAndDisplayNextFrame
-{
-  AVPacket *packet = av_packet_alloc();
-  packet->data = NULL;
-  packet->size = 0;
-
-  while (av_read_frame(_formatContext, packet) >= 0)
-    {
-      if (!_playing) break;
-
-      if (packet->stream_index == _videoStreamIndex)
-	{
-	  avcodec_send_packet(_codecContext, packet);
-	  if (avcodec_receive_frame(_codecContext, _avframe) == 0)
-	    {
-	      sws_scale(_swsCtx, (const uint8_t * const *)_avframe->data, _avframe->linesize, 0,
-			_codecContext->height, _avframeRGB->data, _avframeRGB->linesize);
-
-	      NSBitmapImageRep *rep = [[NSBitmapImageRep alloc]
-					initWithBitmapDataPlanes: _avframeRGB->data
-						      pixelsWide: _codecContext->width
-						      pixelsHigh: _codecContext->height
-						   bitsPerSample: 8
-						 samplesPerPixel: 3
-							hasAlpha: NO
-							isPlanar: NO
-						  colorSpaceName: NSCalibratedRGBColorSpace
-						     bytesPerRow: _avframeRGB->linesize[0]
-						    bitsPerPixel: 24];
-	      NSSize imageSize = NSMakeSize(_codecContext->width, _codecContext->height);
-	      NSImage *image = [[NSImage alloc] initWithSize: imageSize];
-
-	      [image addRepresentation:rep];
-	      [self performSelectorOnMainThread: @selector(updateImage:)
-				     withObject: image
-				  waitUntilDone: NO];
-	      AUTORELEASE(rep);
-
-	      break;
-	    }
-	}
-      else if (packet->stream_index == _audioStreamIndex)
-	{
-	  [_audioPlayer submitPacket: packet];
-	}
-      av_packet_unref(packet);
-    }
-}
-
-
-- (void) start: (id)sender
-{
-  [super start: sender];
-  [self setRate: 1.0 / 30.0];
-  [self setVolume: 1.0];
-
-  _decodeTimer =
-    [NSTimer scheduledTimerWithTimeInterval: [self rate]
-				     target: self
-				   selector: @selector(decodeAndDisplayNextFrame)
-				   userInfo: nil
-				    repeats: YES];
-}
-
-- (void) stop: (id)sender
-{
-  [super stop: sender];
-
-  if (_decodeTimer)
-    {
-      [_decodeTimer invalidate];
-      RELEASE(_decodeTimer);
-      _decodeTimer = nil;
-    }
-
-  if (_avframe)
-    {
-      av_frame_free(&_avframe);
-      _avframe = NULL;
-    }
-
-  if (_avframeRGB)
-    {
-      av_frame_free(&_avframeRGB);
-      _avframeRGB = NULL;
-    }
-
-  if (_buffer)
-    {
-      av_free(_buffer);
-      _buffer = NULL;
-    }
-
-  if (_codecContext)
-    {
-      avcodec_free_context(&_codecContext);
-      _codecContext = NULL;
-    }
-
-  if (_formatContext)
-    {
-      avformat_close_input(&_formatContext);
-      _formatContext = NULL;
-    }
-
-  if (_swsCtx)
-    {
-      sws_freeContext(_swsCtx);
-      _swsCtx = NULL;
-    }
-}
-
-- (void) setVolume: (float)volume
-{
-  [super setVolume: volume];
-  [_audioPlayer setVolume: volume];
-}
-
-- (NSRect) movieRect
-{
-  return NSMakeRect(0.0, 0.0,
-		    (float)_codecContext->width,
-		    (float)_codecContext->height);
-}
-
-*/
 
 @end
