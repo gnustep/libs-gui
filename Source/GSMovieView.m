@@ -78,7 +78,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   return *packet;
 }
 
-@interface FFmpegAudioPlayer : NSObject
+@interface GSAudioPlayer : NSObject
 {
   AVCodecContext *_audioCodecCtx;
   AVFrame *_audioFrame;
@@ -98,13 +98,13 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (void) prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
                            streamIndex:(int)audioStreamIndex;
 - (void) decodeAudioPacket:(AVPacket *)packet;
-- (void) start;
-- (void) stop;
+- (void) startAudio;
+- (void) stopAudio;
 - (void) setVolume: (float)volume;
 
 @end
 
-@implementation FFmpegAudioPlayer
+@implementation GSAudioPlayer
 - (instancetype) init
 {
   self = [super init];
@@ -126,7 +126,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (void)dealloc
 {
-  [self stop];
+  [self stopAudio];
 
   if (_audioFrame)
     av_frame_free(&_audioFrame);
@@ -196,7 +196,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   _audioClock = av_gettime();
   _audioPackets = [[NSMutableArray alloc] init];
   _running = YES;
-  // [self start];
 }
 
 - (void)audioThreadEntry
@@ -285,17 +284,17 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
   @synchronized (_audioPackets)
     {
-      [_audioPackets addObject:dict];
+      [_audioPackets addObject: dict];
     }
 }
 
-- (void)start
+- (void)startAudio
 {
   _audioThread = [[NSThread alloc] initWithTarget:self selector:@selector(audioThreadEntry) object:nil];
   [_audioThread start];
 }
 
-- (void)stop
+- (void)stopAudio
 {
   _running = NO;
   [_audioThread cancel];
@@ -305,7 +304,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   _audioThread = nil;
 }
 
-- (void)setVolume:(float)volume
+- (void) setVolume: (float)volume
 {
   if (volume < 0.0) volume = 0.0;
   if (volume > 1.0) volume = 1.0;
@@ -324,7 +323,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _currentFrame = nil;
       _videoThread = nil;
       _feedThread = nil;
-      _audioPlayer = [[FFmpegAudioPlayer alloc] init];
+      _audioPlayer = [[GSAudioPlayer alloc] init];
       _videoPackets = RETAIN([[NSMutableArray alloc] init]);
       _running = NO;
       _started = NO;
@@ -364,16 +363,16 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   [self setRate: 1.0 / 30.0];
   [self setVolume: 1.0];
 
-  _feedThread = RETAIN([[NSThread alloc] initWithTarget:self selector:@selector(feed) object:nil]);
+  _feedThread = RETAIN([[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil]);
   [_feedThread start];
-  [_audioPlayer start];
+  [_audioPlayer startAudio];
 }
 
 - (IBAction) stop: (id)sender
 {
   [_feedThread cancel];
-  [self stop];
-  [_audioPlayer stop];
+  [self stopVideo];
+  [_audioPlayer stopAudio];
 
   DESTROY(_feedThread);
 }
@@ -392,6 +391,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 }
 
 // Video playback methods...
+
 - (void) updateImage: (NSImage *)image
 {
   ASSIGN(_currentFrame, image);
@@ -407,7 +407,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 }
 
-- (void) feed
+- (void) feedVideo
 {
   NSMovie *movie = [self movie];
   NSURL *url = [movie URL];
@@ -456,13 +456,17 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       return;
     }
 
-  // If it's video only we just log it and continue...
-  if (audioStream == -1)
+  [self prepareVideoWithFormatContext: formatCtx
+			  streamIndex: videoStream];
+  if (audioStream == -1) // if we do have an audio stream, initialize it... otherwise log it
     {
-      NSLog(@"[Error] No audio stream found. | Timestamp: %ld", av_gettime());
+      NSLog(@"[Info] No audio stream found. | Timestamp: %ld", av_gettime());
     }
-
-  [self prepareVideoWithFormatContext:formatCtx streamIndex:videoStream];
+  else
+    {
+      [_audioPlayer prepareAudioWithFormatContext: formatCtx
+				      streamIndex: videoStream];
+    }
 
   AVPacket packet;
   int64_t i = 0;
@@ -471,7 +475,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       // After 1000 frames, start the thread...
       if (i == 1000)
 	{
-	  [self start];
+	  [self startVideo];
 	}
       
       if (packet.stream_index == videoStream)
@@ -488,7 +492,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   if (i < 1000)
     {
       NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
-      [self start];
+      [self startVideo];
     }
   
   avformat_close_input(&formatCtx);
@@ -524,7 +528,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   _started = NO;
 }
 
-- (void) start
+- (void) startVideo
 {
   NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld", av_gettime());
   if (!_running)
@@ -535,7 +539,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 }
 
-- (void) stop
+- (void) stopVideo
 {
   NSLog(@"[GSMovieView] Stopping video thread | Timestamp: %ld", av_gettime());
   if (_running)
@@ -553,7 +557,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
   @synchronized (_videoPackets)
     {
-      [_videoPackets addObject:dict];
+      [_videoPackets addObject: dict];
     }
 }
 
@@ -588,15 +592,17 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
           if (dict)
             {
-              // NSLog(@"[GSMovieView] Rendering frame PTS: %ld | Delay: %ld us", packet.pts, delay);
               AVPacket packet = AVPacketFromNSDictionary(dict);
-
               int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
               int64_t now = av_gettime() - _videoClock;
               int64_t delay = packetTime - now;
+	      
+              fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r", packet.pts, delay);
               if (delay > 0)
-                usleep((useconds_t)delay);
-
+		{
+		  usleep((useconds_t)delay);
+		}
+	      
               [self decodeVideoPacket:&packet];
               RELEASE(dict);
             }

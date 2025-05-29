@@ -45,7 +45,7 @@
 
 @class NSImage;
 @class NSTimer;
-@class FFmpegAudioPlayer;
+@class GSAudioPlayer;
 
 APPKIT_EXPORT_CLASS
 @interface GSMovieView : NSMovieView
@@ -54,7 +54,7 @@ APPKIT_EXPORT_CLASS
   NSThread *_videoThread;
   NSThread *_feedThread;
   NSImage *_currentFrame;
-  FFmpegAudioPlayer *_audioPlayer;
+  GSAudioPlayer *_audioPlayer;
 
   AVCodecContext *_videoCodecCtx;
   AVFrame *_videoFrame;
@@ -70,9 +70,9 @@ APPKIT_EXPORT_CLASS
                            streamIndex: (int)videoStreamIndex;
 - (void) submitVideoPacket: (AVPacket *)packet;
 - (void) decodeVideoPacket: (AVPacket *)packet;
-- (void) start;
-- (void) stop;
-- (void) feed;
+- (void) startVideo;
+- (void) stopVideo;
+- (void) feedVideo;
 // - (void) logStreamMetadata;
 
 @end
