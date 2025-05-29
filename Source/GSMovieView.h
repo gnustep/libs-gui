@@ -50,25 +50,30 @@
 APPKIT_EXPORT_CLASS
 @interface GSMovieView : NSMovieView
 {
+  NSMutableArray *_videoPackets;
+  NSThread *_videoThread;
+  NSThread *_feedThread;
   NSImage *_currentFrame;
-#ifdef HAVE_AVCODEC
-  AVFormatContext *_formatContext;
-  AVCodecContext *_codecContext;
-  AVFrame *_avframe;
-  AVFrame *_avframeRGB;
-  struct SwsContext *_swsCtx;
-#endif
-  int _videoStreamIndex;
-  int _audioStreamIndex;
-  uint8_t *_buffer;
-  NSTimer *_decodeTimer;
   FFmpegAudioPlayer *_audioPlayer;
-  AVRational _videoTimeBase;
+
+  AVCodecContext *_videoCodecCtx;
+  AVFrame *_videoFrame;
+  struct SwsContext *_swsCtx;
+  AVRational _timeBase;
+
+  BOOL _running;
+  BOOL _started;
+  int64_t _videoClock;
 }
 
-- (void) updateImage: (NSImage *)image;
-- (void) prepareDecoder;
-- (void) decodeAndDisplayNextFrame;
+- (void) prepareVideoWithFormatContext: (AVFormatContext *)formatCtx
+                           streamIndex: (int)videoStreamIndex;
+- (void) submitVideoPacket: (AVPacket *)packet;
+- (void) decodeVideoPacket: (AVPacket *)packet;
+- (void) start;
+- (void) stop;
+- (void) feed;
+// - (void) logStreamMetadata;
 
 @end
 

@@ -66,7 +66,6 @@
   if (self != nil)
     {
       _movie = nil;
-      _playing = NO;
       _rate = 0.0;
       _volume = 1.0;
       _flags.muted = NO;
@@ -91,42 +90,35 @@
 
 - (void) start: (id)sender
 {
-  _playing = YES;
 }
 
 - (void) stop: (id)sender
 {
-  _playing = NO;
 }
 
 - (BOOL) isPlaying
 {
-  return _playing;  
+  return NO;
 }
 
 - (void) gotoPosterFrame: (id)sender
 {
-  //FIXME
 }
 
 - (void) gotoBeginning: (id)sender
 {
-  //FIXME
 }
 
 - (void) gotoEnd: (id)sender
 {
-  //FIXME
 }
 
 - (void) stepForward: (id)sender
 {
-  //FIXME
 }
 
 - (void) stepBack: (id)sender
 {
-  //FIXME
 }
 
 - (void) setRate: (float)rate
@@ -191,13 +183,11 @@
 
 - (void) showController: (BOOL)show adjustingSize: (BOOL)adjustSize
 {
-  //FIXME
   _flags.is_controller_visible = show; 
 }
 
 - (void*) movieController
 {
-  //FIXME
   return NULL;
 }
 
@@ -213,12 +203,10 @@
 
 - (void) resizeWithMagnification: (float)magnification
 {
-  //FIXME
 }
 
 - (NSSize) sizeForMagnification: (float)magnification
 {
-  //FIXME
   return NSMakeSize(0, 0);
 }
 
@@ -234,32 +222,26 @@
 
 - (void) cut: (id)sender
 {
-  //FIXME
 }
 
 - (void) copy: (id)sender
 {
-  //FIXME
 }
 
 - (void) paste: (id)sender
 {
-  //FIXME
 }
 
 - (void) clear: (id)sender
 {
-  //FIXME
 }
 
 - (void) undo: (id)sender
 {
-  //FIXME
 }
 
 - (void) selectAll: (id)sender
 {
-  //FIXME
 }
 
 @end
