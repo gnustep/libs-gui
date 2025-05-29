@@ -290,6 +290,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (void)startAudio
 {
+  NSLog(@"[GSMovieView] Starting audio thread | Timestamp: %ld", av_gettime());
   _audioThread = [[NSThread alloc] initWithTarget:self selector:@selector(audioThreadEntry) object:nil];
   [_audioThread start];
 }
