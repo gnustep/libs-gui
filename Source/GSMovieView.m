@@ -465,7 +465,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   else
     {
       [_audioPlayer prepareAudioWithFormatContext: formatCtx
-				      streamIndex: videoStream];
+				      streamIndex: audioStream];
     }
 
   AVPacket packet;
@@ -476,6 +476,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       if (i == 1000)
 	{
 	  [self startVideo];
+	  [_audioPlayer startAudio];
 	}
       
       if (packet.stream_index == videoStream)
@@ -493,6 +494,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
       [self startVideo];
+      [_audioPlayer startAudio];
     }
   
   avformat_close_input(&formatCtx);
@@ -574,7 +576,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
               if (!_started && [_videoPackets count] < 3)
                 {
                   usleep(5000);
-                  [pool release];
+		  RELEASE(pool);
                   continue;
                 }
               if ([_videoPackets count] > 0)
@@ -603,7 +605,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		  usleep((useconds_t)delay);
 		}
 	      
-              [self decodeVideoPacket:&packet];
+              [self decodeVideoPacket: &packet];
               RELEASE(dict);
             }
           else
