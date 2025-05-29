@@ -443,12 +443,17 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 
   [self prepareVideoWithFormatContext:formatCtx streamIndex:videoStream];
-  // usleep(1000);
-  // [self start];
 
   AVPacket packet;
+  int64_t i = 0;
   while (av_read_frame(formatCtx, &packet) >= 0)
     {
+      // After 100 frames, start the thread...
+      if (i == 1000)
+	{
+	  [self start];
+	}
+      
       if (packet.stream_index == videoStream)
         [self submitVideoPacket:&packet];
 
@@ -457,11 +462,16 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
         [_audioPlayer submitVideoPacket:&packet];      
       */
       av_packet_unref(&packet);
+      i++;
     }
 
-  [self start];
+  // if we had a very short video... play it.
+  if (i < 1000)
+    {
+      NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
+      [self start];
+    }
   
-  // [self stop];
   avformat_close_input(&formatCtx);
 }
 
