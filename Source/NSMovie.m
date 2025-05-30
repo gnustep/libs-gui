@@ -58,7 +58,7 @@ NSString *_writeDataToTempFile(NSData *data)
 
 + (NSArray*) movieUnfilteredFileTypes
 {
-  return [NSArray arrayWithObjects: @"mp4", @"mov", @"avi", @"flv", @"mkv", @"webm", nil ];
+  return [NSArray array]; // WithObjects: @"mp4", @"mov", @"avi", @"flv", @"mkv", @"webm", nil ];
 }
 
 + (NSArray*) movieUnfilteredPasteboardTypes

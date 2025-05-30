@@ -78,6 +78,39 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   return *packet;
 }
 
+// Ignore the warning this will produce as it is intentional.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
+
+// Category smash this method to get the proper types.
+@interface NSMovie (AVCodec)
+@end
+
+@implementation NSMovie (AVCodec)
+
++ (NSArray*) movieUnfilteredFileTypes
+{
+  NSMutableArray *result = [NSMutableArray array];
+  const AVCodec *codec = NULL;
+  void *i = 0;
+  
+  printf("Available codecs:\n");
+  while ((codec = av_codec_iterate(&i)))
+    {
+      if (av_codec_is_decoder(codec) && codec->type == AVMEDIA_TYPE_VIDEO)
+	{
+	  [result addObject: [NSString stringWithUTF8String: codec->name]];
+	}
+    }
+
+  return result;
+}
+
+@end
+
+#pragma clang diagnostic pop
+
+// Audio player for NSMovieView...
 @interface GSAudioPlayer : NSObject
 {
   AVCodecContext *_audioCodecCtx;
@@ -314,6 +347,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 @end
 
+// NSMovieView subclass that does all of the actual work of decoding...
 @implementation GSMovieView
 
 - (instancetype) initWithFrame: (NSRect)frame
