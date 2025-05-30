@@ -1,3 +1,20 @@
+2025-05-29 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* config.make.in
+	* configure
+	* configure.ac
+	* Headers/Additions/GNUstepGUI/config.h.in
+	* Headers/AppKit/NSMovie.h
+	* Headers/AppKit/NSMovieView.h
+	* Source/GNUmakefile
+	* Source/GNUmakefile.preamble
+	* Source/GSMovieView.h
+	* Source/GSMovieView.m
+	* Source/NSMovie.m
+	* Source/NSMovieView.m
+	* Source/NSSound.m: Cleanup NSSound, add support for playing ffmpeg
+	movies using NSMovie, NSMovieView.
+
 2025-04-30 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSColorSpace.h: Add NSColorSpaceModel* enumerated values.

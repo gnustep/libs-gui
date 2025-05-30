@@ -73,12 +73,12 @@ APPKIT_EXPORT_CLASS
 /**
  * Start movie playback.
  */
-- (void) start: (id)sender;
+- (IBAction) start: (id)sender;
 
 /**
  * Stop movie playback.
  */
-- (void) stop: (id)sender;
+- (IBAction) stop: (id)sender;
 
 /**
  * Check whether the movie is currently playing.
@@ -88,27 +88,27 @@ APPKIT_EXPORT_CLASS
 /**
  * Go to the movie's poster frame.
  */
-- (void) gotoPosterFrame: (id)sender;
+- (IBAction) gotoPosterFrame: (id)sender;
 
 /**
  * Move to the beginning of the movie.
  */
-- (void) gotoBeginning: (id)sender;
+- (IBAction) gotoBeginning: (id)sender;
 
 /**
  * Move to the end of the movie.
  */
-- (void) gotoEnd: (id)sender;
+- (IBAction) gotoEnd: (id)sender;
 
 /**
  * Step forward one frame in the movie.
  */
-- (void) stepForward: (id)sender;
+- (IBAction) stepForward: (id)sender;
 
 /**
  * Step backward one frame in the movie.
  */
-- (void) stepBack: (id)sender;
+- (IBAction) stepBack: (id)sender;
 
 /**
  * Set the playback rate for the movie.
@@ -213,32 +213,32 @@ APPKIT_EXPORT_CLASS
 /**
  * Cut the selected movie content.
  */
-- (void) cut: (id)sender;
+- (IBAction) cut: (id)sender;
 
 /**
  * Copy the selected movie content.
  */
-- (void) copy: (id)sender;
+- (IBAction) copy: (id)sender;
 
 /**
  * Paste movie content from the pasteboard.
  */
-- (void) paste: (id)sender;
+- (IBAction) paste: (id)sender;
 
 /**
  * Clear the selected movie content.
  */
-- (void) clear: (id)sender;
+- (IBAction) clear: (id)sender;
 
 /**
  * Undo the last operation.
  */
-- (void) undo: (id)sender;
+- (IBAction) undo: (id)sender;
 
 /**
  * Select all content in the movie view.
  */
-- (void) selectAll: (id)sender;
+- (IBAction) selectAll: (id)sender;
 
 @end
 

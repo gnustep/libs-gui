@@ -88,11 +88,11 @@
   return _movie;
 }
 
-- (void) start: (id)sender
+- (IBAction) start: (id)sender
 {
 }
 
-- (void) stop: (id)sender
+- (IBAction) stop: (id)sender
 {
 }
 
@@ -101,23 +101,23 @@
   return NO;
 }
 
-- (void) gotoPosterFrame: (id)sender
+- (IBAction) gotoPosterFrame: (id)sender
 {
 }
 
-- (void) gotoBeginning: (id)sender
+- (IBAction) gotoBeginning: (id)sender
 {
 }
 
-- (void) gotoEnd: (id)sender
+- (IBAction) gotoEnd: (id)sender
 {
 }
 
-- (void) stepForward: (id)sender
+- (IBAction) stepForward: (id)sender
 {
 }
 
-- (void) stepBack: (id)sender
+- (IBAction) stepBack: (id)sender
 {
 }
 
@@ -220,27 +220,27 @@
   return _flags.editable;
 }
 
-- (void) cut: (id)sender
+- (IBAction) cut: (id)sender
 {
 }
 
-- (void) copy: (id)sender
+- (IBAction) copy: (id)sender
 {
 }
 
-- (void) paste: (id)sender
+- (IBAction) paste: (id)sender
 {
 }
 
-- (void) clear: (id)sender
+- (IBAction) clear: (id)sender
 {
 }
 
-- (void) undo: (id)sender
+- (IBAction) undo: (id)sender
 {
 }
 
-- (void) selectAll: (id)sender
+- (IBAction) selectAll: (id)sender
 {
 }
 

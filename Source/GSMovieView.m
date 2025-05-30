@@ -453,11 +453,11 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   avformat_close_input(&formatCtx);
 }
 
-- (void) stepForward: (id)sender
+- (IBAction) stepForward: (id)sender
 {
 }
 
-- (void) stepBack: (id)sender
+- (IBAction) stepBack: (id)sender
 {
 }
 
