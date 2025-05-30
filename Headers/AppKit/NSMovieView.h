@@ -32,6 +32,7 @@
 #define _GNUstep_H_NSMovieView
 
 #import <AppKit/AppKitDefines.h>
+#import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSView.h>
 
 @class NSMovie;
