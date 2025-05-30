@@ -347,7 +347,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     sws_freeContext(_swsCtx);
 
   DESTROY(_videoPackets);
-  // DESTROY(_currentFrame);
+  TEST_RELEASE(_currentFrame);
   DESTROY(_audioPlayer);
 
   [super dealloc];
@@ -389,6 +389,76 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   return NSMakeRect(0.0, 0.0,
 		    (float)_videoCodecCtx->width,
 		    (float)_videoCodecCtx->height);
+}
+
+- (IBAction)gotoPosterFrame:(id)sender
+{
+  NSLog(@"[GSMovieView] gotoPosterFrame called | Timestamp: %ld", av_gettime());
+  // Reset to first video frame
+  [self stop: sender];
+  [self start: sender];
+}
+
+- (IBAction)gotoBeginning:(id)sender
+{
+  NSLog(@"[GSMovieView] gotoBeginning called | Timestamp: %ld", av_gettime());
+  [self gotoPosterFrame: sender];
+}
+
+- (IBAction)gotoEnd:(id)sender
+{
+  NSURL *url = [[self movie] URL];
+  NSString *path = [url path];
+  
+  NSLog(@"[GSMovieView] gotoEnd called | Timestamp: %ld", av_gettime());
+
+  // Seek to the end of the video stream
+  [self stop: sender];
+
+  AVFormatContext *formatCtx = NULL;
+  if (avformat_open_input(&formatCtx, [path UTF8String], NULL, NULL) != 0)
+    {
+      return;
+    }
+  
+  if (avformat_find_stream_info(formatCtx, NULL) < 0)
+    {
+      avformat_close_input(&formatCtx);
+      return;
+    }
+
+  int videoStream = -1;
+  for (unsigned int i = 0; i < formatCtx->nb_streams; ++i)
+    {
+      if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+        {
+          videoStream = i;
+          break;
+        }
+    }
+
+  if (videoStream == -1)
+    {
+      avformat_close_input(&formatCtx);
+      return;
+    }
+
+  int64_t duration = formatCtx->streams[videoStream]->duration;
+  // AVRational timeBase = formatCtx->streams[videoStream]->time_base;
+
+  int64_t seekTarget = duration - AV_TIME_BASE;
+  av_seek_frame(formatCtx, videoStream, seekTarget, AVSEEK_FLAG_BACKWARD);
+
+  [self feedVideo];
+  avformat_close_input(&formatCtx);
+}
+
+- (void) stepForward: (id)sender
+{
+}
+
+- (void) stepBack: (id)sender
+{
 }
 
 // Video playback methods...
