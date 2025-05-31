@@ -131,6 +131,120 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 #pragma clang diagnostic pop
 
+#define AUDIO_RING_SIZE 128
+
+@interface PacketRingBuffer : NSObject
+{
+  NSMutableArray *_buffer;
+  NSInteger _head;
+  NSInteger _tail;
+  NSInteger _count;
+  NSLock *_lock;
+}
+
+- (instancetype) init;
+- (BOOL) push:(NSDictionary *) packet;
+- (NSDictionary *) pop;
+- (NSInteger) count;
+- (void) clear;
+
+@end
+
+@implementation PacketRingBuffer
+
+- (instancetype) init 
+{
+  if ((self = [super init]))
+    {
+      _buffer = [[NSMutableArray alloc] initWithCapacity:AUDIO_RING_SIZE];
+      for (int i = 0; i < AUDIO_RING_SIZE; i++)
+	{
+	  [_buffer addObject:[NSNull null]];
+	}
+      _head = 0;
+      _tail = 0;
+      _count = 0;
+      _lock = [[NSLock alloc] init];
+    }
+  return self;
+}
+
+- (BOOL) push:(NSDictionary *)packet 
+{
+  [_lock lock];
+
+  if (_count >= AUDIO_RING_SIZE)
+    {
+      [_lock unlock];
+      return NO;
+    }
+
+  RETAIN(packet);
+  [_buffer replaceObjectAtIndex:_tail withObject: packet];
+  _tail = (_tail + 1) % AUDIO_RING_SIZE;
+  _count++;
+  [_lock unlock];
+  
+  return YES;
+}
+
+- (NSDictionary *)pop 
+{
+  [_lock lock];
+  if (_count == 0) {
+    [_lock unlock];
+    return nil;
+  }
+  
+  NSDictionary *pkt = RETAIN([_buffer objectAtIndex:_head]);
+
+  [_buffer replaceObjectAtIndex:_head withObject:[NSNull null]];
+  _head = (_head + 1) % AUDIO_RING_SIZE;
+  _count--;
+  [_lock unlock];
+
+  return AUTORELEASE(pkt);
+}
+
+- (NSInteger) count 
+{
+  [_lock lock];
+  NSInteger c = _count;
+  [_lock unlock];
+  
+  return c;
+}
+
+- (void) clear 
+{
+  [_lock lock];
+
+  for (int i = 0; i < AUDIO_RING_SIZE; i++)
+    {
+      id obj = [_buffer objectAtIndex:i];
+      if (![obj isKindOfClass:[NSNull class]])
+	{
+	  RELEASE(obj);
+	  [_buffer replaceObjectAtIndex:i withObject:[NSNull null]];
+	}
+    }
+  
+  _head = 0;
+  _tail = 0;
+  _count = 0;
+  [_lock unlock];
+}
+
+- (void) dealloc 
+{
+  [self clear];
+  RELEASE(_buffer);
+  RELEASE(_lock);
+  [super dealloc];
+}
+
+@end
+
 // Audio player for NSMovieView...
 @interface GSAudioPlayer : NSObject
 {
@@ -149,6 +263,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   NSMutableArray *_audioPackets;
   NSThread *_audioThread;
   NSData *_audioBuffer;
+  PacketRingBuffer *_ring;
 }
 
 - (void) prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
@@ -218,6 +333,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       return;
     }
 
+  _ring = [[PacketRingBuffer alloc] init];
   _audioCodecCtx = avcodec_alloc_context3(audioCodec);
   avcodec_parameters_to_context(_audioCodecCtx, audioPar);
 
