@@ -90,11 +90,32 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 + (NSArray*) movieUnfilteredFileTypes
 {
+  NSMutableSet<NSString *> *extensionsSet = [NSMutableSet set];
+  void *opaque = NULL;
+  const AVOutputFormat *ofmt = NULL;
+
+  // Iterate over all muxers
+  while ((ofmt = av_muxer_iterate(&opaque)))
+    {
+      if (ofmt->extensions)
+	{
+	  NSString *extString = [NSString stringWithUTF8String:ofmt->extensions];
+	  NSArray<NSString *> *exts = [extString componentsSeparatedByString:@","];
+	  [extensionsSet addObjectsFromArray:exts];
+	}
+    }
+
+    // Convert to sorted array
+    NSArray *sortedExtensions = [[extensionsSet allObjects] sortedArrayUsingSelector:@selector(compare:)];
+    return sortedExtensions;
+}
+
++ (NSArray*) movieUnfilteredPasteboardTypes
+{
   NSMutableArray *result = [NSMutableArray array];
   const AVCodec *codec = NULL;
   void *i = 0;
   
-  printf("Available codecs:\n");
   while ((codec = av_codec_iterate(&i)))
     {
       if (av_codec_is_decoder(codec) && codec->type == AVMEDIA_TYPE_VIDEO)

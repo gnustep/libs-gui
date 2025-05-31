@@ -58,12 +58,12 @@ NSString *_writeDataToTempFile(NSData *data)
 
 + (NSArray*) movieUnfilteredFileTypes
 {
-  return [NSArray array]; // WithObjects: @"mp4", @"mov", @"avi", @"flv", @"mkv", @"webm", nil ];
+  return [NSArray array];
 }
 
 + (NSArray*) movieUnfilteredPasteboardTypes
 {
-  return [self movieUnfilteredFileTypes];
+  return [NSArray array];
 }
 
 + (BOOL) canInitWithPasteboard: (NSPasteboard*)pasteboard
