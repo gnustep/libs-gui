@@ -121,11 +121,13 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   int64_t _lastPTS;
   int64_t _audioClock;
   AVRational _timeBase;
-  NSMutableArray *_audioPackets;
-  NSThread *_audioThread;
   BOOL _running;
   float _volume; /* 0.0 to 1.0 */
   BOOL _started;
+
+  NSMutableArray *_audioPackets;
+  NSThread *_audioThread;
+  NSData *_audioBuffer;
 }
 
 - (void) prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
@@ -228,6 +230,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   _lastPTS = 0;
   _audioClock = av_gettime();
   _audioPackets = [[NSMutableArray alloc] init];
+  _audioBuffer = [[NSMutableData alloc] init];
   _running = YES;
 }
 
