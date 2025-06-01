@@ -262,7 +262,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   NSMutableArray *_audioPackets;
   NSThread *_audioThread;
-  NSData *_audioBuffer;
   PacketRingBuffer *_ring;
 }
 
@@ -299,6 +298,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 {
   [self stopAudio];
 
+  RELEASE(_ring);
   if (_audioFrame)
     av_frame_free(&_audioFrame);
 
@@ -367,57 +367,47 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   _lastPTS = 0;
   _audioClock = av_gettime();
   _audioPackets = [[NSMutableArray alloc] init];
-  _audioBuffer = [[NSMutableData alloc] init];
   _running = YES;
 }
 
-- (void)audioThreadEntry
-{
-  while (_running)
+- (void)audioThreadEntry {
+  while (_running) {
+    CREATE_AUTORELEASE_POOL(pool);
     {
-      CREATE_AUTORELEASE_POOL(pool);
-      {
-	NSDictionary *dict = nil;
-	
-	@synchronized (_audioPackets)
-	  {
-	    if (!_started && [_audioPackets count] < 5)
-	      {
-		usleep(5000);
-		continue;
-	      }
-	    if ([_audioPackets count] > 0)
-	      {
-		dict = [[_audioPackets objectAtIndex:0] retain];
-		[_audioPackets removeObjectAtIndex:0];
-	      }
-	  }
-	
-	if (!_started && dict)
-	  {
-	    _audioClock = av_gettime();
-	    _started = YES;
-	  }
-	
-	if (dict)
-	  {
-	    AVPacket packet = AVPacketFromNSDictionary(dict);
-	    int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
-	    int64_t now = av_gettime() - _audioClock;
-	    int64_t delay = packetTime - now;
-	    if (delay > 0)
-	      usleep((useconds_t)delay);
-	    
-	    [self decodeAudioPacket:&packet];
-	    [dict release];
-	  }
-	else
-	  {
-	    usleep(1000);
-	  }
+      NSDictionary *dict = [_ring pop];
+      if (!_started && [_ring count] < 5) {
+        usleep(5000);
+        RELEASE(pool);
+        continue;
       }
-      RELEASE(pool);
+
+      if (!_started && dict) {
+        _audioClock = av_gettime();
+        _started = YES;
+      }
+
+      if (dict) {
+        AVPacket packet = AVPacketFromNSDictionary(dict);
+
+        if (packet.pts != AV_NOPTS_VALUE) {
+          int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
+          int64_t now = av_gettime() - _audioClock;
+          int64_t delay = packetTime - now;
+
+          NSLog(@"PTS: %ld | Now: %ld | Delay: %ld", packet.pts, now, delay);
+
+          if (delay > 0) {
+            usleep((useconds_t)delay * 100);
+          }
+        }
+
+        [self decodeAudioPacket:&packet];
+      } else {
+        usleep(1000);
+      }
     }
+    RELEASE(pool);
+  }
 }
 
 - (void)decodeAudioPacket:(AVPacket *)packet
@@ -455,10 +445,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (void)submitPacket:(AVPacket *)packet
 {
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
-  @synchronized (_audioPackets)
-    {
-      [_audioPackets addObject: dict];
-    }
+  [_ring push: dict];
 }
 
 - (void)startAudio
