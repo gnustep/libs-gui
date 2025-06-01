@@ -259,8 +259,10 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   BOOL _running;
   float _volume; /* 0.0 to 1.0 */
   BOOL _started;
+  int64_t _lastPlaybackTime;
+  double _avgDelay;
+  int _delayCount;
 
-  NSMutableArray *_audioPackets;
   NSThread *_audioThread;
   PacketRingBuffer *_ring;
 }
@@ -285,11 +287,13 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _swrCtx = NULL;
       _lastPTS = 0;
       _audioClock = 0;
-      _audioPackets = nil;
       _audioThread = nil;
       _running = NO;
       _volume = 1.0;
       _started = NO;
+      _lastPlaybackTime = 0;
+      _avgDelay = 0.0;
+      _delayCount = 0;
     }
   return self;
 }
@@ -310,8 +314,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   if (_aoDev)
     ao_close(_aoDev);
-
-  RELEASE(_audioPackets);
 
   ao_shutdown();
   [super dealloc];
@@ -335,8 +337,11 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   _ring = [[PacketRingBuffer alloc] init];
   _audioCodecCtx = avcodec_alloc_context3(audioCodec);
+  _lastPlaybackTime = 0;
+  _avgDelay = 0.0;
+  _delayCount = 0;
+  
   avcodec_parameters_to_context(_audioCodecCtx, audioPar);
-
   if (avcodec_open2(_audioCodecCtx, audioCodec, NULL) < 0)
     {
       NSLog(@"Failed to open audio codec.");
@@ -366,7 +371,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   _timeBase = formatCtx->streams[audioStreamIndex]->time_base;
   _lastPTS = 0;
   _audioClock = av_gettime();
-  _audioPackets = [[NSMutableArray alloc] init];
   _running = YES;
 }
 
@@ -389,19 +393,30 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       if (dict) {
         AVPacket packet = AVPacketFromNSDictionary(dict);
 
+        int64_t delay = 0;
+
         if (packet.pts != AV_NOPTS_VALUE) {
           int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
           int64_t now = av_gettime() - _audioClock;
-          int64_t delay = packetTime - now;
+          delay = packetTime - now;
 
           NSLog(@"PTS: %ld | Now: %ld | Delay: %ld", packet.pts, now, delay);
 
           if (delay > 0) {
-            usleep((useconds_t)delay * 100);
+            usleep((useconds_t)delay);
           }
+        } else if (_lastPlaybackTime > 0) {
+          delay = _avgDelay > 0 ? (int64_t)_avgDelay : 23000; // default to ~23ms
+          usleep((useconds_t)delay);
         }
 
+        int64_t start = av_gettime();
         [self decodeAudioPacket:&packet];
+        int64_t duration = av_gettime() - start;
+
+        _avgDelay = ((_avgDelay * _delayCount) + duration) / (_delayCount + 1);
+        _delayCount++;
+        _lastPlaybackTime = start;
       } else {
         usleep(1000);
       }
