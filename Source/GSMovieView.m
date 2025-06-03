@@ -354,8 +354,12 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		      _audioCodecCtx->sample_fmt,
 		      _audioCodecCtx->sample_rate,
 		      0, NULL);
-  swr_init(_swrCtx);
-
+  int r = swr_init(_swrCtx);
+  if (r == 0)
+    {
+      NSLog(@"[GSMovieView] WARNING: swr_init returned 0");
+    }
+  
   memset(&_aoFmt, 0, sizeof(ao_sample_format));
   _aoFmt.bits = 16;
   _aoFmt.channels = out_channels;
