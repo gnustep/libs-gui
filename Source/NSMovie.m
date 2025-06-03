@@ -23,8 +23,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -50,7 +50,7 @@ NSString *_writeDataToTempFile(NSData *data)
     {
       return nil;
     }
-  
+
   return filepath;
 }
 
@@ -91,7 +91,7 @@ NSString *_writeDataToTempFile(NSData *data)
       _tmp = YES;
       ASSIGN(_movie, movie);
     }
-  
+
   return self;
 }
 
@@ -105,9 +105,14 @@ NSString *_writeDataToTempFile(NSData *data)
   self = [super init];
   if (self != nil)
     {
+      if (url == nil)
+	{
+	  return nil;
+	}
+
       ASSIGN(_url, url);
     }
-  
+
   return self;
 }
 
@@ -117,13 +122,13 @@ NSString *_writeDataToTempFile(NSData *data)
   NSData* data;
 
   type =
-    [pasteboard availableTypeFromArray: 
+    [pasteboard availableTypeFromArray:
 		  [object_getClass(self) movieUnfilteredPasteboardTypes]];
   if (type == nil)
     {
       data = nil;
     }
-  else 
+  else
     {
       data = [pasteboard dataForType: type];
     }
@@ -145,7 +150,7 @@ NSString *_writeDataToTempFile(NSData *data)
   [[NSFileManager defaultManager] removeFileAtPath: [_url path] handler: nil];
   TEST_RELEASE(_url);
   TEST_RELEASE(_movie);
-  
+
   [super dealloc];
 }
 

@@ -67,7 +67,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   NSNumber *pts = [dict objectForKey:@"pts"];
   NSNumber *duration = [dict objectForKey:@"duration"];
   NSNumber *flags = [dict objectForKey:@"flags"];
-  
+
   AVPacket *packet = av_packet_alloc();
   packet->data = (uint8_t *)[data bytes];
   packet->size = (int)[data length];
@@ -115,7 +115,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   NSMutableArray *result = [NSMutableArray array];
   const AVCodec *codec = NULL;
   void *i = 0;
-  
+
   while ((codec = av_codec_iterate(&i)))
     {
       if (av_codec_is_decoder(codec) && codec->type == AVMEDIA_TYPE_VIDEO)
@@ -151,7 +151,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 }
 
 - (void) prepareAudioWithFormatContext: (AVFormatContext *)formatCtx
-                           streamIndex: (int)audioStreamIndex;
+			   streamIndex: (int)audioStreamIndex;
 - (void) decodeAudioPacket: (AVPacket *)packet;
 - (void) startAudio;
 - (void) stopAudio;
@@ -202,12 +202,12 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 }
 
 - (void) prepareAudioWithFormatContext: (AVFormatContext *)formatCtx
-                           streamIndex: (int)audioStreamIndex
+			   streamIndex: (int)audioStreamIndex
 {
   ao_initialize();
   int driver = ao_default_driver_id();
   int out_channels = 2;
-  
+
   AVCodecParameters *audioPar = formatCtx->streams[audioStreamIndex]->codecpar;
   const AVCodec *audioCodec = avcodec_find_decoder(audioPar->codec_id);
 
@@ -242,7 +242,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       NSLog(@"[GSMovieView] WARNING: swr_init returned 0");
     }
-  
+
   memset(&_aoFmt, 0, sizeof(ao_sample_format));
   _aoFmt.bits = 16;
   _aoFmt.channels = out_channels;
@@ -264,7 +264,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       CREATE_AUTORELEASE_POOL(pool);
       {
 	NSDictionary *dict = nil;
-	
+
 	@synchronized (_audioPackets)
 	  {
 	    if (!_started && [_audioPackets count] < 5)
@@ -278,13 +278,13 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		[_audioPackets removeObjectAtIndex:0];
 	      }
 	  }
-	
+
 	if (!_started && dict)
 	  {
 	    _audioClock = av_gettime();
 	    _started = YES;
 	  }
-	
+
 	if (dict)
 	  {
 	    AVPacket packet = AVPacketFromNSDictionary(dict);
@@ -293,7 +293,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	    int64_t delay = packetTime - now;
 	    if (delay > 0)
 	      usleep((useconds_t)delay);
-	    
+
 	    [self decodeAudioPacket:&packet];
 	    [dict release];
 	  }
@@ -322,7 +322,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       uint8_t *outPtrs[] = { outBuf };
 
       swr_convert(_swrCtx, outPtrs, outSamples,
-                  (const uint8_t **) _audioFrame->data,
+		  (const uint8_t **) _audioFrame->data,
 		  outSamples);
 
       // Apply volume
@@ -332,7 +332,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	{
 	  samples[i] = samples[i] * _volume;
 	}
-      
+
       ao_play(_aoDev, (char *) outBuf, outBytes);
       free(outBuf);
     }
@@ -469,7 +469,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 {
   NSURL *url = [[self movie] URL];
   NSString *path = [url path];
-  
+
   NSLog(@"[GSMovieView] gotoEnd called | Timestamp: %ld", av_gettime());
 
   // Seek to the end of the video stream
@@ -480,7 +480,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       return;
     }
-  
+
   if (avformat_find_stream_info(formatCtx, NULL) < 0)
     {
       avformat_close_input(&formatCtx);
@@ -491,10 +491,10 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   for (unsigned int i = 0; i < formatCtx->nb_streams; ++i)
     {
       if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
-        {
-          videoStream = i;
-          break;
-        }
+	{
+	  videoStream = i;
+	  break;
+	}
     }
 
   if (videoStream == -1)
@@ -541,94 +541,102 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (void) feedVideo
 {
   NSMovie *movie = [self movie];
-  NSURL *url = [movie URL];
-  const char *path = [[url path] UTF8String]; 
-  NSLog(@"[Info] Opening file: %s | Timestamp: %ld", path, av_gettime());
-  avformat_network_init();
 
-  AVFormatContext *formatCtx = NULL;
-  if (avformat_open_input(&formatCtx, path, NULL, NULL) != 0)
+  if (movie != nil)
     {
-      NSLog(@"[Error] Could not open file: %s | Timestamp: %ld", path, av_gettime());
-      return;
-    }
+      NSURL *url = [movie URL];
 
-  if (avformat_find_stream_info(formatCtx, NULL) < 0)
-    {
-      NSLog(@"[Error] Could not find stream info. | Timestamp: %ld", av_gettime());
-      avformat_close_input(&formatCtx);
-      return;
-    }
-
-  int videoStream = -1;
-  for (unsigned int i = 0; i < formatCtx->nb_streams; i++)
-    {
-      if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
-        {
-          videoStream = i;
-          break;
-        }
-    }
-
-  int audioStream = -1;
-  for (unsigned int i = 0; i < formatCtx->nb_streams; i++)
-    {
-      if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
-        {
-          audioStream = i;
-          break;
-        }
-    }  
-
-  if (videoStream == -1)
-    {
-      NSLog(@"[Error] No video stream found. | Timestamp: %ld", av_gettime());
-      avformat_close_input(&formatCtx);
-      return;
-    }
-
-  [self prepareVideoWithFormatContext: formatCtx
-			  streamIndex: videoStream];
-  if (audioStream == -1) // if we do have an audio stream, initialize it... otherwise log it
-    {
-      NSLog(@"[Info] No audio stream found. | Timestamp: %ld", av_gettime());
-    }
-  else
-    {
-      [_audioPlayer prepareAudioWithFormatContext: formatCtx
-				      streamIndex: audioStream];
-    }
-
-  AVPacket packet;
-  int64_t i = 0;
-  while (av_read_frame(formatCtx, &packet) >= 0)
-    {
-      // After 1000 frames, start the thread...
-      if (i == 1000)
+      if (url != nil)
 	{
-	  [self startVideo];
-	  [_audioPlayer startAudio];
+	  const char *path = [[url path] UTF8String];
+	  NSLog(@"[Info] Opening file: %s | Timestamp: %ld", path, av_gettime());
+	  avformat_network_init();
+
+	  AVFormatContext *formatCtx = NULL;
+	  if (avformat_open_input(&formatCtx, path, NULL, NULL) != 0)
+	    {
+	      NSLog(@"[Error] Could not open file: %s | Timestamp: %ld", path, av_gettime());
+	      return;
+	    }
+
+	  if (avformat_find_stream_info(formatCtx, NULL) < 0)
+	    {
+	      NSLog(@"[Error] Could not find stream info. | Timestamp: %ld", av_gettime());
+	      avformat_close_input(&formatCtx);
+	      return;
+	    }
+
+	  int videoStream = -1;
+	  for (unsigned int i = 0; i < formatCtx->nb_streams; i++)
+	    {
+	      if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+		{
+		  videoStream = i;
+		  break;
+		}
+	    }
+
+	  int audioStream = -1;
+	  for (unsigned int i = 0; i < formatCtx->nb_streams; i++)
+	    {
+	      if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+		{
+		  audioStream = i;
+		  break;
+		}
+	    }
+
+	  if (videoStream == -1)
+	    {
+	      NSLog(@"[Error] No video stream found. | Timestamp: %ld", av_gettime());
+	      avformat_close_input(&formatCtx);
+	      return;
+	    }
+
+	  [self prepareVideoWithFormatContext: formatCtx
+				  streamIndex: videoStream];
+	  if (audioStream == -1) // if we do have an audio stream, initialize it... otherwise log it
+	    {
+	      NSLog(@"[Info] No audio stream found. | Timestamp: %ld", av_gettime());
+	    }
+	  else
+	    {
+	      [_audioPlayer prepareAudioWithFormatContext: formatCtx
+					      streamIndex: audioStream];
+	    }
+
+	  AVPacket packet;
+	  int64_t i = 0;
+	  while (av_read_frame(formatCtx, &packet) >= 0)
+	    {
+	      // After 1000 frames, start the thread...
+	      if (i == 1000)
+		{
+		  [self startVideo];
+		  [_audioPlayer startAudio];
+		}
+
+	      if (packet.stream_index == videoStream)
+		[self submitVideoPacket: &packet];
+
+	      if (packet.stream_index == audioStream)
+		[_audioPlayer submitPacket: &packet];
+
+	      av_packet_unref(&packet);
+	      i++;
+	    }
+
+	  // if we had a very short video... play it.
+	  if (i < 1000)
+	    {
+	      NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
+	      [self startVideo];
+	      [_audioPlayer startAudio];
+	    }
+
+	  avformat_close_input(&formatCtx);
 	}
-      
-      if (packet.stream_index == videoStream)
-        [self submitVideoPacket: &packet];
-
-      if (packet.stream_index == audioStream)
-        [_audioPlayer submitPacket: &packet];      
-
-      av_packet_unref(&packet);
-      i++;
     }
-
-  // if we had a very short video... play it.
-  if (i < 1000)
-    {
-      NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
-      [self startVideo];
-      [_audioPlayer startAudio];
-    }
-  
-  avformat_close_input(&formatCtx);
 }
 
 - (void)prepareVideoWithFormatContext: (AVFormatContext *)formatCtx streamIndex: (int)videoStreamIndex
@@ -640,7 +648,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       NSLog(@"[Error] Unsupported video codec. | Timestamp: %ld", av_gettime());
       return;
     }
-  
+
   _videoCodecCtx = avcodec_alloc_context3(videoCodec);
   avcodec_parameters_to_context(_videoCodecCtx, videoPar);
   if (avcodec_open2(_videoCodecCtx, videoCodec, NULL) < 0)
@@ -648,11 +656,11 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       NSLog(@"[Error] Failed to open video codec. | Timestamp: %ld", av_gettime());
       return;
     }
-  
+
   _videoFrame = av_frame_alloc();
   _swsCtx = sws_getContext(videoPar->width, videoPar->height, _videoCodecCtx->pix_fmt,
-                           videoPar->width, videoPar->height, AV_PIX_FMT_RGB24,
-                           SWS_BILINEAR, NULL, NULL, NULL);
+			   videoPar->width, videoPar->height, AV_PIX_FMT_RGB24,
+			   SWS_BILINEAR, NULL, NULL, NULL);
 
   _timeBase = formatCtx->streams[videoStreamIndex]->time_base;
   _videoPackets = RETAIN([[NSMutableArray alloc] init]);
@@ -680,7 +688,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _running = NO;
       [_videoThread cancel];
       while (![_videoThread isFinished])
-        usleep(1000);
+	usleep(1000);
       DESTROY(_videoThread);
     }
 }
@@ -699,52 +707,52 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   while (_running)
     {
       CREATE_AUTORELEASE_POOL(pool);
-        {
-          NSDictionary *dict = nil;
+	{
+	  NSDictionary *dict = nil;
 
-          @synchronized (_videoPackets)
-            {
-              if (!_started && [_videoPackets count] < 3)
-                {
-                  usleep(5000);
+	  @synchronized (_videoPackets)
+	    {
+	      if (!_started && [_videoPackets count] < 3)
+		{
+		  usleep(5000);
 		  RELEASE(pool);
-                  continue;
-                }
-              if ([_videoPackets count] > 0)
-                {
-                  dict = RETAIN([_videoPackets objectAtIndex:0]);
-                  [_videoPackets removeObjectAtIndex:0];
-                }
-            }
+		  continue;
+		}
+	      if ([_videoPackets count] > 0)
+		{
+		  dict = RETAIN([_videoPackets objectAtIndex:0]);
+		  [_videoPackets removeObjectAtIndex:0];
+		}
+	    }
 
-          if (!_started && dict)
-            {
-              _videoClock = av_gettime();
-              _started = YES;
-            }
+	  if (!_started && dict)
+	    {
+	      _videoClock = av_gettime();
+	      _started = YES;
+	    }
 
-          if (dict)
-            {
-              AVPacket packet = AVPacketFromNSDictionary(dict);
-              int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
-              int64_t now = av_gettime() - _videoClock;
-              int64_t delay = packetTime - now;
-	      
-              fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r", packet.pts, delay);
-              if (delay > 0)
+	  if (dict)
+	    {
+	      AVPacket packet = AVPacketFromNSDictionary(dict);
+	      int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
+	      int64_t now = av_gettime() - _videoClock;
+	      int64_t delay = packetTime - now;
+
+	      fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r", packet.pts, delay);
+	      if (delay > 0)
 		{
 		  usleep((useconds_t)delay);
 		}
-	      
-              [self decodeVideoPacket: &packet];
-              RELEASE(dict);
-            }
-          else
-            {
-              usleep(1000);
-            }
+
+	      [self decodeVideoPacket: &packet];
+	      RELEASE(dict);
+	    }
+	  else
+	    {
+	      usleep(1000);
+	    }
 	  RELEASE(pool);
-        }
+	}
     }
 }
 
@@ -760,21 +768,21 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       uint8_t *rgbData[1];
       int rgbLineSize[1];
-      
+
       int width = _videoCodecCtx->width;
       int height = _videoCodecCtx->height;
-      
+
       rgbLineSize[0] = width * 3;
       rgbData[0] = (uint8_t *)malloc(height * rgbLineSize[0]);
-      
+
       sws_scale(_swsCtx,
-                (const uint8_t * const *)_videoFrame->data,
-                _videoFrame->linesize,
-                0,
-                height,
-                rgbData,
-                rgbLineSize);
-      
+		(const uint8_t * const *)_videoFrame->data,
+		_videoFrame->linesize,
+		0,
+		height,
+		rgbData,
+		rgbLineSize);
+
       NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
 				   initWithBitmapDataPlanes: &rgbData[0]
 						 pixelsWide: width
@@ -786,12 +794,12 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 					     colorSpaceName: NSCalibratedRGBColorSpace
 						bytesPerRow: rgbLineSize[0]
 					       bitsPerPixel: 24];
-      
+
       NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(width, height)];
       [image addRepresentation: bitmap];
       [self performSelectorOnMainThread: @selector(updateImage:)
 			     withObject: image
-			  waitUntilDone: NO];      
+			  waitUntilDone: NO];
 
       RELEASE(image);
       RELEASE(bitmap);
