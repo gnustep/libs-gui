@@ -150,9 +150,9 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   NSThread *_audioThread;
 }
 
-- (void) prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
-                           streamIndex:(int)audioStreamIndex;
-- (void) decodeAudioPacket:(AVPacket *)packet;
+- (void) prepareAudioWithFormatContext: (AVFormatContext *)formatCtx
+                           streamIndex: (int)audioStreamIndex;
+- (void) decodeAudioPacket: (AVPacket *)packet;
 - (void) startAudio;
 - (void) stopAudio;
 - (void) setVolume: (float)volume;
@@ -201,8 +201,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   [super dealloc];
 }
 
-- (void) prepareAudioWithFormatContext:(AVFormatContext *)formatCtx
-                           streamIndex:(int)audioStreamIndex
+- (void) prepareAudioWithFormatContext: (AVFormatContext *)formatCtx
+                           streamIndex: (int)audioStreamIndex
 {
   ao_initialize();
   int driver = ao_default_driver_id();
@@ -306,7 +306,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 }
 
-- (void)decodeAudioPacket:(AVPacket *)packet
+- (void)decodeAudioPacket: (AVPacket *)packet
 {
   if (!_audioCodecCtx || !_swrCtx || !_aoDev)
     return;
@@ -338,7 +338,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 }
 
-- (void)submitPacket:(AVPacket *)packet
+- (void)submitPacket: (AVPacket *)packet
 {
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
   @synchronized (_audioPackets)
@@ -451,7 +451,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		    (float)_videoCodecCtx->height);
 }
 
-- (IBAction)gotoPosterFrame:(id)sender
+- (IBAction)gotoPosterFrame: (id)sender
 {
   NSLog(@"[GSMovieView] gotoPosterFrame called | Timestamp: %ld", av_gettime());
   // Reset to first video frame
@@ -459,13 +459,13 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   [self start: sender];
 }
 
-- (IBAction)gotoBeginning:(id)sender
+- (IBAction)gotoBeginning: (id)sender
 {
   NSLog(@"[GSMovieView] gotoBeginning called | Timestamp: %ld", av_gettime());
   [self gotoPosterFrame: sender];
 }
 
-- (IBAction)gotoEnd:(id)sender
+- (IBAction)gotoEnd: (id)sender
 {
   NSURL *url = [[self movie] URL];
   NSString *path = [url path];
@@ -631,7 +631,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   avformat_close_input(&formatCtx);
 }
 
-- (void)prepareVideoWithFormatContext:(AVFormatContext *)formatCtx streamIndex:(int)videoStreamIndex
+- (void)prepareVideoWithFormatContext: (AVFormatContext *)formatCtx streamIndex: (int)videoStreamIndex
 {
   AVCodecParameters *videoPar = formatCtx->streams[videoStreamIndex]->codecpar;
   const AVCodec *videoCodec = avcodec_find_decoder(videoPar->codec_id);
@@ -685,7 +685,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 }
 
-- (void)submitVideoPacket:(AVPacket *)packet
+- (void)submitVideoPacket: (AVPacket *)packet
 {
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
   @synchronized (_videoPackets)
@@ -748,7 +748,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 }
 
-- (void)decodeVideoPacket:(AVPacket *)packet
+- (void)decodeVideoPacket: (AVPacket *)packet
 {
   if (!_videoCodecCtx || !_swsCtx)
     return;
@@ -792,7 +792,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       [self performSelectorOnMainThread: @selector(updateImage:)
 			     withObject: image
 			  waitUntilDone: NO];      
-      
+
+      RELEASE(image);
       RELEASE(bitmap);
       free(rgbData[0]);
     }
