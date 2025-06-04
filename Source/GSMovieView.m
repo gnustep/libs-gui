@@ -430,7 +430,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _videoThread = nil;
       _feedThread = nil;
       _audioPlayer = [[GSAudioPlayer alloc] init];
-      _videoPackets = RETAIN([[NSMutableArray alloc] init]);
+      _videoPackets = [[NSMutableArray alloc] init];
       _running = NO;
       _started = NO;
       _videoClock = 0;
@@ -469,7 +469,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   [self setRate: 1.0 / 30.0];
   [self setVolume: 1.0];
 
-  _feedThread = RETAIN([[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil]);
+  _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil];
   [_feedThread start];
   [_audioPlayer startAudio];
 }
@@ -736,7 +736,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 			   NULL, NULL, NULL);
 
   _timeBase = formatCtx->streams[videoStreamIndex]->time_base;
-  _videoPackets = RETAIN([[NSMutableArray alloc] init]);
+  _videoPackets = [[NSMutableArray alloc] init];
   _videoClock = av_gettime();
   _running = NO;
   _started = NO;
@@ -748,7 +748,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   if (!_running)
     {
       _running = YES;
-      _videoThread = RETAIN([[NSThread alloc] initWithTarget:self selector:@selector(videoThreadEntry) object:nil]);
+      _videoThread = [[NSThread alloc] initWithTarget:self selector:@selector(videoThreadEntry) object:nil];
       [_videoThread start];
     }
 }
