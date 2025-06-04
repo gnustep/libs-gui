@@ -90,7 +90,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 + (NSArray*) movieUnfilteredFileTypes
 {
-  NSMutableSet<NSString *> *extensionsSet = [NSMutableSet set];
+  NSMutableSet *extensionsSet = [NSMutableSet set];
   void *opaque = NULL;
   const AVOutputFormat *ofmt = NULL;
 
@@ -100,8 +100,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       if (ofmt->extensions)
 	{
 	  NSString *extString = [NSString stringWithUTF8String:ofmt->extensions];
-	  NSArray<NSString *> *exts = [extString componentsSeparatedByString:@","];
-	  [extensionsSet addObjectsFromArray:exts];
+	  NSArray *exts = [extString componentsSeparatedByString:@","];
+	  [extensionsSet addObjectsFromArray: exts];
 	}
     }
 
@@ -112,7 +112,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 + (NSArray*) movieUnfilteredPasteboardTypes
 {
-  NSMutableArray *result = [NSMutableArray array];
+  NSMutableSet *result = [NSMutableSet set];
   const AVCodec *codec = NULL;
   void *i = 0;
 
@@ -124,7 +124,9 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	}
     }
 
-  return result;
+  // Convert to sorted array
+  NSArray *sorted = [[result allObjects] sortedArrayUsingSelector:@selector(compare:)];
+  return sorted;
 }
 
 @end
@@ -145,7 +147,9 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   BOOL _running;
   float _volume; /* 0.0 to 1.0 */
   BOOL _started;
-
+  unsigned int _loopMode:3;
+  BOOL _muted;
+  
   NSMutableArray *_audioPackets;
   NSThread *_audioThread;
 }
@@ -155,7 +159,15 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (void) decodeAudioPacket: (AVPacket *)packet;
 - (void) startAudio;
 - (void) stopAudio;
+
+- (float) volume;
 - (void) setVolume: (float)volume;
+
+- (NSQTMovieLoopMode) loopMode;
+- (void) setLoopMode: (NSQTMovieLoopMode)mode;
+
+- (BOOL) isMuted;
+- (void) setMuted: (BOOL)muted;
 
 @end
 
@@ -175,6 +187,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _running = NO;
       _volume = 1.0;
       _started = NO;
+      _loopMode = NSQTMovieNormalPlayback;
     }
   return self;
 }
@@ -199,6 +212,16 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   ao_shutdown();
   [super dealloc];
+}
+
+- (NSQTMovieLoopMode) loopMode
+{
+  return _loopMode;
+}
+
+- (void) setLoopMode: (NSQTMovieLoopMode)mode
+{
+  _loopMode = mode;
 }
 
 - (void) prepareAudioWithFormatContext: (AVFormatContext *)formatCtx
@@ -330,7 +353,14 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       int i = 0;
       for (i = 0; i < outBytes / 2; ++i)
 	{
-	  samples[i] = samples[i] * _volume;
+	  if ([self isMuted])
+	    {
+	      samples[i] = 0.0;
+	    }
+	  else
+	    {
+	      samples[i] = samples[i] * _volume;
+	    }
 	}
 
       ao_play(_aoDev, (char *) outBuf, outBytes);
@@ -371,6 +401,21 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   _volume = volume;
 }
 
+- (float) volume
+{
+  return _volume;
+}
+
+- (void) setMuted: (BOOL)muted
+{
+  _muted = muted;
+}
+
+- (BOOL) isMuted
+{
+  return _muted;
+}
+
 @end
 
 // NSMovieView subclass that does all of the actual work of decoding...
@@ -390,7 +435,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _started = NO;
       _videoClock = 0;
       _videoCodecCtx = 0;
-      _swsCtx = NULL;
+      _swsCtx = NULL;      
     }
   return self;
 }
@@ -438,10 +483,28 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   DESTROY(_feedThread);
 }
 
+- (void) resetFeed
+{
+  [self stop: nil];
+  [self start: nil];
+}
+
+- (void) setMuted: (BOOL)muted
+{
+  [super setMuted: muted];
+  [_audioPlayer setMuted: muted];
+}
+
 - (void) setVolume: (float)volume
 {
   [super setVolume: volume];
   [_audioPlayer setVolume: volume];
+}
+
+- (void) setLoopMode: (NSQTMovieLoopMode)mode
+{
+  [super setLoopMode: mode];
+  [self resetFeed];
 }
 
 - (NSRect) movieRect
@@ -454,6 +517,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (IBAction)gotoPosterFrame: (id)sender
 {
   NSLog(@"[GSMovieView] gotoPosterFrame called | Timestamp: %ld", av_gettime());
+
   // Reset to first video frame
   [self stop: sender];
   [self start: sender];
@@ -462,6 +526,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (IBAction)gotoBeginning: (id)sender
 {
   NSLog(@"[GSMovieView] gotoBeginning called | Timestamp: %ld", av_gettime());
+
   [self gotoPosterFrame: sender];
 }
 
@@ -657,12 +722,18 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       return;
     }
 
+  // Configure the codec...
   _videoCodecCtx->thread_count = 4;
   _videoCodecCtx->thread_type = FF_THREAD_FRAME;
   _videoFrame = av_frame_alloc();
-  _swsCtx = sws_getContext(videoPar->width, videoPar->height, _videoCodecCtx->pix_fmt,
-			   videoPar->width, videoPar->height, AV_PIX_FMT_RGB24,
-			   SWS_BILINEAR, NULL, NULL, NULL);
+  _swsCtx = sws_getContext(videoPar->width,
+			   videoPar->height,
+			   _videoCodecCtx->pix_fmt,
+			   videoPar->width,
+			   videoPar->height,
+			   AV_PIX_FMT_RGB24,
+			   SWS_BILINEAR,
+			   NULL, NULL, NULL);
 
   _timeBase = formatCtx->streams[videoStreamIndex]->time_base;
   _videoPackets = RETAIN([[NSMutableArray alloc] init]);
@@ -770,7 +841,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       uint8_t *rgbData[1];
       int rgbLineSize[1];
-
       int width = _videoCodecCtx->width;
       int height = _videoCodecCtx->height;
 
