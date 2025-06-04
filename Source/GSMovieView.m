@@ -657,6 +657,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       return;
     }
 
+  _videoCodecCtx->thread_count = 4;
+  _videoCodecCtx->thread_type = FF_THREAD_FRAME;
   _videoFrame = av_frame_alloc();
   _swsCtx = sws_getContext(videoPar->width, videoPar->height, _videoCodecCtx->pix_fmt,
 			   videoPar->width, videoPar->height, AV_PIX_FMT_RGB24,
