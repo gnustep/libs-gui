@@ -510,7 +510,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (NSRect) movieRect
 {
   AVFormatContext* fmt_ctx = NULL;
-  // AVCodecContext* codec_ctx = NULL;
   NSURL *url = [[self movie] URL];
   const char *name = [[url path] UTF8String];
 
@@ -738,6 +737,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 {
   AVCodecParameters *videoPar = formatCtx->streams[videoStreamIndex]->codecpar;
   const AVCodec *videoCodec = avcodec_find_decoder(videoPar->codec_id);
+
   if (!videoCodec)
     {
       NSLog(@"[Error] Unsupported video codec. | Timestamp: %ld", av_gettime());
