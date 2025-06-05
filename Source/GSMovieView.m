@@ -509,9 +509,39 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (NSRect) movieRect
 {
-  return NSMakeRect(0.0, 0.0,
-		    (float)_videoCodecCtx->width,
-		    (float)_videoCodecCtx->height);
+  AVFormatContext* fmt_ctx = NULL;
+  // AVCodecContext* codec_ctx = NULL;
+  NSURL *url = [[self movie] URL];
+  const char *name = [[url path] UTF8String];
+
+  // I realize this is inefficient, but there is a race condition
+  // which occurs when setting this from the existing stream.
+  
+  // Open video file
+  avformat_open_input(&fmt_ctx, name, NULL, NULL);
+  avformat_find_stream_info(fmt_ctx, NULL);
+
+  // Find the first video stream
+  int video_stream_index = -1;
+  unsigned int i = 0;
+  for (i = 0; i < fmt_ctx->nb_streams; i++)
+    {
+      if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+	{
+	  video_stream_index = i;
+	  break;
+	}
+    }
+
+  // Retrieve codec parameters
+  AVCodecParameters* codecpar =
+    fmt_ctx->streams[video_stream_index]->codecpar;
+
+  // These are your video dimensions:
+  CGFloat width = (CGFloat)(codecpar->width);
+  CGFloat height = (CGFloat)(codecpar->height);
+
+  return NSMakeRect(0.0, 0.0, width, height);
 }
 
 - (IBAction)gotoPosterFrame: (id)sender
@@ -793,8 +823,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		}
 	      if ([_videoPackets count] > 0)
 		{
-		  dict = RETAIN([_videoPackets objectAtIndex:0]);
-		  [_videoPackets removeObjectAtIndex:0];
+		  dict = RETAIN([_videoPackets objectAtIndex: 0]);
+		  [_videoPackets removeObjectAtIndex: 0];
 		}
 	    }
 
