@@ -65,6 +65,8 @@ APPKIT_EXPORT_CLASS
   BOOL _running;
   BOOL _started;
   int64_t _videoClock;
+  int _videoStreamIndex;
+  int _audioStreamIndex;
 }
 
 - (void) prepareVideoWithFormatContext: (AVFormatContext *)formatCtx
@@ -74,8 +76,7 @@ APPKIT_EXPORT_CLASS
 - (void) startVideo;
 - (void) stopVideo;
 - (void) feedVideo;
-// - (void) logStreamMetadata;
 
 @end
 
-#endif /* _GNUstep_H_NSMovieView */
+#endif /* _GNUstep_H_GSMovieView */

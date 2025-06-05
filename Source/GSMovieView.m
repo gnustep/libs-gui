@@ -141,7 +141,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   SwrContext *_swrCtx;
   ao_device *_aoDev;
   ao_sample_format _aoFmt;
-  int64_t _lastPTS;
   int64_t _audioClock;
   AVRational _timeBase;
   BOOL _running;
@@ -180,7 +179,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _audioCodecCtx = NULL;
       _audioFrame = NULL;
       _swrCtx = NULL;
-      _lastPTS = 0;
       _audioClock = 0;
       _audioPackets = nil;
       _audioThread = nil;
@@ -197,17 +195,25 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   [self stopAudio];
 
   if (_audioFrame)
-    av_frame_free(&_audioFrame);
-
+    {
+      av_frame_free(&_audioFrame);
+    }
+  
   if (_audioCodecCtx)
-    avcodec_free_context(&_audioCodecCtx);
-
+    {
+      avcodec_free_context(&_audioCodecCtx);
+    }
+  
   if (_swrCtx)
-    swr_free(&_swrCtx);
+    {
+      swr_free(&_swrCtx);
+    }
 
   if (_aoDev)
-    ao_close(_aoDev);
-
+    {
+      ao_close(_aoDev);
+    }
+  
   RELEASE(_audioPackets);
 
   ao_shutdown();
@@ -274,7 +280,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   _aoDev = ao_open_live(driver, &_aoFmt, NULL);
   _timeBase = formatCtx->streams[audioStreamIndex]->time_base;
-  _lastPTS = 0;
   _audioClock = av_gettime();
   _audioPackets = [[NSMutableArray alloc] init];
   _running = YES;
@@ -388,16 +393,27 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 {
   _running = NO;
   [_audioThread cancel];
-  while (![_audioThread isFinished])
-    usleep(1000);
-  [_audioThread release];
-  _audioThread = nil;
+
+  while ([_audioThread isFinished] == NO)
+    {
+      usleep(1000);
+    }
+  
+  DESTROY(_audioThread);
 }
 
 - (void) setVolume: (float)volume
 {
-  if (volume < 0.0) volume = 0.0;
-  if (volume > 1.0) volume = 1.0;
+  if (volume < 0.0)
+    {
+      volume = 0.0;
+    }
+  
+  if (volume > 1.0)
+    {
+      volume = 1.0;
+    }
+  
   _volume = volume;
 }
 
@@ -575,50 +591,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (IBAction)gotoEnd: (id)sender
 {
-  NSURL *url = [[self movie] URL];
-  NSString *path = [url path];
-
-  NSLog(@"[GSMovieView] gotoEnd called | Timestamp: %ld", av_gettime());
-
-  // Seek to the end of the video stream
-  [self stop: sender];
-
-  AVFormatContext *formatCtx = NULL;
-  if (avformat_open_input(&formatCtx, [path UTF8String], NULL, NULL) != 0)
-    {
-      return;
-    }
-
-  if (avformat_find_stream_info(formatCtx, NULL) < 0)
-    {
-      avformat_close_input(&formatCtx);
-      return;
-    }
-
-  int videoStream = -1;
-  for (unsigned int i = 0; i < formatCtx->nb_streams; ++i)
-    {
-      if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
-	{
-	  videoStream = i;
-	  break;
-	}
-    }
-
-  if (videoStream == -1)
-    {
-      avformat_close_input(&formatCtx);
-      return;
-    }
-
-  int64_t duration = formatCtx->streams[videoStream]->duration;
-  // AVRational timeBase = formatCtx->streams[videoStream]->time_base;
-
-  int64_t seekTarget = duration - AV_TIME_BASE;
-  av_seek_frame(formatCtx, videoStream, seekTarget, AVSEEK_FLAG_BACKWARD);
-
-  [self feedVideo];
-  avformat_close_input(&formatCtx);
 }
 
 - (IBAction) stepForward: (id)sender
@@ -630,7 +602,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 }
 
 // Video playback methods...
-
 - (void) updateImage: (NSImage *)image
 {
   ASSIGN(_currentFrame, image);
@@ -674,50 +645,50 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	      return;
 	    }
 
-	  int videoStream = -1;
+	  _videoStreamIndex = -1;
 	  for (unsigned int i = 0; i < formatCtx->nb_streams; i++)
 	    {
 	      if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
 		{
-		  videoStream = i;
+		  _videoStreamIndex = i;
 		  break;
 		}
 	    }
 
-	  int audioStream = -1;
+	  _audioStreamIndex = -1;
 	  for (unsigned int i = 0; i < formatCtx->nb_streams; i++)
 	    {
 	      if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
 		{
-		  audioStream = i;
+		  _audioStreamIndex = i;
 		  break;
 		}
 	    }
 
 	  // Video stream...
-	  if (videoStream == -1)
+	  if (_videoStreamIndex == -1)
 	    {
 	      NSLog(@"[Info] No video stream found. | Timestamp: %ld", av_gettime());
 	    }
 	  else
 	    {
 	      [self prepareVideoWithFormatContext: formatCtx
-				      streamIndex: videoStream];
+				      streamIndex: _videoStreamIndex];
 	    }
 
 	  // Audio stream...
-	  if (audioStream == -1) // if we do have an audio stream, initialize it... otherwise log it
+	  if (_audioStreamIndex == -1) // if we do have an audio stream, initialize it... otherwise log it
 	    {
 	      NSLog(@"[Info] No audio stream found. | Timestamp: %ld", av_gettime());
 	    }
 	  else
 	    {
 	      [_audioPlayer prepareAudioWithFormatContext: formatCtx
-					      streamIndex: audioStream];
+					      streamIndex: _audioStreamIndex];
 	    }
 
 	  // Video and Audio stream not present...
-	  if (videoStream == -1 && audioStream == -1)
+	  if (_videoStreamIndex == -1 && _audioStreamIndex == -1)
 	    {
 	      NSLog(@"[Error] No video or audio stream detected, exiting");
 	      avformat_close_input(&formatCtx);
@@ -735,12 +706,16 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		  [_audioPlayer startAudio];
 		}
 
-	      if (packet.stream_index == videoStream)
-		[self submitVideoPacket: &packet];
-
-	      if (packet.stream_index == audioStream)
-		[_audioPlayer submitPacket: &packet];
-
+	      if (packet.stream_index == _videoStreamIndex)
+		{
+		  [self submitVideoPacket: &packet];
+		}
+	      
+	      if (packet.stream_index == _audioStreamIndex)
+		{
+		  [_audioPlayer submitPacket: &packet];
+		}
+	      
 	      av_packet_unref(&packet);
 	      i++;
 	    }
