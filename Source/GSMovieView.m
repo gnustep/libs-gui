@@ -444,17 +444,31 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 {
   [self stop: nil];
 
+  if (_feedThread)
+    {
+      [_feedThread cancel];
+      DESTROY(_feedThread);
+    }
+  
   if (_videoFrame)
-    av_frame_free(&_videoFrame);
+    {
+      av_frame_free(&_videoFrame);
+    }
+  
   if (_videoCodecCtx)
-    avcodec_free_context(&_videoCodecCtx);
+    {
+      avcodec_free_context(&_videoCodecCtx);
+    }
+  
   if (_swsCtx)
-    sws_freeContext(_swsCtx);
-
-  DESTROY(_videoPackets);
+    {
+      sws_freeContext(_swsCtx);
+    }
+  
   TEST_RELEASE(_currentFrame);
+  DESTROY(_videoPackets);
   DESTROY(_audioPlayer);
-
+    
   [super dealloc];
 }
 
@@ -680,15 +694,18 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		}
 	    }
 
+	  // Video stream...
 	  if (videoStream == -1)
 	    {
-	      NSLog(@"[Error] No video stream found. | Timestamp: %ld", av_gettime());
-	      avformat_close_input(&formatCtx);
-	      return;
+	      NSLog(@"[Info] No video stream found. | Timestamp: %ld", av_gettime());
+	    }
+	  else
+	    {
+	      [self prepareVideoWithFormatContext: formatCtx
+				      streamIndex: videoStream];
 	    }
 
-	  [self prepareVideoWithFormatContext: formatCtx
-				  streamIndex: videoStream];
+	  // Audio stream...
 	  if (audioStream == -1) // if we do have an audio stream, initialize it... otherwise log it
 	    {
 	      NSLog(@"[Info] No audio stream found. | Timestamp: %ld", av_gettime());
@@ -697,6 +714,14 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	    {
 	      [_audioPlayer prepareAudioWithFormatContext: formatCtx
 					      streamIndex: audioStream];
+	    }
+
+	  // Video and Audio stream not present...
+	  if (videoStream == -1 && audioStream == -1)
+	    {
+	      NSLog(@"[Error] No video or audio stream detected, exiting");
+	      avformat_close_input(&formatCtx);
+	      return;
 	    }
 
 	  AVPacket packet;
