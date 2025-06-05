@@ -148,7 +148,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   BOOL _started;
   unsigned int _loopMode:3;
   BOOL _muted;
-  
+
   NSMutableArray *_audioPackets;
   NSThread *_audioThread;
 }
@@ -198,12 +198,12 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       av_frame_free(&_audioFrame);
     }
-  
+
   if (_audioCodecCtx)
     {
       avcodec_free_context(&_audioCodecCtx);
     }
-  
+
   if (_swrCtx)
     {
       swr_free(&_swrCtx);
@@ -213,7 +213,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       ao_close(_aoDev);
     }
-  
+
   RELEASE(_audioPackets);
 
   ao_shutdown();
@@ -398,7 +398,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       usleep(1000);
     }
-  
+
   DESTROY(_audioThread);
 }
 
@@ -408,12 +408,12 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       volume = 0.0;
     }
-  
+
   if (volume > 1.0)
     {
       volume = 1.0;
     }
-  
+
   _volume = volume;
 }
 
@@ -451,7 +451,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _started = NO;
       _videoClock = 0;
       _videoCodecCtx = 0;
-      _swsCtx = NULL;      
+      _swsCtx = NULL;
     }
   return self;
 }
@@ -465,26 +465,26 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       [_feedThread cancel];
       DESTROY(_feedThread);
     }
-  
+
   if (_videoFrame)
     {
       av_frame_free(&_videoFrame);
     }
-  
+
   if (_videoCodecCtx)
     {
       avcodec_free_context(&_videoCodecCtx);
     }
-  
+
   if (_swsCtx)
     {
       sws_freeContext(_swsCtx);
     }
-  
+
   TEST_RELEASE(_currentFrame);
   DESTROY(_videoPackets);
   DESTROY(_audioPlayer);
-    
+
   [super dealloc];
 }
 
@@ -545,7 +545,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   // I realize this is inefficient, but there is a race condition
   // which occurs when setting this from the existing stream.
-  
+
   // Open video file
   avformat_open_input(&fmt_ctx, name, NULL, NULL);
   avformat_find_stream_info(fmt_ctx, NULL);
@@ -573,24 +573,99 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   return NSMakeRect(0.0, 0.0, width, height);
 }
 
+- (void) _gotoFrame: (int64_t)pts
+{
+  AVPacket pkt;
+  AVFormatContext *fmt_ctx = NULL;
+  NSURL *url = [[self movie] URL];
+  const char *name = [[url path] UTF8String];
+  
+  [self stop: nil];
+
+  // Open video file
+  avformat_open_input(&fmt_ctx, name, NULL, NULL);
+  avformat_find_stream_info(fmt_ctx, NULL);
+
+  // Find the first video stream
+  int video_stream_index = -1;
+  unsigned int i = 0;
+  for (i = 0; i < fmt_ctx->nb_streams; i++)
+    {
+      if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+	{
+	  video_stream_index = i;
+	  break;
+	}
+    }
+
+  // Get the first decoded frame, show that...
+  while (av_read_frame(fmt_ctx, &pkt) >= pts)
+    {
+      if (pkt.stream_index == video_stream_index)
+	{
+	  [self decodeVideoPacket: &pkt];
+	}
+      av_packet_unref(&pkt);
+    }
+}
+
 - (IBAction)gotoPosterFrame: (id)sender
 {
+  [self _gotoFrame: 0];
   NSLog(@"[GSMovieView] gotoPosterFrame called | Timestamp: %ld", av_gettime());
-
-  // Reset to first video frame
-  [self stop: sender];
-  [self start: sender];
 }
 
 - (IBAction)gotoBeginning: (id)sender
 {
+  [self _gotoFrame: 0];
   NSLog(@"[GSMovieView] gotoBeginning called | Timestamp: %ld", av_gettime());
-
-  [self gotoPosterFrame: sender];
 }
 
 - (IBAction)gotoEnd: (id)sender
 {
+  AVFormatContext *fmt_ctx = NULL;
+  NSURL *url = [[self movie] URL];
+  const char *name = [[url path] UTF8String];
+  
+  [self stop: nil];
+
+  // Open video file
+  avformat_open_input(&fmt_ctx, name, NULL, NULL);
+
+  // Find the first video stream
+  int video_stream_index = -1;
+  unsigned int i = 0;
+  for (i = 0; i < fmt_ctx->nb_streams; i++)
+    {
+      if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+	{
+	  video_stream_index = i;
+	  break;
+	}
+    }
+
+  // Find and decode the packet
+  AVPacket pkt;
+  int64_t last_pts = AV_NOPTS_VALUE;
+  av_seek_frame(fmt_ctx, video_stream_index, INT64_MAX, AVSEEK_FLAG_BACKWARD);
+  while (av_read_frame(fmt_ctx, &pkt) >= 0)
+    {
+      if (pkt.stream_index == video_stream_index)
+	{
+	  if (pkt.pts != AV_NOPTS_VALUE)
+	    {
+	      last_pts = pkt.pts;
+	    }
+	}
+      av_packet_unref(&pkt);
+    }
+
+  if (last_pts != AV_NOPTS_VALUE)
+    {
+      double seconds = last_pts * av_q2d(fmt_ctx->streams[video_stream_index]->time_base);
+      [self _gotoFrame: last_pts];
+      NSLog(@"Last decoded PTS: %" PRId64 " (%.3f sec)\n", last_pts, seconds);
+    }
 }
 
 - (IBAction) stepForward: (id)sender
@@ -627,11 +702,11 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
       if (url != nil)
 	{
+	  AVFormatContext *formatCtx = NULL;
 	  const char *path = [[url path] UTF8String];
+
 	  NSLog(@"[Info] Opening file: %s | Timestamp: %ld", path, av_gettime());
 	  avformat_network_init();
-
-	  AVFormatContext *formatCtx = NULL;
 	  if (avformat_open_input(&formatCtx, path, NULL, NULL) != 0)
 	    {
 	      NSLog(@"[Error] Could not open file: %s | Timestamp: %ld", path, av_gettime());
@@ -710,12 +785,12 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		{
 		  [self submitVideoPacket: &packet];
 		}
-	      
+
 	      if (packet.stream_index == _audioStreamIndex)
 		{
 		  [_audioPlayer submitPacket: &packet];
 		}
-	      
+
 	      av_packet_unref(&packet);
 	      i++;
 	    }
