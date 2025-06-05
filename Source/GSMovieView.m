@@ -496,21 +496,27 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (IBAction) start: (id)sender
 {
-  [self setRate: 1.0 / 30.0];
-  [self setVolume: 1.0];
+  if (_running == NO)
+    {
+      [self setRate: 1.0 / 30.0];
+      [self setVolume: 1.0];
 
-  _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil];
-  [_feedThread start];
-  [_audioPlayer startAudio];
+      _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil];
+      [_feedThread start];
+      [_audioPlayer startAudio];
+    }
 }
 
 - (IBAction) stop: (id)sender
 {
-  [_feedThread cancel];
-  [self stopVideo];
-  [_audioPlayer stopAudio];
-
-  DESTROY(_feedThread);
+  if (_running)
+    {
+      [_feedThread cancel];
+      [self stopVideo];
+      [_audioPlayer stopAudio];
+      
+      DESTROY(_feedThread);    
+    }
 }
 
 - (void) resetFeed
@@ -626,10 +632,12 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   AVFormatContext *fmt_ctx = NULL;
   NSURL *url = [[self movie] URL];
   const char *name = [[url path] UTF8String];
-  
+
+  NSLog(@"Stopping...");
   [self stop: nil];
 
   // Open video file
+  NSLog(@"Name... %s", name);
   avformat_open_input(&fmt_ctx, name, NULL, NULL);
 
   // Find the first video stream
@@ -644,6 +652,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	}
     }
 
+  NSLog(@"stream = %d", video_stream_index);
   // Find and decode the packet
   AVPacket pkt;
   int64_t last_pts = AV_NOPTS_VALUE;
@@ -659,6 +668,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	}
       av_packet_unref(&pkt);
     }
+
+  NSLog(@"last_pts = %ld", last_pts);
 
   if (last_pts != AV_NOPTS_VALUE)
     {
