@@ -953,13 +953,11 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		  int64_t now = av_gettime() - _videoClock;
 		  int64_t delay = packetTime - now;
 
-		  // Show the information...
-		  _statusString = [NSString stringWithFormat: @"[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us",
-					    packet.pts, delay];
-		  NSLog(@"statusField = %@", _statusField);
 		  if (_statusField != nil)
 		    {
-		      NSLog(@"Setting...");
+		      // Show the information...
+		      _statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | %@",
+						packet.pts, delay, _running ? @"Running" : @"Stopped"];
 		      [_statusField setStringValue: _statusString];
 		    }
 		  
@@ -1035,11 +1033,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       RELEASE(bitmap);
       free(rgbData[0]);
     }
-}
-
-- (NSString *) statusString
-{
-  return _statusString;
 }
 
 @end
