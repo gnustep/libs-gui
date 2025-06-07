@@ -30,10 +30,12 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSNotification.h>
 #import <Foundation/NSTimer.h>
 #import <Foundation/NSThread.h>
 #import <Foundation/NSURL.h>
 
+#import "AppKit/NSApplication.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
@@ -45,6 +47,8 @@
 #import "GSMovieView.h"
 
 #include <libswresample/swresample.h>
+
+static NSNotificationCenter *nc = nil;
 
 static NSDictionary *NSDictionaryFromAVPacket(AVPacket *packet)
 {
@@ -77,64 +81,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   return *packet;
 }
-
-/*
-BOOL seek_to_pts(AVFormatContext *fmt_ctx,
-		 AVCodecContext *codec_ctx,
-		 int stream_index,
-		 int64_t target_pts)
-{
-  AVPacket pkt;
-  AVFrame *frame = av_frame_alloc();
-  BOOL found = NO;
-
-  NSLog(@"[GSMovieView] stream_index = %d, target_pts = %ld", stream_index, target_pts);
-
-  // No frame
-  if (!frame)
-    {
-      NSLog(@"[GSMovieView] No AVFrame allocated");
-      return NO;
-    }
-  
-  // Seek near the target timestamp (in stream time_base units)
-  if (av_seek_frame(fmt_ctx, stream_index, target_pts, AVSEEK_FLAG_BACKWARD) < 0)
-    {
-      NSLog(@"[GSMovieView] Error seeking\n");
-      av_frame_free(&frame);
-      return NO;
-    }
-  
-  avcodec_flush_buffers(codec_ctx);
-  
-  // Read packets until desired frame is found
-  while (av_read_frame(fmt_ctx, &pkt) >= 0)
-    {
-      if (pkt.stream_index == stream_index)
-	{
-	  if (avcodec_send_packet(codec_ctx, &pkt) == 0)
-	    {
-	      while (avcodec_receive_frame(codec_ctx, frame) == 0)
-		{
-		  if (frame->pts >= target_pts)
-		    {
-		      found = YES;
-		      break;
-		    }
-		}
-	    }
-	}
-      av_packet_unref(&pkt);
-      if (found)
-	{
-	  break;
-	}
-    }
-  
-  av_frame_free(&frame);
-  return found;
-}
-*/
 
 // Ignore the warning this will produce as it is intentional.
 #pragma clang diagnostic push
@@ -495,6 +441,17 @@ BOOL seek_to_pts(AVFormatContext *fmt_ctx,
 // NSMovieView subclass that does all of the actual work of decoding...
 @implementation GSMovieView
 
++ (void) initialize
+{
+  if (self == [GSMovieView class])
+    {
+      if (nc == nil)
+	{
+	  nc = [NSNotificationCenter defaultCenter];
+	}
+    }
+}
+
 - (instancetype) initWithFrame: (NSRect)frame
 {
   self = [super initWithFrame: frame];
@@ -511,7 +468,12 @@ BOOL seek_to_pts(AVFormatContext *fmt_ctx,
       _videoCodecCtx = NULL;
       _formatCtx = NULL;
       _swsCtx = NULL;
-      _lastPts = 0;      
+      _lastPts = 0;
+      // NSApplicationWillTerminateNotification
+      [nc addObserver: self
+	     selector: @selector(handleNotification:)
+		 name: NSApplicationWillTerminateNotification
+	       object: nil];
     }
   return self;
 }
@@ -544,39 +506,29 @@ BOOL seek_to_pts(AVFormatContext *fmt_ctx,
   TEST_RELEASE(_currentFrame);
   DESTROY(_videoPackets);
   DESTROY(_audioPlayer);
+  [nc removeObserver: self];
 
   [super dealloc];
 }
 
+// Notification responses...
+- (void) handleNotification: (NSNotification *)notification
+{
+  NSLog(@"[GSMovieView] Shutting down, final pts %ld", _lastPts);
+  
+  [_feedThread cancel];
+  [_videoThread cancel];
+  [_audioPlayer stopAudio];
+  [self stopVideo];
+}
+
 // Private methods...
-- (void) _resetFeed
+- (void) _resetFeed: (int64_t)pts
 {
   [self stop: nil];
-  [self start: nil];
+  _savedPts = pts;
+  // [self start: nil];
 }
-
-/*
-- (void) _gotoFrame: (int64_t)pts
-{
-  BOOL success = [self reset];
-
-  if(success)
-    {
-      success = seek_to_pts(_formatCtx,
-			    _videoCodecCtx,
-			    _videoStreamIndex,
-			    _lastPts);
-      if (!success)
-	{
-	  NSLog(@"Failed to seek to frame");
-	}
-    }
-  else
-    {
-      NSLog(@"Failed to reset frame");
-    }
-}
-*/
 
 // Overridden methods from the superclass...
 - (BOOL) isPlaying
@@ -666,15 +618,13 @@ BOOL seek_to_pts(AVFormatContext *fmt_ctx,
 
 - (IBAction)gotoPosterFrame: (id)sender
 {
-  _savedPts = 0.0;
-  [self _resetFeed];
+  [self _resetFeed: _savedPts];
   NSLog(@"[GSMovieView] gotoPosterFrame called | Timestamp: %ld", av_gettime());
 }
 
 - (IBAction)gotoBeginning: (id)sender
 {
-  _savedPts = 0.0;
-  [self _resetFeed];
+  [self _resetFeed: _savedPts];
   NSLog(@"[GSMovieView] gotoBeginning called | Timestamp: %ld", av_gettime());
 }
 
@@ -774,7 +724,6 @@ BOOL seek_to_pts(AVFormatContext *fmt_ctx,
 	      return;
 	    }
 
-	  // NSLog(@"_formatCtx = %lld", _formatCtx);
 	  if (avformat_find_stream_info(_formatCtx, NULL) < 0)
 	    {
 	      NSLog(@"[Error] Could not find stream info. | Timestamp: %ld", av_gettime());
@@ -832,53 +781,47 @@ BOOL seek_to_pts(AVFormatContext *fmt_ctx,
 	      return;
 	    }
 
-	  // Seek to the current PTS...
-	  BOOL success = YES;
+	  AVPacket packet;
+	  int64_t i = 0;
 
-	  // seek_to_pts(_formatCtx,
-	  //			     _videoCodecCtx,
-	  // 			     _videoStreamIndex,
-	  //			     _lastPts);
-	  
-	  if (success)
+	  while (av_read_frame(_formatCtx, &packet) >= 0)
 	    {
-	      AVPacket packet;
-	      int64_t i = 0;
-
-	      while (av_read_frame(_formatCtx, &packet) >= 0)
+	      if (packet.pts <= _savedPts)
 		{
-		  // After 1000 frames, start the thread...
-		  if (i == 1000)
-		    {
-		      [self startVideo];
-		      [_audioPlayer startAudio];
-		    }
-		  
-		  if (packet.stream_index == _videoStreamIndex)
-		    {
-		      [self submitVideoPacket: &packet];
-		    }
-
-		  if (packet.stream_index == _audioStreamIndex)
-		    {
-		      [_audioPlayer submitPacket: &packet];
-		    }
-
-		  av_packet_unref(&packet);
-		  i++;
+		  continue;
 		}
-
-	      // if we had a very short video... play it.
-	      if (i < 1000)
+	      
+	      // After 1000 frames, start the thread...
+	      if (i == 1000)
 		{
-		  NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
 		  [self startVideo];
 		  [_audioPlayer startAudio];
 		}
+		  
+	      if (packet.stream_index == _videoStreamIndex)
+		{
+		  [self submitVideoPacket: &packet];
+		}
+
+	      if (packet.stream_index == _audioStreamIndex)
+		{
+		  [_audioPlayer submitPacket: &packet];
+		}
+
+	      av_packet_unref(&packet);
+	      i++;
 	    }
-	  
-	  avformat_close_input(&_formatCtx);
+
+	  // if we had a very short video... play it.
+	  if (i < 1000)
+	    {
+	      NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
+	      [self startVideo];
+	      [_audioPlayer startAudio];
+	    }
 	}
+	  
+      avformat_close_input(&_formatCtx);
     }
 }
 
@@ -1011,6 +954,8 @@ BOOL seek_to_pts(AVFormatContext *fmt_ctx,
 		  int64_t delay = packetTime - now;
 
 		  // Show the information...
+		  _statusString = [NSString stringWithFormat: @"[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us",
+					    packet.pts, delay];
 		  fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
 			  packet.pts, delay);
 		  if (delay > 0)
@@ -1083,6 +1028,11 @@ BOOL seek_to_pts(AVFormatContext *fmt_ctx,
       RELEASE(bitmap);
       free(rgbData[0]);
     }
+}
+
+- (NSString *) statusString
+{
+  return _statusString;
 }
 
 @end
