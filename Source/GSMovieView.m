@@ -956,6 +956,13 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		  // Show the information...
 		  _statusString = [NSString stringWithFormat: @"[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us",
 					    packet.pts, delay];
+		  NSLog(@"statusField = %@", _statusField);
+		  if (_statusField != nil)
+		    {
+		      NSLog(@"Setting...");
+		      [_statusField setStringValue: _statusString];
+		    }
+		  
 		  fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
 			  packet.pts, delay);
 		  if (delay > 0)

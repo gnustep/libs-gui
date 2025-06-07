@@ -35,6 +35,7 @@
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSView.h>
 
+@class NSTextField;
 @class NSMovie;
 
 typedef enum {
@@ -46,7 +47,9 @@ typedef enum {
 APPKIT_EXPORT_CLASS
 @interface NSMovieView : NSView
 {
+  IBOutlet NSTextField *_statusField;
   NSMovie* _movie;
+  
   float _rate;
   float _volume;
   BOOL _playing;
@@ -240,6 +243,14 @@ APPKIT_EXPORT_CLASS
  * Select all content in the movie view.
  */
 - (IBAction) selectAll: (id)sender;
+
+/**
+ * GNUstep extension, this allows the user to set a
+ * text field to monitor the status of the movie view.
+ *
+- (void) setStatusField: (id)field;
+- (id) statusField;
+*/
 
 @end
 

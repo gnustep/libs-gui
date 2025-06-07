@@ -252,4 +252,17 @@
 {
 }
 
+// GNUstep extension...
+/*
+- (void) setStatusField: (NSTextField *)field
+{
+  ASSIGN(_statusField, field);
+}
+
+- (NSTextField *) statusField
+{
+  return _statusField;
+}
+*/
+
 @end
