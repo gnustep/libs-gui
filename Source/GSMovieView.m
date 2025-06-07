@@ -341,11 +341,21 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (void)decodeAudioPacket: (AVPacket *)packet
 {
   if (!_audioCodecCtx || !_swrCtx || !_aoDev)
-    return;
-
+    {
+      return;
+    }
+  
   if (avcodec_send_packet(_audioCodecCtx, packet) < 0)
-    return;
-
+    {
+      return;
+    }
+  
+  if (packet->flags & AV_PKT_FLAG_CORRUPT)
+    {
+      NSLog(@"Skipping corrupt audio packet");
+      return;
+    }
+  
   while (avcodec_receive_frame(_audioCodecCtx, _audioFrame) == 0)
     {
       int outSamples = _audioFrame->nb_samples;
@@ -986,11 +996,21 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (void)decodeVideoPacket: (AVPacket *)packet
 {
   if (!_videoCodecCtx || !_swsCtx)
-    return;
+    {
+      return;
+    }
 
   if (avcodec_send_packet(_videoCodecCtx, packet) < 0)
-    return;
-
+    {
+      return;
+    }
+  
+    if (packet->flags & AV_PKT_FLAG_CORRUPT)
+    {
+      NSLog(@"Skipping corrupt video packet");
+      return;
+    }
+  
   _lastPts = packet->pts;
   
   while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
