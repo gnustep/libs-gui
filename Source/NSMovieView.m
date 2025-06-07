@@ -134,6 +134,14 @@
 - (void) setVolume: (float)volume
 {
   _volume = volume;
+  if (volume <= 0.0)
+    {
+      _flags.muted = YES;
+    }
+  else if (volume > 0.0)
+    {
+      _flags.muted = NO;
+    }
 }
 
 - (float) volume

@@ -59,6 +59,7 @@ APPKIT_EXPORT_CLASS
 
   AVCodecContext *_videoCodecCtx;
   AVFrame *_videoFrame;
+  AVFormatContext *_formatCtx;
   struct SwsContext *_swsCtx;
   AVRational _timeBase;
 
@@ -67,14 +68,23 @@ APPKIT_EXPORT_CLASS
   int64_t _videoClock;
   int _videoStreamIndex;
   int _audioStreamIndex;
+  int64_t _lastPts;
+  int64_t _savedPts;
 }
 
+// Initialization...
 - (void) prepareVideoWithFormatContext: (AVFormatContext *)formatCtx
                            streamIndex: (int)videoStreamIndex;
+
+// Submit packets...
 - (void) submitVideoPacket: (AVPacket *)packet;
 - (void) decodeVideoPacket: (AVPacket *)packet;
+
+// Start and stop...
 - (void) startVideo;
 - (void) stopVideo;
+
+// Main loop to process packets...
 - (void) feedVideo;
 
 @end

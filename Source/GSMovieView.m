@@ -78,6 +78,64 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   return *packet;
 }
 
+/*
+BOOL seek_to_pts(AVFormatContext *fmt_ctx,
+		 AVCodecContext *codec_ctx,
+		 int stream_index,
+		 int64_t target_pts)
+{
+  AVPacket pkt;
+  AVFrame *frame = av_frame_alloc();
+  BOOL found = NO;
+
+  NSLog(@"[GSMovieView] stream_index = %d, target_pts = %ld", stream_index, target_pts);
+
+  // No frame
+  if (!frame)
+    {
+      NSLog(@"[GSMovieView] No AVFrame allocated");
+      return NO;
+    }
+  
+  // Seek near the target timestamp (in stream time_base units)
+  if (av_seek_frame(fmt_ctx, stream_index, target_pts, AVSEEK_FLAG_BACKWARD) < 0)
+    {
+      NSLog(@"[GSMovieView] Error seeking\n");
+      av_frame_free(&frame);
+      return NO;
+    }
+  
+  avcodec_flush_buffers(codec_ctx);
+  
+  // Read packets until desired frame is found
+  while (av_read_frame(fmt_ctx, &pkt) >= 0)
+    {
+      if (pkt.stream_index == stream_index)
+	{
+	  if (avcodec_send_packet(codec_ctx, &pkt) == 0)
+	    {
+	      while (avcodec_receive_frame(codec_ctx, frame) == 0)
+		{
+		  if (frame->pts >= target_pts)
+		    {
+		      found = YES;
+		      break;
+		    }
+		}
+	    }
+	}
+      av_packet_unref(&pkt);
+      if (found)
+	{
+	  break;
+	}
+    }
+  
+  av_frame_free(&frame);
+  return found;
+}
+*/
+
 // Ignore the warning this will produce as it is intentional.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
@@ -450,8 +508,10 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _running = NO;
       _started = NO;
       _videoClock = 0;
-      _videoCodecCtx = 0;
+      _videoCodecCtx = NULL;
+      _formatCtx = NULL;
       _swsCtx = NULL;
+      _lastPts = 0;      
     }
   return self;
 }
@@ -488,6 +548,36 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   [super dealloc];
 }
 
+// Private methods...
+- (void) _resetFeed
+{
+  [self stop: nil];
+  [self start: nil];
+}
+
+/*
+- (void) _gotoFrame: (int64_t)pts
+{
+  BOOL success = [self reset];
+
+  if(success)
+    {
+      success = seek_to_pts(_formatCtx,
+			    _videoCodecCtx,
+			    _videoStreamIndex,
+			    _lastPts);
+      if (!success)
+	{
+	  NSLog(@"Failed to seek to frame");
+	}
+    }
+  else
+    {
+      NSLog(@"Failed to reset frame");
+    }
+}
+*/
+
 // Overridden methods from the superclass...
 - (BOOL) isPlaying
 {
@@ -519,12 +609,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 }
 
-- (void) resetFeed
-{
-  [self stop: nil];
-  [self start: nil];
-}
-
 - (void) setMuted: (BOOL)muted
 {
   [super setMuted: muted];
@@ -540,7 +624,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (void) setLoopMode: (NSQTMovieLoopMode)mode
 {
   [super setLoopMode: mode];
-  [self resetFeed];
 }
 
 - (NSRect) movieRect
@@ -551,7 +634,9 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   // I realize this is inefficient, but there is a race condition
   // which occurs when setting this from the existing stream.
-
+  // The issue with using the ivars is that they are initialized on
+  // a thread, so they may not be set when this is called.
+  
   // Open video file
   avformat_open_input(&fmt_ctx, name, NULL, NULL);
   avformat_find_stream_info(fmt_ctx, NULL);
@@ -579,51 +664,17 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   return NSMakeRect(0.0, 0.0, width, height);
 }
 
-- (void) _gotoFrame: (int64_t)pts
-{
-  AVPacket pkt;
-  AVFormatContext *fmt_ctx = NULL;
-  NSURL *url = [[self movie] URL];
-  const char *name = [[url path] UTF8String];
-  
-  [self stop: nil];
-
-  // Open video file
-  avformat_open_input(&fmt_ctx, name, NULL, NULL);
-  avformat_find_stream_info(fmt_ctx, NULL);
-
-  // Find the first video stream
-  int video_stream_index = -1;
-  unsigned int i = 0;
-  for (i = 0; i < fmt_ctx->nb_streams; i++)
-    {
-      if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
-	{
-	  video_stream_index = i;
-	  break;
-	}
-    }
-
-  // Get the first decoded frame, show that...
-  while (av_read_frame(fmt_ctx, &pkt) >= pts)
-    {
-      if (pkt.stream_index == video_stream_index)
-	{
-	  [self decodeVideoPacket: &pkt];
-	}
-      av_packet_unref(&pkt);
-    }
-}
-
 - (IBAction)gotoPosterFrame: (id)sender
 {
-  [self _gotoFrame: 0];
+  _savedPts = 0.0;
+  [self _resetFeed];
   NSLog(@"[GSMovieView] gotoPosterFrame called | Timestamp: %ld", av_gettime());
 }
 
 - (IBAction)gotoBeginning: (id)sender
 {
-  [self _gotoFrame: 0];
+  _savedPts = 0.0;
+  [self _resetFeed];
   NSLog(@"[GSMovieView] gotoBeginning called | Timestamp: %ld", av_gettime());
 }
 
@@ -674,7 +725,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   if (last_pts != AV_NOPTS_VALUE)
     {
       double seconds = last_pts * av_q2d(fmt_ctx->streams[video_stream_index]->time_base);
-      [self _gotoFrame: last_pts];
+      // [self _gotoFrame: last_pts];
       NSLog(@"Last decoded PTS: %" PRId64 " (%.3f sec)\n", last_pts, seconds);
     }
 }
@@ -713,28 +764,28 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
       if (url != nil)
 	{
-	  AVFormatContext *formatCtx = NULL;
 	  const char *path = [[url path] UTF8String];
 
 	  NSLog(@"[Info] Opening file: %s | Timestamp: %ld", path, av_gettime());
 	  avformat_network_init();
-	  if (avformat_open_input(&formatCtx, path, NULL, NULL) != 0)
+	  if (avformat_open_input(&_formatCtx, path, NULL, NULL) != 0)
 	    {
 	      NSLog(@"[Error] Could not open file: %s | Timestamp: %ld", path, av_gettime());
 	      return;
 	    }
 
-	  if (avformat_find_stream_info(formatCtx, NULL) < 0)
+	  // NSLog(@"_formatCtx = %lld", _formatCtx);
+	  if (avformat_find_stream_info(_formatCtx, NULL) < 0)
 	    {
 	      NSLog(@"[Error] Could not find stream info. | Timestamp: %ld", av_gettime());
-	      avformat_close_input(&formatCtx);
+	      avformat_close_input(&_formatCtx);
 	      return;
 	    }
 
 	  _videoStreamIndex = -1;
-	  for (unsigned int i = 0; i < formatCtx->nb_streams; i++)
+	  for (unsigned int i = 0; i < _formatCtx->nb_streams; i++)
 	    {
-	      if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+	      if (_formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
 		{
 		  _videoStreamIndex = i;
 		  break;
@@ -742,9 +793,9 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	    }
 
 	  _audioStreamIndex = -1;
-	  for (unsigned int i = 0; i < formatCtx->nb_streams; i++)
+	  for (unsigned int i = 0; i < _formatCtx->nb_streams; i++)
 	    {
-	      if (formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+	      if (_formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
 		{
 		  _audioStreamIndex = i;
 		  break;
@@ -758,7 +809,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	    }
 	  else
 	    {
-	      [self prepareVideoWithFormatContext: formatCtx
+	      [self prepareVideoWithFormatContext: _formatCtx
 				      streamIndex: _videoStreamIndex];
 	    }
 
@@ -769,7 +820,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	    }
 	  else
 	    {
-	      [_audioPlayer prepareAudioWithFormatContext: formatCtx
+	      [_audioPlayer prepareAudioWithFormatContext: _formatCtx
 					      streamIndex: _audioStreamIndex];
 	    }
 
@@ -777,44 +828,56 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	  if (_videoStreamIndex == -1 && _audioStreamIndex == -1)
 	    {
 	      NSLog(@"[Error] No video or audio stream detected, exiting");
-	      avformat_close_input(&formatCtx);
+	      avformat_close_input(&_formatCtx);
 	      return;
 	    }
 
-	  AVPacket packet;
-	  int64_t i = 0;
-	  while (av_read_frame(formatCtx, &packet) >= 0)
+	  // Seek to the current PTS...
+	  BOOL success = YES;
+
+	  // seek_to_pts(_formatCtx,
+	  //			     _videoCodecCtx,
+	  // 			     _videoStreamIndex,
+	  //			     _lastPts);
+	  
+	  if (success)
 	    {
-	      // After 1000 frames, start the thread...
-	      if (i == 1000)
+	      AVPacket packet;
+	      int64_t i = 0;
+
+	      while (av_read_frame(_formatCtx, &packet) >= 0)
 		{
+		  // After 1000 frames, start the thread...
+		  if (i == 1000)
+		    {
+		      [self startVideo];
+		      [_audioPlayer startAudio];
+		    }
+		  
+		  if (packet.stream_index == _videoStreamIndex)
+		    {
+		      [self submitVideoPacket: &packet];
+		    }
+
+		  if (packet.stream_index == _audioStreamIndex)
+		    {
+		      [_audioPlayer submitPacket: &packet];
+		    }
+
+		  av_packet_unref(&packet);
+		  i++;
+		}
+
+	      // if we had a very short video... play it.
+	      if (i < 1000)
+		{
+		  NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
 		  [self startVideo];
 		  [_audioPlayer startAudio];
 		}
-
-	      if (packet.stream_index == _videoStreamIndex)
-		{
-		  [self submitVideoPacket: &packet];
-		}
-
-	      if (packet.stream_index == _audioStreamIndex)
-		{
-		  [_audioPlayer submitPacket: &packet];
-		}
-
-	      av_packet_unref(&packet);
-	      i++;
 	    }
-
-	  // if we had a very short video... play it.
-	  if (i < 1000)
-	    {
-	      NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
-	      [self startVideo];
-	      [_audioPlayer startAudio];
-	    }
-
-	  avformat_close_input(&formatCtx);
+	  
+	  avformat_close_input(&_formatCtx);
 	}
     }
 }
@@ -860,7 +923,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (void) startVideo
 {
-  NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld", av_gettime());
+  NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld, lastPts = %ld", av_gettime(), _lastPts);
   if (!_running)
     {
       _running = YES;
@@ -871,14 +934,22 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (void) stopVideo
 {
-  NSLog(@"[GSMovieView] Stopping video thread | Timestamp: %ld", av_gettime());
+  NSLog(@"[GSMovieView] Stopping video thread | Timestamp: %ld, lastPts = %ld", av_gettime(), _lastPts);
   if (_running)
     {
       _running = NO;
+
       [_videoThread cancel];
       while (![_videoThread isFinished])
-	usleep(1000);
+	{
+	  usleep(1000);
+	}
+      
       DESTROY(_videoThread);
+      avformat_close_input(&_formatCtx);
+
+      _savedPts = _lastPts;
+      _lastPts = 0;
     }
 }
 
@@ -899,6 +970,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	{
 	  NSDictionary *dict = nil;
 
+	  // Pop the video packet off _videoPackets, sync on
+	  // the array.
 	  @synchronized (_videoPackets)
 	    {
 	      if (!_started && [_videoPackets count] < 3)
@@ -914,32 +987,47 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		}
 	    }
 
+	  // If the dict is present and the thread is started, get
+	  // the clock.
 	  if (!_started && dict)
 	    {
 	      _videoClock = av_gettime();
 	      _started = YES;
 	    }
 
+	  // If dict is not nil, decode it and get the frame...
 	  if (dict)
 	    {
 	      AVPacket packet = AVPacketFromNSDictionary(dict);
-	      int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
-	      int64_t now = av_gettime() - _videoClock;
-	      int64_t delay = packetTime - now;
 
-	      fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r", packet.pts, delay);
-	      if (delay > 0)
+	      // If the current pts is at or after the saved,
+	      // then alow it to be decoded and displayed...
+	      if (packet.pts >= _savedPts)
 		{
-		  usleep((useconds_t)delay);
-		}
+		  int64_t packetTime = av_rescale_q(packet.pts,
+						    _timeBase,
+						    (AVRational){1, 1000000});
+		  int64_t now = av_gettime() - _videoClock;
+		  int64_t delay = packetTime - now;
 
-	      [self decodeVideoPacket: &packet];
-	      RELEASE(dict);
+		  // Show the information...
+		  fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
+			  packet.pts, delay);
+		  if (delay > 0)
+		    {
+		      usleep((useconds_t)delay);
+		    }
+
+		  // Decode the packet, display it and play the sound...
+		  [self decodeVideoPacket: &packet];
+		  RELEASE(dict);
+		}
+	      else
+		{
+		  usleep(1000);
+		}
 	    }
-	  else
-	    {
-	      usleep(1000);
-	    }
+	  
 	  RELEASE(pool);
 	}
     }
@@ -953,6 +1041,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   if (avcodec_send_packet(_videoCodecCtx, packet) < 0)
     return;
 
+  _lastPts = packet->pts;
+  
   while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
     {
       uint8_t *rgbData[1];
