@@ -4,6 +4,8 @@
 
    Copyright <copy>(C) 2003 Free Software Foundation, Inc.</copy>
 
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
+   Date: May 2025
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: March 2003
 
@@ -21,8 +23,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -30,20 +32,38 @@
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSURL.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSUUID.h>
+
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSPasteboard.h"
+
+NSString *_writeDataToTempFile(NSData *data)
+{
+  NSString *tempDirectory = NSTemporaryDirectory();
+  NSString *filename = [NSString stringWithFormat: @"tmpfile-%@.dat", [[NSUUID UUID] UUIDString]];
+  NSString *filepath = [tempDirectory stringByAppendingPathComponent: filename];
+  NSError *error = nil;
+
+  BOOL success = [data writeToFile: filepath options: NSDataWritingAtomic error: &error];
+  if (success)
+    {
+      return nil;
+    }
+
+  return filepath;
+}
 
 @implementation NSMovie
 
 + (NSArray*) movieUnfilteredFileTypes
 {
-  return [NSArray arrayWithObject: @"mov"];
+  return [NSArray array];
 }
 
 + (NSArray*) movieUnfilteredPasteboardTypes
 {
-  // FIXME
-  return [NSArray arrayWithObject: @"QuickTimeMovie"];
+  return [NSArray array];
 }
 
 + (BOOL) canInitWithPasteboard: (NSPasteboard*)pasteboard
@@ -54,55 +74,61 @@
   return ([pbTypes firstObjectCommonWithArray: myTypes] != nil);
 }
 
-- (id) initWithData: (NSData *)movie
+- (instancetype) initWithData: (NSData *)movie
 {
   if (movie == nil)
     {
       RELEASE(self);
       return nil;
     }
-  
-  [super init];
-  ASSIGN(_movie, movie);
 
-  return self;
-}
-
-- (id) initWithMovie: (void*)movie
-{
-  //FIXME
-
-  return self;
-}
-
-- (id) initWithURL: (NSURL*)url byReference: (BOOL)byRef
-{
-  NSData* data = [url resourceDataUsingCache: YES];
-
-  self = [self initWithData: data];
-
-  if (byRef)
+  self = [super init];
+  if (self != nil)
     {
+      NSString *filepath = _writeDataToTempFile(_movie);
+
+      _url = [NSURL fileURLWithPath: filepath];
+      _tmp = YES;
+      ASSIGN(_movie, movie);
+    }
+
+  return self;
+}
+
+- (instancetype) initWithMovie: (void*)movie
+{
+  return [self initWithData: movie];
+}
+
+- (instancetype) initWithURL: (NSURL*)url byReference: (BOOL)byRef
+{
+  self = [super init];
+  if (self != nil)
+    {
+      if (url == nil)
+	{
+	  return nil;
+	}
+
       ASSIGN(_url, url);
     }
 
   return self;
 }
 
-- (id) initWithPasteboard: (NSPasteboard*)pasteboard
+- (instancetype) initWithPasteboard: (NSPasteboard*)pasteboard
 {
   NSString *type;
   NSData* data;
 
-  type = [pasteboard availableTypeFromArray: 
-			 [object_getClass(self) movieUnfilteredPasteboardTypes]];
+  type =
+    [pasteboard availableTypeFromArray:
+		  [object_getClass(self) movieUnfilteredPasteboardTypes]];
   if (type == nil)
     {
-      //NSArray *array = [pasteboard propertyListForType: NSFilenamesPboardType];
-      // FIXME
       data = nil;
     }
-  else 
+  else
     {
       data = [pasteboard dataForType: type];
     }
@@ -120,9 +146,11 @@
 
 - (void) dealloc
 {
+  _tmp = NO;
+  [[NSFileManager defaultManager] removeFileAtPath: [_url path] handler: nil];
   TEST_RELEASE(_url);
   TEST_RELEASE(_movie);
-    
+
   [super dealloc];
 }
 
@@ -160,7 +188,7 @@
     }
 }
 
-- (id) initWithCoder: (NSCoder*)aDecoder
+- (instancetype) initWithCoder: (NSCoder*)aDecoder
 {
   if ([aDecoder allowsKeyedCoding])
     {
