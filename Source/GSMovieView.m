@@ -1034,12 +1034,13 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       return;
     }
   
-    if (packet->flags & AV_PKT_FLAG_CORRUPT)
+  if (packet->flags & AV_PKT_FLAG_CORRUPT)
     {
       NSLog(@"Skipping corrupt video packet");
       return;
     }
   
+  // Record last pts...
   _lastPts = packet->pts;
   
   while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
