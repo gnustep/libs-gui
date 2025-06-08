@@ -533,12 +533,19 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 }
 
 // Private methods...
-- (void) _resetFeed: (int64_t)pts
+- (void) _startAtPts: (int64_t)pts
 {
-  [self stop: nil];
-  _savedPts = pts;
-  // [self start: nil];
-}
+  if (_running == NO)
+    {
+      [self setRate: 1.0 / 30.0];
+      [self setVolume: 1.0];
+      
+      _savedPts = pts;
+      _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil];
+      [_feedThread start];
+      [_audioPlayer startAudio];
+    }
+}  
 
 // Overridden methods from the superclass...
 - (BOOL) isPlaying
@@ -548,15 +555,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (IBAction) start: (id)sender
 {
-  if (_running == NO)
-    {
-      [self setRate: 1.0 / 30.0];
-      [self setVolume: 1.0];
-
-      _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil];
-      [_feedThread start];
-      [_audioPlayer startAudio];
-    }
+  [self _startAtPts: 0];
 }
 
 - (IBAction) stop: (id)sender
@@ -628,13 +627,15 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (IBAction)gotoPosterFrame: (id)sender
 {
-  [self _resetFeed: _savedPts];
+  [self stop: sender];
+  [self _startAtPts: 0];
   NSLog(@"[GSMovieView] gotoPosterFrame called | Timestamp: %ld", av_gettime());
 }
 
 - (IBAction)gotoBeginning: (id)sender
 {
-  [self _resetFeed: _savedPts];
+  [self stop: sender];
+  [self _startAtPts: 0];
   NSLog(@"[GSMovieView] gotoBeginning called | Timestamp: %ld", av_gettime());
 }
 
@@ -679,10 +680,14 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (IBAction) stepForward: (id)sender
 {
+  [self stop: sender];
+  [self _startAtPts: _savedPts + 1000];
 }
 
 - (IBAction) stepBack: (id)sender
 {
+  [self stop: sender];
+  [self _startAtPts: _savedPts - 1000];
 }
 
 // Video playback methods...
@@ -701,7 +706,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 }
 
-- (void) feedVideo
+- (BOOL) setup
 {
   NSMovie *movie = [self movie];
 
@@ -718,14 +723,14 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	  if (avformat_open_input(&_formatCtx, path, NULL, NULL) != 0)
 	    {
 	      NSLog(@"[Error] Could not open file: %s | Timestamp: %ld", path, av_gettime());
-	      return;
+	      return NO;
 	    }
 
 	  if (avformat_find_stream_info(_formatCtx, NULL) < 0)
 	    {
 	      NSLog(@"[Error] Could not find stream info. | Timestamp: %ld", av_gettime());
 	      avformat_close_input(&_formatCtx);
-	      return;
+	      return NO;
 	    }
 
 	  _videoStreamIndex = -1;
@@ -775,50 +780,78 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	    {
 	      NSLog(@"[Error] No video or audio stream detected, exiting");
 	      avformat_close_input(&_formatCtx);
-	      return;
+	      return NO;
 	    }
+	}
+    }
 
-	  AVPacket packet;
-	  int64_t i = 0;
+  return YES;
+}
 
-	  while (av_read_frame(_formatCtx, &packet) >= 0)
+- (void) loop
+{
+  if (_formatCtx != NULL)
+    {  
+      AVPacket packet;
+      int64_t i = 0;
+
+      while (av_read_frame(_formatCtx, &packet) >= 0)
+	{
+	  if (packet.pts <= _savedPts)
 	    {
-	      if (packet.pts <= _savedPts)
-		{
-		  continue;
-		}
+	      continue;
+	    }
 	      
-	      // After 1000 frames, start the thread...
-	      if (i == 1000)
-		{
-		  [self startVideo];
-		  [_audioPlayer startAudio];
-		}
-		  
-	      if (packet.stream_index == _videoStreamIndex)
-		{
-		  [self submitVideoPacket: &packet];
-		}
-
-	      if (packet.stream_index == _audioStreamIndex)
-		{
-		  [_audioPlayer submitPacket: &packet];
-		}
-
-	      av_packet_unref(&packet);
-	      i++;
-	    }
-
-	  // if we had a very short video... play it.
-	  if (i < 1000)
+	  // After 1000 frames, start the thread...
+	  if (i == 1000)
 	    {
-	      NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
 	      [self startVideo];
 	      [_audioPlayer startAudio];
 	    }
+		  
+	  if (packet.stream_index == _videoStreamIndex)
+	    {
+	      [self submitVideoPacket: &packet];
+	    }
+
+	  if (packet.stream_index == _audioStreamIndex)
+	    {
+	      [_audioPlayer submitPacket: &packet];
+	    }
+
+	  av_packet_unref(&packet);
+	  i++;
 	}
-	  
+
+      // if we had a very short video... play it.
+      if (i < 1000)
+	{
+	  NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
+	  [self startVideo];
+	  [_audioPlayer startAudio];
+	}
+    }
+}
+
+- (void) close
+{
+  if (_formatCtx != NULL)
+    {
       avformat_close_input(&_formatCtx);
+    }
+}
+
+- (void) feedVideo
+{
+  BOOL success = [self setup];
+  if (success)
+    {
+      [self loop];
+      [self close];
+    }
+  else
+    {
+      NSLog(@"[GSMovieView] setup failed.");
     }
 }
 
