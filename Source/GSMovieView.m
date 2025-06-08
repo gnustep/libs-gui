@@ -640,53 +640,40 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (IBAction)gotoEnd: (id)sender
 {
-  AVFormatContext *fmt_ctx = NULL;
-  NSURL *url = [[self movie] URL];
-  const char *name = [[url path] UTF8String];
+  NSLog(@"_videoStreamIndex = %d", _videoStreamIndex);
+  AVStream *videoStream = _formatCtx->streams[_videoStreamIndex];
+  int64_t duration = videoStream->duration;
+  // AVRational timeBase = videoStream->time_base;
 
-  NSLog(@"Stopping...");
   [self stop: nil];
+  
+  // Seek near the end (some formats don't like seeking to exact end)
+  int64_t seekTarget = duration - (AV_TIME_BASE / 10); // a bit before the end
+  av_seek_frame(_formatCtx, _videoStreamIndex, seekTarget, AVSEEK_FLAG_BACKWARD);
 
-  // Open video file
-  NSLog(@"Name... %s", name);
-  avformat_open_input(&fmt_ctx, name, NULL, NULL);
+  // Flush decoder
+  avcodec_flush_buffers(_videoCodecCtx);
 
-  // Find the first video stream
-  int video_stream_index = -1;
-  unsigned int i = 0;
-  for (i = 0; i < fmt_ctx->nb_streams; i++)
+  // Read packets and decode
+  AVPacket packet;
+  while (av_read_frame(_formatCtx, &packet) >= 0)
     {
-      if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+      if (packet.stream_index == _videoStreamIndex)
 	{
-	  video_stream_index = i;
-	  break;
-	}
-    }
-
-  NSLog(@"stream = %d", video_stream_index);
-  // Find and decode the packet
-  AVPacket pkt;
-  int64_t last_pts = AV_NOPTS_VALUE;
-  av_seek_frame(fmt_ctx, video_stream_index, INT64_MAX, AVSEEK_FLAG_BACKWARD);
-  while (av_read_frame(fmt_ctx, &pkt) >= 0)
-    {
-      if (pkt.stream_index == video_stream_index)
-	{
-	  if (pkt.pts != AV_NOPTS_VALUE)
+	  if (avcodec_send_packet(_videoCodecCtx, &packet) == 0)
 	    {
-	      last_pts = pkt.pts;
+	      AVFrame *frame = av_frame_alloc();
+	      if (avcodec_receive_frame(_videoCodecCtx, frame) == 0)
+		{
+		  // Convert & render this frame
+		  [self renderFrame: frame];
+		  av_frame_free(&frame);
+		  break;
+		}
+	      av_frame_free(&frame);
 	    }
 	}
-      av_packet_unref(&pkt);
-    }
-
-  NSLog(@"last_pts = %ld", last_pts);
-
-  if (last_pts != AV_NOPTS_VALUE)
-    {
-      double seconds = last_pts * av_q2d(fmt_ctx->streams[video_stream_index]->time_base);
-      // [self _gotoFrame: last_pts];
-      NSLog(@"Last decoded PTS: %" PRId64 " (%.3f sec)\n", last_pts, seconds);
+      av_packet_unref(&packet);
     }
 }
 
@@ -970,7 +957,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 						packet.pts, delay, _running ? @"Running" : @"Stopped"];
 		      [_statusField setStringValue: _statusString];
 		    }
-		  
+
+		  // Show status on the command line...
 		  fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
 			  packet.pts, delay);
 		  if (delay > 0)
@@ -993,7 +981,48 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     }
 }
 
-- (void)decodeVideoPacket: (AVPacket *)packet
+- (void) renderFrame: (AVFrame *)videoFrame
+{
+  uint8_t *rgbData[1];
+  int rgbLineSize[1];
+  int width = _videoCodecCtx->width;
+  int height = _videoCodecCtx->height;
+  
+  rgbLineSize[0] = width * 3;
+  rgbData[0] = (uint8_t *)malloc(height * rgbLineSize[0]);
+  
+  sws_scale(_swsCtx,
+	    (const uint8_t * const *)videoFrame->data,
+	    videoFrame->linesize,
+	    0,
+	    height,
+	    rgbData,
+	    rgbLineSize);
+  
+  NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
+				   initWithBitmapDataPlanes: &rgbData[0]
+						 pixelsWide: width
+						 pixelsHigh: height
+					      bitsPerSample: 8
+					    samplesPerPixel: 3
+						   hasAlpha: NO
+						   isPlanar: NO
+					     colorSpaceName: NSCalibratedRGBColorSpace
+						bytesPerRow: rgbLineSize[0]
+					       bitsPerPixel: 24];
+  
+  NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(width, height)];
+  [image addRepresentation: bitmap];
+  [self performSelectorOnMainThread: @selector(updateImage:)
+			 withObject: image
+		      waitUntilDone: NO];
+  
+  RELEASE(image);
+  RELEASE(bitmap);
+  free(rgbData[0]);
+}
+
+- (void) decodeVideoPacket: (AVPacket *)packet
 {
   if (!_videoCodecCtx || !_swsCtx)
     {
@@ -1015,43 +1044,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   
   while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
     {
-      uint8_t *rgbData[1];
-      int rgbLineSize[1];
-      int width = _videoCodecCtx->width;
-      int height = _videoCodecCtx->height;
-
-      rgbLineSize[0] = width * 3;
-      rgbData[0] = (uint8_t *)malloc(height * rgbLineSize[0]);
-
-      sws_scale(_swsCtx,
-		(const uint8_t * const *)_videoFrame->data,
-		_videoFrame->linesize,
-		0,
-		height,
-		rgbData,
-		rgbLineSize);
-
-      NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
-				   initWithBitmapDataPlanes: &rgbData[0]
-						 pixelsWide: width
-						 pixelsHigh: height
-					      bitsPerSample: 8
-					    samplesPerPixel: 3
-						   hasAlpha: NO
-						   isPlanar: NO
-					     colorSpaceName: NSCalibratedRGBColorSpace
-						bytesPerRow: rgbLineSize[0]
-					       bitsPerPixel: 24];
-
-      NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(width, height)];
-      [image addRepresentation: bitmap];
-      [self performSelectorOnMainThread: @selector(updateImage:)
-			     withObject: image
-			  waitUntilDone: NO];
-
-      RELEASE(image);
-      RELEASE(bitmap);
-      free(rgbData[0]);
+      [self renderFrame: _videoFrame];
     }
 }
 
