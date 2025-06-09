@@ -680,8 +680,11 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (IBAction) stepForward: (id)sender
 {
-  [self stop: sender];
-  [self _startAtPts: _savedPts + 1000];
+  AVStream *videoStream = _formatCtx->streams[_videoStreamIndex];s
+  int64_t skip = av_rescale_q(seconds, (AVRational){1,1}, videoStream->time_base);
+  int64_t newPts = lastDecodedPTS + skip;
+  av_seek_frame(fmtCtx, videoStreamIndex, newPts, AVSEEK_FLAG_BACKWARD);
+  avcodec_flush_buffers(codecCtx);
 }
 
 - (IBAction) stepBack: (id)sender
