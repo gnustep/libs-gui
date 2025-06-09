@@ -1339,6 +1339,69 @@ typedef	struct {
   return [[self infoDictionary] objectForKey: @"GSThemeLicense"];
 }
 
+- (BOOL) supportsLightAppearance
+{
+  NSString *val;
+  BOOL r;
+
+  r = YES; // default themes are light
+  val = [[self infoDictionary] objectForKey: @"GSThemeSupportsLightAppearance"];
+
+  if (val && [val isEqualToString: @"YES"])
+    r =  YES;
+
+  return r;
+}
+
+- (BOOL) supportsDarkAppearance
+{
+  NSString *val;
+  BOOL r;
+
+  r = NO; // default themes are light
+  val = [[self infoDictionary] objectForKey: @"GSThemeSupportsDarkAppearance"];
+
+  // Do we have the key or is it an old GSTheme?
+  if (val == nil)
+    {
+      // try heuristic on the theme name
+      if ([[self name] hasSuffix:@"Dark"])
+        {
+          r = YES;
+        }
+    }
+  else
+    {
+      if ([val isEqualToString: @"YES"])
+        {
+          r =  YES;
+        }
+    }
+
+  return r;
+}
+
+- (BOOL) inLightAppearance
+{
+  // NOTE: maybe we should cache this in an ivar
+  if (![self supportsLightAppearance] && [self supportsDarkAppearance])
+    {
+      return NO;
+    }
+  return YES;
+}
+
+- (BOOL) inDarkAppearance;
+{
+  // NOTE: maybe we should cache this in an ivar
+  if (![self supportsLightAppearance] && [self supportsDarkAppearance])
+    {
+      return YES;
+    }
+  return NO;
+}
+
+
 @end
 
 @implementation	GSTheme (Private)
