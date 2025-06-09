@@ -478,6 +478,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _videoCodecCtx = NULL;
       _formatCtx = NULL;
       _swsCtx = NULL;
+      _stream = NULL;
       _lastPts = 0;
       // NSApplicationWillTerminateNotification
       [nc addObserver: self
@@ -641,10 +642,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (IBAction)gotoEnd: (id)sender
 {
-  NSLog(@"_videoStreamIndex = %d", _videoStreamIndex);
-  AVStream *videoStream = _formatCtx->streams[_videoStreamIndex];
-  int64_t duration = videoStream->duration;
-  // AVRational timeBase = videoStream->time_base;
+  int64_t duration = _stream->duration;
 
   [self stop: nil];
   
@@ -680,11 +678,11 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (IBAction) stepForward: (id)sender
 {
-  AVStream *videoStream = _formatCtx->streams[_videoStreamIndex];s
-  int64_t skip = av_rescale_q(seconds, (AVRational){1,1}, videoStream->time_base);
-  int64_t newPts = lastDecodedPTS + skip;
-  av_seek_frame(fmtCtx, videoStreamIndex, newPts, AVSEEK_FLAG_BACKWARD);
-  avcodec_flush_buffers(codecCtx);
+  int64_t seconds = 2;
+  int64_t skip = av_rescale_q(seconds, (AVRational){1,1}, _stream->time_base);
+  int64_t newPts = _lastPts + skip;
+  av_seek_frame(_formatCtx, _videoStreamIndex, newPts, AVSEEK_FLAG_BACKWARD);
+  avcodec_flush_buffers(_videoCodecCtx);
 }
 
 - (IBAction) stepBack: (id)sender
@@ -741,6 +739,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	    {
 	      if (_formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
 		{
+		  _stream = _formatCtx->streams[i];
 		  _videoStreamIndex = i;
 		  break;
 		}

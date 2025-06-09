@@ -55,12 +55,13 @@ APPKIT_EXPORT_CLASS
   NSThread *_videoThread;
   NSThread *_feedThread;
   NSImage *_currentFrame;
-  GSAudioPlayer *_audioPlayer;
   NSString *_statusString;
+  GSAudioPlayer *_audioPlayer;
 
   AVCodecContext *_videoCodecCtx;
   AVFrame *_videoFrame;
   AVFormatContext *_formatCtx;
+  AVStream *_stream;
   struct SwsContext *_swsCtx;
   AVRational _timeBase;
 
