@@ -86,7 +86,8 @@ APPKIT_EXPORT_CLASS
 // Start and stop...
 - (void) startVideo;
 - (void) stopVideo;
-- (void) setPlaying: (BOOL)f;
+- (void) setPaused: (BOOL)f;
+- (BOOL) isPaused;
 
 // Main loop to process packets...
 - (void) renderFrame: (AVFrame *)videoFrame;

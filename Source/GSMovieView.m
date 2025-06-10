@@ -45,6 +45,7 @@
 #import "AppKit/NSSound.h"
 
 #import "GSMovieView.h"
+#import "GSAudioPlayer.h"
 
 #include <libswresample/swresample.h>
 
@@ -137,45 +138,6 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 #pragma clang diagnostic pop
 
-// Audio player for NSMovieView...
-@interface GSAudioPlayer : NSObject
-{
-  AVCodecContext *_audioCodecCtx;
-  AVFrame *_audioFrame;
-  SwrContext *_swrCtx;
-  ao_device *_aoDev;
-  ao_sample_format _aoFmt;
-  int64_t _audioClock;
-  AVRational _timeBase;
-  BOOL _running;
-  BOOL _started;
-  BOOL _muted;
-  float _volume; /* 0.0 to 1.0 */
-  unsigned int _loopMode:3;
-
-  NSMutableArray *_audioPackets;
-  NSThread *_audioThread;
-}
-
-- (void) prepareAudioWithFormatContext: (AVFormatContext *)formatCtx
-			   streamIndex: (int)audioStreamIndex;
-- (void) decodeAudioPacket: (AVPacket *)packet;
-- (void) startAudio;
-- (void) stopAudio;
-
-- (float) volume;
-- (void) setVolume: (float)volume;
-
-- (NSQTMovieLoopMode) loopMode;
-- (void) setLoopMode: (NSQTMovieLoopMode)mode;
-
-- (BOOL) isMuted;
-- (void) setMuted: (BOOL)muted;
-
-- (void) setPlaying: (BOOL)f;
-
-@end
-
 @implementation GSAudioPlayer
 - (instancetype) init
 {
@@ -191,6 +153,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _running = NO;
       _volume = 1.0;
       _started = NO;
+      _paused = NO;
       _loopMode = NSQTMovieNormalPlayback;
     }
   return self;
@@ -224,6 +187,16 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   ao_shutdown();
   [super dealloc];
+}
+
+- (void) setPaused: (BOOL)f;
+{
+  _paused = f;
+}
+
+- (BOOL) isPaused
+{
+  return _paused;
 }
 
 - (void) setPlaying: (BOOL)f
@@ -305,6 +278,14 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 {
   while (_running)
     {
+      // Stop reading packets while paused...
+      if (_paused == YES)
+	{
+	  usleep(10000); // 10ms pause
+	  continue; // start the loop again...
+	}
+
+      // create pool...
       CREATE_AUTORELEASE_POOL(pool);
       {
 	NSDictionary *dict = nil;
@@ -498,7 +479,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       // Flags
       _running = NO;
       _started = NO;
-
+      _paused = NO;
+      
       [nc addObserver: self
 	     selector: @selector(handleNotification:)
 		 name: NSApplicationWillTerminateNotification
@@ -538,6 +520,17 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   [nc removeObserver: self];
 
   [super dealloc];
+}
+
+// New methods...
+- (void) setPaused: (BOOL)f
+{
+  _paused = f;
+}
+
+- (BOOL) isPaused
+{
+  return _paused;
 }
 
 // Notification responses...
@@ -950,6 +943,14 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 {
   while (_running)
     {
+      // Stop reading packets while paused...
+      if (_paused == YES)
+	{
+	  usleep(10000); // 10ms pause
+	  continue; // start the loop again...
+	}
+
+      // Create pool...
       CREATE_AUTORELEASE_POOL(pool);
       {
 	NSDictionary *dict = nil;
