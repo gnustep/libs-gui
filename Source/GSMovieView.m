@@ -148,10 +148,10 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   int64_t _audioClock;
   AVRational _timeBase;
   BOOL _running;
-  float _volume; /* 0.0 to 1.0 */
   BOOL _started;
-  unsigned int _loopMode:3;
   BOOL _muted;
+  float _volume; /* 0.0 to 1.0 */
+  unsigned int _loopMode:3;
 
   NSMutableArray *_audioPackets;
   NSThread *_audioThread;
@@ -171,6 +171,8 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (BOOL) isMuted;
 - (void) setMuted: (BOOL)muted;
+
+- (void) setPlaying: (BOOL)f;
 
 @end
 
@@ -222,6 +224,16 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   ao_shutdown();
   [super dealloc];
+}
+
+- (void) setPlaying: (BOOL)f
+{
+  _running = f;
+}
+
+- (BOOL) isPlaying
+{
+  return _running;
 }
 
 - (NSQTMovieLoopMode) loopMode
@@ -296,7 +308,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       CREATE_AUTORELEASE_POOL(pool);
       {
 	NSDictionary *dict = nil;
-
+	
 	@synchronized (_audioPackets)
 	  {
 	    if (!_started && [_audioPackets count] < 5)
@@ -304,19 +316,20 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 		usleep(5000);
 		continue;
 	      }
+	    
 	    if ([_audioPackets count] > 0)
 	      {
 		dict = [[_audioPackets objectAtIndex:0] retain];
 		[_audioPackets removeObjectAtIndex:0];
 	      }
 	  }
-
+	
 	if (!_started && dict)
 	  {
 	    _audioClock = av_gettime();
 	    _started = YES;
 	  }
-
+	
 	if (dict)
 	  {
 	    AVPacket packet = AVPacketFromNSDictionary(dict);
@@ -325,7 +338,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	    int64_t delay = packetTime - now;
 	    if (delay > 0)
 	      usleep((useconds_t)delay);
-
+	    
 	    [self decodeAudioPacket:&packet];
 	    [dict release];
 	  }
@@ -344,18 +357,18 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       return;
     }
-  
+
   if (avcodec_send_packet(_audioCodecCtx, packet) < 0)
     {
       return;
     }
-  
+
   if (packet->flags & AV_PKT_FLAG_CORRUPT)
     {
       NSLog(@"Skipping corrupt audio packet");
       return;
     }
-  
+
   while (avcodec_receive_frame(_audioCodecCtx, _audioFrame) == 0)
     {
       int outSamples = _audioFrame->nb_samples;
@@ -398,6 +411,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (void)startAudio
 {
+  _running = YES;
   NSLog(@"[GSMovieView] Starting audio thread | Timestamp: %ld", av_gettime());
   _audioThread = [[NSThread alloc] initWithTarget:self selector:@selector(audioThreadEntry) object:nil];
   [_audioThread start];
@@ -472,15 +486,19 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
       _feedThread = nil;
       _audioPlayer = [[GSAudioPlayer alloc] init];
       _videoPackets = [[NSMutableArray alloc] init];
-      _running = NO;
-      _started = NO;
+
+      // AV
       _videoClock = 0;
       _videoCodecCtx = NULL;
       _formatCtx = NULL;
       _swsCtx = NULL;
       _stream = NULL;
       _lastPts = 0;
-      // NSApplicationWillTerminateNotification
+
+      // Flags
+      _running = NO;
+      _started = NO;
+
       [nc addObserver: self
 	     selector: @selector(handleNotification:)
 		 name: NSApplicationWillTerminateNotification
@@ -526,7 +544,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (void) handleNotification: (NSNotification *)notification
 {
   NSLog(@"[GSMovieView] Shutting down, final pts %ld", _lastPts);
-  
+
   [_feedThread cancel];
   [_videoThread cancel];
   [_audioPlayer stopAudio];
@@ -534,19 +552,29 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 }
 
 // Private methods...
-- (void) _startAtPts: (int64_t)pts
+- (void) _startFeed
 {
   if (_running == NO)
     {
       [self setRate: 1.0 / 30.0];
       [self setVolume: 1.0];
-      
-      _savedPts = pts;
+
+      _savedPts = 0;
       _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil];
       [_feedThread start];
       [_audioPlayer startAudio];
     }
-}  
+}
+
+- (void) _stopFeed
+{
+  if (_running == YES)
+    {
+      _savedPts = _lastPts;
+      [_feedThread cancel];
+      [_audioPlayer stopAudio];
+    }
+}
 
 // Overridden methods from the superclass...
 - (BOOL) isPlaying
@@ -556,19 +584,12 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (IBAction) start: (id)sender
 {
-  [self _startAtPts: 0];
+  [self setPlaying: YES];
 }
 
 - (IBAction) stop: (id)sender
 {
-  if (_running)
-    {
-      [_feedThread cancel];
-      [self stopVideo];
-      [_audioPlayer stopAudio];
-      
-      DESTROY(_feedThread);    
-    }
+  [self setPlaying: NO];
 }
 
 - (void) setMuted: (BOOL)muted
@@ -588,6 +609,15 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   [super setLoopMode: mode];
 }
 
+- (void) setMovie: (NSMovie *)movie
+{
+  @synchronized(_movie)
+    {
+      [super setMovie: movie];
+      [self _startFeed];
+    }
+}
+
 - (NSRect) movieRect
 {
   AVFormatContext* fmt_ctx = NULL;
@@ -598,7 +628,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   // which occurs when setting this from the existing stream.
   // The issue with using the ivars is that they are initialized on
   // a thread, so they may not be set when this is called.
-  
+
   // Open video file
   avformat_open_input(&fmt_ctx, name, NULL, NULL);
   avformat_find_stream_info(fmt_ctx, NULL);
@@ -629,51 +659,20 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (IBAction)gotoPosterFrame: (id)sender
 {
   [self stop: sender];
-  [self _startAtPts: 0];
+  // [self _startAtPts: 0];
   NSLog(@"[GSMovieView] gotoPosterFrame called | Timestamp: %ld", av_gettime());
 }
 
 - (IBAction)gotoBeginning: (id)sender
 {
   [self stop: sender];
-  [self _startAtPts: 0];
+  // [self _startAtPts: 0];
   NSLog(@"[GSMovieView] gotoBeginning called | Timestamp: %ld", av_gettime());
 }
 
 - (IBAction)gotoEnd: (id)sender
 {
-  int64_t duration = _stream->duration;
-
-  [self stop: nil];
-  
-  // Seek near the end (some formats don't like seeking to exact end)
-  int64_t seekTarget = duration - (AV_TIME_BASE / 10); // a bit before the end
-  av_seek_frame(_formatCtx, _videoStreamIndex, seekTarget, AVSEEK_FLAG_BACKWARD);
-
-  // Flush decoder
-  avcodec_flush_buffers(_videoCodecCtx);
-
-  // Read packets and decode
-  AVPacket packet;
-  while (av_read_frame(_formatCtx, &packet) >= 0)
-    {
-      if (packet.stream_index == _videoStreamIndex)
-	{
-	  if (avcodec_send_packet(_videoCodecCtx, &packet) == 0)
-	    {
-	      AVFrame *frame = av_frame_alloc();
-	      if (avcodec_receive_frame(_videoCodecCtx, frame) == 0)
-		{
-		  // Convert & render this frame
-		  [self renderFrame: frame];
-		  av_frame_free(&frame);
-		  break;
-		}
-	      av_frame_free(&frame);
-	    }
-	}
-      av_packet_unref(&packet);
-    }
+  //
 }
 
 - (IBAction) stepForward: (id)sender
@@ -688,7 +687,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (IBAction) stepBack: (id)sender
 {
   [self stop: sender];
-  [self _startAtPts: _savedPts - 1000];
+  // [self _startAtPts: _savedPts - 1000];
 }
 
 // Video playback methods...
@@ -793,7 +792,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 - (void) loop
 {
   if (_formatCtx != NULL)
-    {  
+    {
       AVPacket packet;
       int64_t i = 0;
 
@@ -803,14 +802,14 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	    {
 	      continue;
 	    }
-	      
+
 	  // After 1000 frames, start the thread...
 	  if (i == 1000)
 	    {
 	      [self startVideo];
 	      [_audioPlayer startAudio];
 	    }
-		  
+
 	  if (packet.stream_index == _videoStreamIndex)
 	    {
 	      [self submitVideoPacket: &packet];
@@ -898,18 +897,22 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
 - (void) startVideo
 {
-  NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld, lastPts = %ld", av_gettime(), _lastPts);
+  NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld, lastPts = %ld",
+	av_gettime(), _lastPts);
   if (!_running)
     {
       _running = YES;
-      _videoThread = [[NSThread alloc] initWithTarget:self selector:@selector(videoThreadEntry) object:nil];
+      _videoThread = [[NSThread alloc] initWithTarget:self
+					     selector:@selector(videoThreadEntry)
+					       object:nil];
       [_videoThread start];
     }
 }
 
 - (void) stopVideo
 {
-  NSLog(@"[GSMovieView] Stopping video thread | Timestamp: %ld, lastPts = %ld", av_gettime(), _lastPts);
+  NSLog(@"[GSMovieView] Stopping video thread | Timestamp: %ld, lastPts = %ld",
+	av_gettime(), _lastPts);
   if (_running)
     {
       _running = NO;
@@ -919,13 +922,19 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	{
 	  usleep(1000);
 	}
-      
+
       DESTROY(_videoThread);
       avformat_close_input(&_formatCtx);
 
       _savedPts = _lastPts;
       _lastPts = 0;
     }
+}
+
+- (void) setPlaying: (BOOL)f
+{
+  _running = f;
+  [_audioPlayer setPlaying: _running];
 }
 
 - (void)submitVideoPacket: (AVPacket *)packet
@@ -942,77 +951,76 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   while (_running)
     {
       CREATE_AUTORELEASE_POOL(pool);
-	{
-	  NSDictionary *dict = nil;
+      {
+	NSDictionary *dict = nil;
 
-	  // Pop the video packet off _videoPackets, sync on
-	  // the array.
-	  @synchronized (_videoPackets)
-	    {
-	      if (!_started && [_videoPackets count] < 3)
-		{
-		  usleep(5000);
-		  RELEASE(pool);
-		  continue;
-		}
-	      if ([_videoPackets count] > 0)
-		{
-		  dict = RETAIN([_videoPackets objectAtIndex: 0]);
-		  [_videoPackets removeObjectAtIndex: 0];
-		}
-	    }
-
-	  // If the dict is present and the thread is started, get
-	  // the clock.
-	  if (!_started && dict)
-	    {
-	      _videoClock = av_gettime();
-	      _started = YES;
-	    }
-
-	  // If dict is not nil, decode it and get the frame...
-	  if (dict)
-	    {
-	      AVPacket packet = AVPacketFromNSDictionary(dict);
-
-	      // If the current pts is at or after the saved,
-	      // then alow it to be decoded and displayed...
-	      if (packet.pts >= _savedPts)
-		{
-		  int64_t packetTime = av_rescale_q(packet.pts,
-						    _timeBase,
-						    (AVRational){1, 1000000});
-		  int64_t now = av_gettime() - _videoClock;
-		  int64_t delay = packetTime - now;
-
-		  if (_statusField != nil)
-		    {
-		      // Show the information...
-		      _statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | %@",
-						packet.pts, delay, _running ? @"Running" : @"Stopped"];
-		      [_statusField setStringValue: _statusString];
-		    }
-
-		  // Show status on the command line...
-		  fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
-			  packet.pts, delay);
-		  if (delay > 0)
-		    {
-		      usleep((useconds_t)delay);
-		    }
-
-		  // Decode the packet, display it and play the sound...
-		  [self decodeVideoPacket: &packet];
-		  RELEASE(dict);
-		}
-	      else
-		{
-		  usleep(1000);
-		}
-	    }
-	  
-	  RELEASE(pool);
-	}
+	// Pop the video packet off _videoPackets, sync on
+	// the array.
+	@synchronized (_videoPackets)
+	  {
+	    if (!_started && [_videoPackets count] < 3)
+	      {
+		usleep(5000);
+		RELEASE(pool);
+		continue;
+	      }
+	    if ([_videoPackets count] > 0)
+	      {
+		dict = RETAIN([_videoPackets objectAtIndex: 0]);
+		[_videoPackets removeObjectAtIndex: 0];
+	      }
+	  }
+	
+	// If the dict is present and the thread is started, get
+	// the clock.
+	if (!_started && dict)
+	  {
+	    _videoClock = av_gettime();
+	    _started = YES;
+	  }
+	
+	// If dict is not nil, decode it and get the frame...
+	if (dict)
+	  {
+	    AVPacket packet = AVPacketFromNSDictionary(dict);
+	    
+	    // If the current pts is at or after the saved,
+	    // then alow it to be decoded and displayed...
+	    if (packet.pts >= _savedPts)
+	      {
+		int64_t packetTime = av_rescale_q(packet.pts,
+						  _timeBase,
+						  (AVRational){1, 1000000});
+		int64_t now = av_gettime() - _videoClock;
+		int64_t delay = packetTime - now;
+		
+		if (_statusField != nil)
+		  {
+		    // Show the information...
+		    _statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | %@",
+					      packet.pts, delay, _running ? @"Running" : @"Stopped"];
+		    [_statusField setStringValue: _statusString];
+		  }
+		
+		// Show status on the command line...
+		fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
+			packet.pts, delay);
+		if (delay > 0)
+		  {
+		    usleep((useconds_t)delay);
+		  }
+		
+		// Decode the packet, display it and play the sound...
+		[self decodeVideoPacket: &packet];
+		RELEASE(dict);
+	      }
+	    else
+	      {
+		usleep(1000);
+	      }
+	  }
+      }
+      RELEASE(pool);
     }
 }
 
@@ -1022,10 +1030,10 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   int rgbLineSize[1];
   int width = _videoCodecCtx->width;
   int height = _videoCodecCtx->height;
-  
+
   rgbLineSize[0] = width * 3;
   rgbData[0] = (uint8_t *)malloc(height * rgbLineSize[0]);
-  
+
   sws_scale(_swsCtx,
 	    (const uint8_t * const *)videoFrame->data,
 	    videoFrame->linesize,
@@ -1033,7 +1041,7 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 	    height,
 	    rgbData,
 	    rgbLineSize);
-  
+
   NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
 				   initWithBitmapDataPlanes: &rgbData[0]
 						 pixelsWide: width
@@ -1045,13 +1053,13 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 					     colorSpaceName: NSCalibratedRGBColorSpace
 						bytesPerRow: rgbLineSize[0]
 					       bitsPerPixel: 24];
-  
+
   NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(width, height)];
   [image addRepresentation: bitmap];
   [self performSelectorOnMainThread: @selector(updateImage:)
 			 withObject: image
 		      waitUntilDone: NO];
-  
+
   RELEASE(image);
   RELEASE(bitmap);
   free(rgbData[0]);
@@ -1068,16 +1076,16 @@ static AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
     {
       return;
     }
-  
+
   if (packet->flags & AV_PKT_FLAG_CORRUPT)
     {
       NSLog(@"Skipping corrupt video packet");
       return;
     }
-  
+
   // Record last pts...
   _lastPts = packet->pts;
-  
+
   while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
     {
       [self renderFrame: _videoFrame];
