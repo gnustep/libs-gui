@@ -42,7 +42,6 @@
 #import "AppKit/NSImageRep.h"
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSPasteboard.h"
-#import "AppKit/NSSound.h"
 
 #import "GSMovieView.h"
 #import "GSAudioPlayer.h"
@@ -188,6 +187,7 @@ static NSNotificationCenter *nc = nil;
 - (void) setPaused: (BOOL)f
 {
   _paused = f;
+  [_audioPlayer setPaused: f];
 }
 
 - (BOOL) isPaused
@@ -239,12 +239,12 @@ static NSNotificationCenter *nc = nil;
 
 - (IBAction) start: (id)sender
 {
-  [self setPlaying: YES];
+  [self setPaused: NO];
 }
 
 - (IBAction) stop: (id)sender
 {
-  [self setPlaying: NO];
+  [self setPaused: YES];
 }
 
 - (void) setMuted: (BOOL)muted
@@ -589,7 +589,6 @@ static NSNotificationCenter *nc = nil;
 - (void) setPlaying: (BOOL)f
 {
   _running = f;
-  [_audioPlayer setPlaying: _running];
 }
 
 - (void)submitVideoPacket: (AVPacket *)packet
