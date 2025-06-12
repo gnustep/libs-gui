@@ -149,7 +149,7 @@
   int r = swr_init(_swrCtx);
   if (r == 0)
     {
-      NSLog(@"[GSMovieView] WARNING: swr_init returned 0");
+      NSLog(@"[GSAudioPlayer] WARNING: swr_init returned 0");
     }
 
   memset(&_aoFmt, 0, sizeof(ao_sample_format));
@@ -183,12 +183,6 @@
 	
 	@synchronized (_audioPackets)
 	  {
-	    if (!_started && [_audioPackets count] < 5)
-	      {
-		usleep(5000);
-		continue;
-	      }
-	    
 	    if ([_audioPackets count] > 0)
 	      {
 		dict = [[_audioPackets objectAtIndex:0] retain];
@@ -208,8 +202,11 @@
 	    int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
 	    int64_t now = av_gettime() - _audioClock;
 	    int64_t delay = packetTime - now;
+
 	    if (delay > 0)
-	      usleep((useconds_t)delay);
+	      {
+		usleep((useconds_t)delay); //  + 50000);
+	      }
 	    
 	    [self decodeAudioPacket:&packet];
 	    [dict release];
@@ -275,6 +272,12 @@
 - (void) submitPacket: (AVPacket *)packet
 {
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
+
+  if (_paused)
+    {
+      NSLog(@"Submitted audio packet...");
+    }
+
   @synchronized (_audioPackets)
     {
       [_audioPackets addObject: dict];
@@ -284,7 +287,7 @@
 - (void) startAudio
 {
   _running = YES;
-  NSLog(@"[GSMovieView] Starting audio thread | Timestamp: %ld", av_gettime());
+  NSLog(@"[GSAudioPlayer] Starting audio thread | Timestamp: %ld", av_gettime());
   _audioThread = [[NSThread alloc] initWithTarget:self selector:@selector(audioThreadEntry) object:nil];
   [_audioThread start];
 }

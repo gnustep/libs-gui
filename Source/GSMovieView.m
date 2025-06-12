@@ -335,8 +335,19 @@ static NSNotificationCenter *nc = nil;
   int64_t seconds = 2;
   int64_t skip = av_rescale_q(seconds, (AVRational){1,1}, _stream->time_base);
   int64_t newPts = _lastPts + skip;
-  av_seek_frame(_formatCtx, _videoStreamIndex, newPts, AVSEEK_FLAG_BACKWARD);
-  avcodec_flush_buffers(_videoCodecCtx);
+
+  if (_paused == NO)
+    {
+      _paused = YES;
+      av_seek_frame(_formatCtx, _videoStreamIndex, newPts, AVSEEK_FLAG_BACKWARD);
+      avcodec_flush_buffers(_videoCodecCtx);
+      _paused = NO;
+    }
+  else
+    {
+      av_seek_frame(_formatCtx, _videoStreamIndex, newPts, AVSEEK_FLAG_BACKWARD);
+      avcodec_flush_buffers(_videoCodecCtx);
+    }
 }
 
 - (IBAction) stepBack: (id)sender
@@ -594,6 +605,12 @@ static NSNotificationCenter *nc = nil;
 - (void)submitVideoPacket: (AVPacket *)packet
 {
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
+
+  if (_paused)
+    {
+      NSLog(@"Submitted packet...");
+    }
+  
   @synchronized (_videoPackets)
     {
       [_videoPackets addObject: dict];
@@ -620,12 +637,6 @@ static NSNotificationCenter *nc = nil;
 	// the array.
 	@synchronized (_videoPackets)
 	  {
-	    if (!_started && [_videoPackets count] < 3)
-	      {
-		usleep(5000);
-		RELEASE(pool);
-		continue;
-	      }
 	    if ([_videoPackets count] > 0)
 	      {
 		dict = RETAIN([_videoPackets objectAtIndex: 0]);
