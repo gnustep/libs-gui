@@ -57,6 +57,7 @@ APPKIT_EXPORT_CLASS
   NSImage *_currentFrame;
   NSString *_statusString;
   GSAudioPlayer *_audioPlayer;
+  NSLock *_lock;
 
   AVCodecContext *_videoCodecCtx;
   AVFrame *_videoFrame;

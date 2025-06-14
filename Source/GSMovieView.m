@@ -129,6 +129,7 @@ static NSNotificationCenter *nc = nil;
       _feedThread = nil;
       _audioPlayer = [[GSAudioPlayer alloc] init];
       _videoPackets = [[NSMutableArray alloc] init];
+      _lock = [[NSLock alloc] init];
 
       // AV...
       _videoClock = 0;
@@ -156,10 +157,10 @@ static NSNotificationCenter *nc = nil;
 {
   [self stop: nil];
 
+  // Cancel thread, dealloc av structs...
   if (_feedThread)
     {
       [_feedThread cancel];
-      DESTROY(_feedThread);
     }
 
   if (_videoFrame)
@@ -177,9 +178,14 @@ static NSNotificationCenter *nc = nil;
       sws_freeContext(_swsCtx);
     }
 
-  TEST_RELEASE(_currentFrame);
+  // Destroy objects
+  DESTROY(_feedThread);
+  DESTROY(_lock);
   DESTROY(_videoPackets);
   DESTROY(_audioPlayer);
+  DESTROY(_currentFrame);
+  
+  // Unsubscribe to NSNotification
   [nc removeObserver: self];
 
   [super dealloc];
@@ -271,46 +277,28 @@ static NSNotificationCenter *nc = nil;
   @synchronized(_movie)
     {
       [super setMovie: movie];
+      [self setup];
       [self _startFeed];
     }
 }
 
 - (NSRect) movieRect
 {
-  AVFormatContext* fmt_ctx = NULL;
-  NSURL *url = [[self movie] URL];
-  const char *name = [[url path] UTF8String];
-
-  // I realize this is inefficient, but there is a race condition
-  // which occurs when setting this from the existing stream.
-  // The issue with using the ivars is that they are initialized on
-  // a thread, so they may not be set when this is called.
-
-  // Open video file
-  avformat_open_input(&fmt_ctx, name, NULL, NULL);
-  avformat_find_stream_info(fmt_ctx, NULL);
-
-  // Find the first video stream
-  int video_stream_index = -1;
-  unsigned int i = 0;
-  for (i = 0; i < fmt_ctx->nb_streams; i++)
+  NSRect result = NSZeroRect;
+  
+  if (_stream != NULL)
     {
-      if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
-	{
-	  video_stream_index = i;
-	  break;
-	}
+      // Retrieve codec parameters
+      AVCodecParameters* codecpar = _stream->codecpar;
+      
+      // These are your video dimensions:
+      CGFloat width = (CGFloat)(codecpar->width);
+      CGFloat height = (CGFloat)(codecpar->height);
+        
+      result = NSMakeRect(0.0, 0.0, width, height);
     }
 
-  // Retrieve codec parameters
-  AVCodecParameters* codecpar =
-    fmt_ctx->streams[video_stream_index]->codecpar;
-
-  // These are your video dimensions:
-  CGFloat width = (CGFloat)(codecpar->width);
-  CGFloat height = (CGFloat)(codecpar->height);
-
-  return NSMakeRect(0.0, 0.0, width, height);
+  return result;
 }
 
 - (IBAction)gotoPosterFrame: (id)sender
@@ -377,7 +365,7 @@ static NSNotificationCenter *nc = nil;
 - (BOOL) setup
 {
   NSMovie *movie = [self movie];
-
+  
   if (movie != nil)
     {
       NSURL *url = [movie URL];
@@ -512,25 +500,23 @@ static NSNotificationCenter *nc = nil;
 
 - (void) feedVideo
 {
-  BOOL success = [self setup];
-  if (success)
+  if (_stream != NULL)
     {
       [self loop];
       [self close];
-    }
-  else
-    {
-      NSLog(@"[GSMovieView] setup failed.");
     }
 }
 
 - (void)prepareWithFormatContext: (AVFormatContext *)formatCtx streamIndex: (int)videoStreamIndex
 {
+  // [_lock lock];
+  
   AVStream *videoStream = formatCtx->streams[videoStreamIndex];
-  AVCodecParameters *videoPar = formatCtx->streams[videoStreamIndex]->codecpar;
+  AVCodecParameters *videoPar = videoStream->codecpar;
   const AVCodec *videoCodec = avcodec_find_decoder(videoPar->codec_id);
   AVRational fr = videoStream->avg_frame_rate;
 
+  _stream = videoStream;
   _fps = av_q2d(fr); 
   if (!videoCodec)
     {
@@ -564,6 +550,8 @@ static NSNotificationCenter *nc = nil;
   _videoClock = av_gettime();
   _running = NO;
   _started = NO;
+
+  // [_lock unlock];
 }
 
 - (void) startVideo
