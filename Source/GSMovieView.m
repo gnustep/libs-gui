@@ -129,7 +129,6 @@ static NSNotificationCenter *nc = nil;
       _feedThread = nil;
       _audioPlayer = [[GSAudioPlayer alloc] init];
       _videoPackets = [[NSMutableArray alloc] init];
-      _lock = [[NSLock alloc] init];
 
       // AV...
       _videoClock = 0;
@@ -141,10 +140,11 @@ static NSNotificationCenter *nc = nil;
       _fps = 0.0;
 
       // Flags...
-      _running = NO;
-      _started = NO;
-      _paused = NO;
+      _running = NO; // is the thread running?
+      _started = NO; // have we started processing packets...
+      _paused = NO;  // is the stream paused?
       
+      // Get notifications and shut down the thread if app is closing.
       [nc addObserver: self
 	     selector: @selector(handleNotification:)
 		 name: NSApplicationWillTerminateNotification
@@ -180,7 +180,6 @@ static NSNotificationCenter *nc = nil;
 
   // Destroy objects
   DESTROY(_feedThread);
-  DESTROY(_lock);
   DESTROY(_videoPackets);
   DESTROY(_audioPlayer);
   DESTROY(_currentFrame);
@@ -509,8 +508,6 @@ static NSNotificationCenter *nc = nil;
 
 - (void)prepareWithFormatContext: (AVFormatContext *)formatCtx streamIndex: (int)videoStreamIndex
 {
-  // [_lock lock];
-  
   AVStream *videoStream = formatCtx->streams[videoStreamIndex];
   AVCodecParameters *videoPar = videoStream->codecpar;
   const AVCodec *videoCodec = avcodec_find_decoder(videoPar->codec_id);
@@ -549,9 +546,6 @@ static NSNotificationCenter *nc = nil;
   _videoPackets = [[NSMutableArray alloc] init];
   _videoClock = av_gettime();
   _running = NO;
-  _started = NO;
-
-  // [_lock unlock];
 }
 
 - (void) startVideo
