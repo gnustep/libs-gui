@@ -32,7 +32,6 @@
 #import "config.h"
 #import "AppKit/NSMovieView.h"
 
-#include <ao/ao.h>
 #include <unistd.h>
 
 /* FFmpeg headers */
@@ -45,6 +44,8 @@
 #include <libswresample/swresample.h>
 
 @class NSImage;
+@class NSMutableArray;
+@class NSString;
 @class NSTimer;
 @class GSAudioPlayer;
 
@@ -52,35 +53,34 @@ APPKIT_EXPORT_CLASS
 @interface GSMovieView : NSMovieView
 {
   NSMutableArray *_videoPackets;
-  NSThread *_videoThread;
-  NSThread *_feedThread;
   NSImage *_currentFrame;
   NSString *_statusString;
+  NSTimer *_timer;
+  NSThread *_videoThread;
   GSAudioPlayer *_audioPlayer;
 
   AVCodecContext *_videoCodecCtx;
   AVFrame *_videoFrame;
   AVFormatContext *_formatCtx;
   AVStream *_stream;
-  struct SwsContext *_swsCtx;
   AVRational _timeBase;
+  struct SwsContext *_swsCtx;
 
   BOOL _paused;  // is the stream paused...
   BOOL _running; // is the loop currently running...
-  BOOL _started; // has the video started...
   int64_t _videoClock;
   int _videoStreamIndex;
   int _audioStreamIndex;
   int64_t _lastPts;
-  int64_t _savedPts;
+  int64_t _frames;
+  CGFloat _fps;
 }
 
 // Initialization...
 - (void) prepareVideoWithFormatContext: (AVFormatContext *)formatCtx
-         streamIndex: (int)videoStreamIndex;
+                           streamIndex: (int)videoStreamIndex;
 
-// Submit packets...
-- (void) submitVideoPacket: (AVPacket *)packet;
+// Handle packets...
 - (void) decodeVideoPacket: (AVPacket *)packet;
 
 // Start and stop...
@@ -91,7 +91,6 @@ APPKIT_EXPORT_CLASS
 
 // Main loop to process packets...
 - (void) renderFrame: (AVFrame *)videoFrame;
-- (void) feedVideo;
 - (BOOL) setup;
 - (void) loop;
 - (void) close;

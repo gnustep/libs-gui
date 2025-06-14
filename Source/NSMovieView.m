@@ -66,7 +66,7 @@
   if (self != nil)
     {
       _movie = nil;
-      _rate = 0.0;
+      _rate = 1.0;
       _volume = 1.0;
       _flags.muted = NO;
       _flags.loopMode = NSQTMovieNormalPlayback;

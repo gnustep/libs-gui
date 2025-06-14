@@ -169,13 +169,6 @@
 {
   while (_running)
     {
-      // Stop reading packets while paused...
-      if (_paused == YES)
-	{
-	  usleep(10000); // 10ms pause
-	  continue; // start the loop again...
-	}
-
       // create pool...
       CREATE_AUTORELEASE_POOL(pool);
       {
@@ -190,19 +183,14 @@
 	      }
 	  }
 	
-	if (!_started && dict)
-	  {
-	    _audioClock = av_gettime();
-	    _started = YES;
-	  }
-	
 	if (dict)
 	  {
 	    AVPacket packet = AVPacketFromNSDictionary(dict);
 	    int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
-	    int64_t now = av_gettime() - _audioClock;
+	    int64_t now = av_gettime();
 	    int64_t delay = packetTime - now;
 
+	    _audioClock = now;
 	    if (delay > 0)
 	      {
 		usleep((useconds_t)delay); //  + 50000);
@@ -272,11 +260,6 @@
 - (void) submitPacket: (AVPacket *)packet
 {
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
-
-  if (_paused)
-    {
-      NSLog(@"Submitted audio packet...");
-    }
 
   @synchronized (_audioPackets)
     {

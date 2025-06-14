@@ -73,6 +73,7 @@
 
 - (void) prepareAudioWithFormatContext: (AVFormatContext *)formatCtx
 			   streamIndex: (int)audioStreamIndex;
+
 - (void) decodeAudioPacket: (AVPacket *)packet;
 - (void) submitPacket: (AVPacket *)packet;
 - (void) startAudio;
@@ -84,6 +85,7 @@
 - (NSQTMovieLoopMode) loopMode;
 - (void) setLoopMode: (NSQTMovieLoopMode)mode;
 
+// Controls...
 - (void) setMuted: (BOOL)muted;
 - (BOOL) isMuted;
 - (void) setPaused: (BOOL)f;

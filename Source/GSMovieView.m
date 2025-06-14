@@ -47,6 +47,8 @@
 #import "GSAudioPlayer.h"
 #import "GSAVUtils.h"
 
+#define VIDEO_FRAME_CACHE 5000
+
 static NSNotificationCenter *nc = nil;
 
 // Ignore the warning this will produce as it is intentional.
@@ -124,8 +126,6 @@ static NSNotificationCenter *nc = nil;
   if (self != nil)
     {
       _currentFrame = nil;
-      _videoThread = nil;
-      _feedThread = nil;
       _audioPlayer = [[GSAudioPlayer alloc] init];
       _videoPackets = [[NSMutableArray alloc] init];
 
@@ -136,10 +136,10 @@ static NSNotificationCenter *nc = nil;
       _swsCtx = NULL;
       _stream = NULL;
       _lastPts = 0;
-
+      _frames = 0;
+      
       // Flags
       _running = NO;
-      _started = NO;
       _paused = NO;
       
       [nc addObserver: self
@@ -154,10 +154,10 @@ static NSNotificationCenter *nc = nil;
 {
   [self stop: nil];
 
-  if (_feedThread)
+  if (_videoThread)
     {
-      [_feedThread cancel];
-      DESTROY(_feedThread);
+      [_videoThread cancel];
+      DESTROY(_videoThread);
     }
 
   if (_videoFrame)
@@ -200,35 +200,21 @@ static NSNotificationCenter *nc = nil;
 {
   NSLog(@"[GSMovieView] Shutting down, final pts %ld", _lastPts);
 
-  [_feedThread cancel];
-  [_videoThread cancel];
   [_audioPlayer stopAudio];
   [self stopVideo];
 }
 
 // Private methods...
-- (void) _startFeed
+- (void) _launchThreads
 {
-  if (_running == NO)
-    {
-      [self setRate: 1.0 / 30.0];
-      [self setVolume: 1.0];
+  NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld", av_gettime());
 
-      _savedPts = 0;
-      _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil];
-      [_feedThread start];
-      [_audioPlayer startAudio];
-    }
-}
-
-- (void) _stopFeed
-{
-  if (_running == YES)
-    {
-      _savedPts = _lastPts;
-      [_feedThread cancel];
-      [_audioPlayer stopAudio];
-    }
+  _running = YES;
+  _videoThread = [[NSThread alloc] initWithTarget: self
+					 selector: @selector(videoThreadEntry)
+					   object: nil];
+  [_videoThread start];
+  [_audioPlayer startAudio];
 }
 
 // Overridden methods from the superclass...
@@ -239,6 +225,7 @@ static NSNotificationCenter *nc = nil;
 
 - (IBAction) start: (id)sender
 {
+  [self startVideo];
   [self setPaused: NO];
 }
 
@@ -266,48 +253,18 @@ static NSNotificationCenter *nc = nil;
 
 - (void) setMovie: (NSMovie *)movie
 {
-  @synchronized(_movie)
-    {
-      [super setMovie: movie];
-      [self _startFeed];
-    }
+  [super setMovie: movie];
+  [self setup];
 }
 
 - (NSRect) movieRect
 {
-  AVFormatContext* fmt_ctx = NULL;
-  NSURL *url = [[self movie] URL];
-  const char *name = [[url path] UTF8String];
-
-  // I realize this is inefficient, but there is a race condition
-  // which occurs when setting this from the existing stream.
-  // The issue with using the ivars is that they are initialized on
-  // a thread, so they may not be set when this is called.
-
-  // Open video file
-  avformat_open_input(&fmt_ctx, name, NULL, NULL);
-  avformat_find_stream_info(fmt_ctx, NULL);
-
-  // Find the first video stream
-  int video_stream_index = -1;
-  unsigned int i = 0;
-  for (i = 0; i < fmt_ctx->nb_streams; i++)
-    {
-      if (fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
-	{
-	  video_stream_index = i;
-	  break;
-	}
-    }
-
-  // Retrieve codec parameters
   AVCodecParameters* codecpar =
-    fmt_ctx->streams[video_stream_index]->codecpar;
-
-  // These are your video dimensions:
+    _formatCtx->streams[_videoStreamIndex]->codecpar;
   CGFloat width = (CGFloat)(codecpar->width);
   CGFloat height = (CGFloat)(codecpar->height);
 
+  // These are your video dimensions:
   return NSMakeRect(0.0, 0.0, width, height);
 }
 
@@ -353,7 +310,6 @@ static NSNotificationCenter *nc = nil;
 - (IBAction) stepBack: (id)sender
 {
   [self stop: sender];
-  // [self _startAtPts: _savedPts - 1000];
 }
 
 // Video playback methods...
@@ -455,30 +411,33 @@ static NSNotificationCenter *nc = nil;
   return YES;
 }
 
+- (void) submitPacket: (AVPacket *)packet
+{
+  NSDictionary *dict = NSDictionaryFromAVPacket(packet);
+
+  @synchronized (_videoPackets)
+    {
+      [_videoPackets addObject: dict];
+    }
+}
+
 - (void) loop
 {
   if (_formatCtx != NULL)
     {
       AVPacket packet;
-      int64_t i = 0;
 
-      while (av_read_frame(_formatCtx, &packet) >= 0)
+      if (av_read_frame(_formatCtx, &packet) >= 0)
 	{
-	  if (packet.pts <= _savedPts)
-	    {
-	      continue;
-	    }
-
 	  // After 1000 frames, start the thread...
-	  if (i == 1000)
+	  if (_frames == VIDEO_FRAME_CACHE)
 	    {
-	      [self startVideo];
-	      [_audioPlayer startAudio];
+	      [self _launchThreads];
 	    }
 
 	  if (packet.stream_index == _videoStreamIndex)
 	    {
-	      [self submitVideoPacket: &packet];
+	      [self submitPacket: &packet];
 	    }
 
 	  if (packet.stream_index == _audioStreamIndex)
@@ -487,15 +446,13 @@ static NSNotificationCenter *nc = nil;
 	    }
 
 	  av_packet_unref(&packet);
-	  i++;
+	  _frames++;
 	}
 
       // if we had a very short video... play it.
-      if (i < 1000)
+      if (_frames < VIDEO_FRAME_CACHE)
 	{
-	  NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
-	  [self startVideo];
-	  [_audioPlayer startAudio];
+	  [self _launchThreads];
 	}
     }
 }
@@ -504,29 +461,21 @@ static NSNotificationCenter *nc = nil;
 {
   if (_formatCtx != NULL)
     {
+      _lastPts = 0;
+      _frames = 0;
       avformat_close_input(&_formatCtx);
     }
 }
 
-- (void) feedVideo
+- (void) prepareVideoWithFormatContext: (AVFormatContext *)formatCtx
+			   streamIndex: (int)videoStreamIndex
 {
-  BOOL success = [self setup];
-  if (success)
-    {
-      [self loop];
-      [self close];
-    }
-  else
-    {
-      NSLog(@"[GSMovieView] setup failed.");
-    }
-}
-
-- (void)prepareVideoWithFormatContext: (AVFormatContext *)formatCtx streamIndex: (int)videoStreamIndex
-{
-  AVCodecParameters *videoPar = formatCtx->streams[videoStreamIndex]->codecpar;
+  AVStream *videoStream = formatCtx->streams[videoStreamIndex];
+  AVCodecParameters *videoPar = videoStream->codecpar;
   const AVCodec *videoCodec = avcodec_find_decoder(videoPar->codec_id);
+  AVRational fr = videoStream->avg_frame_rate;
 
+  _fps = 1.0 / av_q2d(fr);
   if (!videoCodec)
     {
       NSLog(@"[Error] Unsupported video codec. | Timestamp: %ld", av_gettime());
@@ -558,62 +507,34 @@ static NSNotificationCenter *nc = nil;
   _videoPackets = [[NSMutableArray alloc] init];
   _videoClock = av_gettime();
   _running = NO;
-  _started = NO;
 }
 
 - (void) startVideo
 {
   NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld, lastPts = %ld",
 	av_gettime(), _lastPts);
+
   if (!_running)
     {
+      // [self setup];
       _running = YES;
-      _videoThread = [[NSThread alloc] initWithTarget:self
-					     selector:@selector(videoThreadEntry)
-					       object:nil];
-      [_videoThread start];
+      _timer = [NSTimer scheduledTimerWithTimeInterval: (_fps * [super rate])
+						target: self
+					      selector: @selector(loop)
+					      userInfo: nil
+					       repeats: YES];			 
     }
 }
 
 - (void) stopVideo
 {
   NSLog(@"[GSMovieView] Stopping video thread | Timestamp: %ld, lastPts = %ld",
-	av_gettime(), _lastPts);
+	av_gettime(), _lastPts);     
   if (_running)
     {
       _running = NO;
-
-      [_videoThread cancel];
-      while (![_videoThread isFinished])
-	{
-	  usleep(1000);
-	}
-
-      DESTROY(_videoThread);
-      avformat_close_input(&_formatCtx);
-
-      _savedPts = _lastPts;
-      _lastPts = 0;
-    }
-}
-
-- (void) setPlaying: (BOOL)f
-{
-  _running = f;
-}
-
-- (void)submitVideoPacket: (AVPacket *)packet
-{
-  NSDictionary *dict = NSDictionaryFromAVPacket(packet);
-
-  if (_paused)
-    {
-      NSLog(@"Submitted packet...");
-    }
-  
-  @synchronized (_videoPackets)
-    {
-      [_videoPackets addObject: dict];
+      [_timer invalidate];
+      [self close];      
     }
 }
 
@@ -621,13 +542,6 @@ static NSNotificationCenter *nc = nil;
 {
   while (_running)
     {
-      // Stop reading packets while paused...
-      if (_paused == YES)
-	{
-	  usleep(10000); // 10ms pause
-	  continue; // start the loop again...
-	}
-
       // Create pool...
       CREATE_AUTORELEASE_POOL(pool);
       {
@@ -644,53 +558,35 @@ static NSNotificationCenter *nc = nil;
 	      }
 	  }
 	
-	// If the dict is present and the thread is started, get
-	// the clock.
-	if (!_started && dict)
-	  {
-	    _videoClock = av_gettime();
-	    _started = YES;
-	  }
-	
 	// If dict is not nil, decode it and get the frame...
 	if (dict)
 	  {
-	    AVPacket packet = AVPacketFromNSDictionary(dict);
-	    
-	    // If the current pts is at or after the saved,
-	    // then alow it to be decoded and displayed...
-	    if (packet.pts >= _savedPts)
+	    AVPacket packet = AVPacketFromNSDictionary(dict);	    
+	    int64_t packetTime = av_rescale_q(packet.pts,
+					      _timeBase,
+					      (AVRational){1, 1000000});
+	    int64_t now = av_gettime();
+	    int64_t delay = packetTime - now;
+		
+	    if (_statusField != nil)
 	      {
-		int64_t packetTime = av_rescale_q(packet.pts,
-						  _timeBase,
-						  (AVRational){1, 1000000});
-		int64_t now = av_gettime() - _videoClock;
-		int64_t delay = packetTime - now;
-		
-		if (_statusField != nil)
-		  {
-		    // Show the information...
-		    _statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | %@",
-					      packet.pts, delay, _running ? @"Running" : @"Stopped"];
-		    [_statusField setStringValue: _statusString];
-		  }
-		
-		// Show status on the command line...
-		fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
-			packet.pts, delay);
-		if (delay > 0)
-		  {
-		    usleep((useconds_t)delay);
-		  }
-		
-		// Decode the packet, display it and play the sound...
-		[self decodeVideoPacket: &packet];
-		RELEASE(dict);
+		// Show the information...
+		_statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | %@",
+					  packet.pts, delay, _running ? @"Running" : @"Stopped"];
+		[_statusField setStringValue: _statusString];
 	      }
-	    else
+		
+	    // Show status on the command line...
+	    fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
+		    packet.pts, delay);
+	    if (delay > 0)
 	      {
-		usleep(1000);
+		usleep((useconds_t)delay);
 	      }
+		
+	    // Decode the packet, display it and play the sound...
+	    [self decodeVideoPacket: &packet];
+	    RELEASE(dict);
 	  }
       }
       RELEASE(pool);
