@@ -73,15 +73,16 @@ APPKIT_EXPORT_CLASS
   int _audioStreamIndex;
   int64_t _lastPts;
   int64_t _savedPts;
+  CGFloat _fps;
 }
 
 // Initialization...
-- (void) prepareVideoWithFormatContext: (AVFormatContext *)formatCtx
-         streamIndex: (int)videoStreamIndex;
+- (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
+                      streamIndex: (int)videoStreamIndex;
 
 // Submit packets...
-- (void) submitVideoPacket: (AVPacket *)packet;
-- (void) decodeVideoPacket: (AVPacket *)packet;
+- (void) submitPacket: (AVPacket *)packet;
+- (void) decodePacket: (AVPacket *)packet;
 
 // Start and stop...
 - (void) startVideo;

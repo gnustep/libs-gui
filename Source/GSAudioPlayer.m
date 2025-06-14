@@ -110,8 +110,8 @@
   _loopMode = mode;
 }
 
-- (void) prepareAudioWithFormatContext: (AVFormatContext *)formatCtx
-			   streamIndex: (int)audioStreamIndex
+- (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
+		      streamIndex: (int)audioStreamIndex
 {
   ao_initialize();
   int driver = ao_default_driver_id();
@@ -208,7 +208,7 @@
 		usleep((useconds_t)delay); //  + 50000);
 	      }
 	    
-	    [self decodeAudioPacket:&packet];
+	    [self decodePacket:&packet];
 	    [dict release];
 	  }
 	else
@@ -220,7 +220,7 @@
     }
 }
 
-- (void)decodeAudioPacket: (AVPacket *)packet
+- (void)decodePacket: (AVPacket *)packet
 {
   if (!_audioCodecCtx || !_swrCtx || !_aoDev)
     {

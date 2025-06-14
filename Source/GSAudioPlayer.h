@@ -71,9 +71,10 @@
   BOOL _paused;  
 }
 
-- (void) prepareAudioWithFormatContext: (AVFormatContext *)formatCtx
-			   streamIndex: (int)audioStreamIndex;
-- (void) decodeAudioPacket: (AVPacket *)packet;
+- (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
+		      streamIndex: (int)audioStreamIndex;
+
+- (void) decodePacket: (AVPacket *)packet;
 - (void) submitPacket: (AVPacket *)packet;
 - (void) startAudio;
 - (void) stopAudio;

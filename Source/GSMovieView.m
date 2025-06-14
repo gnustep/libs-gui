@@ -123,21 +123,23 @@ static NSNotificationCenter *nc = nil;
   self = [super initWithFrame: frame];
   if (self != nil)
     {
+      // Objects...
       _currentFrame = nil;
       _videoThread = nil;
       _feedThread = nil;
       _audioPlayer = [[GSAudioPlayer alloc] init];
       _videoPackets = [[NSMutableArray alloc] init];
 
-      // AV
+      // AV...
       _videoClock = 0;
       _videoCodecCtx = NULL;
       _formatCtx = NULL;
       _swsCtx = NULL;
       _stream = NULL;
       _lastPts = 0;
+      _fps = 0.0;
 
-      // Flags
+      // Flags...
       _running = NO;
       _started = NO;
       _paused = NO;
@@ -427,8 +429,8 @@ static NSNotificationCenter *nc = nil;
 	    }
 	  else
 	    {
-	      [self prepareVideoWithFormatContext: _formatCtx
-				      streamIndex: _videoStreamIndex];
+	      [self prepareWithFormatContext: _formatCtx
+				 streamIndex: _videoStreamIndex];
 	    }
 
 	  // Audio stream...
@@ -438,8 +440,8 @@ static NSNotificationCenter *nc = nil;
 	    }
 	  else
 	    {
-	      [_audioPlayer prepareAudioWithFormatContext: _formatCtx
-					      streamIndex: _audioStreamIndex];
+	      [_audioPlayer prepareWithFormatContext: _formatCtx
+					 streamIndex: _audioStreamIndex];
 	    }
 
 	  // Video and Audio stream not present...
@@ -478,7 +480,7 @@ static NSNotificationCenter *nc = nil;
 
 	  if (packet.stream_index == _videoStreamIndex)
 	    {
-	      [self submitVideoPacket: &packet];
+	      [self submitPacket: &packet];
 	    }
 
 	  if (packet.stream_index == _audioStreamIndex)
@@ -522,11 +524,14 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
-- (void)prepareVideoWithFormatContext: (AVFormatContext *)formatCtx streamIndex: (int)videoStreamIndex
+- (void)prepareWithFormatContext: (AVFormatContext *)formatCtx streamIndex: (int)videoStreamIndex
 {
+  AVStream *videoStream = formatCtx->streams[videoStreamIndex];
   AVCodecParameters *videoPar = formatCtx->streams[videoStreamIndex]->codecpar;
   const AVCodec *videoCodec = avcodec_find_decoder(videoPar->codec_id);
+  AVRational fr = videoStream->avg_frame_rate;
 
+  _fps = av_q2d(fr); 
   if (!videoCodec)
     {
       NSLog(@"[Error] Unsupported video codec. | Timestamp: %ld", av_gettime());
@@ -602,7 +607,7 @@ static NSNotificationCenter *nc = nil;
   _running = f;
 }
 
-- (void)submitVideoPacket: (AVPacket *)packet
+- (void)submitPacket: (AVPacket *)packet
 {
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
 
@@ -684,7 +689,7 @@ static NSNotificationCenter *nc = nil;
 		  }
 		
 		// Decode the packet, display it and play the sound...
-		[self decodeVideoPacket: &packet];
+		[self decodePacket: &packet];
 		RELEASE(dict);
 	      }
 	    else
@@ -738,7 +743,7 @@ static NSNotificationCenter *nc = nil;
   free(rgbData[0]);
 }
 
-- (void) decodeVideoPacket: (AVPacket *)packet
+- (void) decodePacket: (AVPacket *)packet
 {
   if (!_videoCodecCtx || !_swsCtx)
     {
