@@ -89,6 +89,7 @@ APPKIT_EXPORT_CLASS
 - (void) stopVideo;
 - (void) setPaused: (BOOL)f;
 - (BOOL) isPaused;
+- (CGFloat) frameRateForStream: (AVStream *)stream;
 
 // Main loop to process packets...
 - (void) renderFrame: (AVFrame *)videoFrame;

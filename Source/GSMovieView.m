@@ -191,6 +191,14 @@ static NSNotificationCenter *nc = nil;
 }
 
 // New methods...
+- (CGFloat) frameRateForStream: (AVStream *)stream
+{
+  if (stream->avg_frame_rate.num > 0 && stream->avg_frame_rate.den > 0)
+    return av_q2d(stream->avg_frame_rate);
+  else
+    return 1.0 / av_q2d(stream->time_base);
+}
+
 - (void) setPaused: (BOOL)f
 {
   _paused = f;
