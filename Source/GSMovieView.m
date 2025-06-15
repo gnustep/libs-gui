@@ -516,13 +516,14 @@ static NSNotificationCenter *nc = nil;
 
 - (void)prepareWithFormatContext: (AVFormatContext *)formatCtx streamIndex: (int)videoStreamIndex
 {
-  AVStream *videoStream = formatCtx->streams[videoStreamIndex];
-  AVCodecParameters *videoPar = videoStream->codecpar;
-  const AVCodec *videoCodec = avcodec_find_decoder(videoPar->codec_id);
-  AVRational fr = videoStream->avg_frame_rate;
+  AVCodecParameters *videoPar = NULL;
+  const AVCodec *videoCodec = NULL;
 
-  _stream = videoStream;
-  _fps = av_q2d(fr); 
+  _stream = formatCtx->streams[videoStreamIndex];
+  _fps = [self frameRateForStream: _stream]; 
+  videoPar = _stream->codecpar;
+  videoCodec = avcodec_find_decoder(videoPar->codec_id);
+
   if (!videoCodec)
     {
       NSLog(@"[Error] Unsupported video codec. | Timestamp: %ld", av_gettime());
