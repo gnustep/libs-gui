@@ -29,34 +29,38 @@
 
 #ifndef _GNUstep_H_NSDataLinkManager
 #define _GNUstep_H_NSDataLinkManager
-#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
+#import "AppKit/AppKitDefines.h"
+#import "AppKit/NSDataLink.h"
 
-@class NSString;
 @class NSEnumerator;
 @class NSMutableArray;
-@class NSDataLink;
-@class NSSelection;
 @class NSPasteboard;
+@class NSString;
+@class NSSelection;
+@class NSThread;
 @class NSWindow;
 
 APPKIT_EXPORT_CLASS
 @interface NSDataLinkManager : NSObject <NSCoding>
 {
   // Attributes
-  id                  _delegate;
+  id                   _delegate;
   NSString            *_filename;
   NSMutableArray      *_sourceLinks;
   NSMutableArray      *_destinationLinks;
-
+  NSDataLinkNumber     _nextLinkNumber;
+  NSThread            *_monitorThread;
+  int                  _inotifyFD;
+  NSMutableDictionary *_watchDescriptors;
+  
   struct __dlmFlags {
     unsigned areLinkOutlinesVisible:1;
     unsigned delegateVerifiesLinks:1;
     unsigned interactsWithUser:1;
     unsigned isEdited:1;
   } _flags;
-
 }
 
 //

@@ -27,16 +27,28 @@
 */
 
 #include "config.h"
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSArchiver.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSValue.h>
 
 #import "AppKit/NSDataLinkManager.h"
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSPasteboard.h"
 
+#import <sys/inotify.h>
+#import <unistd.h>
+#import <fcntl.h>
+
 #import "GSFastEnumeration.h"
+
+@interface NSDataLinkManager (Private)
+- (void) stopMonitoring;
+- (void) startMonitoring;
+- (void) monitorLoop;
+@end
 
 // Private setters/getters for links...
 @interface NSDataLink (Private)
@@ -112,23 +124,6 @@
 //
 // Initializing and Freeing a Link Manager
 //
-- (id)initWithDelegate: (id)anObject
-{
-  self = [super init];
-
-  if (self != nil)
-    {
-      _delegate = anObject; // don't retain...
-      _filename = nil;
-      _flags.delegateVerifiesLinks = NO;
-      _flags.interactsWithUser = NO;
-      _flags.isEdited = NO;
-      _flags.areLinkOutlinesVisible = NO;
-    }
-
-  return self;
-}
-
 - (id) initWithDelegate: (id)anObject
 	       fromFile: (NSString *)path
 {
@@ -142,9 +137,96 @@
       _flags.interactsWithUser = NO;
       _flags.isEdited = NO;
       _flags.areLinkOutlinesVisible = NO;
+
+      _sourceLinks = [[NSMutableArray alloc] init];
+      _destinationLinks = [[NSMutableArray alloc] init];
+      _watchDescriptors = [[NSMutableDictionary alloc] init];
+      _nextLinkNumber = 1;
+      _inotifyFD = inotify_init();
+      if (_inotifyFD < 0)
+	{
+	  NSLog(@"Failed to initialize inotify");
+	}
+      [self startMonitoring];
     }
 
   return self;
+}
+
+- (id)initWithDelegate: (id)anObject
+{
+  return [self initWithDelegate: anObject fromFile: nil];
+}
+
+- (void) dealloc
+{
+  RELEASE(_sourceLinks);
+  RELEASE(_destinationLinks);
+  RELEASE(_watchDescriptors);
+
+  [self stopMonitoring];
+  [super dealloc];
+}
+
+//
+// Monitoring methods
+//
+- (void)stopMonitoring
+{
+  NSArray *allKeys = [_watchDescriptors allKeys];
+  NSEnumerator *en = [allKeys objectEnumerator];
+  NSNumber *key = nil;
+  
+  while ((key = [en nextObject]) != nil)
+    {
+      inotify_rm_watch(_inotifyFD, [key intValue]);
+    }
+
+  [_watchDescriptors removeAllObjects];
+
+  if (_inotifyFD >= 0)
+    {
+      close(_inotifyFD);
+      _inotifyFD = -1;
+    }
+
+  if (_monitorThread && [_monitorThread isExecuting])
+    {
+      [_monitorThread cancel];  // thread must check isCancelled
+    }
+}
+
+- (void)startMonitoring
+{
+  _monitorThread = [[NSThread alloc] initWithTarget:self selector:@selector(monitorLoop) object:nil];
+  [_monitorThread start];
+}
+
+- (void)monitorLoop
+{
+  char buffer[1024];
+  while (![[NSThread currentThread] isCancelled])
+    {
+      ssize_t length = read(_inotifyFD, buffer, sizeof(buffer));
+      if (length < 0)
+	{
+	  continue;
+	}
+      
+      ssize_t i = 0;
+      while (i < length)
+        {
+          struct inotify_event *event = (struct inotify_event *)&buffer[i];
+          NSNumber *key = [NSNumber numberWithInt:event->wd];
+          NSDataLink *link = [_watchDescriptors objectForKey:key];
+          if (link != nil)
+            {
+              [link noteSourceEdited];
+              NSLog(@"Source file changed for link #%d", [link linkNumber]);
+            }
+          i += sizeof(struct inotify_event) + event->len;
+        }
+    }
 }
 
 //
