@@ -658,6 +658,11 @@ double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
     }
 }
 
+- (NSInteger) integerValue
+{
+  return (NSInteger)_value;
+}
+
 - (id) objectValue
 {
   return [NSNumber numberWithDouble: _value];

@@ -101,6 +101,7 @@
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSMenuItemCell.h>
+#import <AppKit/NSMenuToolbarItem.h>
 #import <AppKit/NSMenuView.h>
 #import <AppKit/NSNibLoading.h>
 #import <AppKit/NSOpenPanel.h>
@@ -167,6 +168,7 @@
 #import <AppKit/NSDockTile.h>
 #import <AppKit/NSDocument.h>
 #import <AppKit/NSDocumentController.h>
+#import <AppKit/NSDictionaryController.h>
 #import <AppKit/NSDrawer.h>
 #import <AppKit/NSFileWrapperExtensions.h>
 #import <AppKit/NSFontAssetRequest.h>
@@ -242,10 +244,13 @@
 #import <AppKit/NSSwitch.h>
 #import <AppKit/NSSplitViewController.h>
 #import <AppKit/NSSplitViewItem.h>
+#import <AppKit/NSTableCellView.h>
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSTableHeaderCell.h>
 #import <AppKit/NSTableHeaderView.h>
+#import <AppKit/NSTableRowView.h>
 #import <AppKit/NSTableView.h>
+#import <AppKit/NSTableViewRowAction.h>
 #import <AppKit/NSTabView.h>
 #import <AppKit/NSTabViewController.h>
 #import <AppKit/NSTabViewItem.h>

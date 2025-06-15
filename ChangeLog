@@ -1,3 +1,197 @@
+2025-04-30 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSColorSpace.h: Add NSColorSpaceModel* enumerated values.
+
+2025-02-11 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* ANNOUNCE:
+	* BUGS:
+	* INSTALL:
+	* NEWS:
+	* Source/DocMakefile:
+	* Version:
+	Updates for 0.32.0 release
+
+2024-11-08 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSBrowser.h: Add dictionary to hold relationships.
+	* Source/NSBrowser.m: Add logic in methods to support bindings,
+	expose bindings in +initialize.
+	* Source/NSTextFieldCell.m: Minor fix to NSTextField for displaying
+	binding values.
+
+2024-10-31 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: fix -laterDate: conditionals to be true
+	only when file date has been updated (returned value != receiver).
+
+2024-10-29 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSLayoutAnchor.h: Add missing include that is required after a change in base.
+	* Source/NSTableView.m: Forward declare new methods.
+
+2024-08-29 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/NSBundleAdditions.m: Quick fix for .gorm loading
+	not returning top level objects.
+
+2024-08-18 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSTreeController.h: Update header
+	* Headers/AppKit/NSTreeNode.h: Update header
+	* Source/GNUmakefile: Add new class
+	* Source/GSBindingHelpers.h: Add NSString category
+	* Source/GSControllerTreeProxy.[hm]: Proxy class
+	for NSTreeController, a subclass of NSTreeNode.
+	* Source/GSThemeDrawing.m: Optimize code a bit and
+	add changes for bindings.
+	* Source/GSXib5KeyedUnarchiver.m: Add support for new keys
+	on NSTreeController.
+	* Source/NSKeyValueBinding.m: Add new methods to
+	GSKeyValueBinding
+	* Source/NSOutlineView.m: Add support for bindings.
+	* Source/NSTreeController.m: Implement new methods.
+	* Source/NSTreeNode.m: Implement new methods
+
+2024-07-25 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSBrowser.h: Add declarations for
+	10.6 delegate methods for item-based browsers.
+	* Source/NSBrowser.m: Add support for 10.6 item-based
+	delegate methods.
+
+2024-06-28 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/AppKit.h: Add NSMenuToolbarItem.h
+	* Headers/AppKit/NSMenuToolbarItem.h: Declarations
+	for NSMenuToolbarItem.
+	* Images/GNUmakefile: Add new image
+	* Images/nsmapping.strings: Add image mapping
+	* MISSING: Remove this class from the list
+	* Source/GNUmakefile: Add class to build
+	* Source/NSMenuToolbarItem.m: Implementation of
+	NSMenuToolbarItem.
+
+2024-06-07 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h: Add new methods
+	for rendering view-based outline/table views.
+	* Headers/AppKit/NSTableRowView.h: Add implementation
+	* Headers/AppKit/NSTableView.h: Add references to
+	NSTableRowView.h
+	* Source/GSThemeDrawing.m: Factor out NSTableView and
+	NSOutlineView rendering so that GSThemeDrawing methods
+	are as minimal as possible.
+	* Source/NSOutlineView.m: Refactor to use new methods
+	to generate NSTableRowView when it is view-based.
+	* Source/NSTableRowView.m: Add implementation of
+	NSTableRowView implementation.
+	* Source/NSTableView.m: Update to use NSTableRowView
+	when it is view-based.
+
+2024-06-05 Richard Frith-Macdonald <rfm@gnu.org>
+
+        * ChangeLog: Update for new release
+	* ANNOUNCE:
+	* NEWS:
+	* Documentation/news.texi: Update of release notes for 0.31.1.
+	* Version: bump to 0.31.1
+
+2024-06-03 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSMenuitem.m:
+	Fix bug in decoding of archived menu item modifier mask.
+
+2024-05-30 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSDisplayServer.m:
+	* Source/NSGraphicsContext.m:
+	* Source/NSWorkspace.m:
+	Avoid using old gnustep_global_lock (removed from base)
+
+2024-05-26 Fred Kiefer <FredKiefer@gmx.de>
+
+	* ChangeLog: Update for new release
+	* ANNOUNCE:
+	* NEWS:
+	* Documentation/news.texi: Update of release notes for 0.31.0.
+	* Version: bump to 0.31.0
+
+2024-05-13  Adam Fox <adam.fox@keysight.com>
+
+	* Source/NSParagraphStyle.m (-init): Apply the old default
+	tab stop behavior from +defaultParagraphStyle to -init,
+	and therefore also to +defaultParagraphStyle.
+
+2024-03-18 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m: Add support for NSFilenamenPboardType.
+	Change by OnFlApp (https://githup.com/onflapp)
+
+2023-12-28 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Documentation/manual/AppKit.texi: Move table of contents outside
+	of title page. This fixes building the documentation with newer texinfo.
+
+2023-12-27 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSView.h: Add ivar for NSShadow, update
+	version of class for NSArchiver so this can be properly
+	read and saved in .gorm files.
+	* Source/GSXib5KeyedUnarchiver.m: Add code to handle XIB
+	keys for NSShadow.
+	* Source/NSShadow.m: Minor cleanup to use ASSIGN macro
+	in -initWithCoder:
+	* Source/NSView.m: Add code to -encodeWithCoder: and
+	-initWithCoder: to properly handle NSViewShadow.
+
+2023-11-27 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSGormLoading.m
+	* Source/GSNibLoading.m
+	* Source/GSXibLoading.m: Remove calls to respondsToSelector:
+	for awakeFromNib.  This method is now implemented on a
+	category on NSObject called NSNibAwaking.  Also add a
+	call to prepareForInterfaceBuilder when we are in Gorm/IB.
+
+2023-11-25 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Documentation/manual/applicationmakefiles.texi: Update
+	documentation.
+	* Documentation/manual/gnustepapplication.texi: Update
+	documentation.  Update installation path default.
+	* Documentation/manual/interfacefiles.texi: Update
+	documentation.  Add information about model files (xib,
+	nib, etc).
+	* Documentation/manual/intro.texi: Update
+	documentation.  Add information about themes.
+
+2023-11-25 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSNibLoading.h: Add declaration for
+	-prepareForInterfaceBuilder to NSNibLoading category.
+	* Source/NSNib.m: Add new empty method implementation for
+	-awakeFromNib and -prepareForInterfaceBuilder to NSNibLoading
+	category on NSObject.
+	* Source/NSView.m: Remove empty implementation of awakeFromNib.
+
+2023-09-05 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/DocMakefile: Fix issue #198 ... headers had added a new
+	APPKIT_EXPORT_CLASS value added without telling autogsdoc how to
+	handle it, breaking parsing.  Mapped it to an empty string.
+
+2023-08-30 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Source/GSXib5KeyedUnarchive.m: Fix for issue#192.  Added code to
+	-decodeObjectForXib:forClassName:withID: to decode toolTip using
+	alternative format described in the issue.
+
+2023-08-13 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSwitch.m (-drawRect:): Correct drawing as suggested by
+	Austin Clow (dr_clow@me.com).
+
 2023-02-12 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Source/NSCollectionView.m: Implementation of methods

@@ -191,7 +191,9 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   NSButton *button;
 
   /* Activate debugging of allocation. */
+#ifndef	NDEBUG
   GSDebugAllocationActive (YES);
+#endif
 
   hbox = [GSHbox new];
   [hbox setDefaultMinXMargin: 5];
@@ -359,6 +361,7 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
 
 - (void) update: (id)sender
 {
+#ifndef NDEBUG
   Class *classList = GSDebugAllocationClassList ();
   Class *pointer;
   GSMemoryPanelEntry *entry;
@@ -388,6 +391,7 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   NSZoneFree(NSDefaultMallocZone(), classList);
 
   [array sortUsingSelector: orderingBy];
+#endif
 
   [table reloadData];
 }

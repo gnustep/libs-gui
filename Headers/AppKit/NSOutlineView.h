@@ -44,7 +44,6 @@ APPKIT_EXPORT_CLASS
   NSMapTable *_itemDict;
   NSMutableArray *_items;
   NSMutableArray *_expandedItems;
-  NSMutableArray *_selectedItems; /* No longer in use */
   NSMapTable *_levelOfItems;
   BOOL _autoResizesOutlineColumn;
   BOOL _indentationMarkerFollowsCell;
@@ -295,6 +294,23 @@ willDisplayOutlineCell: (id)cell
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 - (void) outlineView: (NSOutlineView *)outlineView
   didClickTableColumn: (NSTableColumn *)aTableColumn;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (NSView *) outlineView: (NSOutlineView *)outlineView
+      viewForTableColumn: (NSTableColumn *)aTableColumn
+                    item: (id)item;
+
+- (NSTableRowView *) outlineView: (NSOutlineView *)outlineView
+                  rowViewForItem: (id)item;
+
+- (void) outlineView: (NSOutlineView *)outlineView
+       didAddRowView: (NSTableRowView *)rowView
+              forRow: (NSInteger)rowIndex;
+
+- (void) outlineView: (NSOutlineView *)outlineView
+    didRemoveRowView: (NSTableRowView *)rowView
+              forRow: (NSInteger)rowIndex;
 #endif
 
 @end

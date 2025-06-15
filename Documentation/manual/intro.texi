@@ -20,7 +20,7 @@ workspace support classes such as data links, open/save panels,
 context-dependent help, spell checking.
 
 It provides functionality that aims to implement the @samp{AppKit}
-portion of the OpenStep standard.  However the implementation has
+portion of the OpenStep / Cocoa API.  However the implementation has
 been written to take advantage of GNUstep enhancements wherever possible.
 
 The GNUstep GUI Library is divided into a front and back-end.  The
@@ -33,6 +33,40 @@ Much work will be saved by this clean separation between front and
 back-end, because it allows different platforms to share the large
 amount of front-end code. Documentation for how the individual backends
 work is coverered in a separate document.
+
+The backend is divided into two parts: graphical and event handling. The
+graphical portion renders the widgets based on code in the AppKit/GUI
+framework.  The events portion processes the events from mouse and
+keyboard input.  Both portions are operating system / environment
+specific.
+
+The backends supported by GNUstep currently are:
+@table @command
+
+@item Cairo
+The Cairo backend uses the more postscript like rendering of the cairo
+graphics library (available from opendesktop.org) to render.
+
+@item Win32 / GDI
+This backend uses GDI to render the widgets.
+
+@item Wayland
+This backend uses the Wayland display technology to render.  This is
+an expermental backend at present.
+
+@item Art
+The art backend uses libart (the LGPL version) to render the widgets.
+This backend is deprecated.
+
+@item Xlib
+The Xlib backend is the bare X11 backend that uses primitive calls to
+render the objects.  This backend is deprecated.
+
+@end table
+
+In general, GNUstep GUI can theoretically be used on any system on which
+you can build a backend.  Currently, you can build on most UNIX systems
+(not Darwin, currently) as well as Windows under MSYS2 and MSVC.
 
 @section Implementation Details
 
@@ -74,6 +108,53 @@ protocol this means altering the XdndAware property of the X window).
 You will notice that these methods use the integer window number rather
 than the NSWindow object - this is for the convenience of the backend
 library which should (eventually) use window numbers for everything
+
+@subsection Theming
+
+GNUstep implements Theming via the GSTheme class.  This class can be subclassed
+to override the existing drawing being done by the widgets.  Each widget has
+a category in this class in which the drawing for that widget is done. There are
+two types of theme: code and non-code...
+
+@table @command
+
+@item Code
+Code themes, for example, the WinUXTheme, use code to override specific things in
+the GSTheme class so that the theme can display using the native widgets.  These
+can be combined with custom widgets as well as color and image settings.
+
+@item Non-code
+Non-code themes use .plist files (which can also be used in code based themes) to
+override standard images and color settings in GNUstep.
+
+@end table
+
+Theming is extremely flexible.  GNUstep can be made to blend into most environments.
+The application to modify themes is called Thematic.
+
+You can set the theme using the follow command:
+
+@example
+defaults write NSGlobalDomain GSTheme THEMENAME
+@end example
+
+Where THEMENAME is the name of the theme installed.  The locations for themes are:
+
+@table @samp
+
+@item PREFIX/System/Library/Themes
+System themes
+
+@item PREFIX/Local/Library/Themes
+Locally installed themes
+
+@item ~/GNUstep/Library/Themes
+User installed themes
+
+@end table
+
+Where PREFIX is whatever prefix that was specified when building GNUstep. Usually
+this is /usr/GNUstep, /usr/local/GNUstep, or /.
 
 @subsection NSWorkspace
 

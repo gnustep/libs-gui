@@ -34,9 +34,12 @@
 #define _GNUstep_H_NSView
 #import <AppKit/AppKitDefines.h>
 
+#import <AppKit/NSAppearance.h>
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSResponder.h>
+#import <AppKit/NSUserInterfaceItemIdentification.h>
 #import <AppKit/NSUserInterfaceLayout.h>
+#import <AppKit/NSLayoutConstraint.h>
 
 @class NSArray;
 @class NSAttributedString;
@@ -53,6 +56,7 @@
 @class NSScrollView;
 @class NSView;
 @class NSWindow;
+@class NSShadow;
 
 typedef NSInteger NSTrackingRectTag;
 typedef NSInteger NSToolTipTag;
@@ -123,8 +127,11 @@ typedef enum _NSFocusRingType {
   NSFocusRingTypeExterior = 2
 } NSFocusRingType;
 
+extern const CGFloat NSViewNoInstrinsicMetric;
+extern const CGFloat NSViewNoIntrinsicMetric;
+
 APPKIT_EXPORT_CLASS
-@interface NSView : NSResponder
+@interface NSView : NSResponder <NSAppearanceCustomization, NSUserInterfaceItemIdentification>
 {
   NSRect _frame;
   NSRect _bounds;
@@ -150,7 +157,7 @@ PACKAGE_SCOPE
   void *_previousKeyView;
   CGFloat _alphaValue;
 
-@public
+PACKAGE_SCOPE
   /*
    * Flags for internal use by NSView and it's subclasses.
    */
@@ -169,6 +176,7 @@ PACKAGE_SCOPE
                                         /* backing flush when drawn     */
   } _rFlags;
 
+@protected
   BOOL _is_rotated_from_base;
   BOOL _is_rotated_or_scaled_from_base;
   BOOL _post_frame_changes;
@@ -182,10 +190,17 @@ PACKAGE_SCOPE
   BOOL _needsLayout;
   BOOL _needsUpdateConstraints;
   BOOL _translatesAutoresizingMaskIntoConstraints;
+  float _contentCompressionResistancePriority;
+  GSIntrinsicContentSizePriority _huggingPriorities;
+  GSIntrinsicContentSizePriority _compressionPriorities;
 
   NSUInteger _autoresizingMask;
   NSFocusRingType _focusRingType;
   NSRect _autoresizingFrameError;
+  NSShadow *_shadow;
+  NSAppearance* _appearance;
+  NSUserInterfaceItemIdentifier _identifier;
+
 }
 
 /*
@@ -655,8 +670,8 @@ PACKAGE_SCOPE
 #if GS_HAS_DECLARED_PROPERTIES
 @property (nonatomic) BOOL needsLayout;
 #else
--(BOOL) needsLayout;
--(void) setNeedsLayout: (BOOL)needsLayout;
+- (BOOL) needsLayout;
+- (void) setNeedsLayout: (BOOL)needsLayout;
 #endif
 
 #if GS_HAS_DECLARED_PROPERTIES
@@ -672,10 +687,75 @@ PACKAGE_SCOPE
 - (BOOL) translatesAutoresizingMaskIntoConstraints;
 - (void) setTranslatesAutoresizingMaskIntoConstraints: (BOOL)translatesAutoresizingMaskIntoConstraints;
 #endif
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property float contentCompressionResistancePriority;
+#else
+- (BOOL) contentCompressionResistancePriority;
+- (void) setContentCompressionResistancePriority: (NSLayoutPriority)priority;
+#endif
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property (readonly) NSSize intrinsicContentSize;
+#else
+- (BOOL) intrinsicContentSize;
+#endif
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property (readonly) CGFloat baselineOffsetFromBottom;
+#else
+- (CGFloat) baselineOffsetFromBottom;
+#endif
+
+#if GS_HAS_DECLARED_PROPERTIES
+@property (readonly) CGFloat firstBaselineOffsetFromTop;
+#else
+- (CGFloat) firstBaselineOffsetFromTop;
+#endif
+
 #endif
 
 @end
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+@interface NSView (NSConstraintBasedLayoutCoreMethods)
+
+- (void) updateConstraints;
+
+- (void) updateConstraintsForSubtreeIfNeeded;
+
+- (NSLayoutPriority) contentHuggingPriorityForOrientation: (NSLayoutConstraintOrientation)orientation;
+
+- (void) setContentHuggingPriority: (NSLayoutPriority)priority forOrientation: (NSLayoutConstraintOrientation)orientation;
+
+- (NSLayoutPriority) contentCompressionResistancePriorityForOrientation: (NSLayoutConstraintOrientation)orientation;
+
+- (void)setContentCompressionResistancePriority: (NSLayoutPriority)priority forOrientation: (NSLayoutConstraintOrientation)orientation;
+
+@end
+
+@interface NSView (NSConstraintBasedLayoutInstallingConstraints)
+
+- (void) addConstraint: (NSLayoutConstraint *)constraint;
+
+- (void) addConstraints: (NSArray*)constraints;
+
+@end
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+/*
+ * Core Animation support methods.  More methods will be added here as more are implemented.
+ */
+
+@interface NSView (CoreAnimationSupport)
+
+- (NSShadow *) shadow;
+
+- (void) setShadow: (NSShadow *)shadow;
+
+@end
+#endif
 
 @class NSAffineTransform;
 

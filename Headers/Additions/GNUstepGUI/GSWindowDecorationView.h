@@ -67,6 +67,7 @@ APPKIT_EXPORT_CLASS
   BOOL hasMenu;
   BOOL hasToolbar;
 }
+
 + (id<GSWindowDecorator>) windowDecorator;
 
 - (id) initWithFrame: (NSRect)frame window: (NSWindow *)w;

@@ -50,7 +50,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint;
 
 @implementation NSGradient
 
-- (NSColorSpace *) colorSpace; 
+- (NSColorSpace *) colorSpace
 {
   return _colorSpace;
 }
@@ -133,7 +133,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
     *location = _locations[index];
 }
 
-- (id) initWithColors: (NSArray *)colorArray;
+- (id) initWithColors: (NSArray *)colorArray
 {
   return [self initWithColors: colorArray 
                atLocations: NULL
@@ -142,7 +142,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
 
 - (id) initWithColors: (NSArray *)colorArray
           atLocations: (const CGFloat *)locations
-           colorSpace: (NSColorSpace *)colorSpace;
+           colorSpace: (NSColorSpace *)colorSpace
 {
   if ((self = [super init]))
     {

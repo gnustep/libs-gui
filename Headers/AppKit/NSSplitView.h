@@ -109,7 +109,13 @@ APPKIT_EXPORT_CLASS
 @end
 #endif 
 
+@protocol NSSplitViewDelegate <NSObject>
+#if GS_PROTOCOLS_HAVE_OPTIONAL
+@optional
+#else
+@end
 @interface NSObject (NSSplitViewDelegate)
+#endif
 - (void) splitView: (NSSplitView *)sender 
 resizeSubviewsWithOldSize: (NSSize)oldSize;
 

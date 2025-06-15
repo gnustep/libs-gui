@@ -1,9 +1,10 @@
 /* This tool opens the appropriate application from the command line
    based on what type of file is being accessed. 
 
-   Copyright (C) 2001 Free Software Foundation, Inc.
+   Copyright (C) 2001-2025 Software Foundation, Inc.
 
-   Written by:  Gregory Casamento <greg_casamento@yahoo.com>
+   Written by:  Gregory Casamento <greg.casamento@gmail.com>
+                Riccardo Mottola <rm@gnu.org>
    Created: November 2001
 
    This file is part of the GNUstep Project
@@ -45,11 +46,12 @@
 static NSString*
 absolutePath(NSFileManager *fm, NSString *path)
 {
+  if (nil == path || [path length] == 0)
+    return path;
+
+  if (![path isAbsolutePath])
+    path = [[fm currentDirectoryPath] stringByAppendingPathComponent: path] ;
   path = [path stringByStandardizingPath];
-  if ([path isAbsolutePath] == NO)
-    {
-      path = [[fm currentDirectoryPath] stringByAppendingPathComponent: path];
-    }
   return path;
 }
 
@@ -100,7 +102,8 @@ main(int argc, char** argv, char **env_c)
   
   if (filetoopen)
     {
-      exists = [fm fileExistsAtPath: arg isDirectory: &isDir];
+      filetoopen = absolutePath(fm, filetoopen);
+      exists = [fm fileExistsAtPath: filetoopen isDirectory: &isDir];
       if (exists == NO)
 	{
 	  if ([filetoopen hasPrefix: @"/"] == NO
@@ -111,7 +114,6 @@ main(int argc, char** argv, char **env_c)
 	}
       else
 	{
-	  filetoopen = absolutePath(fm, filetoopen);
 	  [workspace openFile: filetoopen
 	      withApplication: application];
 	}

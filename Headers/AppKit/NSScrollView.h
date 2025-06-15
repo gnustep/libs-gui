@@ -33,6 +33,7 @@
 #import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSView.h>
+#import <AppKit/NSScroller.h>
 
 enum
 {
@@ -76,6 +77,8 @@ APPKIT_EXPORT_CLASS
   BOOL _autohidesScrollers;
   NSScrollElasticity _horizScrollElasticity;
   NSScrollElasticity _vertScrollElasticity;
+  NSScrollerStyle _scrollerStyle;
+  NSScrollerKnobStyle _scrollerKnobStyle;
 }
 
 /* Calculating layout */
@@ -187,6 +190,19 @@ APPKIT_EXPORT_CLASS
 
 /* Arranging components */
 - (void)tile;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+/** The scroller style. By default, NSScrollerStyleDefault. */
+- (NSScrollerStyle)scrollerStyle;
+/** Sets the scroller style. In the default theme, this must be NSScrollerStyleDefault. */
+- (void)setScrollerStyle:(NSScrollerStyle)style;
+/** The scroller knob style. By default, NSScrollerStyleDefault. */
+- (NSScrollerKnobStyle)scrollerKnobStyle;
+/** Sets the scroller knob style. In the default theme, this must be NSScrollerKnobStyleDefault. */
+- (void)setScrollerKnobStyle:(NSScrollerKnobStyle)style;
+/** Shows the scrollers if they're overlay scrollers. */
+- (void)flashScrollers;
+#endif
 
 @end
 

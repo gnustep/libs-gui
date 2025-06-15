@@ -31,11 +31,13 @@
 #import "AppKit/NSAnimation.h"
 #import "AppKit/NSLayoutConstraint.h"
 #import "NSViewPrivate.h"
+#import "NSWindowPrivate.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSApplication.h"
 #import "NSAutoresizingMaskLayoutConstraint.h" 
 #import "GSFastEnumeration.h"
 #import "GSAutoLayoutVFLParser.h"
+#import "GSAutoLayoutEngine.h"
 
 static NSMutableArray *activeConstraints = nil;
 // static NSNotificationCenter *nc = nil;
@@ -259,7 +261,7 @@ static NSMutableArray *activeConstraints = nil;
                     attribute: (NSLayoutAttribute)secondAttribute 
                    multiplier: (CGFloat)multiplier
                      constant: (CGFloat)constant
-                     priority: (CGFloat)priority;
+                     priority: (CGFloat)priority
 {
   self = [super init];
   if (self != nil)
@@ -616,52 +618,24 @@ static NSMutableArray *activeConstraints = nil;
 
 @end
 
-@implementation NSView (NSConstraintBasedLayoutCoreMethods)
+@implementation NSWindow (NSConstraintBasedLayoutCoreMethods)
 
-- (void) updateConstraintsForSubtreeIfNeeded
+- (void) updateConstraintsIfNeeded
 {
-  NSArray *subviews = [self subviews];
-  FOR_IN (NSView *, subview, subviews)
-    [subview updateConstraintsForSubtreeIfNeeded];
-  END_FOR_IN (subviews);
-
-  if ([self needsUpdateConstraints])
-    {
-      [self updateConstraints];
-    }
+  [[self contentView] updateConstraintsForSubtreeIfNeeded];
 }
 
-- (void) updateConstraints
+- (void) layoutIfNeeded
 {
-  if ([self translatesAutoresizingMaskIntoConstraints] &&
-      [self superview] != nil)
-    {
-      NSArray *autoresizingConstraints = [NSAutoresizingMaskLayoutConstraint
-          constraintsWithAutoresizingMask: [self autoresizingMask]
-                                  subitem: self
-                                    frame: [self frame]
-                                superitem: [self superview]
-                                   bounds: [[self superview] bounds]];
-      [self addConstraints: autoresizingConstraints];
-    }
-
-  [self _setNeedsUpdateConstraints: NO];
+  [self updateConstraintsIfNeeded];
+  [[self contentView] _layoutViewAndSubViews];
 }
 
-@end
-
-@implementation NSView (NSConstraintBasedLayoutInstallingConstraints)
-
-- (void) addConstraint: (NSLayoutConstraint *)constraint
+- (void) _bootstrapAutoLayout
 {
-  // FIXME: Implement adding constraint to layout engine
+  GSAutoLayoutEngine *layoutEngine = [[GSAutoLayoutEngine alloc] init];
+  [self _setLayoutEngine: layoutEngine];
+  RELEASE(layoutEngine);
 }
 
-- (void) addConstraints: (NSArray*)constraints
-{
-  FOR_IN (NSLayoutConstraint*, constraint, constraints)
-    [self addConstraint: constraint];
-  END_FOR_IN (constraints);
-}
-
-@end
+@end 

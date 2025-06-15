@@ -176,7 +176,7 @@
   return self;
 }
 	
-- (void) dealloc;
+- (void) dealloc
 {
   RELEASE(_attributes);
   [super dealloc];

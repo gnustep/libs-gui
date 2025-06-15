@@ -65,6 +65,7 @@
 @class NSViewController;
 
 @class GSWindowDecorationView;
+@class GSAutoLayoutEngine;
 
 /*
  * Window levels are taken from MacOS-X
@@ -89,10 +90,18 @@ enum {
 };
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_9, GS_API_LATEST)
-enum {
-  NSModalResponseOK = 1,
-  NSModalResponseCancel = 0
-};
+  typedef NSInteger NSModalResponse;
+  enum {
+    NSModalResponseOK = 1,
+    NSModalResponseCancel = 0,
+    NSModalResponseStop = -1000,
+    NSModalResponseAbort = -1001,
+    NSModalResponseContinue = -1002,
+    NSAlertFirstButtonReturn = 1000,
+    NSAlertSecondButtonReturn = 1001,
+    NSAlertThirdButtonReturn = 1002,
+  };
+  DEFINE_BLOCK_TYPE(GSNSWindowDidEndSheetCallbackBlock, void, NSModalResponse returnCode);
 #endif
 
 enum {
@@ -240,6 +249,7 @@ APPKIT_EXPORT_CLASS
   id            _firstResponder;
   id            _futureFirstResponder;
   NSView        *_initialFirstResponder;
+  GSAutoLayoutEngine *_layoutEngine;
 PACKAGE_SCOPE
   id            _delegate;
 @protected
@@ -860,6 +870,9 @@ PACKAGE_SCOPE
 #else
 - (NSWindow *) sheetParent;
 #endif
+
+- (void)beginSheet:(NSWindow *)sheet
+ completionHandler:(GSNSWindowDidEndSheetCallbackBlock)handler;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)

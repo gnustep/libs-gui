@@ -73,6 +73,11 @@
 #import "AppKit/NSTableView.h"
 #import "GSBindingHelpers.h"
 
+@interface NSTableView (__NSTableColumnPrivate__)
+- (void) _registerPrototypeViews: (NSArray *)prototypeViews;
+@end
+
+
 /**
   <p>
   NSTableColumn objects represent columns in NSTableViews.  
@@ -89,9 +94,13 @@
 {
   if (self == [NSTableColumn class])
     {
-      [self setVersion: 3];
+      [self setVersion: 4];
       [self exposeBinding: NSValueBinding];
       [self exposeBinding: NSEnabledBinding];
+      [self exposeBinding: NSEditableBinding];
+      [self exposeBinding: NSFontBinding];
+      [self exposeBinding: NSFontNameBinding];
+      [self exposeBinding: NSFontSizeBinding];
     }
 }
 
@@ -127,8 +136,9 @@
   _headerToolTip = nil;
 
   _sortDescriptorPrototype = nil;
-
-  ASSIGN (_identifier, anObject);
+  _prototypeCellViews = nil;
+  
+  ASSIGN (_identifier, anObject);  
   return self;
 }
 
@@ -141,6 +151,7 @@
   RELEASE(_headerToolTip);
   RELEASE(_dataCell);
   RELEASE(_sortDescriptorPrototype);
+  RELEASE(_prototypeCellViews);
   TEST_RELEASE(_identifier);
   [super dealloc];
 }
@@ -491,6 +502,7 @@ to YES. */
       [aCoder encodeObject: _headerToolTip forKey: @"NSHeaderToolTip"];
       [aCoder encodeBool: _is_hidden forKey: @"NSHidden"];
       [aCoder encodeObject: _tableView forKey: @"NSTableView"];
+      [aCoder encodeObject: _prototypeCellViews forKey: @"NSPrototypeCellViews"];
     }
   else
     {
@@ -506,6 +518,8 @@ to YES. */
       [aCoder encodeObject: _dataCell];
 
       [aCoder encodeObject: _sortDescriptorPrototype];
+      [aCoder encodeObject: _tableView];
+      [aCoder encodeObject: _prototypeCellViews];
     }
 }
 
@@ -572,6 +586,11 @@ to YES. */
         {
           [self setTableView: [aDecoder decodeObjectForKey: @"NSTableView"]];
         }
+      if ([aDecoder containsValueForKey: @"NSPrototypeCellViews"])
+	{
+	  ASSIGN(_prototypeCellViews, [aDecoder decodeObjectForKey: @"NSPrototypeCellViews"]);
+	  [_tableView _registerPrototypeViews: _prototypeCellViews];
+	}
     }
   else
     {
@@ -597,6 +616,13 @@ to YES. */
             {
               _sortDescriptorPrototype = RETAIN([aDecoder decodeObject]);
             }
+
+	  if (version >= 4)
+	    {
+	      _tableView = [aDecoder decodeObject]; // not retained, tableView retains us...
+	      _prototypeCellViews = RETAIN([aDecoder decodeObject]);
+	      [_tableView _registerPrototypeViews: _prototypeCellViews];
+	    }
         }
       else
         {
@@ -613,6 +639,104 @@ to YES. */
   return self;
 }
 
+- (NSArray *) _prototypeCellViews
+{
+  return _prototypeCellViews;
+}
+
+- (void) setTitle: (NSString *)title
+{
+  [_headerCell setStringValue: title];
+}
+
+- (NSString *) title
+{
+  return [_headerCell stringValue];
+}
+
+- (NSString *) _keyPathForValueBinding
+{
+  NSString *keyPath = nil;
+  NSDictionary *info = [GSKeyValueBinding infoForBinding: NSValueBinding
+					       forObject: self];
+  if (info != nil)
+    {
+      NSString *ikp = [info objectForKey: NSObservedKeyPathKey];
+      NSUInteger location = [ikp rangeOfString: @"."].location;
+
+      keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
+    }
+
+  return keyPath;
+}
+
+- (void) _applyBindingsToCell: (NSCell *)cell
+			atRow: (NSInteger)index
+{
+  GSKeyValueBinding *theBinding = nil;
+  NSFont *font = nil;
+  
+  [cell setEditable: _is_editable];
+  theBinding = [GSKeyValueBinding getBinding: NSEnabledBinding
+				   forObject: self];
+  if (theBinding != nil)
+    {
+      id result = nil;
+      BOOL flag = NO;
+      
+      result = [(NSArray *)[theBinding destinationValue]
+		   objectAtIndex: index];
+      flag = [result boolValue];
+      [cell setEnabled: flag];
+    }
+
+  /* Font bindings... According to Apple documentation, if the
+   * font binding is available, then name, size, and other
+   * font related bindings are ignored.  Otherwise they are
+   * used
+   */
+  theBinding = [GSKeyValueBinding getBinding: NSFontBinding
+				   forObject: self];
+  if (theBinding != nil)
+    {
+      font = [(NSArray *)[theBinding destinationValue]
+		 objectAtIndex: index];
+    }
+  else
+    {
+      NSString *fontName = nil;
+      CGFloat fontSize = 0.0;
+
+      theBinding = [GSKeyValueBinding getBinding: NSFontNameBinding
+				       forObject: self];
+      if (theBinding != nil)
+	{
+	  fontName = [(NSArray *)[theBinding destinationValue]
+			 objectAtIndex: index];
+	}
+
+      if (fontName != nil)
+	{
+	  theBinding = [GSKeyValueBinding getBinding: NSFontSizeBinding
+					   forObject: self];
+	  if (theBinding != nil)
+	    {
+	      id num = [(NSArray *)[theBinding destinationValue]
+			   objectAtIndex: index];
+	      fontSize = [num doubleValue];
+	    }
+
+	  font = [NSFont fontWithName: fontName
+				 size: fontSize];
+	}
+    }
+
+  if (font != nil)
+    {
+      [cell setFont: font];
+    }
+}
+
 - (void) setValue: (id)anObject forKey: (NSString*)aKey
 {
   if ([aKey isEqual: NSValueBinding])
@@ -623,6 +747,13 @@ to YES. */
   else if ([aKey isEqual: NSEnabledBinding])
     {
       // FIXME
+    }
+  else if ([aKey isEqual: NSEditableBinding])
+    {
+      if ([anObject isKindOfClass: [NSNumber class]])
+	{
+	  _is_editable = [anObject boolValue];
+	}
     }
   else
     {
@@ -640,6 +771,10 @@ to YES. */
     {
       // FIXME
       return [NSNumber numberWithBool: YES];
+    }
+  else if ([aKey isEqual: NSEditableBinding])
+    {
+      return [NSNumber numberWithBool: _is_editable];
     }
   else
     {

@@ -64,10 +64,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 
 + (id<GSWindowDecorator>) windowDecorator
 {
-  if ([GSCurrentServer() handlesWindowDecorations])
-    return [GSBackendWindowDecorationView self];
-  else
-    return [GSStandardWindowDecorationView self];
+    return [[GSTheme theme] windowDecorator];
 }
 
 

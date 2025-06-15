@@ -31,6 +31,7 @@
 
 #include <AppKit/NSSliderCell.h>
 
+APPKIT_EXPORT_CLASS
 @interface GSColorSliderCell : NSSliderCell
 {
   int mode;

@@ -81,7 +81,7 @@
   _orientation = orientation;
 }
 
-- (NSSize) paperSize;
+- (NSSize) paperSize
 {
   return _paperSize;
 }

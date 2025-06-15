@@ -2,7 +2,7 @@
 
    <abstract>Useful/configurable drawing functions</abstract>
 
-   Copyright (C) 2004-2006 Free Software Foundation, Inc.
+   Copyright (C) 2004-2023 Free Software Foundation, Inc.
 
    Author: Adam Fedor <fedor@gnu.org>
    Author: Richard Frith-Macdonald <rfm@gnu.org>
@@ -17,7 +17,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNUstep
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
@@ -235,6 +235,8 @@
 #import <AppKit/NSTabView.h>
 #import <AppKit/NSPrintPanel.h>
 #import <AppKit/NSPageLayout.h>
+// For window decorator protocol
+#import <GNUstepGUI/GSWindowDecorationView.h>
 
 #if	OS_API_VERSION(GS_API_NONE,GS_API_NONE)
 @class NSArray;
@@ -247,10 +249,13 @@
 @class NSColorWell;
 @class NSImage;
 @class NSMenuItemCell;
+@class NSOutlineView;
 @class NSPopUpButtonCell;
 @class NSMenuView;
 @class NSProgressIndicator;
+@class NSTableColumn;
 @class NSTableHeaderCell;
+@class NSTableView;
 @class NSTabViewItem;
 @class NSPathControl;
 @class NSPathComponentCell;
@@ -1244,6 +1249,13 @@ APPKIT_EXPORT_CLASS
                     state: (int)inputState
                  andTitle: (NSString*)title;
 
+- (void) setFrameForCloseButton: (NSButton *)closeButton
+		       viewSize: (NSSize)viewSize;
+
+- (NSRect) miniaturizeButtonFrameForBounds: (NSRect)bounds;
+
+- (NSRect) closeButtonFrameForBounds: (NSRect)bounds;
+
 - (NSColor *) browserHeaderTextColor;
 
 - (void) drawBrowserHeaderCell: (NSTableHeaderCell*)cell
@@ -1253,9 +1265,21 @@ APPKIT_EXPORT_CLASS
 - (NSRect) browserHeaderDrawingRectForCell: (NSTableHeaderCell*)cell
 				 withFrame: (NSRect)rect;
 
+- (CGFloat) tabHeightForType: (NSTabViewType)type;
+
 - (NSRect) tabViewContentRectForBounds: (NSRect)aRect
 			   tabViewType: (NSTabViewType)type
 			       tabView: (NSTabView *)view;
+
+- (NSImage *) imageForTabPart: (GSTabPart)part
+			 type: (NSTabViewType)type;
+
+- (NSRect) tabViewBackgroundRectForBounds: (NSRect)aRect
+			      tabViewType: (NSTabViewType)type;
+
+- (void) drawTabViewBezelRect: (NSRect)aRect
+                  tabViewType: (NSTabViewType)type
+                       inView: (NSView *)view;
 
 - (void) drawTabViewRect: (NSRect)rect
 		  inView: (NSView *)view
@@ -1322,12 +1346,30 @@ APPKIT_EXPORT_CLASS
 
 - (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
-		   inView: (NSView *)view;
+		   inView: (NSTableView *)view;
+
+- (NSRect) drawOutlineCell: (NSTableColumn *)tb
+	       outlineView: (NSOutlineView *)outlineView
+		      item: (id)item
+	       drawingRect: (NSRect)inputRect
+                  rowIndex: (NSInteger)rowIndex;
+
+- (void) drawOutlineViewRow: (NSInteger)rowIndex 
+                   clipRect: (NSRect)clipRect
+		     inView: (NSOutlineView *)view;
+
+- (BOOL) isBoxOpaque: (NSBox *)box;
 
 - (void) drawBoxInClipRect: (NSRect)clipRect
 		   boxType: (NSBoxType)boxType
 		borderType: (NSBorderType)borderType
 		    inView: (NSBox *)box;
+
+/* NSDockTile */
+- (NSColor *) badgeBackgroundColor;
+- (NSColor *) badgeDecorationColor;
+- (NSColor *) badgeTextColor;
+
 @end
 
 /**
@@ -1495,6 +1537,50 @@ withRepeatedImage: (NSImage*)image
  */
 - (void)  updateMenu: (NSMenu *)menu forWindow: (NSWindow *)window;
 - (void) updateAllWindowsWithMenu: (NSMenu *) menu;
+
+/**
+ * Modifies the given NSRect for use by NSMenu to position and size
+ * the displayed menu. The default implementation simply returns
+ * the original NSRect unmodified.
+ */
+- (NSRect) modifyRect: (NSRect)aRect
+	   forMenu: (NSMenu *)aMenu
+	   isHorizontal: (BOOL) horizontal;
+
+/**
+ * Modifies the proposed default width for a menu title in the given NSMenuView. 
+ * The default implementation simply returns the proposed width unmodified.
+ */
+- (CGFloat) proposedTitleWidth: (CGFloat)proposedWidth
+		   forMenuView: (NSMenuView *)aMenuView;
+
+/**
+ * Modifies the proposed key equivalent string for the menu item. The default
+ * implementation simply returns the proposed string unmodified.
+ */
+- (NSString *) keyForKeyEquivalent: (NSString *)aString;
+
+/**
+ * Modifies the proposed menu item title. The default implementation simply
+ * returns the proposed string unmodified.
+ */
+- (NSString *) proposedTitle: (NSString *)title
+		 forMenuItem: (NSMenuItem *)menuItem;
+
+/**
+ * Used by the theme to organize the main menu. The default implementation
+ * organizes the main menu in the same way that NSMenu's old default behaviour
+ * did, generating an "app name" menu for horizontal display.
+ */
+- (void) organizeMenu: (NSMenu *)menu
+	 isHorizontal: (BOOL)horizontal;
+
+/**
+ * Used by the theme to override the proposed menu visibility.  The default
+ * implementation simply returns the proposed visibility unmodified.
+ */
+- (BOOL) proposedVisibility: (BOOL)visible
+	 forMenu: (NSMenu *) menu;
 @end 
 
 @interface GSTheme (OpenSavePanels)
@@ -1535,6 +1621,13 @@ APPKIT_EXPORT_CLASS
 @end
 
 @interface GSTheme (NSWindow)
+
+/**
+ * This method returns the window decorator provided by
+ * the current theme.
+ */
+- (id<GSWindowDecorator>) windowDecorator;
+
 /**
  * This method returns the standard window button for the
  * given mask for the current theme.
@@ -1587,7 +1680,6 @@ APPKIT_EXPORT_CLASS
  */
 - (NSImage *) highlightedBranchImage;
 @end
-
 
 #endif /* OS_API_VERSION */
 #endif /* _GNUstep_H_GSTheme */

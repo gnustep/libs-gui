@@ -33,6 +33,7 @@
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSWindowDecorationView.h"
 #import "GSThemePrivate.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 
 @implementation GSTheme (NSWindow)
 - (NSButton *) standardWindowButton: (NSWindowButton)button
@@ -86,4 +87,13 @@
 {
   // default implementation does nothing...
 }
+
+- (id<GSWindowDecorator>) windowDecorator
+{
+  if ([GSCurrentServer() handlesWindowDecorations])
+    return [GSBackendWindowDecorationView self];
+  else
+    return [GSStandardWindowDecorationView self];
+}
+
 @end

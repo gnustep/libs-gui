@@ -565,9 +565,24 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
 - (void) setFrame: (NSRect)rect
 {
+  BOOL changedOrigin = NO;
+  BOOL changedSize = NO;
+  if (NSEqualPoints(_frame.origin, rect.origin) == NO)
+    {
+      changedOrigin = YES;
+    }
+  if (NSEqualSizes(_frame.size, rect.size) == NO)
+    {
+      changedSize = YES;
+    }
   [super setFrame: rect];
-  [self setBoundsOrigin: [self constrainScrollPoint: _bounds.origin]];
-  [_super_view reflectScrolledClipView: self];
+
+  if (changedOrigin || changedSize) 
+    {
+      NSPoint proposedPoint = [self constrainScrollPoint: _bounds.origin];
+      [self setBoundsOrigin: proposedPoint];
+      [_super_view reflectScrolledClipView: self];
+    }
 }
 
 - (void) translateOriginToPoint: (NSPoint)aPoint

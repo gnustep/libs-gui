@@ -30,74 +30,6 @@ static NSUInteger minYAttribute = 33;
 static NSUInteger maxXAttribute = 36;
 static NSUInteger maxYAttribute = 37;
 
-+ (NSArray *)constraintsWithAutoresizingMask:
-                 (NSAutoresizingMaskOptions) autoresizingMask
-                                     subitem: (NSView *) subItem
-                                       frame: (NSRect) frame
-                                   superitem: (NSView *) superItem
-                                      bounds: (NSRect) bounds
-{
-  if (autoresizingMask == NSViewNotSizable)
-    {
-      return [NSArray array];
-    }
-
-  NSAutoresizingMaskLayoutConstraint *xConstraint =
-      [self _xConstraintForAutoresizingMask: autoresizingMask
-                                    subitem: subItem
-                                      frame: frame
-                                  superitem: superItem
-                                     bounds: bounds];
-  NSAutoresizingMaskLayoutConstraint *yConstraint =
-      [self _yConstraintForAutoresizingMask: autoresizingMask
-                                    subitem: subItem
-                                      frame: frame
-                                  superitem: superItem
-                                     bounds: bounds];
-  NSAutoresizingMaskLayoutConstraint *widthConstraint =
-      [self _widthConstraintForAutoresizingMask: autoresizingMask
-                                        subitem: subItem
-                                          frame: frame
-                                      superitem: superItem
-                                         bounds: bounds];
-  NSAutoresizingMaskLayoutConstraint *heightConstraint =
-      [self _heightConstraintForAutoresizingMask: autoresizingMask
-                                         subitem: subItem
-                                           frame: frame
-                                       superitem: superItem
-                                          bounds: bounds];
-
-  NSMutableArray *constraints = [NSMutableArray arrayWithCapacity:4];
-
-  // The order of constraints was determined from MacOS behaviour.
-  // For the majority of users it will not matter, but we should assume that users have coupled to the ordering.
-  if ((autoresizingMask & NSViewMinXMargin)
-      && (autoresizingMask & NSViewMaxXMargin))
-    {
-      [constraints addObject: widthConstraint];
-      [constraints addObject: xConstraint];
-    }
-  else
-    {
-      [constraints addObject: xConstraint];
-      [constraints addObject: widthConstraint];
-    }
-
-  if ((autoresizingMask & NSViewMinYMargin)
-      && (autoresizingMask & NSViewMaxYMargin))
-    {
-      [constraints addObject: heightConstraint];
-      [constraints addObject: yConstraint];
-    }
-  else
-    {
-      [constraints addObject: yConstraint];
-      [constraints addObject: heightConstraint];
-    }
-
-  return constraints;
-}
-
 + (NSAutoresizingMaskLayoutConstraint *)
     _xConstraintForAutoresizingMask: (NSAutoresizingMaskOptions)autoresizingMask
                             subitem: (NSView *)subItem
@@ -290,6 +222,74 @@ static NSUInteger maxYAttribute = 37;
                   multiplier: 1.0
                     constant: frame.size.height];
     }
+}
+
++ (NSArray *)constraintsWithAutoresizingMask:
+                 (NSAutoresizingMaskOptions) autoresizingMask
+                                     subitem: (NSView *) subItem
+                                       frame: (NSRect) frame
+                                   superitem: (NSView *) superItem
+                                      bounds: (NSRect) bounds
+{
+  if (autoresizingMask == NSViewNotSizable)
+    {
+      return [NSArray array];
+    }
+
+  NSAutoresizingMaskLayoutConstraint *xConstraint =
+      [self _xConstraintForAutoresizingMask: autoresizingMask
+                                    subitem: subItem
+                                      frame: frame
+                                  superitem: superItem
+                                     bounds: bounds];
+  NSAutoresizingMaskLayoutConstraint *yConstraint =
+      [self _yConstraintForAutoresizingMask: autoresizingMask
+                                    subitem: subItem
+                                      frame: frame
+                                  superitem: superItem
+                                     bounds: bounds];
+  NSAutoresizingMaskLayoutConstraint *widthConstraint =
+      [self _widthConstraintForAutoresizingMask: autoresizingMask
+                                        subitem: subItem
+                                          frame: frame
+                                      superitem: superItem
+                                         bounds: bounds];
+  NSAutoresizingMaskLayoutConstraint *heightConstraint =
+      [self _heightConstraintForAutoresizingMask: autoresizingMask
+                                         subitem: subItem
+                                           frame: frame
+                                       superitem: superItem
+                                          bounds: bounds];
+
+  NSMutableArray *constraints = [NSMutableArray arrayWithCapacity:4];
+
+  // The order of constraints was determined from MacOS behaviour.
+  // For the majority of users it will not matter, but we should assume that users have coupled to the ordering.
+  if ((autoresizingMask & NSViewMinXMargin)
+      && (autoresizingMask & NSViewMaxXMargin))
+    {
+      [constraints addObject: widthConstraint];
+      [constraints addObject: xConstraint];
+    }
+  else
+    {
+      [constraints addObject: xConstraint];
+      [constraints addObject: widthConstraint];
+    }
+
+  if ((autoresizingMask & NSViewMinYMargin)
+      && (autoresizingMask & NSViewMaxYMargin))
+    {
+      [constraints addObject: heightConstraint];
+      [constraints addObject: yConstraint];
+    }
+  else
+    {
+      [constraints addObject: yConstraint];
+      [constraints addObject: heightConstraint];
+    }
+
+  return constraints;
 }
 
 @end

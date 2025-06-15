@@ -33,15 +33,18 @@
 #import <AppKit/NSControl.h>
 #import <AppKit/NSDragging.h>
 #import <AppKit/NSUserInterfaceValidation.h>
+#import <AppKit/NSUserInterfaceItemIdentification.h>
 
 @class NSArray;
 @class NSIndexSet;
 @class NSMutableIndexSet;
 @class NSTableColumn;
 @class NSTableHeaderView;
+@class NSTableRowView;
 @class NSText;
 @class NSImage;
 @class NSURL;
+@class NSNib;
 
 typedef enum _NSTableViewDropOperation {
   NSTableViewDropOn,
@@ -88,8 +91,26 @@ typedef enum _NSTableViewAnimationOptions
   NSTableViewAnimationSlideLeft  = 0x30,
   NSTableViewAnimationSlideRight = 0x40,
 } NSTableViewAnimationOptions;
+
+typedef enum _NSTableViewRowSizeStyle
+{
+  NSTableViewRowSizeStyleDefault = -1,
+  NSTableViewRowSizeStyleCustom = 0,
+  NSTableViewRowSizeStyleSmall = 1,
+  NSTableViewRowSizeStyleMedium = 2,
+  NSTableViewRowSizeStyleLarge = 3,
+} NSTableViewRowSizeStyle;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+typedef enum _NSTableViewDraggingDestinationFeedbackStyle
+{
+  NSTableViewDraggingDestinationFeedbackStyleNone = 0,
+  NSTableViewDraggingDestinationFeedbackStyleRegular,
+  NSTableViewDraggingDestinationFeedbackStyleSourceList,
+  NSTableViewDraggingDestinationFeedbackStyleGap,
+} NSTableViewDraggingDestinationFeedbackStyle;
+#endif
 
 APPKIT_EXPORT_CLASS
 @interface NSTableView : NSControl <NSUserInterfaceValidations>
@@ -125,6 +146,7 @@ APPKIT_EXPORT_CLASS
   BOOL               _allowsColumnReordering;
   BOOL               _autoresizesAllColumnsToFit;
   BOOL               _selectingColumns;
+  BOOL               _usesAlternatingRowBackgroundColors;
   NSText            *_textObject;
   NSInteger          _editedRow;
   NSInteger          _editedColumn;
@@ -155,7 +177,8 @@ APPKIT_EXPORT_CLASS
    * We cache column origins (precisely, the x coordinate of the left
    * origin of each column).  When a column width is changed through
    * [NSTableColumn setWidth:], then [NSTableView tile] gets called,
-   * which updates the cache.  */
+   * which updates the cache.
+   */
   CGFloat *_columnOrigins;
 
   /*
@@ -174,6 +197,16 @@ APPKIT_EXPORT_CLASS
   NSDragOperation _draggingSourceOperationMaskForRemote;
 
   NSInteger _beginEndUpdates;
+
+  /* Supporting ivars for view based tables */
+  BOOL _viewBased;
+  NSMapTable *_renderedViewPaths;
+  NSMapTable *_pathsToViews;
+  NSMutableDictionary *_registeredNibs;
+  NSMutableDictionary *_registeredViews;
+
+  /* NSTableRowView support */
+  NSMutableDictionary *_rowViews;
 }
 
 /* Data Source */
@@ -380,6 +413,15 @@ APPKIT_EXPORT_CLASS
 - (void) insertRowsAtIndexes: (NSIndexSet*)indexes withAnimation: (NSTableViewAnimationOptions)animationOptions;
 - (void) removeRowsAtIndexes: (NSIndexSet*)indexes withAnimation: (NSTableViewAnimationOptions)animationOptions;
 - (NSInteger) rowForView: (NSView*)view;
+- (NSView *) makeViewWithIdentifier: (NSUserInterfaceItemIdentifier)identifier owner: (id)owner;
+- (NSTableRowView *) rowViewAtRow: (NSInteger)row makeIfNecessary: (BOOL)flag;
+- (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+- (void) registerNib: (NSNib *)nib
+       forIdentifier: (NSUserInterfaceItemIdentifier)identifier;
+- (NSDictionary *) registeredNibsByIdentifier;
 #endif
 
 @end /* interface of NSTableView */
@@ -496,6 +538,24 @@ dataCellForTableColumn: (NSTableColumn *)aTableColumn
              tableColumn: (NSTableColumn *)col
                      row: (NSInteger)row
            mouseLocation: (NSPoint)mouse;
+#endif
+
+// NSTableCellView based table methods...
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (NSView *) tableView: (NSTableView *)tableView
+    viewForTableColumn: (NSTableColumn *)aTableColumn
+                   row: (NSInteger)rowIndex;
+
+- (NSTableRowView *) tableView: (NSTableView *)tableView
+                 rowViewForRow: (NSInteger)rowIndex;
+
+- (void) tableView: (NSTableView *)tableView
+     didAddRowView: (NSTableRowView *)rowView
+            forRow: (NSInteger)rowIndex;
+
+- (void) tableView: (NSTableView *)tableView
+  didRemoveRowView: (NSTableRowView *)rowView
+            forRow: (NSInteger)rowIndex;
 #endif
 @end
 

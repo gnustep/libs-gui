@@ -410,7 +410,7 @@ APPKIT_EXPORT_CLASS
 		unsigned int unused: 25;
   } _menu;
 
-@private
+@protected
   NSWindow *_aWindow;
   NSWindow *_bWindow;
   NSMenu *_oldAttachedMenu;
@@ -436,9 +436,14 @@ APPKIT_EXPORT_CLASS
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+// Provided for source compatibility with GNUstep-specific code.
+// This method is just an alternate name for popUpMenuPositioningItem:atLocation:inView:
 - (void) popUpMenuPositionItem: (NSMenuItem *)item
                     atLocation: (NSPoint) point
                         inView: (NSView *) view;
+- (void) popUpMenuPositioningItem: (NSMenuItem *)item
+                       atLocation: (NSPoint) point
+                           inView: (NSView *) view;
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
@@ -632,6 +637,12 @@ APPKIT_EXPORT_CLASS
 /** Removes item at position index.
  */
 - (void) removeItemAtIndex: (NSInteger)index;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+/** Removes all items
+ */
+- (void) removeAllItems;
+#endif
 
 /** Sets if a menu does autoenable.
  */

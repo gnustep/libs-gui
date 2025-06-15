@@ -13,6 +13,7 @@ gnustep-gui-debug.spec
 gui.make
 Headers/Additions/GNUstepGUI/GSVersion.h
 Source/config.h
+Source/gnustep-gui.pc
 Source/Info-gnustep.plist
 Tests/gui/*/GNUmakefile
 Tools/speech/GSSpeechServer.app
@@ -20,6 +21,7 @@ Tools/speech_recognizer/GSSpeechRecognitionServer.app
 *~
 *.nssound
 *.nsmovie
+*.swp
 
 # Created by https://www.gitignore.io/api/xcode
 # Edit at https://www.gitignore.io/?templates=xcode
@@ -60,3 +62,8 @@ DerivedData/
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 # End of https://www.gitignore.io/api/xcode
+
+
+compile_commands.json
+**/.cache
+**/.vscode

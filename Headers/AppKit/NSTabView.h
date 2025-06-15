@@ -114,7 +114,9 @@ APPKIT_EXPORT_CLASS
 @optional
 #endif
 #else
+/** <ignore> */
 @interface NSObject (NSTabViewDelegate)
+/** </ignore> */
 #endif
 - (BOOL)tabView:(NSTabView *)tabView shouldSelectTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)tabView:(NSTabView *)tabView willSelectTabViewItem:(NSTabViewItem *)tabViewItem;

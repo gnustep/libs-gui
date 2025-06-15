@@ -461,8 +461,8 @@ static GSAutocompleteWindow *gsWindow = nil;
   if ( (flag) ||
        (movement == NSCancelTextMovement) )
     {
-      ASSIGN(_originalWord, nil);
-      ASSIGN(_words, nil);
+      DESTROY(_originalWord);
+      DESTROY(_words);
     }
 }
 

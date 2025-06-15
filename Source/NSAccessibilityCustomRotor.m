@@ -90,7 +90,7 @@
   return nil;
 }
 
-- (id<NSAccessibilityElement>) targetElement;
+- (id<NSAccessibilityElement>) targetElement
 {
   return nil;
 }

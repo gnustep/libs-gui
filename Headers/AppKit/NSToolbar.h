@@ -145,10 +145,12 @@ APPKIT_EXPORT_CLASS
  * Methods Implemented by the Delegate
  */
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+/** <ignore> */
 @protocol NSToolbarDelegate <NSObject>
 #if GS_PROTOCOLS_HAVE_OPTIONAL
 @optional
 #endif
+/** </ignore> */
 #else
 @interface NSObject (NSToolbarDelegate)
 #endif

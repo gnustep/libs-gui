@@ -91,6 +91,11 @@ enum _NSEventType {
   NSApplicationDefined,
   NSPeriodic,
   NSCursorUpdate,
+// NSEventTypeCursorUpdate              = 17,
+// NSEventTypeRotate                    = 18,
+// NSEventTypeBeginGesture              = 19,
+// NSEventTypeEndGesture                = 20,
+// (not defined)                        = 21,
   NSScrollWheel = 22,
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
   NSTabletPoint,
@@ -98,7 +103,46 @@ enum _NSEventType {
 #endif
   NSOtherMouseDown = 25,
   NSOtherMouseUp,
-  NSOtherMouseDragged
+  NSOtherMouseDragged,
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+  NSEventTypeLeftMouseDown             = 1,
+  NSEventTypeLeftMouseUp               = 2,
+  NSEventTypeRightMouseDown            = 3,
+  NSEventTypeRightMouseUp              = 4,
+  NSEventTypeMouseMoved                = 5,
+  NSEventTypeLeftMouseDragged          = 6,
+  NSEventTypeRightMouseDragged         = 7,
+  NSEventTypeMouseEntered              = 8,
+  NSEventTypeMouseExited               = 9,
+  NSEventTypeKeyDown                   = 10,
+  NSEventTypeKeyUp                     = 11,
+  NSEventTypeFlagsChanged              = 12,
+  NSEventTypeAppKitDefined             = 13,
+  NSEventTypeSystemDefined             = 14,
+  NSEventTypeApplicationDefined        = 15,
+  NSEventTypePeriodic                  = 16,
+  NSEventTypeCursorUpdate              = 17,
+  NSEventTypeRotate                    = 18,
+  NSEventTypeBeginGesture              = 19,
+  NSEventTypeEndGesture                = 20,
+// (not defined)                       = 21,
+  NSEventTypeScrollWheel               = 22,
+  NSEventTypeTabletPoint               = 23,
+  NSEventTypeTabletProximity           = 24,
+  NSEventTypeOtherMouseDown            = 25,
+  NSEventTypeOtherMouseUp              = 26,
+  NSEventTypeOtherMouseDragged         = 27,
+// (not defined)                       = 28,
+  NSEventTypeGesture                   = 29,
+  NSEventTypeMagnify                   = 30,
+  NSEventTypeSwipe                     = 31,
+  NSEventTypeSmartMagnify              = 32,
+  NSEventTypeQuickLook                 = 33,
+  NSEventTypePressure                  = 34,
+// (not defined)                       = 35~37
+  NSEventTypeDirectTouch               = 37,
+  NSEventTypeChangeMode                = 38,
+#endif
 };
 typedef NSUInteger NSEventType;
 
@@ -183,7 +227,17 @@ enum {
   NSCommandKeyMask = 16 << 16,
   NSNumericPadKeyMask = 32 << 16,
   NSHelpKeyMask = 64 << 16,
-  NSFunctionKeyMask = 128 << 16
+  NSFunctionKeyMask = 128 << 16,
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+  NSEventModifierFlagCapsLock = NSAlphaShiftKeyMask,
+  NSEventModifierFlagShift = NSShiftKeyMask,
+  NSEventModifierFlagControl = NSControlKeyMask,
+  NSEventModifierFlagOption = NSAlternateKeyMask,
+  NSEventModifierFlagCommand = NSCommandKeyMask,
+  NSEventModifierFlagNumericPad = NSNumericPadKeyMask,
+  NSEventModifierFlagFunction = NSFunctionKeyMask,
+  NSEventModifierFlagDeviceIndependentFlagsMask = NSDeviceIndependentModifierFlagsMask,
+#endif
 };
 typedef NSUInteger NSEventModifierFlags;
 

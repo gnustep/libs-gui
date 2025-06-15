@@ -213,62 +213,82 @@
 
 	  if ([viewer isEqual: @"NSHelpPanel"] == NO)
 	    {
+	      if (viewer && [viewer length] > 0)
+		{
+		  NSDictionary *apps =  [ws infoForExtension: ext];
+		  NSDictionary *appInfo;
+
+		  // Let's try to be lenient if Viewer was set instead of Viewer.app
+		  if ([[viewer pathExtension] length] == 0)
+		    viewer = [viewer stringByAppendingPathExtension: @"app"];
+		  appInfo = [apps objectForKey: viewer];
+
+		  // We ingore the role, supposing both Editor and Viewer are fine
+		  if (nil == appInfo)
+		    {
+		      NSWarnLog(@"Designated viewer %@ is not registered for %@", viewer, ext);
+		      viewer = nil;
+		    }
+		}
 	      if ([viewer length] == 0)
 		{
 	          viewer = [ws getBestAppInRole: @"Viewer" forExtension: ext];
 		}
 	      if (viewer != nil)
 		{
-		  result = [[NSWorkspace sharedWorkspace] openFile: file
-						   withApplication: viewer];
-	          return;
+		  result = [ws openFile: file
+			       withApplication: viewer];
 		}
 	    }
 
-	  if (result == NO)
-	    {
-	      NSHelpPanel	*panel;
-	      NSTextView	*tv;
-	      id		object = nil;
+	  // external viewer succeeded
+	  if (result)
+	    return;
 
-	      panel = [NSHelpPanel sharedHelpPanel];
-	      tv = [(NSScrollView*)[panel contentView] documentView];
-	      if (ext == nil  
+	  // fallback to internal viewer
+	  {
+	    NSHelpPanel	*panel;
+	    NSTextView	*tv;
+	    id		object = nil;
+
+	    panel = [NSHelpPanel sharedHelpPanel];
+	    tv = [(NSScrollView*)[panel contentView] documentView];
+	    if (ext == nil
 		|| [ext isEqualToString: @""]	 
 		|| [ext isEqualToString: @"txt"] 
 		|| [ext isEqualToString: @"text"])
-		{
-		  object = [NSString stringWithContentsOfFile: file];
-		}
-	      else if ([ext isEqualToString: @"rtf"])
-		{
-		  NSData *data = [NSData dataWithContentsOfFile: file];
+	      {
+		object = [NSString stringWithContentsOfFile: file];
+	      }
+	    else if ([ext isEqualToString: @"rtf"])
+	      {
+		NSData *data = [NSData dataWithContentsOfFile: file];
 		  
-		  object = [[NSAttributedString alloc] initWithRTF: data
-		    documentAttributes: 0];
-		  AUTORELEASE (object);
-		}
-	      else if ([ext isEqualToString: @"rtfd"])
-		{
-		  NSFileWrapper *wrapper;
+		object = [[NSAttributedString alloc] initWithRTF: data
+					      documentAttributes: 0];
+		AUTORELEASE (object);
+	      }
+	    else if ([ext isEqualToString: @"rtfd"])
+	      {
+		NSFileWrapper *wrapper;
 		  
-		  wrapper = [[NSFileWrapper alloc] initWithPath: file];
-		  AUTORELEASE (wrapper);
-		  object = [[NSAttributedString alloc]
-		    initWithRTFDFileWrapper: wrapper
-		    documentAttributes: 0];
-		  AUTORELEASE (object);
-		}
+		wrapper = [[NSFileWrapper alloc] initWithPath: file];
+		AUTORELEASE (wrapper);
+		object = [[NSAttributedString alloc]
+			   initWithRTFDFileWrapper: wrapper
+				documentAttributes: 0];
+		AUTORELEASE (object);
+	      }
 	      
-	      if (object != nil)
-		{
-		  [[tv textStorage] setAttributedString: object];
-		  [tv sizeToFit];
-		}
-	      [tv setNeedsDisplay: YES];
-	      [panel makeKeyAndOrderFront: self];
-	      return;
-	    }
+	    if (object != nil)
+	      {
+		[[tv textStorage] setAttributedString: object];
+		[tv sizeToFit];
+	      }
+	    [tv setNeedsDisplay: YES];
+	    [panel makeKeyAndOrderFront: self];
+	    return;
+	  }
 	}
     }
   

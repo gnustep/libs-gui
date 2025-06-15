@@ -138,7 +138,6 @@ NSGraphicsContext	*GSCurrentContext(void)
 {
   if (contextLock == nil)
     {
-      [gnustep_global_lock lock];
       if (contextLock == nil)
 	{
 	  contextLock = [NSRecursiveLock new];
@@ -147,7 +146,6 @@ NSGraphicsContext	*GSCurrentContext(void)
 	  classMethodTable =
 	    [[NSMutableDictionary allocWithZone: _globalGSZone] init];
 	}
-      [gnustep_global_lock unlock];
     }
 }
 
@@ -320,6 +318,7 @@ NSGraphicsContext	*GSCurrentContext(void)
   DESTROY(focus_stack);
   DESTROY(context_data);
   DESTROY(context_info);
+  DESTROY(_shadow);
   [super dealloc];
 }
 
@@ -345,12 +344,12 @@ NSGraphicsContext	*GSCurrentContext(void)
        * be protected from other threads.
        */
       [contextLock lock];
-      methods = [[classMethodTable objectForKey: [self class]] pointerValue];
+      methods = [[classMethodTable objectForKey: (id<NSCopying>)[self class]] pointerValue];
       if (methods == 0)
         {
           methods = [[self class] _initializeMethodTable];
           [classMethodTable setObject: [NSValue valueWithPointer: methods]
-                            forKey: [self class]];
+                            forKey: (id<NSCopying>)[self class]];
         }
       [contextLock unlock];
     }
@@ -359,7 +358,7 @@ NSGraphicsContext	*GSCurrentContext(void)
 
 
 - (id) initWithGraphicsPort: (void *)port 
-                    flipped: (BOOL)flag;
+                    flipped: (BOOL)flag
 {
   self = [self init];
   if (self != nil)
@@ -373,6 +372,11 @@ NSGraphicsContext	*GSCurrentContext(void)
 - (NSDictionary *) attributes
 {
   return context_info;
+}
+
+- (const gsMethodTable *) methods
+{
+  return methods;
 }
 
 - (void) flushGraphics
@@ -510,6 +514,17 @@ NSGraphicsContext	*GSCurrentContext(void)
 {
 }
 
+/* Private method for handling shadows */
+- (void) setShadow: (NSShadow *)shadow
+{
+  ASSIGN(_shadow, shadow);
+}
+
+- (NSShadow *) shadow
+{
+  return _shadow;
+}
+
 @end
 
 @implementation NSGraphicsContext (Private)
@@ -596,7 +611,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     GET_IMP(@selector(GSShowText::));
   methodTable.GSShowGlyphs__ =
     GET_IMP(@selector(GSShowGlyphs::));
-  methodTable.GSShowGlyphsWithAdvances__ =
+  methodTable.GSShowGlyphsWithAdvances___ =
     GET_IMP(@selector(GSShowGlyphsWithAdvances:::));
 
 /* ----------------------------------------------------------------------- */
@@ -722,7 +737,7 @@ NSGraphicsContext	*GSCurrentContext(void)
     GET_IMP(@selector(DPSrmoveto::));
   methodTable.DPSstroke =
     GET_IMP(@selector(DPSstroke));
-  methodTable.DPSshfill =
+  methodTable.DPSshfill_ =
     GET_IMP(@selector(DPSshfill:));
 
   methodTable.GSSendBezierPath_ =

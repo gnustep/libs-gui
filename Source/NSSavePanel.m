@@ -577,7 +577,7 @@ selectCellWithString: (NSString*)title
   else
     {
       ASSIGN (_directory, [path stringByAppendingPathComponent: title]);
-      ASSIGN (_fullFileName, nil);
+      DESTROY (_fullFileName);
     }
 
   [self _selectTextInColumn:column];

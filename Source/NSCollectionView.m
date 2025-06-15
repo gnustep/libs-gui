@@ -688,7 +688,7 @@ static NSString *_placeholderItem = nil;
   NSRect itemFrame = NSMakeRect (0,0,0,0);
   NSInteger index;
   NSUInteger count = [_items count];
-  CGFloat x = _horizontalMargin;
+  CGFloat x = 0;
   CGFloat y = -_itemSize.height;
 
   if (_maxNumberOfColumns > 0 && _maxNumberOfRows > 0)
@@ -700,7 +700,7 @@ static NSString *_placeholderItem = nil;
     {
       if (index % _numberOfColumns == 0)
 	{
-	  x = _horizontalMargin;
+	  x = 0;
 	  y += _verticalMargin + _itemSize.height;
 	}
 
@@ -730,6 +730,9 @@ static NSString *_placeholderItem = nil;
 	}
 
       x += _itemSize.width + _horizontalMargin;
+    }
+    if(_maxNumberOfColumns == 1) {
+      itemFrame.size.width = self.frame.size.width;
     }
   return itemFrame;
 }
@@ -1605,6 +1608,15 @@ static NSString *_placeholderItem = nil;
 
 /* Creating Collection view Items */
 
+- (NSNib *) _nibForClass: (Class)cls
+{
+  NSString *clsName = NSStringFromClass(cls);
+  NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
+					bundle: [NSBundle bundleForClass: cls]];
+  AUTORELEASE(nib);
+  return nib;
+}
+
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
@@ -1702,15 +1714,6 @@ static NSString *_placeholderItem = nil;
 }
 
 /* Configuring the Collection view */
-
-- (NSNib *) _nibForClass: (Class)cls
-{
-  NSString *clsName = NSStringFromClass(cls);
-  NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
-					bundle: [NSBundle bundleForClass: cls]];
-  AUTORELEASE(nib);
-  return nib;
-}
 
 - (NSView *) backgroundView
 {
@@ -1987,7 +1990,7 @@ static NSString *_placeholderItem = nil;
   return _allowsEmptySelection;
 }
 
-- (void) setAllowsEmptySelection: (BOOL)flag;
+- (void) setAllowsEmptySelection: (BOOL)flag
 {
   _allowsEmptySelection = flag;
 }

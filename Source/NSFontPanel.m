@@ -84,6 +84,107 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 }
 @end
 
+@interface FPBrowser : NSBrowser
+@end
+@implementation FPBrowser
+
+static void
+autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
+	   CGFloat *contentPositionInOut, CGFloat *contentSizeInOut,
+	   BOOL minMarginFlexible, BOOL sizeFlexible, BOOL maxMarginFlexible)
+{
+  const CGFloat change = newContainerSize - oldContainerSize;
+
+  if (change == 0.0)
+    return;
+
+  // Size
+  if (sizeFlexible)
+    {
+      if (maxMarginFlexible || minMarginFlexible)
+	{
+	  *contentSizeInOut += change / 2;
+	}
+      else
+	{
+	  *contentSizeInOut += change;
+	}
+    }
+
+  // Position
+  if (minMarginFlexible)
+    {
+      if (maxMarginFlexible || sizeFlexible)
+	{
+	  *contentPositionInOut += change / 2;
+	}
+      else
+	{
+	  *contentPositionInOut += change;
+	}
+    }
+}
+
+- (void) resizeWithOldSuperviewSize: (NSSize)oldSize
+{
+  NSSize superViewFrameSize;
+  NSRect newFrame = _frame;
+  NSRect newFrameRounded;
+
+  if (_autoresizingMask == NSViewNotSizable)
+    return;
+  
+  if (!NSEqualRects(NSZeroRect, _autoresizingFrameError))
+    {
+      newFrame.origin.x -= _autoresizingFrameError.origin.x;
+      newFrame.origin.y -= _autoresizingFrameError.origin.y;
+      newFrame.size.width -= _autoresizingFrameError.size.width;
+      newFrame.size.height -= _autoresizingFrameError.size.height;
+    }
+
+  superViewFrameSize = NSMakeSize(0,0);
+  if (_super_view)
+    superViewFrameSize = [_super_view frame].size;
+
+  autoresize(oldSize.width, superViewFrameSize.width, &newFrame.origin.x,
+	     &newFrame.size.width, (_autoresizingMask & NSViewMinXMargin),
+	     (_autoresizingMask & NSViewWidthSizable),
+	     (_autoresizingMask & NSViewMaxXMargin));
+
+  {
+    const BOOL flipped = (_super_view && [_super_view isFlipped]);
+    const BOOL maxMarginFlexible = flipped
+				     ? (_autoresizingMask & NSViewMinYMargin)
+				     : (_autoresizingMask & NSViewMaxYMargin);
+    const BOOL minMarginFlexible = flipped
+				     ? (_autoresizingMask & NSViewMaxYMargin)
+				     : (_autoresizingMask & NSViewMinYMargin);
+
+    autoresize(oldSize.height, superViewFrameSize.height, &newFrame.origin.y,
+	       &newFrame.size.height, minMarginFlexible,
+	       (_autoresizingMask & NSViewHeightSizable), maxMarginFlexible);
+  }
+
+  newFrameRounded = newFrame;
+
+  /**
+   * Perform rounding to pixel-align the frame if we are not rotated
+   */
+  if (![self isRotatedFromBase] && [self superview] != nil)
+    {
+      newFrameRounded = [[self superview] centerScanRect: newFrameRounded];
+    }
+
+  [self setFrame: newFrameRounded];
+
+  _autoresizingFrameError.origin.x = (newFrameRounded.origin.x - newFrame.origin.x);
+  _autoresizingFrameError.origin.y = (newFrameRounded.origin.y - newFrame.origin.y);
+  _autoresizingFrameError.size.width = (newFrameRounded.size.width - newFrame.size.width);
+  _autoresizingFrameError.size.height = (newFrameRounded.size.height - newFrame.size.height);
+}
+
+@end
+
 @interface NSFontPanel (Private)
 - (NSFont*) _fontForSelection: (NSFont*) fontObject;
 
@@ -587,7 +688,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // Selection of the font family
   // We use a browser with one column to get a selection list
-  familyBrowser = [[NSBrowser alloc] initWithFrame: familyBrowserRect];
+  familyBrowser = [[FPBrowser alloc] initWithFrame: familyBrowserRect];
   [familyBrowser setDelegate: self];
   [familyBrowser setMaxVisibleColumns: 1];
   [familyBrowser setMinColumnWidth: 0];
@@ -608,7 +709,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // selection of type face
   // We use a browser with one column to get a selection list
-  faceBrowser = [[NSBrowser alloc] initWithFrame: typefaceBrowserRect];
+  faceBrowser = [[FPBrowser alloc] initWithFrame: typefaceBrowserRect];
   [faceBrowser setDelegate: self];
   [faceBrowser setMaxVisibleColumns: 1];
   [faceBrowser setMinColumnWidth: 0];
@@ -654,7 +755,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [bottomSplit addSubview: sizeField];
   RELEASE(sizeField);
 
-  sizeBrowser = [[NSBrowser alloc] initWithFrame: sizeBrowserRect];
+  sizeBrowser = [[FPBrowser alloc] initWithFrame: sizeBrowserRect];
   [sizeBrowser setDelegate: self];
   [sizeBrowser setMaxVisibleColumns: 1];
   [sizeBrowser setAllowsMultipleSelection: NO];
@@ -686,7 +787,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   slash = [[NSBox alloc] initWithFrame: slashRect];
   [slash setBorderType: NSGrooveBorder];
-  [slash setTitlePosition: NSNoTitle];
+  [slash setTitlePosition:NSNoTitle];
   [slash setAutoresizingMask: NSViewWidthSizable];
   [bottomArea addSubview: slash];
   RELEASE(slash);

@@ -68,9 +68,11 @@
 #import "AppKit/NSPrintInfo.h"
 #import "AppKit/NSPrintOperation.h"
 #import "AppKit/NSScrollView.h"
+#import "AppKit/NSShadow.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSWorkspace.h"
+#import "AppKit/NSAppearance.h"
 #import "AppKit/PSOperators.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/GSTrackingRect.h"
@@ -79,7 +81,10 @@
 #import "GSBindingHelpers.h"
 #import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
+#import "GSAutoLayoutEngine.h"
+#import "NSAutoresizingMaskLayoutConstraint.h" 
 #import "NSViewPrivate.h"
+#import "NSWindowPrivate.h"
 
 /*
  * We need a fast array that can store objects without retain/release ...
@@ -100,6 +105,9 @@
    a class variable because we want it visible to subviews also
 */
 NSView *viewIsPrinting = nil;
+
+const CGFloat NSViewNoInstrinsicMetric = -1;
+const CGFloat NSViewNoIntrinsicMetric = -1;
 
 /**
   <unit>
@@ -563,7 +571,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       viewClass = [NSView class];
       rectClass = [GSTrackingRect class];
       NSDebugLLog(@"NSView", @"Initialize NSView class\n");
-      [self setVersion: 1];
+      [self setVersion: 2];
 
       // expose bindings
       [self exposeBinding: NSToolTipBinding];
@@ -635,7 +643,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   _needsUpdateConstraints = YES;
   _translatesAutoresizingMaskIntoConstraints = YES;
-  
+
   return self;
 }
 
@@ -765,6 +773,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   TEST_RELEASE(_cursor_rects);
   TEST_RELEASE(_tracking_rects);
+  TEST_RELEASE(_shadow);
+  
   [self unregisterDraggedTypes];
   [self releaseGState];
 
@@ -1662,7 +1672,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   return 0.0;
 }
 
-- (void) setFrameCenterRotation:(CGFloat)rot;
+- (void) setFrameCenterRotation:(CGFloat)rot
 {
   // FIXME this is dummy, we don't have layers yet
   // we probably need a Matrix akin frame rotation.
@@ -2820,8 +2830,13 @@ in the main thread.
 
 - (void) _setNeedsDisplayInRect_real: (NSValue *)v
 {
-  NSRect invalidRect = [v rectValue];
+  NSRect invalidRect;
   NSView *currentView = _super_view;
+
+  if (nil == v)
+    return;
+
+  invalidRect = [v rectValue];
 
   /*
    *	Limit to bounds, combine with old _invalidRect, and then check to see
@@ -4602,6 +4617,12 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
         {
           [aCoder encodeConditionalObject: _super_view forKey: @"NSSuperview"];
         }
+
+      // Encode the shadow...
+      if (_shadow != nil)
+	{
+	  [aCoder encodeConditionalObject: _shadow forKey: @"NSViewShadow"];
+	}
     }
   else
     {
@@ -4619,6 +4640,9 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
       [aCoder encodeConditionalObject: [self nextKeyView]];
       [aCoder encodeConditionalObject: [self previousKeyView]];
       [aCoder encodeObject: _sub_views];
+
+      // Encode view effects attributes...
+      [aCoder encodeConditionalObject: [self shadow]];
       NSDebugLLog(@"NSView", @"NSView: finish encoding\n");
     }
 }
@@ -4731,12 +4755,19 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 	  [self didAddSubview: sub];
 	}
 
+      // Decode the shadow...
+      if ([aDecoder containsValueForKey: @"NSViewShadow"])
+	{
+	  [self setShadow: [aDecoder decodeObjectForKey: @"NSViewShadow"]];
+	}
+
       // the superview...
       //[aDecoder decodeObjectForKey: @"NSSuperview"];
     }
   else
     {
       NSRect	rect;
+      int version = [aDecoder versionForClassName: @"NSView"];
       
       NSDebugLLog(@"NSView", @"NSView: start decoding\n");
 
@@ -4792,6 +4823,12 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 	  [self didAddSubview: sub];
 	}
       RELEASE(subs);
+
+      // Decode the shadow if this is version 2 or greater...
+      if (version >= 2)
+	{
+	  [self setShadow: [aDecoder decodeObject]];
+	}
     }
 
   return self;
@@ -5140,27 +5177,26 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (void) layout
 {
-  // FIXME: Implement asking layout engine for the alignment rect of each subview and set the alignment rect of each sub view
+  _needsLayout = NO;
+
+  GSAutoLayoutEngine *engine = [self _layoutEngine];
+  if (!engine)
+    {
+      return;
+    }
+
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    NSRect subviewAlignmentRect =
+        [engine alignmentRectForView: subview];
+    [subview setFrame: subviewAlignmentRect];
+  END_FOR_IN (subviews);
 }
 
 - (void) layoutSubtreeIfNeeded
 {
   [self updateConstraintsForSubtreeIfNeeded];
   [self _layoutViewAndSubViews];
-}
-
-- (void) _layoutViewAndSubViews
-{
-  if (_needsLayout)
-    {
-      [self layout];
-      _needsLayout = NO;
-    }
-
-  NSArray *subviews = [self subviews];
-  FOR_IN (NSView *, subview, subviews)
-    [subview _layoutViewAndSubViews];
-  END_FOR_IN (subviews);
 }
 
 - (void) setNeedsLayout: (BOOL) needsLayout
@@ -5203,7 +5239,68 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   return _translatesAutoresizingMaskIntoConstraints;
 }
 
+- (NSLayoutPriority) contentCompressionResistancePriority
+{
+  return _contentCompressionResistancePriority;
+}
+
+- (void) setContentCompressionResistancePriority: (NSLayoutPriority)priority
+{
+  _contentCompressionResistancePriority = priority;
+}
+
+- (NSSize) intrinsicContentSize
+{
+  return NSMakeSize(NSViewNoIntrinsicMetric, NSViewNoIntrinsicMetric);
+}
+
+- (CGFloat) baselineOffsetFromBottom
+{
+  return 0;
+}
+
+- (CGFloat) firstBaselineOffsetFromTop
+{
+  return 0;
+}
+
+/* Implement NSAppearanceCustomization */
+- (NSAppearance*) appearance {
+  return _appearance;
+}
+
+- (void) setAppearance: (NSAppearance*) appearance {
+  ASSIGNCOPY(_appearance, appearance);
+}
+
+- (NSAppearance*) effectiveAppearance {
+  if (_appearance)
+  {
+    return _appearance;
+  }
+  else if ([self superview])
+  {
+    return [[self superview] effectiveAppearance];
+  }
+  else
+  {
+    return [NSAppearance currentAppearance];
+  }
+}
+
+- (void) setIdentifier: (NSUserInterfaceItemIdentifier) identifier
+{
+  ASSIGN(_identifier, identifier);
+}
+
+- (NSUserInterfaceItemIdentifier) identifier
+{
+  return _identifier;
+}
+
 @end
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 
 @implementation NSView (NSConstraintBasedLayoutCorePrivateMethods)
 // This private setter allows the updateConstraints method to toggle needsUpdateConstraints
@@ -5212,7 +5309,173 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   _needsUpdateConstraints = needsUpdateConstraints;
 }
 
+- (void) _layoutViewAndSubViews
+{
+  if (_needsLayout)
+    {
+      [self layout];
+    }
+
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    [subview _layoutViewAndSubViews];
+  END_FOR_IN (subviews);
+}
+
+- (GSAutoLayoutEngine*) _layoutEngine
+{
+  if (![self window])
+    {
+      return nil;
+    }
+
+  return [[self window] _layoutEngine];
+}
+
+- (void) _layoutEngineDidChangeAlignmentRect
+{
+  [[self superview] setNeedsLayout: YES];
+}
+
+- (GSAutoLayoutEngine*) _getOrCreateLayoutEngine
+{
+  if (![self window])
+    {
+      return nil;
+    }
+  if (![[self window] _layoutEngine])
+    {
+      [[self window] _bootstrapAutoLayout];
+    }
+
+  return [[self window] _layoutEngine];
+ }
+
 @end
+
+@implementation NSView (NSConstraintBasedLayoutCoreMethods)
+
+- (void) updateConstraintsForSubtreeIfNeeded
+{
+  NSArray *subviews = [self subviews];
+  FOR_IN (NSView *, subview, subviews)
+    [subview updateConstraintsForSubtreeIfNeeded];
+  END_FOR_IN (subviews);
+
+  if ([self needsUpdateConstraints])
+    {
+      [self updateConstraints];
+    }
+}
+
+- (void) updateConstraints
+{
+  if ([self translatesAutoresizingMaskIntoConstraints] &&
+      [self superview] != nil)
+    {
+      NSArray *autoresizingConstraints = [NSAutoresizingMaskLayoutConstraint
+          constraintsWithAutoresizingMask: [self autoresizingMask]
+                                  subitem: self
+                                    frame: [self frame]
+                                superitem: [self superview]
+                                   bounds: [[self superview] bounds]];
+      [self addConstraints: autoresizingConstraints];
+    }
+
+  [self _setNeedsUpdateConstraints: NO];
+}
+
+- (NSLayoutPriority) contentCompressionResistancePriorityForOrientation: (NSLayoutConstraintOrientation)orientation {
+  if (orientation == NSLayoutConstraintOrientationHorizontal) {
+    return _compressionPriorities.horizontal;
+  } else {
+    return _compressionPriorities.vertical;
+  }
+}
+
+- (void) setContentCompressionResistancePriority: (NSLayoutPriority)priority forOrientation: (NSLayoutConstraintOrientation)orientation {
+    if (orientation == NSLayoutConstraintOrientationHorizontal) {
+      _compressionPriorities.horizontal = priority;
+    } else {
+      _compressionPriorities.vertical = priority;
+    }
+}
+
+- (NSLayoutPriority) contentHuggingPriorityForOrientation: (NSLayoutConstraintOrientation)orientation {
+  if (orientation == NSLayoutConstraintOrientationHorizontal) {
+    return _huggingPriorities.horizontal;
+  } else {
+    return _huggingPriorities.vertical;
+  }
+}
+
+- (void) setContentHuggingPriority: (NSLayoutPriority)priority forOrientation: (NSLayoutConstraintOrientation)orientation
+{
+    if (orientation == NSLayoutConstraintOrientationHorizontal) {
+      _huggingPriorities.horizontal = priority;
+    } else {
+      _huggingPriorities.vertical = priority;
+    }
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedLayoutInstallingConstraints)
+
+- (void) addConstraint: (NSLayoutConstraint *)constraint
+{
+  if (![self _getOrCreateLayoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] addConstraint: constraint];
+}
+
+- (void) addConstraints: (NSArray*)constraints
+{
+  if (![self _getOrCreateLayoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] addConstraints: constraints];
+}
+
+- (void) removeConstraint: (NSLayoutConstraint *)constraint
+{
+  if (![self _layoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] removeConstraint: constraint];
+}
+
+- (void) removeConstraints: (NSArray *)constraints
+{
+  if (![self _layoutEngine])
+    {
+      return;
+    }
+
+  [[self _layoutEngine] removeConstraints: constraints];
+}
+
+- (NSArray*) constraints
+{
+  GSAutoLayoutEngine *engine = [self _layoutEngine];
+  if (!engine)
+    {
+      return [NSArray array];
+    }
+
+  return [engine constraintsForView: self];
+}
+
+@end
+
+#endif
 
 @implementation NSView (__NSViewPrivateMethods__)
 
@@ -5284,6 +5547,20 @@ cmpFrame(id view1, id view2, void *context)
       nextKeyView = aView;
     }
   [self setNextKeyView: nextKeyView];
+}
+
+@end
+
+@implementation NSView (CoreAnimationSupport)
+
+- (NSShadow *) shadow
+{
+  return _shadow;
+}
+
+- (void) setShadow: (NSShadow *)shadow
+{
+  ASSIGN(_shadow, shadow);
 }
 
 @end

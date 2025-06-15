@@ -2,7 +2,7 @@
 
    <abstract>The theme methods for drawing controls</abstract>
 
-   Copyright (C) 2004-2010 Free Software Foundation, Inc.
+   Copyright (C) 2004-2023 Free Software Foundation, Inc.
 
    Author: Adam Fedor <fedor@gnu.org>
    Date: Jan 2004
@@ -33,6 +33,7 @@
 
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSBezierPath.h"
+#import "AppKit/NSButton.h"
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
@@ -42,8 +43,11 @@
 #import "AppKit/NSColorWell.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSImageView.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSMenuView.h"
 #import "AppKit/NSMenuItemCell.h"
+#import "AppKit/NSOutlineView.h"
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSPopUpButtonCell.h"
 #import "AppKit/NSProgressIndicator.h"
@@ -51,9 +55,11 @@
 #import "AppKit/NSScrollView.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSTableView.h"
+#import "AppKit/NSTableCellView.h"
 #import "AppKit/NSTableColumn.h"
 #import "AppKit/NSTableHeaderCell.h"
 #import "AppKit/NSTableHeaderView.h"
+#import "AppKit/NSTableView.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSTabView.h"
 #import "AppKit/NSTabViewItem.h"
@@ -62,8 +68,10 @@
 #import "AppKit/NSPathCell.h"
 #import "AppKit/NSPathControl.h"
 #import "AppKit/NSPathComponentCell.h"
+
 #import "GNUstepGUI/GSToolbarView.h"
 #import "GNUstepGUI/GSTitleView.h"
+#import "GSBindingHelpers.h"
 
 /* a border width of 5 gives a reasonable compromise between Cocoa metrics and looking good */
 /* 7.0 gives us the NeXT Look (which is 8 pix wide including the shadow) */
@@ -76,6 +84,9 @@
 		      row: (NSInteger)index;
 - (id)_objectValueForTableColumn: (NSTableColumn *)tb
 			     row: (NSInteger)index;
+- (void) _calculatedStartingColumn: (NSInteger *)startingColumn
+		      endingColumn: (NSInteger *)endingColumn
+			inClipRect: (NSRect)clipRect;
 @end
 
 @interface NSCell (Private)
@@ -676,6 +687,45 @@
   return color;
 }
 
+- (NSColor *) badgeBackgroundColor
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"badgeColor"
+                state: GSThemeNormalState];
+  if (color == nil)
+    {
+      color = [NSColor redColor];
+    }
+  return color;
+}
+
+- (NSColor *) badgeDecorationColor
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"badgeColor"
+                state: GSThemeSelectedState];
+  if (color == nil)
+    {
+      color = [NSColor lightGrayColor];
+    }
+  return color;
+}
+
+- (NSColor *) badgeTextColor
+{
+  NSColor *color;
+
+  color = [self colorNamed: @"badgeColor"
+                state: GSThemeHighlightedState];
+  if (color == nil)
+    {
+      color = [NSColor whiteColor];
+    }
+  return color;
+}
+
 - (void) drawToolbarRect: (NSRect)aRect
                    frame: (NSRect)viewFrame
               borderMask: (unsigned int)borderMask
@@ -928,12 +978,11 @@
   // fill oval with background color
   [backgroundColor set];
   [oval fill];
-  
+
   // and stroke rounded button
   [[NSColor shadowColor] set];
   [oval stroke];
 }
-
 
 - (void) drawSwitchInRect: (NSRect)rect
                  forState: (NSControlStateValue)state
@@ -2032,6 +2081,38 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  PSstroke();
 	}
     }
+}
+
+- (void) setFrameForCloseButton: (NSButton *)closeButton
+		       viewSize: (NSSize)viewSize
+{
+  NSSize buttonSize = [[closeButton image] size];
+  buttonSize = NSMakeSize(buttonSize.width + 3, buttonSize.height + 3);
+  
+  [closeButton setFrame: NSMakeRect(viewSize.width - buttonSize.width - 4,
+                   		   (viewSize.height - buttonSize.height) / 2,
+  		                    buttonSize.width, 
+				    buttonSize.height)];
+}
+
+- (NSRect) closeButtonFrameForBounds: (NSRect)bounds
+{
+  GSTheme *theme = [GSTheme theme];
+
+  return NSMakeRect(bounds.size.width - [theme titlebarButtonSize] - 
+				   [theme titlebarPaddingRight], bounds.size.height - 
+				   [theme titlebarButtonSize] - [theme titlebarPaddingTop], 
+				   [theme titlebarButtonSize], [theme titlebarButtonSize]);
+}
+
+- (NSRect) miniaturizeButtonFrameForBounds: (NSRect)bounds
+{
+  GSTheme *theme = [GSTheme theme];
+
+  return NSMakeRect([theme titlebarPaddingLeft], 
+		    bounds.size.height - [theme titlebarButtonSize] - [theme titlebarPaddingTop], 
+		    [theme titlebarButtonSize],
+		    [theme titlebarButtonSize]);
 }
 
 - (NSColor *) browserHeaderTextColor
@@ -3205,7 +3286,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
     {
       endingRow = numberOfRows - 1;
     }
-  //  NSLog(@"drawRect : %d-%d", startingRow, endingRow);
+  // NSLog(@"drawRect : %ld-%ld", startingRow, endingRow);
   {
     SEL sel = @selector(drawRow:clipRect:);
     void (*imp)(id, SEL, NSInteger, NSRect);
@@ -3228,7 +3309,6 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSInteger numberOfColumns = [tableView numberOfColumns];
   NSIndexSet *selectedRows = [tableView selectedRowIndexes];
   NSIndexSet *selectedColumns = [tableView selectedColumnIndexes];
-  NSColor *backgroundColor = [tableView backgroundColor];
 
   // Set the fill color
   {
@@ -3239,18 +3319,10 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
     if (selectionColor == nil)
       {
-	// Switch to the alternate color of the backgroundColor is white.
-	if([backgroundColor isEqual: [NSColor whiteColor]])
-	  {
-	    selectionColor = [NSColor colorWithCalibratedRed: 0.86
-						       green: 0.92
-							blue: 0.99
-						       alpha: 1.0];
-	  }
-	else
-	  {
-	    selectionColor = [NSColor whiteColor];
-	  }
+	selectionColor = [NSColor colorWithCalibratedRed: 1.0
+						   green: 1.0
+						    blue: 1.0
+						   alpha: 1.0];
       }
     [selectionColor set];
   }
@@ -3313,14 +3385,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 
 - (void) drawTableViewRow: (NSInteger)rowIndex 
 		 clipRect: (NSRect)clipRect
-		   inView: (NSView *)view
+		   inView: (NSTableView *)tableView
 {
-  NSTableView *tableView = (NSTableView *)view;
-  // NSInteger numberOfRows = [tableView numberOfRows];
-  NSInteger numberOfColumns = [tableView numberOfColumns];
-  // NSIndexSet *selectedRows = [tableView selectedRowIndexes];
-  // NSColor *backgroundColor = [tableView backgroundColor];
-  CGFloat *columnOrigins = [tableView _columnOrigins];
   NSInteger editedRow = [tableView editedRow];
   NSInteger editedColumn = [tableView editedColumn];
   NSArray *tableColumns = [tableView tableColumns];
@@ -3330,44 +3396,21 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   NSRect drawingRect;
   NSCell *cell;
   NSInteger i;
-  CGFloat x_pos;
   const BOOL rowSelected = [[tableView selectedRowIndexes] containsIndex: rowIndex];
   NSColor *tempColor = nil;
   NSColor *selectedTextColor = [self colorNamed: @"highlightedTableRowTextColor"
 					  state: GSThemeNormalState];
 
-  /* Using columnAtPoint: here would make it called twice per row per drawn 
-     rect - so we avoid it and do it natively */
-
-  /* Determine starting column as fast as possible */
-  x_pos = NSMinX (clipRect);
-  i = 0;
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  startingColumn = (i - 1);
-
-  if (startingColumn == -1)
-    startingColumn = 0;
-
-  /* Determine ending column as fast as possible */
-  x_pos = NSMaxX (clipRect);
-  // Nota Bene: we do *not* reset i
-  while ((i < numberOfColumns) && (x_pos > columnOrigins[i]))
-    {
-      i++;
-    }
-  endingColumn = (i - 1);
-
-  if (endingColumn == -1)
-    endingColumn = numberOfColumns - 1;
-
+  [tableView _calculatedStartingColumn: &startingColumn
+			  endingColumn: &endingColumn
+			    inClipRect: clipRect];
+  
   /* Draw the row between startingColumn and endingColumn */
   for (i = startingColumn; i <= endingColumn; i++)
     {
       const BOOL columnSelected = [tableView isColumnSelected: i];
       const BOOL cellSelected = (rowSelected || columnSelected);
+
       tb = [tableColumns objectAtIndex: i];
       cell = [tb dataCellForRow: rowIndex];
       [tableView _willDisplayCell: cell
@@ -3410,6 +3453,150 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
       if (i == editedColumn && rowIndex == editedRow)
 	[cell _setInEditing: NO];
     }
+}
+
+- (NSRect) drawOutlineCell: (NSTableColumn *)tb
+	       outlineView: (NSOutlineView *)outlineView
+		      item: (id)item
+	       drawingRect: (NSRect)inputRect
+		  rowIndex: (NSInteger)rowIndex
+{
+  NSRect drawingRect = inputRect;
+  NSImage *image = nil;
+  NSInteger level = 0;
+  CGFloat indentationFactor = 0.0;
+  CGFloat indentationPerLevel = [outlineView indentationPerLevel];
+  NSCell *imageCell = nil;
+  NSRect imageRect;
+  id delegate = [outlineView delegate];
+
+  // display the correct arrow...
+  if ([outlineView isItemExpanded: item])
+    {
+      image = [NSImage imageNamed: @"common_ArrowDownH"];
+    }
+  else
+    {
+      image = [NSImage imageNamed: @"common_ArrowRightH"];
+    }
+
+  if (![outlineView isExpandable: item])
+    {
+      image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(14.0,14.0)]);
+    }
+
+  level = [outlineView levelForItem: item];
+  indentationFactor = indentationPerLevel * level;
+  imageCell = [[NSCell alloc] initImageCell: image];
+  imageRect = [outlineView frameOfOutlineCellAtRow: rowIndex];
+
+  if ([delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
+    {
+      [delegate outlineView: outlineView
+		willDisplayOutlineCell: imageCell
+	     forTableColumn: tb
+		       item: item];
+    }
+
+  /* Do not indent if the delegate set the image to nil. */
+  if ([imageCell image])
+    {
+      imageRect.size.width = [image size].width;
+      imageRect.size.height = [image size].height + 5;
+      [imageCell drawWithFrame: imageRect inView: outlineView];
+      drawingRect.origin.x
+	+= indentationFactor + imageRect.size.width + 5;
+      drawingRect.size.width
+	-= indentationFactor + imageRect.size.width + 5;
+    }
+  else
+    {
+      drawingRect.origin.x += indentationFactor;
+      drawingRect.size.width -= indentationFactor;
+    }
+
+  RELEASE(imageCell);
+
+  return drawingRect;
+}
+
+- (void) drawOutlineViewRow: (NSInteger)rowIndex 
+		   clipRect: (NSRect)clipRect
+		     inView: (NSOutlineView *)outlineView
+{
+  NSInteger editedRow = [outlineView editedRow];
+  NSInteger editedColumn = [outlineView editedColumn];
+  NSArray *tableColumns = [outlineView tableColumns];
+  NSInteger numberOfRows = [outlineView numberOfRows];
+  NSInteger startingColumn;
+  NSInteger endingColumn;
+  NSRect drawingRect;
+  NSInteger i;
+  NSTableColumn *outlineTableColumn = [outlineView outlineTableColumn];
+
+  /* Using columnAtPoint: here would make it called twice per row per drawn
+     rect - so we avoid it and do it natively */
+
+  if (rowIndex >= numberOfRows)
+    {
+      return;
+    }
+
+  [outlineView _calculatedStartingColumn: &startingColumn
+			    endingColumn: &endingColumn
+			      inClipRect: clipRect];
+  
+  /* Draw the row between startingColumn and endingColumn */
+  for (i = startingColumn; i <= endingColumn; i++)
+    {
+      id item = [outlineView itemAtRow: rowIndex];
+      NSTableColumn *tb = [tableColumns objectAtIndex: i];
+      NSCell *cell = [outlineView preparedCellAtColumn: i row: rowIndex];
+
+      [outlineView _willDisplayCell: cell
+		     forTableColumn: tb
+				row: rowIndex];
+      if (i == editedColumn && rowIndex == editedRow)
+        {
+          [cell _setInEditing: YES];
+          [cell setShowsFirstResponder: YES];
+        }
+      else
+        {
+	  id value = [outlineView _objectValueForTableColumn: tb
+							 row: rowIndex];
+	  [cell setObjectValue: value];
+        }
+
+      drawingRect = [outlineView frameOfCellAtColumn: i
+						 row: rowIndex];
+
+      if (tb == outlineTableColumn)
+        {
+	  drawingRect = [self drawOutlineCell: tb
+				  outlineView: outlineView
+					 item: item
+				  drawingRect: drawingRect
+				     rowIndex: rowIndex];
+	}
+      
+      [cell drawWithFrame: drawingRect inView: outlineView];
+      if (i == editedColumn && rowIndex == editedRow)
+        {
+          [cell _setInEditing: NO];
+          [cell setShowsFirstResponder: NO];
+        }
+    }  
+}
+
+- (BOOL) isBoxOpaque: (NSBox *)box
+{
+  if ([box boxType] == NSBoxCustom)
+    {
+      return ![box isTransparent];
+    }
+
+  return YES;
 }
 
 - (void) drawBoxInClipRect: (NSRect)clipRect

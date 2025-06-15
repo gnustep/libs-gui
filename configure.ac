@@ -88,6 +88,17 @@ AC_PROG_CC
 AC_PROG_CPP
 
 #--------------------------------------------------------------------
+# Check for pkg-config
+#--------------------------------------------------------------------
+AC_PATH_PROG(WHOAMI, whoami, echo, $PATH:/usr/ucb)
+PKG_PROG_PKG_CONFIG
+# If the modern mechanism fails we may have an older pkg-config
+# so try looking it up the old fashioned way.
+if test -z "$PKG_CONFIG"; then
+  AC_PATH_PROG(PKG_CONFIG,pkg-config,,)
+fi
+
+#--------------------------------------------------------------------
 # Add target OS directories as necessary
 #--------------------------------------------------------------------
 CONFIG_SYSTEM_INCL="$CPPFLAGS"
@@ -273,7 +284,16 @@ if test "$have_tiff" = yes; then
     GRAPHIC_LFLAGS="$with_tiff_library $GRAPHIC_LFLAGS"
     GRAPHIC_CFLAGS="$with_tiff_include $GRAPHIC_CFLAGS"
   else
-    have_tiff=no
+    PKG_CHECK_MODULES(
+      [TIFF],
+      [libtiff-4],
+      [
+        GRAPHIC_LFLAGS="$TIFF_LIBS $GRAPHIC_LFLAGS"
+        GRAPHIC_CFLAGS="$TIFF_CFLAGS $GRAPHIC_CFLAGS"
+      ],
+      [
+        have_tiff=no
+      ])
   fi
 fi
 
@@ -431,6 +451,11 @@ AS_IF([test "x$enable_imagemagick" = "xyes"], [
     ],
     [AC_DEFINE([HAVE_IMAGEMAGICK], [0], [Don't have ImageMagick])])
 ])
+AS_IF([test "x$enable_imagemagick" = "xyes"], [
+   PKG_CHECK_MODULES([MAGICKCORE], [MagickCore >= 7],
+   [AC_DEFINE([MAGICKCORE_7_OR_NEWER], [1], [MagickCore >= 7])],
+   [AC_DEFINE([MAGICKCORE_7_OR_NEWER], [0], [MagickCore < 7])])
+])
 
 #--------------------------------------------------------------------
 # Check for International Components for Unicode
@@ -441,33 +466,37 @@ AC_ARG_ENABLE(icu,
   [  --disable-icu		Disable International Components for Unicode],,
   enable_icu=yes)
 
-AC_ARG_ENABLE(icu-config,
-  [  --disable-icu-config		Do not use the icu-config script to check
-				for ICU.],,
-  enable_icu_config=yes)
-
 AC_ARG_WITH(icu-library,
   [  --with-icu-library=PATH  	library path for ICU libraries (only checked
 				if not using icu-config)],
   icu_libdir="$withval", icu_libdir="no")
 
-if test $enable_icu = yes; then
-  if test "$enable_icu_config" = "yes"; then
-    AC_CHECK_ICU(4.0, have_icu=yes, have_icu=no)
-  else
-    have_icu=no;
+AS_IF([test "x$enable_icu" = "xyes"], [
+  # First attempt, icu-config
+  AC_CHECK_ICU(4.0,  [HAVE_ICU=1], [HAVE_ICU=0])
+
+  # If no icu-config, attempt pkg-config
+  if test $HAVE_ICU = 0; then
+    PKG_CHECK_MODULES([ICU], [icu-i18n > 49.0], [
+      AC_CHECK_HEADERS([unicode/uloc.h unicode/ulocdata.h unicode/ucol.h unicode/ucurr.h unicode/uregex.h unicode/ucal.h unicode/unorm2.h unicode/unum.h unicode/udat.h unicode/udatpg.h unicode/ustring.h unicode/usearch.h unicode/ucnv.h unicode/utext.h unicode/ubrk.h unicode/utypes.h],
+      HAVE_ICU=1)], [HAVE_ICU=0])
+  fi
+
+  if test $HAVE_ICU = 0; then
+    HAVE_ICU=0;
     AC_CHECKING([for libicu (icu-config disabled)])
     if test "$icu_libdir" != "no"; then
       ICU_LDFLAGS="-L$icu_libdir";
     fi
     saved_LDFLAGS="$LDFLAGS";
     LDFLAGS="$LDFLAGS $LIBS $ICU_LDFLAGS -licui18n -licuuc -licudata -lm"
-    AC_TRY_LINK([],[], have_icu="yes", have_icu="no");
+    AC_TRY_LINK([],[], HAVE_ICU=1, HAVE_ICU=0);
     LDFLAGS="$saved_LDFLAGS";
     ICU_LIBS="-licui18n -licuuc -licudata -lm" 
   fi
+
     
-  if test "$have_icu" = "yes"; then
+  if test $HAVE_ICU = 1; then
     AC_MSG_RESULT(yes)
     AC_CHECK_HEADERS(unicode/uchar.h unicode/ustring.h)
     GRAPHIC_LFLAGS="$ICU_LDFLAGS $ICU_LIBS $GRAPHIC_LFLAGS"
@@ -476,7 +505,7 @@ if test $enable_icu = yes; then
     AC_MSG_RESULT(no)
     AC_MSG_WARN([The International Components for Unicode (ICU) development headers and libraries do not appear to be available on this system.])
   fi
-fi
+])
 AC_SUBST(HAVE_ICU)
 
 #--------------------------------------------------------------------
@@ -635,6 +664,12 @@ fi
 AC_SUBST(WARN_FLAGS)
 
 #--------------------------------------------------------------------
+# Get the Cflags and Libs values for gnustep-gui.pc
+#--------------------------------------------------------------------
+AC_SUBST(GUIFLAGS, `gnustep-config --objc-flags`)
+AC_SUBST(GUILIBS, `gnustep-config --gui-libs`)
+
+#--------------------------------------------------------------------
 # Record the version
 #--------------------------------------------------------------------
 AC_MSG_CHECKING(for the version of gnustep-gui we are compiling)
@@ -673,5 +708,5 @@ static double rint(double a)     \
 #endif
 ])
 
-AC_CONFIG_FILES([config.make gui.make Headers/Additions/GNUstepGUI/GSVersion.h])
+AC_CONFIG_FILES([config.make gui.make Source/gnustep-gui.pc Headers/Additions/GNUstepGUI/GSVersion.h])
 AC_OUTPUT

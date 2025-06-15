@@ -103,6 +103,7 @@ NSDataLinkManager.m \
 NSDataLinkPanel.m \
 NSDatePicker.m \
 NSDatePickerCell.m \
+NSDictionaryController.m \
 NSDockTile.m \
 NSDocument.m \
 NSDocumentController.m \
@@ -179,6 +180,7 @@ NSStoryboardSegue.m \
 NSMagnificationGestureRecognizer.m \
 NSMatrix.m \
 NSMenu.m \
+NSMenuToolbarItem.m \
 NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
@@ -260,10 +262,13 @@ NSStatusItem.m \
 NSTabView.m \
 NSTabViewController.m \
 NSTabViewItem.m \
+NSTableCellView.m \
 NSTableColumn.m \
 NSTableHeaderView.m \
 NSTableHeaderCell.m \
 NSTableView.m \
+NSTableViewRowAction.m \
+NSTableRowView.m \
 NSText.m \
 NSTextAlternatives.m \
 NSTextAttachment.m \
@@ -299,6 +304,7 @@ NSWindowController.m \
 NSWorkspace.m \
 GSAnimator.m \
 GSAutocompleteWindow.m \
+GSControllerTreeProxy.m \
 GSDisplayServer.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
@@ -356,7 +362,19 @@ GSXibLoading.m \
 GSXibKeyedUnarchiver.m \
 GSXib5KeyedUnarchiver.m \
 GSHelpAttachment.m \
-GSAutoLayoutVFLParser.m
+GSAutoLayoutEngine.m \
+GSAutoLayoutVFLParser.m \
+GSCassowarySolver.m \
+GSCSConstraint.m \
+GSCSVariable.m \
+GSCSSolution.m \
+GSCSFloatComparator.m \
+GSCSLinearExpression.m \
+GSCSStrength.m \
+GSCSEditInfo.m \
+GSCSEditVariableManager.m \
+GSCSTableau.m \
+GSColorSliderCell.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -434,6 +452,7 @@ NSDataLinkManager.h \
 NSDataLinkPanel.h \
 NSDatePicker.h \
 NSDatePickerCell.h \
+NSDictionaryController.h \
 NSDockTile.h \
 NSDocument.h \
 NSDocumentController.h \
@@ -480,6 +499,7 @@ NSMediaLibraryBrowserController.h \
 NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
+NSMenuToolbarItem.h \
 NSMenuView.h \
 NSMovie.h \
 NSMovieView.h \
@@ -567,10 +587,13 @@ NSSwitch.h \
 NSTabView.h \
 NSTabViewController.h \
 NSTabViewItem.h \
+NSTableCellView.h \
 NSTableColumn.h \
 NSTableHeaderCell.h \
 NSTableHeaderView.h \
 NSTableView.h \
+NSTableViewRowAction.h \
+NSTableRowView.h \
 NSText.h \
 NSTextAlternatives.h \
 NSTextAttachment.h \
@@ -670,8 +693,7 @@ GSWindowDecorationView.h \
 GSXibElement.h \
 GSXibLoading.h \
 GSXibKeyedUnarchiver.h \
-GSHelpAttachment.h \
-GSAutoLayoutVFLParser.h
+GSHelpAttachment.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 
@@ -688,6 +710,9 @@ libgui-resources_RESOURCE_FILES = Info-gnustep.plist
 
 # Extra DLL exports file
 libgnustep-gui_DLL_DEF = libgnustep-gui.def
+
+# pkg-config file
+libgnustep-gui_PKGCONFIG_FILES = "gnustep-gui.pc"
 
 include GNUmakefile.preamble
 

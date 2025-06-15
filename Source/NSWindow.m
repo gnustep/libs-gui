@@ -89,8 +89,10 @@
 #import "GSGuiPrivate.h"
 #import "GSToolTips.h"
 #import "GSIconManager.h"
+#import "GSAutoLayoutEngine.h"
 #import "NSToolbarFrameworkPrivate.h"
 #import "NSViewPrivate.h"
+#import "NSWindowPrivate.h"
 
 #define GSI_ARRAY_TYPES 0
 #define GSI_ARRAY_TYPE NSWindow *
@@ -922,6 +924,8 @@ many times.
   DESTROY(_lastOtherMouseDownView);
   DESTROY(_lastDragView);
   DESTROY(_screen);
+
+  TEST_RELEASE(_layoutEngine);
 
   /*
    * FIXME This should not be necessary - the views should have removed
@@ -2105,10 +2109,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (BOOL) showsResizeIndicator
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-        "showsResizeIndicator", "NSWindow");
-  return YES;
+  return ([self styleMask] & NSResizableWindowMask) ? YES : NO;
 }
 
 - (void) setShowsResizeIndicator: (BOOL)show
@@ -5948,6 +5949,30 @@ current key view.<br />
   return nil;
 }
 
+- (void)beginSheet:(NSWindow *)sheet
+ completionHandler:(GSNSWindowDidEndSheetCallbackBlock)handler {
+  // FIXME
+  NSInteger ret;
+
+  [sheet setParentWindow: self];
+  self->_attachedSheet = sheet;
+
+  [[NSNotificationCenter defaultCenter] 
+          postNotificationName: NSWindowWillBeginSheetNotification
+                        object: self];
+  ret = [NSApp runModalForWindow: sheet 
+	      relativeToWindow: self];
+
+  CALL_BLOCK(handler, ret);
+
+  [sheet close];
+  self->_attachedSheet = nil;
+  [sheet setParentWindow: nil];
+  [[NSNotificationCenter defaultCenter] 
+          postNotificationName: NSWindowDidEndSheetNotification
+                        object: self];
+}
+
 - (CGFloat) backingScaleFactor
 {
   return 1.0;
@@ -6154,6 +6179,20 @@ current key view.<br />
       [_inactive removeObject: window];
     }
 }
+@end
+
+@implementation NSWindow (NSConstraintBasedLayoutCorePrivateMethods)
+
+- (GSAutoLayoutEngine*) _layoutEngine
+{
+  return _layoutEngine;
+}
+
+- (void) _setLayoutEngine: (GSAutoLayoutEngine*)layoutEngine
+{
+  ASSIGN(_layoutEngine, layoutEngine);
+}
+
 @end
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)

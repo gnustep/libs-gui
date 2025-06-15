@@ -109,7 +109,7 @@
   [super dealloc];
 }
 
-- (id) copyWithZone: (NSZone*)zone;
+- (id) copyWithZone: (NSZone*)zone
 {
   NSSearchFieldCell *c = [super copyWithZone: zone];
 
@@ -345,7 +345,7 @@
   return text;
 }
 
-- (NSRect) searchButtonRectForBounds: (NSRect)rect;
+- (NSRect) searchButtonRectForBounds: (NSRect)rect
 {
   NSRect search, part;
 

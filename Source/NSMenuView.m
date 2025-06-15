@@ -789,7 +789,10 @@ static float menuBarHeight = 0.0;
         {
           GSCellRect elem;
           NSMenuItemCell *aCell = [self menuItemCellForItemAtIndex: i];
-          float titleWidth = [aCell titleWidth];
+          CGFloat titleWidth = [aCell titleWidth];
+
+	  titleWidth = [[GSTheme theme] proposedTitleWidth: titleWidth
+					       forMenuView: self];
 
           if ([aCell imageWidth])
             {
@@ -1829,6 +1832,11 @@ static float menuBarHeight = 0.0;
 					inMode: NSEventTrackingRunLoopMode
 				       dequeue: YES];
 	  type = [event type];
+    if (type == NSLeftMouseUp || type == NSRightMouseUp || type == NSOtherMouseUp)
+      {
+          shouldFinish = YES;
+          break;  // Exit the loop to proceed to StopPeriodicEvents
+      }
 	  if (type == NSAppKitDefined)
 	    {
 	      [[event window] sendEvent: event];

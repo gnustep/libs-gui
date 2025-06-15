@@ -41,12 +41,14 @@
 
 #import <AppKit/NSResponder.h>
 #import <AppKit/NSUserInterfaceValidation.h>
+#import <AppKit/NSWindow.h>
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
 @class NSArray;
+@class NSAppearance;
 @class NSDate;
 @class NSError;
 @class NSException;
@@ -62,6 +64,7 @@ extern "C" {
 @class NSMenuItem;
 @class NSPasteboard;
 @class NSWindow;
+@class NSDockTile;
 
 @class GSInfoPanel;
 
@@ -221,11 +224,13 @@ APPKIT_EXPORT_CLASS
   BOOL			_windows_need_update;
   NSImage		*_app_icon;
   NSWindow		*_app_icon_window;
+  NSDockTile            *_dock_tile;
   NSMutableArray	*_hidden;
   NSMutableArray	*_inactive;
   NSWindow		*_hidden_key;
   NSWindow              *_hidden_main;
   GSInfoPanel           *_infoPanel;
+  NSAppearance          *_appearance;
   NSApplicationPresentationOptions _presentationOptions;
 
   /* This autorelease pool should only be created and used by -run, with
@@ -777,16 +782,6 @@ NSShowSystemInfoPanel(NSDictionary *options);
  * The NSApp global variable.
  */
 APPKIT_EXPORT NSApplication	*NSApp;
-
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
-enum
-{
-  NSModalResponseStop = -1000,
-  NSModalResponseAbort = -1001,
-  NSModalResponseContinue = -1002
-};
-typedef NSInteger NSModalResponse;
-#endif
 
 #if defined(__cplusplus)
 }

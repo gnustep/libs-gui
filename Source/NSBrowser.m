@@ -14,6 +14,9 @@
    Date: September 2000
    Author:  Fred Kiefer <FredKiefer@gmx.de>
    Date: September 2002
+   Author:  Gregory Casamento <greg.casamento@gmail.com>
+   Date: July 2024
+   Note: Added support for 10.6+ delegate methods. Added bindings support
 
    This file is part of the GNUstep GUI Library.
 
@@ -29,39 +32,47 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
-#include <math.h>                  // (float)rintf(float x)
+#include <math.h> // (float)rintf(float x}
 #import "config.h"
+
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDebug.h>
+#import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSIndexPath.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
+
+#import "AppKit/AppKitExceptions.h"
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
-#import "AppKit/AppKitExceptions.h"
-#import "AppKit/NSScroller.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSFont.h"
-#import "AppKit/NSScrollView.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSMatrix.h"
+#import "AppKit/NSScroller.h"
+#import "AppKit/NSScrollView.h"
 #import "AppKit/NSTableHeaderCell.h"
+#import "AppKit/NSTreeController.h"
+#import "AppKit/NSTreeNode.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSViewController.h"
 #import "AppKit/NSWindow.h"
-#import "AppKit/NSBezierPath.h"
-#import "GNUstepGUI/GSTheme.h"
 
+#import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
+#import "GSBindingHelpers.h"
 
 /* Cache */
-static CGFloat scrollerWidth; // == [NSScroller scrollerWidth]
+static CGFloat scrollerWidth; // == [NSScroller scrollerWidth];
 static NSTextFieldCell *titleCell;
 static CGFloat browserColumnSeparation;
 static CGFloat browserVerticalPadding;
@@ -165,7 +176,7 @@ static BOOL browserUseBezels;
   else
     {
       int dummy = 0;
-      
+
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
       [aCoder encodeObject: _columnScrollView];
       [aCoder encodeObject: _columnMatrix];
@@ -173,7 +184,7 @@ static BOOL browserUseBezels;
       [aCoder encodeObject: _columnTitle];
     }
 }
-  
+
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   if ([aDecoder allowsKeyedCoding])
@@ -186,14 +197,14 @@ static BOOL browserUseBezels;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
       _columnScrollView = [aDecoder decodeObject];
       if (_columnScrollView)
-        RETAIN(_columnScrollView);
+	RETAIN(_columnScrollView);
       _columnMatrix = [aDecoder decodeObject];
       if (_columnMatrix)
-        RETAIN(_columnMatrix);
+	RETAIN(_columnMatrix);
       [aDecoder decodeValueOfObjCType: @encode(int) at: &dummy];
       _columnTitle = [aDecoder decodeObject];
       if (_columnTitle)
-        RETAIN(_columnTitle);
+	RETAIN(_columnTitle);
     }
   return self;
 }
@@ -224,8 +235,8 @@ static BOOL browserUseBezels;
 						withFrame: theRect];
 }
 
-- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame 
-                                    inView: (NSView*)controlView
+- (void) _drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
+				    inView: (NSView*)controlView
 {
   [[GSTheme theme] drawBrowserHeaderCell: self
 			       withFrame: cellFrame
@@ -245,10 +256,15 @@ static BOOL browserUseBezels;
 @interface NSBrowser (Private)
 - (NSString *) _getTitleOfColumn: (NSInteger)column;
 - (void) _performLoadOfColumn: (NSInteger)column;
+- (id) _itemForColumn: (NSInteger)column;
 - (void) _remapColumnSubviews: (BOOL)flag;
 - (void) _setColumnTitlesNeedDisplay;
 - (NSBorderType) _resolvedBorderType;
 - (void) _themeDidActivate: (NSNotification*)notification;
+@end
+
+// Category to handle bindings
+@interface NSBrowser (GSBindingsPrivate)
 @end
 
 //
@@ -256,7 +272,7 @@ static BOOL browserUseBezels;
 //
 @implementation NSBrowser
 
-/** <p>Returns the NSBrowserCell class (regardless of whether a 
+/** <p>Returns the NSBrowserCell class (regardless of whether a
     -setCellClass: message has been sent to a particular instance). This
     method is not meant to be used by applications.</p>
     <p>See Also: -setCellClass: </p> */
@@ -287,7 +303,7 @@ static BOOL browserUseBezels;
 }
 
 /** <p>Sets the NSCell instance copied to display items in the columns of
-    NSBrowser.</p><p>See Also: -cellPrototype</p> 
+    NSBrowser.</p><p>See Also: -cellPrototype</p>
 */
 - (void) setCellPrototype: (NSCell *)aCell
 {
@@ -295,7 +311,7 @@ static BOOL browserUseBezels;
 }
 
 /** <p>Returns the class of NSMatrix used in the NSBrowser's columns.</p>
-  <p>See Also: -setMatrixClass:</p> 
+  <p>See Also: -setMatrixClass:</p>
 */
 - (Class) matrixClass
 {
@@ -303,7 +319,7 @@ static BOOL browserUseBezels;
 }
 
 /** <p>Sets the matrix class (NSMatrix or an NSMatrix subclass) used in the
-    NSBrowser's columns.</p><p>See Also: -matrixClass</p> 
+    NSBrowser's columns.</p><p>See Also: -matrixClass</p>
 */
 - (void) setMatrixClass: (Class)classId
 {
@@ -328,7 +344,7 @@ static BOOL browserUseBezels;
     {
       return nil;
     }
-  
+
   if (!(matrix = [self matrixInColumn: i]))
     {
       return nil;
@@ -337,9 +353,9 @@ static BOOL browserUseBezels;
   return [matrix selectedCell];
 }
 
-/** <p>Returns the last (lowest) NSCell that's selected in column. 
+/** <p>Returns the last (lowest) NSCell that's selected in column.
     Returns nil if no cell is selected</p>
-    <p>See Also: -selectedCell -selectedCells</p> 
+    <p>See Also: -selectedCell -selectedCells</p>
 */
 - (id) selectedCellInColumn: (NSInteger)column
 {
@@ -354,7 +370,7 @@ static BOOL browserUseBezels;
 }
 
 /** <p>Returns a NSArray of selected cells in the rightmost column. Returns
-    nil if no cell is selected.</p><p>See Also: -selectedCell 
+    nil if no cell is selected.</p><p>See Also: -selectedCell
     -selectedCellInColumn: [NSMatrix selectedCells]</p>
 */
 - (NSArray *) selectedCells
@@ -367,7 +383,7 @@ static BOOL browserUseBezels;
     {
       return nil;
     }
-  
+
   if (!(matrix = [self matrixInColumn: i]))
     {
       return nil;
@@ -407,15 +423,15 @@ static BOOL browserUseBezels;
   return [matrix selectedRow];
 }
 
-/**<p>Selects the cell at index <var>row</var> in the column identified by 
-   index <var>column</var>. If the delegate method 
+/**<p>Selects the cell at index <var>row</var> in the column identified by
+   index <var>column</var>. If the delegate method
    -browser:selectRow:inColumn: is implemented, this is its responsability
    to select the cell. This method adds a NSBrowser column if needed
-   and deselects other selections if the browser does not allows multiple 
-   selection.</p><p>See Also: -loadedCellAtRow:column: 
+   and deselects other selections if the browser does not allows multiple
+   selection.</p><p>See Also: -loadedCellAtRow:column:
    -browser:selectRow:inColumn: [NSMatrix-selectCellAtRow:column:]</p>
  */
-- (void) selectRow: (NSInteger)row inColumn: (NSInteger)column 
+- (void) selectRow: (NSInteger)row inColumn: (NSInteger)column
 {
   NSMatrix *matrix;
   id cell;
@@ -432,18 +448,18 @@ static BOOL browserUseBezels;
     }
 
   [self setLastColumn: column];
-  
+
   if (_allowsMultipleSelection == NO)
     {
       [matrix deselectAllCells];
     }
 
   if ([_browserDelegate respondsToSelector:
-                          @selector(browser:selectRow:inColumn:)])
+			  @selector(browser:selectRow:inColumn:)])
     {
       didSelect = [_browserDelegate browser: self
-                                  selectRow: row
-                                   inColumn: column];
+				  selectRow: row
+				   inColumn: column];
     }
   else
     {
@@ -451,14 +467,14 @@ static BOOL browserUseBezels;
       didSelect = YES;
     }
 
-  if (didSelect && (![cell respondsToSelector: @selector(isLeaf)] 
-                    || ([(NSBrowserCell*)cell isLeaf] == NO)))
+  if (didSelect && (![cell respondsToSelector: @selector(isLeaf)]
+		    || ([(NSBrowserCell*)cell isLeaf] == NO)))
     {
       [self addColumn];
     }
 }
 
-/** <p>Returns the index path of the selected item, or nil if there is
+/** Returns the index path of the selected item, or nil if there is
     no selection.
 */
 - (NSIndexPath *) selectionIndexPath
@@ -469,14 +485,14 @@ static BOOL browserUseBezels;
   if (selectedColumn > -1)
     {
       NSUInteger rowIndexes[selectedColumn + 1];
-      
-      for (columnNumber = 0; columnNumber <= selectedColumn; columnNumber++)
-        {
-          rowIndexes[columnNumber] = [self selectedRowInColumn: columnNumber];
-        }
 
-      return [[NSIndexPath alloc] initWithIndexes: rowIndexes 
-                                           length: selectedColumn + 1];
+      for (columnNumber = 0; columnNumber <= selectedColumn; columnNumber++)
+	{
+	  rowIndexes[columnNumber] = [self selectedRowInColumn: columnNumber];
+	}
+
+      return [[NSIndexPath alloc] initWithIndexes: rowIndexes
+					   length: selectedColumn + 1];
     }
 
   return nil;
@@ -499,15 +515,15 @@ static BOOL browserUseBezels;
 
       // FIXME: There should be a more efficent way to the the selected row numbers
       if (!(matrix = [self matrixInColumn: selectedColumn]))
-        {
-          return nil;
-        }
+	{
+	  return nil;
+	}
 
       selectedCells = [matrix selectedCells];
       if (selectedCells == nil)
-        {
-          return nil;
-        }
+	{
+	  return nil;
+	}
 
       count = [selectedCells count];
       NSInteger seletedRows[count];
@@ -516,46 +532,46 @@ static BOOL browserUseBezels;
       int i = 0;
 
       while ((cell = [enumerator nextObject]) != nil)
-        {
-          NSInteger row;
-          NSInteger column;
+	{
+	  NSInteger row;
+	  NSInteger column;
 
-          [matrix getRow: &row
-                  column: &column
-                  ofCell: cell];
-          seletedRows[i++] = row;
-        }
+	  [matrix getRow: &row
+		  column: &column
+		  ofCell: cell];
+	  seletedRows[i++] = row;
+	}
 
       if (selectedColumn > 0)
-        {
-          NSIndexPath *indexPath;
-          NSUInteger rowIndexes[selectedColumn];
-          NSInteger columnNumber = 0;
-          
-          for (columnNumber = 0; columnNumber < selectedColumn; columnNumber++)
-            {
-              rowIndexes[columnNumber] = [self selectedRowInColumn: columnNumber];
-            }
-          
-          indexPath = [[NSIndexPath alloc] initWithIndexes: rowIndexes 
-                                                    length: selectedColumn];
-          
-          for (i = 0; i < count; i++)
-            {
-              [paths addObject: [indexPath indexPathByAddingIndex: seletedRows[i]]];
-            }
-        }
-      if (selectedColumn == 0)
-        {
-          NSIndexPath *indexPath;
+	{
+	  NSIndexPath *indexPath;
+	  NSUInteger rowIndexes[selectedColumn];
+	  NSInteger columnNumber = 0;
 
-          for (i = 0; i < count; i++)
-            {
-              indexPath = [[NSIndexPath alloc] initWithIndex: seletedRows[i]];
-              [paths addObject: indexPath];
-              RELEASE(indexPath);
-            }
-        }
+	  for (columnNumber = 0; columnNumber < selectedColumn; columnNumber++)
+	    {
+	      rowIndexes[columnNumber] = [self selectedRowInColumn: columnNumber];
+	    }
+
+	  indexPath = [[NSIndexPath alloc] initWithIndexes: rowIndexes
+						    length: selectedColumn];
+
+	  for (i = 0; i < count; i++)
+	    {
+	      [paths addObject: [indexPath indexPathByAddingIndex: seletedRows[i]]];
+	    }
+	}
+      if (selectedColumn == 0)
+	{
+	  NSIndexPath *indexPath;
+
+	  for (i = 0; i < count; i++)
+	    {
+	      indexPath = [[NSIndexPath alloc] initWithIndex: seletedRows[i]];
+	      [paths addObject: indexPath];
+	      RELEASE(indexPath);
+	    }
+	}
       return paths;
     }
 
@@ -588,12 +604,12 @@ static BOOL browserUseBezels;
     }
 }
 
-/** Loads if necessary and returns the NSCell at row in column. 
+/** Loads if necessary and returns the NSCell at row in column.
     if you change this code, you may want to look at the __performLoadOfColumn:
-    method in which the following code is integrated (for speed) 
+    method in which the following code is integrated (for speed)
 */
 - (id) loadedCellAtRow: (NSInteger)row
-                column: (NSInteger)column
+		column: (NSInteger)column
 {
   NSMatrix *matrix;
   NSCell *cell;
@@ -610,27 +626,27 @@ static BOOL browserUseBezels;
     }
 
   // Load if not already loaded
-  if (![cell respondsToSelector: @selector(isLoaded)] 
+  if (![cell respondsToSelector: @selector(isLoaded)]
       || [(NSBrowserCell*)cell isLoaded])
     {
       return cell;
     }
   else
     {
-      if (_passiveDelegate || [_browserDelegate respondsToSelector: 
-                  @selector(browser:willDisplayCell:atRow:column:)])
-        {
-          [_browserDelegate browser: self willDisplayCell: cell
-                            atRow: row  column: column];
-        }
+      if (_passiveDelegate || [_browserDelegate respondsToSelector:
+		  @selector(browser:willDisplayCell:atRow:column:)])
+	{
+	  [_browserDelegate browser: self willDisplayCell: cell
+			    atRow: row  column: column];
+	}
       [(NSBrowserCell*)cell setLoaded: YES];
     }
 
   return cell;
 }
 
-/** <p>Returns the matrix located in the column identified by index 
-    <var>column</var>. Returns nil if the matrix does not exists</p> 
+/** <p>Returns the matrix located in the column identified by index
+    <var>column</var>. Returns nil if the matrix does not exists</p>
 */
 - (NSMatrix *) matrixInColumn: (NSInteger)column
 {
@@ -642,7 +658,7 @@ static BOOL browserUseBezels;
     }
 
   browserColumn = [_browserColumns objectAtIndex: column];
-  
+
   if ((browserColumn == nil) || !(browserColumn->_isLoaded))
     {
       return nil;
@@ -723,7 +739,7 @@ static BOOL browserUseBezels;
   subStrings = [[path componentsSeparatedByString: _pathSeparator] mutableCopy];
   [subStrings removeObject: @""];
   numberOfSubStrings = [subStrings count];
-  
+
   if ([path hasPrefix: _pathSeparator])
     {
       NSUInteger i;
@@ -739,20 +755,20 @@ static BOOL browserUseBezels;
        * case, we can avoid redrawing those columns.
        */
       for (i = 0; i <= _lastColumnLoaded; i++)
-        {
-          if ((i < numberOfSubStrings) &&
-              [[[self selectedCellInColumn: i] stringValue]
-                isEqualToString: [subStrings objectAtIndex: i]])
-            {
-              column = i;
-            }
-          else
-            {
-              // Actually it's always called at 0 column, when string is "/"
-              [[self matrixInColumn: i] deselectAllCells];
-              break;
-            }
-        }
+	{
+	  if ((i < numberOfSubStrings) &&
+	      [[[self selectedCellInColumn: i] stringValue]
+		isEqualToString: [subStrings objectAtIndex: i]])
+	    {
+	      column = i;
+	    }
+	  else
+	    {
+	      // Actually it's always called at 0 column, when string is "/"
+	      [[self matrixInColumn: i] deselectAllCells];
+	      break;
+	    }
+	}
 
       [self setLastColumn: column];
       indexOfSubStrings = column;
@@ -773,53 +789,53 @@ static BOOL browserUseBezels;
       BOOL                     found = NO;
 
       if (useDelegate == YES)
-        {
-          if ([_browserDelegate browser: self
-                   selectCellWithString: aStr
-                               inColumn: column])
-            {
-              found = YES;
-              selectedCell = [matrix selectedCell];
-            }
-        }
+	{
+	  if ([_browserDelegate browser: self
+		   selectCellWithString: aStr
+			       inColumn: column])
+	    {
+	      found = YES;
+	      selectedCell = [matrix selectedCell];
+	    }
+	}
       else
-        {
-          NSInteger numOfRows = [matrix numberOfRows];
-          NSInteger row;
+	{
+	  NSInteger numOfRows = [matrix numberOfRows];
+	  NSInteger row;
 
-          // find the cell in the browser matrix which is equal to aStr
-          for (row = 0; row < numOfRows; row++)
-            {
-              selectedCell = [matrix cellAtRow: row column: 0];
+	  // find the cell in the browser matrix which is equal to aStr
+	  for (row = 0; row < numOfRows; row++)
+	    {
+	      selectedCell = [matrix cellAtRow: row column: 0];
 
-              if ([[selectedCell stringValue] isEqualToString: aStr])
-                {
-                  [matrix selectCellAtRow: row column: 0];
-                  found = YES;
-                  break;
-                }
-            }
-        }
+	      if ([[selectedCell stringValue] isEqualToString: aStr])
+		{
+		  [matrix selectCellAtRow: row column: 0];
+		  found = YES;
+		  break;
+		}
+	    }
+	}
 
       if (found)
-        {
-          indexOfSubStrings++;
-        }
+	{
+	  indexOfSubStrings++;
+	}
       else
-        {
-          // if unable to find a cell whose title matches aStr return NO
-          NSDebugLLog (@"NSBrowser", 
-                       @"unable to find cell '%@' in column %d\n", 
-                      aStr, (int)column);
-          break;
-        }
+	{
+	  // if unable to find a cell whose title matches aStr return NO
+	  NSDebugLLog (@"NSBrowser",
+		       @"unable to find cell '%@' in column %d\n",
+		      aStr, (int)column);
+	  break;
+	}
 
       // if the cell is a leaf, we are finished setting the path
       if ([selectedCell isLeaf])
-        {
-          break;
-        }
-      
+	{
+	  break;
+	}
+
       // else, it is not a leaf: get a column in the browser for it
       [self addColumn];
       column++;
@@ -846,7 +862,7 @@ static BOOL browserUseBezels;
   NSMutableString        *separator = [_pathSeparator mutableCopy];
   NSString *string;
   NSInteger i;
-  
+
   /*
    * Cannot go past the number of loaded columns
    */
@@ -860,22 +876,22 @@ static BOOL browserUseBezels;
       id cell = [self selectedCellInColumn: i];
 
       if (i != 0)
-        {
-          [separator appendString: _pathSeparator];
-        }
+	{
+	  [separator appendString: _pathSeparator];
+	}
 
       string = [cell stringValue];
-      
+
       if (string == nil)
-        {
-          /* This should happen only when c == nil, in which case it
-             doesn't make sense to go with the path */
-          break;
-        }
+	{
+	  /* This should happen only when c == nil, in which case it
+	     doesn't make sense to go with the path */
+	  break;
+	}
       else
-        {
-          [separator appendString: string];          
-        }
+	{
+	  [separator appendString: string];
+	}
     }
   /*
    * We actually return a mutable string, but that's ok since a mutable
@@ -904,7 +920,7 @@ static BOOL browserUseBezels;
 
 
 /*
- * Manipulating columns 
+ * Manipulating columns
  */
 - (NSBrowserColumn *) _createColumn
 {
@@ -919,7 +935,7 @@ static BOOL browserUseBezels;
   [sc setHasHorizontalScroller: NO];
   [sc setHasVerticalScroller: YES];
   [sc setBorderType: [self _resolvedBorderType]];
-  
+
   [bc setColumnScrollView: sc];
   [self addSubview: sc];
   RELEASE(sc);
@@ -1028,7 +1044,7 @@ static BOOL browserUseBezels;
   [sc setNeedsDisplay: YES];
 }
 
-/** <p>Returns the column number in which <var>matrix</var> is located. 
+/** <p>Returns the column number in which <var>matrix</var> is located.
     Returns -1 if <var>matrix</var> is not found.</p>
  */
 - (NSInteger) columnOfMatrix: (NSMatrix *)matrix
@@ -1040,7 +1056,7 @@ static BOOL browserUseBezels;
   for (i = 0; i < count; ++i)
     {
       if (matrix == [self matrixInColumn: i])
-        return i;
+	return i;
     }
 
   // Not found
@@ -1056,11 +1072,11 @@ static BOOL browserUseBezels;
   for (i = _lastColumnLoaded; i >= 0; i--)
     {
       if (!(matrix = [self matrixInColumn: i]))
-        continue;
+	continue;
       if ([matrix selectedCell])
-        return i;
+	return i;
     }
-  
+
   return -1;
 }
 
@@ -1085,7 +1101,7 @@ static BOOL browserUseBezels;
     {
       return;
     }
-    
+
   if (column < 0)
     {
       column = -1;
@@ -1103,25 +1119,25 @@ static BOOL browserUseBezels;
       sc = [bc columnScrollView];
 
       if ([bc isLoaded])
-        {
-          // Make the column appear empty by removing the matrix
-          if (sc)
-            {
-              [sc setDocumentView: nil];
-            }
-          [bc setIsLoaded: NO];
-          [self setTitle: nil ofColumn: i];
-        }
+	{
+	  // Make the column appear empty by removing the matrix
+	  if (sc)
+	    {
+	      [sc setDocumentView: nil];
+	    }
+	  [bc setIsLoaded: NO];
+	  [self setTitle: nil ofColumn: i];
+	}
 
       if (!_reusesColumns && i > _lastVisibleColumn)
-        {
-          [sc removeFromSuperview];
-          [_browserColumns removeObject: bc];
-          count--;
-          i--;
-        }
+	{
+	  [sc removeFromSuperview];
+	  [_browserColumns removeObject: bc];
+	  count--;
+	  i--;
+	}
     }
-  
+
   [self scrollColumnToVisible:column];
 }
 
@@ -1131,8 +1147,9 @@ static BOOL browserUseBezels;
   return _firstVisibleColumn;
 }
 
-/** <p>Returns the number of columns visible.</p>
-    <p>See Also: -firstVisibleColumn -lastVisibleColumn</p>*/
+/** Returns the number of columns visible.
+
+  <p>See Also: -firstVisibleColumn -lastVisibleColumn</p> */
 - (NSInteger) numberOfVisibleColumns
 {
   NSInteger num;
@@ -1148,15 +1165,15 @@ static BOOL browserUseBezels;
   return _lastVisibleColumn;
 }
 
-/** Invokes delegate method -browser:isColumnValid: for visible columns. 
+/** Invokes delegate method -browser:isColumnValid: for visible columns.
 */
 - (void) validateVisibleColumns
 {
   NSInteger i;
 
   // If delegate doesn't care, just return
-  if (![_browserDelegate respondsToSelector: 
-                           @selector(browser:isColumnValid:)])
+  if (![_browserDelegate respondsToSelector:
+			   @selector(browser:isColumnValid:)])
     {
       return;
     }
@@ -1167,9 +1184,9 @@ static BOOL browserUseBezels;
       // Ask delegate if the column is valid and if not
       // then reload the column
       if (![_browserDelegate browser: self  isColumnValid: i])
-        {
-          [self reloadColumn: i];
-        }
+	{
+	  [self reloadColumn: i];
+	}
     }
 }
 
@@ -1211,12 +1228,13 @@ static BOOL browserUseBezels;
     {
       return;
     }
-    
+
   // Get the previously selected cells
   selectedCells = [[matrix selectedCells] copy];
-  
+
   // Perform the data load
   [self _performLoadOfColumn: column];
+
   // set last column loaded
   [self setLastColumn: column];
 
@@ -1228,9 +1246,9 @@ static BOOL browserUseBezels;
       NSInteger sRow, sColumn;
 
       if ([matrix getRow: &sRow  column: &sColumn  ofCell: cell])
-        {
-          [matrix selectCellAtRow: sRow  column: sColumn];
-        }
+	{
+	  [matrix selectCellAtRow: sRow  column: sColumn];
+	}
     }
   RELEASE(selectedCells);
 }
@@ -1242,7 +1260,7 @@ static BOOL browserUseBezels;
 
 /**<p> Returns whether the user can select branch items when multiple selection
     is enabled. By default YES.</p>
-    <p>See Also: -setAllowsBranchSelection:</p> 
+    <p>See Also: -setAllowsBranchSelection:</p>
 */
 - (BOOL) allowsBranchSelection
 {
@@ -1250,7 +1268,7 @@ static BOOL browserUseBezels;
 }
 
 /**<p>Sets whether the user can select branch items when multiple selection
-   is enabled. By default YES.</p><p>See Also: -allowsBranchSelection</p> 
+   is enabled. By default YES.</p><p>See Also: -allowsBranchSelection</p>
 */
 - (void) setAllowsBranchSelection: (BOOL)flag
 {
@@ -1258,7 +1276,7 @@ static BOOL browserUseBezels;
 }
 
 /**<p>Returns whether there can be nothing selected. By default YES.</p>
-   <p>See Also: -setAllowsEmptySelection:</p> 
+   <p>See Also: -setAllowsEmptySelection:</p>
 */
 - (BOOL) allowsEmptySelection
 {
@@ -1276,14 +1294,14 @@ static BOOL browserUseBezels;
 
       _allowsEmptySelection = flag;
       for (i = 0; i <= _lastColumnLoaded; i++)
-        {
-          [[self matrixInColumn: i] setAllowsEmptySelection: flag];
-        }
+	{
+	  [[self matrixInColumn: i] setAllowsEmptySelection: flag];
+	}
     }
 }
 
 /**<p>Returns whether the user can select multiple items. By default YES.</p>
-   <p>See Also: -allowsMultipleSelection</p> 
+   <p>See Also: -allowsMultipleSelection</p>
 */
 - (BOOL) allowsMultipleSelection
 {
@@ -1291,7 +1309,7 @@ static BOOL browserUseBezels;
 }
 
 /** <p>Sets whether the user can select multiple items. By default YES.</p>
-    <p>See Also: -allowsMultipleSelection</p> 
+    <p>See Also: -allowsMultipleSelection</p>
 */
 - (void) setAllowsMultipleSelection: (BOOL)flag
 {
@@ -1302,17 +1320,17 @@ static BOOL browserUseBezels;
 
       _allowsMultipleSelection = flag;
       if (flag)
-        {
-          mode = NSListModeMatrix;
-        }
+	{
+	  mode = NSListModeMatrix;
+	}
       else
-        {
-          mode = NSRadioModeMatrix;
-        }
+	{
+	  mode = NSRadioModeMatrix;
+	}
       for (i = 0; i <= _lastColumnLoaded; i++)
-        {
-          [[self matrixInColumn: i] setMode: mode];
-        }
+	{
+	  [[self matrixInColumn: i] setMode: mode];
+	}
     }
 }
 
@@ -1323,7 +1341,7 @@ static BOOL browserUseBezels;
 
 /**<p>Returns YES if NSMatrix objects aren't freed when their columns
    are unloaded. By default a NSBrowser does not reuses their columns.</p>
-   <p>See Also: -setReusesColumns: [NSMatrix-renewRows:columns:]</p> 
+   <p>See Also: -setReusesColumns: [NSMatrix-renewRows:columns:]</p>
 */
 - (BOOL) reusesColumns
 {
@@ -1331,8 +1349,8 @@ static BOOL browserUseBezels;
 }
 
 /**<p>If flag is YES, prevents NSMatrix objects from being freed when
-   their columns are unloaded, so they can be reused.  By default a NSBrowser 
-   does not reuses their columns.</p><p>See Also: -reusesColumns  
+   their columns are unloaded, so they can be reused.  By default a NSBrowser
+   does not reuses their columns.</p><p>See Also: -reusesColumns
    [NSMatrix-renewRows:columns:]</p>
 */
 - (void) setReusesColumns: (BOOL)flag
@@ -1341,16 +1359,16 @@ static BOOL browserUseBezels;
 }
 
 /**<p>Returns the maximum number of visible columns. By default a NSBrowser
-   has 3 visible columns.</p><p>See Also: -setMaxVisibleColumns:</p> 
+   has 3 visible columns.</p><p>See Also: -setMaxVisibleColumns:</p>
 */
 - (NSInteger) maxVisibleColumns
 {
   return _maxVisibleColumns;
 }
 
-/** <p>Sets the maximum number of columns displayed and  adjusts the various 
+/** <p>Sets the maximum number of columns displayed and  adjusts the various
     subviews. By default a NSBrowser has 3 visible columns.</p>
-    <p>See Also: -maxVisibleColumns</p> 
+    <p>See Also: -maxVisibleColumns</p>
 */
 - (void) setMaxVisibleColumns: (NSInteger)columnCount
 {
@@ -1363,7 +1381,7 @@ static BOOL browserUseBezels;
   [self tile];
 }
 
-/** <p>Returns the minimum column width in pixels.</p> 
+/** <p>Returns the minimum column width in pixels.</p>
     <p>See Also: -setMinColumnWidth:</p>
 */
 - (CGFloat) minColumnWidth
@@ -1391,7 +1409,7 @@ static BOOL browserUseBezels;
   [self tile];
 }
 
-/** <p>Returns whether columns are separated by bezeled borders. By default a 
+/** <p>Returns whether columns are separated by bezeled borders. By default a
     NSBrowser has separate columns.</p><p>See Also: -setSeparatesColumns:</p>
  */
 - (BOOL) separatesColumns
@@ -1399,7 +1417,7 @@ static BOOL browserUseBezels;
   return _separatesColumns;
 }
 
-/**<p>Sets whether to separate columns with bezeled borders and marks self for 
+/**<p>Sets whether to separate columns with bezeled borders and marks self for
    display. Does nothing if the NSBrowser is titled. By default a NSBrowser
    has separate columns.</p><p>See Also: -separatesColumns -isTitled</p>
 */
@@ -1480,7 +1498,7 @@ static BOOL browserUseBezels;
 }
 
 
-/**<p> Returns YES if the title of a column is set to the string value of 
+/**<p> Returns YES if the title of a column is set to the string value of
     the selected NSCell in the previous column. By default YES</p>
     <p>See Also: -setTakesTitleFromPreviousColumn: -selectedCellInColumn:</p>
 */
@@ -1490,7 +1508,7 @@ static BOOL browserUseBezels;
 }
 
 /** <p>Sets whether the title of a column is set to the string value of the
-    selected NSCell in the previous column and marks self for display. By 
+    selected NSCell in the previous column and marks self for display. By
     default YES</p>
     <p>See Also: -takesTitleFromPreviousColumn -selectedCellInColumn:</p>
 */
@@ -1526,16 +1544,16 @@ static BOOL browserUseBezels;
 }
 
 - (BOOL) canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
-                       inColumn: (NSInteger)columnIndex
-                      withEvent: (NSEvent *)dragEvent
+		       inColumn: (NSInteger)columnIndex
+		      withEvent: (NSEvent *)dragEvent
 {
-  if ([_browserDelegate respondsToSelector: 
-                         @selector(browser:canDragRowsWithIndexes:inColumn:withEvent:)])
+  if ([_browserDelegate respondsToSelector:
+			 @selector(browser:canDragRowsWithIndexes:inColumn:withEvent:)])
     {
       return [_browserDelegate browser: self
-                canDragRowsWithIndexes: rowIndexes
-                              inColumn: columnIndex
-                             withEvent: dragEvent];
+		canDragRowsWithIndexes: rowIndexes
+			      inColumn: columnIndex
+			     withEvent: dragEvent];
     }
   else
     {
@@ -1559,24 +1577,24 @@ static BOOL browserUseBezels;
   return browserColumn->_columnTitle;
 }
 
-/** <p>Sets the title of the column at index <var>column</var> to 
+/** <p>Sets the title of the column at index <var>column</var> to
     <var>aString</var> and marks the title for dispaly if the NSBrowser
     can diplay titles or if the column <var>column</var> is visible.</p>
     <p>See Also: -isTitled -titleFrameOfColumn: -titleHeight</p>
 */
 - (void) setTitle: (NSString *)aString
-         ofColumn: (NSInteger)column
+	 ofColumn: (NSInteger)column
 {
   NSBrowserColumn *bc;
 
   bc = [_browserColumns objectAtIndex: column];
 
   [bc setColumnTitle: aString];
-  
+
   // If column is not visible then nothing to redisplay
   if (!_isTitled || !NSBR_COLUMN_IS_VISIBLE(column))
     return;
-  
+
   [self setNeedsDisplayInRect: [self titleFrameOfColumn: column]];
 }
 
@@ -1591,13 +1609,13 @@ static BOOL browserUseBezels;
 /** <p>Sets whether columns display titles and marks self for display.
     Does nothing if the NSBrowser hasn't separates columns. By default
     a NSBrowser displays titles.</p>
-    <p>See Also: -isTitled -separatesColumns </p> 
+    <p>See Also: -isTitled -separatesColumns </p>
 */
 - (void) setTitled: (BOOL)flag
 {
   if (_isTitled == flag || !_separatesColumns)
     return;
-  
+
   _isTitled = flag;
   [self tile];
   [self setNeedsDisplay: YES];
@@ -1605,27 +1623,40 @@ static BOOL browserUseBezels;
 
 /**
  */
-- (void) drawTitleOfColumn: (NSInteger)column 
-                    inRect: (NSRect)aRect
+- (void) drawTitleOfColumn: (NSInteger)column
+		    inRect: (NSRect)aRect
 {
-  [self drawTitle: [self titleOfColumn: column] 
-        inRect: aRect 
-        ofColumn: column];
+  [self drawTitle: [self titleOfColumn: column]
+	inRect: aRect
+	ofColumn: column];
 }
 
 /** Draws the title for the column at index column within the rectangle
     defined by aRect. */
 - (void) drawTitle: (NSString *)title
-            inRect: (NSRect)aRect
-          ofColumn: (NSInteger)column
+	    inRect: (NSRect)aRect
+	  ofColumn: (NSInteger)column
 {
+  NSView *cv = nil;
+
   if (!_isTitled || !NSBR_COLUMN_IS_VISIBLE(column))
     return;
 
-//  [titleCell setControlView: self];
+  if (_itemBasedDelegate == YES)
+    {
+      SEL sel = @selector(browser:headerViewControllerForItem:);
+      if ([_browserDelegate respondsToSelector: sel])
+	{
+	  id item = [self _itemForColumn: column];
+	  NSViewController *vc = nil;
+	  vc = [_browserDelegate browser: self headerViewControllerForItem: item];
+	  cv = [vc view];
+	}
+    }
+
   [titleCell setStringValue: title];
   [titleCell drawWithFrame: aRect inView: self];
-  [titleCell setControlView: nil];
+  [titleCell setControlView: cv];
 }
 
 /** <p>Returns the height of column titles. The Nextish look returns 21.</p>
@@ -1656,25 +1687,25 @@ static BOOL browserUseBezels;
 
       // Calculate origin
       if (_separatesColumns)
-        {
-          rect.origin.x = nbColumn * (_columnSize.width + browserColumnSeparation);
-        }
+	{
+	  rect.origin.x = nbColumn * (_columnSize.width + browserColumnSeparation);
+	}
       else
-        {
-          rect.origin.x = nbColumn * _columnSize.width;
-        }
+	{
+	  rect.origin.x = nbColumn * _columnSize.width;
+	}
 
       rect.origin.y = _frame.size.height - titleHeight;
-      
+
       // Calculate size
       if (column == _lastVisibleColumn)
-        {
-          rect.size.width = _frame.size.width - rect.origin.x;
-        }
+	{
+	  rect.size.width = _frame.size.width - rect.origin.x;
+	}
       else
-        {
-          rect.size.width = _columnSize.width;
-        }
+	{
+	  rect.size.width = _columnSize.width;
+	}
 
       rect.size.height = titleHeight;
 
@@ -1696,14 +1727,14 @@ static BOOL browserUseBezels;
   if (_lastVisibleColumn < column)
     {
       [self scrollColumnsRightBy: (column - _lastVisibleColumn)];
-    } 
+    }
   else if (_firstVisibleColumn > column)
     {
       [self scrollColumnsLeftBy: (_firstVisibleColumn - column)];
-    } 
+    }
 }
 
-/** <p>Scrolls columns left by <var>shiftAmount</var> columns.</p> 
+/** <p>Scrolls columns left by <var>shiftAmount</var> columns.</p>
     <p>See Also: -scrollColumnsRightBy: -scrollColumnToVisible:</p>
  */
 - (void) scrollColumnsLeftBy: (NSInteger)shiftAmount
@@ -1734,7 +1765,7 @@ static BOOL browserUseBezels;
 
   // Notify the delegate
   if ([_browserDelegate respondsToSelector: @selector(browserDidScroll:)])
-    [_browserDelegate browserDidScroll: self];  
+    [_browserDelegate browserDidScroll: self];
 }
 
 /** <p>Scrolls columns right by <var>shiftAmount</var> columns.</p>
@@ -1795,7 +1826,7 @@ static BOOL browserUseBezels;
   [_horizontalScroller setFloatValue: fv knobProportion: prop];
 }
 
-/** Scrolls columns left or right based on an NSScroller. 
+/** Scrolls columns left or right based on an NSScroller.
 */
 - (void) scrollViaScroller: (NSScroller *)sender
 {
@@ -1803,36 +1834,36 @@ static BOOL browserUseBezels;
 
   if ([sender class] != [NSScroller class])
     return;
-  
+
   hit = [sender hitPart];
-  
+
   switch (hit)
     {
       // Scroll to the left
       case NSScrollerDecrementLine:
       case NSScrollerDecrementPage:
-              [self scrollColumnsLeftBy: 1];
-              break;
-      
+	      [self scrollColumnsLeftBy: 1];
+	      break;
+
       // Scroll to the right
       case NSScrollerIncrementLine:
       case NSScrollerIncrementPage:
-        [self scrollColumnsRightBy: 1];
-              break;
-      
+	[self scrollColumnsRightBy: 1];
+	      break;
+
       // The knob or knob slot
       case NSScrollerKnob:
       case NSScrollerKnobSlot:
-        {
-          float f = [sender floatValue];
+	{
+	  float f = [sender floatValue];
 
-          [self scrollColumnToVisible: GSRoundTowardsInfinity(f * _lastColumnLoaded)];
-        }
-        break;
-      
+	  [self scrollColumnToVisible: GSRoundTowardsInfinity(f * _lastColumnLoaded)];
+	}
+	break;
+
       // NSScrollerNoPart ???
       default:
-              break;
+	      break;
     }
 }
 
@@ -1841,7 +1872,7 @@ static BOOL browserUseBezels;
   NSMatrix *matrix = [self matrixInColumn: column];
 
   [matrix scrollCellToVisibleAtRow: row
-                            column: 1];
+			    column: 1];
 }
 
 /*
@@ -1850,7 +1881,7 @@ static BOOL browserUseBezels;
 
 /**<p>Returns whether an NSScroller is used to scroll horizontally.
    By default a NSBrowser has a horizontal scroller.</p><p>See Also:
-   -setHasHorizontalScroller:</p> 
+   -setHasHorizontalScroller:</p>
 */
 - (BOOL) hasHorizontalScroller
 {
@@ -1869,9 +1900,9 @@ static BOOL browserUseBezels;
     {
       _hasHorizontalScroller = flag;
       if (!flag)
-              [_horizontalScroller removeFromSuperview];
+	      [_horizontalScroller removeFromSuperview];
       else
-        [self addSubview: _horizontalScroller];
+	[self addSubview: _horizontalScroller];
       [self tile];
       [self setNeedsDisplay: YES];
     }
@@ -1910,7 +1941,7 @@ static BOOL browserUseBezels;
 
 /** <p>Sets whether pressing an arrow key will cause the action message
     to be sent (in addition to causing scrolling). By default YES.</p>
-    <p>See Also: -sendsActionOnArrowKeys -setAcceptsArrowKeys: 
+    <p>See Also: -sendsActionOnArrowKeys -setAcceptsArrowKeys:
     [NSControl-setAction:] [NSControl-action]</p>
 */
 - (void) setSendsActionOnArrowKeys: (BOOL)flag
@@ -1958,9 +1989,9 @@ static BOOL browserUseBezels;
   else if (!_separatesColumns && browserUseBezels)
     {
       if (column == _firstVisibleColumn)
-        rect.origin.x += 2;
+	rect.origin.x += 2;
       else
-        rect.origin.x += (n + 2);
+	rect.origin.x += (n + 2);
     }
 
   // Adjust for horizontal scroller
@@ -1969,15 +2000,15 @@ static BOOL browserUseBezels;
       if (_hasHorizontalScroller)
 	{
 	  if (_separatesColumns)
-	    rect.origin.y = (scrollerWidth - 1) + (2 * bezelBorderSize.height) + 
+	    rect.origin.y = (scrollerWidth - 1) + (2 * bezelBorderSize.height) +
 	      browserVerticalPadding;
 	  else
 	    rect.origin.y = scrollerWidth + bezelBorderSize.width;
 	}
       else if (!_separatesColumns)
-        {
-          rect.origin.y += bezelBorderSize.width;
-        }
+	{
+	  rect.origin.y += bezelBorderSize.width;
+	}
     }
   else
     {
@@ -1989,10 +2020,10 @@ static BOOL browserUseBezels;
   if (column == _lastVisibleColumn)
     {
       if (_separatesColumns)
-        rect.size.width = _frame.size.width - rect.origin.x;
-      else 
-        rect.size.width = _frame.size.width -
-          (rect.origin.x + bezelBorderSize.width);
+	rect.size.width = _frame.size.width - rect.origin.x;
+      else
+	rect.size.width = _frame.size.width -
+	  (rect.origin.x + bezelBorderSize.width);
 
       // FIXME: Assumes left-side scrollers
       if ([[GSTheme theme] scrollViewScrollersOverlapBorders])
@@ -2058,7 +2089,7 @@ static BOOL browserUseBezels;
     bezelBorderSize = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
 
   _columnSize.height = _frame.size.height;
-  
+
   // Titles (there is no real frames to resize)
   if (_isTitled)
     {
@@ -2072,16 +2103,16 @@ static BOOL browserUseBezels;
 
       _scrollerRect.origin.x = bezelBorderSize.width;
       _scrollerRect.origin.y = bezelBorderSize.height - scrollerHightReduction;
-      _scrollerRect.size.width = (_frame.size.width - 
-                                  (2 * bezelBorderSize.width));
+      _scrollerRect.size.width = (_frame.size.width -
+				  (2 * bezelBorderSize.width));
       _scrollerRect.size.height = scrollerWidth;
-      
+
       if (_separatesColumns)
-        _columnSize.height -= (scrollerWidth - scrollerHightReduction) + 
-          (2 * bezelBorderSize.height) + browserVerticalPadding;
+	_columnSize.height -= (scrollerWidth - scrollerHightReduction) +
+	  (2 * bezelBorderSize.height) + browserVerticalPadding;
       else
-        _columnSize.height -= scrollerWidth + (2 * bezelBorderSize.height);
-      
+	_columnSize.height -= scrollerWidth + (2 * bezelBorderSize.height);
+
       // "Bottom corner" box
       if (!browserUseBezels && !useBottomCorner)
 	{
@@ -2098,20 +2129,20 @@ static BOOL browserUseBezels;
 	}
 
       if (!NSEqualRects(_scrollerRect, [_horizontalScroller frame]))
-        {
-          [_horizontalScroller setFrame: _scrollerRect];
-        }
+	{
+	  [_horizontalScroller setFrame: _scrollerRect];
+	}
     }
   else
     {
       _scrollerRect = NSZeroRect;
       if (!_separatesColumns)
-        _columnSize.height -= 2 * bezelBorderSize.width;
+	_columnSize.height -= 2 * bezelBorderSize.width;
     }
 
   if (_columnSize.height < 0)
     _columnSize.height = 0;
-  
+
   num = _lastVisibleColumn - _firstVisibleColumn + 1;
 
   // Column count
@@ -2120,14 +2151,14 @@ static BOOL browserUseBezels;
       CGFloat colWidth = _minColumnWidth + scrollerWidth;
 
       if (_separatesColumns)
-        colWidth += browserColumnSeparation;
+	colWidth += browserColumnSeparation;
 
       if (_frame.size.width > colWidth)
-        {
-          columnCount = (int)(_frame.size.width / colWidth);
-        }
+	{
+	  columnCount = (int)(_frame.size.width / colWidth);
+	}
       else
-        columnCount = 1;
+	columnCount = 1;
     }
   else
     columnCount = num;
@@ -2139,18 +2170,18 @@ static BOOL browserUseBezels;
   if (columnCount != num)
     {
       if (num > 0)
-        delta = columnCount - num;
+	delta = columnCount - num;
       else
-        delta = columnCount - 1;
+	delta = columnCount - 1;
 
       if ((delta > 0) && (_lastVisibleColumn <= _lastColumnLoaded))
-        {
-          _firstVisibleColumn = (_firstVisibleColumn - delta > 0) ?
-            _firstVisibleColumn - delta : 0;
-        }
+	{
+	  _firstVisibleColumn = (_firstVisibleColumn - delta > 0) ?
+	    _firstVisibleColumn - delta : 0;
+	}
 
       for (i = [_browserColumns count]; i < columnCount; i++)
-        [self _createColumn];
+	[self _createColumn];
 
       _lastVisibleColumn = _firstVisibleColumn + columnCount - 1;
     }
@@ -2159,8 +2190,8 @@ static BOOL browserUseBezels;
   if (_separatesColumns)
     frameWidth = _frame.size.width - ((columnCount - 1) * browserColumnSeparation);
   else
-    frameWidth = _frame.size.width - ((columnCount - 1) + 
-                                      (2 * bezelBorderSize.width));
+    frameWidth = _frame.size.width - ((columnCount - 1) +
+				      (2 * bezelBorderSize.width));
 
   _columnSize.width = (int)(frameWidth / (CGFloat)columnCount);
 
@@ -2176,38 +2207,38 @@ static BOOL browserUseBezels;
       bc = [_browserColumns objectAtIndex: i];
 
       if (!(sc = [bc columnScrollView]))
-        {
-          NSLog(@"NSBrowser error, sc != [bc columnScrollView]");
-          return;
-        }
+	{
+	  NSLog(@"NSBrowser error, sc != [bc columnScrollView]");
+	  return;
+	}
 
       [sc setBorderType: [self _resolvedBorderType]];
       [sc setFrame: [self frameOfColumn: i]];
       matrix = [bc columnMatrix];
-      
+
       // Adjust matrix to fit in scrollview if column has been loaded
       if (matrix && [bc isLoaded])
-        {
-          NSSize cs, ms;
-          
-          cs = [sc contentSize];
-          ms = [matrix cellSize];
-          ms.width = cs.width;
-          [matrix setCellSize: ms];
-          [sc setDocumentView: matrix];
-        }
+	{
+	  NSSize cs, ms;
+
+	  cs = [sc contentSize];
+	  ms = [matrix cellSize];
+	  ms.width = cs.width;
+	  [matrix setCellSize: ms];
+	  [sc setDocumentView: matrix];
+	}
     }
 
   if (columnCount != num)
     {
       [self updateScroller];
       [self _remapColumnSubviews: YES];
-      //      [self _setColumnTitlesNeedDisplay];  
+      //      [self _setColumnTitlesNeedDisplay];
       [self setNeedsDisplay: YES];
     }
 }
 
-/** Override from NSControl. Don't do anything to change the size of the 
+/** Override from NSControl. Don't do anything to change the size of the
     browser.  */
 - (void) sizeToFit
 {
@@ -2228,9 +2259,9 @@ static BOOL browserUseBezels;
  * <p>Sets the delegate of the receiver.
  * If not nil, the delegate must either be passive and respond to
  * [NSObject-browser:numberOfRowsInColumn:] or be active and respond to
- * [NSObject-browser:createRowsForColumn:inMatrix:] but not both.  
+ * [NSObject-browser:createRowsForColumn:inMatrix:] but not both.
  * If the delegate is active it must also respond to
- * [NSObject-browser:willDisplayCell:atRow:column:].  
+ * [NSObject-browser:willDisplayCell:atRow:column:].
  * If the delegate is not nil but does not meet these conditions,
  * an NSBrowserIllegalDelegateException will be raised.</p>
  *<p>See Also: -delegate</p>
@@ -2241,46 +2272,60 @@ static BOOL browserUseBezels;
 
   /* Default to YES for nil delegate.  */
   _passiveDelegate = YES;
+  _itemBasedDelegate = NO;
 
-  if ([anObject respondsToSelector: 
-                  @selector(browser:numberOfRowsInColumn:)])
-    {
-      flag = YES;
-      if (![anObject respondsToSelector: 
-                         @selector(browser:willDisplayCell:atRow:column:)])
-        [NSException raise: NSBrowserIllegalDelegateException
-                     format: @"(Passive) Delegate does not respond to %s\n",
-                     GSNameFromSelector
-                       (@selector(browser:willDisplayCell:atRow:column:))];
-    }
-
-  if ([anObject respondsToSelector: 
-                  @selector(browser:createRowsForColumn:inMatrix:)])
+  if ([anObject respondsToSelector:
+		 @selector(browser:numberOfChildrenOfItem:)]
+      && [anObject respondsToSelector:
+		    @selector(browser:child:ofItem:)]
+      && [anObject respondsToSelector:
+		    @selector(browser:isLeafItem:)])
     {
       _passiveDelegate = NO;
-
-      /* If flag is already set
-         then the delegate must respond to both methods.  */
-      if (flag)
-        {
-          [NSException raise: NSBrowserIllegalDelegateException
-                       format: @"Delegate responds to both %s and %s\n",
-                       GSNameFromSelector
-                         (@selector(browser:numberOfRowsInColumn:)),
-                       GSNameFromSelector
-                         (@selector(browser:createRowsForColumn:inMatrix:))];
-        }
-
-      flag = YES;
+      _itemBasedDelegate = YES;
     }
+  else
+    {
+      if ([anObject respondsToSelector:
+		     @selector(browser:numberOfRowsInColumn:)])
+	{
+	  flag = YES;
+	  if (![anObject respondsToSelector:
+			  @selector(browser:willDisplayCell:atRow:column:)])
+	    [NSException raise: NSBrowserIllegalDelegateException
+			format: @"(Passive) Delegate does not respond to %s\n",
+			 GSNameFromSelector
+			 (@selector(browser:willDisplayCell:atRow:column:))];
+	}
 
-  if (!flag && anObject)
-    [NSException raise: NSBrowserIllegalDelegateException
-                 format: @"Delegate does not respond to %s or %s\n",
-                 GSNameFromSelector
-                   (@selector(browser:numberOfRowsInColumn:)),
-                 GSNameFromSelector
-                   (@selector(browser:createRowsForColumn:inMatrix:))];
+      if ([anObject respondsToSelector:
+		     @selector(browser:createRowsForColumn:inMatrix:)])
+	{
+	  _passiveDelegate = NO;
+
+	  /* If flag is already set
+	     then the delegate must respond to both methods.  */
+	  if (flag)
+	    {
+	      [NSException raise: NSBrowserIllegalDelegateException
+			  format: @"Delegate responds to both %s and %s\n",
+			   GSNameFromSelector
+			   (@selector(browser:numberOfRowsInColumn:)),
+			   GSNameFromSelector
+			   (@selector(browser:createRowsForColumn:inMatrix:))];
+	    }
+
+	  flag = YES;
+	}
+
+      if (!flag && anObject)
+	[NSException raise: NSBrowserIllegalDelegateException
+		    format: @"Delegate does not respond to %s or %s\n",
+		     GSNameFromSelector
+		     (@selector(browser:numberOfRowsInColumn:)),
+		     GSNameFromSelector
+		     (@selector(browser:createRowsForColumn:inMatrix:))];
+    }
 
   _browserDelegate = anObject;
 }
@@ -2291,7 +2336,7 @@ static BOOL browserUseBezels;
  */
 
 /** <p>Returns the NSBrowser's double-click action method.</p>
- <p>See Also: -setDoubleAction: </p> 
+ <p>See Also: -setDoubleAction: </p>
 */
 - (SEL) doubleAction
 {
@@ -2299,14 +2344,14 @@ static BOOL browserUseBezels;
 }
 
 /**<p> Sets the NSBrowser's double-click action to aSelector.</p>
- <p>See Also: -doubleAction</p> 
+ <p>See Also: -doubleAction</p>
 */
 - (void) setDoubleAction: (SEL)aSelector
 {
   _doubleAction = aSelector;
 }
 
-/** Sends the action message to the target. Returns YES upon success, 
+/** Sends the action message to the target. Returns YES upon success,
     NO if no target for the message could be found. */
 - (BOOL) sendAction
 {
@@ -2336,7 +2381,7 @@ static BOOL browserUseBezels;
   // If the matrix isn't ours then just return
   if (column < 0 || column > _lastColumnLoaded)
     return;
-    
+
   array = [sender selectedCells];
   aCount = [array count];
   if (aCount == 0)
@@ -2348,9 +2393,9 @@ static BOOL browserUseBezels;
   while ((cell = [enumerator nextObject]))
     {
       if (_allowsBranchSelection == NO && [cell isLeaf] == NO)
-        {
-          [selectedCells removeObject: cell];
-        }
+	{
+	  [selectedCells removeObject: cell];
+	}
     }
 
   if ([selectedCells count] == 0 && [sender selectedCell] != nil)
@@ -2370,7 +2415,7 @@ static BOOL browserUseBezels;
       [sender deselectAllCells];
       enumerator = [selectedCells objectEnumerator];
       while ((cell = [enumerator nextObject]))
-        [sender selectCell: cell];
+	[sender selectCell: cell];
       [sender setAutoscroll: autoscroll];
     }
 
@@ -2382,9 +2427,9 @@ static BOOL browserUseBezels;
 
       // If the cell is not a leaf we need to load a column
       if (![cell isLeaf])
-        {
-          [self addColumn];
-        }
+	{
+	  [self addColumn];
+	}
 
       [sender scrollCellToVisibleAtRow: [sender selectedRow] column: 0];
     }
@@ -2440,14 +2485,18 @@ static BOOL browserUseBezels;
 
       // Initial version
       [self setVersion: 1];
-      
+
       /* Create the shared titleCell if it hasn't been created already. */
       if (!titleCell)
-        {
-          titleCell = [GSBrowserTitleCell new];
-        }
-      
+	{
+	  titleCell = [GSBrowserTitleCell new];
+	}
+
       [self _themeDidActivate: nil];
+
+      // Bindings...
+      [self exposeBinding: NSContentBinding];
+      [self exposeBinding: NSContentValuesBinding];
     }
 }
 
@@ -2468,7 +2517,7 @@ static BOOL browserUseBezels;
   // Class setting
   _browserCellPrototype = [[[NSBrowser cellClass] alloc] init];
   _browserMatrixClass = [NSMatrix class];
-  
+
   // Default values
   _pathSeparator = @"/";
   _allowsBranchSelection = YES;
@@ -2488,7 +2537,7 @@ static BOOL browserUseBezels;
   _sendsActionOnAlphaNumericalKeys = YES;
   _browserDelegate = nil;
   _passiveDelegate = YES;
-  _doubleAction = NULL;  
+  _doubleAction = NULL;
   // FIXME: Seems a bit wrong to look at the current theme here
   bs = NSZeroSize;
   if (browserUseBezels)
@@ -2518,6 +2567,10 @@ static BOOL browserUseBezels;
   _maxVisibleColumns = 3;
   [self _createColumn];
 
+  // Item based delegate, 10.6+
+  _itemBasedDelegate = NO;
+  _columnDictionary = [[NSMutableDictionary alloc] init];
+
   [[NSNotificationCenter defaultCenter]
     addObserver: self
     selector: @selector(_themeDidActivate:)
@@ -2529,6 +2582,8 @@ static BOOL browserUseBezels;
 
 - (void) dealloc
 {
+  [GSKeyValueBinding unbindAllForObject: self];
+
   [[NSNotificationCenter defaultCenter] removeObserver: self];
 
   if ([titleCell controlView] == self)
@@ -2540,6 +2595,7 @@ static BOOL browserUseBezels;
   RELEASE(_pathSeparator);
   RELEASE(_horizontalScroller);
   RELEASE(_browserColumns);
+  RELEASE(_columnDictionary);
   TEST_RELEASE(_charBuffer);
 
   [super dealloc];
@@ -2578,7 +2634,7 @@ static BOOL browserUseBezels;
 
 
 /*
- * Events handling 
+ * Events handling
  */
 
 - (void) drawRect: (NSRect)rect
@@ -2612,26 +2668,26 @@ static BOOL browserUseBezels;
       matrix = (NSMatrix *)[_window firstResponder];
       selectedColumn = [self columnOfMatrix:matrix];
       if (selectedColumn == -1)
-        {
-          selectedColumn = [self selectedColumn];
-          matrix = [self matrixInColumn: selectedColumn];
-        }
+	{
+	  selectedColumn = [self selectedColumn];
+	  matrix = [self matrixInColumn: selectedColumn];
+	}
       if (selectedColumn > 0)
-        {
-          [matrix deselectAllCells];
-          [matrix scrollCellToVisibleAtRow:0 column:0];
-          [self setLastColumn: selectedColumn];
+	{
+	  [matrix deselectAllCells];
+	  [matrix scrollCellToVisibleAtRow:0 column:0];
+	  [self setLastColumn: selectedColumn];
 
-          selectedColumn--;
-          [self scrollColumnToVisible: selectedColumn];
-          matrix = [self matrixInColumn: selectedColumn];
-          [_window makeFirstResponder: matrix];
+	  selectedColumn--;
+	  [self scrollColumnToVisible: selectedColumn];
+	  matrix = [self matrixInColumn: selectedColumn];
+	  [_window makeFirstResponder: matrix];
 
-          if (_sendsActionOnArrowKeys == YES)
-            {
-              [super sendAction: _action to: _target];
-            }
-        }
+	  if (_sendsActionOnArrowKeys == YES)
+	    {
+	      [super sendAction: _action to: _target];
+	    }
+	}
     }
 }
 
@@ -2645,47 +2701,47 @@ static BOOL browserUseBezels;
       matrix = (NSMatrix *)[_window firstResponder];
       selectedColumn = [self columnOfMatrix:matrix];
       if (selectedColumn == -1)
-        {
-          selectedColumn = [self selectedColumn];
-          matrix = [self matrixInColumn: selectedColumn];
-        }
+	{
+	  selectedColumn = [self selectedColumn];
+	  matrix = [self matrixInColumn: selectedColumn];
+	}
       if (selectedColumn == -1)
-        {
-          matrix = [self matrixInColumn: 0];
+	{
+	  matrix = [self matrixInColumn: 0];
 
-          if ([[matrix cells] count])
-            {
-              [matrix selectCellAtRow: 0 column: 0];
-            }
-        }
+	  if ([[matrix cells] count])
+	    {
+	      [matrix selectCellAtRow: 0 column: 0];
+	    }
+	}
       else
-        {
-          // if there is one selected cell and it is a leaf, move right
-          // (column is already loaded)
-          if (![[matrix selectedCell] isLeaf]
-              && [[matrix selectedCells] count] == 1)
-            {
-              selectedColumn++;
-              matrix = [self matrixInColumn: selectedColumn];
-              if ([[matrix cells] count] && [matrix selectedCell] == nil)
-                {
-                  [matrix selectCellAtRow: 0 column: 0];
-                }
-              // if selected cell is a leaf, we need to add a column
-              if (![[matrix selectedCell] isLeaf]
-                  && [[matrix selectedCells] count] == 1)
-                {  
-                  [self addColumn];
-                }
-            }
-        }
+	{
+	  // if there is one selected cell and it is a leaf, move right
+	  // (column is already loaded)
+	  if (![[matrix selectedCell] isLeaf]
+	      && [[matrix selectedCells] count] == 1)
+	    {
+	      selectedColumn++;
+	      matrix = [self matrixInColumn: selectedColumn];
+	      if ([[matrix cells] count] && [matrix selectedCell] == nil)
+		{
+		  [matrix selectCellAtRow: 0 column: 0];
+		}
+	      // if selected cell is a leaf, we need to add a column
+	      if (![[matrix selectedCell] isLeaf]
+		  && [[matrix selectedCells] count] == 1)
+		{
+		  [self addColumn];
+		}
+	    }
+	}
 
       [_window makeFirstResponder: matrix];
 
       if (_sendsActionOnArrowKeys == YES)
-        {
-          [super sendAction: _action to: _target];
-        }
+	{
+	  [super sendAction: _action to: _target];
+	}
     }
 }
 
@@ -2702,32 +2758,32 @@ static BOOL browserUseBezels;
   if (_acceptsArrowKeys)
     {
       switch (character)
-        {
-        case NSUpArrowFunctionKey:
-        case NSDownArrowFunctionKey:
-          return;
-        case NSLeftArrowFunctionKey:
-          [self moveLeft:self];
-          return;
-        case NSRightArrowFunctionKey:
-          [self moveRight:self];
-          return;
-        case NSBackTabCharacter:
-          [_window selectKeyViewPrecedingView: self];
-          return;
-        case NSTabCharacter:
-          {
-            if ([theEvent modifierFlags] & NSShiftKeyMask)
-              {
-                [_window selectKeyViewPrecedingView: self];
-              }
-            else
-              {
-                [_window selectKeyViewFollowingView: self];
-              }
-          }
-          return;
-        }
+	{
+	case NSUpArrowFunctionKey:
+	case NSDownArrowFunctionKey:
+	  return;
+	case NSLeftArrowFunctionKey:
+	  [self moveLeft:self];
+	  return;
+	case NSRightArrowFunctionKey:
+	  [self moveRight:self];
+	  return;
+	case NSBackTabCharacter:
+	  [_window selectKeyViewPrecedingView: self];
+	  return;
+	case NSTabCharacter:
+	  {
+	    if ([theEvent modifierFlags] & NSShiftKeyMask)
+	      {
+		[_window selectKeyViewPrecedingView: self];
+	      }
+	    else
+	      {
+		[_window selectKeyViewFollowingView: self];
+	      }
+	  }
+	  return;
+	}
     }
 
   if (_acceptsAlphaNumericalKeys && (character < 0xF700)
@@ -2743,83 +2799,83 @@ static BOOL browserUseBezels;
 
       selectedColumn = [self selectedColumn];
       if (selectedColumn != -1)
-        {
-          matrix = [self matrixInColumn: selectedColumn];
-          n = [matrix numberOfRows];
-          s = [matrix selectedRow];
-          
-          if (!_charBuffer)
-            {
-              _charBuffer = [characters substringToIndex: 1];
-              RETAIN(_charBuffer);
-            }
-          else
-            {
-              if (([theEvent timestamp] - _lastKeyPressed < 2000.0)
-                  && (_alphaNumericalLastColumn == selectedColumn))
-                {
-                  NSString *transition;
-                  transition = [_charBuffer 
-                                 stringByAppendingString:
-                                   [characters substringToIndex: 1]];
-                  RELEASE(_charBuffer);
-                  _charBuffer = transition;
-                  RETAIN(_charBuffer);
-                }
-              else
-                {
-                  RELEASE(_charBuffer);
-                  _charBuffer = [characters substringToIndex: 1];
-                  RETAIN(_charBuffer);
-                }
-            }
+	{
+	  matrix = [self matrixInColumn: selectedColumn];
+	  n = [matrix numberOfRows];
+	  s = [matrix selectedRow];
 
-          _alphaNumericalLastColumn = selectedColumn;
-          _lastKeyPressed = [theEvent timestamp];
-          
-          sv = [((*lcarc)(self, lcarcSel, s, selectedColumn))
-                 stringValue];
+	  if (!_charBuffer)
+	    {
+	      _charBuffer = [characters substringToIndex: 1];
+	      RETAIN(_charBuffer);
+	    }
+	  else
+	    {
+	      if (([theEvent timestamp] - _lastKeyPressed < 2000.0)
+		  && (_alphaNumericalLastColumn == selectedColumn))
+		{
+		  NSString *transition;
+		  transition = [_charBuffer
+				 stringByAppendingString:
+				   [characters substringToIndex: 1]];
+		  RELEASE(_charBuffer);
+		  _charBuffer = transition;
+		  RETAIN(_charBuffer);
+		}
+	      else
+		{
+		  RELEASE(_charBuffer);
+		  _charBuffer = [characters substringToIndex: 1];
+		  RETAIN(_charBuffer);
+		}
+	    }
 
-          if (([sv length] > 0)
-              && ([sv hasPrefix: _charBuffer]))
-            return;
+	  _alphaNumericalLastColumn = selectedColumn;
+	  _lastKeyPressed = [theEvent timestamp];
 
-          match = -1;
-          for (i = s + 1; i < n; i++)
-            {
-              sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-                     stringValue];
-              if (([sv length] > 0)
-                  && ([sv hasPrefix: _charBuffer]))
-                {
-                  match = i;
-                  break;
-                }
-            }
-          if (i == n)
-            {
-              for (i = 0; i < s; i++)
-                {
-                  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-                         stringValue];
-                  if (([sv length] > 0)
-                      && ([sv hasPrefix: _charBuffer]))
-                    {
-                      match = i;
-                      break;
-                    }
-                }
-            }
-          if (match != -1)
-            {
-              [matrix deselectAllCells];
-              [self selectRow: match
-                inColumn: selectedColumn];
-              [matrix scrollCellToVisibleAtRow: match column: 0];
-              [matrix performClick: self];
-              return;
-            }
-        }
+	  sv = [((*lcarc)(self, lcarcSel, s, selectedColumn))
+		 stringValue];
+
+	  if (([sv length] > 0)
+	      && ([sv hasPrefix: _charBuffer]))
+	    return;
+
+	  match = -1;
+	  for (i = s + 1; i < n; i++)
+	    {
+	      sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+		     stringValue];
+	      if (([sv length] > 0)
+		  && ([sv hasPrefix: _charBuffer]))
+		{
+		  match = i;
+		  break;
+		}
+	    }
+	  if (i == n)
+	    {
+	      for (i = 0; i < s; i++)
+		{
+		  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+			 stringValue];
+		  if (([sv length] > 0)
+		      && ([sv hasPrefix: _charBuffer]))
+		    {
+		      match = i;
+		      break;
+		    }
+		}
+	    }
+	  if (match != -1)
+	    {
+	      [matrix deselectAllCells];
+	      [self selectRow: match
+		inColumn: selectedColumn];
+	      [matrix scrollCellToVisibleAtRow: match column: 0];
+	      [matrix performClick: self];
+	      return;
+	    }
+	}
       _lastKeyPressed = 0.;
     }
 
@@ -2869,9 +2925,9 @@ static BOOL browserUseBezels;
       [aCoder encodeInt: _columnResizing forKey: @"NSColumnResizingType"];
       //[aCoder encodeInt: prefWidth forKey: @"NSPreferedColumnWidth"];
       if (nil != [self columnsAutosaveName])
-        {
-          [aCoder encodeObject: [self columnsAutosaveName] forKey: @"NSColumnsAutosaveName"];
-        }
+	{
+	  [aCoder encodeObject: [self columnsAutosaveName] forKey: @"NSColumnsAutosaveName"];
+	}
     }
   else
     {
@@ -2879,7 +2935,7 @@ static BOOL browserUseBezels;
       [aCoder encodeObject: nil];
       [aCoder encodeObject:_browserCellPrototype];
       [aCoder encodeObject: NSStringFromClass (_browserMatrixClass)];
-      
+
       [aCoder encodeObject:_pathSeparator];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsBranchSelection];
@@ -2891,32 +2947,32 @@ static BOOL browserUseBezels;
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_separatesColumns];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_takesTitleFromPreviousColumn];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isTitled];
-      
-      
+
+
       [aCoder encodeObject:_horizontalScroller];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizontalScroller];
       [aCoder encodeRect: _scrollerRect];
       [aCoder encodeSize: _columnSize];
-      
+
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_acceptsArrowKeys];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnArrowKeys];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_acceptsAlphaNumericalKeys];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_sendsActionOnAlphaNumericalKeys];
-      
+
       [aCoder encodeConditionalObject:_browserDelegate];
-      
+
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
       [aCoder encodeConditionalObject: _target];
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
-      
+
       [aCoder encodeObject: _browserColumns];
-      
+
       // Just encode the number of columns and the first visible
       // and rebuild the browser columns on the decoding side
       {
-        int colCount = [_browserColumns count];  
-        [aCoder encodeValueOfObjCType: @encode(int) at: &colCount];
-        [aCoder encodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
+	int colCount = [_browserColumns count];
+	[aCoder encodeValueOfObjCType: @encode(int) at: &colCount];
+	[aCoder encodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
       }
     }
 }
@@ -2931,11 +2987,11 @@ static BOOL browserUseBezels;
       NSString *sep = [aDecoder decodeObjectForKey: @"NSPathSeparator"];
       long flags;
       NSSize bs;
-      
+
       // Class setting
       _browserCellPrototype = [[[NSBrowser cellClass] alloc] init];
       _browserMatrixClass = [NSMatrix class];
-      
+
       // Default values
       _pathSeparator = @"/";
       _allowsBranchSelection = YES;
@@ -2955,15 +3011,19 @@ static BOOL browserUseBezels;
       _sendsActionOnAlphaNumericalKeys = YES;
       _browserDelegate = nil;
       _passiveDelegate = YES;
-      _doubleAction = NULL;  
+      _doubleAction = NULL;
       // FIXME: Seems a bit wrong to look at the current theme here
       bs = NSZeroSize;
       if (browserUseBezels)
 	bs = [[GSTheme theme] sizeForBorderType: NSBezelBorder];
       _minColumnWidth = scrollerWidth + (2 * bs.width);
       if (_minColumnWidth < 100.0)
-        _minColumnWidth = 100.0;
-      
+	_minColumnWidth = 100.0;
+
+      // Item based delegate, 10.6+
+      _itemBasedDelegate = NO;
+      _columnDictionary = [[NSMutableDictionary alloc] init];
+
       // Horizontal scroller
       _scrollerRect.origin.x = bs.width;
       _scrollerRect.origin.y = bs.height;
@@ -2974,76 +3034,76 @@ static BOOL browserUseBezels;
       [_horizontalScroller setAction: @selector(scrollViaScroller:)];
       [self addSubview: _horizontalScroller];
       _skipUpdateScroller = NO;
-      
+
       // Columns
       _browserColumns = [[NSMutableArray alloc] init];
-      
+
       // Create a single column
       _lastColumnLoaded = -1;
       _firstVisibleColumn = 0;
       _lastVisibleColumn = 0;
       _maxVisibleColumns = 3;
       [self _createColumn];
-      // end //            
-      
+      // end //
+
       [self setCellPrototype: proto];
       [self setPathSeparator: sep];
       [self setTitle: title ofColumn: 0];
 
       if ([aDecoder containsValueForKey: @"NSBrFlags"])
-        {
-          flags = [aDecoder decodeIntForKey: @"NSBrFlags"];
+	{
+	  flags = [aDecoder decodeIntForKey: @"NSBrFlags"];
 
-          [self setHasHorizontalScroller: ((flags & 0x10000) == 0x10000)];
-          [self setAllowsEmptySelection: !((flags & 0x20000) == 0x20000)];
-          [self setSendsActionOnArrowKeys: ((flags & 0x40000) == 0x40000)];
-          [self setAcceptsArrowKeys: ((flags & 0x100000) == 0x100000)];
-          [self setSeparatesColumns: ((flags & 0x4000000) == 0x4000000)];
-          [self setTakesTitleFromPreviousColumn: ((flags & 0x8000000) == 0x8000000)];
-          [self setTitled: ((flags & 0x10000000) == 0x10000000)];
-          [self setReusesColumns: ((flags & 0x20000000) == 0x20000000)];
-          [self setAllowsBranchSelection: ((flags & 0x40000000) == 0x40000000)];
-          [self setAllowsMultipleSelection: ((flags & 0x80000000) == 0x80000000)];
-        }
+	  [self setHasHorizontalScroller: ((flags & 0x10000) == 0x10000)];
+	  [self setAllowsEmptySelection: !((flags & 0x20000) == 0x20000)];
+	  [self setSendsActionOnArrowKeys: ((flags & 0x40000) == 0x40000)];
+	  [self setAcceptsArrowKeys: ((flags & 0x100000) == 0x100000)];
+	  [self setSeparatesColumns: ((flags & 0x4000000) == 0x4000000)];
+	  [self setTakesTitleFromPreviousColumn: ((flags & 0x8000000) == 0x8000000)];
+	  [self setTitled: ((flags & 0x10000000) == 0x10000000)];
+	  [self setReusesColumns: ((flags & 0x20000000) == 0x20000000)];
+	  [self setAllowsBranchSelection: ((flags & 0x40000000) == 0x40000000)];
+	  [self setAllowsMultipleSelection: ((flags & 0x80000000) == 0x80000000)];
+	}
 
       if ([aDecoder containsValueForKey: @"NSNumberOfVisibleColumns"])
-        {
-          [self setMaxVisibleColumns: [aDecoder decodeIntForKey: 
-                                                  @"NSNumberOfVisibleColumns"]];
-        }
+	{
+	  [self setMaxVisibleColumns: [aDecoder decodeIntForKey:
+						  @"NSNumberOfVisibleColumns"]];
+	}
 
       if ([aDecoder containsValueForKey: @"NSMinColumnWidth"])
-        {
-          [self setMinColumnWidth: [aDecoder decodeIntForKey: @"NSMinColumnWidth"]];
-        }
+	{
+	  [self setMinColumnWidth: [aDecoder decodeIntForKey: @"NSMinColumnWidth"]];
+	}
 
       if ([aDecoder containsValueForKey: @"NSColumnResizingType"])
-        {
-          [self setColumnResizingType: [aDecoder decodeIntForKey: @"NSColumnResizingType"]];
-        }
+	{
+	  [self setColumnResizingType: [aDecoder decodeIntForKey: @"NSColumnResizingType"]];
+	}
 
       if ([aDecoder containsValueForKey: @"NSPreferedColumnWidth"])
-        {
-          //int prefWidth = [aDecoder decodeIntForKey: @"NSPreferedColumnWidth"];
-        }
+	{
+	  //int prefWidth = [aDecoder decodeIntForKey: @"NSPreferedColumnWidth"];
+	}
 
       if ([aDecoder containsValueForKey: @"NSColumnsAutosaveName"])
-        {
-          [self setColumnsAutosaveName: [aDecoder decodeObjectForKey:
-                                                    @"NSColumnsAutosaveName"]];
-        }
+	{
+	  [self setColumnsAutosaveName: [aDecoder decodeObjectForKey:
+						    @"NSColumnsAutosaveName"]];
+	}
     }
   else
     {
       int colCount;
-      
+
       // Here to keep compatibility with old version
       [aDecoder decodeObject];
       _browserCellPrototype = RETAIN([aDecoder decodeObject]);
       _browserMatrixClass   = NSClassFromString ((NSString *)[aDecoder decodeObject]);
-      
+
       [self setPathSeparator: [aDecoder decodeObject]];
-      
+
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsBranchSelection];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
@@ -3054,7 +3114,7 @@ static BOOL browserUseBezels;
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_separatesColumns];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_takesTitleFromPreviousColumn];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isTitled];
-      
+
       //NSBox *_horizontalScrollerBox;
       _horizontalScroller = RETAIN([aDecoder decodeObject]);
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHorizontalScroller];
@@ -3063,9 +3123,9 @@ static BOOL browserUseBezels;
 
       _skipUpdateScroller = NO;
       /*
-        _horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
-        [_horizontalScroller setTarget: self];
-        [_horizontalScroller setAction: @selector(scrollViaScroller:)];
+	_horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
+	[_horizontalScroller setTarget: self];
+	[_horizontalScroller setAction: @selector(scrollViaScroller:)];
       */
       [self setHasHorizontalScroller: _hasHorizontalScroller];
 
@@ -3079,27 +3139,27 @@ static BOOL browserUseBezels;
 
       _browserDelegate = [aDecoder decodeObject];
       if (_browserDelegate != nil)
-        [self setDelegate:_browserDelegate];
+	[self setDelegate:_browserDelegate];
       else
-        _passiveDelegate = YES;
-      
+	_passiveDelegate = YES;
+
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
       _target = [aDecoder decodeObject];
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
-      
+
       // Do the minimal thing to initiate the browser...
       /*
-        _lastColumnLoaded = -1;
-        _firstVisibleColumn = 0;
-        _lastVisibleColumn = 0;
-        [self _createColumn];
+	_lastColumnLoaded = -1;
+	_firstVisibleColumn = 0;
+	_lastVisibleColumn = 0;
+	[self _createColumn];
       */
       _browserColumns = RETAIN([aDecoder decodeObject]);
       // ..and rebuild any existing browser columns
       [aDecoder decodeValueOfObjCType: @encode(int) at: &colCount];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_firstVisibleColumn];
     }
-      
+
   // Display even if there isn't any column
   _isLoaded = NO;
   [self tile];
@@ -3146,14 +3206,14 @@ static BOOL browserUseBezels;
   _acceptsAlphaNumericalKeys = flag;
 }
 
-/** Returns NO if pressing an arrow key only scrolls the browser, YES if 
+/** Returns NO if pressing an arrow key only scrolls the browser, YES if
     it also sends the action message specified by setAction:. */
 - (BOOL) sendsActionOnAlphaNumericalKeys
 {
   return _sendsActionOnAlphaNumericalKeys;
 }
 
-/** Sets whether pressing an arrow key will cause the action message 
+/** Sets whether pressing an arrow key will cause the action message
     to be sent (in addition to causing scrolling). */
 - (void) setSendsActionOnAlphaNumericalKeys: (BOOL)flag
 {
@@ -3186,13 +3246,13 @@ static BOOL browserUseBezels;
       sc = [bc columnScrollView];
 
       if (!firstResponder && [bc columnMatrix] == [_window firstResponder])
-        {
-          firstResponder = [bc columnMatrix];
-        }
+	{
+	  firstResponder = [bc columnMatrix];
+	}
       if (sc)
-        {
-          [sc removeFromSuperviewWithoutNeedingDisplay];
-        }
+	{
+	  [sc removeFromSuperviewWithoutNeedingDisplay];
+	}
     }
 
   if (_firstVisibleColumn > _lastVisibleColumn)
@@ -3204,58 +3264,207 @@ static BOOL browserUseBezels;
   if (fromFirst)
     {
       for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
-        {
-          bc = [_browserColumns objectAtIndex: i];
-          sc = [bc columnScrollView];
-          [self addSubview: sc];
+	{
+	  bc = [_browserColumns objectAtIndex: i];
+	  sc = [bc columnScrollView];
+	  [self addSubview: sc];
 
-          if ([bc isLoaded] && [bc columnMatrix] == firstResponder)
-            {
-              [_window makeFirstResponder: firstResponder];
-              setFirstResponder = YES;
-            }
-        }
+	  if ([bc isLoaded] && [bc columnMatrix] == firstResponder)
+	    {
+	      [_window makeFirstResponder: firstResponder];
+	      setFirstResponder = YES;
+	    }
+	}
 
       if (firstResponder && setFirstResponder == NO)
-        {
-          [_window makeFirstResponder:
-                     [[_browserColumns objectAtIndex: _firstVisibleColumn]
-                       columnMatrix]];
-        }
+	{
+	  [_window makeFirstResponder:
+		     [[_browserColumns objectAtIndex: _firstVisibleColumn]
+		       columnMatrix]];
+	}
     }
   else
     {
       for (i = _lastVisibleColumn; i >= _firstVisibleColumn; i--)
-        {
-          bc = [_browserColumns objectAtIndex: i];
-          sc = [bc columnScrollView];
-          [self addSubview: sc];
+	{
+	  bc = [_browserColumns objectAtIndex: i];
+	  sc = [bc columnScrollView];
+	  [self addSubview: sc];
 
-          if ([bc isLoaded] && [bc columnMatrix] == firstResponder)
-            {
-              [_window makeFirstResponder: firstResponder];
-              setFirstResponder = YES;
-            }
-        }
+	  if ([bc isLoaded] && [bc columnMatrix] == firstResponder)
+	    {
+	      [_window makeFirstResponder: firstResponder];
+	      setFirstResponder = YES;
+	    }
+	}
 
       if (firstResponder && setFirstResponder == NO)
-        {
-          [_window makeFirstResponder:
-                     [[_browserColumns objectAtIndex: _lastVisibleColumn]
-                       columnMatrix]];
-        }
+	{
+	  [_window makeFirstResponder:
+		     [[_browserColumns objectAtIndex: _lastVisibleColumn]
+		       columnMatrix]];
+	}
     }
+}
+
+- (id) _itemForColumn: (NSInteger)column
+{
+  id item = nil;
+  GSKeyValueBinding *theBinding;
+  theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				   forObject: self];
+  if (column == 0)
+    {
+      if (theBinding == nil)
+	{
+	  item = [_browserDelegate rootItemForBrowser: self];
+	}
+      else
+	{
+	  item = nil; // [NSNull null];
+	}
+    }
+  else
+    {
+      NSInteger col = column - 1;
+      NSBrowserColumn *bc;
+
+      bc = [_browserColumns objectAtIndex: col];
+      if (bc != nil)
+	{
+	  NSMatrix *matrix;
+
+	  matrix = [bc columnMatrix];
+	  if (matrix != nil)
+	    {
+	      NSArray *selectedCells = [matrix selectedCells];
+	      if (selectedCells != nil && [selectedCells count] > 0)
+		{
+		  id cell = [selectedCells objectAtIndex: 0];
+
+		  if (theBinding != nil)
+		    {
+		      NSNumber *colNum = [NSNumber numberWithInteger: col];
+		      NSArray *array = [_columnDictionary objectForKey: colNum];
+		      if ([array count] > 0)
+			{
+			  NSInteger row = [self selectedRowInColumn: col];
+			  item = [array objectAtIndex: row];
+			}
+		    }
+		  else
+		    {
+		      item = [cell objectValue];
+		    }
+		}
+	    }
+	}
+    }
+
+  return item;
+}
+
+- (NSString *) _keyPathForValueBinding
+{
+  NSString *keyPath = nil;
+  NSDictionary *info = [GSKeyValueBinding infoForBinding: NSContentValuesBinding
+					       forObject: self];
+  if (info != nil)
+    {
+      NSString *ikp = [info objectForKey: NSObservedKeyPathKey];
+      NSUInteger location = [ikp rangeOfString: @"."].location;
+
+      keyPath = (location == NSNotFound ? ikp : [ikp substringFromIndex: location + 1]);
+    }
+
+  return keyPath;
 }
 
 /* Loads column 'column' (asking the delegate). */
 - (void) _performLoadOfColumn: (NSInteger)column
 {
-  NSBrowserColumn *bc;
-  NSScrollView *sc;
-  NSMatrix *matrix;
-  NSInteger i, rows, cols;
+  NSBrowserColumn *bc = nil;
+  NSScrollView *sc = nil;
+  NSMatrix *matrix = nil;
+  NSInteger i = 0, rows = 0, cols = 0;
+  id child = nil;
+  id item = nil;
+  NSNumber *colNum = nil;
+  NSTreeController *tc = nil;
+  NSArray *children = nil;
 
-  if (_passiveDelegate)
+  if (_itemBasedDelegate)
+    {
+      GSKeyValueBinding *theBinding;
+
+      theBinding = [GSKeyValueBinding getBinding: NSContentBinding
+				       forObject: self];
+
+      item = [self _itemForColumn: column];
+      if (theBinding != nil)
+	{
+	  id observedObject = [theBinding observedObject];
+
+	  rows = 0;
+	  colNum = [NSNumber numberWithInteger: column];
+	  if ([observedObject isKindOfClass: [NSTreeController class]])
+	    {
+	      tc = (NSTreeController *)observedObject;
+
+	      if (item == nil)
+		{
+		  NSTreeNode *node = (NSTreeNode *)[theBinding destinationValue];
+
+		  if (node != nil)
+		    {
+		      /* Per the documentation 10.4/5+ uses NSTreeNode as the return value for
+		       * the contents of this tree node consists of a dictionary with a single
+		       * key of "children".   This is per the tests for this at
+		       * https://github.com/gcasa/NSTreeController_test.  Specifically it returns
+		       * _NSControllerTreeProxy.  The equivalent of that class in GNUstep is
+		       * GSControllerTreeProxy.
+		       */
+		      children = [node mutableChildNodes];
+		      rows = [children count];
+		      item = node;
+		    }
+		}
+	      else
+		{
+		  NSString *childrenKeyPath = [tc childrenKeyPathForNode: item];
+
+		  if (childrenKeyPath != nil)
+		    {
+		      NSString *countKeyPath = [tc countKeyPathForNode: item];
+
+		      children = [item valueForKeyPath: childrenKeyPath];
+		      if (countKeyPath == nil)
+			{
+			  rows = [children count]; // get the count directly...
+			}
+		      else
+			{
+			  NSNumber *countValue = [item valueForKeyPath: countKeyPath];
+			  rows = [countValue integerValue];
+			}
+		    }
+		}
+
+	      // If the node has children, add them to the column...
+	      if (children != nil)
+		{
+		  [_columnDictionary setObject: children forKey: colNum];
+		}
+	    }
+	}
+      else
+	{
+	  // Ask the delegate for the number of rows for a given item...
+	  rows = [_browserDelegate browser: self numberOfChildrenOfItem: item];
+	}
+      cols = 1;
+    }
+  else if (_passiveDelegate)
     {
       // Ask the delegate for the number of rows
       rows = [_browserDelegate browser: self numberOfRowsInColumn: column];
@@ -3280,9 +3489,9 @@ static BOOL browserUseBezels;
 
       // Mark all the cells as unloaded
       for (i = 0; i < rows; i++)
-        {
-          [[matrix cellAtRow: i column: 0] setLoaded: NO];
-        }
+	{
+	  [[matrix cellAtRow: i column: 0] setLoaded: NO];
+	}
     }
   else
     {
@@ -3291,11 +3500,11 @@ static BOOL browserUseBezels;
 
       // create a new col matrix
       matrix = [[_browserMatrixClass alloc]
-                   initWithFrame: matrixRect
-                   mode: NSListModeMatrix
-                   prototype: _browserCellPrototype
-                   numberOfRows: rows
-                   numberOfColumns: cols];
+		   initWithFrame: matrixRect
+		   mode: NSListModeMatrix
+		   prototype: _browserCellPrototype
+		   numberOfRows: rows
+		   numberOfColumns: cols];
       [matrix setIntercellSpacing: matrixIntercellSpace];
       [matrix setAllowsEmptySelection: _allowsEmptySelection];
       [matrix setAutoscroll: YES];
@@ -3305,21 +3514,82 @@ static BOOL browserUseBezels;
       [matrix setDrawsBackground: YES];
 
       if (!_allowsMultipleSelection)
-        {
-          [matrix setMode: NSRadioModeMatrix];
-        }
+	{
+	  [matrix setMode: NSRadioModeMatrix];
+	}
       [matrix setTarget: self];
       [matrix setAction: @selector(doClick:)];
       [matrix setDoubleAction: @selector(doDoubleClick:)];
-      
+
       // set new col matrix and release old
       [bc setColumnMatrix: matrix];
       RELEASE (matrix);
     }
   [sc setDocumentView: matrix];
 
-  // Loading is different based upon passive/active delegate
-  if (_passiveDelegate)
+  // Loading is different based upon item/passive/active delegate
+  if (_itemBasedDelegate == YES) //  && item != nil && tc != nil)
+    {
+      NSString *childrenKeyPath = [tc childrenKeyPathForNode: item];
+
+      if (childrenKeyPath != nil)
+	{
+	  NSString *leafKeyPath = [tc leafKeyPathForNode: item];
+	  NSString *valueKeyPath = [self _keyPathForValueBinding];
+
+	  // Iterate over the children for the item....
+	  for (i = 0; i < rows; i++)
+	    {
+	      id aCell = [matrix cellAtRow: i column: 0];
+	      if (![aCell isLoaded])
+		{
+		  BOOL leaf = YES;
+		  id val = nil;
+		  NSNumber *leafBool = nil;
+
+		  child = [children objectAtIndex: i];
+		  leafBool = [child valueForKeyPath: leafKeyPath];
+		  leaf = [leafBool boolValue];
+
+		  // If a content values binding is present, it uses that key path,
+		  // but if one isn't it uses the description... per documentation.
+		  if (valueKeyPath != nil)
+		    {
+		      val = [child valueForKeyPath: valueKeyPath];
+		    }
+		  else
+		    {
+		      val = [child description]; // per documentation.
+		    }
+
+		  [aCell setLeaf: leaf];
+		  [aCell setObjectValue: val];
+		  [aCell setLoaded: YES];
+		}
+	    }
+	}
+      else
+	{
+	  // Iterate over the children for the item....
+	  for (i = 0; i < rows; i++)
+	    {
+	      id aCell = [matrix cellAtRow: i column: 0];
+	      if (![aCell isLoaded])
+		{
+		  BOOL leaf = YES;
+		  id val = nil;
+
+		  child = [_browserDelegate browser: self child: i ofItem: item];
+		  leaf = [_browserDelegate browser: self isLeafItem: child];
+		  val = [_browserDelegate browser: self objectValueForItem: child];
+		  [aCell setLeaf: leaf];
+		  [aCell setObjectValue: val];
+		  [aCell setLoaded: YES];
+		}
+	    }
+	}
+    }
+  else if (_passiveDelegate)
     {
       // Now loop through the cells and load each one
       id aCell;
@@ -3327,46 +3597,46 @@ static BOOL browserUseBezels;
       IMP imp1 = [_browserDelegate methodForSelector: sel1];
       SEL sel2 = @selector(cellAtRow:column:);
       IMP imp2 = [matrix methodForSelector: sel2];
-      
+
       for (i = 0; i < rows; i++)
-        {
-          aCell = (*imp2)(matrix, sel2, i, 0);
-          if (![aCell isLoaded])
-            {
-              (*imp1)(_browserDelegate, sel1, self, aCell, i, 
-                      column);
-              [aCell setLoaded: YES];
-            }
-        }
+	{
+	  aCell = (*imp2)(matrix, sel2, i, 0);
+	  if (![aCell isLoaded])
+	    {
+	      (*imp1)(_browserDelegate, sel1, self, aCell, i,
+		      column);
+	      [aCell setLoaded: YES];
+	    }
+	}
     }
   else
     {
       // Tell the delegate to create the rows
       [_browserDelegate browser: self
-                        createRowsForColumn: column
-                        inMatrix: matrix];
+			createRowsForColumn: column
+			inMatrix: matrix];
     }
 
   [bc setIsLoaded: YES];
-  
+
   if (column > _lastColumnLoaded)
     {
       _lastColumnLoaded = column;
     }
 
-  /* Determine the height of a cell in the matrix, and set that as the 
+  /* Determine the height of a cell in the matrix, and set that as the
      cellSize of the matrix.  */
   {
     NSSize cs, ms;
-    NSBrowserCell *b = [matrix cellAtRow: 0  column: 0]; 
+    NSBrowserCell *b = [matrix cellAtRow: 0  column: 0];
 
     if (b != nil)
       {
-        ms = [b cellSize];
+	ms = [b cellSize];
       }
     else
       {
-        ms = [matrix cellSize];
+	ms = [matrix cellSize];
       }
     cs = [sc contentSize];
     ms.width = cs.width;
@@ -3383,68 +3653,68 @@ static BOOL browserUseBezels;
 - (NSString *) _getTitleOfColumn: (NSInteger)column
 {
   // Ask the delegate for the column title
-  if ([_browserDelegate respondsToSelector: 
-                          @selector(browser:titleOfColumn:)])
+  if ([_browserDelegate respondsToSelector:
+			  @selector(browser:titleOfColumn:)])
     {
       return [_browserDelegate browser: self titleOfColumn: column];
     }
-  
+
 
   // Check if we take title from previous column
   if (_takesTitleFromPreviousColumn)
     {
       id c;
-      
+
       // If first column then use the path separator
       if (column == 0)
-        {
-          return _pathSeparator;
-        }
-      
+	{
+	  return _pathSeparator;
+	}
+
       // Get the selected cell
       // Use its string value as the title
       // Only if it is not a leaf
       if (_allowsMultipleSelection == NO)
-        {
-          c = [self selectedCellInColumn: column - 1];
-        }
+	{
+	  c = [self selectedCellInColumn: column - 1];
+	}
       else
-        {
-          NSMatrix *matrix;
-          NSArray  *selectedCells;
+	{
+	  NSMatrix *matrix;
+	  NSArray  *selectedCells;
 
-          if (!(matrix = [self matrixInColumn: column - 1]))
-            return @"";
+	  if (!(matrix = [self matrixInColumn: column - 1]))
+	    return @"";
 
-          selectedCells = [matrix selectedCells];
+	  selectedCells = [matrix selectedCells];
 
-          if ([selectedCells count] == 1)
-            {
-              c = [selectedCells objectAtIndex:0];
-            }
-          else
-            {
-              return @"";
-            }
-        }
+	  if ([selectedCells count] == 1)
+	    {
+	      c = [selectedCells objectAtIndex:0];
+	    }
+	  else
+	    {
+	      return @"";
+	    }
+	}
 
       if ([c isLeaf])
-        {
-          return @"";
-        }
+	{
+	  return @"";
+	}
       else
-        { 
-          NSString *value = [c stringValue];
+	{
+	  NSString *value = [c stringValue];
 
-          if (value != nil)
-            {
-              return value;
-            }
-          else
-            {
-              return @"";
-            }
-        }
+	  if (value != nil)
+	    {
+	      return value;
+	    }
+	  else
+	    {
+	      return @"";
+	    }
+	}
     }
   return @"";
 }
@@ -3478,6 +3748,43 @@ static BOOL browserUseBezels;
 - (void) _themeDidActivate: (NSNotification*)notification
 {
   [self tile];
+}
+
+@end
+
+@implementation NSBrowser (GSBindingsPrivate)
+
+/* Private methods to handle bindings */
+
+- (void) setValue: (id)anObject forKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSContentBinding]
+      || [aKey isEqual: NSContentValuesBinding])
+    {
+      // Reload data
+      _passiveDelegate = NO;
+      _itemBasedDelegate = YES;
+
+      [self loadColumnZero];
+      NSDebugLLog(@"NSBinding", @"Setting browser view content/values to %@", anObject);
+    }
+  else
+    {
+      [super setValue: anObject forKey: aKey];
+    }
+}
+
+- (id) valueForKey: (NSString*)aKey
+{
+  if ([aKey isEqual: NSContentBinding]
+      || [aKey isEqual: NSContentValuesBinding])
+    {
+      return nil;
+    }
+  else
+    {
+      return [super valueForKey: aKey];
+    }
 }
 
 @end

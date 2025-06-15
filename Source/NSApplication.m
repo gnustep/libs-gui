@@ -62,6 +62,7 @@
 
 #import "AppKit/AppKitExceptions.h"
 #import "AppKit/NSAlert.h"
+#import "AppKit/NSAppearance.h"
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSCursor.h"
@@ -71,6 +72,7 @@
 #import "AppKit/NSImage.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSMenuItem.h"
+#import "AppKit/NSDockTile.h"
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSPageLayout.h"
 #import "AppKit/NSPanel.h"
@@ -1244,6 +1246,7 @@ static BOOL _isAutolaunchChecked = NO;
 
   TEST_RELEASE(_app_icon);
   TEST_RELEASE(_app_icon_window);
+  TEST_RELEASE(_dock_tile);
   TEST_RELEASE(_infoPanel);
 
   /* Destroy the default context */
@@ -1674,7 +1677,7 @@ static BOOL _isAutolaunchChecked = NO;
           [theWindow center];
       [theWindow setLevel: NSModalPanelWindowLevel];
     }
-  [theWindow orderFrontRegardless];
+  
   if ([self isActive] == YES)
     {
       if ([theWindow canBecomeKeyWindow] == YES)
@@ -1686,6 +1689,7 @@ static BOOL _isAutolaunchChecked = NO;
 	  [theWindow makeMainWindow];
 	}
     }
+  [theWindow orderFrontRegardless];
 
   return theSession;
 }
@@ -2458,6 +2462,15 @@ image.</p><p>See Also: -applicationIconImage</p>
   return _app_icon_window;
 }
 
+- (NSDockTile *) dockTile
+{
+  if (!_dock_tile)
+    {
+      _dock_tile = [[NSDockTile alloc] init];
+      [_dock_tile setContentView: [_app_icon_window contentView]];
+    }
+  return _dock_tile;
+}
 /*
  * Hiding and arranging windows
  */
@@ -2483,6 +2496,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 	  NSDictionary  	*info;
 	  NSWindow		*win;
 	  NSEnumerator  	*iter;
+          id<NSMenuItem>  	menuItem;
 
 	  [nc postNotificationName: NSApplicationWillHideNotification
 	                    object: self];
@@ -2530,7 +2544,16 @@ image.</p><p>See Also: -applicationIconImage</p>
                   [_hidden addObject: win];
                   [win orderOut: self];
                 }
-            }
+	    }
+	  menuItem = [sender isKindOfClass:[NSMenuItem class]]
+		       ? sender
+		       : [_main_menu itemWithTitle:_(@"Hide")];
+	  if (menuItem)
+	    {
+	      [menuItem setAction:@selector(unhide:)];
+	      [menuItem setTitle:_(@"Show")];
+	    }
+
 	  _app_is_hidden = YES;
 	  
 	  if (YES == [[NSUserDefaults standardUserDefaults]
@@ -2593,6 +2616,14 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (void) unhide: (id)sender
 {
+  id<NSMenuItem> menuItem = [sender isKindOfClass:[NSMenuItem class]]
+			      ? sender
+			      : [_main_menu itemWithTitle:_(@"Show")];
+  if (menuItem)
+    {
+      [menuItem setAction:@selector(hide:)];
+      [menuItem setTitle:_(@"Hide")];
+    }
   if (_app_is_hidden)
     {
       [self unhideWithoutActivation];
@@ -3822,6 +3853,26 @@ struct _DelegateWrapper
     }
   return self;
 }
+
+- (NSAppearance*) appearance {
+  return _appearance;
+}
+
+- (void) setAppearance: (NSAppearance*) appearance {
+  ASSIGNCOPY(_appearance, appearance);
+}
+
+- (NSAppearance*) effectiveAppearance {
+  if (_appearance)
+  {
+    return _appearance;
+  }
+  else
+  {
+    return [NSAppearance currentAppearance];
+  }
+}
+
 
 @end /* NSApplication */
 

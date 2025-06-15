@@ -1,4 +1,4 @@
-/* GSStandardColorPicker.m
+/* GSColorSliderCell.m
 
    Copyright (C) 2007 Free Software Foundation, Inc.
 
