@@ -27,9 +27,12 @@
 */
 
 #include "config.h"
+
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSKeyedArchiver.h>
+
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSDataLinkManager.h"
 #import "AppKit/NSPasteboard.h"
@@ -38,9 +41,6 @@
 
 @implementation NSDataLink
 
-//
-// Class methods
-//
 + (void)initialize
 {
   if (self == [NSDataLink class])
@@ -50,129 +50,73 @@
     }
 }
 
-//
-//
-// Instance methods
-//
-// Initializing a Link
-//
-- (id)initLinkedToFile: (NSString *)filename
+- (id)initLinkedToFile:(NSString * )filename
 {
-  if ((self = [self init]) != nil)
+  if ((self = [super init]))
     {
-      NSData *data = [NSData dataWithBytes: [filename cString] length: [filename cStringLength]];
-      NSSelection *selection = [NSSelection selectionWithDescriptionData: data];
-      ASSIGN(_sourceSelection, selection);
+      _sourceFilename = [filename copy];
+      _disposition = NSLinkInSource;
+      _lastUpdateTime = [[NSFileManager defaultManager] attributesOfItemAtPath:filename error:nil][NSFileModificationDate];
+      _flags.broken = NO;
     }
   return self;
 }
 
-- (id)initLinkedToSourceSelection: (NSSelection *)selection
-			managedBy: (NSDataLinkManager *)linkManager
-		  supportingTypes: (NSArray *)newTypes
+- (id)initLinkedToSourceSelection:(NSSelection *)selection
+                         managedBy:(NSDataLinkManager *)linkManager
+                   supportingTypes:(NSArray *)newTypes
 {
-  if ((self = [self init]) != nil)
+  if ((self = [super init]))
     {
-      ASSIGN(_sourceSelection,selection);
-      ASSIGN(_sourceManager,linkManager);
-      ASSIGN(_types,newTypes);
+      _sourceSelection = [selection retain];
+      _sourceManager = [linkManager retain];
+      _types = [newTypes retain];
+      _disposition = NSLinkInSource;
+      _flags.broken = NO;
     }
   return self;
 }
 
-- (id)initWithContentsOfFile: (NSString *)filename
+- (id)initWithContentsOfFile:(NSString *)filename
 {
-  NSData *data = [[NSData alloc] initWithContentsOfFile: filename];
-  id object = [NSUnarchiver unarchiveObjectWithData: data];
-
-  RELEASE(data);
-  RELEASE(self);
-  return RETAIN(object);
-}
-
-- (id)initWithPasteboard: (NSPasteboard *)pasteboard
-{
-  NSData *data = [pasteboard dataForType: NSDataLinkPboardType];
-  id object = [NSUnarchiver unarchiveObjectWithData: data];
-
-  RELEASE(self);
-  return RETAIN(object);
-}
-
-- (void) dealloc
-{
-  [self break];
-
-  RELEASE(_lastUpdateTime);
-  RELEASE(_sourceApplicationName);
-  RELEASE(_sourceFilename);
-  RELEASE(_sourceSelection);
-
-  _sourceManager = nil; // manager retains us...
-
-  RELEASE(_destinationApplicationName);
-  RELEASE(_destinationFilename);
-  RELEASE(_destinationSelection);
-
-  _destinationManager = nil; // manager retains us...
-
-  RELEASE(_types);
-  [super dealloc];
-}
-
-//
-// Exporting a Link
-//
-- (BOOL)saveLinkIn: (NSString *)directoryName
-{
-  NSSavePanel		*sp;
-  int			result;
-
-  sp = [NSSavePanel savePanel];
-  [sp setRequiredFileType: NSDataLinkFilenameExtension];
-  result = [sp runModalForDirectory: directoryName file: @""];
-  if (result == NSOKButton)
+  NSData *data = [NSData dataWithContentsOfFile:filename];
+  if (data)
     {
-      NSFileManager	*mgr = [NSFileManager defaultManager];
-      NSString		*path = [sp filename];
-
-      if ([mgr fileExistsAtPath: path] == YES)
-	{
-	  /* NSSavePanel has already asked if it's ok to replace */
-	  NSString	*bPath = [path stringByAppendingString: @"~"];
-
-	  [mgr removeFileAtPath: bPath handler: nil];
-	  [mgr movePath: path toPath: bPath handler: nil];
-	}
-
-      // save it.
-      return [self writeToFile: path];
+      return [NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
-
-  return NO;
+  return nil;
 }
 
-- (BOOL)writeToFile: (NSString *)filename
+- (id)initWithPasteboard:(NSPasteboard *)pasteboard
 {
-  NSString *path = filename;
-
-  if ([[path pathExtension] isEqual: NSDataLinkFilenameExtension] == NO)
+  NSData *data = [pasteboard dataForType:NSDataLinkPboardType];
+  if (data)
     {
-      path = [filename stringByAppendingPathExtension: NSDataLinkFilenameExtension];
+      return [NSKeyedUnarchiver unarchiveObjectWithData:data];
     }
-
-  return [NSArchiver archiveRootObject: self toFile: path];
+  return nil;
 }
 
-- (void)writeToPasteboard: (NSPasteboard *)pasteboard
+- (BOOL)saveLinkIn:(NSString *)directoryName
 {
-  NSData *data = [NSArchiver archivedDataWithRootObject: self];
-  [pasteboard setData: data forType: NSDataLinkPboardType];
+  NSString *filePath = [directoryName stringByAppendingPathComponent:
+                         [NSString stringWithFormat:@"Link_%d.link", _linkNumber]];
+  return [self writeToFile:filePath];
 }
 
-//
-// Information about the Link
-//
+- (BOOL)writeToFile:(NSString *)filename
+{
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self];
+  return [data writeToFile:filename atomically:YES];
+}
+
+- (void)writeToPasteboard:(NSPasteboard *)pasteboard
+{
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self];
+  [pasteboard declareTypes:@[NSDataLinkPboardType] owner:nil];
+  [pasteboard setData:data forType:NSDataLinkPboardType];
+}
+
 - (NSDataLinkDisposition)disposition
 {
   return _disposition;
@@ -185,12 +129,9 @@
 
 - (NSDataLinkManager *)manager
 {
-  return _sourceManager;
+  return (_disposition == NSLinkInSource) ? _sourceManager : _destinationManager;
 }
 
-//
-// Information about the Link's Source
-//
 - (NSDate *)lastUpdateTime
 {
   return _lastUpdateTime;
@@ -198,7 +139,7 @@
 
 - (BOOL)openSource
 {
-  return NO;
+  return NO; /* Stub */
 }
 
 - (NSString *)sourceApplicationName
@@ -221,9 +162,6 @@
   return _types;
 }
 
-//
-// Information about the Link's Destination
-//
 - (NSString *)destinationApplicationName
 {
   return _destinationApplicationName;
@@ -276,19 +214,22 @@
     }
 }
 
-- (NSDataLinkUpdateMode)updateMode
-{
-  return _updateMode;
-}
-
-- (void)setUpdateMode: (NSDataLinkUpdateMode)mode
+- (void)setUpdateMode:(NSDataLinkUpdateMode)mode
 {
   _updateMode = mode;
 }
 
 - (BOOL)updateDestination
 {
-  return NO;
+  if (_flags.broken || _updateMode == NSUpdateNever)
+    return NO;
+  _flags.isDirty = NO;
+  return YES;
+}
+
+- (NSDataLinkUpdateMode)updateMode
+{
+  return _updateMode;
 }
 
 //
