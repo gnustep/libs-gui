@@ -37,7 +37,10 @@
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSPasteboard.h"
 
+#ifdef HAVE_INOTIFY_H
 #import <sys/inotify.h>
+#endif
+
 #import <unistd.h>
 #import <fcntl.h>
 
@@ -141,7 +144,9 @@
       _destinationLinks = [[NSMutableArray alloc] init];
       _watchDescriptors = [[NSMutableDictionary alloc] init];
       _nextLinkNumber = 1;
+#ifdef HAVE_INOTIFY_H
       _inotifyFD = inotify_init();
+#endif
       if (_inotifyFD < 0)
 	{
 	  NSLog(@"Failed to initialize inotify");
@@ -172,6 +177,7 @@
 //
 - (void)stopMonitoring
 {
+#ifdef HAVE_INOTIFY_H  
   NSArray *allKeys = [_watchDescriptors allKeys];
   NSEnumerator *en = [allKeys objectEnumerator];
   NSNumber *key = nil;
@@ -193,6 +199,7 @@
     {
       [_monitorThread cancel];  // thread must check isCancelled
     }
+#endif  
 }
 
 - (void)startMonitoring
@@ -203,6 +210,7 @@
 
 - (void)monitorLoop
 {
+#ifdef HAVE_INOTIFY_H  
   char buffer[1024];
   while (![[NSThread currentThread] isCancelled])
     {
@@ -226,6 +234,7 @@
           i += sizeof(struct inotify_event) + event->len;
         }
     }
+#endif
 }
 
 //

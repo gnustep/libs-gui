@@ -175,6 +175,8 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
+/* Do we have inotify */
+#undef HAVE_INOTIFY_H
 
 /* Define for those who don't have rintf and/or rint */
 #ifndef HAVE_RINTF
