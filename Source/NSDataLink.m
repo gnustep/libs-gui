@@ -54,9 +54,11 @@
 {
   if ((self = [super init]))
     {
+      NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:filename error:nil];
+
       _sourceFilename = [filename copy];
       _disposition = NSLinkInSource;
-      _lastUpdateTime = [[NSFileManager defaultManager] attributesOfItemAtPath:filename error:nil][NSFileModificationDate];
+      _lastUpdateTime = [dict objectForKey: NSFileModificationDate];
       _flags.broken = NO;
     }
   return self;
@@ -113,8 +115,10 @@
 - (void)writeToPasteboard:(NSPasteboard *)pasteboard
 {
   NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self];
-  [pasteboard declareTypes:@[NSDataLinkPboardType] owner:nil];
-  [pasteboard setData:data forType:NSDataLinkPboardType];
+  NSArray *array = [NSArray arrayWithObject: NSDataLinkPboardType];
+
+  [pasteboard declareTypes: array owner: nil];
+  [pasteboard setData: data forType: NSDataLinkPboardType];
 }
 
 - (NSDataLinkDisposition)disposition
