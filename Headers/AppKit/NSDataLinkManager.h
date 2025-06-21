@@ -29,55 +29,59 @@
 
 #ifndef _GNUstep_H_NSDataLinkManager
 #define _GNUstep_H_NSDataLinkManager
-#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
+#import "AppKit/AppKitDefines.h"
+#import "AppKit/NSDataLink.h"
 
-@class NSString;
 @class NSEnumerator;
 @class NSMutableArray;
-@class NSDataLink;
-@class NSSelection;
 @class NSPasteboard;
+@class NSString;
+@class NSSelection;
+@class NSThread;
 @class NSWindow;
 
 APPKIT_EXPORT_CLASS
 @interface NSDataLinkManager : NSObject <NSCoding>
 {
   // Attributes
-  id                  delegate;
-  NSString            *filename;
-  NSMutableArray      *sourceLinks;
-  NSMutableArray      *destinationLinks;
-
+  id                   _delegate;
+  NSString            *_filename;
+  NSMutableArray      *_sourceLinks;
+  NSMutableArray      *_destinationLinks;
+  NSDataLinkNumber     _nextLinkNumber;
+  NSThread            *_monitorThread;
+  int                  _inotifyFD;
+  NSMutableDictionary *_watchDescriptors;
+  
   struct __dlmFlags {
     unsigned areLinkOutlinesVisible:1;
     unsigned delegateVerifiesLinks:1;
     unsigned interactsWithUser:1;
     unsigned isEdited:1;
   } _flags;
-
 }
 
 //
 // Initializing and Freeing a Link Manager
 //
-- (id)initWithDelegate:(id)anObject;
-- (id)initWithDelegate:(id)anObject
-	      fromFile:(NSString *)path;
+- (id) initWithDelegate: (id)anObject;
+- (id) initWithDelegate: (id)anObject
+               fromFile: (NSString *)path;
 
 //
 // Adding and Removing Links
 //
-- (BOOL)addLink:(NSDataLink *)link
-	     at:(NSSelection *)selection;
-- (BOOL)addLinkAsMarker:(NSDataLink *)link
-		     at:(NSSelection *)selection;
-- (NSDataLink *)addLinkPreviouslyAt:(NSSelection *)oldSelection
-		     fromPasteboard:(NSPasteboard *)pasteboard
-				 at:(NSSelection *)selection;
+- (BOOL)addLink: (NSDataLink *)link
+	     at: (NSSelection *)selection;
+- (BOOL)addLinkAsMarker: (NSDataLink *)link
+		     at: (NSSelection *)selection;
+- (NSDataLink *)addLinkPreviouslyAt: (NSSelection *)oldSelection
+		     fromPasteboard: (NSPasteboard *)pasteboard
+				 at: (NSSelection *)selection;
 - (void)breakAllLinks;
-- (void)writeLinksToPasteboard:(NSPasteboard *)pasteboard;
+- (void)writeLinksToPasteboard: (NSPasteboard *)pasteboard;
 
 //
 // Informing the Link Manager of Document Status
@@ -86,8 +90,8 @@ APPKIT_EXPORT_CLASS
 - (void)noteDocumentEdited;
 - (void)noteDocumentReverted;
 - (void)noteDocumentSaved;
-- (void)noteDocumentSavedAs:(NSString *)path;
-- (void)noteDocumentSavedTo:(NSString *)path;
+- (void)noteDocumentSavedAs: (NSString *)path;
+- (void)noteDocumentSavedTo: (NSString *)path;
 
 //
 // Getting and Setting Information about the Link Manager
@@ -97,16 +101,16 @@ APPKIT_EXPORT_CLASS
 - (NSString *)filename;
 - (BOOL)interactsWithUser;
 - (BOOL)isEdited;
-- (void)setDelegateVerifiesLinks:(BOOL)flag;
-- (void)setInteractsWithUser:(BOOL)flag;
+- (void)setDelegateVerifiesLinks: (BOOL)flag;
+- (void)setInteractsWithUser: (BOOL)flag;
 
 //
 // Getting and Setting Information about the Manager's Links
 //
 - (BOOL)areLinkOutlinesVisible;
 - (NSEnumerator *)destinationLinkEnumerator;
-- (NSDataLink *)destinationLinkWithSelection:(NSSelection *)destSel;
-- (void)setLinkOutlinesVisible:(BOOL)flag;
+- (NSDataLink *)destinationLinkWithSelection: (NSSelection *)destSel;
+- (void)setLinkOutlinesVisible: (BOOL)flag;
 - (NSEnumerator *)sourceLinkEnumerator;
 @end
 
@@ -116,29 +120,29 @@ APPKIT_EXPORT_CLASS
 //
 @interface NSObject (NSDataLinkManagerDelegate)
 // data link management methods.
-- (void)dataLinkManager:(NSDataLinkManager *)sender 
-	   didBreakLink:(NSDataLink *)link;
-- (BOOL)dataLinkManager:(NSDataLinkManager *)sender 
-  isUpdateNeededForLink:(NSDataLink *)link;
-- (void)dataLinkManager:(NSDataLinkManager *)sender 
-      startTrackingLink:(NSDataLink *)link;
-- (void)dataLinkManager:(NSDataLinkManager *)sender 
-       stopTrackingLink:(NSDataLink *)link;
-- (void)dataLinkManagerCloseDocument:(NSDataLinkManager *)sender;
-- (void)dataLinkManagerDidEditLinks:(NSDataLinkManager *)sender;
-- (void)dataLinkManagerRedrawLinkOutlines:(NSDataLinkManager *)sender;
-- (BOOL)dataLinkManagerTracksLinksIndividually:(NSDataLinkManager *)sender;
+- (void)dataLinkManager: (NSDataLinkManager *)sender 
+	   didBreakLink: (NSDataLink *)link;
+- (BOOL)dataLinkManager: (NSDataLinkManager *)sender 
+  isUpdateNeededForLink: (NSDataLink *)link;
+- (void)dataLinkManager: (NSDataLinkManager *)sender 
+      startTrackingLink: (NSDataLink *)link;
+- (void)dataLinkManager: (NSDataLinkManager *)sender 
+       stopTrackingLink: (NSDataLink *)link;
+- (void)dataLinkManagerCloseDocument: (NSDataLinkManager *)sender;
+- (void)dataLinkManagerDidEditLinks: (NSDataLinkManager *)sender;
+- (void)dataLinkManagerRedrawLinkOutlines: (NSDataLinkManager *)sender;
+- (BOOL)dataLinkManagerTracksLinksIndividually: (NSDataLinkManager *)sender;
 
 // selection management methods.
-- (BOOL)copyToPasteboard:(NSPasteboard *)pasteboard 
-		      at:(NSSelection *)selection
-	cheapCopyAllowed:(BOOL)flag;
-- (BOOL)importFile:(NSString *)filename
-		at:(NSSelection *)selection;
-- (BOOL)pasteFromPasteboard:(NSPasteboard *)pasteboard 
-			 at:(NSSelection *)selection;
-- (BOOL)showSelection:(NSSelection *)selection;
-- (NSWindow *)windowForSelection:(NSSelection *)selection;
+- (BOOL)copyToPasteboard: (NSPasteboard *)pasteboard 
+		      at: (NSSelection *)selection
+	cheapCopyAllowed: (BOOL)flag;
+- (BOOL)importFile: (NSString *)filename
+		at: (NSSelection *)selection;
+- (BOOL)pasteFromPasteboard: (NSPasteboard *)pasteboard 
+			 at: (NSSelection *)selection;
+- (BOOL)showSelection: (NSSelection *)selection;
+- (NSWindow *)windowForSelection: (NSSelection *)selection;
 @end
 
 

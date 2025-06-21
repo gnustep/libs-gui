@@ -643,6 +643,13 @@ AC_SUBST(GSCUPS_LIBS)
 AC_SUBST(GSCUPS_DATADIR)
 AC_SUBST(BUILD_GSCUPS)
 
+#-------------------------------------------------------------------
+# Check for inotify.h
+#-------------------------------------------------------------------
+AC_CHECK_HEADER([sys/inotify.h], [
+  AC_DEFINE([HAVE_INOTIFY_H], [1], [Define if inotify is available])
+])
+
 #--------------------------------------------------------------------
 # Check for -Wdeclaration-after-statement
 #--------------------------------------------------------------------
