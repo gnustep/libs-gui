@@ -41,7 +41,7 @@
 
 @implementation NSDataLink
 
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSDataLink class])
     {
@@ -50,7 +50,7 @@
     }
 }
 
-- (id)initLinkedToFile:(NSString * )filename
+- (id) initLinkedToFile: (NSString * )filename
 {
   if ((self = [super init]))
     {
@@ -59,14 +59,15 @@
       _sourceFilename = [filename copy];
       _disposition = NSLinkInSource;
       _lastUpdateTime = [dict objectForKey: NSFileModificationDate];
+      _updateMode = NSUpdateWhenSourceSaved;
       _flags.broken = NO;
     }
   return self;
 }
 
-- (id)initLinkedToSourceSelection:(NSSelection *)selection
-                         managedBy:(NSDataLinkManager *)linkManager
-                   supportingTypes:(NSArray *)newTypes
+- (id) initLinkedToSourceSelection: (NSSelection *)selection
+			 managedBy: (NSDataLinkManager *)linkManager
+		   supportingTypes: (NSArray *)newTypes
 {
   if ((self = [super init]))
     {
@@ -74,12 +75,13 @@
       _sourceManager = [linkManager retain];
       _types = [newTypes retain];
       _disposition = NSLinkInSource;
+      _updateMode = NSUpdateWhenSourceSaved;
       _flags.broken = NO;
     }
   return self;
 }
 
-- (id)initWithContentsOfFile:(NSString *)filename
+- (id) initWithContentsOfFile: (NSString *)filename
 {
   NSData *data = [NSData dataWithContentsOfFile:filename];
   if (data)
@@ -89,7 +91,7 @@
   return nil;
 }
 
-- (id)initWithPasteboard:(NSPasteboard *)pasteboard
+- (id) initWithPasteboard: (NSPasteboard *)pasteboard
 {
   NSData *data = [pasteboard dataForType:NSDataLinkPboardType];
   if (data)
@@ -102,7 +104,7 @@
 - (BOOL)saveLinkIn:(NSString *)directoryName
 {
   NSString *filePath = [directoryName stringByAppendingPathComponent:
-                         [NSString stringWithFormat:@"Link_%d.link", _linkNumber]];
+			 [NSString stringWithFormat:@"Link_%d.link", _linkNumber]];
   return [self writeToFile:filePath];
 }
 
@@ -316,7 +318,7 @@
 
       _linkNumber = [aCoder decodeIntForKey: @"GSLinkNumber"];
       _disposition = [aCoder decodeIntForKey: @"GSDisposition"];
-      _updateMode = [aCoder decodeIntForKey: @"GSUpdateMode"];
+      _updateMode = [aCoder decodeIntForKey: @"GSLastUpdateMode"];
 
       obj = [aCoder decodeObjectForKey: @"GSSourceManager"];
       ASSIGN(_sourceManager,obj);
@@ -393,6 +395,41 @@
     }
 
   return self;
+}
+
+- (NSString *) description
+{
+  NSString *description = [NSString stringWithFormat:
+				      @"%@ <_linkNumber = %d, _disposition = %d, _updateMode = %d, "
+				    "_sourceManager = %@, _destinationManager = %@, _lastUpdateTime = %@, "
+				    "_sourceApplicationName = %@, _sourceFilename = %@, _sourceSelection = %@, _sourceManager = %@, "
+				    "_destinationApplicationName = %@, _destinationFilename = %@, _destinationSelection = %@, _destinationManager = %@, "
+				    "%d, %d, %d, %d, %d",
+				    [super description],
+				    _linkNumber,
+				    _disposition,
+				    _updateMode,
+				    // objects...
+				    _sourceManager,
+				    _destinationManager,
+				    _lastUpdateTime,
+				    // source...
+				    _sourceApplicationName,
+				    _sourceFilename,
+				    _sourceSelection,
+				    _sourceManager,
+				    // destination...
+				    _destinationApplicationName,
+				    _destinationFilename,
+				    _destinationSelection,
+				    _destinationManager,
+				    // flags
+				    _flags.appVerifies,
+				    _flags.canUpdateContinuously,
+				    _flags.isDirty,
+				    _flags.willOpenSource,
+				    _flags.willUpdate];
+  return description;
 }
 
 @end
