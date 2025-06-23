@@ -54,6 +54,7 @@ APPKIT_EXPORT_CLASS
   NSMutableArray *_videoPackets;
   NSThread *_videoThread;
   NSThread *_feedThread;
+  NSTimer *_feedTimer;
   NSImage *_currentFrame;
   NSString *_statusString;
   GSAudioPlayer *_audioPlayer;
