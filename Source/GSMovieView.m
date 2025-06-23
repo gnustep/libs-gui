@@ -226,7 +226,7 @@ static NSNotificationCenter *nc = nil;
 {
   if (_running == NO)
     {
-      [self setRate: 1.0 / 30.0];
+      [self setRate: 1.0];
       [self setVolume: 1.0];
 
       _savedPts = 0;
