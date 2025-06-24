@@ -419,8 +419,6 @@ static NSNotificationCenter *nc = nil;
   packet.data = NULL;
   packet.size = 0;
 
-  NSLog(@"Display frame");
-  
   rgbLineSize[0] = width * 3;
   rgbData[0] = (uint8_t *)malloc(height * rgbLineSize[0]);
   
@@ -465,7 +463,12 @@ static NSNotificationCenter *nc = nil;
 	      break;
 	    }
 	}
-    av_packet_unref(&packet);
+      else if (packet.stream_index == _audioStreamIndex)
+	{
+	  NSLog(@"Audio packet...");
+	}
+
+      av_packet_unref(&packet);
   }
 }
 
