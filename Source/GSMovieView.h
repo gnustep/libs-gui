@@ -51,14 +51,11 @@
 APPKIT_EXPORT_CLASS
 @interface GSMovieView : NSMovieView
 {
-  NSMutableArray *_videoPackets;
-  NSThread *_videoThread;
-  NSThread *_feedThread;
   NSTimer *_feedTimer;
   NSImage *_currentFrame;
   NSString *_statusString;
   GSAudioPlayer *_audioPlayer;
-
+  
   AVCodecContext *_videoCodecCtx;
   AVFrame *_videoFrame;
   AVFormatContext *_formatCtx;
@@ -66,15 +63,13 @@ APPKIT_EXPORT_CLASS
   struct SwsContext *_swsCtx;
   AVRational _timeBase;
 
-  BOOL _paused;  // is the stream paused...
-  BOOL _running; // is the loop currently running...
-  BOOL _started; // has the video started...
   int64_t _videoClock;
   int _videoStreamIndex;
   int _audioStreamIndex;
   int64_t _lastPts;
   int64_t _savedPts;
   CGFloat _fps;
+  BOOL _running;
 }
 
 // Initialization...
@@ -82,19 +77,13 @@ APPKIT_EXPORT_CLASS
                       streamIndex: (int)videoStreamIndex;
 
 // Submit packets...
-- (void) submitPacket: (AVPacket *)packet;
 - (void) decodePacket: (AVPacket *)packet;
 
 // Start and stop...
-- (void) startVideo;
-- (void) stopVideo;
-- (void) setPaused: (BOOL)f;
-- (BOOL) isPaused;
-- (CGFloat) frameRateForStream: (AVStream *)stream;
+- (CGFloat) frameRateForStream;
 
 // Main loop to process packets...
 - (void) renderFrame: (AVFrame *)videoFrame;
-- (void) feedVideo;
 - (BOOL) setup;
 - (void) loop;
 - (void) close;
