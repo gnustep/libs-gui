@@ -502,6 +502,8 @@ static NSNotificationCenter *nc = nil;
 
   while (av_read_frame(_formatCtx, &packet) >= 0)
     {
+      NSDictionary *dict = nil;
+
       if (!_running)
 	{
 	  break;
@@ -513,18 +515,19 @@ static NSNotificationCenter *nc = nil;
 	  break;
 	}
 
+      dict = NSDictionaryFromAVPacket(&packet);
       if (packet.stream_index == _videoStreamIndex)
 	{
-	  [self decodePacket: &packet];
+	  [NSThread detachNewThreadSelector: @selector(decodeDictionary:)
+				   toTarget: self
+				 withObject: dict];
+	  break;
 	}
       else if (packet.stream_index == _audioStreamIndex)
 	{
-	  NSDictionary *dict = NSDictionaryFromAVPacket(&packet);
-
 	  [NSThread detachNewThreadSelector: @selector(decodeDictionary:)
 				   toTarget: _audioPlayer
 				 withObject: dict];
-	  // [_audioPlayer decodePacket: &packet];
 	  break;
 	}
 
