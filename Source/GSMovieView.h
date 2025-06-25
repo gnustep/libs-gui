@@ -85,7 +85,6 @@ APPKIT_EXPORT_CLASS
 // Main loop to process packets...
 - (void) renderFrame: (AVFrame *)videoFrame;
 - (BOOL) setup;
-- (void) loop;
 - (void) close;
 
 @end

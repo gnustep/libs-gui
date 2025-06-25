@@ -46,6 +46,7 @@
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
 
+@class NSDictionary;
 @class NSMutableArray;
 @class NSThread;
 
@@ -59,38 +60,24 @@
   ao_sample_format _aoFmt;
   int64_t _audioClock;
   AVRational _timeBase;
+
   float _volume; /* 0.0 to 1.0 */
-  unsigned int _loopMode:3;
-
-  NSMutableArray *_audioPackets;
-  NSThread *_audioThread;
-
   BOOL _running;
-  BOOL _started;
   BOOL _muted;
-  BOOL _paused;  
 }
 
 - (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
 		      streamIndex: (int)audioStreamIndex;
 
+// Decode and play the packet...
 - (void) decodePacket: (AVPacket *)packet;
-- (void) submitPacket: (AVPacket *)packet;
-- (void) startAudio;
-- (void) stopAudio;
+- (void) decodeDictionary: (NSDictionary *)dict;
 
+// Controls...
 - (float) volume;
 - (void) setVolume: (float)volume;
-
-- (NSQTMovieLoopMode) loopMode;
-- (void) setLoopMode: (NSQTMovieLoopMode)mode;
-
 - (void) setMuted: (BOOL)muted;
 - (BOOL) isMuted;
-- (void) setPaused: (BOOL)f;
-- (BOOL) isPaused;
-- (void) setPlaying: (BOOL)f;
-- (BOOL) isPlaying;
 
 @end
 

@@ -39,21 +39,13 @@
       _audioFrame = NULL;
       _swrCtx = NULL;
       _audioClock = 0;
-      _audioPackets = nil;
-      _audioThread = nil;
-      _running = NO;
       _volume = 1.0;
-      _started = NO;
-      _paused = NO;
-      _loopMode = NSQTMovieNormalPlayback;
     }
   return self;
 }
 
 - (void)dealloc
 {
-  [self stopAudio];
-
   if (_audioFrame)
     {
       av_frame_free(&_audioFrame);
@@ -74,40 +66,8 @@
       ao_close(_aoDev);
     }
 
-  RELEASE(_audioPackets);
-
   ao_shutdown();
   [super dealloc];
-}
-
-- (void) setPaused: (BOOL)f;
-{
-  _paused = f;
-}
-
-- (BOOL) isPaused
-{
-  return _paused;
-}
-
-- (void) setPlaying: (BOOL)f
-{
-  _running = f;
-}
-
-- (BOOL) isPlaying
-{
-  return _running;
-}
-
-- (NSQTMovieLoopMode) loopMode
-{
-  return _loopMode;
-}
-
-- (void) setLoopMode: (NSQTMovieLoopMode)mode
-{
-  _loopMode = mode;
 }
 
 - (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
@@ -161,63 +121,7 @@
   _aoDev = ao_open_live(driver, &_aoFmt, NULL);
   _timeBase = formatCtx->streams[audioStreamIndex]->time_base;
   _audioClock = av_gettime();
-  _audioPackets = [[NSMutableArray alloc] init];
   _running = YES;
-}
-
-- (void)audioThreadEntry
-{
-  while (_running)
-    {
-      // Stop reading packets while paused...
-      if (_paused == YES)
-	{
-	  usleep(10000); // 10ms pause
-	  continue; // start the loop again...
-	}
-
-      // create pool...
-      CREATE_AUTORELEASE_POOL(pool);
-      {
-	NSDictionary *dict = nil;
-	
-	@synchronized (_audioPackets)
-	  {
-	    if ([_audioPackets count] > 0)
-	      {
-		dict = [[_audioPackets objectAtIndex:0] retain];
-		[_audioPackets removeObjectAtIndex:0];
-	      }
-	  }
-	
-	if (!_started && dict)
-	  {
-	    _audioClock = av_gettime();
-	    _started = YES;
-	  }
-	
-	if (dict)
-	  {
-	    AVPacket packet = AVPacketFromNSDictionary(dict);
-	    int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
-	    int64_t now = av_gettime() - _audioClock;
-	    int64_t delay = packetTime - now;
-
-	    if (delay > 0)
-	      {
-		usleep((useconds_t)delay); //  + 50000);
-	      }
-	    
-	    [self decodePacket:&packet];
-	    [dict release];
-	  }
-	else
-	  {
-	    usleep(1000);
-	  }
-      }
-      RELEASE(pool);
-    }
 }
 
 - (void)decodePacket: (AVPacket *)packet
@@ -269,40 +173,10 @@
     }
 }
 
-- (void) submitPacket: (AVPacket *)packet
+- (void) decodeDictionary: (NSDictionary *)dict
 {
-  NSDictionary *dict = NSDictionaryFromAVPacket(packet);
-
-  if (_paused)
-    {
-      NSLog(@"Submitted audio packet...");
-    }
-
-  @synchronized (_audioPackets)
-    {
-      [_audioPackets addObject: dict];
-    }
-}
-
-- (void) startAudio
-{
-  _running = YES;
-  NSLog(@"[GSAudioPlayer] Starting audio thread | Timestamp: %ld", av_gettime());
-  _audioThread = [[NSThread alloc] initWithTarget:self selector:@selector(audioThreadEntry) object:nil];
-  [_audioThread start];
-}
-
-- (void) stopAudio
-{
-  _running = NO;
-  [_audioThread cancel];
-
-  while ([_audioThread isFinished] == NO)
-    {
-      usleep(1000);
-    }
-
-  DESTROY(_audioThread);
+  AVPacket packet = AVPacketFromNSDictionary(dict);
+  [self decodePacket: &packet];
 }
 
 - (void) setVolume: (float)volume

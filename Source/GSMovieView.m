@@ -127,7 +127,7 @@ static NSNotificationCenter *nc = nil;
       _audioPlayer = [[GSAudioPlayer alloc] init];
       _feedTimer = nil;
       _currentFrame = nil;
-      
+
       // AV...
       _videoClock = 0;
       _videoCodecCtx = NULL;
@@ -139,7 +139,7 @@ static NSNotificationCenter *nc = nil;
 
       // Flags...
       _running = NO; // is the thread running?
-      
+
       // Get notifications and shut down the thread if app is closing.
       [nc addObserver: self
 	     selector: @selector(handleNotification:)
@@ -172,7 +172,7 @@ static NSNotificationCenter *nc = nil;
   // Destroy objects
   DESTROY(_audioPlayer);
   DESTROY(_currentFrame);
-  
+
   // Unsubscribe to NSNotification
   [nc removeObserver: self];
 
@@ -208,16 +208,16 @@ static NSNotificationCenter *nc = nil;
       NSTimeInterval fr = (double)(1/[self frameRateForStream]);
 
       NSLog(@"[GSMovieView] Starting video | Timestamp: %ld, lastPts = %ld, fr = %f",
-	    av_gettime(), _lastPts, fr); 
+	    av_gettime(), _lastPts, fr);
       [self setRate: 1.0];
       [self setVolume: 1.0];
-      
+
       _running = YES;
       _feedTimer = [NSTimer scheduledTimerWithTimeInterval: fr
 						    target: self
 						  selector: @selector(decodeAndDisplayNextFrame)
 						  userInfo: nil
-						   repeats: YES];			   
+						   repeats: YES];
     }
 }
 
@@ -228,7 +228,7 @@ static NSNotificationCenter *nc = nil;
       _running = NO;
       [_feedTimer invalidate];
       NSLog(@"[GSMovieView] Stopping video | Timestamp: %ld, lastPts = %ld",
-	    	av_gettime(), _lastPts);
+		av_gettime(), _lastPts);
     }
 }
 
@@ -262,16 +262,16 @@ static NSNotificationCenter *nc = nil;
 - (NSRect) movieRect
 {
   NSRect result = NSZeroRect;
-  
+
   if (_stream != NULL)
     {
       // Retrieve codec parameters
       AVCodecParameters* codecpar = _stream->codecpar;
-      
+
       // These are your video dimensions:
       CGFloat width = (CGFloat)(codecpar->width);
       CGFloat height = (CGFloat)(codecpar->height);
-        
+
       result = NSMakeRect(0.0, 0.0, width, height);
     }
 
@@ -327,7 +327,7 @@ static NSNotificationCenter *nc = nil;
 - (BOOL) setup
 {
   NSMovie *movie = [self movie];
-  
+
   if (movie != nil)
     {
       NSURL *url = [movie URL];
@@ -407,6 +407,10 @@ static NSNotificationCenter *nc = nil;
   return YES;
 }
 
+- (void) decodePacket: (AVPacket *)packet
+{
+}
+
 - (void) decodeAndDisplayNextFrame
 {
   AVPacket packet;
@@ -421,14 +425,31 @@ static NSNotificationCenter *nc = nil;
 
   rgbLineSize[0] = width * 3;
   rgbData[0] = (uint8_t *)malloc(height * rgbLineSize[0]);
-  
+
   while (av_read_frame(_formatCtx, &packet) >= 0)
     {
       if (!_running)
 	{
 	  break;
 	}
-      
+
+      if (packet.flags & AV_PKT_FLAG_CORRUPT)
+	{
+	  NSLog(@"Skipping corrupt video packet");
+	  return;
+	}
+
+      // Log pts...
+      fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld\r",
+	      packet.pts);
+      if (_statusField != nil)
+	{
+	  // Show the information...
+	  _statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | %@",
+				    packet.pts, _running ? @"Running" : @"Stopped"];
+	  [_statusField setStringValue: _statusString];
+	}
+
       if (packet.stream_index == _videoStreamIndex)
 	{
 	  avcodec_send_packet(_videoCodecCtx, &packet);
@@ -455,45 +476,31 @@ static NSNotificationCenter *nc = nil;
 						    bitsPerPixel: 24];
 
 	      NSImage *image = [[NSImage alloc] initWithSize:NSMakeSize(_videoCodecCtx->width, _videoCodecCtx->height)];
-	      [image addRepresentation:rep];
+	      [image addRepresentation: rep];
 
 	      [self performSelectorOnMainThread: @selector(updateImage:)
 				     withObject: image
 				  waitUntilDone: NO];
+
+	      AUTORELEASE(image);
+	      AUTORELEASE(rep);
+
 	      break;
 	    }
 	}
       else if (packet.stream_index == _audioStreamIndex)
 	{
-	  NSLog(@"Audio packet...");
+	  NSDictionary *dict = NSDictionaryFromAVPacket(&packet);
+
+	  [NSThread detachNewThreadSelector: @selector(decodeDictionary:)
+				   toTarget: _audioPlayer
+				 withObject: dict];
+	  // [_audioPlayer decodePacket: &packet];
+	  break;
 	}
 
       av_packet_unref(&packet);
   }
-}
-
-- (void) loop
-{
-  if (_formatCtx != NULL)
-    {
-      AVPacket packet;
-      
-      while (av_read_frame(_formatCtx, &packet) >= 0)
-	{
-	  if (packet.stream_index == _videoStreamIndex)
-	    {
-	      [self decodePacket: &packet];
-	      break;
-	    }
-	  if (packet.stream_index == _audioStreamIndex)
-	    {
-	      [_audioPlayer decodePacket: &packet];
-	      break;
-	    }
-	}
-      
-      av_packet_unref(&packet);
-    }
 }
 
 - (void) close
@@ -510,7 +517,7 @@ static NSNotificationCenter *nc = nil;
   const AVCodec *videoCodec = NULL;
 
   _stream = formatCtx->streams[videoStreamIndex];
-  _fps = [self frameRateForStream]; 
+  _fps = [self frameRateForStream];
   videoPar = _stream->codecpar;
   videoCodec = avcodec_find_decoder(videoPar->codec_id);
 
@@ -555,80 +562,6 @@ static NSNotificationCenter *nc = nil;
 
 - (void) renderFrame: (AVFrame *)videoFrame
 {
-  uint8_t *rgbData[1];
-  int rgbLineSize[1];
-  int width = _videoCodecCtx->width;
-  int height = _videoCodecCtx->height;
-
-  rgbLineSize[0] = width * 3;
-  rgbData[0] = (uint8_t *)malloc(height * rgbLineSize[0]);
-
-  sws_scale(_swsCtx,
-	    (const uint8_t * const *)videoFrame->data,
-	    videoFrame->linesize,
-	    0,
-	    height,
-	    rgbData,
-	    rgbLineSize);
-
-  NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
-				   initWithBitmapDataPlanes: &rgbData[0]
-						 pixelsWide: width
-						 pixelsHigh: height
-					      bitsPerSample: 8
-					    samplesPerPixel: 3
-						   hasAlpha: NO
-						   isPlanar: NO
-					     colorSpaceName: NSCalibratedRGBColorSpace
-						bytesPerRow: rgbLineSize[0]
-					       bitsPerPixel: 24];
-
-  NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(width, height)];
-  [image addRepresentation: bitmap];
-  [self performSelectorOnMainThread: @selector(updateImage:)
-			 withObject: image
-		      waitUntilDone: NO];
-
-  RELEASE(image);
-  RELEASE(bitmap);
-  free(rgbData[0]);
-}
-
-- (void) decodePacket: (AVPacket *)packet
-{
-  if (!_videoCodecCtx || !_swsCtx)
-    {
-      return;
-    }
-
-  if (avcodec_send_packet(_videoCodecCtx, packet) < 0)
-    {
-      return;
-    }
-
-  if (packet->flags & AV_PKT_FLAG_CORRUPT)
-    {
-      NSLog(@"Skipping corrupt video packet");
-      return;
-    }
-
-  // Log pts...
-  fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld\r",
-	  packet->pts);
-  if (_statusField != nil)
-    {
-      // Show the information...
-      _statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | %@",
-				packet->pts, _running ? @"Running" : @"Stopped"];
-      [_statusField setStringValue: _statusString];
-    }
-  
-  // Record last pts...
-  _lastPts = packet->pts;
-  while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
-    {
-      [self renderFrame: _videoFrame];
-    }
 }
 
 @end
