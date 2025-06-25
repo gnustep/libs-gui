@@ -407,7 +407,7 @@ static NSNotificationCenter *nc = nil;
   return YES;
 }
 
-- (BOOL) decodePacket: (AVPacket *)packet
+- (void) renderFrame: (AVFrame *)videoFrame
 {
   uint8_t *rgbData[1];
   int rgbLineSize[1];
@@ -417,7 +417,40 @@ static NSNotificationCenter *nc = nil;
   // Get the image data from the packet...
   rgbLineSize[0] = width * 3;
   rgbData[0] = (uint8_t *)malloc(height * rgbLineSize[0]);
-  
+
+  sws_scale(_swsCtx,
+	    (const uint8_t * const *)_videoFrame->data,
+	    _videoFrame->linesize,
+	    0,
+	    height,
+	    rgbData,
+	    rgbLineSize);
+
+  NSBitmapImageRep *rep = [[NSBitmapImageRep alloc]
+					initWithBitmapDataPlanes: &rgbData[0]
+						      pixelsWide: _videoCodecCtx->width
+						      pixelsHigh: _videoCodecCtx->height
+						   bitsPerSample: 8
+						 samplesPerPixel: 3
+							hasAlpha: NO
+							isPlanar: NO
+						  colorSpaceName: NSCalibratedRGBColorSpace
+						     bytesPerRow: rgbLineSize[0]
+						    bitsPerPixel: 24];
+
+  NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(_videoCodecCtx->width,
+							     _videoCodecCtx->height)];
+  [image addRepresentation: rep];
+  [self performSelectorOnMainThread: @selector(updateImage:)
+			 withObject: image
+		      waitUntilDone: NO];
+
+  AUTORELEASE(image);
+  AUTORELEASE(rep);
+}
+
+- (BOOL) decodePacket: (AVPacket *)packet
+{
   if (!_videoCodecCtx || !_swsCtx)
     {
       return NO;
@@ -444,38 +477,10 @@ static NSNotificationCenter *nc = nil;
 				packet->pts, _running ? @"Running" : @"Stopped"];
       [_statusField setStringValue: _statusString];
     }
-  
+
   while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
     {
-      sws_scale(_swsCtx,
-		(const uint8_t * const *)_videoFrame->data,
-		_videoFrame->linesize,
-		0,
-		height,
-		rgbData,
-		rgbLineSize);
-
-      NSBitmapImageRep *rep = [[NSBitmapImageRep alloc]
-					initWithBitmapDataPlanes: &rgbData[0]
-						      pixelsWide: _videoCodecCtx->width
-						      pixelsHigh: _videoCodecCtx->height
-						   bitsPerSample: 8
-						 samplesPerPixel: 3
-							hasAlpha: NO
-							isPlanar: NO
-						  colorSpaceName: NSCalibratedRGBColorSpace
-						     bytesPerRow: rgbLineSize[0]
-						    bitsPerPixel: 24];
-
-      NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(_videoCodecCtx->width,
-								 _videoCodecCtx->height)];
-      [image addRepresentation: rep];
-      [self performSelectorOnMainThread: @selector(updateImage:)
-			     withObject: image
-			  waitUntilDone: NO];
-
-      AUTORELEASE(image);
-      AUTORELEASE(rep);
+      [self renderFrame: _videoFrame];
     }
 
   return YES;
@@ -582,10 +587,6 @@ static NSNotificationCenter *nc = nil;
 - (void) setPlaying: (BOOL)f
 {
   _running = f;
-}
-
-- (void) renderFrame: (AVFrame *)videoFrame
-{
 }
 
 @end
