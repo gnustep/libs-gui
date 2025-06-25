@@ -407,63 +407,55 @@ static NSNotificationCenter *nc = nil;
   return YES;
 }
 
-- (void) decodePacket: (AVPacket *)packet
+- (BOOL) decodePacket: (AVPacket *)packet
 {
-}
-
-- (void) decodeAndDisplayNextFrame
-{
-  AVPacket packet;
   uint8_t *rgbData[1];
   int rgbLineSize[1];
   int width = _videoCodecCtx->width;
   int height = _videoCodecCtx->height;
 
-  // av_init_packet(&packet);
-  packet.data = NULL;
-  packet.size = 0;
-
+  // Get the image data from the packet...
   rgbLineSize[0] = width * 3;
   rgbData[0] = (uint8_t *)malloc(height * rgbLineSize[0]);
-
-  while (av_read_frame(_formatCtx, &packet) >= 0)
+  
+  if (!_videoCodecCtx || !_swsCtx)
     {
-      if (!_running)
-	{
-	  break;
-	}
+      return NO;
+    }
 
-      if (packet.flags & AV_PKT_FLAG_CORRUPT)
-	{
-	  NSLog(@"Skipping corrupt video packet");
-	  return;
-	}
+  if (avcodec_send_packet(_videoCodecCtx, packet) < 0)
+    {
+      return NO;
+    }
 
-      // Log pts...
-      fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld\r",
-	      packet.pts);
-      if (_statusField != nil)
-	{
-	  // Show the information...
-	  _statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | %@",
-				    packet.pts, _running ? @"Running" : @"Stopped"];
-	  [_statusField setStringValue: _statusString];
-	}
+  if (packet->flags & AV_PKT_FLAG_CORRUPT)
+    {
+      NSLog(@"Skipping corrupt audio packet");
+      return NO;
+    }
 
-      if (packet.stream_index == _videoStreamIndex)
-	{
-	  avcodec_send_packet(_videoCodecCtx, &packet);
-	  if (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
-	    {
-	      sws_scale(_swsCtx,
-			(const uint8_t * const *)_videoFrame->data,
-			_videoFrame->linesize,
-			0,
-			height,
-			rgbData,
-			rgbLineSize);
+  // Log pts...
+  fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld\r",
+	  packet->pts);
+  if (_statusField != nil)
+    {
+      // Show the information...
+      _statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | %@",
+				packet->pts, _running ? @"Running" : @"Stopped"];
+      [_statusField setStringValue: _statusString];
+    }
+  
+  while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
+    {
+      sws_scale(_swsCtx,
+		(const uint8_t * const *)_videoFrame->data,
+		_videoFrame->linesize,
+		0,
+		height,
+		rgbData,
+		rgbLineSize);
 
-	      NSBitmapImageRep *rep = [[NSBitmapImageRep alloc]
+      NSBitmapImageRep *rep = [[NSBitmapImageRep alloc]
 					initWithBitmapDataPlanes: &rgbData[0]
 						      pixelsWide: _videoCodecCtx->width
 						      pixelsHigh: _videoCodecCtx->height
@@ -475,18 +467,50 @@ static NSNotificationCenter *nc = nil;
 						     bytesPerRow: rgbLineSize[0]
 						    bitsPerPixel: 24];
 
-	      NSImage *image = [[NSImage alloc] initWithSize:NSMakeSize(_videoCodecCtx->width, _videoCodecCtx->height)];
-	      [image addRepresentation: rep];
+      NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(_videoCodecCtx->width,
+								 _videoCodecCtx->height)];
+      [image addRepresentation: rep];
+      [self performSelectorOnMainThread: @selector(updateImage:)
+			     withObject: image
+			  waitUntilDone: NO];
 
-	      [self performSelectorOnMainThread: @selector(updateImage:)
-				     withObject: image
-				  waitUntilDone: NO];
+      AUTORELEASE(image);
+      AUTORELEASE(rep);
+    }
 
-	      AUTORELEASE(image);
-	      AUTORELEASE(rep);
+  return YES;
+}
 
-	      break;
-	    }
+- (BOOL) decodeDictionary: (NSDictionary *)dict
+{
+  AVPacket packet = AVPacketFromNSDictionary(dict);
+  return [self decodePacket: &packet];
+}
+
+- (void) decodeAndDisplayNextFrame
+{
+  AVPacket packet;
+
+  // av_init_packet(&packet);
+  packet.data = NULL;
+  packet.size = 0;
+
+  while (av_read_frame(_formatCtx, &packet) >= 0)
+    {
+      if (!_running)
+	{
+	  break;
+	}
+
+      if (packet.flags & AV_PKT_FLAG_CORRUPT)
+	{
+	  NSLog(@"Skipping corrupt video packet");
+	  break;
+	}
+
+      if (packet.stream_index == _videoStreamIndex)
+	{
+	  [self decodePacket: &packet];
 	}
       else if (packet.stream_index == _audioStreamIndex)
 	{

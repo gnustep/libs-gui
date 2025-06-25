@@ -124,22 +124,22 @@
   _running = YES;
 }
 
-- (void)decodePacket: (AVPacket *)packet
+- (BOOL) decodePacket: (AVPacket *)packet
 {
   if (!_audioCodecCtx || !_swrCtx || !_aoDev)
     {
-      return;
+      return NO;
     }
 
   if (avcodec_send_packet(_audioCodecCtx, packet) < 0)
     {
-      return;
+      return NO;
     }
 
   if (packet->flags & AV_PKT_FLAG_CORRUPT)
     {
       NSLog(@"Skipping corrupt audio packet");
-      return;
+      return NO;
     }
 
   while (avcodec_receive_frame(_audioCodecCtx, _audioFrame) == 0)
@@ -171,12 +171,14 @@
       ao_play(_aoDev, (char *) outBuf, outBytes);
       free(outBuf);
     }
+
+  return YES;
 }
 
-- (void) decodeDictionary: (NSDictionary *)dict
+- (BOOL) decodeDictionary: (NSDictionary *)dict
 {
   AVPacket packet = AVPacketFromNSDictionary(dict);
-  [self decodePacket: &packet];
+  return [self decodePacket: &packet];
 }
 
 - (void) setVolume: (float)volume

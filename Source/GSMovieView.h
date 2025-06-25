@@ -77,7 +77,8 @@ APPKIT_EXPORT_CLASS
                       streamIndex: (int)videoStreamIndex;
 
 // Submit packets...
-- (void) decodePacket: (AVPacket *)packet;
+- (BOOL) decodePacket: (AVPacket *)packet;
+- (BOOL) decodeDictionary: (NSDictionary *)dict;
 
 // Start and stop...
 - (CGFloat) frameRateForStream;
