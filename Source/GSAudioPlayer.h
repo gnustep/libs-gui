@@ -70,8 +70,10 @@
 		      streamIndex: (int)audioStreamIndex;
 
 // Decode and play the packet...
+- (NSData *) decodePacketToData: (AVPacket *)packet;
 - (BOOL) decodePacket: (AVPacket *)packet;
 - (BOOL) decodeDictionary: (NSDictionary *)dict;
+- (void) playData: (NSData *)data;
 
 // Controls...
 - (float) volume;

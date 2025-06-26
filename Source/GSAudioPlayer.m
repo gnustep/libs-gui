@@ -124,23 +124,25 @@
   _running = YES;
 }
 
-- (BOOL) decodePacket: (AVPacket *)packet
+- (NSData *) decodePacketToData: (AVPacket *)packet
 {
   if (!_audioCodecCtx || !_swrCtx || !_aoDev)
     {
-      return NO;
-    }
-
-  if (avcodec_send_packet(_audioCodecCtx, packet) < 0)
-    {
-      return NO;
+      return nil;
     }
 
   if (packet->flags & AV_PKT_FLAG_CORRUPT)
     {
       NSLog(@"Skipping corrupt audio packet");
-      return NO;
+      return nil;
     }
+
+  if (avcodec_send_packet(_audioCodecCtx, packet) < 0)
+    {
+      return nil;
+    }
+
+  NSMutableData *decodedData = [NSMutableData data];
 
   while (avcodec_receive_frame(_audioCodecCtx, _audioFrame) == 0)
     {
@@ -149,36 +151,61 @@
       uint8_t *outBuf = (uint8_t *) malloc(outBytes);
       uint8_t *outPtrs[] = { outBuf };
 
-      swr_convert(_swrCtx, outPtrs, outSamples,
-		  (const uint8_t **) _audioFrame->data,
-		  outSamples);
+      swr_convert(_swrCtx,
+                  outPtrs,
+                  outSamples,
+                  (const uint8_t **) _audioFrame->data,
+                  outSamples);
 
-      // Apply volume
-      int16_t *samples = (int16_t *)outBuf;
+      int16_t *samples = (int16_t *) outBuf;
       int i = 0;
       for (i = 0; i < outBytes / 2; ++i)
-	{
-	  if ([self isMuted])
-	    {
-	      samples[i] = 0.0;
-	    }
-	  else
-	    {
-	      samples[i] = samples[i] * _volume;
-	    }
-	}
+        {
+          if ([self isMuted])
+            {
+              samples[i] = 0;
+            }
+          else
+            {
+              samples[i] = (int16_t)(samples[i] * _volume);
+            }
+        }
 
-      ao_play(_aoDev, (char *) outBuf, outBytes);
+      [decodedData appendBytes: outBuf length: outBytes];
       free(outBuf);
     }
 
-  return YES;
+  return ([decodedData length] > 0) ? decodedData : nil;
+}
+
+- (BOOL) decodePacket: (AVPacket *)packet
+{
+  NSData *data = [self decodePacketToData: packet];
+  BOOL result = NO;
+    
+  if (data != nil)
+    {
+      RETAIN(data);
+      [self playData: data];
+      result = YES;
+      RELEASE(data);
+    }
+
+  return result;
 }
 
 - (BOOL) decodeDictionary: (NSDictionary *)dict
 {
   AVPacket packet = AVPacketFromNSDictionary(dict);
   return [self decodePacket: &packet];
+}
+
+- (void) playData: (NSData *)data
+{
+  char *outBuf = (char *)[data bytes];
+  int outBytes = [data length];
+      
+  ao_play(_aoDev, (char *) outBuf, outBytes);
 }
 
 - (void) setVolume: (float)volume
