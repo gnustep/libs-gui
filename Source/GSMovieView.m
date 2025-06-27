@@ -503,7 +503,6 @@ static NSNotificationCenter *nc = nil;
 {
   AVPacket packet;
 
-  // av_init_packet(&packet);
   packet.data = NULL;
   packet.size = 0;
 
