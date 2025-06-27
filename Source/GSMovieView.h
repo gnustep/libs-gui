@@ -44,9 +44,10 @@
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
 
-@class NSImage;
-@class NSTimer;
 @class GSAudioPlayer;
+@class NSImage;
+@class NSMutableArray;
+@class NSTimer;
 
 APPKIT_EXPORT_CLASS
 @interface GSMovieView : NSMovieView
@@ -70,6 +71,10 @@ APPKIT_EXPORT_CLASS
   int64_t _savedPts;
   CGFloat _fps;
   BOOL _running;
+
+  // buffers
+  NSMutableArray *_videoBuffer;
+  NSMutableArray *_audioBuffer;
 }
 
 // Initialization...
@@ -84,7 +89,7 @@ APPKIT_EXPORT_CLASS
 - (CGFloat) frameRateForStream;
 
 // Main loop to process packets...
-- (void) renderFrame: (AVFrame *)videoFrame;
+- (NSImage *) renderFrame: (AVFrame *)videoFrame;
 - (BOOL) setup;
 - (void) close;
 

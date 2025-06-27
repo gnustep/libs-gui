@@ -140,6 +140,10 @@ static NSNotificationCenter *nc = nil;
       // Flags...
       _running = NO; // is the thread running?
 
+      // buffers...
+      _videoBuffer = [[NSMutableArray alloc] init];
+      _audioBuffer = [[NSMutableArray alloc] init];
+      
       // Get notifications and shut down the thread if app is closing.
       [nc addObserver: self
 	     selector: @selector(handleNotification:)
@@ -172,7 +176,9 @@ static NSNotificationCenter *nc = nil;
   // Destroy objects
   DESTROY(_audioPlayer);
   DESTROY(_currentFrame);
-
+  DESTROY(_videoBuffer);
+  DESTROY(_audioBuffer);
+  
   // Unsubscribe to NSNotification
   [nc removeObserver: self];
 
@@ -407,7 +413,7 @@ static NSNotificationCenter *nc = nil;
   return YES;
 }
 
-- (void) renderFrame: (AVFrame *)videoFrame
+- (NSImage *) renderFrame: (AVFrame *)videoFrame
 {
   uint8_t *rgbData[1];
   int rgbLineSize[1];
@@ -441,12 +447,9 @@ static NSNotificationCenter *nc = nil;
   NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(_videoCodecCtx->width,
 							     _videoCodecCtx->height)];
   [image addRepresentation: rep];
-  [self performSelectorOnMainThread: @selector(updateImage:)
-			 withObject: image
-		      waitUntilDone: NO];
-
-  AUTORELEASE(image);
   AUTORELEASE(rep);
+
+  return image;
 }
 
 - (BOOL) decodePacket: (AVPacket *)packet
@@ -480,7 +483,11 @@ static NSNotificationCenter *nc = nil;
 
   while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
     {
-      [self renderFrame: _videoFrame];
+      NSImage *image = [self renderFrame: _videoFrame];
+      [self performSelectorOnMainThread: @selector(updateImage:)
+			     withObject: image
+			  waitUntilDone: NO];
+      AUTORELEASE(image);
     }
 
   return YES;
