@@ -452,22 +452,22 @@ static NSNotificationCenter *nc = nil;
   return image;
 }
 
-- (BOOL) decodePacket: (AVPacket *)packet
+- (NSImage *) decodePacketToImage: (AVPacket *)packet
 {
   if (!_videoCodecCtx || !_swsCtx)
     {
-      return NO;
+      return nil;
     }
 
   if (avcodec_send_packet(_videoCodecCtx, packet) < 0)
     {
-      return NO;
+      return nil;
     }
 
   if (packet->flags & AV_PKT_FLAG_CORRUPT)
     {
       NSLog(@"Skipping corrupt audio packet");
-      return NO;
+      return nil;
     }
 
   // Log pts...
@@ -481,16 +481,28 @@ static NSNotificationCenter *nc = nil;
       [_statusField setStringValue: _statusString];
     }
 
+  NSImage *image = nil;
   while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
     {
-      NSImage *image = [self renderFrame: _videoFrame];
+      image = [self renderFrame: _videoFrame];
+    }
+
+  return image;
+}
+
+- (BOOL) decodePacket: (AVPacket *)packet
+{
+  NSImage *image = [self decodePacketToImage: packet];
+
+  if (image != nil)
+    {
       [self performSelectorOnMainThread: @selector(updateImage:)
 			     withObject: image
 			  waitUntilDone: NO];
       AUTORELEASE(image);
     }
-
-  return YES;
+  
+  return (image != nil);
 }
 
 - (BOOL) decodeDictionary: (NSDictionary *)dict
