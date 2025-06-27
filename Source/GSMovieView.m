@@ -125,9 +125,10 @@ static NSNotificationCenter *nc = nil;
     {
       // Objects...
       _audioPlayer = [[GSAudioPlayer alloc] init];
-      _feedTimer = nil;
+      _playTimer = nil;
       _currentFrame = nil;
-
+      _cacheThread = nil;
+      
       // AV...
       _videoClock = 0;
       _videoCodecCtx = NULL;
@@ -136,7 +137,8 @@ static NSNotificationCenter *nc = nil;
       _stream = NULL;
       _lastPts = 0;
       _fps = 0.0;
-
+      _cachedCount = 0;
+      
       // Flags...
       _running = NO; // is the thread running?
 
@@ -198,7 +200,7 @@ static NSNotificationCenter *nc = nil;
 - (void) handleNotification: (NSNotification *)notification
 {
   NSLog(@"[GSMovieView] Shutting down, final pts %ld", _lastPts);
-  [_feedTimer invalidate];
+  [_playTimer invalidate];
 }
 
 // Overridden methods from the superclass...
@@ -219,7 +221,7 @@ static NSNotificationCenter *nc = nil;
       [self setVolume: 1.0];
 
       _running = YES;
-      _feedTimer = [NSTimer scheduledTimerWithTimeInterval: fr
+      _playTimer = [NSTimer scheduledTimerWithTimeInterval: fr
 						    target: self
 						  selector: @selector(decodeAndDisplayNextFrame)
 						  userInfo: nil
@@ -232,7 +234,7 @@ static NSNotificationCenter *nc = nil;
   if (_running == YES)
     {
       _running = NO;
-      [_feedTimer invalidate];
+      [_playTimer invalidate];
       NSLog(@"[GSMovieView] Stopping video | Timestamp: %ld, lastPts = %ld",
 		av_gettime(), _lastPts);
     }
@@ -260,7 +262,7 @@ static NSNotificationCenter *nc = nil;
   @synchronized(_movie)
     {
       [super setMovie: movie];
-      [self setup];
+      [self open];
       [self start: nil];
     }
 }
@@ -330,7 +332,7 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
-- (BOOL) setup
+- (BOOL) open
 {
   NSMovie *movie = [self movie];
 
@@ -407,10 +409,23 @@ static NSNotificationCenter *nc = nil;
 	      avformat_close_input(&_formatCtx);
 	      return NO;
 	    }
+
+	  // Start cache thread...
+	  _cacheThread = [[NSThread alloc] initWithTarget: self
+						 selector: @selector(buildCache)
+						   object: nil];
+	  // [_cacheThread start];
 	}
     }
 
   return YES;
+}
+
+- (void) buildCache
+{
+  _cachedCount = 0;
+  // NSImage *image
+  // while (
 }
 
 - (NSImage *) renderFrame: (AVFrame *)videoFrame

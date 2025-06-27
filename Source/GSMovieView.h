@@ -52,7 +52,8 @@
 APPKIT_EXPORT_CLASS
 @interface GSMovieView : NSMovieView
 {
-  NSTimer *_feedTimer;
+  NSTimer *_playTimer;
+  NSThread *_cacheThread;
   NSImage *_currentFrame;
   NSString *_statusString;
   GSAudioPlayer *_audioPlayer;
@@ -71,7 +72,8 @@ APPKIT_EXPORT_CLASS
   int64_t _savedPts;
   CGFloat _fps;
   BOOL _running;
-
+  NSInteger _cachedCount;
+  
   // buffers
   NSMutableArray *_videoBuffer;
   NSMutableArray *_audioBuffer;
@@ -84,13 +86,17 @@ APPKIT_EXPORT_CLASS
 // Submit packets...
 - (BOOL) decodePacket: (AVPacket *)packet;
 - (BOOL) decodeDictionary: (NSDictionary *)dict;
+- (NSImage *) decodePacketToImage: (AVPacket *)packet;
 
-// Start and stop...
+// Framerate
 - (CGFloat) frameRateForStream;
 
 // Main loop to process packets...
 - (NSImage *) renderFrame: (AVFrame *)videoFrame;
-- (BOOL) setup;
+- (void) decodeAndDisplayNextFrame;
+- (void) buildCache;
+
+- (BOOL) open;
 - (void) close;
 
 @end
