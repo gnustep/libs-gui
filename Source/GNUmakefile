@@ -374,7 +374,8 @@ GSCSStrength.m \
 GSCSEditInfo.m \
 GSCSEditVariableManager.m \
 GSCSTableau.m \
-GSColorSliderCell.m
+GSColorSliderCell.m \
+GSRingBuffer.m
 
 ifeq ($(BUILD_MOVIE), yes)
 libgnustep-gui_OBJC_FILES += GSMovieView.m

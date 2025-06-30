@@ -583,12 +583,6 @@ static NSNotificationCenter *nc = nil;
   return (image != nil);
 }
 
-- (BOOL) decodeDictionary: (NSDictionary *)dict
-{
-  AVPacket packet = AVPacketFromNSDictionary(dict);
-  return [self decodePacket: &packet];
-}
-
 - (void) displayNextFrame
 {
   if (_cachedCount < 1000)
@@ -612,48 +606,6 @@ static NSNotificationCenter *nc = nil;
 	  [self updateImage: image];
 	  [_videoBuffer removeObjectAtIndex: 0];
 	}
-    }
-}
-
-- (void) decodeAndDisplayNextFrame
-{
-  AVPacket packet;
-
-  packet.data = NULL;
-  packet.size = 0;
-
-  while (av_read_frame(_formatCtx, &packet) >= 0)
-    {
-      NSDictionary *dict = nil;
-
-      if (!_running)
-	{
-	  break;
-	}
-
-      if (packet.flags & AV_PKT_FLAG_CORRUPT)
-	{
-	  NSLog(@"Skipping corrupt video packet");
-	  break;
-	}
-
-      dict = NSDictionaryFromAVPacket(&packet);
-      if (packet.stream_index == _videoStreamIndex)
-	{
-	  [NSThread detachNewThreadSelector: @selector(decodeDictionary:)
-				   toTarget: self
-				 withObject: dict];
-	  break;
-	}
-      else if (packet.stream_index == _audioStreamIndex)
-	{
-	  [NSThread detachNewThreadSelector: @selector(decodeDictionary:)
-				   toTarget: _audioPlayer
-				 withObject: dict];
-	  break;
-	}
-
-      av_packet_unref(&packet);
     }
 }
 
