@@ -215,17 +215,18 @@ static NSNotificationCenter *nc = nil;
     {
       NSTimeInterval fr = (double)(1/[self frameRateForStream]);
 
-      NSLog(@"[GSMovieView] Starting video | Timestamp: %ld, lastPts = %ld, fr = %f",
-	    av_gettime(), _lastPts, fr);
+      NSLog(@"fr = %f", fr);
+      NSLog(@"[GSMovieView] Starting video | Timestamp: %ld, lastPts = %ld",
+	    av_gettime(), _lastPts);
       [self setRate: 1.0];
       [self setVolume: 1.0];
-
       _running = YES;
       _playTimer = [NSTimer scheduledTimerWithTimeInterval: fr
 						    target: self
-						  selector: @selector(decodeAndDisplayNextFrame)
+						  selector: @selector(displayNextFrame)
 						  userInfo: nil
 						   repeats: YES];
+		  
     }
 }
 
@@ -414,18 +415,80 @@ static NSNotificationCenter *nc = nil;
 	  _cacheThread = [[NSThread alloc] initWithTarget: self
 						 selector: @selector(buildCache)
 						   object: nil];
-	  // [_cacheThread start];
+	  [_cacheThread start];
 	}
     }
 
   return YES;
 }
 
+- (id) decodeNext
+{
+  AVPacket packet;
+  id data = nil;
+  
+  packet.data = NULL;
+  packet.size = 0;
+  while (av_read_frame(_formatCtx, &packet) >= 0)
+    {
+      if (!_running)
+	{
+	  break;
+	}
+
+      if (packet.flags & AV_PKT_FLAG_CORRUPT)
+	{
+	  NSLog(@"Skipping corrupt video packet");
+	  break;
+	}
+
+      // dict = NSDictionaryFromAVPacket(&packet);
+      if (packet.stream_index == _videoStreamIndex)
+	{
+	  data = [self decodePacketToImage: &packet];
+	  // NSLog(@"image = %@", data);
+	  break;
+	}
+      else if (packet.stream_index == _audioStreamIndex)
+	{
+	  data = [_audioPlayer decodePacketToData: &packet];
+	  // NSLog(@"sound = %@", data);
+	  break;
+	}
+
+      av_packet_unref(&packet);
+    }
+  
+  if (data == nil) NSLog(@"data is nil");
+  return data;
+}
+
 - (void) buildCache
 {
   _cachedCount = 0;
-  // NSImage *image
-  // while (
+  while (_running) // (data = [self decodeNext]) != nil)
+    {
+      id data = [self decodeNext];
+      
+      @synchronized(_videoBuffer)
+	{
+	  if (data != nil)
+	    {
+	      if ([data isKindOfClass: [NSImage class]])
+		{
+		  [_videoBuffer addObject: data];
+		  NSLog(@"Video buffer count = %ld", [_videoBuffer count]);
+		}
+	      else
+		{
+		  [_audioBuffer addObject: data];
+		  // NSLog(@"Audio buffer count = %ld", [_videoBuffer count]);
+		}
+	      
+	      _cachedCount++;
+	    }
+	}
+    }
 }
 
 - (NSImage *) renderFrame: (AVFrame *)videoFrame
@@ -526,6 +589,32 @@ static NSNotificationCenter *nc = nil;
   return [self decodePacket: &packet];
 }
 
+- (void) displayNextFrame
+{
+  if (_cachedCount < 1000)
+    {
+      NSLog(@"Not yet.. %d", _cachedCount);
+      return;
+    }
+  
+  @synchronized(_videoBuffer)
+    {
+      if ([_audioBuffer count] > 0)
+	{
+	  NSData *sound = [_audioBuffer objectAtIndex: 0];
+	  [_audioPlayer playData: sound];
+	  [_audioBuffer removeObjectAtIndex: 0];
+	}
+      
+      if ([_videoBuffer count] > 0)
+	{
+	  NSImage *image = [_videoBuffer objectAtIndex: 0];
+	  [self updateImage: image];
+	  [_videoBuffer removeObjectAtIndex: 0];
+	}
+    }
+}
+
 - (void) decodeAndDisplayNextFrame
 {
   AVPacket packet;
@@ -565,7 +654,7 @@ static NSNotificationCenter *nc = nil;
 	}
 
       av_packet_unref(&packet);
-  }
+    }
 }
 
 - (void) close
