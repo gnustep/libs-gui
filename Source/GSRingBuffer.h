@@ -1,6 +1,6 @@
 /* GSRingBuffer.m - Ring buffer implementation in Objective-C 1.0 for GNUstep */
 
-#import <Foundation/Foundation.h>
+#import <Foundation/NSObject.h>
 
 @interface GSRingBuffer : NSObject
 {
