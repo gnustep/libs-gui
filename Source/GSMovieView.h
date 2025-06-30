@@ -84,8 +84,6 @@ APPKIT_EXPORT_CLASS
                       streamIndex: (int)videoStreamIndex;
 
 // Submit packets...
-- (BOOL) decodePacket: (AVPacket *)packet;
-- (BOOL) decodeDictionary: (NSDictionary *)dict;
 - (NSImage *) decodePacketToImage: (AVPacket *)packet;
 
 // Framerate
@@ -93,9 +91,11 @@ APPKIT_EXPORT_CLASS
 
 // Main loop to process packets...
 - (NSImage *) renderFrame: (AVFrame *)videoFrame;
-- (void) decodeAndDisplayNextFrame;
+- (id) decodeNext;
 - (void) buildCache;
+- (void) displayNextFrame;
 
+// Open and close movie...
 - (BOOL) open;
 - (void) close;
 

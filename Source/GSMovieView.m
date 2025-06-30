@@ -459,7 +459,7 @@ static NSNotificationCenter *nc = nil;
       av_packet_unref(&packet);
     }
   
-  if (data == nil) NSLog(@"data is nil");
+  // if (data == nil) NSLog(@"data is nil");
   return data;
 }
 
@@ -477,7 +477,7 @@ static NSNotificationCenter *nc = nil;
 	      if ([data isKindOfClass: [NSImage class]])
 		{
 		  [_videoBuffer addObject: data];
-		  NSLog(@"Video buffer count = %ld", [_videoBuffer count]);
+		  // NSLog(@"Video buffer count = %ld", [_videoBuffer count]);
 		}
 	      else
 		{
@@ -568,26 +568,11 @@ static NSNotificationCenter *nc = nil;
   return image;
 }
 
-- (BOOL) decodePacket: (AVPacket *)packet
-{
-  NSImage *image = [self decodePacketToImage: packet];
-
-  if (image != nil)
-    {
-      [self performSelectorOnMainThread: @selector(updateImage:)
-			     withObject: image
-			  waitUntilDone: NO];
-      AUTORELEASE(image);
-    }
-  
-  return (image != nil);
-}
-
 - (void) displayNextFrame
 {
   if (_cachedCount < 1000)
     {
-      NSLog(@"Not yet.. %d", _cachedCount);
+      // NSLog(@"Not yet.. %d", _cachedCount);
       return;
     }
   
