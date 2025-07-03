@@ -72,7 +72,7 @@
 
 #endif
 
-#if defined(__clang__) && !defined(__MINGW32__)
+#if defined(__clang__) && !defined(__MINGW32__) && !defined(WIN32)
 #  define PACKAGE_SCOPE @package
 #else
 #  define PACKAGE_SCOPE @public
