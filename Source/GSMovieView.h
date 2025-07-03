@@ -45,6 +45,7 @@
 #include <libswresample/swresample.h>
 
 @class GSAudioPlayer;
+@class GSRingBuffer;
 @class NSImage;
 @class NSMutableArray;
 @class NSTimer;
@@ -75,8 +76,7 @@ APPKIT_EXPORT_CLASS
   NSInteger _cachedCount;
   
   // buffers
-  NSMutableArray *_videoBuffer;
-  NSMutableArray *_audioBuffer;
+  GSRingBuffer *_ringBuffer;
 }
 
 // Initialization...

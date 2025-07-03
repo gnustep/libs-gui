@@ -43,11 +43,14 @@
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSPasteboard.h"
 
-#import "GSMovieView.h"
 #import "GSAudioPlayer.h"
 #import "GSAVUtils.h"
+#import "GSMovieView.h"
+#import "GSRingBuffer.h"
 
 static NSNotificationCenter *nc = nil;
+
+#define BUFFER_SIZE 1024
 
 // Ignore the warning this will produce as it is intentional.
 #pragma clang diagnostic push
@@ -143,8 +146,7 @@ static NSNotificationCenter *nc = nil;
       _running = NO; // is the thread running?
 
       // buffers...
-      _videoBuffer = [[NSMutableArray alloc] init];
-      _audioBuffer = [[NSMutableArray alloc] init];
+      _ringBuffer = [[GSRingBuffer alloc] initWithCapacity: BUFFER_SIZE];
       
       // Get notifications and shut down the thread if app is closing.
       [nc addObserver: self
@@ -178,8 +180,7 @@ static NSNotificationCenter *nc = nil;
   // Destroy objects
   DESTROY(_audioPlayer);
   DESTROY(_currentFrame);
-  DESTROY(_videoBuffer);
-  DESTROY(_audioBuffer);
+  DESTROY(_ringBuffer);
   
   // Unsubscribe to NSNotification
   [nc removeObserver: self];
@@ -470,19 +471,13 @@ static NSNotificationCenter *nc = nil;
     {
       id data = [self decodeNext];
       
-      @synchronized(_videoBuffer)
+      @synchronized(_ringBuffer)
 	{
 	  if (data != nil)
 	    {
-	      if ([data isKindOfClass: [NSImage class]])
+	      if (![_ringBuffer isFull])
 		{
-		  [_videoBuffer addObject: data];
-		  // NSLog(@"Video buffer count = %ld", [_videoBuffer count]);
-		}
-	      else
-		{
-		  [_audioBuffer addObject: data];
-		  // NSLog(@"Audio buffer count = %ld", [_videoBuffer count]);
+		  [_ringBuffer enqueue: data];
 		}
 	      
 	      _cachedCount++;
@@ -570,26 +565,16 @@ static NSNotificationCenter *nc = nil;
 
 - (void) displayNextFrame
 {
-  if (_cachedCount < 1000)
+  @synchronized(_ringBuffer)
     {
-      // NSLog(@"Not yet.. %d", _cachedCount);
-      return;
-    }
-  
-  @synchronized(_videoBuffer)
-    {
-      if ([_audioBuffer count] > 0)
+      id data = [_ringBuffer dequeue];
+      if ([data isKindOfClass: [NSData class]])
 	{
-	  NSData *sound = [_audioBuffer objectAtIndex: 0];
-	  [_audioPlayer playData: sound];
-	  [_audioBuffer removeObjectAtIndex: 0];
+	  [_audioPlayer playData: data];
 	}
-      
-      if ([_videoBuffer count] > 0)
+      else // if ([_videoBuffer count] > 0)
 	{
-	  NSImage *image = [_videoBuffer objectAtIndex: 0];
-	  [self updateImage: image];
-	  [_videoBuffer removeObjectAtIndex: 0];
+	  [self updateImage: data];
 	}
     }
 }
