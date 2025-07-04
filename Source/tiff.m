@@ -73,7 +73,7 @@
 #include <string.h>
 #if defined(HAVE_UNISTD_H)
 #include <unistd.h>		/* for L_SET, etc definitions */
-#endif /* !HAVE_UNISTD_H */
+#endif /* HAVE_UNISTD_H */
 
 #if !defined(TIFF_VERSION_CLASSIC)
 // This only got added in version 4 of libtiff, but TIFFLIB_VERSION is unusable to differentiate here
