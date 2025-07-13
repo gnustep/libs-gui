@@ -333,9 +333,14 @@ setPath(NSBrowser *browser, NSString *path)
   _okButton = [[NSButton alloc] initWithFrame: r]; 
   [_okButton setBordered: YES];
   [_okButton setTitle:  _(@"OK")];
-  [_okButton setImagePosition: NSImageRight]; 
-  [_okButton setImage: [NSImage imageNamed: @"common_ret"]];
-  [_okButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+  [_okButton setImagePosition: NSImageRight];
+  NSInterfaceStyle interfaceStyle = NSInterfaceStyleForKey(@"NSInterfaceStyle", nil);
+  if (interfaceStyle == NSNextStepInterfaceStyle
+      || interfaceStyle == GSWindowMakerInterfaceStyle)
+    {
+      [_okButton setImage: [NSImage imageNamed: @"common_ret"]];
+      [_okButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+    }
   [_okButton setTarget: self];
   [_okButton setAction: @selector(ok:)];
   [_okButton setEnabled: NO];

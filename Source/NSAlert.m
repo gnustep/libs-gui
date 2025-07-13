@@ -502,8 +502,13 @@ setKeyEquivalent(NSButton *button)
   [defButton setHighlightsBy: NSPushInCellMask | NSChangeGrayCellMask 
                               | NSContentsCellMask];
   [defButton setImagePosition: NSImageRight];
-  [defButton setImage: [NSImage imageNamed: @"common_ret"]];
-  [defButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+  NSInterfaceStyle interfaceStyle = NSInterfaceStyleForKey(@"NSInterfaceStyle", nil);
+  if (interfaceStyle == NSNextStepInterfaceStyle
+      || interfaceStyle == GSWindowMakerInterfaceStyle)
+    {
+      [defButton setImage: [NSImage imageNamed: @"common_ret"]];
+      [defButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+    }
   
   altButton = [self _makeButtonWithRect: rect tag: NSAlertAlternateReturn];
   othButton = [self _makeButtonWithRect: rect tag: NSAlertOtherReturn];
