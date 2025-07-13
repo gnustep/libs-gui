@@ -101,15 +101,15 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
     [button setTitle: NSLocalizedString(@"OK", @"")];
     [button setKeyEquivalent: @"\r"];
     [button setImagePosition: NSImageRight];
-  NSInterfaceStyle interfaceStyle = NSInterfaceStyleForKey(@"NSInterfaceStyle", nil);
-  if (interfaceStyle == NSNextStepInterfaceStyle
-      || interfaceStyle == GSWindowMakerInterfaceStyle)
-    {
-      [button setImage: [NSImage imageNamed: @"common_ret"]];
-      [button setAlternateImage: [NSImage imageNamed: @"common_retH"]];
-    }
-	  [button setTarget: self];
-	  [button setAction: @selector(buttonAction:)];		
+    NSInterfaceStyle interfaceStyle = NSInterfaceStyleForKey(@"NSInterfaceStyle", nil);
+    if (interfaceStyle == NSNextStepInterfaceStyle
+        || interfaceStyle == GSWindowMakerInterfaceStyle)
+      {
+        [button setImage: [NSImage imageNamed: @"common_ret"]];
+        [button setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+      }
+    [button setTarget: self];
+    [button setAction: @selector(buttonAction:)];		
 
     [[self contentView] addSubview: button];
     RELEASE (button);
