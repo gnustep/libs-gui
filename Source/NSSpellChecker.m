@@ -709,8 +709,13 @@ inSpellDocumentWithTag:(int)tag
   [_correctButton setKeyEquivalent: @"c"];
   [_correctButton setKeyEquivalentModifierMask: NSCommandKeyMask];
   [_correctButton setImagePosition: NSImageRight];
-  [_correctButton setImage: [NSImage imageNamed: @"common_ret"]];
-  [_correctButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+  NSInterfaceStyle interfaceStyle = NSInterfaceStyleForKey(@"NSInterfaceStyle", nil);
+  if (interfaceStyle == NSNextStepInterfaceStyle
+      || interfaceStyle == GSWindowMakerInterfaceStyle)
+    {
+      [_correctButton setImage: [NSImage imageNamed: @"common_ret"]];
+      [_correctButton setAlternateImage: [NSImage imageNamed: @"common_retH"]];
+    }
   [_spellPanel makeFirstResponder: _correctButton];
   [_spellPanel setBecomesKeyOnlyIfNeeded: YES];
   [_spellPanel setFloatingPanel: YES];
