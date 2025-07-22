@@ -66,14 +66,12 @@ APPKIT_EXPORT_CLASS
   struct SwsContext *_swsCtx;
   AVRational _timeBase;
 
-  BOOL _paused;  // is the stream paused...
   BOOL _running; // is the loop currently running...
   BOOL _started; // has the video started...
   int64_t _videoClock;
   int _videoStreamIndex;
   int _audioStreamIndex;
   int64_t _lastPts;
-  int64_t _savedPts;
   CGFloat _fps;
 }
 
@@ -88,8 +86,6 @@ APPKIT_EXPORT_CLASS
 // Start and stop...
 - (void) startVideo;
 - (void) stopVideo;
-- (void) setPaused: (BOOL)f;
-- (BOOL) isPaused;
 
 // Main loop to process packets...
 - (void) renderFrame: (AVFrame *)videoFrame;

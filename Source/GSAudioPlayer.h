@@ -68,7 +68,6 @@
   BOOL _running;
   BOOL _started;
   BOOL _muted;
-  BOOL _paused;  
 }
 
 - (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
@@ -87,8 +86,6 @@
 
 - (void) setMuted: (BOOL)muted;
 - (BOOL) isMuted;
-- (void) setPaused: (BOOL)f;
-- (BOOL) isPaused;
 - (void) setPlaying: (BOOL)f;
 - (BOOL) isPlaying;
 

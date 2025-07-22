@@ -47,6 +47,8 @@
 #import "GSAudioPlayer.h"
 #import "GSAVUtils.h"
 
+#define BUFFER_SIZE 2048
+
 static NSNotificationCenter *nc = nil;
 
 // Ignore the warning this will produce as it is intentional.
@@ -143,12 +145,13 @@ static NSNotificationCenter *nc = nil;
       // Flags...
       _running = NO;
       _started = NO;
-      _paused = NO;
-      
+
+      /*
       [nc addObserver: self
 	     selector: @selector(handleNotification:)
 		 name: NSApplicationWillTerminateNotification
 	       object: nil];
+      */
     }
   return self;
 }
@@ -191,18 +194,6 @@ static NSNotificationCenter *nc = nil;
   [super dealloc];
 }
 
-// New methods...
-- (void) setPaused: (BOOL)f
-{
-  _paused = f;
-  [_audioPlayer setPaused: f];
-}
-
-- (BOOL) isPaused
-{
-  return _paused;
-}
-
 // Notification responses...
 - (void) handleNotification: (NSNotification *)notification
 {
@@ -222,7 +213,6 @@ static NSNotificationCenter *nc = nil;
       [self setRate: 1.0 / 30.0];
       [self setVolume: 1.0];
 
-      _savedPts = 0;
       _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil];
       [_feedThread start];
       [_audioPlayer startAudio];
@@ -233,7 +223,6 @@ static NSNotificationCenter *nc = nil;
 {
   if (_running == YES)
     {
-      _savedPts = _lastPts;
       [_feedThread cancel];
       [_audioPlayer stopAudio];
     }
@@ -247,12 +236,12 @@ static NSNotificationCenter *nc = nil;
 
 - (IBAction) start: (id)sender
 {
-  [self setPaused: NO];
+  [self startVideo];
 }
 
 - (IBAction) stop: (id)sender
 {
-  [self setPaused: YES];
+  [self stopVideo];
 }
 
 - (void) setMuted: (BOOL)muted
@@ -317,33 +306,14 @@ static NSNotificationCenter *nc = nil;
 
 - (IBAction)gotoEnd: (id)sender
 {
-  //
 }
 
 - (IBAction) stepForward: (id)sender
 {
-  int64_t seconds = 2;
-  int64_t skip = av_rescale_q(seconds, (AVRational){1,1}, _stream->time_base);
-  int64_t newPts = _lastPts + skip;
-
-  if (_paused == NO)
-    {
-      _paused = YES;
-      av_seek_frame(_formatCtx, _videoStreamIndex, newPts, AVSEEK_FLAG_BACKWARD);
-      avcodec_flush_buffers(_videoCodecCtx);
-      _paused = NO;
-    }
-  else
-    {
-      av_seek_frame(_formatCtx, _videoStreamIndex, newPts, AVSEEK_FLAG_BACKWARD);
-      avcodec_flush_buffers(_videoCodecCtx);
-    }
 }
 
 - (IBAction) stepBack: (id)sender
 {
-  [self stop: sender];
-  // [self _startAtPts: _savedPts - 1000];
 }
 
 // Video playback methods...
@@ -454,16 +424,10 @@ static NSNotificationCenter *nc = nil;
 
       while (av_read_frame(_formatCtx, &packet) >= 0)
 	{
-	  if (packet.pts <= _savedPts)
-	    {
-	      continue;
-	    }
-
-	  // After 1000 frames, start the thread...
-	  if (i == 1000)
+	  // After BUFFER_SIZE frames, start the thread...
+	  if (i == BUFFER_SIZE)
 	    {
 	      [self startVideo];
-	      [_audioPlayer startAudio];
 	    }
 
 	  if (packet.stream_index == _videoStreamIndex)
@@ -481,11 +445,10 @@ static NSNotificationCenter *nc = nil;
 	}
 
       // if we had a very short video... play it.
-      if (i < 1000)
+      if (i < BUFFER_SIZE)
 	{
 	  NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
 	  [self startVideo];
-	  [_audioPlayer startAudio];
 	}
     }
 }
@@ -565,6 +528,7 @@ static NSNotificationCenter *nc = nil;
 					     selector:@selector(videoThreadEntry)
 					       object:nil];
       [_videoThread start];
+      [_audioPlayer startAudio];
     }
 }
 
@@ -577,6 +541,7 @@ static NSNotificationCenter *nc = nil;
       _running = NO;
 
       [_videoThread cancel];
+      [_audioPlayer stopAudio];
       while (![_videoThread isFinished])
 	{
 	  usleep(1000);
@@ -584,9 +549,6 @@ static NSNotificationCenter *nc = nil;
 
       DESTROY(_videoThread);
       avformat_close_input(&_formatCtx);
-
-      _savedPts = _lastPts;
-      _lastPts = 0;
     }
 }
 
@@ -598,12 +560,6 @@ static NSNotificationCenter *nc = nil;
 - (void)submitPacket: (AVPacket *)packet
 {
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
-
-  if (_paused)
-    {
-      NSLog(@"Submitted packet...");
-    }
-  
   @synchronized (_videoPackets)
     {
       [_videoPackets addObject: dict];
@@ -614,13 +570,6 @@ static NSNotificationCenter *nc = nil;
 {
   while (_running)
     {
-      // Stop reading packets while paused...
-      if (_paused == YES)
-	{
-	  usleep(10000); // 10ms pause
-	  continue; // start the loop again...
-	}
-
       // Create pool...
       CREATE_AUTORELEASE_POOL(pool);
       {
@@ -652,38 +601,31 @@ static NSNotificationCenter *nc = nil;
 	    
 	    // If the current pts is at or after the saved,
 	    // then alow it to be decoded and displayed...
-	    if (packet.pts >= _savedPts)
+	    int64_t packetTime = av_rescale_q(packet.pts,
+					      _timeBase,
+					      (AVRational){1, 1000000});
+	    int64_t now = av_gettime() - _videoClock;
+	    int64_t delay = packetTime - now;
+		
+	    if (_statusField != nil)
 	      {
-		int64_t packetTime = av_rescale_q(packet.pts,
-						  _timeBase,
-						  (AVRational){1, 1000000});
-		int64_t now = av_gettime() - _videoClock;
-		int64_t delay = packetTime - now;
-		
-		if (_statusField != nil)
-		  {
-		    // Show the information...
-		    _statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | %@",
-					      packet.pts, delay, _running ? @"Running" : @"Stopped"];
-		    [_statusField setStringValue: _statusString];
-		  }
-		
-		// Show status on the command line...
-		fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
-			packet.pts, delay);
-		if (delay > 0)
-		  {
-		    usleep((useconds_t)delay);
-		  }
-		
-		// Decode the packet, display it and play the sound...
-		[self decodePacket: &packet];
-		RELEASE(dict);
+		// Show the information...
+		_statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | %@",
+					  packet.pts, delay, _running ? @"Running" : @"Stopped"];
+		[_statusField setStringValue: _statusString];
 	      }
-	    else
+	    
+	    // Show status on the command line...
+	    fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
+		    packet.pts, delay);
+	    if (delay > 0)
 	      {
-		usleep(1000);
+		usleep((useconds_t)delay);
 	      }
+		
+	    // Decode the packet, display it and play the sound...
+	    [self decodePacket: &packet];
+	    RELEASE(dict);
 	  }
       }
       RELEASE(pool);

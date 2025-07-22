@@ -44,7 +44,6 @@
       _running = NO;
       _volume = 1.0;
       _started = NO;
-      _paused = NO;
       _loopMode = NSQTMovieNormalPlayback;
     }
   return self;
@@ -78,16 +77,6 @@
 
   ao_shutdown();
   [super dealloc];
-}
-
-- (void) setPaused: (BOOL)f;
-{
-  _paused = f;
-}
-
-- (BOOL) isPaused
-{
-  return _paused;
 }
 
 - (void) setPlaying: (BOOL)f
@@ -169,13 +158,6 @@
 {
   while (_running)
     {
-      // Stop reading packets while paused...
-      if (_paused == YES)
-	{
-	  usleep(10000); // 10ms pause
-	  continue; // start the loop again...
-	}
-
       // create pool...
       CREATE_AUTORELEASE_POOL(pool);
       {
@@ -272,12 +254,6 @@
 - (void) submitPacket: (AVPacket *)packet
 {
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
-
-  if (_paused)
-    {
-      NSLog(@"Submitted audio packet...");
-    }
-
   @synchronized (_audioPackets)
     {
       [_audioPackets addObject: dict];
