@@ -247,10 +247,13 @@ APPKIT_EXPORT_CLASS
 /**
  * GNUstep extension, this allows the user to set a
  * text field to monitor the status of the movie view.
- *
+ */
 - (void) setStatusField: (id)field;
+
+/**
+ * GNUstep extension, get the status field.
+ */
 - (id) statusField;
-*/
 
 @end
 

@@ -254,4 +254,14 @@
 {
 }
 
+- (void) setStatusField: (id)field
+{
+  ASSIGN(_statusField, field);
+}
+
+- (id) statusField
+{
+  return _statusField;
+}
+
 @end

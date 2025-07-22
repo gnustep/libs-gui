@@ -145,13 +145,6 @@ static NSNotificationCenter *nc = nil;
       // Flags...
       _running = NO;
       _started = NO;
-
-      /*
-      [nc addObserver: self
-	     selector: @selector(handleNotification:)
-		 name: NSApplicationWillTerminateNotification
-	       object: nil];
-      */
     }
   return self;
 }
@@ -188,21 +181,7 @@ static NSNotificationCenter *nc = nil;
   DESTROY(_audioPlayer);
   DESTROY(_currentFrame);
   
-  // Unsubscribe to NSNotification
-  [nc removeObserver: self];
-
   [super dealloc];
-}
-
-// Notification responses...
-- (void) handleNotification: (NSNotification *)notification
-{
-  NSLog(@"[GSMovieView] Shutting down, final pts %ld", _lastPts);
-
-  [_feedThread cancel];
-  [_videoThread cancel];
-  [_audioPlayer stopAudio];
-  [self stopVideo];
 }
 
 // Private methods...
