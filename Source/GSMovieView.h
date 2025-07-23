@@ -57,7 +57,6 @@ APPKIT_EXPORT_CLASS
   NSImage *_currentFrame;
   NSString *_statusString;
   GSAudioPlayer *_audioPlayer;
-  NSLock *_lock;
 
   AVCodecContext *_videoCodecCtx;
   AVFrame *_videoFrame;
@@ -85,7 +84,7 @@ APPKIT_EXPORT_CLASS
 
 // Main loop to process packets...
 - (void) renderFrame: (AVFrame *)videoFrame;
-- (void) feedVideo;
+- (void) feed;
 - (BOOL) setup;
 - (void) loop;
 - (void) close;

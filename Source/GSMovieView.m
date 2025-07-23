@@ -30,7 +30,6 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
-#import <Foundation/NSNotification.h>
 #import <Foundation/NSTimer.h>
 #import <Foundation/NSThread.h>
 #import <Foundation/NSURL.h>
@@ -48,8 +47,6 @@
 #import "GSAVUtils.h"
 
 #define BUFFER_SIZE 2048
-
-static NSNotificationCenter *nc = nil;
 
 // Ignore the warning this will produce as it is intentional.
 #pragma clang diagnostic push
@@ -79,8 +76,7 @@ static NSNotificationCenter *nc = nil;
     }
 
     // Convert to sorted array
-    NSArray *sortedExtensions = [[extensionsSet allObjects] sortedArrayUsingSelector:@selector(compare:)];
-    return sortedExtensions;
+    return [[extensionsSet allObjects] sortedArrayUsingSelector:@selector(compare:)];
 }
 
 + (NSArray*) movieUnfilteredPasteboardTypes
@@ -98,8 +94,7 @@ static NSNotificationCenter *nc = nil;
     }
 
   // Convert to sorted array
-  NSArray *sorted = [[result allObjects] sortedArrayUsingSelector:@selector(compare:)];
-  return sorted;
+  return [[result allObjects] sortedArrayUsingSelector:@selector(compare:)];
 }
 
 @end
@@ -108,17 +103,6 @@ static NSNotificationCenter *nc = nil;
 
 // NSMovieView subclass that does all of the actual work of decoding...
 @implementation GSMovieView
-
-+ (void) initialize
-{
-  if (self == [GSMovieView class])
-    {
-      if (nc == nil)
-	{
-	  nc = [NSNotificationCenter defaultCenter];
-	}
-    }
-}
 
 - (instancetype) initWithFrame: (NSRect)frame
 {
@@ -131,7 +115,6 @@ static NSNotificationCenter *nc = nil;
       _feedThread = nil;
       _audioPlayer = [[GSAudioPlayer alloc] init];
       _videoPackets = [[NSMutableArray alloc] init];
-      _lock = [[NSLock alloc] init];
 
       // AV...
       _videoClock = 0;
@@ -176,7 +159,6 @@ static NSNotificationCenter *nc = nil;
 
   // Destroy objects
   DESTROY(_feedThread);
-  DESTROY(_lock);
   DESTROY(_videoPackets);
   DESTROY(_audioPlayer);
   DESTROY(_currentFrame);
@@ -192,7 +174,7 @@ static NSNotificationCenter *nc = nil;
       [self setRate: 1.0 / 30.0];
       [self setVolume: 1.0];
 
-      _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feedVideo) object:nil];
+      _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feed) object:nil];
       [_feedThread start];
       [_audioPlayer startAudio];
     }
@@ -213,11 +195,11 @@ static NSNotificationCenter *nc = nil;
   return _running;
 }
 
-
 - (IBAction) start: (id)sender
 {
   NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld, lastPts = %ld",
 	av_gettime(), _lastPts);
+
   if (!_running)
     {
       _running = YES;
@@ -233,6 +215,7 @@ static NSNotificationCenter *nc = nil;
 {
   NSLog(@"[GSMovieView] Stopping video thread | Timestamp: %ld, lastPts = %ld",
 	av_gettime(), _lastPts);
+
   if (_running)
     {
       _running = NO;
@@ -466,7 +449,7 @@ static NSNotificationCenter *nc = nil;
     }
 }
 
-- (void) feedVideo
+- (void) feed
 {
   if (_stream != NULL)
     {
@@ -477,8 +460,6 @@ static NSNotificationCenter *nc = nil;
 
 - (void)prepareWithFormatContext: (AVFormatContext *)formatCtx streamIndex: (int)videoStreamIndex
 {
-  // [_lock lock];
-  
   AVStream *videoStream = formatCtx->streams[videoStreamIndex];
   AVCodecParameters *videoPar = videoStream->codecpar;
   const AVCodec *videoCodec = avcodec_find_decoder(videoPar->codec_id);
@@ -518,8 +499,6 @@ static NSNotificationCenter *nc = nil;
   _videoClock = av_gettime();
   _running = NO;
   _started = NO;
-
-  // [_lock unlock];
 }
 
 - (void) setPlaying: (BOOL)f
