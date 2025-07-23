@@ -200,14 +200,21 @@
   NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld, lastPts = %ld",
 	av_gettime(), _lastPts);
 
-  if (!_running)
+  if (_feedThread != nil)
     {
-      _running = YES;
-      _videoThread = [[NSThread alloc] initWithTarget:self
-					     selector:@selector(videoThreadEntry)
-					       object:nil];
-      [_videoThread start];
-      [_audioPlayer startAudio];
+      if (!_running)
+	{
+	  _running = YES;
+	  _videoThread = [[NSThread alloc] initWithTarget:self
+						 selector:@selector(videoThreadEntry)
+						   object:nil];
+	  [_videoThread start];
+	  [_audioPlayer startAudio];
+	}
+    }
+  else
+    {
+      [self _startFeed];
     }
 }
 
@@ -222,6 +229,7 @@
 
       [_videoThread cancel];
       [_audioPlayer stopAudio];
+      [self _stopFeed];
       while (![_videoThread isFinished])
 	{
 	  usleep(1000);
@@ -244,10 +252,12 @@
   [_audioPlayer setVolume: volume];
 }
 
+/*
 - (void) setLoopMode: (NSQTMovieLoopMode)mode
 {
   [super setLoopMode: mode];
 }
+*/
 
 - (void) setMovie: (NSMovie *)movie
 {
@@ -255,7 +265,6 @@
     {
       [super setMovie: movie];
       [self setup];
-      [self _startFeed];
     }
 }
 
