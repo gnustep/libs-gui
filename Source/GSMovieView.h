@@ -83,10 +83,6 @@ APPKIT_EXPORT_CLASS
 - (void) submitPacket: (AVPacket *)packet;
 - (void) decodePacket: (AVPacket *)packet;
 
-// Start and stop...
-- (void) startVideo;
-- (void) stopVideo;
-
 // Main loop to process packets...
 - (void) renderFrame: (AVFrame *)videoFrame;
 - (void) feedVideo;

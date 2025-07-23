@@ -213,14 +213,40 @@ static NSNotificationCenter *nc = nil;
   return _running;
 }
 
+
 - (IBAction) start: (id)sender
 {
-  [self startVideo];
+  NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld, lastPts = %ld",
+	av_gettime(), _lastPts);
+  if (!_running)
+    {
+      _running = YES;
+      _videoThread = [[NSThread alloc] initWithTarget:self
+					     selector:@selector(videoThreadEntry)
+					       object:nil];
+      [_videoThread start];
+      [_audioPlayer startAudio];
+    }
 }
 
 - (IBAction) stop: (id)sender
 {
-  [self stopVideo];
+  NSLog(@"[GSMovieView] Stopping video thread | Timestamp: %ld, lastPts = %ld",
+	av_gettime(), _lastPts);
+  if (_running)
+    {
+      _running = NO;
+
+      [_videoThread cancel];
+      [_audioPlayer stopAudio];
+      while (![_videoThread isFinished])
+	{
+	  usleep(1000);
+	}
+
+      DESTROY(_videoThread);
+      avformat_close_input(&_formatCtx);
+    }
 }
 
 - (void) setMuted: (BOOL)muted
@@ -406,7 +432,7 @@ static NSNotificationCenter *nc = nil;
 	  // After BUFFER_SIZE frames, start the thread...
 	  if (i == BUFFER_SIZE)
 	    {
-	      [self startVideo];
+	      [self start: nil];
 	    }
 
 	  if (packet.stream_index == _videoStreamIndex)
@@ -427,7 +453,7 @@ static NSNotificationCenter *nc = nil;
       if (i < BUFFER_SIZE)
 	{
 	  NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
-	  [self startVideo];
+	  [self start: nil];
 	}
     }
 }
@@ -494,41 +520,6 @@ static NSNotificationCenter *nc = nil;
   _started = NO;
 
   // [_lock unlock];
-}
-
-- (void) startVideo
-{
-  NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld, lastPts = %ld",
-	av_gettime(), _lastPts);
-  if (!_running)
-    {
-      _running = YES;
-      _videoThread = [[NSThread alloc] initWithTarget:self
-					     selector:@selector(videoThreadEntry)
-					       object:nil];
-      [_videoThread start];
-      [_audioPlayer startAudio];
-    }
-}
-
-- (void) stopVideo
-{
-  NSLog(@"[GSMovieView] Stopping video thread | Timestamp: %ld, lastPts = %ld",
-	av_gettime(), _lastPts);
-  if (_running)
-    {
-      _running = NO;
-
-      [_videoThread cancel];
-      [_audioPlayer stopAudio];
-      while (![_videoThread isFinished])
-	{
-	  usleep(1000);
-	}
-
-      DESTROY(_videoThread);
-      avformat_close_input(&_formatCtx);
-    }
 }
 
 - (void) setPlaying: (BOOL)f
