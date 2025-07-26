@@ -25,6 +25,18 @@
    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
+/**
+ *  Class: NSController
+ *  Description: Abstract base class for controllers. NSController provides a common
+ *               interface for managing editing and communication between a model
+ *               and view objects, and is the superclass of concrete controller classes
+ *               like NSObjectController and NSArrayController.
+ *
+ *  Instance Variables:
+ *    _editors        - An array of objects currently editing the controller's values.
+ *    _declared_keys  - An array of key names that the controller is managing.
+ */
+
 #ifndef _GNUstep_H_NSController
 #define _GNUstep_H_NSController
 #import <AppKit/AppKitDefines.h>
@@ -43,19 +55,42 @@ APPKIT_EXPORT_CLASS
 }
 
 // NSEditor protocol
+
+/**
+ *  Commits all pending edits to the underlying model.
+ *  Returns YES if editing was successfully committed.
+ */
 - (BOOL) commitEditing;
+
+/**
+ *  Discards any uncommitted changes made by editors.
+ */
 - (void) discardEditing;
 
+/**
+ *  Returns whether any registered editors are currently editing.
+ */
 - (BOOL) isEditing;
 
 // NSEditorRegistration protocol
+
+/**
+ *  Registers that a specific editor has started editing.
+ */
 - (void) objectDidBeginEditing: (id)editor;
+
+/**
+ *  Unregisters the editor indicating editing is complete.
+ */
 - (void) objectDidEndEditing: (id)editor;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
+/**
+ *  Commits editing and notifies a delegate when the operation completes.
+ */
 - (void) commitEditingWithDelegate: (id)delegate
-                 didCommitSelector: (SEL)didCommitSelector
-                       contextInfo: (void*)contextInfo;
+		 didCommitSelector: (SEL)didCommitSelector
+		       contextInfo: (void*)contextInfo;
 #endif
 
 @end
