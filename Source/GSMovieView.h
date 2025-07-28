@@ -112,6 +112,9 @@ APPKIT_EXPORT_CLASS
 - (BOOL) isUsingSynchronizedAudio;
 - (NSString *) synchronizationStatus;
 
+// Emergency cleanup (use with caution)
+- (void) forceStop;
+
 @end
 
 #endif /* _GNUstep_H_GSMovieView */
