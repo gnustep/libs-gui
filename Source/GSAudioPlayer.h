@@ -1,6 +1,10 @@
 /** <title>GSAudioPlayer</title>
 
-   <abstract>This class is just a quick sound player for GSMovieView</abstract>
+   <abstract>Audio player with master clock functionality for GSMovieView synchronization</abstract>
+
+   This class provides audio playback capabilities and serves as the master clock
+   for audio-video synchronization. The audio clock is continuously updated during
+   playback and can be accessed by GSMovieView to synchronize video frame display.
 
    Copyright <copy>(C) 2003 Free Software Foundation, Inc.</copy>
 
@@ -88,6 +92,11 @@
 - (BOOL) isMuted;
 - (void) setPlaying: (BOOL)f;
 - (BOOL) isPlaying;
+
+// Audio clock access for synchronization
+- (int64_t) currentAudioClock;
+- (BOOL) isAudioStarted;
+- (int64_t) currentPlaybackTime; // Returns current playback time in microseconds
 
 @end
 

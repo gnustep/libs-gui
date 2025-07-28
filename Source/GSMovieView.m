@@ -1,6 +1,11 @@
 /** <title>GSMovieView</title>
 
-   <abstract>Encapsulate a movie</abstract>
+   <abstract>Encapsulate a movie with audio clock-driven synchronization</abstract>
+
+   This implementation uses the audio clock as the master timing reference.
+   Video frames are synchronized to the audio clock to ensure proper
+   audio-video synchronization. When no audio is present, the system
+   falls back to system time-based synchronization.
 
    Copyright <copy>(C) 2025 Free Software Foundation, Inc.</copy>
 
@@ -117,7 +122,6 @@
       _videoPackets = [[NSMutableArray alloc] init];
 
       // AV...
-      _videoClock = 0;
       _videoCodecCtx = NULL;
       _formatCtx = NULL;
       _swsCtx = NULL;
@@ -505,7 +509,6 @@
 
   _timeBase = formatCtx->streams[videoStreamIndex]->time_base;
   _videoPackets = [[NSMutableArray alloc] init];
-  _videoClock = av_gettime();
   _running = NO;
   _started = NO;
 }
@@ -544,11 +547,10 @@
 	      }
 	  }
 	
-	// If the dict is present and the thread is started, get
-	// the clock.
+	// If the dict is present and audio is started, we can sync to audio clock.
+	// If audio is not available, we fall back to system time
 	if (!_started && dict)
 	  {
-	    _videoClock = av_gettime();
 	    _started = YES;
 	  }
 	
@@ -557,25 +559,44 @@
 	  {
 	    AVPacket packet = AVPacketFromNSDictionary(dict);
 	    
-	    // If the current pts is at or after the saved,
-	    // then alow it to be decoded and displayed...
+	    // Calculate video timing based on audio clock
 	    int64_t packetTime = av_rescale_q(packet.pts,
 					      _timeBase,
 					      (AVRational){1, 1000000});
-	    int64_t now = av_gettime() - _videoClock;
-	    int64_t delay = packetTime - now;
+	    int64_t referenceTime;
+	    int64_t delay;
+	    
+	    // Use audio clock as master if audio is available and started
+	    if (_audioPlayer && [_audioPlayer isAudioStarted])
+	      {
+		referenceTime = [_audioPlayer currentPlaybackTime];
+		delay = packetTime - referenceTime;
+	      }
+	    else
+	      {
+		// Fall back to system time if no audio
+		static int64_t startTime = 0;
+		if (startTime == 0)
+		  {
+		    startTime = av_gettime();
+		  }
+		referenceTime = av_gettime() - startTime;
+		delay = packetTime - referenceTime;
+	      }
 		
 	    if (_statusField != nil)
 	      {
 		// Show the information...
-		_statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | %@",
-					  packet.pts, delay, _running ? @"Running" : @"Stopped"];
+		NSString *syncSource = (_audioPlayer && [_audioPlayer isAudioStarted]) ? @"Audio Clock" : @"System Time";
+		_statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | Sync: %@ | %@",
+					  packet.pts, delay, syncSource, _running ? @"Running" : @"Stopped"];
 		[_statusField setStringValue: _statusString];
 	      }
 	    
 	    // Show status on the command line...
-	    fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us\r",
-		    packet.pts, delay);
+	    NSString *syncSource = (_audioPlayer && [_audioPlayer isAudioStarted]) ? @"Audio Clock" : @"System Time";
+	    fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us | Sync: %s\r",
+		    packet.pts, delay, [syncSource UTF8String]);
 	    if (delay > 0)
 	      {
 		usleep((useconds_t)delay);
@@ -655,6 +676,36 @@
   while (avcodec_receive_frame(_videoCodecCtx, _videoFrame) == 0)
     {
       [self renderFrame: _videoFrame];
+    }
+}
+
+// Status field management
+- (void) setStatusField: (NSTextField *)field
+{
+  ASSIGN(_statusField, field);
+}
+
+- (NSTextField *) statusField
+{
+  return _statusField;
+}
+
+// Synchronization monitoring
+- (BOOL) isUsingSynchronizedAudio
+{
+  return (_audioPlayer && [_audioPlayer isAudioStarted]);
+}
+
+- (NSString *) synchronizationStatus
+{
+  if ([self isUsingSynchronizedAudio])
+    {
+      int64_t audioTime = [_audioPlayer currentPlaybackTime];
+      return [NSString stringWithFormat: @"Audio Clock Sync: %ld us", audioTime];
+    }
+  else
+    {
+      return @"System Time Sync (No Audio)";
     }
 }
 
