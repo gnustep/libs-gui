@@ -1,6 +1,11 @@
 /** <title>NSMovieView</title>
 
-   <abstract>Encapsulate a view for Quicktime movies</abstract>
+   <abstract>Movie view with audio clock-driven synchronization</abstract>
+
+   This subclass of NSMovieView implements video playback synchronized to
+   the audio clock provided by GSAudioPlayer. When audio is present, video
+   frames are synchronized to the audio timeline. When no audio is available,
+   the implementation falls back to system time-based synchronization.
 
    Copyright <copy>(C) 2003 Free Software Foundation, Inc.</copy>
 
@@ -46,6 +51,7 @@
 
 @class NSImage;
 @class NSTimer;
+@class NSTextField;
 @class GSAudioPlayer;
 
 APPKIT_EXPORT_CLASS
@@ -67,7 +73,6 @@ APPKIT_EXPORT_CLASS
 
   BOOL _running; // is the loop currently running...
   BOOL _started; // has the video started...
-  int64_t _videoClock;
   int _videoStreamIndex;
   int _audioStreamIndex;
   int64_t _lastPts;
@@ -98,6 +103,14 @@ APPKIT_EXPORT_CLASS
 
 // Playback status
 - (NSString *) playbackStatus;
+
+// Status field management
+- (void) setStatusField: (NSTextField *)field;
+- (NSTextField *) statusField;
+
+// Synchronization monitoring
+- (BOOL) isUsingSynchronizedAudio;
+- (NSString *) synchronizationStatus;
 
 @end
 

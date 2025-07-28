@@ -1,6 +1,10 @@
 /** <title>GSAudioPlayer</title>
 
-   <abstract>Encapsulate a movie</abstract>
+   <abstract>Audio player with master clock functionality for GSMovieView</abstract>
+
+   This audio player serves as the master clock for audio-video synchronization
+   in GSMovieView. The audio clock is updated during playback and is used by
+   the video thread to synchronize video frame presentation.
 
    Copyright <copy>(C) 2025 Free Software Foundation, Inc.</copy>
 
@@ -190,6 +194,14 @@
 		usleep((useconds_t)delay); //  + 50000);
 	      }
 	    
+	    // Update the audio clock to the current packet time
+	    // This provides the reference clock for video synchronization
+	    _audioClock = av_gettime() - packetTime;
+	    
+	    // Debug logging for audio clock updates
+	    fprintf(stderr, "[GSAudioPlayer] Audio clock updated: PTS: %ld | Delay: %ld us | Clock: %ld\r",
+		    packet.pts, delay, _audioClock);
+	    
 	    [self decodePacket:&packet];
 	    [dict release];
 	  }
@@ -263,6 +275,7 @@
 - (void) startAudio
 {
   _running = YES;
+  _started = NO; // Will be set to YES when first packet is processed
   NSLog(@"[GSAudioPlayer] Starting audio thread | Timestamp: %ld", av_gettime());
   _audioThread = [[NSThread alloc] initWithTarget:self selector:@selector(audioThreadEntry) object:nil];
   [_audioThread start];
@@ -271,6 +284,7 @@
 - (void) stopAudio
 {
   _running = NO;
+  _started = NO; // Reset synchronization state
   [_audioThread cancel];
 
   while ([_audioThread isFinished] == NO)
@@ -279,6 +293,7 @@
     }
 
   DESTROY(_audioThread);
+  NSLog(@"[GSAudioPlayer] Audio thread stopped | Timestamp: %ld", av_gettime());
 }
 
 - (void) setVolume: (float)volume
@@ -332,6 +347,26 @@
   
   NSLog(@"[GSAudioPlayer] Audio seek to timestamp %lld", timestamp);
   return YES;
+}
+
+// Audio clock access for synchronization
+- (int64_t) currentAudioClock
+{
+  return _audioClock;
+}
+
+- (BOOL) isAudioStarted
+{
+  return _started;
+}
+
+- (int64_t) currentPlaybackTime
+{
+  if (_started)
+    {
+      return av_gettime() - _audioClock;
+    }
+  return 0;
 }
 
 @end
