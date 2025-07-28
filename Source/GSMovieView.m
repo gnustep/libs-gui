@@ -138,14 +138,24 @@
 
 - (void)dealloc
 {
+  // Stop all playback and clean up
   [self stop: nil];
+  [self _stopFeed];
 
-  // Cancel thread, dealloc av structs...
+  // Cancel and clean up threads if they still exist
   if (_feedThread)
     {
       [_feedThread cancel];
+      DESTROY(_feedThread);
+    }
+  
+  if (_videoThread)
+    {
+      [_videoThread cancel];
+      DESTROY(_videoThread);
     }
 
+  // Clean up AV structures
   if (_videoFrame)
     {
       av_frame_free(&_videoFrame);
@@ -160,9 +170,14 @@
     {
       sws_freeContext(_swsCtx);
     }
+  
+  // Close format context
+  if (_formatCtx)
+    {
+      avformat_close_input(&_formatCtx);
+    }
 
   // Destroy objects
-  DESTROY(_feedThread);
   DESTROY(_videoPackets);
   DESTROY(_audioPlayer);
   DESTROY(_currentFrame);
@@ -173,74 +188,164 @@
 // Private methods...
 - (void) _startFeed
 {
-  if (_running == NO)
+  @synchronized(self)
     {
+      if (_feedThread != nil)
+        {
+          NSLog(@"[GSMovieView] Feed thread already exists");
+          return;
+        }
+
       [self setRate: 1.0 / 30.0];
       [self setVolume: 1.0];
 
       _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feed) object:nil];
       [_feedThread start];
-      [_audioPlayer startAudio];
+      
+      NSLog(@"[GSMovieView] Feed thread started | Timestamp: %ld", av_gettime());
     }
 }
 
 - (void) _stopFeed
 {
-  if (_running == YES)
+  @synchronized(self)
     {
-      [_feedThread cancel];
-      [_audioPlayer stopAudio];
+      if (_feedThread != nil)
+        {
+          [_feedThread cancel];
+          
+          // Wait for feed thread to finish with timeout
+          int timeout = 500; // 0.5 second timeout
+          while (![_feedThread isFinished] && timeout > 0)
+            {
+              usleep(1000); // 1ms
+              timeout--;
+            }
+          
+          DESTROY(_feedThread);
+          NSLog(@"[GSMovieView] Feed thread stopped | Timestamp: %ld", av_gettime());
+        }
     }
 }
 
 // Overridden methods from the superclass...
 - (BOOL) isPlaying
 {
-  return _running;
+  @synchronized(self)
+    {
+      // More robust check: ensure we have both the flag and active threads
+      return _running && (_videoThread != nil || _feedThread != nil);
+    }
 }
 
 - (IBAction) start: (id)sender
 {
-  NSLog(@"[GSMovieView] Starting video thread | Timestamp: %ld, lastPts = %ld",
-	av_gettime(), _lastPts);
+  @synchronized(self)
+    {
+      if (_running)
+        {
+          NSLog(@"[GSMovieView] Already running, ignoring start request | Timestamp: %ld", av_gettime());
+          return;
+        }
 
-  if (_feedThread != nil)
-    {
-      if (!_running)
-	{
-	  _running = YES;
-	  _videoThread = [[NSThread alloc] initWithTarget:self
-						 selector:@selector(videoThreadEntry)
-						   object:nil];
-	  [_videoThread start];
-	  [_audioPlayer startAudio];
-	}
-    }
-  else
-    {
-      [self _startFeed];
+      if (!_formatCtx || !_stream)
+        {
+          NSLog(@"[GSMovieView] Cannot start - no media loaded | Timestamp: %ld", av_gettime());
+          return;
+        }
+
+      NSLog(@"[GSMovieView] Starting video playback | Timestamp: %ld, lastPts = %ld",
+            av_gettime(), _lastPts);
+
+      _running = YES;
+      _started = NO; // Reset for synchronization
+
+      // Start feed thread if not already started
+      if (_feedThread == nil)
+        {
+          [self setRate: 1.0 / 30.0];
+          [self setVolume: 1.0];
+          
+          _feedThread = [[NSThread alloc] initWithTarget:self 
+                                                selector:@selector(feed) 
+                                                  object:nil];
+          [_feedThread start];
+        }
+
+      // Start video processing thread
+      if (_videoThread == nil)
+        {
+          _videoThread = [[NSThread alloc] initWithTarget:self
+                                                 selector:@selector(videoThreadEntry)
+                                                   object:nil];
+          [_videoThread start];
+        }
+
+      // Start audio playback
+      if (_audioPlayer && _audioStreamIndex >= 0)
+        {
+          [_audioPlayer startAudio];
+        }
+
+      NSLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
     }
 }
 
 - (IBAction) stop: (id)sender
 {
-  NSLog(@"[GSMovieView] Stopping video thread | Timestamp: %ld, lastPts = %ld",
-	av_gettime(), _lastPts);
-
-  if (_running)
+  @synchronized(self)
     {
+      if (!_running)
+        {
+          NSLog(@"[GSMovieView] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
+          return;
+        }
+
+      NSLog(@"[GSMovieView] Stopping video playback | Timestamp: %ld, lastPts = %ld",
+            av_gettime(), _lastPts);
+
       _running = NO;
 
-      [_videoThread cancel];
-      [_audioPlayer stopAudio];
-      [self _stopFeed];
-      while (![_videoThread isFinished])
-	{
-	  usleep(1000);
-	}
+      // Stop audio playback first
+      if (_audioPlayer)
+        {
+          [_audioPlayer stopAudio];
+        }
 
-      DESTROY(_videoThread);
-      avformat_close_input(&_formatCtx);
+      // Cancel and wait for video thread
+      if (_videoThread)
+        {
+          [_videoThread cancel];
+          
+          // Wait for video thread to finish with timeout
+          int timeout = 1000; // 1 second timeout
+          while (![_videoThread isFinished] && timeout > 0)
+            {
+              usleep(1000); // 1ms
+              timeout--;
+            }
+          
+          if (timeout <= 0)
+            {
+              NSLog(@"[GSMovieView] Warning: Video thread did not finish within timeout");
+            }
+          
+          DESTROY(_videoThread);
+        }
+
+      // Cancel feed thread but don't destroy it (might be reused)
+      if (_feedThread)
+        {
+          [_feedThread cancel];
+        }
+
+      // Clear video packet queue
+      @synchronized (_videoPackets)
+        {
+          [_videoPackets removeAllObjects];
+        }
+
+      NSLog(@"[GSMovieView] Video playback stopped successfully | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -265,10 +370,54 @@
 
 - (void) setMovie: (NSMovie *)movie
 {
-  @synchronized(_movie)
+  @synchronized(self)
     {
+      // Stop current playback
+      [self stop: nil];
+      
+      // Clean up existing format context
+      if (_formatCtx)
+        {
+          avformat_close_input(&_formatCtx);
+          _formatCtx = NULL;
+        }
+      
+      // Reset stream indices
+      _videoStreamIndex = -1;
+      _audioStreamIndex = -1;
+      _stream = NULL;
+      
+      // Clear codec context
+      if (_videoCodecCtx)
+        {
+          avcodec_free_context(&_videoCodecCtx);
+          _videoCodecCtx = NULL;
+        }
+      
+      // Clear scaling context
+      if (_swsCtx)
+        {
+          sws_freeContext(_swsCtx);
+          _swsCtx = NULL;
+        }
+      
+      // Clear video frame
+      if (_videoFrame)
+        {
+          av_frame_free(&_videoFrame);
+          _videoFrame = NULL;
+        }
+      
+      // Set the new movie
       [super setMovie: movie];
-      [self setup];
+      
+      // Setup the new movie if provided
+      if (movie != nil)
+        {
+          [self setup];
+        }
+      
+      NSLog(@"[GSMovieView] Movie changed | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -951,6 +1100,41 @@
     {
       return @"System Time Sync (No Audio)";
     }
+}
+
+// Emergency cleanup (use with caution)
+- (void) forceStop
+{
+  NSLog(@"[GSMovieView] Force stop initiated | Timestamp: %ld", av_gettime());
+  
+  _running = NO;
+  
+  // Force stop audio
+  if (_audioPlayer)
+    {
+      [_audioPlayer stopAudio];
+    }
+  
+  // Force destroy threads without waiting
+  if (_videoThread)
+    {
+      [_videoThread cancel];
+      DESTROY(_videoThread);
+    }
+  
+  if (_feedThread)
+    {
+      [_feedThread cancel];
+      DESTROY(_feedThread);
+    }
+  
+  // Clear packet queue
+  @synchronized (_videoPackets)
+    {
+      [_videoPackets removeAllObjects];
+    }
+  
+  NSLog(@"[GSMovieView] Force stop completed | Timestamp: %ld", av_gettime());
 }
 
 @end
