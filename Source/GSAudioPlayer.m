@@ -311,4 +311,27 @@
   return _muted;
 }
 
+// Seeking methods
+- (BOOL) seekToTime: (int64_t)timestamp
+{
+  // Clear existing audio packets
+  @synchronized (_audioPackets)
+    {
+      [_audioPackets removeAllObjects];
+    }
+  
+  // Reset codec state
+  if (_audioCodecCtx)
+    {
+      avcodec_flush_buffers(_audioCodecCtx);
+    }
+  
+  // Reset the audio clock to account for the seek
+  _audioClock = av_gettime() - timestamp;
+  _started = NO; // Will be reset when first packet after seek is processed
+  
+  NSLog(@"[GSAudioPlayer] Audio seek to timestamp %lld", timestamp);
+  return YES;
+}
+
 @end

@@ -89,6 +89,16 @@ APPKIT_EXPORT_CLASS
 - (void) loop;
 - (void) close;
 
+// Seeking methods
+- (BOOL) seekToTime: (int64_t)timestamp;
+- (BOOL) seekToFrame: (int64_t)frameNumber;
+- (int64_t) getCurrentTimestamp;
+- (int64_t) getDuration;
+- (void) displayCurrentFrame;
+
+// Playback status
+- (NSString *) playbackStatus;
+
 @end
 
 #endif /* _GNUstep_H_GSMovieView */

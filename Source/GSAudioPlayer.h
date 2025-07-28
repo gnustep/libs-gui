@@ -89,6 +89,9 @@
 - (void) setPlaying: (BOOL)f;
 - (BOOL) isPlaying;
 
+// Seeking methods
+- (BOOL) seekToTime: (int64_t)timestamp;
+
 @end
 
 #endif // end of _GNUstep_H_GSAudioPlayer

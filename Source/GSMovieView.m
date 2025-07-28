@@ -290,27 +290,146 @@
 - (IBAction)gotoPosterFrame: (id)sender
 {
   [self stop: sender];
-  // [self _startAtPts: 0];
-  NSLog(@"[GSMovieView] gotoPosterFrame called | Timestamp: %ld", av_gettime());
+  
+  // Go to the first frame (poster frame)
+  if ([self seekToFrame: 0])
+    {
+      [self displayCurrentFrame];
+      NSLog(@"[GSMovieView] gotoPosterFrame successful | Timestamp: %ld", av_gettime());
+    }
+  else
+    {
+      NSLog(@"[GSMovieView] gotoPosterFrame failed | Timestamp: %ld", av_gettime());
+    }
 }
 
 - (IBAction)gotoBeginning: (id)sender
 {
   [self stop: sender];
-  // [self _startAtPts: 0];
-  NSLog(@"[GSMovieView] gotoBeginning called | Timestamp: %ld", av_gettime());
+  
+  // Go to timestamp 0 (beginning of movie)
+  if ([self seekToTime: 0])
+    {
+      [self displayCurrentFrame];
+      NSLog(@"[GSMovieView] gotoBeginning successful | Timestamp: %ld", av_gettime());
+    }
+  else
+    {
+      NSLog(@"[GSMovieView] gotoBeginning failed | Timestamp: %ld", av_gettime());
+    }
 }
 
 - (IBAction)gotoEnd: (id)sender
 {
+  [self stop: sender];
+  
+  // Go to the end of the movie
+  int64_t duration = [self getDuration];
+  if (duration > 0)
+    {
+      if ([self seekToTime: duration - 1000000]) // 1 second before end
+        {
+          [self displayCurrentFrame];
+          NSLog(@"[GSMovieView] gotoEnd successful | Timestamp: %ld", av_gettime());
+        }
+      else
+        {
+          NSLog(@"[GSMovieView] gotoEnd failed | Timestamp: %ld", av_gettime());
+        }
+    }
+  else
+    {
+      NSLog(@"[GSMovieView] gotoEnd failed - no duration available | Timestamp: %ld", av_gettime());
+    }
 }
 
 - (IBAction) stepForward: (id)sender
 {
+  BOOL wasPlaying = [self isPlaying];
+  [self stop: sender];
+  
+  if (_fps > 0.0)
+    {
+      // Calculate frame duration in microseconds
+      int64_t frameDuration = (int64_t)(1000000.0 / _fps);
+      int64_t currentTime = [self getCurrentTimestamp];
+      int64_t nextFrameTime = currentTime + frameDuration;
+      
+      // Don't seek beyond the duration
+      int64_t duration = [self getDuration];
+      if (duration > 0 && nextFrameTime >= duration)
+        {
+          nextFrameTime = duration - 1000; // Just before the end
+        }
+      
+      if ([self seekToTime: nextFrameTime])
+        {
+          [self displayCurrentFrame];
+          NSLog(@"[GSMovieView] stepForward successful to time %lld | Timestamp: %ld", 
+                nextFrameTime, av_gettime());
+          
+          // If it was playing before, resume playback after a short delay
+          if (wasPlaying)
+            {
+              [self performSelector: @selector(start:) 
+                         withObject: sender 
+                         afterDelay: 0.1];
+            }
+        }
+      else
+        {
+          NSLog(@"[GSMovieView] stepForward failed | Timestamp: %ld", av_gettime());
+        }
+    }
+  else
+    {
+      NSLog(@"[GSMovieView] stepForward failed - no frame rate available (fps: %f) | Timestamp: %ld", 
+            _fps, av_gettime());
+    }
 }
 
 - (IBAction) stepBack: (id)sender
 {
+  BOOL wasPlaying = [self isPlaying];
+  [self stop: sender];
+  
+  if (_fps > 0.0)
+    {
+      // Calculate frame duration in microseconds
+      int64_t frameDuration = (int64_t)(1000000.0 / _fps);
+      int64_t currentTime = [self getCurrentTimestamp];
+      int64_t prevFrameTime = currentTime - frameDuration;
+      
+      // Don't go before the beginning
+      if (prevFrameTime < 0)
+        {
+          prevFrameTime = 0;
+        }
+      
+      if ([self seekToTime: prevFrameTime])
+        {
+          [self displayCurrentFrame];
+          NSLog(@"[GSMovieView] stepBack successful to time %lld | Timestamp: %ld", 
+                prevFrameTime, av_gettime());
+          
+          // If it was playing before, resume playback after a short delay
+          if (wasPlaying)
+            {
+              [self performSelector: @selector(start:) 
+                         withObject: sender 
+                         afterDelay: 0.1];
+            }
+        }
+      else
+        {
+          NSLog(@"[GSMovieView] stepBack failed | Timestamp: %ld", av_gettime());
+        }
+    }
+  else
+    {
+      NSLog(@"[GSMovieView] stepBack failed - no frame rate available (fps: %f) | Timestamp: %ld", 
+            _fps, av_gettime());
+    }
 }
 
 // Video playback methods...
@@ -656,6 +775,131 @@
     {
       [self renderFrame: _videoFrame];
     }
+}
+
+// Seeking methods
+- (BOOL) seekToTime: (int64_t)timestamp
+{
+  if (!_formatCtx || !_stream)
+    {
+      return NO;
+    }
+
+  BOOL wasPlaying = [self isPlaying];
+  
+  // Stop playback first
+  if (wasPlaying)
+    {
+      [self stop: nil];
+    }
+
+  // Convert timestamp to stream timebase
+  int64_t seekTarget = av_rescale_q(timestamp, (AVRational){1, 1000000}, _timeBase);
+  
+  // Seek in the format context
+  int result = av_seek_frame(_formatCtx, _videoStreamIndex, seekTarget, AVSEEK_FLAG_BACKWARD);
+  
+  if (result >= 0)
+    {
+      // Clear existing video packets
+      @synchronized (_videoPackets)
+        {
+          [_videoPackets removeAllObjects];
+        }
+      
+      // Reset codec state
+      if (_videoCodecCtx)
+        {
+          avcodec_flush_buffers(_videoCodecCtx);
+        }
+      
+      // Ask audio player to seek as well
+      if (_audioPlayer)
+        {
+          [_audioPlayer seekToTime: timestamp];
+        }
+      
+      // Reset internal state
+      _started = NO;
+      
+      // Update _lastPts to reflect the seek position
+      // Convert back from stream timebase to get actual PTS
+      _lastPts = seekTarget;
+      
+      NSLog(@"[GSMovieView] Seek to timestamp %lld successful", timestamp);
+      return YES;
+    }
+  
+  NSLog(@"[GSMovieView] Seek to timestamp %lld failed", timestamp);
+  return NO;
+}
+
+- (BOOL) seekToFrame: (int64_t)frameNumber
+{
+  if (!_formatCtx || !_stream || _fps <= 0.0)
+    {
+      return NO;
+    }
+  
+  // Calculate timestamp from frame number
+  int64_t timestamp = (int64_t)((double)frameNumber / _fps * 1000000.0);
+  
+  return [self seekToTime: timestamp];
+}
+
+- (int64_t) getCurrentTimestamp
+{
+  if (_lastPts != AV_NOPTS_VALUE)
+    {
+      return av_rescale_q(_lastPts, _timeBase, (AVRational){1, 1000000});
+    }
+  return 0;
+}
+
+- (int64_t) getDuration
+{
+  if (_formatCtx && _formatCtx->duration != AV_NOPTS_VALUE)
+    {
+      return _formatCtx->duration;
+    }
+  else if (_stream && _stream->duration != AV_NOPTS_VALUE)
+    {
+      return av_rescale_q(_stream->duration, _timeBase, (AVRational){1, 1000000});
+    }
+  return 0;
+}
+
+- (void) displayCurrentFrame
+{
+  if (!_formatCtx)
+    {
+      return;
+    }
+    
+  // Read and decode a single frame to display
+  AVPacket packet;
+  while (av_read_frame(_formatCtx, &packet) >= 0)
+    {
+      if (packet.stream_index == _videoStreamIndex)
+        {
+          [self decodePacket: &packet];
+          av_packet_unref(&packet);
+          break; // Only process one video frame
+        }
+      av_packet_unref(&packet);
+    }
+}
+
+// Playback status
+- (NSString *) playbackStatus
+{
+  int64_t currentTime = [self getCurrentTimestamp];
+  int64_t duration = [self getDuration];
+  double currentSeconds = (double)currentTime / 1000000.0;
+  double totalSeconds = (double)duration / 1000000.0;
+  
+  return [NSString stringWithFormat: @"Time: %.2f/%.2f sec | FPS: %.2f | Playing: %@", 
+          currentSeconds, totalSeconds, _fps, [self isPlaying] ? @"YES" : @"NO"];
 }
 
 @end
