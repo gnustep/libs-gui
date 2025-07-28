@@ -62,7 +62,6 @@ APPKIT_EXPORT_CLASS
   NSThread *_feedThread;
   NSImage *_currentFrame;
   NSString *_statusString;
-  NSTextField *_statusField;
   GSAudioPlayer *_audioPlayer;
 
   AVCodecContext *_videoCodecCtx;

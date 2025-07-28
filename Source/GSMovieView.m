@@ -701,7 +701,7 @@
   if ([self isUsingSynchronizedAudio])
     {
       int64_t audioTime = [_audioPlayer currentPlaybackTime];
-      return [NSString stringWithFormat: @"Audio Clock Sync: %lld us", audioTime];
+      return [NSString stringWithFormat: @"Audio Clock Sync: %ld us", audioTime];
     }
   else
     {
