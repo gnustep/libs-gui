@@ -369,7 +369,7 @@
       if ([self seekToTime: nextFrameTime])
         {
           [self displayCurrentFrame];
-          NSLog(@"[GSMovieView] stepForward successful to time %lld | Timestamp: %ld", 
+          NSLog(@"[GSMovieView] stepForward successful to time %ld | Timestamp: %ld", 
                 nextFrameTime, av_gettime());
           
           // If it was playing before, resume playback after a short delay
@@ -413,7 +413,7 @@
       if ([self seekToTime: prevFrameTime])
         {
           [self displayCurrentFrame];
-          NSLog(@"[GSMovieView] stepBack successful to time %lld | Timestamp: %ld", 
+          NSLog(@"[GSMovieView] stepBack successful to time %ld | Timestamp: %ld", 
                 prevFrameTime, av_gettime());
           
           // If it was playing before, resume playback after a short delay
@@ -847,11 +847,11 @@
       // Convert back from stream timebase to get actual PTS
       _lastPts = seekTarget;
       
-      NSLog(@"[GSMovieView] Seek to timestamp %lld successful", timestamp);
+      NSLog(@"[GSMovieView] Seek to timestamp %ld successful", timestamp);
       return YES;
     }
   
-  NSLog(@"[GSMovieView] Seek to timestamp %lld failed", timestamp);
+  NSLog(@"[GSMovieView] Seek to timestamp %ld failed", timestamp);
   return NO;
 }
 
