@@ -904,6 +904,27 @@
 	      {
 		referenceTime = [_audioPlayer currentPlaybackTime];
 		delay = packetTime - referenceTime;
+		
+		// Sanity check - if delay is extremely large, audio clock might be wrong
+		if (delay > 5000000 || delay < -5000000) // More than 5 seconds off
+		  {
+		    NSLog(@"[GSMovieView] Audio clock seems incorrect (delay: %ld us), falling back to system time", delay);
+		    // Fall back to system timing
+		    static int64_t fallbackStartTime = 0;
+		    if (fallbackStartTime == 0)
+		      {
+			fallbackStartTime = av_gettime();
+		      }
+		    referenceTime = av_gettime() - fallbackStartTime;
+		    delay = packetTime - referenceTime;
+		  }
+		
+		// Debug: Log audio synchronization details
+		if (packet.pts % 30 == 0) // Log every 30th frame to avoid spam
+		  {
+		    NSLog(@"[GSMovieView] Audio sync - PTS: %ld, AudioTime: %ld, Delay: %ld us", 
+		          packetTime, referenceTime, delay);
+		  }
 	      }
 	    else
 	      {
@@ -915,6 +936,13 @@
 		  }
 		referenceTime = av_gettime() - startTime;
 		delay = packetTime - referenceTime;
+		
+		// Debug: Log system time synchronization
+		if (packet.pts % 30 == 0) // Log every 30th frame to avoid spam
+		  {
+		    NSLog(@"[GSMovieView] System sync - PTS: %ld, SysTime: %ld, Delay: %ld us", 
+		          packetTime, referenceTime, delay);
+		  }
 	      }
 		
 	    if (_statusField != nil)
@@ -931,17 +959,34 @@
 	    fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us | Sync: %s\r",
 		    packet.pts, delay, [syncSource UTF8String]);
 	    
-	    // Only delay for positive delays greater than 10ms to reduce stuttering
-	    // This allows for some natural jitter without causing pauses that affect audio
-	    if (delay > 10000) // 10ms threshold
+	    // More tolerant timing thresholds to ensure video displays
+	    // Be extra lenient during startup (first 100 frames)
+	    static int frameCount = 0;
+	    frameCount++;
+	    
+	    int64_t delayThreshold = (frameCount < 100) ? 100000 : 50000; // 100ms during startup, then 50ms
+	    int64_t dropThreshold = (frameCount < 100) ? 500000 : 200000; // 500ms during startup, then 200ms
+	    
+	    if (delay > delayThreshold)
 	      {
+		// Only delay if we're significantly ahead
 		usleep((useconds_t)delay);
+		NSLog(@"[GSMovieView] Delaying frame by %ld us (frame #%d)", delay, frameCount);
 	      }
-	    else if (delay < -50000) // If we're more than 50ms behind, drop this frame
+	    else if (delay < -dropThreshold)
 	      {
-		NSLog(@"[GSMovieView] Dropping frame - %ld us behind", -delay);
+		NSLog(@"[GSMovieView] Dropping frame - %ld us behind (threshold: %ld us, frame #%d)", 
+		      -delay, dropThreshold, frameCount);
 		RELEASE(dict);
 		continue; // Skip this frame to catch up
+	      }
+	    else
+	      {
+		// Normal case - display the frame without delay
+		if (packet.pts % 60 == 0) // Log every 60th frame
+		  {
+		    NSLog(@"[GSMovieView] Displaying frame normally - delay: %ld us (frame #%d)", delay, frameCount);
+		  }
 	      }
 		
 	    // Decode the packet, display it and play the sound...
