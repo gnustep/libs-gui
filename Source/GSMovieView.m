@@ -1,34 +1,34 @@
 /** <title>GSMovieView</title>
 
-   <abstract>Encapsulate a movie with audio clock-driven synchronization</abstract>
+    <abstract>Encapsulate a movie with audio clock-driven synchronization</abstract>
 
-   This implementation uses the audio clock as the master timing reference.
-   Video frames are synchronized to the audio clock to ensure proper
-   audio-video synchronization. When no audio is present, the system
-   falls back to system time-based synchronization.
+    This implementation uses the audio clock as the master timing reference.
+    Video frames are synchronized to the audio clock to ensure proper
+    audio-video synchronization. When no audio is present, the system
+    falls back to system time-based synchronization.
 
-   Copyright <copy>(C) 2025 Free Software Foundation, Inc.</copy>
+    Copyright <copy>(C) 2025 Free Software Foundation, Inc.</copy>
 
-   Author: Gregory Casamento <greg.casamento@gmail.com>
-   Date: May 2025
+    Author: Gregory Casamento <greg.casamento@gmail.com>
+    Date: May 2025
 
-   This file is part of the GNUstep GUI Library.
+    This file is part of the GNUstep GUI Library.
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
 
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Lesser General Public License for more details.
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+    Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the
-   Free Software Foundation, 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; see the file COPYING.LIB.
+    If not, see <http://www.gnu.org/licenses/> or write to the
+    Free Software Foundation, 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #import "config.h"
@@ -80,8 +80,8 @@
 	}
     }
 
-    // Convert to sorted array
-    return [[extensionsSet allObjects] sortedArrayUsingSelector:@selector(compare:)];
+  // Convert to sorted array
+  return [[extensionsSet allObjects] sortedArrayUsingSelector:@selector(compare:)];
 }
 
 + (NSArray*) movieUnfilteredPasteboardTypes
@@ -148,7 +148,7 @@
       [_feedThread cancel];
       DESTROY(_feedThread);
     }
-  
+
   if (_videoThread)
     {
       [_videoThread cancel];
@@ -170,7 +170,7 @@
     {
       sws_freeContext(_swsCtx);
     }
-  
+
   // Close format context
   if (_formatCtx)
     {
@@ -181,7 +181,7 @@
   DESTROY(_videoPackets);
   DESTROY(_audioPlayer);
   DESTROY(_currentFrame);
-  
+
   [super dealloc];
 }
 
@@ -191,17 +191,17 @@
   @synchronized(self)
     {
       if (_feedThread != nil)
-        {
-          NSLog(@"[GSMovieView] Feed thread already exists");
-          return;
-        }
+	{
+	  NSLog(@"[GSMovieView] Feed thread already exists");
+	  return;
+	}
 
       [self setRate: 1.0 / 30.0];
       [self setVolume: 1.0];
 
       _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feed) object:nil];
       [_feedThread start];
-      
+
       NSLog(@"[GSMovieView] Feed thread started | Timestamp: %ld", av_gettime());
     }
 }
@@ -211,21 +211,21 @@
   @synchronized(self)
     {
       if (_feedThread != nil)
-        {
-          [_feedThread cancel];
-          
-          // Wait for feed thread to finish with timeout
-          int timeout = 500; // 0.5 second timeout
-          while (![_feedThread isFinished] && timeout > 0)
-            {
-              usleep(1000); // 1ms
-              timeout--;
-            }
-          
-          // Don't destroy the thread reference immediately - let start method handle it
-          // This allows us to check if the thread finished and needs restarting
-          NSLog(@"[GSMovieView] Feed thread stopped | Timestamp: %ld", av_gettime());
-        }
+	{
+	  [_feedThread cancel];
+
+	  // Wait for feed thread to finish with timeout
+	  int timeout = 500; // 0.5 second timeout
+	  while (![_feedThread isFinished] && timeout > 0)
+	    {
+	      usleep(1000); // 1ms
+	      timeout--;
+	    }
+
+	  // Don't destroy the thread reference immediately - let start method handle it
+	  // This allows us to check if the thread finished and needs restarting
+	  NSLog(@"[GSMovieView] Feed thread stopped | Timestamp: %ld", av_gettime());
+	}
     }
 }
 
@@ -244,19 +244,19 @@
   @synchronized(self)
     {
       if (_running)
-        {
-          NSLog(@"[GSMovieView] Already running, ignoring start request | Timestamp: %ld", av_gettime());
-          return;
-        }
+	{
+	  NSLog(@"[GSMovieView] Already running, ignoring start request | Timestamp: %ld", av_gettime());
+	  return;
+	}
 
       if (!_formatCtx || !_stream)
-        {
-          NSLog(@"[GSMovieView] Cannot start - no media loaded | Timestamp: %ld", av_gettime());
-          return;
-        }
+	{
+	  NSLog(@"[GSMovieView] Cannot start - no media loaded | Timestamp: %ld", av_gettime());
+	  return;
+	}
 
       NSLog(@"[GSMovieView] Starting video playback | Timestamp: %ld, lastPts = %ld",
-            av_gettime(), _lastPts);
+	    av_gettime(), _lastPts);
 
       _running = YES;
       _started = NO; // Reset for synchronization
@@ -265,77 +265,77 @@
       // We can detect this by checking if the feed thread finished but we still have a format context
       BOOL needsRestart = (_feedThread == nil || [_feedThread isFinished]) && _formatCtx != NULL;
       if (needsRestart)
-        {
-          NSLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
-          
-          // Clear existing video packets
-          @synchronized (_videoPackets)
-            {
-              [_videoPackets removeAllObjects];
-            }
-          
-          // Seek back to the beginning
-          if (av_seek_frame(_formatCtx, _videoStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
-            {
-              // Reset codec state
-              if (_videoCodecCtx)
-                {
-                  avcodec_flush_buffers(_videoCodecCtx);
-                }
-              
-              // Ask audio player to seek back as well
-              if (_audioPlayer)
-                {
-                  [_audioPlayer seekToTime: 0];
-                }
-              
-              // Reset PTS
-              _lastPts = 0;
-            }
-          else
-            {
-              NSLog(@"[GSMovieView] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
-            }
-        }
+	{
+	  NSLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
+
+	  // Clear existing video packets
+	  @synchronized (_videoPackets)
+	    {
+	      [_videoPackets removeAllObjects];
+	    }
+
+	  // Seek back to the beginning
+	  if (av_seek_frame(_formatCtx, _videoStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
+	    {
+	      // Reset codec state
+	      if (_videoCodecCtx)
+		{
+		  avcodec_flush_buffers(_videoCodecCtx);
+		}
+
+	      // Ask audio player to seek back as well
+	      if (_audioPlayer)
+		{
+		  [_audioPlayer seekToTime: 0];
+		}
+
+	      // Reset PTS
+	      _lastPts = 0;
+	    }
+	  else
+	    {
+	      NSLog(@"[GSMovieView] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
+	    }
+	}
 
       // Start feed thread if not already started or if it finished
       if (_feedThread == nil || [_feedThread isFinished])
-        {
-          [self setRate: 1.0 / 30.0];
-          [self setVolume: 1.0];
-          
-          // Clean up old thread reference if it finished
-          if (_feedThread && [_feedThread isFinished])
-            {
-              DESTROY(_feedThread);
-            }
-          
-          _feedThread = [[NSThread alloc] initWithTarget:self 
-                                                selector:@selector(feed) 
-                                                  object:nil];
-          [_feedThread start];
-        }
+	{
+	  [self setRate: 1.0 / 30.0];
+	  [self setVolume: 1.0];
+
+	  // Clean up old thread reference if it finished
+	  if (_feedThread && [_feedThread isFinished])
+	    {
+	      DESTROY(_feedThread);
+	    }
+
+	  _feedThread = [[NSThread alloc] initWithTarget:self
+						selector:@selector(feed)
+						  object:nil];
+	  [_feedThread start];
+	}
 
       // Start video processing thread
       if (_videoThread == nil || [_videoThread isFinished])
-        {
-          // Clean up old thread reference if it finished
-          if (_videoThread && [_videoThread isFinished])
-            {
-              DESTROY(_videoThread);
-            }
-          
-          _videoThread = [[NSThread alloc] initWithTarget:self
-                                                 selector:@selector(videoThreadEntry)
-                                                   object:nil];
-          [_videoThread start];
-        }
+	{
+	  // Clean up old thread reference if it finished
+	  if (_videoThread && [_videoThread isFinished])
+	    {
+	      DESTROY(_videoThread);
+	    }
+
+	  _videoThread = [[NSThread alloc] initWithTarget:self
+						 selector:@selector(videoThreadEntry)
+						   object:nil];
+	  [_videoThread start];
+	}
 
       // Start audio playback
       if (_audioPlayer && _audioStreamIndex >= 0)
-        {
-          [_audioPlayer startAudio];
-        }
+	{
+	  [_audioPlayer startAudio];
+	}
 
       NSLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
     }
@@ -346,54 +346,54 @@
   @synchronized(self)
     {
       if (!_running)
-        {
-          NSLog(@"[GSMovieView] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
-          return;
-        }
+	{
+	  NSLog(@"[GSMovieView] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
+	  return;
+	}
 
       NSLog(@"[GSMovieView] Stopping video playback | Timestamp: %ld, lastPts = %ld",
-            av_gettime(), _lastPts);
+	    av_gettime(), _lastPts);
 
       _running = NO;
 
       // Stop audio playback first
       if (_audioPlayer)
-        {
-          [_audioPlayer stopAudio];
-        }
+	{
+	  [_audioPlayer stopAudio];
+	}
 
       // Cancel and wait for video thread
       if (_videoThread)
-        {
-          [_videoThread cancel];
-          
-          // Wait for video thread to finish with timeout
-          int timeout = 1000; // 1 second timeout
-          while (![_videoThread isFinished] && timeout > 0)
-            {
-              usleep(1000); // 1ms
-              timeout--;
-            }
-          
-          if (timeout <= 0)
-            {
-              NSLog(@"[GSMovieView] Warning: Video thread did not finish within timeout");
-            }
-          
-          DESTROY(_videoThread);
-        }
+	{
+	  [_videoThread cancel];
+
+	  // Wait for video thread to finish with timeout
+	  int timeout = 1000; // 1 second timeout
+	  while (![_videoThread isFinished] && timeout > 0)
+	    {
+	      usleep(1000); // 1ms
+	      timeout--;
+	    }
+
+	  if (timeout <= 0)
+	    {
+	      NSLog(@"[GSMovieView] Warning: Video thread did not finish within timeout");
+	    }
+
+	  DESTROY(_videoThread);
+	}
 
       // Cancel feed thread but don't destroy it (might be reused)
       if (_feedThread)
-        {
-          [_feedThread cancel];
-        }
+	{
+	  [_feedThread cancel];
+	}
 
       // Clear video packet queue
       @synchronized (_videoPackets)
-        {
-          [_videoPackets removeAllObjects];
-        }
+	{
+	  [_videoPackets removeAllObjects];
+	}
 
       NSLog(@"[GSMovieView] Video playback stopped successfully | Timestamp: %ld", av_gettime());
     }
@@ -412,10 +412,10 @@
 }
 
 /*
-- (void) setLoopMode: (NSQTMovieLoopMode)mode
-{
+  - (void) setLoopMode: (NSQTMovieLoopMode)mode
+  {
   [super setLoopMode: mode];
-}
+  }
 */
 
 - (void) setMovie: (NSMovie *)movie
@@ -424,49 +424,49 @@
     {
       // Stop current playback
       [self stop: nil];
-      
+
       // Clean up existing format context
       if (_formatCtx)
-        {
-          avformat_close_input(&_formatCtx);
-          _formatCtx = NULL;
-        }
-      
+	{
+	  avformat_close_input(&_formatCtx);
+	  _formatCtx = NULL;
+	}
+
       // Reset stream indices
       _videoStreamIndex = -1;
       _audioStreamIndex = -1;
       _stream = NULL;
-      
+
       // Clear codec context
       if (_videoCodecCtx)
-        {
-          avcodec_free_context(&_videoCodecCtx);
-          _videoCodecCtx = NULL;
-        }
-      
+	{
+	  avcodec_free_context(&_videoCodecCtx);
+	  _videoCodecCtx = NULL;
+	}
+
       // Clear scaling context
       if (_swsCtx)
-        {
-          sws_freeContext(_swsCtx);
-          _swsCtx = NULL;
-        }
-      
+	{
+	  sws_freeContext(_swsCtx);
+	  _swsCtx = NULL;
+	}
+
       // Clear video frame
       if (_videoFrame)
-        {
-          av_frame_free(&_videoFrame);
-          _videoFrame = NULL;
-        }
-      
+	{
+	  av_frame_free(&_videoFrame);
+	  _videoFrame = NULL;
+	}
+
       // Set the new movie
       [super setMovie: movie];
-      
+
       // Setup the new movie if provided
       if (movie != nil)
-        {
-          [self setup];
-        }
-      
+	{
+	  [self setup];
+	}
+
       NSLog(@"[GSMovieView] Movie changed | Timestamp: %ld", av_gettime());
     }
 }
@@ -474,16 +474,16 @@
 - (NSRect) movieRect
 {
   NSRect result = NSZeroRect;
-  
+
   if (_stream != NULL)
     {
       // Retrieve codec parameters
       AVCodecParameters* codecpar = _stream->codecpar;
-      
+
       // These are your video dimensions:
       CGFloat width = (CGFloat)(codecpar->width);
       CGFloat height = (CGFloat)(codecpar->height);
-        
+
       result = NSMakeRect(0.0, 0.0, width, height);
     }
 
@@ -493,7 +493,7 @@
 - (IBAction)gotoPosterFrame: (id)sender
 {
   [self stop: sender];
-  
+
   // Go to the first frame (poster frame)
   if ([self seekToFrame: 0])
     {
@@ -509,7 +509,7 @@
 - (IBAction)gotoBeginning: (id)sender
 {
   [self stop: sender];
-  
+
   // Go to timestamp 0 (beginning of movie)
   if ([self seekToTime: 0])
     {
@@ -525,20 +525,20 @@
 - (IBAction)gotoEnd: (id)sender
 {
   [self stop: sender];
-  
+
   // Go to the end of the movie
   int64_t duration = [self getDuration];
   if (duration > 0)
     {
       if ([self seekToTime: duration - 1000000]) // 1 second before end
-        {
-          [self displayCurrentFrame];
-          NSLog(@"[GSMovieView] gotoEnd successful | Timestamp: %ld", av_gettime());
-        }
+	{
+	  [self displayCurrentFrame];
+	  NSLog(@"[GSMovieView] gotoEnd successful | Timestamp: %ld", av_gettime());
+	}
       else
-        {
-          NSLog(@"[GSMovieView] gotoEnd failed | Timestamp: %ld", av_gettime());
-        }
+	{
+	  NSLog(@"[GSMovieView] gotoEnd failed | Timestamp: %ld", av_gettime());
+	}
     }
   else
     {
@@ -550,44 +550,44 @@
 {
   BOOL wasPlaying = [self isPlaying];
   [self stop: sender];
-  
+
   if (_fps > 0.0)
     {
       // Calculate frame duration in microseconds
       int64_t frameDuration = (int64_t)(1000000.0 / _fps);
       int64_t currentTime = [self getCurrentTimestamp];
       int64_t nextFrameTime = currentTime + frameDuration;
-      
+
       // Don't seek beyond the duration
       int64_t duration = [self getDuration];
       if (duration > 0 && nextFrameTime >= duration)
-        {
-          nextFrameTime = duration - 1000; // Just before the end
-        }
-      
+	{
+	  nextFrameTime = duration - 1000; // Just before the end
+	}
+
       if ([self seekToTime: nextFrameTime])
-        {
-          [self displayCurrentFrame];
-          NSLog(@"[GSMovieView] stepForward successful to time %ld | Timestamp: %ld", 
-                nextFrameTime, av_gettime());
-          
-          // If it was playing before, resume playback after a short delay
-          if (wasPlaying)
-            {
-              [self performSelector: @selector(start:) 
-                         withObject: sender 
-                         afterDelay: 0.1];
-            }
-        }
+	{
+	  [self displayCurrentFrame];
+	  NSLog(@"[GSMovieView] stepForward successful to time %ld | Timestamp: %ld",
+		nextFrameTime, av_gettime());
+
+	  // If it was playing before, resume playback after a short delay
+	  if (wasPlaying)
+	    {
+	      [self performSelector: @selector(start:)
+			 withObject: sender
+			 afterDelay: 0.1];
+	    }
+	}
       else
-        {
-          NSLog(@"[GSMovieView] stepForward failed | Timestamp: %ld", av_gettime());
-        }
+	{
+	  NSLog(@"[GSMovieView] stepForward failed | Timestamp: %ld", av_gettime());
+	}
     }
   else
     {
-      NSLog(@"[GSMovieView] stepForward failed - no frame rate available (fps: %f) | Timestamp: %ld", 
-            _fps, av_gettime());
+      NSLog(@"[GSMovieView] stepForward failed - no frame rate available (fps: %f) | Timestamp: %ld",
+	    _fps, av_gettime());
     }
 }
 
@@ -595,43 +595,43 @@
 {
   BOOL wasPlaying = [self isPlaying];
   [self stop: sender];
-  
+
   if (_fps > 0.0)
     {
       // Calculate frame duration in microseconds
       int64_t frameDuration = (int64_t)(1000000.0 / _fps);
       int64_t currentTime = [self getCurrentTimestamp];
       int64_t prevFrameTime = currentTime - frameDuration;
-      
+
       // Don't go before the beginning
       if (prevFrameTime < 0)
-        {
-          prevFrameTime = 0;
-        }
-      
+	{
+	  prevFrameTime = 0;
+	}
+
       if ([self seekToTime: prevFrameTime])
-        {
-          [self displayCurrentFrame];
-          NSLog(@"[GSMovieView] stepBack successful to time %ld | Timestamp: %ld", 
-                prevFrameTime, av_gettime());
-          
-          // If it was playing before, resume playback after a short delay
-          if (wasPlaying)
-            {
-              [self performSelector: @selector(start:) 
-                         withObject: sender 
-                         afterDelay: 0.1];
-            }
-        }
+	{
+	  [self displayCurrentFrame];
+	  NSLog(@"[GSMovieView] stepBack successful to time %ld | Timestamp: %ld",
+		prevFrameTime, av_gettime());
+
+	  // If it was playing before, resume playback after a short delay
+	  if (wasPlaying)
+	    {
+	      [self performSelector: @selector(start:)
+			 withObject: sender
+			 afterDelay: 0.1];
+	    }
+	}
       else
-        {
-          NSLog(@"[GSMovieView] stepBack failed | Timestamp: %ld", av_gettime());
-        }
+	{
+	  NSLog(@"[GSMovieView] stepBack failed | Timestamp: %ld", av_gettime());
+	}
     }
   else
     {
-      NSLog(@"[GSMovieView] stepBack failed - no frame rate available (fps: %f) | Timestamp: %ld", 
-            _fps, av_gettime());
+      NSLog(@"[GSMovieView] stepBack failed - no frame rate available (fps: %f) | Timestamp: %ld",
+	    _fps, av_gettime());
     }
 }
 
@@ -654,7 +654,7 @@
 - (BOOL) setup
 {
   NSMovie *movie = [self movie];
-  
+
   if (movie != nil)
     {
       NSURL *url = [movie URL];
@@ -778,7 +778,7 @@
 	  NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
 	  [self start: nil];
 	}
-      
+
       // When we reach EOF, we can seek back to beginning if looping is desired
       // For now, just log that we've reached the end
       NSLog(@"[GSMovieView] Reached end of stream, frames read: %ld | Timestamp: %ld", i, av_gettime());
@@ -812,7 +812,7 @@
   AVRational fr = videoStream->avg_frame_rate;
 
   _stream = videoStream;
-  _fps = av_q2d(fr); 
+  _fps = av_q2d(fr);
   if (!videoCodec)
     {
       NSLog(@"[Error] Unsupported video codec. | Timestamp: %ld", av_gettime());
@@ -879,32 +879,32 @@
 		[_videoPackets removeObjectAtIndex: 0];
 	      }
 	  }
-	
+
 	// If the dict is present and audio is started, we can sync to audio clock.
 	// If audio is not available, we fall back to system time
 	if (!_started && dict)
 	  {
 	    _started = YES;
 	  }
-	
+
 	// If dict is not nil, decode it and get the frame...
 	if (dict)
 	  {
 	    AVPacket packet = AVPacketFromNSDictionary(dict);
-	    
+
 	    // Calculate video timing based on audio clock
 	    int64_t packetTime = av_rescale_q(packet.pts,
 					      _timeBase,
 					      (AVRational){1, 1000000});
 	    int64_t referenceTime;
 	    int64_t delay;
-	    
+
 	    // Use audio clock as master if audio is available and started
 	    if (_audioPlayer && [_audioPlayer isAudioStarted])
 	      {
 		referenceTime = [_audioPlayer currentPlaybackTime];
 		delay = packetTime - referenceTime;
-		
+
 		// Sanity check - if delay is extremely large, audio clock might be wrong
 		if (delay > 5000000 || delay < -5000000) // More than 5 seconds off
 		  {
@@ -918,12 +918,12 @@
 		    referenceTime = av_gettime() - fallbackStartTime;
 		    delay = packetTime - referenceTime;
 		  }
-		
+
 		// Debug: Log audio synchronization details
 		if (packet.pts % 30 == 0) // Log every 30th frame to avoid spam
 		  {
-		    NSLog(@"[GSMovieView] Audio sync - PTS: %ld, AudioTime: %ld, Delay: %ld us", 
-		          packetTime, referenceTime, delay);
+		    NSLog(@"[GSMovieView] Audio sync - PTS: %ld, AudioTime: %ld, Delay: %ld us",
+			  packetTime, referenceTime, delay);
 		  }
 	      }
 	    else
@@ -936,15 +936,15 @@
 		  }
 		referenceTime = av_gettime() - startTime;
 		delay = packetTime - referenceTime;
-		
+
 		// Debug: Log system time synchronization
 		if (packet.pts % 30 == 0) // Log every 30th frame to avoid spam
 		  {
-		    NSLog(@"[GSMovieView] System sync - PTS: %ld, SysTime: %ld, Delay: %ld us", 
-		          packetTime, referenceTime, delay);
+		    NSLog(@"[GSMovieView] System sync - PTS: %ld, SysTime: %ld, Delay: %ld us",
+			  packetTime, referenceTime, delay);
 		  }
 	      }
-		
+
 	    if (_statusField != nil)
 	      {
 		// Show the information...
@@ -953,20 +953,20 @@
 					  packet.pts, delay, syncSource, _running ? @"Running" : @"Stopped"];
 		[_statusField setStringValue: _statusString];
 	      }
-	    
+
 	    // Show status on the command line...
 	    NSString *syncSource = (_audioPlayer && [_audioPlayer isAudioStarted]) ? @"Audio Clock" : @"System Time";
 	    fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us | Sync: %s\r",
 		    packet.pts, delay, [syncSource UTF8String]);
-	    
+
 	    // More tolerant timing thresholds to ensure video displays
 	    // Be extra lenient during startup (first 100 frames)
 	    static int frameCount = 0;
 	    frameCount++;
-	    
+
 	    int64_t delayThreshold = (frameCount < 100) ? 100000 : 50000; // 100ms during startup, then 50ms
 	    int64_t dropThreshold = (frameCount < 100) ? 500000 : 200000; // 500ms during startup, then 200ms
-	    
+
 	    if (delay > delayThreshold)
 	      {
 		// Only delay if we're significantly ahead
@@ -975,7 +975,7 @@
 	      }
 	    else if (delay < -dropThreshold)
 	      {
-		NSLog(@"[GSMovieView] Dropping frame - %ld us behind (threshold: %ld us, frame #%d)", 
+		NSLog(@"[GSMovieView] Dropping frame - %ld us behind (threshold: %ld us, frame #%d)",
 		      -delay, dropThreshold, frameCount);
 		RELEASE(dict);
 		continue; // Skip this frame to catch up
@@ -988,7 +988,7 @@
 		    NSLog(@"[GSMovieView] Displaying frame normally - delay: %ld us (frame #%d)", delay, frameCount);
 		  }
 	      }
-		
+
 	    // Decode the packet, display it and play the sound...
 	    [self decodePacket: &packet];
 	    RELEASE(dict);
@@ -1075,7 +1075,7 @@
     }
 
   BOOL wasPlaying = [self isPlaying];
-  
+
   // Stop playback first
   if (wasPlaying)
     {
@@ -1084,41 +1084,41 @@
 
   // Convert timestamp to stream timebase
   int64_t seekTarget = av_rescale_q(timestamp, (AVRational){1, 1000000}, _timeBase);
-  
+
   // Seek in the format context
   int result = av_seek_frame(_formatCtx, _videoStreamIndex, seekTarget, AVSEEK_FLAG_BACKWARD);
-  
+
   if (result >= 0)
     {
       // Clear existing video packets
       @synchronized (_videoPackets)
-        {
-          [_videoPackets removeAllObjects];
-        }
-      
+	{
+	  [_videoPackets removeAllObjects];
+	}
+
       // Reset codec state
       if (_videoCodecCtx)
-        {
-          avcodec_flush_buffers(_videoCodecCtx);
-        }
-      
+	{
+	  avcodec_flush_buffers(_videoCodecCtx);
+	}
+
       // Ask audio player to seek as well
       if (_audioPlayer)
-        {
-          [_audioPlayer seekToTime: timestamp];
-        }
-      
+	{
+	  [_audioPlayer seekToTime: timestamp];
+	}
+
       // Reset internal state
       _started = NO;
-      
+
       // Update _lastPts to reflect the seek position
       // Convert back from stream timebase to get actual PTS
       _lastPts = seekTarget;
-      
+
       NSLog(@"[GSMovieView] Seek to timestamp %ld successful", timestamp);
       return YES;
     }
-  
+
   NSLog(@"[GSMovieView] Seek to timestamp %ld failed", timestamp);
   return NO;
 }
@@ -1129,10 +1129,10 @@
     {
       return NO;
     }
-  
+
   // Calculate timestamp from frame number
   int64_t timestamp = (int64_t)((double)frameNumber / _fps * 1000000.0);
-  
+
   return [self seekToTime: timestamp];
 }
 
@@ -1164,17 +1164,17 @@
     {
       return;
     }
-    
+
   // Read and decode a single frame to display
   AVPacket packet;
   while (av_read_frame(_formatCtx, &packet) >= 0)
     {
       if (packet.stream_index == _videoStreamIndex)
-        {
-          [self decodePacket: &packet];
-          av_packet_unref(&packet);
-          break; // Only process one video frame
-        }
+	{
+	  [self decodePacket: &packet];
+	  av_packet_unref(&packet);
+	  break; // Only process one video frame
+	}
       av_packet_unref(&packet);
     }
 }
@@ -1186,9 +1186,9 @@
   int64_t duration = [self getDuration];
   double currentSeconds = (double)currentTime / 1000000.0;
   double totalSeconds = (double)duration / 1000000.0;
-  
-  return [NSString stringWithFormat: @"Time: %.2f/%.2f sec | FPS: %.2f | Playing: %@", 
-          currentSeconds, totalSeconds, _fps, [self isPlaying] ? @"YES" : @"NO"];
+
+  return [NSString stringWithFormat: @"Time: %.2f/%.2f sec | FPS: %.2f | Playing: %@",
+		   currentSeconds, totalSeconds, _fps, [self isPlaying] ? @"YES" : @"NO"];
 }
 
 // Status field management
@@ -1225,34 +1225,34 @@
 - (void) forceStop
 {
   NSLog(@"[GSMovieView] Force stop initiated | Timestamp: %ld", av_gettime());
-  
+
   _running = NO;
-  
+
   // Force stop audio
   if (_audioPlayer)
     {
       [_audioPlayer stopAudio];
     }
-  
+
   // Force destroy threads without waiting
   if (_videoThread)
     {
       [_videoThread cancel];
       DESTROY(_videoThread);
     }
-  
+
   if (_feedThread)
     {
       [_feedThread cancel];
       DESTROY(_feedThread);
     }
-  
+
   // Clear packet queue
   @synchronized (_videoPackets)
     {
       [_videoPackets removeAllObjects];
     }
-  
+
   NSLog(@"[GSMovieView] Force stop completed | Timestamp: %ld", av_gettime());
 }
 

@@ -1,33 +1,33 @@
 /** <title>GSAudioPlayer</title>
 
-   <abstract>Audio player with master clock functionality for GSMovieView</abstract>
+    <abstract>Audio player with master clock functionality for GSMovieView</abstract>
 
-   This audio player serves as the master clock for audio-video synchronization
-   in GSMovieView. The audio clock is updated during playback and is used by
-   the video thread to synchronize video frame presentation.
+    This audio player serves as the master clock for audio-video synchronization
+    in GSMovieView. The audio clock is updated during playback and is used by
+    the video thread to synchronize video frame presentation.
 
-   Copyright <copy>(C) 2025 Free Software Foundation, Inc.</copy>
+    Copyright <copy>(C) 2025 Free Software Foundation, Inc.</copy>
 
-   Author: Gregory Casamento <greg.casamento@gmail.com>
-   Date: May 2025
+    Author: Gregory Casamento <greg.casamento@gmail.com>
+    Date: May 2025
 
-   This file is part of the GNUstep GUI Library.
+    This file is part of the GNUstep GUI Library.
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
 
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Lesser General Public License for more details.
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+    Lesser General Public License for more details.
 
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the
-   Free Software Foundation, 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; see the file COPYING.LIB.
+    If not, see <http://www.gnu.org/licenses/> or write to the
+    Free Software Foundation, 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #import "GSAudioPlayer.h"
@@ -153,7 +153,7 @@
 
   // Configure audio device options for better buffering to reduce skipping
   ao_option *options = NULL;
-  
+
   // Set buffer size to reduce skipping (in bytes)
   // Calculate buffer for about 100ms of audio
   int bufferSamples = _audioCodecCtx->sample_rate / 10; // 100ms
@@ -161,9 +161,9 @@
   char bufferSizeStr[32];
   snprintf(bufferSizeStr, sizeof(bufferSizeStr), "%d", bufferSize);
   ao_append_option(&options, "buffer_time", "100000"); // 100ms in microseconds
-  
-  NSLog(@"[GSAudioPlayer] Initializing audio: %d Hz, %d channels, buffer size: %d bytes", 
-        _audioCodecCtx->sample_rate, out_channels, bufferSize);
+
+  NSLog(@"[GSAudioPlayer] Initializing audio: %d Hz, %d channels, buffer size: %d bytes",
+	_audioCodecCtx->sample_rate, out_channels, bufferSize);
 
   _aoDev = ao_open_live(driver, &_aoFmt, options);
   if (_aoDev == NULL)
@@ -172,7 +172,7 @@
       ao_free_options(options);
       return;
     }
-  
+
   ao_free_options(options);
   _timeBase = formatCtx->streams[audioStreamIndex]->time_base;
   _audioClock = av_gettime();
@@ -184,14 +184,14 @@
 {
   int64_t audioStartTime = 0;
   int64_t totalSamplesPlayed = 0;
-  
+
   while (_running)
     {
       // create pool...
       CREATE_AUTORELEASE_POOL(pool);
       {
 	NSDictionary *dict = nil;
-	
+
 	@synchronized (_audioPackets)
 	  {
 	    if ([_audioPackets count] > 0)
@@ -200,7 +200,7 @@
 		[_audioPackets removeObjectAtIndex:0];
 	      }
 	  }
-	
+
 	if (!_started && dict)
 	  {
 	    audioStartTime = av_gettime();
@@ -208,40 +208,37 @@
 	    _started = YES;
 	    NSLog(@"[GSAudioPlayer] Audio playback started | Timestamp: %ld", audioStartTime);
 	  }
-	
+
 	if (dict)
 	  {
 	    AVPacket packet = AVPacketFromNSDictionary(dict);
-	    
-	    // Calculate when this packet should be played
-	    int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
-	    
+
 	    // Calculate expected playback time based on samples played
 	    int64_t expectedTime = audioStartTime + (totalSamplesPlayed * 1000000LL / _audioCodecCtx->sample_rate);
 	    int64_t currentTime = av_gettime();
-	    
+
 	    // Only delay if we're ahead of schedule by more than 5ms to reduce skipping
 	    int64_t timingError = expectedTime - currentTime;
 	    if (timingError > 5000) // 5ms threshold
 	      {
 		usleep((useconds_t)timingError);
 	      }
-	    
+
 	    // Update audio clock for video synchronization
 	    // The audio clock represents the actual time of the audio currently being played
 	    _audioClock = audioStartTime + (totalSamplesPlayed * 1000000LL / _audioCodecCtx->sample_rate);
-	    
+
 	    // Debug logging for audio clock updates (reduced frequency)
 	    if (totalSamplesPlayed % (_audioCodecCtx->sample_rate / 4) == 0) // Log 4 times per second
 	      {
 		fprintf(stderr, "[GSAudioPlayer] Audio clock: %ld | PTS: %ld | Samples: %ld | Timing error: %ld us\n",
 			_audioClock, packet.pts, totalSamplesPlayed, timingError);
 	      }
-	    
+
 	    // Decode and play the packet
 	    int samplesDecoded = [self decodePacket:&packet];
 	    totalSamplesPlayed += samplesDecoded;
-	    
+
 	    [dict release];
 	  }
 	else
@@ -257,7 +254,7 @@
 - (int) decodePacket: (AVPacket *)packet
 {
   int totalSamples = 0;
-  
+
   if (!_audioCodecCtx || !_swrCtx || !_aoDev)
     {
       return 0;
@@ -286,31 +283,31 @@
 					 outSamples);
 
       if (convertedSamples > 0)
-        {
-          // Apply volume
-          int16_t *samples = (int16_t *)outBuf;
-          int sampleCount = convertedSamples * 2; // stereo
-          
-          for (int i = 0; i < sampleCount; ++i)
-            {
-              if ([self isMuted])
-                {
-                  samples[i] = 0;
-                }
-              else
-                {
-                  samples[i] = (int16_t)(samples[i] * _volume);
-                }
-            }
+	{
+	  // Apply volume
+	  int16_t *samples = (int16_t *)outBuf;
+	  int sampleCount = convertedSamples * 2; // stereo
 
-          // Play the audio - this will block until the audio device is ready
-          ao_play(_aoDev, (char *) outBuf, convertedSamples * 2 * sizeof(int16_t));
-          totalSamples += convertedSamples;
-        }
-      
+	  for (int i = 0; i < sampleCount; ++i)
+	    {
+	      if ([self isMuted])
+		{
+		  samples[i] = 0;
+		}
+	      else
+		{
+		  samples[i] = (int16_t)(samples[i] * _volume);
+		}
+	    }
+
+	  // Play the audio - this will block until the audio device is ready
+	  ao_play(_aoDev, (char *) outBuf, convertedSamples * 2 * sizeof(int16_t));
+	  totalSamples += convertedSamples;
+	}
+
       free(outBuf);
     }
-  
+
   return totalSamples;
 }
 
@@ -385,18 +382,18 @@
     {
       [_audioPackets removeAllObjects];
     }
-  
+
   // Reset codec state
   if (_audioCodecCtx)
     {
       avcodec_flush_buffers(_audioCodecCtx);
     }
-  
+
   // Reset the audio clock and synchronization state
   // The clock will be properly initialized when the next packet is processed
   _audioClock = timestamp;
   _started = NO; // Will be reset when first packet after seek is processed
-  
+
   NSLog(@"[GSAudioPlayer] Audio seek to timestamp %ld", timestamp);
   return YES;
 }
@@ -421,14 +418,5 @@
     }
   return 0;
 }
-/*
-- (int64_t) currentPlaybackTime
-{
-  if (_started)
-    {
-      return av_gettime() - _audioClock;
-    }
-  return 0;
-}
-*/
+
 @end
