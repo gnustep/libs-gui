@@ -345,7 +345,7 @@
   _audioClock = av_gettime() - timestamp;
   _started = NO; // Will be reset when first packet after seek is processed
   
-  NSLog(@"[GSAudioPlayer] Audio seek to timestamp %lld", timestamp);
+  NSLog(@"[GSAudioPlayer] Audio seek to timestamp %ld", timestamp);
   return YES;
 }
 
