@@ -254,7 +254,7 @@
     }
 }
 
-- (int)decodePacket: (AVPacket *)packet
+- (int) decodePacket: (AVPacket *)packet
 {
   int totalSamples = 0;
   
@@ -421,7 +421,7 @@
     }
   return 0;
 }
-
+/*
 - (int64_t) currentPlaybackTime
 {
   if (_started)
@@ -430,5 +430,5 @@
     }
   return 0;
 }
-
+*/
 @end

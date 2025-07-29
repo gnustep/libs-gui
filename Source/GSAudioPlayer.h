@@ -77,7 +77,7 @@
 - (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
 		      streamIndex: (int)audioStreamIndex;
 
-- (void) decodePacket: (AVPacket *)packet;
+- (int) decodePacket: (AVPacket *)packet;
 - (void) submitPacket: (AVPacket *)packet;
 - (void) startAudio;
 - (void) stopAudio;

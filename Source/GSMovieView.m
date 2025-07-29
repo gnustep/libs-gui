@@ -784,7 +784,6 @@
       NSLog(@"[GSMovieView] Reached end of stream, frames read: %ld | Timestamp: %ld", i, av_gettime());
     }
 }
-}
 
 - (void) close
 {
