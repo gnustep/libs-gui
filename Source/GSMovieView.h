@@ -115,6 +115,9 @@ APPKIT_EXPORT_CLASS
 // Emergency cleanup (use with caution)
 - (void) forceStop;
 
+// Restart from current position (useful for recovering from EOF or errors)
+- (BOOL) restartFromCurrentPosition;
+
 @end
 
 #endif /* _GNUstep_H_GSMovieView */
