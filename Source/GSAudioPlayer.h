@@ -62,6 +62,8 @@
   ao_device *_aoDev;
   ao_sample_format _aoFmt;
   int64_t _audioClock;
+  int64_t _audioStartTime;
+  int64_t _totalSamplesPlayed;
   AVRational _timeBase;
   float _volume; /* 0.0 to 1.0 */
   unsigned int _loopMode:3;
@@ -77,7 +79,7 @@
 - (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
 		      streamIndex: (int)audioStreamIndex;
 
-- (void) decodePacket: (AVPacket *)packet;
+- (int) decodePacket: (AVPacket *)packet; // Returns number of samples decoded
 - (void) submitPacket: (AVPacket *)packet;
 - (void) startAudio;
 - (void) stopAudio;
@@ -100,6 +102,9 @@
 - (int64_t) currentAudioClock;
 - (BOOL) isAudioStarted;
 - (int64_t) currentPlaybackTime; // Returns current playback time in microseconds
+
+// Debug methods
+- (NSUInteger) audioPacketBufferCount;
 
 @end
 

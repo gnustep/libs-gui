@@ -930,9 +930,18 @@
 	    NSString *syncSource = (_audioPlayer && [_audioPlayer isAudioStarted]) ? @"Audio Clock" : @"System Time";
 	    fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us | Sync: %s\r",
 		    packet.pts, delay, [syncSource UTF8String]);
-	    if (delay > 0)
+	    
+	    // Only delay for positive delays greater than 10ms to reduce stuttering
+	    // This allows for some natural jitter without causing pauses
+	    if (delay > 10000) // 10ms threshold
 	      {
 		usleep((useconds_t)delay);
+	      }
+	    else if (delay < -50000) // If we're more than 50ms behind, skip frame
+	      {
+		NSLog(@"[GSMovieView] Dropping frame - %ld us behind", -delay);
+		RELEASE(dict);
+		continue; // Skip this frame to catch up
 	      }
 		
 	    // Decode the packet, display it and play the sound...

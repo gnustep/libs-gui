@@ -43,6 +43,8 @@
       _audioFrame = NULL;
       _swrCtx = NULL;
       _audioClock = 0;
+      _audioStartTime = 0;
+      _totalSamplesPlayed = 0;
       _audioPackets = nil;
       _audioThread = nil;
       _running = NO;
@@ -151,7 +153,29 @@
   _aoFmt.rate = _audioCodecCtx->sample_rate;
   _aoFmt.byte_format = AO_FMT_NATIVE;
 
-  _aoDev = ao_open_live(driver, &_aoFmt, NULL);
+  // Configure audio device options for better buffering
+  ao_option *options = NULL;
+  
+  // Set buffer size to reduce skipping (in bytes)
+  // Calculate buffer for about 100ms of audio
+  int bufferSamples = _audioCodecCtx->sample_rate / 10; // 100ms
+  int bufferSize = bufferSamples * out_channels * 2; // 16-bit stereo
+  char bufferSizeStr[32];
+  snprintf(bufferSizeStr, sizeof(bufferSizeStr), "%d", bufferSize);
+  ao_append_option(&options, "buffer_time", "100000"); // 100ms in microseconds
+  
+  NSLog(@"[GSAudioPlayer] Initializing audio: %d Hz, %d channels, buffer size: %d bytes", 
+        _audioCodecCtx->sample_rate, out_channels, bufferSize);
+
+  _aoDev = ao_open_live(driver, &_aoFmt, options);
+  if (_aoDev == NULL)
+    {
+      NSLog(@"[GSAudioPlayer] Failed to open audio device");
+      ao_free_options(options);
+      return;
+    }
+  
+  ao_free_options(options);
   _timeBase = formatCtx->streams[audioStreamIndex]->time_base;
   _audioClock = av_gettime();
   _audioPackets = [[NSMutableArray alloc] init];
@@ -178,58 +202,77 @@
 	
 	if (!_started && dict)
 	  {
-	    _audioClock = av_gettime();
+	    _audioStartTime = av_gettime();
+	    _totalSamplesPlayed = 0;
 	    _started = YES;
+	    NSLog(@"[GSAudioPlayer] Audio playback started | Timestamp: %ld", _audioStartTime);
 	  }
 	
 	if (dict)
 	  {
 	    AVPacket packet = AVPacketFromNSDictionary(dict);
+	    
+	    // Calculate when this packet should be played
 	    int64_t packetTime = av_rescale_q(packet.pts, _timeBase, (AVRational){1, 1000000});
-	    int64_t now = av_gettime() - _audioClock;
-	    int64_t delay = packetTime - now;
-
-	    if (delay > 0)
+	    
+	    // Calculate expected playback time based on samples played
+	    int64_t expectedTime = _audioStartTime + (_totalSamplesPlayed * 1000000LL / _audioCodecCtx->sample_rate);
+	    int64_t currentTime = av_gettime();
+	    
+	    // Only delay if we're ahead of schedule by more than 5ms to reduce skipping
+	    int64_t timingError = expectedTime - currentTime;
+	    if (timingError > 5000) // 5ms threshold
 	      {
-		usleep((useconds_t)delay); //  + 50000);
+		usleep((useconds_t)timingError);
 	      }
 	    
-	    // Update the audio clock to the current packet time
-	    // This provides the reference clock for video synchronization
-	    _audioClock = av_gettime() - packetTime;
+	    // Update audio clock for video synchronization
+	    // The audio clock represents the actual time of the audio currently being played
+	    _audioClock = _audioStartTime + (_totalSamplesPlayed * 1000000LL / _audioCodecCtx->sample_rate);
 	    
 	    // Debug logging for audio clock updates
-	    fprintf(stderr, "[GSAudioPlayer] Audio clock updated: PTS: %ld | Delay: %ld us | Clock: %ld\r",
-		    packet.pts, delay, _audioClock);
+	    if (_totalSamplesPlayed % (_audioCodecCtx->sample_rate / 4) == 0) // Log 4 times per second
+	      {
+		fprintf(stderr, "[GSAudioPlayer] Audio clock: %ld | PTS: %ld | Samples: %ld | Timing error: %ld us\n",
+			_audioClock, packet.pts, _totalSamplesPlayed, timingError);
+	      }
 	    
-	    [self decodePacket:&packet];
+	    // Decode and play the packet
+	    int samplesDecoded = [self decodePacket:&packet];
+	    _totalSamplesPlayed += samplesDecoded;
+	    
 	    [dict release];
 	  }
 	else
 	  {
-	    usleep(1000);
+	    // No packets available - wait a bit longer to avoid busy waiting
+	    usleep(5000); // 5ms
 	  }
       }
       RELEASE(pool);
     }
 }
+}
+}
 
-- (void)decodePacket: (AVPacket *)packet
+- (int)decodePacket: (AVPacket *)packet
 {
+  int totalSamples = 0;
+  
   if (!_audioCodecCtx || !_swrCtx || !_aoDev)
     {
-      return;
+      return 0;
     }
 
   if (avcodec_send_packet(_audioCodecCtx, packet) < 0)
     {
-      return;
+      return 0;
     }
 
   if (packet->flags & AV_PKT_FLAG_CORRUPT)
     {
       NSLog(@"Skipping corrupt audio packet");
-      return;
+      return 0;
     }
 
   while (avcodec_receive_frame(_audioCodecCtx, _audioFrame) == 0)
@@ -239,28 +282,37 @@
       uint8_t *outBuf = (uint8_t *) malloc(outBytes);
       uint8_t *outPtrs[] = { outBuf };
 
-      swr_convert(_swrCtx, outPtrs, outSamples,
-		  (const uint8_t **) _audioFrame->data,
-		  outSamples);
+      int convertedSamples = swr_convert(_swrCtx, outPtrs, outSamples,
+					 (const uint8_t **) _audioFrame->data,
+					 outSamples);
 
-      // Apply volume
-      int16_t *samples = (int16_t *)outBuf;
-      int i = 0;
-      for (i = 0; i < outBytes / 2; ++i)
-	{
-	  if ([self isMuted])
-	    {
-	      samples[i] = 0.0;
-	    }
-	  else
-	    {
-	      samples[i] = samples[i] * _volume;
-	    }
-	}
+      if (convertedSamples > 0)
+        {
+          // Apply volume
+          int16_t *samples = (int16_t *)outBuf;
+          int sampleCount = convertedSamples * 2; // stereo
+          
+          for (int i = 0; i < sampleCount; ++i)
+            {
+              if ([self isMuted])
+                {
+                  samples[i] = 0;
+                }
+              else
+                {
+                  samples[i] = (int16_t)(samples[i] * _volume);
+                }
+            }
 
-      ao_play(_aoDev, (char *) outBuf, outBytes);
+          // Play the audio - this will block until the audio device is ready
+          ao_play(_aoDev, (char *) outBuf, convertedSamples * 2 * sizeof(int16_t));
+          totalSamples += convertedSamples;
+        }
+      
       free(outBuf);
     }
+  
+  return totalSamples;
 }
 
 - (void) submitPacket: (AVPacket *)packet
@@ -285,6 +337,9 @@
 {
   _running = NO;
   _started = NO; // Reset synchronization state
+  _audioStartTime = 0;
+  _totalSamplesPlayed = 0;
+  
   [_audioThread cancel];
 
   while ([_audioThread isFinished] == NO)
@@ -341,8 +396,9 @@
       avcodec_flush_buffers(_audioCodecCtx);
     }
   
-  // Reset the audio clock to account for the seek
-  _audioClock = av_gettime() - timestamp;
+  // Reset the audio clock and synchronization state
+  // The clock will be properly initialized when the next packet is processed
+  _audioClock = timestamp;
   _started = NO; // Will be reset when first packet after seek is processed
   
   NSLog(@"[GSAudioPlayer] Audio seek to timestamp %lld", timestamp);
@@ -364,9 +420,19 @@
 {
   if (_started)
     {
-      return av_gettime() - _audioClock;
+      // Return the current audio clock time
+      return _audioClock;
     }
   return 0;
+}
+
+// Debug method to check buffer status
+- (NSUInteger) audioPacketBufferCount
+{
+  @synchronized (_audioPackets)
+    {
+      return [_audioPackets count];
+    }
 }
 
 @end
