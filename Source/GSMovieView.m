@@ -971,11 +971,11 @@
 	      {
 		// Only delay if we're significantly ahead
 		usleep((useconds_t)delay);
-		NSLog(@"[GSMovieView] Delaying frame by %ld us (frame #%d)", delay, frameCount);
+		fprintf(stderr, "[GSMovieView] Delaying frame by %ld us (frame #%d)\r", delay, frameCount);
 	      }
 	    else if (delay < -dropThreshold)
 	      {
-		NSLog(@"[GSMovieView] Dropping frame - %ld us behind (threshold: %ld us, frame #%d)",
+		fprintf(stderr, "[GSMovieView] Dropping frame - %ld us behind (threshold: %ld us, frame #%d)\r",
 		      -delay, dropThreshold, frameCount);
 		RELEASE(dict);
 		continue; // Skip this frame to catch up
@@ -985,7 +985,7 @@
 		// Normal case - display the frame without delay
 		if (packet.pts % 60 == 0) // Log every 60th frame
 		  {
-		    NSLog(@"[GSMovieView] Displaying frame normally - delay: %ld us (frame #%d)", delay, frameCount);
+		    fprintf(stderr, "[GSMovieView] Displaying frame normally - delay: %ld us (frame #%d)\r", delay, frameCount);
 		  }
 	      }
 
@@ -1115,7 +1115,7 @@
       // Convert back from stream timebase to get actual PTS
       _lastPts = seekTarget;
 
-      NSLog(@"[GSMovieView] Seek to timestamp %ld successful", timestamp);
+      fprintf(stderr, "[GSMovieView] Seek to timestamp %ld successful\r", timestamp);
       return YES;
     }
 
