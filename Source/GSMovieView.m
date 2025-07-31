@@ -908,7 +908,7 @@
 		// Sanity check - if delay is extremely large, audio clock might be wrong
 		if (delay > 5000000 || delay < -5000000) // More than 5 seconds off
 		  {
-		    NSLog(@"[GSMovieView] Audio clock seems incorrect (delay: %ld us), falling back to system time", delay);
+		    fprintf(stderr, "[GSMovieView] Audio clock seems incorrect (delay: %ld us), falling back to system time\r", delay);
 		    // Fall back to system timing
 		    static int64_t fallbackStartTime = 0;
 		    if (fallbackStartTime == 0)
@@ -922,7 +922,7 @@
 		// Debug: Log audio synchronization details
 		if (packet.pts % 30 == 0) // Log every 30th frame to avoid spam
 		  {
-		    NSLog(@"[GSMovieView] Audio sync - PTS: %ld, AudioTime: %ld, Delay: %ld us",
+		    fprintf(stderr, "[GSMovieView] Audio sync - PTS: %ld, AudioTime: %ld, Delay: %ld us\r",
 			  packetTime, referenceTime, delay);
 		  }
 	      }
@@ -940,7 +940,7 @@
 		// Debug: Log system time synchronization
 		if (packet.pts % 30 == 0) // Log every 30th frame to avoid spam
 		  {
-		    NSLog(@"[GSMovieView] System sync - PTS: %ld, SysTime: %ld, Delay: %ld us",
+		    fprintf(stderr, "[GSMovieView] System sync - PTS: %ld, SysTime: %ld, Delay: %ld us\n",
 			  packetTime, referenceTime, delay);
 		  }
 	      }
