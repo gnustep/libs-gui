@@ -6471,7 +6471,7 @@ else $as_nop
 fi
 
 done
-if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$enable_movie" = yes; then
+if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$enable_movie" = yes; then
 
 printf "%s\n" "#define HAVE_AVCODEC 1" >>confdefs.h
 

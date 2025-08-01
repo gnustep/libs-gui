@@ -50,7 +50,7 @@
 @implementation NSMovieView
 
 // Make sure we have all of the video and audio components, to build this...
-#if defined(HAVE_AVCODEC) && defined(HAVE_AO) && defined(HAVE_SNDFILE)
+#if defined(HAVE_AVCODEC) && defined(HAVE_AO)
 + (id) allocWithZone: (NSZone *)zone
 {
   if (self == [NSMovieView class])
