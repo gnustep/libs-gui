@@ -6196,7 +6196,7 @@ fi
 
 done
 # Only if we have both...
-if test $have_sndfile = yes -a $have_ao = yes -a $enable_sound = yes; then
+if test "$have_sndfile" = yes -a "$have_ao" = yes -a "$enable_sound" = yes; then
    BUILD_SOUND="sound"
    SOUND_LIBS=`pkg-config --libs sndfile ao`
    SOUND_CFLAGS=`pkg-config --cflags sndfile ao`
@@ -6273,7 +6273,7 @@ else $as_nop
 fi
 
 done
-if test $have_flite = yes -a $have_speech = yes -a $enable_speech = yes; then
+if test "$have_flite" = yes -a "$have_speech" = yes -a "$enable_speech" = yes; then
    BUILD_SPEECH="speech say"
    FLITE_BASE_LIBS="-lflite_usenglish -lflite_cmulex -lflite"
    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for register_cmu_us_kal16 in -lflite_cmu_us_kal16" >&5
@@ -6392,7 +6392,7 @@ else $as_nop
 fi
 
 done
-if test $have_pocketsphinx = yes -a $have_speech_recognizer = yes -a $enable_speech_recognizer = yes; then
+if test "$have_pocketsphinx" = yes -a "$have_speech_recognizer" = yes -a "$enable_speech_recognizer" = yes; then
    BUILD_SPEECH_RECOGNIZER="speech_recognizer"
    RECOGNIZER_BASE_LIBS=`pkg-config --libs pocketsphinx sphinxbase`
    RECOGNIZER_BASE_CFLAGS=`pkg-config --cflags pocketsphinx sphinxbase`
@@ -6471,7 +6471,7 @@ else $as_nop
 fi
 
 done
-if test $have_avcodec = yes -a $have_codec = yes -a $enable_movie = yes; then
+if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$enable_movie" = yes; then
 
 printf "%s\n" "#define HAVE_AVCODEC 1" >>confdefs.h
 
