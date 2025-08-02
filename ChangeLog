@@ -1,23 +1,26 @@
 2025-05-29 Gregory John Casamento <greg.casamento@gmail.com>
 
-	* config.make.in
+	* config.make.in: Add HAVE_* variables.
 	* configure
-	* configure.ac
+	* configure.ac: Look for relevant libraries
 	* Headers/Additions/GNUstepGUI/config.h.in
 	* Headers/AppKit/NSMovie.h
 	* Headers/AppKit/NSMovieView.h
 	* Source/GNUmakefile
 	* Source/GNUmakefile.preamble
+	* Source/GSAudioPlayer.h
+	* Source/GSAudioPlayer.m: Added to play audio from avcodec
 	* Source/GSMovieView.h
-	* Source/GSMovieView.m
+	* Source/GSMovieView.m: Subclass to handle video playback
 	* Source/NSMovie.m
-	* Source/NSMovieView.m
-	* Source/NSSound.m: Cleanup NSSound, add support for playing ffmpeg
-	movies using NSMovie, NSMovieView.
+	* Source/NSMovieView.m: Cleanup and add textfield.
+	* Source/NSSound.m: Cleanup NSSound, add support for playing
+	ffmpeg movies using NSMovie, NSMovieView.
 
 2025-04-30 Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Headers/AppKit/NSColorSpace.h: Add NSColorSpaceModel* enumerated values.
+	* Headers/AppKit/NSColorSpace.h: Add NSColorSpaceModel*
+	enumerated values.
 
 2025-02-11 Richard Frith-Macdonald <rfm@gnu.org>
 
@@ -26,8 +29,7 @@
 	* INSTALL:
 	* NEWS:
 	* Source/DocMakefile:
-	* Version:
-	Updates for 0.32.0 release
+	* Version: Updates for 0.32.0 release
 
 2024-11-08 Gregory John Casamento <greg.casamento@gmail.com>
 
@@ -44,7 +46,8 @@
 
 2024-10-29 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Headers/AppKit/NSLayoutAnchor.h: Add missing include that is required after a change in base.
+	* Headers/AppKit/NSLayoutAnchor.h: Add missing include that is
+	required after a change in base.
 	* Source/NSTableView.m: Forward declare new methods.
 
 2024-08-29 Gregory John Casamento <greg.casamento@gmail.com>
@@ -62,7 +65,7 @@
 	for NSTreeController, a subclass of NSTreeNode.
 	* Source/GSThemeDrawing.m: Optimize code a bit and
 	add changes for bindings.
-	* Source/GSXib5KeyedUnarchiver.m: Add support for new keys
+	* Source/GSib5KeyedUnarchiver.m: Add support for new keys
 	on NSTreeController.
 	* Source/NSKeyValueBinding.m: Add new methods to
 	GSKeyValueBinding
