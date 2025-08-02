@@ -66,6 +66,10 @@
   float _volume; /* 0.0 to 1.0 */
   unsigned int _loopMode:3;
 
+  // Reusable audio buffer for conversion
+  uint8_t *_audioBuffer;
+  int _audioBufferSize;
+
   NSMutableArray *_audioPackets;
   NSThread *_audioThread;
 

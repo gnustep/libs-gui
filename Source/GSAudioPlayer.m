@@ -49,6 +49,10 @@
       _volume = 1.0;
       _started = NO;
       _loopMode = NSQTMovieNormalPlayback;
+      
+      // Initialize reusable audio buffer
+      _audioBuffer = NULL;
+      _audioBufferSize = 0;
     }
   return self;
 }
@@ -70,6 +74,13 @@
   if (_swrCtx)
     {
       swr_free(&_swrCtx);
+    }
+
+  if (_audioBuffer)
+    {
+      free(_audioBuffer);
+      _audioBuffer = NULL;
+      _audioBufferSize = 0;
     }
 
   if (_aoDev)
@@ -281,8 +292,20 @@
     {
       int outSamples = _audioFrame->nb_samples;
       int outBytes = av_samples_get_buffer_size(NULL, 2, outSamples, AV_SAMPLE_FMT_S16, 1);
-      uint8_t *outBuf = (uint8_t *) malloc(outBytes);
-      uint8_t *outPtrs[] = { outBuf };
+      
+      // Ensure our reusable buffer is large enough
+      if (_audioBufferSize < outBytes)
+	{
+	  if (_audioBuffer)
+	    {
+	      free(_audioBuffer);
+	    }
+	  _audioBuffer = (uint8_t *) malloc(outBytes);
+	  _audioBufferSize = outBytes;
+	  NSLog(@"[GSAudioPlayer] Allocated audio buffer: %d bytes", outBytes);
+	}
+      
+      uint8_t *outPtrs[] = { _audioBuffer };
 
       int convertedSamples = swr_convert(_swrCtx, outPtrs, outSamples,
 					 (const uint8_t **) _audioFrame->data,
@@ -291,7 +314,7 @@
       if (convertedSamples > 0)
 	{
 	  // Apply volume
-	  int16_t *samples = (int16_t *)outBuf;
+	  int16_t *samples = (int16_t *)_audioBuffer;
 	  int sampleCount = convertedSamples * 2; // stereo
 
 	  for (int i = 0; i < sampleCount; ++i)
@@ -307,11 +330,9 @@
 	    }
 
 	  // Play the audio - this will block until the audio device is ready
-	  ao_play(_aoDev, (char *) outBuf, convertedSamples * 2 * sizeof(int16_t));
+	  ao_play(_aoDev, (char *) _audioBuffer, convertedSamples * 2 * sizeof(int16_t));
 	  totalSamples += convertedSamples;
 	}
-
-      free(outBuf);
     }
 
   return totalSamples;
