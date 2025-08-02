@@ -28,8 +28,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#import "config.h"
-
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSTimer.h>
@@ -42,10 +40,6 @@
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSMovieView.h"
 #import "AppKit/NSPasteboard.h"
-
-#ifdef HAVE_AVCODEC
-#import "GSMovieView.h"
-#endif
 
 @implementation NSMovieView
 
