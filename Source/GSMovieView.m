@@ -104,6 +104,23 @@
 
 @end
 
+@interface NSMovieView (AVCodec)
+@end
+
+@implementation NSMovieView (AVCodec)
+
+// Make sure we have all of the video and audio components, to build this...
++ (id) allocWithZone: (NSZone *)zone
+{
+  if (self == [NSMovieView class])
+    {
+      return [GSMovieView allocWithZone: zone];
+    }
+  return [super allocWithZone: zone];
+}
+
+@end
+
 #pragma clang diagnostic pop
 
 // NSMovieView subclass that does all of the actual work of decoding...
