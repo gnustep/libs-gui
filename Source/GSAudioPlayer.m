@@ -119,6 +119,12 @@
       return;
     }
 
+  if (_audioCodecCtx != NULL)
+    {
+      NSLog(@"Audio codec already initialized");
+      return;
+    }
+
   _audioCodecCtx = avcodec_alloc_context3(audioCodec);
   avcodec_parameters_to_context(_audioCodecCtx, audioPar);
 
@@ -231,7 +237,7 @@
 	    // Debug logging for audio clock updates (reduced frequency)
 	    if (totalSamplesPlayed % (_audioCodecCtx->sample_rate / 4) == 0) // Log 4 times per second
 	      {
-		fprintf(stderr, "[GSAudioPlayer] Audio clock: %ld | PTS: %ld | Samples: %ld | Timing error: %ld us\n",
+		NSLog(@"[GSAudioPlayer] Audio clock: %ld | PTS: %ld | Samples: %ld | Timing error: %ld us\n",
 			_audioClock, packet.pts, totalSamplesPlayed, timingError);
 	      }
 

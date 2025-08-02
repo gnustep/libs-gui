@@ -680,17 +680,17 @@
 	{
 	  const char *path = [[url path] UTF8String];
 
-	  NSLog(@"[Info] Opening file: %s | Timestamp: %ld", path, av_gettime());
+	  NSDebugLog(@"[Info] Opening file: %s | Timestamp: %ld", path, av_gettime());
 	  avformat_network_init();
 	  if (avformat_open_input(&_formatCtx, path, NULL, NULL) != 0)
 	    {
-	      NSLog(@"[Error] Could not open file: %s | Timestamp: %ld", path, av_gettime());
+	      NSDebugLog(@"[Error] Could not open file: %s | Timestamp: %ld", path, av_gettime());
 	      return NO;
 	    }
 
 	  if (avformat_find_stream_info(_formatCtx, NULL) < 0)
 	    {
-	      NSLog(@"[Error] Could not find stream info. | Timestamp: %ld", av_gettime());
+	      NSDebugLog(@"[Error] Could not find stream info. | Timestamp: %ld", av_gettime());
 	      avformat_close_input(&_formatCtx);
 	      return NO;
 	    }
@@ -817,7 +817,7 @@
       [self loop];
       // DON'T close the format context here - keep it open for restart capability
       // [self close];
-      NSLog(@"[GSMovieView] Feed thread finished, format context remains open for restart | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSMovieView] Feed thread finished, format context remains open for restart | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -1070,7 +1070,7 @@
 
   if (packet->flags & AV_PKT_FLAG_CORRUPT)
     {
-      NSLog(@"Skipping corrupt video packet");
+      NSDebugLog(@"Skipping corrupt video packet");
       return;
     }
 
