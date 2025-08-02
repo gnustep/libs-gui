@@ -56,17 +56,17 @@ NSString *_writeDataToTempFile(NSData *data)
 
 @implementation NSMovie
 
-+ (NSArray*) movieUnfilteredFileTypes
++ (NSArray *) movieUnfilteredFileTypes
 {
   return [NSArray array];
 }
 
-+ (NSArray*) movieUnfilteredPasteboardTypes
++ (NSArray *) movieUnfilteredPasteboardTypes
 {
   return [NSArray array];
 }
 
-+ (BOOL) canInitWithPasteboard: (NSPasteboard*)pasteboard
++ (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard
 {
   NSArray *pbTypes = [pasteboard types];
   NSArray *myTypes = [self movieUnfilteredPasteboardTypes];
@@ -95,12 +95,12 @@ NSString *_writeDataToTempFile(NSData *data)
   return self;
 }
 
-- (instancetype) initWithMovie: (void*)movie
+- (instancetype) initWithMovie: (void *)movie
 {
   return [self initWithData: movie];
 }
 
-- (instancetype) initWithURL: (NSURL*)url byReference: (BOOL)byRef
+- (instancetype) initWithURL: (NSURL *)url byReference: (BOOL)byRef
 {
   self = [super init];
   if (self != nil)
@@ -116,10 +116,10 @@ NSString *_writeDataToTempFile(NSData *data)
   return self;
 }
 
-- (instancetype) initWithPasteboard: (NSPasteboard*)pasteboard
+- (instancetype) initWithPasteboard: (NSPasteboard *)pasteboard
 {
   NSString *type;
-  NSData* data;
+  NSData *data;
 
   type =
     [pasteboard availableTypeFromArray:
@@ -146,8 +146,14 @@ NSString *_writeDataToTempFile(NSData *data)
 
 - (void) dealloc
 {
-  _tmp = NO;
-  [[NSFileManager defaultManager] removeFileAtPath: [_url path] handler: nil];
+  // If this is a temporary file, then delete it...
+  if (_tmp == YES)
+    {
+      NSFileManager *fm = [NSFileManager defaultManager];
+      [fm removeItemAtURL: _url error: NULL];
+      _tmp = NO;
+    }
+
   TEST_RELEASE(_url);
   TEST_RELEASE(_movie);
 
@@ -171,15 +177,17 @@ NSString *_writeDataToTempFile(NSData *data)
 
   new->_movie = [_movie copyWithZone: zone];
   new->_url = [_url copyWithZone: zone];
+
   return new;
 }
 
 // NSCoding protocoll
-- (void) encodeWithCoder: (NSCoder*)aCoder
+- (void) encodeWithCoder: (NSCoder *)aCoder
 {
   if ([aCoder allowsKeyedCoding])
     {
-      // FIXME
+      [aCoder encodeObject: _movie forKey: @"GSMovieData"];
+      [aCoder encodeObject: _url forKey: @"GSMovieURL"];
     }
   else
     {
@@ -192,7 +200,8 @@ NSString *_writeDataToTempFile(NSData *data)
 {
   if ([aDecoder allowsKeyedCoding])
     {
-      // FIXME
+      ASSIGN (_movie, [aDecoder decodeObjectForKey: @"GSMovieData"]);
+      ASSIGN (_url, [aDecoder decodeObjectForKey: @"GSMovieURL"]);
     }
   else
     {

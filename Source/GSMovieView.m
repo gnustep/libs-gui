@@ -147,7 +147,7 @@
       _fps = 0.0;
 
       // Flags...
-      _running = NO;
+      _flags.playing = NO;
       _started = NO;
     }
   return self;
@@ -252,7 +252,7 @@
   @synchronized(self)
     {
       // More robust check: ensure we have both the flag and active threads
-      return _running && (_videoThread != nil || _feedThread != nil);
+      return _flags.playing && (_videoThread != nil || _feedThread != nil);
     }
 }
 
@@ -260,7 +260,7 @@
 {
   @synchronized(self)
     {
-      if (_running)
+      if (_flags.playing)
 	{
 	  NSLog(@"[GSMovieView] Already running, ignoring start request | Timestamp: %ld", av_gettime());
 	  return;
@@ -275,7 +275,7 @@
       NSLog(@"[GSMovieView] Starting video playback | Timestamp: %ld, lastPts = %ld",
 	    av_gettime(), _lastPts);
 
-      _running = YES;
+      _flags.playing = YES;
       _started = NO; // Reset for synchronization
 
       // If we're restarting and at EOF, seek back to beginning
@@ -362,7 +362,7 @@
 {
   @synchronized(self)
     {
-      if (!_running)
+      if (!_flags.playing)
 	{
 	  NSLog(@"[GSMovieView] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
 	  return;
@@ -371,7 +371,7 @@
       NSLog(@"[GSMovieView] Stopping video playback | Timestamp: %ld, lastPts = %ld",
 	    av_gettime(), _lastPts);
 
-      _running = NO;
+      _flags.playing = NO;
 
       // Stop audio playback first
       if (_audioPlayer)
@@ -762,7 +762,7 @@
       while (av_read_frame(_formatCtx, &packet) >= 0)
 	{
 	  // Check if we should stop feeding
-	  if (!_running && [[NSThread currentThread] isCancelled])
+	  if (!_flags.playing && [[NSThread currentThread] isCancelled])
 	    {
 	      av_packet_unref(&packet);
 	      break;
@@ -859,13 +859,13 @@
 
   _timeBase = formatCtx->streams[videoStreamIndex]->time_base;
   _videoPackets = [[NSMutableArray alloc] init];
-  _running = NO;
+  _flags.playing = NO;
   _started = NO;
 }
 
 - (void) setPlaying: (BOOL)f
 {
-  _running = f;
+  _flags.playing = f;
 }
 
 - (void)submitPacket: (AVPacket *)packet
@@ -879,7 +879,7 @@
 
 - (void)videoThreadEntry
 {
-  while (_running)
+  while (_flags.playing)
     {
       // Create pool...
       CREATE_AUTORELEASE_POOL(pool);
@@ -925,7 +925,7 @@
 		// Sanity check - if delay is extremely large, audio clock might be wrong
 		if (delay > 5000000 || delay < -5000000) // More than 5 seconds off
 		  {
-		    fprintf(stderr, "[GSMovieView] Audio clock seems incorrect (delay: %ld us), falling back to system time\r", delay);
+		    NSDebugLog(@"[GSMovieView] Audio clock seems incorrect (delay: %ld us), falling back to system time\r", delay);
 		    // Fall back to system timing
 		    static int64_t fallbackStartTime = 0;
 		    if (fallbackStartTime == 0)
@@ -939,7 +939,7 @@
 		// Debug: Log audio synchronization details
 		if (packet.pts % 30 == 0) // Log every 30th frame to avoid spam
 		  {
-		    fprintf(stderr, "[GSMovieView] Audio sync - PTS: %ld, AudioTime: %ld, Delay: %ld us\r",
+		    NSDebugLog(@"[GSMovieView] Audio sync - PTS: %ld, AudioTime: %ld, Delay: %ld us\r",
 			  packetTime, referenceTime, delay);
 		  }
 	      }
@@ -957,7 +957,7 @@
 		// Debug: Log system time synchronization
 		if (packet.pts % 30 == 0) // Log every 30th frame to avoid spam
 		  {
-		    fprintf(stderr, "[GSMovieView] System sync - PTS: %ld, SysTime: %ld, Delay: %ld us\n",
+		    NSDebugLog(@"[GSMovieView] System sync - PTS: %ld, SysTime: %ld, Delay: %ld us\n",
 			  packetTime, referenceTime, delay);
 		  }
 	      }
@@ -967,13 +967,13 @@
 		// Show the information...
 		NSString *syncSource = (_audioPlayer && [_audioPlayer isAudioStarted]) ? @"Audio Clock" : @"System Time";
 		_statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | Sync: %@ | %@",
-					  packet.pts, delay, syncSource, _running ? @"Running" : @"Stopped"];
+					  packet.pts, delay, syncSource, _flags.playing ? @"Running" : @"Stopped"];
 		[_statusField setStringValue: _statusString];
 	      }
 
 	    // Show status on the command line...
 	    NSString *syncSource = (_audioPlayer && [_audioPlayer isAudioStarted]) ? @"Audio Clock" : @"System Time";
-	    fprintf(stderr, "[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us | Sync: %s\r",
+	    NSDebugLog(@"[GSMovieView] Rendering video frame PTS: %ld | Delay: %ld us | Sync: %s\r",
 		    packet.pts, delay, [syncSource UTF8String]);
 
 	    // More tolerant timing thresholds to ensure video displays
@@ -988,11 +988,11 @@
 	      {
 		// Only delay if we're significantly ahead
 		usleep((useconds_t)delay);
-		fprintf(stderr, "[GSMovieView] Delaying frame by %ld us (frame #%d)\r", delay, frameCount);
+		NSDebugLog(@"[GSMovieView] Delaying frame by %ld us (frame #%d)\r", delay, frameCount);
 	      }
 	    else if (delay < -dropThreshold)
 	      {
-		fprintf(stderr, "[GSMovieView] Dropping frame - %ld us behind (threshold: %ld us, frame #%d)\r",
+		NSDebugLog(@"[GSMovieView] Dropping frame - %ld us behind (threshold: %ld us, frame #%d)\r",
 		      -delay, dropThreshold, frameCount);
 		RELEASE(dict);
 		continue; // Skip this frame to catch up
@@ -1002,7 +1002,7 @@
 		// Normal case - display the frame without delay
 		if (packet.pts % 60 == 0) // Log every 60th frame
 		  {
-		    fprintf(stderr, "[GSMovieView] Displaying frame normally - delay: %ld us (frame #%d)\r", delay, frameCount);
+		    NSDebugLog(@"[GSMovieView] Displaying frame normally - delay: %ld us (frame #%d)\r", delay, frameCount);
 		  }
 	      }
 
@@ -1132,7 +1132,7 @@
       // Convert back from stream timebase to get actual PTS
       _lastPts = seekTarget;
 
-      fprintf(stderr, "[GSMovieView] Seek to timestamp %ld successful\r", timestamp);
+      NSDebugLog(@"[GSMovieView] Seek to timestamp %ld successful\r", timestamp);
       return YES;
     }
 
@@ -1243,7 +1243,7 @@
 {
   NSLog(@"[GSMovieView] Force stop initiated | Timestamp: %ld", av_gettime());
 
-  _running = NO;
+  _flags.playing = NO;
 
   // Force stop audio
   if (_audioPlayer)

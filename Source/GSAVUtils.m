@@ -34,10 +34,10 @@
 
 NSDictionary *NSDictionaryFromAVPacket(AVPacket *packet)
 {
-  NSData *data = [NSData dataWithBytes:packet->data length:packet->size];
-  NSNumber *pts = [NSNumber numberWithLongLong:packet->pts];
-  NSNumber *duration = [NSNumber numberWithInt:packet->duration];
-  NSNumber *flags = [NSNumber numberWithInt:packet->flags];
+  NSData *data = [NSData dataWithBytes: packet->data length: packet->size];
+  NSNumber *pts = [NSNumber numberWithLongLong: packet->pts];
+  NSNumber *duration = [NSNumber numberWithInt: packet->duration];
+  NSNumber *flags = [NSNumber numberWithInt: packet->flags];
 
   return [NSDictionary dictionaryWithObjectsAndKeys:
 			 data, @"data",
@@ -49,10 +49,10 @@ NSDictionary *NSDictionaryFromAVPacket(AVPacket *packet)
 
 AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 {
-  NSData *data = [dict objectForKey:@"data"];
-  NSNumber *pts = [dict objectForKey:@"pts"];
-  NSNumber *duration = [dict objectForKey:@"duration"];
-  NSNumber *flags = [dict objectForKey:@"flags"];
+  NSData *data = [dict objectForKey: @"data"];
+  NSNumber *pts = [dict objectForKey: @"pts"];
+  NSNumber *duration = [dict objectForKey: @"duration"];
+  NSNumber *flags = [dict objectForKey: @"flags"];
 
   AVPacket *packet = av_packet_alloc();
   packet->data = (uint8_t *)[data bytes];

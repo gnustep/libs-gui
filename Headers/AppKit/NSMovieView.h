@@ -52,8 +52,8 @@ APPKIT_EXPORT_CLASS
   
   float _rate;
   float _volume;
-  BOOL _playing;
   struct NSMovieViewFlags {
+    unsigned int playing: 1;
     unsigned int muted: 1;
     unsigned int loopMode: 3;
     unsigned int plays_selection_only: 1;

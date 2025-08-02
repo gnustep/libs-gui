@@ -356,6 +356,7 @@
       volume = 1.0;
     }
 
+  _muted = (volume > 0.0); // set to YES if it is 0, NO otherwise.
   _volume = volume;
 }
 
