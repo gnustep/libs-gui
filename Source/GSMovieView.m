@@ -276,8 +276,8 @@
 	  return;
 	}
 
-      NSLog(@"[GSMovieView] Starting video playback | Timestamp: %ld, lastPts = %ld",
-	    av_gettime(), _lastPts);
+      NSLog(@"[GSMovieView] Starting video playback | Timestamp: %ld, lastPts = %ld, manualStop = %d",
+	    av_gettime(), _lastPts, _manualStop);
 
       _flags.playing = YES;
       _started = NO; // Reset for synchronization
@@ -286,6 +286,7 @@
       // We can detect this by checking if the feed thread finished but we still have a format context
       // However, if this was a manual stop, we should resume from where we left off
       BOOL needsRestart = (_feedThread == nil || [_feedThread isFinished]) && _formatCtx != NULL;
+      NSLog(@"[GSMovieView] needsRestart = %d, _manualStop = %d | Timestamp: %ld", needsRestart, _manualStop, av_gettime());
       if (needsRestart && !_manualStop)
 	{
 	  NSLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
@@ -334,8 +335,8 @@
 	  if (_lastPts != 0)
 	    {
 	      int64_t currentTimestamp = av_rescale_q(_lastPts, _timeBase, (AVRational){1, 1000000});
-	      NSLog(@"[GSMovieView] Seeking to resume position: %ld us | Timestamp: %ld", 
-		    currentTimestamp, av_gettime());
+	      NSLog(@"[GSMovieView] Seeking to resume position: %ld us (PTS: %ld) | Timestamp: %ld", 
+		    currentTimestamp, _lastPts, av_gettime());
 	      
 	      if (av_seek_frame(_formatCtx, _videoStreamIndex, _lastPts, AVSEEK_FLAG_BACKWARD) >= 0)
 		{
@@ -350,11 +351,17 @@
 		    {
 		      [_audioPlayer seekToTime: currentTimestamp];
 		    }
+		  
+		  NSLog(@"[GSMovieView] Seek to resume position successful | Timestamp: %ld", av_gettime());
 		}
 	      else
 		{
-		  NSLog(@"[GSMovieView] Failed to seek to resume position | Timestamp: %ld", av_gettime());
+		  NSLog(@"[GSMovieView] Failed to seek to resume position, falling back to current stream position | Timestamp: %ld", av_gettime());
 		}
+	    }
+	  else
+	    {
+	      NSLog(@"[GSMovieView] No valid PTS for resume, starting from current stream position | Timestamp: %ld", av_gettime());
 	    }
 	  
 	  // Clear the manual stop flag since we're resuming
@@ -366,6 +373,7 @@
       // Start feed thread if not already started or if it finished
       if (_feedThread == nil || [_feedThread isFinished])
 	{
+	  NSLog(@"[GSMovieView] Starting new feed thread | Timestamp: %ld", av_gettime());
 	  [self setRate: 1.0 / 30.0];
 	  [self setVolume: 1.0];
 
@@ -379,11 +387,17 @@
 						selector:@selector(feed)
 						  object:nil];
 	  [_feedThread start];
+	  NSLog(@"[GSMovieView] Feed thread started successfully | Timestamp: %ld", av_gettime());
+	}
+      else
+	{
+	  NSLog(@"[GSMovieView] Feed thread already running | Timestamp: %ld", av_gettime());
 	}
 
       // Start video processing thread
       if (_videoThread == nil || [_videoThread isFinished])
 	{
+	  NSLog(@"[GSMovieView] Starting new video thread | Timestamp: %ld", av_gettime());
 	  // Clean up old thread reference if it finished
 	  if (_videoThread && [_videoThread isFinished])
 	    {
@@ -394,12 +408,23 @@
 						 selector:@selector(videoThreadEntry)
 						   object:nil];
 	  [_videoThread start];
+	  NSLog(@"[GSMovieView] Video thread started successfully | Timestamp: %ld", av_gettime());
+	}
+      else
+	{
+	  NSLog(@"[GSMovieView] Video thread already running | Timestamp: %ld", av_gettime());
 	}
 
       // Start audio playback
       if (_audioPlayer && _audioStreamIndex >= 0)
 	{
+	  NSLog(@"[GSMovieView] Starting audio playback | Timestamp: %ld", av_gettime());
 	  [_audioPlayer startAudio];
+	}
+      else
+	{
+	  NSLog(@"[GSMovieView] No audio to start (audioPlayer: %p, audioStreamIndex: %d) | Timestamp: %ld", 
+		_audioPlayer, _audioStreamIndex, av_gettime());
 	}
 
       NSLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
@@ -812,8 +837,8 @@
 
       while (av_read_frame(_formatCtx, &packet) >= 0)
 	{
-	  // Check if we should stop feeding
-	  if (!_flags.playing && [[NSThread currentThread] isCancelled])
+	  // Check if we should stop feeding - exit if cancelled OR if not playing
+	  if ([[NSThread currentThread] isCancelled] || !_flags.playing)
 	    {
 	      NSLog(@"[GSMovieView] Feed loop stopping - playing: %d, cancelled: %d | Timestamp: %ld", 
 		    _flags.playing, [[NSThread currentThread] isCancelled], av_gettime());
