@@ -323,6 +323,40 @@
 	{
 	  NSLog(@"[GSMovieView] Resuming from manual stop at PTS: %ld | Timestamp: %ld", 
 		_lastPts, av_gettime());
+	  
+	  // Clear existing video packets to start fresh
+	  @synchronized (_videoPackets)
+	    {
+	      [_videoPackets removeAllObjects];
+	    }
+	  
+	  // Seek to the current position to ensure proper resume
+	  if (_lastPts != 0)
+	    {
+	      int64_t currentTimestamp = av_rescale_q(_lastPts, _timeBase, (AVRational){1, 1000000});
+	      NSLog(@"[GSMovieView] Seeking to resume position: %ld us | Timestamp: %ld", 
+		    currentTimestamp, av_gettime());
+	      
+	      if (av_seek_frame(_formatCtx, _videoStreamIndex, _lastPts, AVSEEK_FLAG_BACKWARD) >= 0)
+		{
+		  // Reset codec state after seek
+		  if (_videoCodecCtx)
+		    {
+		      avcodec_flush_buffers(_videoCodecCtx);
+		    }
+		  
+		  // Ask audio player to seek to the same position
+		  if (_audioPlayer)
+		    {
+		      [_audioPlayer seekToTime: currentTimestamp];
+		    }
+		}
+	      else
+		{
+		  NSLog(@"[GSMovieView] Failed to seek to resume position | Timestamp: %ld", av_gettime());
+		}
+	    }
+	  
 	  // Clear the manual stop flag since we're resuming
 	  _manualStop = NO;
 	  // Flag to reset timing on next video frame
@@ -768,6 +802,8 @@
 
 - (void) loop
 {
+  NSLog(@"[GSMovieView] Feed loop started | Timestamp: %ld", av_gettime());
+  
   if (_formatCtx != NULL)
     {
       AVPacket packet;
@@ -779,6 +815,8 @@
 	  // Check if we should stop feeding
 	  if (!_flags.playing && [[NSThread currentThread] isCancelled])
 	    {
+	      NSLog(@"[GSMovieView] Feed loop stopping - playing: %d, cancelled: %d | Timestamp: %ld", 
+		    _flags.playing, [[NSThread currentThread] isCancelled], av_gettime());
 	      av_packet_unref(&packet);
 	      break;
 	    }
@@ -896,6 +934,8 @@
 
 - (void)videoThreadEntry
 {
+  NSLog(@"[GSMovieView] Video thread started | Timestamp: %ld", av_gettime());
+  
   while (_flags.playing)
     {
       // Create pool...
@@ -1032,9 +1072,16 @@
 	    [self decodePacket: &packet];
 	    RELEASE(dict);
 	  }
+	else
+	  {
+	    // No packets available, sleep briefly to avoid busy waiting
+	    usleep(1000); // 1ms
+	  }
       }
       RELEASE(pool);
     }
+  
+  NSLog(@"[GSMovieView] Video thread finished | Timestamp: %ld", av_gettime());
 }
 
 - (void) renderFrame: (AVFrame *)videoFrame
