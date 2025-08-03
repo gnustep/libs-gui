@@ -73,9 +73,13 @@ APPKIT_EXPORT_CLASS
 
   BOOL _running; // is the loop currently running...
   BOOL _started; // has the video started...
+  BOOL _manualStop; // was the last stop manual (vs EOF)
+  BOOL _resetTiming; // should timing be reset on next video frame
   int _videoStreamIndex;
   int _audioStreamIndex;
   int64_t _lastPts;
+  int64_t _videoStartTime;      // For system time fallback
+  int64_t _videoFallbackTime;   // For audio clock fallback
   CGFloat _fps;
 }
 

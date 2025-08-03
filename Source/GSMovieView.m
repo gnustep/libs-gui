@@ -144,11 +144,15 @@
       _swsCtx = NULL;
       _stream = NULL;
       _lastPts = 0;
+      _videoStartTime = 0;
+      _videoFallbackTime = 0;
       _fps = 0.0;
 
       // Flags...
       _flags.playing = NO;
       _started = NO;
+      _manualStop = NO;
+      _resetTiming = NO;
     }
   return self;
 }
@@ -280,8 +284,9 @@
 
       // If we're restarting and at EOF, seek back to beginning
       // We can detect this by checking if the feed thread finished but we still have a format context
+      // However, if this was a manual stop, we should resume from where we left off
       BOOL needsRestart = (_feedThread == nil || [_feedThread isFinished]) && _formatCtx != NULL;
-      if (needsRestart)
+      if (needsRestart && !_manualStop)
 	{
 	  NSLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
 
@@ -313,6 +318,15 @@
 	    {
 	      NSLog(@"[GSMovieView] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
 	    }
+	}
+      else if (_manualStop)
+	{
+	  NSLog(@"[GSMovieView] Resuming from manual stop at PTS: %ld | Timestamp: %ld", 
+		_lastPts, av_gettime());
+	  // Clear the manual stop flag since we're resuming
+	  _manualStop = NO;
+	  // Flag to reset timing on next video frame
+	  _resetTiming = YES;
 	}
 
       // Start feed thread if not already started or if it finished
@@ -372,6 +386,7 @@
 	    av_gettime(), _lastPts);
 
       _flags.playing = NO;
+      _manualStop = YES; // Mark this as a manual stop
 
       // Stop audio playback first
       if (_audioPlayer)
@@ -798,6 +813,8 @@
 
       // When we reach EOF, we can seek back to beginning if looping is desired
       // For now, just log that we've reached the end
+      // Mark this as not a manual stop since we reached EOF naturally
+      _manualStop = NO;
       NSLog(@"[GSMovieView] Reached end of stream, frames read: %ld | Timestamp: %ld", i, av_gettime());
     }
 }
@@ -927,12 +944,11 @@
 		  {
 		    NSDebugLog(@"[GSMovieView] Audio clock seems incorrect (delay: %ld us), falling back to system time\r", delay);
 		    // Fall back to system timing
-		    static int64_t fallbackStartTime = 0;
-		    if (fallbackStartTime == 0)
+		    if (_videoFallbackTime == 0 || _resetTiming)
 		      {
-			fallbackStartTime = av_gettime();
+			_videoFallbackTime = av_gettime();
 		      }
-		    referenceTime = av_gettime() - fallbackStartTime;
+		    referenceTime = av_gettime() - _videoFallbackTime;
 		    delay = packetTime - referenceTime;
 		  }
 
@@ -946,12 +962,11 @@
 	    else
 	      {
 		// Fall back to system time if no audio
-		static int64_t startTime = 0;
-		if (startTime == 0)
+		if (_videoStartTime == 0 || _resetTiming)
 		  {
-		    startTime = av_gettime();
+		    _videoStartTime = av_gettime();
 		  }
-		referenceTime = av_gettime() - startTime;
+		referenceTime = av_gettime() - _videoStartTime;
 		delay = packetTime - referenceTime;
 
 		// Debug: Log system time synchronization
@@ -960,6 +975,13 @@
 		    NSDebugLog(@"[GSMovieView] System sync - PTS: %ld, SysTime: %ld, Delay: %ld us\n",
 			  packetTime, referenceTime, delay);
 		  }
+	      }
+	    
+	    // Clear the reset timing flag after first use
+	    if (_resetTiming)
+	      {
+		_resetTiming = NO;
+		NSLog(@"[GSMovieView] Reset video timing for resume");
 	      }
 
 	    if (_statusField != nil)
