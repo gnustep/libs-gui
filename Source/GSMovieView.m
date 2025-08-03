@@ -279,28 +279,27 @@
       NSLog(@"[GSMovieView] Starting video playback | Timestamp: %ld, lastPts = %ld, manualStop = %d",
 	    av_gettime(), _lastPts, _manualStop);
 
-      _flags.playing = YES;
       _started = NO; // Reset for synchronization
 
       // For manual resume, seek to the preserved position
       if (_manualStop)
 	{
-	  NSLog(@"[GSMovieView] Resuming from manual stop at PTS: %ld | Timestamp: %ld", 
+	  NSLog(@"[GSMovieView] Resuming from manual stop at PTS: %ld | Timestamp: %ld",
 		_lastPts, av_gettime());
-	  
+
 	  // Clear existing video packets to start fresh
 	  @synchronized (_videoPackets)
 	    {
 	      [_videoPackets removeAllObjects];
 	    }
-	  
+
 	  // Seek to the current position to ensure proper resume
 	  if (_lastPts != 0)
 	    {
 	      int64_t currentTimestamp = av_rescale_q(_lastPts, _timeBase, (AVRational){1, 1000000});
-	      NSLog(@"[GSMovieView] Seeking to resume position: %ld us (PTS: %ld) | Timestamp: %ld", 
+	      NSLog(@"[GSMovieView] Seeking to resume position: %ld us (PTS: %ld) | Timestamp: %ld",
 		    currentTimestamp, _lastPts, av_gettime());
-	      
+
 	      if (av_seek_frame(_formatCtx, _videoStreamIndex, _lastPts, AVSEEK_FLAG_BACKWARD) >= 0)
 		{
 		  // Reset codec state after seek
@@ -308,13 +307,13 @@
 		    {
 		      avcodec_flush_buffers(_videoCodecCtx);
 		    }
-		  
+
 		  // Ask audio player to seek to the same position
 		  if (_audioPlayer)
 		    {
 		      [_audioPlayer seekToTime: currentTimestamp];
 		    }
-		  
+
 		  NSLog(@"[GSMovieView] Seek to resume position successful | Timestamp: %ld", av_gettime());
 		}
 	      else
@@ -326,7 +325,7 @@
 	    {
 	      NSLog(@"[GSMovieView] No valid PTS for resume, starting from current stream position | Timestamp: %ld", av_gettime());
 	    }
-	  
+
 	  // Clear the manual stop flag since we're resuming
 	  _manualStop = NO;
 	  // Flag to reset timing on next video frame
@@ -395,9 +394,12 @@
 	}
       else
 	{
-	  NSLog(@"[GSMovieView] No audio to start (audioPlayer: %p, audioStreamIndex: %d) | Timestamp: %ld", 
+	  NSLog(@"[GSMovieView] No audio to start (audioPlayer: %p, audioStreamIndex: %d) | Timestamp: %ld",
 		_audioPlayer, _audioStreamIndex, av_gettime());
 	}
+
+      // Only set playing flag AFTER everything is set up
+      _flags.playing = YES;
 
       NSLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
     }
@@ -800,29 +802,21 @@
 - (void) loop
 {
   NSLog(@"[GSMovieView] Feed loop started | Timestamp: %ld", av_gettime());
-  
+
   if (_formatCtx != NULL)
     {
       AVPacket packet;
       int64_t i = 0;
-      BOOL shouldStart = NO;
 
       while (av_read_frame(_formatCtx, &packet) >= 0)
 	{
 	  // Check if we should stop feeding - exit if cancelled OR if not playing
 	  if ([[NSThread currentThread] isCancelled] || !_flags.playing)
 	    {
-	      NSLog(@"[GSMovieView] Feed loop stopping - playing: %d, cancelled: %d | Timestamp: %ld", 
+	      NSLog(@"[GSMovieView] Feed loop stopping - playing: %d, cancelled: %d | Timestamp: %ld",
 		    _flags.playing, [[NSThread currentThread] isCancelled], av_gettime());
 	      av_packet_unref(&packet);
 	      break;
-	    }
-
-	  // After BUFFER_SIZE frames, start the thread...
-	  if (i == BUFFER_SIZE && !shouldStart)
-	    {
-	      shouldStart = YES;
-	      [self start: nil];
 	    }
 
 	  if (packet.stream_index == _videoStreamIndex)
@@ -837,13 +831,6 @@
 
 	  av_packet_unref(&packet);
 	  i++;
-	}
-
-      // if we had a very short video... play it.
-      if (i < BUFFER_SIZE && i > 0)
-	{
-	  NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
-	  [self start: nil];
 	}
 
       // When we reach EOF, we can seek back to beginning if looping is desired
@@ -932,7 +919,7 @@
 - (void)videoThreadEntry
 {
   NSLog(@"[GSMovieView] Video thread started | Timestamp: %ld", av_gettime());
-  
+
   while (_flags.playing)
     {
       // Create pool...
@@ -1013,7 +1000,7 @@
 			  packetTime, referenceTime, delay);
 		  }
 	      }
-	    
+
 	    // Clear the reset timing flag after first use
 	    if (_resetTiming)
 	      {
@@ -1077,7 +1064,7 @@
       }
       RELEASE(pool);
     }
-  
+
   NSLog(@"[GSMovieView] Video thread finished | Timestamp: %ld", av_gettime());
 }
 
