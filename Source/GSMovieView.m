@@ -1033,8 +1033,9 @@
 	    rgbData,
 	    rgbLineSize);
 
+  // Create bitmap with NULL planes so it allocates its own memory
   NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
-				   initWithBitmapDataPlanes: &rgbData[0]
+				   initWithBitmapDataPlanes: NULL
 						 pixelsWide: width
 						 pixelsHigh: height
 					      bitsPerSample: 8
@@ -1044,6 +1045,10 @@
 					     colorSpaceName: NSCalibratedRGBColorSpace
 						bytesPerRow: rgbLineSize[0]
 					       bitsPerPixel: 24];
+
+  // Copy our data into the bitmap's own memory
+  unsigned char *bitmapData = [bitmap bitmapData];
+  memcpy(bitmapData, rgbData[0], height * rgbLineSize[0]);
 
   NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(width, height)];
   [image addRepresentation: bitmap];
