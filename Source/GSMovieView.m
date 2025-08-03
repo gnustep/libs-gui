@@ -282,45 +282,8 @@
       _flags.playing = YES;
       _started = NO; // Reset for synchronization
 
-      // If we're restarting and at EOF, seek back to beginning
-      // We can detect this by checking if the feed thread finished but we still have a format context
-      // However, if this was a manual stop, we should resume from where we left off
-      BOOL needsRestart = (_feedThread == nil || [_feedThread isFinished]) && _formatCtx != NULL;
-      NSLog(@"[GSMovieView] needsRestart = %d, _manualStop = %d | Timestamp: %ld", needsRestart, _manualStop, av_gettime());
-      if (needsRestart && !_manualStop)
-	{
-	  NSLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
-
-	  // Clear existing video packets
-	  @synchronized (_videoPackets)
-	    {
-	      [_videoPackets removeAllObjects];
-	    }
-
-	  // Seek back to the beginning
-	  if (av_seek_frame(_formatCtx, _videoStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
-	    {
-	      // Reset codec state
-	      if (_videoCodecCtx)
-		{
-		  avcodec_flush_buffers(_videoCodecCtx);
-		}
-
-	      // Ask audio player to seek back as well
-	      if (_audioPlayer)
-		{
-		  [_audioPlayer seekToTime: 0];
-		}
-
-	      // Reset PTS
-	      _lastPts = 0;
-	    }
-	  else
-	    {
-	      NSLog(@"[GSMovieView] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
-	    }
-	}
-      else if (_manualStop)
+      // For manual resume, seek to the preserved position
+      if (_manualStop)
 	{
 	  NSLog(@"[GSMovieView] Resuming from manual stop at PTS: %ld | Timestamp: %ld", 
 		_lastPts, av_gettime());
@@ -368,6 +331,15 @@
 	  _manualStop = NO;
 	  // Flag to reset timing on next video frame
 	  _resetTiming = YES;
+	}
+      else
+	{
+	  NSLog(@"[GSMovieView] Starting playback from current stream position | Timestamp: %ld", av_gettime());
+	  // Clear existing video packets to start fresh
+	  @synchronized (_videoPackets)
+	    {
+	      [_videoPackets removeAllObjects];
+	    }
 	}
 
       // Start feed thread if not already started or if it finished
