@@ -341,6 +341,9 @@
 	    }
 	}
 
+      // Set playing flag before starting threads so they don't exit immediately
+      _flags.playing = YES;
+
       // Start feed thread if not already started or if it finished
       if (_feedThread == nil || [_feedThread isFinished])
 	{
@@ -397,9 +400,6 @@
 	  NSLog(@"[GSMovieView] No audio to start (audioPlayer: %p, audioStreamIndex: %d) | Timestamp: %ld",
 		_audioPlayer, _audioStreamIndex, av_gettime());
 	}
-
-      // Only set playing flag AFTER everything is set up
-      _flags.playing = YES;
 
       NSLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
     }
