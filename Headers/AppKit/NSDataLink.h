@@ -29,8 +29,8 @@
 
 #ifndef _GNUstep_H_NSDataLink
 #define _GNUstep_H_NSDataLink
-#import <AppKit/AppKitDefines.h>
 
+#import <AppKit/AppKitDefines.h>
 #import <Foundation/NSObject.h>
 
 @class NSString;
