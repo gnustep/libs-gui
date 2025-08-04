@@ -225,7 +225,7 @@
         {
           struct inotify_event *event = (struct inotify_event *)&buffer[i];
           NSNumber *key = [NSNumber numberWithInt:event->wd];
-          NSDataLink *link = [_watchDescriptors objectForKey:key];
+          NSDataLink *link = [_watchDescriptors objectForKey: key];
           if (link != nil)
             {
               [link noteSourceEdited];
