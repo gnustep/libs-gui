@@ -1,4 +1,4 @@
-/** <title>NSMovieView</title>
+/* <title>NSMovieView</title>
 
    <abstract>Encapsulate a view for Quicktime movies</abstract>
 
@@ -34,6 +34,37 @@
 #import <AppKit/AppKitDefines.h>
 #import <AppKit/NSNibDeclarations.h>
 #import <AppKit/NSView.h>
+
+/**
+ * NSMovieView
+ *
+ * Encapsulates a view component for playing QuickTime movies using the NSMovie class.
+ * Provides playback controls, status monitoring, and display customization.
+ *
+ * Instance Variables:
+ *   _statusField:
+ *     An optional NSTextField outlet that displays the playback status of the movie.
+ *
+ *   _movie:
+ *     The NSMovie object currently loaded in the view.
+ *
+ *   _rate:
+ *     The current playback rate of the movie.
+ *
+ *   _volume:
+ *     The current playback volume level.
+ *
+ *   _flags:
+ *     A bitfield structure representing various movie playback options and UI states:
+ *       - playing: Whether the movie is currently playing.
+ *       - muted: Whether playback is muted.
+ *       - loopMode: Loop playback mode (normal, looping, back-and-forth).
+ *       - plays_selection_only: Whether only the selected portion of the movie is played.
+ *       - plays_every_frame: Whether all frames are rendered during playback.
+ *       - is_controller_visible: Whether the movie controller is currently visible.
+ *       - editable: Whether the movie view is editable.
+ *       - reserved: Reserved bits for future use.
+ */
 
 @class NSTextField;
 @class NSMovie;

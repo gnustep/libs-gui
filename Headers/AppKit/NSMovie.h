@@ -1,4 +1,4 @@
-/** <title>NSMovie</title>
+/* <title>NSMovie</title>
 
    <abstract>Encapsulate a Quicktime movie</abstract>
 
@@ -30,9 +30,25 @@
 
 #ifndef _GNUstep_H_NSMovie
 #define _GNUstep_H_NSMovie
-#import <AppKit/AppKitDefines.h>
-
 #import <Foundation/NSObject.h>
+#import "AppKit/AppKitDefines.h"
+
+/**
+ * NSMovie
+ *
+ * Encapsulates a QuickTime movie object, providing methods to initialize and
+ * retrieve movie data from various sources, such as NSData, NSURL, or NSPasteboard.
+ *
+ * Instance Variables:
+ *   _movie:
+ *     The raw NSData representing the contents of the QuickTime movie.
+ *
+ *   _url:
+ *     The URL from which the movie was loaded. May be nil if not URL-based.
+ *
+ *   _tmp:
+ *     A boolean indicating whether the movie data is temporary (not persisted).
+ */
 
 @class NSArray;
 @class NSData;
