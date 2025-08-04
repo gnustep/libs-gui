@@ -32,7 +32,7 @@
 
 #import <Foundation/NSObject.h>
 #import <AppKit/AppKitDefines.h>
-#import >AppKit/NSDataLink.h>
+#import <AppKit/NSDataLink.h>
 
 @class NSEnumerator;
 @class NSMutableArray;
