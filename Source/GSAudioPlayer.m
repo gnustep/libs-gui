@@ -47,12 +47,17 @@
       _audioThread = nil;
       _running = NO;
       _volume = 1.0;
+      _playbackRate = 1.0;
       _started = NO;
       _loopMode = NSQTMovieNormalPlayback;
-      
+
       // Initialize reusable audio buffer
       _audioBuffer = NULL;
       _audioBufferSize = 0;
+
+      // Initialize time stretching components
+      _stretchSwrCtx = NULL;
+      _stretchedFrame = NULL;
     }
   return self;
 }
@@ -60,6 +65,7 @@
 - (void)dealloc
 {
   [self stopAudio];
+  [self cleanupTimeStretching];
 
   if (_audioFrame)
     {
@@ -195,6 +201,12 @@
   _audioClock = av_gettime();
   _audioPackets = [[NSMutableArray alloc] init];
   _running = YES;
+
+  // Initialize time stretching for sample rate changes
+  if (![self initializeTimeStretching])
+    {
+      NSLog(@"[GSAudioPlayer] Warning: Failed to initialize time stretching");
+    }
 }
 
 - (void)audioThreadEntry
@@ -290,9 +302,42 @@
 
   while (avcodec_receive_frame(_audioCodecCtx, _audioFrame) == 0)
     {
-      int outSamples = _audioFrame->nb_samples;
+      AVFrame *frameToProcess = _audioFrame;
+
+      // Apply time stretching if rate is not 1.0
+      if (_playbackRate != 1.0f && _stretchSwrCtx)
+	{
+	  // Calculate new sample rate for time stretching
+	  int stretchedSampleRate = (int)(_audioCodecCtx->sample_rate / _playbackRate);
+
+	  // Convert to stretched sample rate
+	  int maxOutSamples = swr_get_out_samples(_stretchSwrCtx, _audioFrame->nb_samples);
+
+	  if (!_stretchedFrame)
+	    {
+	      _stretchedFrame = av_frame_alloc();
+	      _stretchedFrame->format = AV_SAMPLE_FMT_S16;
+	      _stretchedFrame->ch_layout = _audioFrame->ch_layout;
+	      _stretchedFrame->sample_rate = stretchedSampleRate;
+	    }
+
+	  _stretchedFrame->nb_samples = maxOutSamples;
+	  av_frame_get_buffer(_stretchedFrame, 0);
+
+	  int convertedSamples = swr_convert(_stretchSwrCtx,
+					   _stretchedFrame->data, maxOutSamples,
+					   (const uint8_t **)_audioFrame->data, _audioFrame->nb_samples);
+
+	  if (convertedSamples > 0)
+	    {
+	      _stretchedFrame->nb_samples = convertedSamples;
+	      frameToProcess = _stretchedFrame;
+	    }
+	}
+
+      int outSamples = frameToProcess->nb_samples;
       int outBytes = av_samples_get_buffer_size(NULL, 2, outSamples, AV_SAMPLE_FMT_S16, 1);
-      
+
       // Ensure our reusable buffer is large enough
       if (_audioBufferSize < outBytes)
 	{
@@ -304,11 +349,11 @@
 	  _audioBufferSize = outBytes;
 	  NSLog(@"[GSAudioPlayer] Allocated audio buffer: %d bytes", outBytes);
 	}
-      
+
       uint8_t *outPtrs[] = { _audioBuffer };
 
       int convertedSamples = swr_convert(_swrCtx, outPtrs, outSamples,
-					 (const uint8_t **) _audioFrame->data,
+					 (const uint8_t **) frameToProcess->data,
 					 outSamples);
 
       if (convertedSamples > 0)
@@ -332,6 +377,12 @@
 	  // Play the audio - this will block until the audio device is ready
 	  ao_play(_aoDev, (char *) _audioBuffer, convertedSamples * 2 * sizeof(int16_t));
 	  totalSamples += convertedSamples;
+	}
+
+      // Unref stretched frame if we used it
+      if (frameToProcess == _stretchedFrame)
+	{
+	  av_frame_unref(_stretchedFrame);
 	}
     }
 
@@ -388,7 +439,7 @@
     {
       _muted = YES;
     }
-  else if (volume > 0.0) 
+  else if (volume > 0.0)
     {
       _muted = NO;
     }
@@ -454,6 +505,90 @@
       return _audioClock;
     }
   return 0;
+}
+
+// Time stretching support
+- (float) playbackRate
+{
+  return _playbackRate;
+}
+
+- (void) setPlaybackRate: (float)rate
+{
+  if (rate < 0.5f) rate = 0.5f;
+  if (rate > 2.0f) rate = 2.0f;
+
+  if (_playbackRate != rate)
+    {
+      _playbackRate = rate;
+
+      // Reinitialize time stretching if it's already set up
+      if (_stretchSwrCtx)
+	{
+	  [self cleanupTimeStretching];
+	  [self initializeTimeStretching];
+	}
+
+      NSLog(@"[GSAudioPlayer] Set playback rate to %.2f", rate);
+    }
+}
+
+- (BOOL) initializeTimeStretching
+{
+  if (!_audioCodecCtx)
+    {
+      NSLog(@"[GSAudioPlayer] Cannot initialize time stretching - no audio codec context");
+      return NO;
+    }
+
+  // Clean up existing context
+  [self cleanupTimeStretching];
+
+  if (_playbackRate == 1.0f)
+    {
+      // No stretching needed
+      return YES;
+    }
+
+  // Calculate stretched sample rate
+  int stretchedSampleRate = (int)(_audioCodecCtx->sample_rate / _playbackRate);
+
+  // Create resampler for time stretching
+  swr_alloc_set_opts2(&_stretchSwrCtx,
+		      &_audioCodecCtx->ch_layout,
+		      AV_SAMPLE_FMT_S16,
+		      stretchedSampleRate,  // Output at different rate for time stretch
+		      &_audioCodecCtx->ch_layout,
+		      _audioCodecCtx->sample_fmt,
+		      _audioCodecCtx->sample_rate,
+		      0, NULL);
+
+  int ret = swr_init(_stretchSwrCtx);
+  if (ret < 0)
+    {
+      NSLog(@"[GSAudioPlayer] Failed to initialize time stretching resampler");
+      [self cleanupTimeStretching];
+      return NO;
+    }
+
+  NSLog(@"[GSAudioPlayer] Time stretching initialized with rate %.2f (sample rate: %d -> %d)",
+	_playbackRate, _audioCodecCtx->sample_rate, stretchedSampleRate);
+  return YES;
+}
+
+- (void) cleanupTimeStretching
+{
+  if (_stretchedFrame)
+    {
+      av_frame_free(&_stretchedFrame);
+      _stretchedFrame = NULL;
+    }
+
+  if (_stretchSwrCtx)
+    {
+      swr_free(&_stretchSwrCtx);
+      _stretchSwrCtx = NULL;
+    }
 }
 
 @end

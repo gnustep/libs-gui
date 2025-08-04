@@ -26,8 +26,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -114,6 +114,10 @@ APPKIT_EXPORT_CLASS
 
 // Emergency cleanup (use with caution)
 - (void) forceStop;
+
+// Time stretching support
+- (float) audioPlaybackRate;
+- (void) setAudioPlaybackRate: (float)rate; // 0.5 to 2.0, 1.0 = normal speed
 
 @end
 

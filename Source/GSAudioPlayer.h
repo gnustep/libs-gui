@@ -25,8 +25,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -64,7 +64,12 @@
   int64_t _audioClock;
   AVRational _timeBase;
   float _volume; /* 0.0 to 1.0 */
+  float _playbackRate; /* 0.5 to 2.0, 1.0 = normal speed */
   unsigned int _loopMode:3;
+
+  // Audio filtering for time stretching (alternative implementation)
+  SwrContext *_stretchSwrCtx;  // Secondary resampler for time stretching
+  AVFrame *_stretchedFrame;    // Frame for stretched audio
 
   // Reusable audio buffer for conversion
   uint8_t *_audioBuffer;
@@ -104,6 +109,12 @@
 - (int64_t) currentAudioClock;
 - (BOOL) isAudioStarted;
 - (int64_t) currentPlaybackTime; // Returns current playback time in microseconds
+
+// Time stretching support (sample rate based)
+- (float) playbackRate;
+- (void) setPlaybackRate: (float)rate; // 0.5 to 2.0, 1.0 = normal speed
+- (BOOL) initializeTimeStretching;
+- (void) cleanupTimeStretching;
 
 @end
 

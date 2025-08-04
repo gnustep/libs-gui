@@ -1278,4 +1278,27 @@
   NSLog(@"[GSMovieView] Force stop completed | Timestamp: %ld", av_gettime());
 }
 
+// Time stretching support
+- (float) audioPlaybackRate
+{
+  if (_audioPlayer)
+    {
+      return [_audioPlayer playbackRate];
+    }
+  return 1.0f;
+}
+
+- (void) setAudioPlaybackRate: (float)rate
+{
+  if (_audioPlayer)
+    {
+      [_audioPlayer setPlaybackRate: rate];
+      NSLog(@"[GSMovieView] Set audio playback rate to %.2f", rate);
+    }
+  else
+    {
+      NSLog(@"[GSMovieView] Cannot set audio playback rate - no audio player");
+    }
+}
+
 @end
