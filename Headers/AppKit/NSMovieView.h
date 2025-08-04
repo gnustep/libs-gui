@@ -286,6 +286,11 @@ APPKIT_EXPORT_CLASS
  */
 - (id) statusField;
 
+/**
+ * GNUstep extension, get current position in the movie.
+ */
+- (CGFloat) currentPosition;
+
 @end
 
 #endif /* _GNUstep_H_NSMovieView */

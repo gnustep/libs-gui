@@ -1180,6 +1180,11 @@
   return 0;
 }
 
+- (CGFloat) currentPosition
+{
+  return (CGFloat) ([self getCurrentTimestamp]/[self getDuration]);
+}
+
 - (void) displayCurrentFrame
 {
   if (!_formatCtx)

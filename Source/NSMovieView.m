@@ -237,6 +237,7 @@
 {
 }
 
+// GNUstep specific extensions...
 - (void) setStatusField: (id)field
 {
   ASSIGN(_statusField, field);
@@ -245,6 +246,11 @@
 - (id) statusField
 {
   return _statusField;
+}
+
+- (CGFloat) currentPosition
+{
+  return 0.0;
 }
 
 @end
