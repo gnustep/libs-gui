@@ -100,198 +100,167 @@ APPKIT_EXPORT_CLASS
 // Initializing a Link
 //
 
-/** <p>Initializes a data link connected to a file.</p>
-    <p>Creates a new NSDataLink object that references the specified file.
-    The link will monitor the file for changes and can update dependent
-    documents when the source file is modified.</p>
-    @param filename The path to the source file
-    @return A new NSDataLink instance or nil if initialization fails
-*/
+/** Initializes a data link connected to a file.
+ * Creates a new NSDataLink object that references the specified file.
+ * The link will monitor the file for changes and can update dependent
+ * documents when the source file is modified.
+ */
 - (id)initLinkedToFile:(NSString *)filename;
 
-/** <p>Initializes a data link with a source selection managed by a link manager.</p>
-    <p>Creates a new NSDataLink that represents a selection within a document
-    managed by the specified NSDataLinkManager. This is typically used for
-    creating links between different parts of the same application.</p>
-    @param selection The source selection to link to
-    @param linkManager The manager responsible for this link
-    @param newTypes Array of supported pasteboard types
-    @return A new NSDataLink instance or nil if initialization fails
-*/
+/** Initializes a data link with a source selection managed by a link manager.
+ * Creates a new NSDataLink that represents a selection within a document
+ * managed by the specified NSDataLinkManager. This is typically used for
+ * creating links between different parts of the same application.
+ */
 - (id)initLinkedToSourceSelection:(NSSelection *)selection
 			managedBy:(NSDataLinkManager *)linkManager
 		  supportingTypes:(NSArray *)newTypes;
 
-/** <p>Initializes a data link from a saved file.</p>
-    <p>Reconstructs a data link from a previously saved link file.
-    The file should contain archived link data created by writeToFile:.</p>
-    @param filename Path to the saved link file
-    @return A new NSDataLink instance or nil if the file cannot be read
-*/
+/** Initializes a data link from a saved file.
+ * Reconstructs a data link from a previously saved link file.
+ * The file should contain archived link data created by writeToFile.
+ */
 - (id)initWithContentsOfFile:(NSString *)filename;
 
-/** <p>Initializes a data link from pasteboard data.</p>
-    <p>Creates a data link from link data stored on the pasteboard.
-    This is typically used when pasting linked data.</p>
-    @param pasteboard The pasteboard containing link data
-    @return A new NSDataLink instance or nil if no valid link data is found
-*/
+/** Initializes a data link from pasteboard data.
+ * Creates a data link from link data stored on the pasteboard.
+ * This is typically used when pasting linked data.
+ */
 - (id)initWithPasteboard:(NSPasteboard *)pasteboard;
 
 //
 // Exporting a Link
 //
 
-/** <p>Saves the link to a directory.</p>
-    <p>Writes the link data to a file in the specified directory.
-    The filename is automatically generated based on the link number.</p>
-    @param directoryName Path to the directory where the link should be saved
-    @return YES if the link was saved successfully, NO otherwise
-*/
+/** Saves the link to a directory.
+ * Writes the link data to a file in the specified directory.
+ * The filename is automatically generated based on the link number.
+ */
 - (BOOL)saveLinkIn:(NSString *)directoryName;
 
-/** <p>Writes the link data to a specific file.</p>
-    <p>Archives the complete link data to the specified file path.
-    The saved file can later be used with initWithContentsOfFile:.</p>
-    @param filename Path where the link data should be written
-    @return YES if the data was written successfully, NO otherwise
-*/
+/** Writes the link data to a specific file.
+ * Archives the complete link data to the specified file path.
+ * The saved file can later be used with initWithContentsOfFile.
+ */
 - (BOOL)writeToFile:(NSString *)filename;
 
-/** <p>Writes link data to the pasteboard.</p>
-    <p>Puts the link data onto the pasteboard so it can be pasted
-    into other documents or applications.</p>
-    @param pasteboard The pasteboard to write to
-*/
+/** Writes link data to the pasteboard.
+ * Puts the link data onto the pasteboard so it can be pasted
+ * into other documents or applications.
+ */
 - (void)writeToPasteboard:(NSPasteboard *)pasteboard;
 
 //
 // Information about the Link
 //
 
-/** <p>Returns the current disposition of the link.</p>
-    <p>The disposition indicates whether the link exists in the source
-    document, destination document, or is broken.</p>
-    @return The current NSDataLinkDisposition value
-*/
+/** Returns the current disposition of the link.
+ * The disposition indicates whether the link exists in the source
+ * document, destination document, or is broken.
+ */
 - (NSDataLinkDisposition)disposition;
 
-/** <p>Returns the unique number identifying this link.</p>
-    <p>Each link has a unique number assigned by its manager.
-    This number is used for tracking and identification purposes.</p>
-    @return The link's unique identification number
-*/
+/** Returns the unique number identifying this link.
+ * Each link has a unique number assigned by its manager.
+ * This number is used for tracking and identification purposes.
+ */
 - (NSDataLinkNumber)linkNumber;
 
-/** <p>Returns the link manager responsible for this link.</p>
-    <p>The manager handles link updates, monitoring, and lifecycle management.</p>
-    @return The NSDataLinkManager instance managing this link
-*/
+/** Returns the link manager responsible for this link.
+ * The manager handles link updates, monitoring, and lifecycle management.
+ */
 - (NSDataLinkManager *)manager;
 
 //
 // Information about the Link's Source
 //
 
-/** <p>Returns the last time the source was updated.</p>
-    <p>This timestamp indicates when the source data was last modified.
-    It's used to determine if destination links need updating.</p>
-    @return NSDate representing the last update time, or nil if unknown
-*/
+/** Returns the last time the source was updated.
+ * This timestamp indicates when the source data was last modified.
+ * It's used to determine if destination links need updating.
+ */
 - (NSDate *)lastUpdateTime;
 
-/** <p>Opens the source document or application.</p>
-    <p>Attempts to open the source document in its associated application.
-    This allows users to edit the source data directly.</p>
-    @return YES if the source was opened successfully, NO otherwise
-*/
+/** Opens the source document or application.
+ * Attempts to open the source document in its associated application.
+ * This allows users to edit the source data directly.
+ */
 - (BOOL)openSource;
 
-/** <p>Returns the name of the source application.</p>
-    <p>Identifies which application created or manages the source data.</p>
-    @return The application name as a string, or nil if unknown
-*/
+/** Returns the name of the source application.
+ * Identifies which application created or manages the source data.
+ */
 - (NSString *)sourceApplicationName;
 
-/** <p>Returns the filename of the source data.</p>
-    <p>For file-based links, this returns the path to the source file.</p>
-    @return The source filename, or nil for non-file sources
-*/
+/** Returns the filename of the source data.
+ * For file-based links, this returns the path to the source file.
+ */
 - (NSString *)sourceFilename;
 
-/** <p>Returns the selection within the source document.</p>
-    <p>For document-based links, this identifies the specific portion
-    of the source document that is linked.</p>
-    @return The source selection, or nil for file-based links
-*/
+/** Returns the selection within the source document.
+ * For document-based links, this identifies the specific portion
+ * of the source document that is linked.
+ */
 - (NSSelection *)sourceSelection;
 
-/** <p>Returns the array of supported data types.</p>
-    <p>Lists the pasteboard types that this link can provide.
-    Used during copy/paste operations to determine compatibility.</p>
-    @return Array of NSString objects representing pasteboard types
-*/
+/** Returns the array of supported data types.
+ * Lists the pasteboard types that this link can provide.
+ * Used during copy/paste operations to determine compatibility.
+ */
 - (NSArray *)types;
 
 //
 // Information about the Link's Destination
 //
 
-/** <p>Returns the name of the destination application.</p>
-    <p>Identifies which application contains the destination document.</p>
-    @return The destination application name, or nil if unknown
-*/
+/** Returns the name of the destination application.
+ * Identifies which application contains the destination document.
+ */
 - (NSString *)destinationApplicationName;
 
-/** <p>Returns the filename of the destination document.</p>
-    <p>For file-based destinations, this returns the path to the destination file.</p>
-    @return The destination filename, or nil for non-file destinations
-*/
+/** Returns the filename of the destination document.
+ * For file-based destinations, this returns the path to the destination file.
+ */
 - (NSString *)destinationFilename;
 
-/** <p>Returns the selection within the destination document.</p>
-    <p>Identifies where the linked data appears in the destination document.</p>
-    @return The destination selection, or nil if not applicable
-*/
+/** Returns the selection within the destination document.
+ * Identifies where the linked data appears in the destination document.
+ */
 - (NSSelection *)destinationSelection;
 
 //
 // Changing the Link
 //
 
-/** <p>Breaks the data link connection.</p>
-    <p>Permanently severs the connection between source and destination.
-    Once broken, the link cannot be restored and will no longer update.
-    Notifies both source and destination managers via delegate callbacks.</p>
-    @return YES if the link was successfully broken, NO otherwise
-*/
+/** Breaks the data link connection.
+ * Permanently severs the connection between source and destination.
+ * Once broken, the link cannot be restored and will no longer update.
+ * Notifies both source and destination managers via delegate callbacks.
+ */
 - (BOOL)break;
 
-/** <p>Notifies the link that its source has been edited.</p>
-    <p>Call this method when the source data has been modified.
-    This marks the link as dirty and may trigger update checks
-    depending on the current update mode.</p>
-*/
+/** Notifies the link that its source has been edited.
+ * Call this method when the source data has been modified.
+ * This marks the link as dirty and may trigger update checks
+ * depending on the current update mode.
+ */
 - (void)noteSourceEdited;
 
-/** <p>Sets when the link should update its destination.</p>
-    <p>Controls the automatic update behavior of the link.</p>
-    @param mode The desired update mode (continuous, on save, manual, or never)
-*/
+/** Sets when the link should update its destination.
+ * Controls the automatic update behavior of the link.
+ */
 - (void)setUpdateMode:(NSDataLinkUpdateMode)mode;
 
-/** <p>Updates the destination with current source data.</p>
-    <p>Attempts to update the destination with the latest source data.
-    Consults the destination manager's delegate to determine if update
-    is needed and handles the actual data transfer.</p>
-    @return YES if the update was successful, NO if update failed or wasn't needed
-*/
+/** Updates the destination with current source data.
+ * Attempts to update the destination with the latest source data.
+ * Consults the destination manager's delegate to determine if update
+ * is needed and handles the actual data transfer.
+ */
 - (BOOL)updateDestination;
 
-/** <p>Returns the current update mode.</p>
-    <p>Indicates when this link will automatically update its destination.</p>
-    @return The current NSDataLinkUpdateMode setting
-*/
+/** Returns the current update mode.
+ * Indicates when this link will automatically update its destination.
+ */
 - (NSDataLinkUpdateMode)updateMode;
 @end
 
