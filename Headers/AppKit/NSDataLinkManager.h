@@ -75,11 +75,13 @@ APPKIT_EXPORT_CLASS
 //
 - (BOOL)addLink: (NSDataLink *)link
 	     at: (NSSelection *)selection;
+- (BOOL)addSourceLink: (NSDataLink *)link;
 - (BOOL)addLinkAsMarker: (NSDataLink *)link
 		     at: (NSSelection *)selection;
 - (NSDataLink *)addLinkPreviouslyAt: (NSSelection *)oldSelection
 		     fromPasteboard: (NSPasteboard *)pasteboard
 				 at: (NSSelection *)selection;
+- (void)removeLink: (NSDataLink *)link;
 - (void)breakAllLinks;
 - (void)writeLinksToPasteboard: (NSPasteboard *)pasteboard;
 
@@ -112,6 +114,13 @@ APPKIT_EXPORT_CLASS
 - (NSDataLink *)destinationLinkWithSelection: (NSSelection *)destSel;
 - (void)setLinkOutlinesVisible: (BOOL)flag;
 - (NSEnumerator *)sourceLinkEnumerator;
+
+//
+// Link Update Management
+//
+- (void)checkForLinkUpdates;
+- (void)redrawLinkOutlines;
+- (BOOL)tracksLinksIndividually;
 @end
 
 

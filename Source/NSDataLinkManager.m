@@ -230,6 +230,16 @@
             {
               [link noteSourceEdited];
               NSLog(@"Source file changed for link #%d", [link linkNumber]);
+              
+              // Check if delegate wants to verify this update
+              if ([_delegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
+                {
+                  BOOL needsUpdate = [_delegate dataLinkManager: self isUpdateNeededForLink: link];
+                  if (needsUpdate)
+                    {
+                      [link updateDestination];
+                    }
+                }
             }
           i += sizeof(struct inotify_event) + event->len;
         }
@@ -252,6 +262,12 @@
     {
       [_destinationLinks addObject: link];
       result = YES;
+      
+      // Notify delegate that we're starting to track this link
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:startTrackingLink:)])
+        {
+          [_delegate dataLinkManager: self startTrackingLink: link];
+        }
     }
 
   return result;
@@ -287,15 +303,69 @@
 {
   FOR_IN(NSDataLink*, src, _sourceLinks)
     {
+      // Notify delegate we're stopping tracking
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
+        {
+          [_delegate dataLinkManager: self stopTrackingLink: src];
+        }
       [src break];
     }
   END_FOR_IN(_sourceLinks);
 
   FOR_IN(NSDataLink*, dst, _destinationLinks)
     {
+      // Notify delegate we're stopping tracking  
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
+        {
+          [_delegate dataLinkManager: self stopTrackingLink: dst];
+        }
       [dst break];
     }
   END_FOR_IN(_destinationLinks);
+}
+
+- (void) removeLink: (NSDataLink *)link
+{
+  if ([_sourceLinks containsObject: link])
+    {
+      // Notify delegate we're stopping tracking
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
+        {
+          [_delegate dataLinkManager: self stopTrackingLink: link];
+        }
+      [_sourceLinks removeObject: link];
+    }
+  
+  if ([_destinationLinks containsObject: link])
+    {
+      // Notify delegate we're stopping tracking
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
+        {
+          [_delegate dataLinkManager: self stopTrackingLink: link];
+        }
+      [_destinationLinks removeObject: link];
+    }
+}
+
+- (BOOL) addSourceLink: (NSDataLink *)link
+{
+  BOOL result = NO;
+  
+  [link setSourceManager: self];
+  
+  if ([_sourceLinks containsObject: link] == NO)
+    {
+      [_sourceLinks addObject: link];
+      result = YES;
+      
+      // Notify delegate that we're starting to track this link
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:startTrackingLink:)])
+        {
+          [_delegate dataLinkManager: self startTrackingLink: link];
+        }
+    }
+  
+  return result;
 }
 
 - (void) writeLinksToPasteboard: (NSPasteboard *)pasteboard
@@ -336,17 +406,34 @@
 
 - (void) noteDocumentSaved
 {
-  // implemented by subclass
+  // Update all source links when document is saved
+  FOR_IN(NSDataLink*, link, _sourceLinks)
+    {
+      [link setLastUpdateTime: [NSDate date]];
+    }
+  END_FOR_IN(_sourceLinks);
+  
+  // Check if any destination links need updates
+  [self checkForLinkUpdates];
 }
 
 - (void) noteDocumentSavedAs:(NSString *)path
 {
-  // implemented by subclass
+  ASSIGN(_filename, path);
+  [self noteDocumentSaved];
 }
 
 - (void)noteDocumentSavedTo:(NSString *)path
 {
-  // implemented by subclass
+  // When saving to a different location, update source links if applicable
+  FOR_IN(NSDataLink*, link, _sourceLinks)
+    {
+      if ([[link sourceFilename] isEqualToString: _filename])
+        {
+          [link setSourceFilename: path];
+        }
+    }
+  END_FOR_IN(_sourceLinks);
 }
 
 //
@@ -420,6 +507,12 @@
 - (void)setLinkOutlinesVisible:(BOOL)flag
 {
   _flags.areLinkOutlinesVisible = flag;
+  
+  // Notify delegate to redraw outlines when visibility changes
+  if ([_delegate respondsToSelector: @selector(dataLinkManagerRedrawLinkOutlines:)])
+    {
+      [_delegate dataLinkManagerRedrawLinkOutlines: self];
+    }
 }
 
 - (NSEnumerator *)sourceLinkEnumerator
@@ -513,6 +606,42 @@
 	return nil;
     }
   return self;
+}
+
+// 
+// Additional delegate callback methods
+//
+- (void) checkForLinkUpdates
+{
+  FOR_IN(NSDataLink*, link, _destinationLinks)
+    {
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
+        {
+          BOOL needsUpdate = [_delegate dataLinkManager: self isUpdateNeededForLink: link];
+          if (needsUpdate)
+            {
+              [link updateDestination];
+            }
+        }
+    }
+  END_FOR_IN(_destinationLinks);
+}
+
+- (void) redrawLinkOutlines
+{
+  if ([_delegate respondsToSelector: @selector(dataLinkManagerRedrawLinkOutlines:)])
+    {
+      [_delegate dataLinkManagerRedrawLinkOutlines: self];
+    }
+}
+
+- (BOOL) tracksLinksIndividually
+{
+  if ([_delegate respondsToSelector: @selector(dataLinkManagerTracksLinksIndividually:)])
+    {
+      return [_delegate dataLinkManagerTracksLinksIndividually: self];
+    }
+  return YES; // Default behavior
 }
 
 @end
