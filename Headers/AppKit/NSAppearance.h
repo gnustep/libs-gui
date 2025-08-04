@@ -45,21 +45,45 @@ APPKIT_EXPORT_CLASS
   NSAppearanceName _currentAppearance;
 }
 
-// Creating an appearance...
+/**
+ * Creates and returns an NSAppearance object for the given name.
+ * Takes a string specifying the name of the appearance.
+ * Returns an NSAppearance instance corresponding to the specified name.
+ */
 + (instancetype) appearanceNamed: (NSString *)name;
+
+/**
+ * Initializes a new NSAppearance object with the given name and bundle.
+ * Takes a string for the appearance name and a bundle where the appearance can be found.
+ * Returns an initialized NSAppearance instance.
+ */
 - (instancetype) initWithAppearanceNamed: (NSString *)name bundle: (NSBundle *)bundle;
 
-// Getting the appearance name
+/**
+ * Gets the name of the appearance.
+ * Returns a string representing the appearance name.
+ */
 - (NSString *) name;
 
-// Determining the most appropriate appearance
+/**
+  * Determining the most appropriate appearance, returns the name of the best
+  * match.
+  */
 - (NSAppearanceName) bestMatchFromAppearancesWithNames: (NSArray *)appearances;
 
-// Getting and setting the appearance
+/**
+ * Setting the current appearance
+ */
 + (void) setCurrentAppearance: (NSAppearance *)appearance;
+
+/**
+ * Getting the current appearance
+ */
 + (NSAppearance *) currentAppearance;
 
-// Managing vibrancy
+/**
+ * Returns YES if the appearance allows vibrancy
+ */
 - (BOOL) allowsVibrancy;
   
 @end
