@@ -177,11 +177,11 @@
 //
 - (void)stopMonitoring
 {
-#ifdef HAVE_INOTIFY_H  
+#ifdef HAVE_INOTIFY_H
   NSArray *allKeys = [_watchDescriptors allKeys];
   NSEnumerator *en = [allKeys objectEnumerator];
   NSNumber *key = nil;
-  
+
   while ((key = [en nextObject]) != nil)
     {
       inotify_rm_watch(_inotifyFD, [key intValue]);
@@ -199,7 +199,7 @@
     {
       [_monitorThread cancel];  // thread must check isCancelled
     }
-#endif  
+#endif
 }
 
 - (void)startMonitoring
@@ -210,7 +210,7 @@
 
 - (void)monitorLoop
 {
-#ifdef HAVE_INOTIFY_H  
+#ifdef HAVE_INOTIFY_H
   char buffer[1024];
   while (![[NSThread currentThread] isCancelled])
     {
@@ -219,7 +219,7 @@
 	{
 	  continue;
 	}
-      
+
       ssize_t i = 0;
       while (i < length)
         {
@@ -230,7 +230,7 @@
             {
               [link noteSourceEdited];
               NSLog(@"Source file changed for link #%d", [link linkNumber]);
-              
+
               // Check if delegate wants to verify this update
               if ([_delegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
                 {
@@ -262,7 +262,7 @@
     {
       [_destinationLinks addObject: link];
       result = YES;
-      
+
       // Notify delegate that we're starting to track this link
       if ([_delegate respondsToSelector: @selector(dataLinkManager:startTrackingLink:)])
         {
@@ -314,7 +314,7 @@
 
   FOR_IN(NSDataLink*, dst, _destinationLinks)
     {
-      // Notify delegate we're stopping tracking  
+      // Notify delegate we're stopping tracking
       if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
         {
           [_delegate dataLinkManager: self stopTrackingLink: dst];
@@ -335,7 +335,7 @@
         }
       [_sourceLinks removeObject: link];
     }
-  
+
   if ([_destinationLinks containsObject: link])
     {
       // Notify delegate we're stopping tracking
@@ -350,21 +350,21 @@
 - (BOOL) addSourceLink: (NSDataLink *)link
 {
   BOOL result = NO;
-  
+
   [link setSourceManager: self];
-  
+
   if ([_sourceLinks containsObject: link] == NO)
     {
       [_sourceLinks addObject: link];
       result = YES;
-      
+
       // Notify delegate that we're starting to track this link
       if ([_delegate respondsToSelector: @selector(dataLinkManager:startTrackingLink:)])
         {
           [_delegate dataLinkManager: self startTrackingLink: link];
         }
     }
-  
+
   return result;
 }
 
@@ -412,7 +412,7 @@
       [link setLastUpdateTime: [NSDate date]];
     }
   END_FOR_IN(_sourceLinks);
-  
+
   // Check if any destination links need updates
   [self checkForLinkUpdates];
 }
@@ -507,7 +507,7 @@
 - (void)setLinkOutlinesVisible:(BOOL)flag
 {
   _flags.areLinkOutlinesVisible = flag;
-  
+
   // Notify delegate to redraw outlines when visibility changes
   if ([_delegate respondsToSelector: @selector(dataLinkManagerRedrawLinkOutlines:)])
     {
@@ -608,7 +608,7 @@
   return self;
 }
 
-// 
+//
 // Additional delegate callback methods
 //
 - (void) checkForLinkUpdates

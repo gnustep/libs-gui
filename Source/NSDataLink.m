@@ -228,10 +228,10 @@
 - (BOOL)updateDestination
 {
   id dstDelegate = [_destinationManager delegate];
-  
+
   if (_flags.broken || _updateMode == NSUpdateNever)
     return NO;
-    
+
   // Check with delegate if update is needed
   if ([dstDelegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
     {
@@ -239,10 +239,10 @@
       if (!needsUpdate)
         return NO;
     }
-    
+
   _flags.isDirty = NO;
   _lastUpdateTime = [NSDate date];
-  
+
   return YES;
 }
 

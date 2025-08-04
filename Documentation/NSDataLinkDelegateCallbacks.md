@@ -115,14 +115,14 @@ The file monitoring system now integrates with delegate callbacks:
 
 @implementation MyDelegate
 
-- (void)dataLinkManager:(NSDataLinkManager *)sender 
+- (void)dataLinkManager:(NSDataLinkManager *)sender
        startTrackingLink:(NSDataLink *)link
 {
     // Set up UI elements, start monitoring, etc.
     [self addLinkToUI: link];
 }
 
-- (BOOL)dataLinkManager:(NSDataLinkManager *)sender 
+- (BOOL)dataLinkManager:(NSDataLinkManager *)sender
   isUpdateNeededForLink:(NSDataLink *)link
 {
     // Custom update logic
@@ -143,7 +143,7 @@ The file monitoring system now integrates with delegate callbacks:
 ```objectivec
 // Initialize with delegate
 MyDelegate *delegate = [[MyDelegate alloc] init];
-NSDataLinkManager *manager = [[NSDataLinkManager alloc] 
+NSDataLinkManager *manager = [[NSDataLinkManager alloc]
                                initWithDelegate: delegate];
 
 // Add links with automatic delegate notification
