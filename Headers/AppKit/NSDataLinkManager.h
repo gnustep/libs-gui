@@ -79,7 +79,7 @@ APPKIT_EXPORT_CLASS
  * the manager represents links within a specific document.
  */
 - (id) initWithDelegate: (id)anObject
-               fromFile: (NSString *)path;
+	       fromFile: (NSString *)path;
 
 //
 // Adding and Removing Links

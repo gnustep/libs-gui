@@ -33,6 +33,8 @@
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSThread.h>
 #import <Foundation/NSValue.h>
+
+#import "AppKit/NSPanel.h"
 #import "AppKit/NSDataLinkManager.h"
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSPasteboard.h"
@@ -222,29 +224,37 @@
 
       ssize_t i = 0;
       while (i < length)
-        {
-          struct inotify_event *event = (struct inotify_event *)&buffer[i];
-          NSNumber *key = [NSNumber numberWithInt:event->wd];
-          NSDataLink *link = [_watchDescriptors objectForKey: key];
-          if (link != nil)
-            {
-              [link noteSourceEdited];
-              NSLog(@"Source file changed for link #%d", [link linkNumber]);
+	{
+	  struct inotify_event *event = (struct inotify_event *)&buffer[i];
+	  NSNumber *key = [NSNumber numberWithInt:event->wd];
+	  NSDataLink *link = [_watchDescriptors objectForKey: key];
+	  if (link != nil)
+	    {
+	      [link noteSourceEdited];
+	      NSLog(@"Source file changed for link #%d", [link linkNumber]);
 
-              // Check if delegate wants to verify this update
-              if ([_delegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
-                {
-                  BOOL needsUpdate = [_delegate dataLinkManager: self isUpdateNeededForLink: link];
-                  if (needsUpdate)
-                    {
-                      [link updateDestination];
-                    }
-                }
-            }
-          i += sizeof(struct inotify_event) + event->len;
-        }
+	      // Check if delegate wants to verify this update
+	      if ([_delegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
+		{
+		  BOOL needsUpdate = [_delegate dataLinkManager: self isUpdateNeededForLink: link];
+		  if (needsUpdate)
+		    {
+		      [link updateDestination];
+		    }
+		}
+	    }
+	  i += sizeof(struct inotify_event) + event->len;
+	}
     }
 #endif
+}
+
+- (void) _checkLink: (NSDataLink *)link
+{
+  if (link == nil)
+    {
+      NSRunAlertPanel(@"Links", @"You must save the source document before you can link to it.", @"OK", nil, nil);
+    }
 }
 
 //
@@ -255,6 +265,7 @@
 {
   BOOL result = NO;
 
+  [self _checkLink: link];
   [link setDestinationSelection: selection];
   [link setDestinationManager: self];
 
@@ -265,9 +276,9 @@
 
       // Notify delegate that we're starting to track this link
       if ([_delegate respondsToSelector: @selector(dataLinkManager:startTrackingLink:)])
-        {
-          [_delegate dataLinkManager: self startTrackingLink: link];
-        }
+	{
+	  [_delegate dataLinkManager: self startTrackingLink: link];
+	}
     }
 
   return result;
@@ -305,9 +316,9 @@
     {
       // Notify delegate we're stopping tracking
       if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
-        {
-          [_delegate dataLinkManager: self stopTrackingLink: src];
-        }
+	{
+	  [_delegate dataLinkManager: self stopTrackingLink: src];
+	}
       [src break];
     }
   END_FOR_IN(_sourceLinks);
@@ -316,9 +327,9 @@
     {
       // Notify delegate we're stopping tracking
       if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
-        {
-          [_delegate dataLinkManager: self stopTrackingLink: dst];
-        }
+	{
+	  [_delegate dataLinkManager: self stopTrackingLink: dst];
+	}
       [dst break];
     }
   END_FOR_IN(_destinationLinks);
@@ -330,9 +341,9 @@
     {
       // Notify delegate we're stopping tracking
       if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
-        {
-          [_delegate dataLinkManager: self stopTrackingLink: link];
-        }
+	{
+	  [_delegate dataLinkManager: self stopTrackingLink: link];
+	}
       [_sourceLinks removeObject: link];
     }
 
@@ -340,9 +351,9 @@
     {
       // Notify delegate we're stopping tracking
       if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
-        {
-          [_delegate dataLinkManager: self stopTrackingLink: link];
-        }
+	{
+	  [_delegate dataLinkManager: self stopTrackingLink: link];
+	}
       [_destinationLinks removeObject: link];
     }
 }
@@ -360,9 +371,9 @@
 
       // Notify delegate that we're starting to track this link
       if ([_delegate respondsToSelector: @selector(dataLinkManager:startTrackingLink:)])
-        {
-          [_delegate dataLinkManager: self startTrackingLink: link];
-        }
+	{
+	  [_delegate dataLinkManager: self startTrackingLink: link];
+	}
     }
 
   return result;
@@ -429,9 +440,9 @@
   FOR_IN(NSDataLink*, link, _sourceLinks)
     {
       if ([[link sourceFilename] isEqualToString: _filename])
-        {
-          [link setSourceFilename: path];
-        }
+	{
+	  [link setSourceFilename: path];
+	}
     }
   END_FOR_IN(_sourceLinks);
 }
@@ -616,13 +627,13 @@
   FOR_IN(NSDataLink*, link, _destinationLinks)
     {
       if ([_delegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
-        {
-          BOOL needsUpdate = [_delegate dataLinkManager: self isUpdateNeededForLink: link];
-          if (needsUpdate)
-            {
-              [link updateDestination];
-            }
-        }
+	{
+	  BOOL needsUpdate = [_delegate dataLinkManager: self isUpdateNeededForLink: link];
+	  if (needsUpdate)
+	    {
+	      [link updateDestination];
+	    }
+	}
     }
   END_FOR_IN(_destinationLinks);
 }
