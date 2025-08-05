@@ -169,6 +169,7 @@
 
   </unit>
 */
+APPKIT_EXPORT_CLASS
 @interface GSHbox: GSTable
 {
   BOOL _haveViews;

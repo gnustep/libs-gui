@@ -138,7 +138,6 @@ NSGraphicsContext	*GSCurrentContext(void)
 {
   if (contextLock == nil)
     {
-      [gnustep_global_lock lock];
       if (contextLock == nil)
 	{
 	  contextLock = [NSRecursiveLock new];
@@ -147,7 +146,6 @@ NSGraphicsContext	*GSCurrentContext(void)
 	  classMethodTable =
 	    [[NSMutableDictionary allocWithZone: _globalGSZone] init];
 	}
-      [gnustep_global_lock unlock];
     }
 }
 

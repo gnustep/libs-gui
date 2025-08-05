@@ -44,7 +44,7 @@
 @class NSView;
 @class NSPrintInfo;
 
-
+APPKIT_EXPORT_CLASS
 @interface GSPrintOperation: NSPrintOperation
 {
 }

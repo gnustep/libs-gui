@@ -34,7 +34,7 @@ BUNDLE_NAME = StandardPicker NamedPicker WheelPicker
 
 BUNDLE_INSTALL_DIR = $(GNUSTEP_LIBRARY)/ColorPickers
 
-ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers
+ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers -I../Source
 
 ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR) -L../Models/$(GNUSTEP_OBJ_DIR)
 
@@ -43,10 +43,9 @@ StandardPicker_OBJC_FILES =  	GSStandardColorPicker.m \
 			     	GSRGBColorPicker.m \
 				GSCMYKColorPicker.m \
 				GSHSBColorPicker.m \
-				GSGrayColorPicker.m \
-				GSColorSliderCell.m
+				GSGrayColorPicker.m
 NamedPicker_OBJC_FILES =  GSNamedColorPicker.m
-WheelPicker_OBJC_FILES =  GSWheelColorPicker.m GSColorSliderCell.m
+WheelPicker_OBJC_FILES =  GSWheelColorPicker.m
 
 # The class to load
 StandardPicker_PRINCIPAL_CLASS = GSStandardColorPicker

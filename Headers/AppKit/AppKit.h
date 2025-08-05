@@ -101,6 +101,7 @@
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSMenuItemCell.h>
+#import <AppKit/NSMenuToolbarItem.h>
 #import <AppKit/NSMenuView.h>
 #import <AppKit/NSNibLoading.h>
 #import <AppKit/NSOpenPanel.h>

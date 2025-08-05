@@ -182,6 +182,7 @@ NSStoryboardSegue.m \
 NSMagnificationGestureRecognizer.m \
 NSMatrix.m \
 NSMenu.m \
+NSMenuToolbarItem.m \
 NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
@@ -305,6 +306,7 @@ NSWindowController.m \
 NSWorkspace.m \
 GSAnimator.m \
 GSAutocompleteWindow.m \
+GSControllerTreeProxy.m \
 GSDisplayServer.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
@@ -373,7 +375,8 @@ GSCSLinearExpression.m \
 GSCSStrength.m \
 GSCSEditInfo.m \
 GSCSEditVariableManager.m \
-GSCSTableau.m
+GSCSTableau.m \
+GSColorSliderCell.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -500,6 +503,7 @@ NSMediaLibraryBrowserController.h \
 NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
+NSMenuToolbarItem.h \
 NSMenuView.h \
 NSMovie.h \
 NSMovieView.h \

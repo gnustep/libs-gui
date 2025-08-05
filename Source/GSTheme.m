@@ -942,8 +942,8 @@ typedef	struct {
 	      mth = [[GSThemeMethod new] autorelease];
 	      types = method_getTypeEncoding(method);
 	      mth->imp = method_getImplementation(method);
-	      memcpy(buf, name + 9, (ptr - name) + 9);
-	      buf[(ptr - name) + 9] = '\0';
+	      memcpy(buf, name + 9, (ptr - name) - 9);
+	      buf[(ptr - name) - 9] = '\0';
 	      mth->cls = objc_lookUpClass(buf);
 	      if (mth->cls == 0)
 		{

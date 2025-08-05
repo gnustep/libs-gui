@@ -3,9 +3,9 @@
 
    Functions for dealing with tiff images.
 
-   Copyright (C) 1996,1999-2010, 2017 Free Software Foundation, Inc.
+   Copyright (C) 1996-2024 Free Software Foundation, Inc.
    
-   Author:  Adam Fedor <fedor@colorado.edu>
+   Author:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996
 
    Support for writing tiffs: Richard Frith-Macdonald
@@ -64,27 +64,30 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
+#import <Foundation/NSByteOrder.h>
 #import "GSGuiPrivate.h"
+#import <AppKit/NSBitmapImageRep.h>
 
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef __WIN32__
+#if defined(HAVE_UNISTD_H)
 #include <unistd.h>		/* for L_SET, etc definitions */
-#endif /* !__WIN32__ */
+#endif /* HAVE_UNISTD_H */
 
 #if !defined(TIFF_VERSION_CLASSIC)
 // This only got added in version 4 of libtiff, but TIFFLIB_VERSION is unusable to differentiate here
 typedef tsize_t tmsize_t;
 #endif
 
-typedef struct {
-  char* data;
+typedef struct
+{
+  char  *data;
   long  size;
   long  position;
   char  mode;
-  char **outdata;
-  long *outposition;
+  char  **outdata;
+  long  *outposition;
 } chandle_t;
 
 static int tiff_error_handler_set = 0;
@@ -464,21 +467,54 @@ NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
   return error;
 }
 
-#define WRITE_SCANLINE(sample) \
-	if (TIFFWriteScanline(image, buf, row, sample) != 1) { \
-	    error = 1; \
-	    break; \
-	}
+#define SWAP_LINE_ENDIANNESS						\
+  if (info->is16Bit)							\
+    {									\
+       uint16_t *inBuf =  (uint16_t*)buf;				\
+       uint16_t *outBuf = (uint16_t*)bufSwap;				\
+       unsigned swapSample;						\
+       for (swapSample = 0; swapSample < scan_line_size / 2; swapSample++) \
+	 {								\
+	   outBuf[swapSample] = GSSwapI16(inBuf[swapSample]);		\
+	 }								\
+    }									\
+  else if (info->is32Bit)						\
+    {									\
+       uint32_t *inBuf =  (uint32_t*)buf;                               \
+       uint32_t *outBuf = (uint32_t*)bufSwap;				\
+       unsigned swapSample;						\
+       for (swapSample = 0; swapSample < scan_line_size / 4; swapSample++) \
+	 {								\
+	   outBuf[swapSample] = GSSwapI32(inBuf[swapSample]);		\
+	 }								\
+    }
+
+#define WRITE_SCANLINE(sample)					   \
+  if (swapByteOrder)						   \
+    {								   \
+      SWAP_LINE_ENDIANNESS;					   \
+    }								   \
+  else								   \
+    {								   \
+      bufSwap = buf;						   \
+    }								   \
+  if (TIFFWriteScanline(image, bufSwap, row, sample) != 1) {	   \
+    error = 1;							   \
+    break;							   \
+  }
+
 
 int  
 NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 {
-  void*	buf = (void*)data;
-  uint16_t        sample_info[1];
+  void          *buf = (void*)data;
+  void          *bufSwap = nil;
+  uint16_t      sample_info[1];
   int		i;
   unsigned int 	row;
   int           error = 0;
   tmsize_t      scan_line_size;
+  BOOL          swapByteOrder = NO;
 
   if (info->numImages > 1)
     {
@@ -511,6 +547,18 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
     sample_info[0] = EXTRASAMPLE_UNASSALPHA;
   TIFFSetField(image, TIFFTAG_EXTRASAMPLES, info->extraSamples, sample_info);
   scan_line_size = TIFFScanlineSize(image);
+
+  // check if image endianness is different from Host
+  if ((info->isBigEndian != 0) != (NSHostByteOrder() == NS_BigEndian) &&
+      (info->is16Bit || info->is32Bit))
+    {
+      swapByteOrder = YES;
+    }
+
+  if (swapByteOrder)
+    {
+      bufSwap = malloc(scan_line_size); // sizeof(unsigned char)
+    }
 
   switch (info->photoInterp) 
     {
@@ -569,6 +617,10 @@ NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
   // Write out the directory as there may be more images comming
   TIFFWriteDirectory(image);
   TIFFFlush(image);
+  if (swapByteOrder)
+    {
+      free(bufSwap);
+    }
 
   return error;
 }
@@ -684,5 +736,3 @@ int NSTiffIsCodecConfigured(unsigned int codec)
   }
 #endif
 }
-
-

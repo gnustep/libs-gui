@@ -45,7 +45,8 @@ common_ToolbarShowColorsItem = NSToolbarShowColors;
 common_ToolbarShowFontsItem = NSToolbarShowFonts;
 common_RecyclerEmpty = NSImageTrashEmpty;
 common_RecyclerFull = NSImageTrashFull;
- 
+common_MenuToolbarItem = NSMenuToolbarItem;
+
 /* Misc. */
 
 common_MultipleSelection = NSImageNameMultipleDocuments;

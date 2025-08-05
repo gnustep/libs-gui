@@ -33,6 +33,10 @@ env:
     libcurl4-gnutls-dev
     libgmp-dev
     libcairo2-dev
+    libjpeg-dev
+    libtiff-dev
+    libpng-dev
+    libicns-dev
 
   # packages for GCC Objective-C runtime
   APT_PACKAGES_gcc: >-
@@ -129,7 +133,7 @@ jobs:
           make check
 
       - name: Upload logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Logs - ${{ matrix.name }}

@@ -2,7 +2,7 @@
 
    Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 
-   Created by: Enrico Sersale <enrico@imago.ro>
+   Created by: Enrico Sersale
    Date: Jan 2002
    Author: Fred Kiefer <fredkiefer@gmx.de>
    Date: Jan 2003

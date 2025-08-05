@@ -1280,7 +1280,7 @@ typedef NSInteger GSLayoutViewAttribute;
     RELEASE(_viewAlignmentRectByViewIndex);
     RELEASE(_viewIndexByViewHash);
     RELEASE(_constraintsByViewIndex);
-    RELEASE(_constraintsByViewIndex);
+    RELEASE(_layoutConstraintsBySolverConstraint);
     RELEASE(_supportingConstraintsByConstraint);
     RELEASE(_constraintsByAutoLayoutConstaintHash);
     RELEASE(_internalConstraintsByViewIndex);

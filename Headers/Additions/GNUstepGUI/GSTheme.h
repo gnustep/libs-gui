@@ -253,6 +253,7 @@
 @class NSPopUpButtonCell;
 @class NSMenuView;
 @class NSProgressIndicator;
+@class NSTableColumn;
 @class NSTableHeaderCell;
 @class NSTableView;
 @class NSTabViewItem;
@@ -1264,6 +1265,8 @@ APPKIT_EXPORT_CLASS
 - (NSRect) browserHeaderDrawingRectForCell: (NSTableHeaderCell*)cell
 				 withFrame: (NSRect)rect;
 
+- (CGFloat) tabHeightForType: (NSTabViewType)type;
+
 - (NSRect) tabViewContentRectForBounds: (NSRect)aRect
 			   tabViewType: (NSTabViewType)type
 			       tabView: (NSTabView *)view;
@@ -1273,6 +1276,10 @@ APPKIT_EXPORT_CLASS
 
 - (NSRect) tabViewBackgroundRectForBounds: (NSRect)aRect
 			      tabViewType: (NSTabViewType)type;
+
+- (void) drawTabViewBezelRect: (NSRect)aRect
+                  tabViewType: (NSTabViewType)type
+                       inView: (NSView *)view;
 
 - (void) drawTabViewRect: (NSRect)rect
 		  inView: (NSView *)view
@@ -1341,9 +1348,11 @@ APPKIT_EXPORT_CLASS
 		 clipRect: (NSRect)clipRect
 		   inView: (NSTableView *)view;
 
-- (void) drawCellViewRow: (NSInteger)rowIndex
-                clipRect: (NSRect)clipRect
-                  inView: (NSTableView *)v;
+- (NSRect) drawOutlineCell: (NSTableColumn *)tb
+	       outlineView: (NSOutlineView *)outlineView
+		      item: (id)item
+	       drawingRect: (NSRect)inputRect
+                  rowIndex: (NSInteger)rowIndex;
 
 - (void) drawOutlineViewRow: (NSInteger)rowIndex 
                    clipRect: (NSRect)clipRect
@@ -1566,6 +1575,12 @@ withRepeatedImage: (NSImage*)image
 - (void) organizeMenu: (NSMenu *)menu
 	 isHorizontal: (BOOL)horizontal;
 
+/**
+ * Used by the theme to override the proposed menu visibility.  The default
+ * implementation simply returns the proposed visibility unmodified.
+ */
+- (BOOL) proposedVisibility: (BOOL)visible
+	 forMenu: (NSMenu *) menu;
 @end 
 
 @interface GSTheme (OpenSavePanels)

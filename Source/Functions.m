@@ -7,7 +7,7 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -22,10 +22,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSBundle.h>
@@ -98,20 +98,20 @@ NSApplicationMain(int argc, const char **argv)
     {
       mainModelFile = [infoDict objectForKey: @"NSMainStoryboardFile"];
       if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
-        {
-          NSStoryboard *storyboard = [NSStoryboard storyboardWithName: mainModelFile
-                                                               bundle: [NSBundle mainBundle]];
-          if (storyboard == nil)
-            {
-              NSLog (_(@"Cannot load the main storyboard file '%@'"), mainModelFile);
-            }
-          else
-            {
-              [NSStoryboard _setMainStoryboard: storyboard];
-              [storyboard _instantiateApplicationScene];
-              [storyboard instantiateInitialController];
-            }
-        }
+	{
+	  NSStoryboard *storyboard = [NSStoryboard storyboardWithName: mainModelFile
+							       bundle: [NSBundle mainBundle]];
+	  if (storyboard == nil)
+	    {
+	      NSLog (_(@"Cannot load the main storyboard file '%@'"), mainModelFile);
+	    }
+	  else
+	    {
+	      [NSStoryboard _setMainStoryboard: storyboard];
+	      [storyboard _instantiateApplicationScene];
+	      [storyboard instantiateInitialController];
+	    }
+	}
     }
 
   RECREATE_AUTORELEASE_POOL(pool);
@@ -140,7 +140,7 @@ NSAvailableWindowDepths(void)
    * belongs in the backend.   It should be possible
    * to detect which depths the window server is capable
    * of.
-   */	
+   */
   return (const NSWindowDepth *)_GSWindowDepths;
 }
 
@@ -152,12 +152,12 @@ NSBestDepth(NSString *colorSpace, NSInteger bitsPerSample, NSInteger bitsPerPixe
   NSInteger		index = 0;
   const NSWindowDepth	*depths = NSAvailableWindowDepths();
   NSWindowDepth		bestDepth = NSDefaultDepth;
-  
+
   if (exactMatch != NULL)
     *exactMatch = NO;
 
   if (components == 1)
-    {	
+    {
       for (index = 0; depths[index] != 0; index++)
 	{
 	  NSWindowDepth	depth = depths[index];
@@ -167,8 +167,8 @@ NSBestDepth(NSString *colorSpace, NSInteger bitsPerSample, NSInteger bitsPerPixe
 	      bestDepth = depth;
 	      if (NSBitsPerSampleFromDepth(depth) == bitsPerSample)
 		{
-                  if (exactMatch != NULL)
-                    *exactMatch = YES;
+		  if (exactMatch != NULL)
+		    *exactMatch = YES;
 		}
 	    }
 	}
@@ -184,13 +184,13 @@ NSBestDepth(NSString *colorSpace, NSInteger bitsPerSample, NSInteger bitsPerPixe
 	      bestDepth = depth;
 	      if (NSBitsPerSampleFromDepth(depth) == bitsPerSample)
 		{
-                  if (exactMatch != NULL)
-                    *exactMatch = YES;
+		  if (exactMatch != NULL)
+		    *exactMatch = YES;
 		}
 	    }
 	}
     }
-  
+
   return bestDepth;
 }
 
@@ -199,10 +199,10 @@ NSBitsPerPixelFromDepth(NSWindowDepth depth)
 {
   NSInteger bps = NSBitsPerSampleFromDepth(depth);
   NSInteger spp = 0;
-  
+
   if (depth & _GSRGBBitValue)
     {
-      spp = 3;	
+      spp = 3;
     }
   else if (depth & _GSCMYKBitValue)
     {
@@ -238,7 +238,7 @@ NSBitsPerSampleFromDepth(NSWindowDepth depth)
     }
   /*
    * AND against the complement
-   * to extract the bps value.	
+   * to extract the bps value.
    */
   return (depth & ~(bitValue));
 }
@@ -247,7 +247,7 @@ NSString*
 NSColorSpaceFromDepth(NSWindowDepth depth)
 {
   NSString	*colorSpace = NSCalibratedWhiteColorSpace;
-  
+
   /*
    * Test against each of the possible colorspace bits
    * and return the corresponding colorspace.
@@ -284,7 +284,7 @@ NSInteger
 NSNumberOfColorComponents(NSString *colorSpaceName)
 {
   NSInteger components = 1;
-  
+
   /*
    * These are the only exceptions to the above.
    * All other colorspaces have as many bps as bpp.
@@ -305,7 +305,7 @@ BOOL
 NSPlanarFromDepth(NSWindowDepth depth)
 {
   BOOL planar = NO;
-  
+
   /*
    * Only the grayscale depths are planar.
    * All others are interleaved.
@@ -344,31 +344,31 @@ void NSCopyBits(NSInteger srcGstate, NSRect srcRect, NSPoint destPoint)
 }
 
 void NSDrawBitmap(NSRect rect,
-                  NSInteger pixelsWide,
-                  NSInteger pixelsHigh,
-                  NSInteger bitsPerSample,
-                  NSInteger samplesPerPixel,
-                  NSInteger bitsPerPixel,
-                  NSInteger bytesPerRow,
-                  BOOL isPlanar,
-                  BOOL hasAlpha,
-                  NSString *colorSpaceName,
-                  const unsigned char *const data[5])
+		  NSInteger pixelsWide,
+		  NSInteger pixelsHigh,
+		  NSInteger bitsPerSample,
+		  NSInteger samplesPerPixel,
+		  NSInteger bitsPerPixel,
+		  NSInteger bytesPerRow,
+		  BOOL isPlanar,
+		  BOOL hasAlpha,
+		  NSString *colorSpaceName,
+		  const unsigned char *const data[5])
 {
   NSBitmapImageRep *bitmap;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  bitmap = [[NSBitmapImageRep alloc] 
-               initWithBitmapDataPlanes: (unsigned char **)data
-               pixelsWide: pixelsWide
-               pixelsHigh: pixelsHigh
-               bitsPerSample: bitsPerSample
-               samplesPerPixel: samplesPerPixel
-               hasAlpha: hasAlpha
-               isPlanar: isPlanar
-               colorSpaceName: colorSpaceName
-               bytesPerRow: bytesPerRow
-               bitsPerPixel: bitsPerPixel];
+  bitmap = [[NSBitmapImageRep alloc]
+	       initWithBitmapDataPlanes: (unsigned char **)data
+	       pixelsWide: pixelsWide
+	       pixelsHigh: pixelsHigh
+	       bitsPerSample: bitsPerSample
+	       samplesPerPixel: samplesPerPixel
+	       hasAlpha: hasAlpha
+	       isPlanar: isPlanar
+	       colorSpaceName: colorSpaceName
+	       bytesPerRow: bytesPerRow
+	       bitsPerPixel: bitsPerPixel];
 
   [ctxt GSDrawImage: rect : bitmap];
   RELEASE(bitmap);
@@ -388,13 +388,13 @@ static void GSDrawRepeatingImage2D(NSRect aRect, NSImage *image, NSCompositingOp
     }
 
   [NSGraphicsContext saveGraphicsState];
-  NSRectClip(aRect); 
-  
+  NSRectClip(aRect);
+
   {
     const NSInteger numHorizontal = ceil(aRect.size.width / imageSize.width);
     const NSInteger numVertical = ceil(aRect.size.height / imageSize.height);
     NSInteger x, y;
-    
+
     if (numHorizontal > 0 && numVertical > 0)
       {
 	for (x = 0; x < numHorizontal; x++)
@@ -433,28 +433,28 @@ static void GSDrawRepeatingImage1D(NSRect aRect, NSImage *image, BOOL isVertical
     }
 
   [NSGraphicsContext saveGraphicsState];
-  NSRectClip(aRect); 
-  
+  NSRectClip(aRect);
+
   {
-    const NSInteger num = isVertical ? 
+    const NSInteger num = isVertical ?
       ceil(aRect.size.height / imageSize.height)
       : ceil(aRect.size.width / imageSize.width);
 
     NSInteger i;
-    
+
     if (num > 0)
       {
 	for (i = 0; i < num; i++)
 	  {
 	    NSRect drawRect;
-	    if (isVertical) 
+	    if (isVertical)
 	      {
 		drawRect.size = NSMakeSize(aRect.size.width, imageSize.height);
 		drawRect.origin = NSMakePoint(aRect.origin.x,
 					      flipped ? (NSMaxY(aRect) - ((i + 1) * imageSize.height))
 					      : (aRect.origin.y + (i * imageSize.height)));
 	      }
-	    else 
+	    else
 	      {
 		drawRect.size = NSMakeSize(imageSize.width, aRect.size.height);
 		drawRect.origin = NSMakePoint(aRect.origin.x + (i * imageSize.width),
@@ -485,23 +485,23 @@ void NSDrawThreePartImage(NSRect aRect, NSImage *start, NSImage *middle,
     {
       aRect = [focusView centerScanRect: aRect];
     }
-  
+
   [NSGraphicsContext saveGraphicsState];
 
   // Protects against the case when the smallest source image is larger than aRect
-  NSRectClip(aRect); 
+  NSRectClip(aRect);
 
   if (isVertical)
     {
-      startRect.size = NSMakeSize(aRect.size.width, 
+      startRect.size = NSMakeSize(aRect.size.width,
 				  [start size].height);
       endRect.size = NSMakeSize(aRect.size.width,
 				[end size].height);
       middleRect.size = NSMakeSize(aRect.size.width,
-				   MAX(0, aRect.size.height - 
+				   MAX(0, aRect.size.height -
 				       startRect.size.height -
 				       endRect.size.height));
-      
+
       endRect.origin = aRect.origin;
       middleRect.origin = NSMakePoint(aRect.origin.x, NSMaxY(endRect));
       startRect.origin = NSMakePoint(aRect.origin.x, NSMaxY(middleRect));
@@ -510,13 +510,13 @@ void NSDrawThreePartImage(NSRect aRect, NSImage *start, NSImage *middle,
     {
       startRect.size = NSMakeSize([start size].width,
 				  aRect.size.height);
-      endRect.size = NSMakeSize([end size].width, 
+      endRect.size = NSMakeSize([end size].width,
 				aRect.size.height);
-      middleRect.size = NSMakeSize(MAX(0, aRect.size.width - 
+      middleRect.size = NSMakeSize(MAX(0, aRect.size.width -
 				       startRect.size.width -
 				       endRect.size.width),
 				   aRect.size.height);
-      
+
       startRect.origin = aRect.origin;
       middleRect.origin = NSMakePoint(NSMaxX(startRect), aRect.origin.y);
       endRect.origin = NSMakePoint(NSMaxX(middleRect), aRect.origin.y);
@@ -524,7 +524,7 @@ void NSDrawThreePartImage(NSRect aRect, NSImage *start, NSImage *middle,
 
   [start drawInRect: startRect fromRect: NSZeroRect operation: op fraction: fraction respectFlipped: YES hints: nil];
   GSDrawRepeatingImage1D(middleRect, middle, isVertical, op, fraction, flipped);
-  [end drawInRect: endRect fromRect: NSZeroRect operation: op fraction: fraction respectFlipped: YES hints: nil];   
+  [end drawInRect: endRect fromRect: NSZeroRect operation: op fraction: fraction respectFlipped: YES hints: nil];
 
   [NSGraphicsContext restoreGraphicsState]; // Restore clipping region
 }
@@ -543,11 +543,11 @@ void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
     {
       aRect = [focusView centerScanRect: aRect];
     }
-  
+
   [NSGraphicsContext saveGraphicsState];
 
   // Protects against the case when the smallest source image is larger than aRect
-  NSRectClip(aRect); 
+  NSRectClip(aRect);
 
   {
     NSRect topLeftRect;
@@ -556,7 +556,7 @@ void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
     NSRect centerLeftRect;
     NSRect centerMiddleRect;
     NSRect centerRightRect;
-    NSRect bottomLeftRect; 
+    NSRect bottomLeftRect;
     NSRect bottomMiddleRect;
     NSRect bottomRightRect;
 
@@ -565,15 +565,15 @@ void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
     bottomRightRect.size = [bottomRight size];
 
     // Fill in the rest of the sizes
-    topMiddleRect.size = NSMakeSize(MAX(0, aRect.size.width - 
-					topLeftRect.size.width - 
+    topMiddleRect.size = NSMakeSize(MAX(0, aRect.size.width -
+					topLeftRect.size.width -
 					bottomRightRect.size.width),
 				    topLeftRect.size.height);
     topRightRect.size = NSMakeSize(bottomRightRect.size.width,
 				   topLeftRect.size.height);
     centerLeftRect.size = NSMakeSize(topLeftRect.size.width,
-				     MAX(0, aRect.size.height - 
-					 topLeftRect.size.height - 
+				     MAX(0, aRect.size.height -
+					 topLeftRect.size.height -
 					 bottomRightRect.size.height));
     centerMiddleRect.size = NSMakeSize(topMiddleRect.size.width,
 				       centerLeftRect.size.height);
@@ -626,12 +626,12 @@ void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
 	topRightRect.origin = NSMakePoint(NSMaxX(aRect) - NSWidth(topRightRect),
 					  NSMaxY(aRect) - NSHeight(topRightRect));
       }
-	
+
     // Draw the images left-to-right, bottom-to-top
 
     [bottomLeft drawInRect: bottomLeftRect fromRect: NSZeroRect operation: op fraction: fraction respectFlipped: YES hints: nil];
     GSDrawRepeatingImage2D(bottomMiddleRect, bottomMiddle, op, fraction, flipped);
-    [bottomRight drawInRect: bottomRightRect fromRect: NSZeroRect operation: op fraction: fraction respectFlipped: YES hints: nil];   
+    [bottomRight drawInRect: bottomRightRect fromRect: NSZeroRect operation: op fraction: fraction respectFlipped: YES hints: nil];
     GSDrawRepeatingImage2D(centerLeftRect, centerLeft, op, fraction, flipped);
     GSDrawRepeatingImage2D(centerMiddleRect, centerMiddle, op, fraction, flipped);
     GSDrawRepeatingImage2D(centerRightRect, centerRight, op, fraction, flipped);
@@ -644,7 +644,7 @@ void NSDrawNinePartImage(NSRect aRect, NSImage *topLeft, NSImage *topMiddle,
 }
 
 /*
- * Rectangle Drawing 
+ * Rectangle Drawing
  */
 void NSEraseRect(NSRect aRect)
 {
@@ -658,15 +658,15 @@ void NSEraseRect(NSRect aRect)
 void NSHighlightRect(NSRect aRect)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  DPScompositerect(ctxt, NSMinX(aRect), NSMinY(aRect), 
-		   NSWidth(aRect), NSHeight(aRect), 
+  DPScompositerect(ctxt, NSMinX(aRect), NSMinY(aRect),
+		   NSWidth(aRect), NSHeight(aRect),
 		   GSCompositeHighlight);
 }
 
 void NSRectClip(NSRect aRect)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  DPSrectclip(ctxt, NSMinX(aRect), NSMinY(aRect), 
+  DPSrectclip(ctxt, NSMinX(aRect), NSMinY(aRect),
 	      NSWidth(aRect), NSHeight(aRect));
   DPSnewpath(ctxt);
 }
@@ -679,9 +679,9 @@ void NSRectClipList(const NSRect *rects, NSInteger count)
   if (count == 0)
     return;
 
-  /* 
-     The specification is not clear if the union of the rects 
-     should produce the new clip rect or if the outline of all rects 
+  /*
+     The specification is not clear if the union of the rects
+     should produce the new clip rect or if the outline of all rects
      should be used as clip path.
   */
   union_rect = rects[0];
@@ -694,7 +694,7 @@ void NSRectClipList(const NSRect *rects, NSInteger count)
 void NSRectFill(NSRect aRect)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  DPSrectfill(ctxt, NSMinX(aRect), NSMinY(aRect), 
+  DPSrectfill(ctxt, NSMinX(aRect), NSMinY(aRect),
 	      NSWidth(aRect), NSHeight(aRect));
 }
 
@@ -704,7 +704,7 @@ void NSRectFillList(const NSRect *rects, NSInteger count)
   GSRectFillList(ctxt, rects, count);
 }
 
-void 
+void
 NSRectFillListWithColors(const NSRect *rects, NSColor **colors, NSInteger count)
 {
   NSInteger i;
@@ -720,7 +720,7 @@ NSRectFillListWithColors(const NSRect *rects, NSColor **colors, NSInteger count)
   DPSgrestore(ctxt);
 }
 
-void NSRectFillListWithGrays(const NSRect *rects, const CGFloat *grays, 
+void NSRectFillListWithGrays(const NSRect *rects, const CGFloat *grays,
 			     NSInteger count)
 {
   NSInteger i;
@@ -730,7 +730,7 @@ void NSRectFillListWithGrays(const NSRect *rects, const CGFloat *grays,
   for (i = 0; i < count; i++)
     {
       DPSsetgray(ctxt, grays[i]);
-      DPSrectfill(ctxt,  NSMinX(rects[i]), NSMinY(rects[i]), 
+      DPSrectfill(ctxt,  NSMinX(rects[i]), NSMinY(rects[i]),
 		  NSWidth(rects[i]), NSHeight(rects[i]));
     }
 
@@ -740,13 +740,13 @@ void NSRectFillListWithGrays(const NSRect *rects, const CGFloat *grays,
 void NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  DPScompositerect(ctxt, NSMinX(aRect), NSMinY(aRect), 
+  DPScompositerect(ctxt, NSMinX(aRect), NSMinY(aRect),
 		   NSWidth(aRect), NSHeight(aRect), op);
 }
 
 
-void 
-NSRectFillListUsingOperation(const NSRect *rects, NSInteger count, 
+void
+NSRectFillListUsingOperation(const NSRect *rects, NSInteger count,
 			     NSCompositingOperation op)
 {
   NSInteger i;
@@ -757,10 +757,10 @@ NSRectFillListUsingOperation(const NSRect *rects, NSInteger count,
     }
 }
 
-void 
-NSRectFillListWithColorsUsingOperation(const NSRect *rects, 
-				       NSColor **colors, 
-				       NSInteger num, 
+void
+NSRectFillListWithColorsUsingOperation(const NSRect *rects,
+				       NSColor **colors,
+				       NSInteger num,
 				       NSCompositingOperation op)
 {
   NSInteger i;
@@ -813,15 +813,15 @@ void NSFrameRectWithWidth(const NSRect aRect, CGFloat frameWidth)
       frameWidth = (aSize.width + aSize.height) / 2.0;
     }
 
-  for (i = 0; i < 4; i++) 
+  for (i = 0; i < 4; i++)
     {
       NSDivideRect(remainder, &rects[i], &remainder, frameWidth, sides[i]);
     }
   NSRectFillList(rects, 4);
 }
 
-void 
-NSFrameRectWithWidthUsingOperation(NSRect aRect, CGFloat frameWidth, 
+void
+NSFrameRectWithWidthUsingOperation(NSRect aRect, CGFloat frameWidth,
 				   NSCompositingOperation op)
 {
   NSRectEdge sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
@@ -837,14 +837,14 @@ NSFrameRectWithWidthUsingOperation(NSRect aRect, CGFloat frameWidth,
       frameWidth = (aSize.width + aSize.height) / 2.0;
     }
 
-  for (i = 0; i < 4; i++) 
+  for (i = 0; i < 4; i++)
     {
       NSDivideRect(remainder, &rects[i], &remainder, frameWidth, sides[i]);
     }
   NSRectFillListUsingOperation(rects, 4, op);
 }
 
-NSRect 
+NSRect
 NSDrawTiledRects(NSRect aRect, const NSRect clipRect,
 		 const NSRectEdge *sides,
 		 const CGFloat *grays, NSInteger count)
@@ -872,9 +872,9 @@ NSDrawTiledRects(NSRect aRect, const NSRect clipRect,
   return remainder;
 }
 
-NSRect 
-NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect, 
-		      const NSRectEdge *sides, NSColor **colors, 
+NSRect
+NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect,
+		      const NSRectEdge *sides, NSColor **colors,
 		      NSInteger count)
 {
   NSInteger i;
@@ -903,15 +903,15 @@ NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect,
 void
 NSDrawButton(const NSRect aRect, const NSRect clipRect)
 {
-  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
-			   NSMinXEdge, NSMaxYEdge, 
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge,
+			   NSMinXEdge, NSMaxYEdge,
 			   NSMaxXEdge, NSMinYEdge};
-  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
-			     NSMinXEdge, NSMinYEdge, 
+  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge,
+			     NSMinXEdge, NSMinYEdge,
 			     NSMaxXEdge, NSMaxYEdge};
-  CGFloat grays[] = {NSBlack, NSBlack, 
-                     NSWhite, NSWhite, 
-                     NSDarkGray, NSDarkGray};
+  CGFloat grays[] = {NSBlack, NSBlack,
+		     NSWhite, NSWhite,
+		     NSDarkGray, NSDarkGray};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
@@ -927,7 +927,7 @@ NSDrawButton(const NSRect aRect, const NSRect clipRect)
     }
   DPSgsave(ctxt);
   DPSsetgray(ctxt, NSLightGray);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
 	      NSWidth(rect), NSHeight(rect));
   DPSgrestore(ctxt);
 }
@@ -940,7 +940,7 @@ NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect)
   NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge,
 			     NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge};
   CGFloat grays[] = {NSWhite, NSWhite, NSDarkGray, NSDarkGray,
-                     NSLightGray, NSLightGray, NSBlack, NSBlack};
+		     NSLightGray, NSLightGray, NSBlack, NSBlack};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
@@ -966,20 +966,20 @@ NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect)
     }
 
   DPSsetgray(ctxt, NSLightGray);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
 	      NSWidth(rect), NSHeight(rect));
   DPSgrestore(ctxt);
 }
 
-void 
+void
 NSDrawGroove(const NSRect aRect, const NSRect clipRect)
 {
-  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, NSMinXEdge, NSMaxYEdge, 
+  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, NSMinXEdge, NSMaxYEdge,
 			   NSMaxXEdge, NSMinYEdge, NSMaxXEdge, NSMinYEdge};
-  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, NSMinXEdge, NSMinYEdge, 
+  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, NSMinXEdge, NSMinYEdge,
 			     NSMaxXEdge, NSMaxYEdge, NSMaxXEdge, NSMaxYEdge};
   CGFloat grays[] = {NSDarkGray, NSDarkGray, NSWhite, NSWhite,
-                     NSWhite, NSWhite, NSDarkGray, NSDarkGray};
+		     NSWhite, NSWhite, NSDarkGray, NSDarkGray};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
@@ -996,20 +996,20 @@ NSDrawGroove(const NSRect aRect, const NSRect clipRect)
 
   DPSgsave(ctxt);
   DPSsetgray(ctxt, NSLightGray);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
 	      NSWidth(rect), NSHeight(rect));
   DPSgrestore(ctxt);
 }
 
-void 
+void
 NSDrawWhiteBezel(const NSRect aRect,  const NSRect clipRect)
 {
   NSRectEdge up_sides[] = {NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge,
-  			   NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge};
-  NSRectEdge down_sides[] = {NSMinYEdge, NSMaxXEdge, NSMaxYEdge, NSMinXEdge, 
-  			     NSMinYEdge, NSMaxXEdge, NSMaxYEdge, NSMinXEdge};
-  CGFloat grays[] = {NSDarkGray, NSWhite, NSWhite, NSDarkGray, 
-                     NSDarkGray, NSLightGray, NSLightGray, NSDarkGray};
+			   NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge};
+  NSRectEdge down_sides[] = {NSMinYEdge, NSMaxXEdge, NSMaxYEdge, NSMinXEdge,
+			     NSMinYEdge, NSMaxXEdge, NSMaxYEdge, NSMinXEdge};
+  CGFloat grays[] = {NSDarkGray, NSWhite, NSWhite, NSDarkGray,
+		     NSDarkGray, NSLightGray, NSLightGray, NSDarkGray};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
@@ -1026,22 +1026,22 @@ NSDrawWhiteBezel(const NSRect aRect,  const NSRect clipRect)
 
   DPSgsave(ctxt);
   DPSsetgray(ctxt, NSWhite);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
 	      NSWidth(rect), NSHeight(rect));
   DPSgrestore(ctxt);
 }
 
-void 
+void
 NSDrawDarkBezel(NSRect aRect, NSRect clipRect)
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge,
 			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
   NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge,
 			     NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge};
-  // FIXME: The actual colour used for the 3 + 4 line 
-  // (and the two additional points) is a bit darker. 
+  // FIXME: The actual colour used for the 3 + 4 line
+  // (and the two additional points) is a bit darker.
   CGFloat grays[] = {NSWhite, NSWhite, NSLightGray, NSLightGray,
-                     NSLightGray, NSLightGray, NSBlack, NSBlack};
+		     NSLightGray, NSLightGray, NSBlack, NSBlack};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
   DPSgsave(ctxt);
@@ -1066,20 +1066,20 @@ NSDrawDarkBezel(NSRect aRect, NSRect clipRect)
     }
 
   DPSsetgray(ctxt, NSLightGray);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
 	      NSWidth(rect), NSHeight(rect));
   DPSgrestore(ctxt);
 }
 
-void 
+void
 NSDrawLightBezel(NSRect aRect, NSRect clipRect)
 {
-  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge, 
-  			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
-  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge, 
-  			     NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge};
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge,
+			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
+  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge,
+			     NSMaxXEdge, NSMaxYEdge, NSMinXEdge, NSMinYEdge};
   CGFloat grays[] = {NSWhite, NSWhite, NSGray, NSGray,
-                     NSBlack, NSBlack, NSBlack, NSBlack};
+		     NSBlack, NSBlack, NSBlack, NSBlack};
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
   DPSgsave(ctxt);
@@ -1104,7 +1104,7 @@ NSDrawLightBezel(NSRect aRect, NSRect clipRect)
     }
 
   DPSsetgray(ctxt, NSWhite);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
 	      NSWidth(rect), NSHeight(rect));
   DPSgrestore(ctxt);
 }
@@ -1112,16 +1112,16 @@ NSDrawLightBezel(NSRect aRect, NSRect clipRect)
 void
 NSDrawFramePhoto(const NSRect aRect, const NSRect clipRect)
 {
-  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
-			   NSMinXEdge, NSMaxYEdge, 
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge,
+			   NSMinXEdge, NSMaxYEdge,
 			   NSMaxXEdge, NSMinYEdge};
-  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
-			     NSMinXEdge, NSMinYEdge, 
+  NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge,
+			     NSMinXEdge, NSMinYEdge,
 			     NSMaxXEdge, NSMaxYEdge};
-  CGFloat grays[] = {NSDarkGray, NSDarkGray, 
-                     NSDarkGray, NSDarkGray,
-                     NSBlack, NSBlack};
- 
+  CGFloat grays[] = {NSDarkGray, NSDarkGray,
+		     NSDarkGray, NSDarkGray,
+		     NSBlack, NSBlack};
+
   NSRect rect;
   NSGraphicsContext *ctxt = GSCurrentContext();
 
@@ -1138,31 +1138,31 @@ NSDrawFramePhoto(const NSRect aRect, const NSRect clipRect)
 
   DPSgsave(ctxt);
   DPSsetgray(ctxt, NSLightGray);
-  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect), 
+  DPSrectfill(ctxt, NSMinX(rect), NSMinY(rect),
 	      NSWidth(rect), NSHeight(rect));
   DPSgrestore(ctxt);
 }
 
-void 
+void
 NSDrawWindowBackground(NSRect aRect)
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();  
+  NSGraphicsContext *ctxt = GSCurrentContext();
   DPSgsave(ctxt);
   [[NSColor windowBackgroundColor] set];
   NSRectFill(aRect);
   DPSgrestore(ctxt);
 }
 
-CGFloat 
+CGFloat
 NSLinkFrameThickness(void)
 {
   return 1.0;
 }
 
-void 
+void
 NSFrameLinkRect(NSRect aRect, BOOL isDestination)
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();  
+  NSGraphicsContext *ctxt = GSCurrentContext();
   DPSgsave(ctxt);
 
   if (isDestination)
@@ -1184,7 +1184,7 @@ void NSSetFocusRingStyle(NSFocusRingPlacement placement)
   NSLog(@"*** NSSetFocusRingStyle not implemented ***");
 }
 
-void 
+void
 NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum)
 {
   NSArray *windows = GSAllWindows();
@@ -1196,41 +1196,41 @@ NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum)
       NSWindow *win = [windows objectAtIndex: i];
 
       if (((int)(intptr_t)[win windowRef]) == globalNum)
-        {
-          *winNum = [win windowNumber];
-          return;
-        }
+	{
+	  *winNum = [win windowNumber];
+	  return;
+	}
     }
   *winNum = 0;
 }
 
-void 
+void
 NSConvertWindowNumberToGlobal(int winNum, unsigned int *globalNum)
 {
   *globalNum = (int)(intptr_t)[GSWindowWithNumber(winNum) windowRef];
 }
 
-void 
+void
 NSCountWindowsForContext(NSInteger context, NSInteger *count)
 {
 // TODO
   *count = 0;
 }
 
-void 
+void
 NSShowSystemInfoPanel(NSDictionary *options)
 {
   [NSApp orderFrontStandardInfoPanelWithOptions: options];
 }
 
-void 
+void
 NSWindowListForContext(NSInteger context, NSInteger size, NSInteger **list)
 {
 // TODO
 }
 
-int 
-NSGetWindowServerMemory(int context, int *virtualMemory, 
+int
+NSGetWindowServerMemory(int context, int *virtualMemory,
 			int *windowBackingMemory, NSString **windowDumpStream)
 {
 // TODO

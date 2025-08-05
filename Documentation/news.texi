@@ -9,6 +9,100 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.32.0}
+
+This version adds binding support for NSBrowser, NSOutlineView and NSTableView.
+Plus the usual bunch of bug fixes.
+ 
+@itemize @bullet
+@item Add support for bindings in NSBrowser.
+@item Return top level object when loading .gorm files.
+@item Add bindings support to NSOutlineView,
+@item Add support for 10.6 item-based delegate methods to NSBrowser.
+@item Add NSMenuToolbarItem.
+@item Add view based rendering to NSTableView and NSOutlineView.
+@item Add code to NSTreeController.
+@item Fix display of icons if the home is a symlink.
+@item Make some ivars in NSView protected instead of package scoped.
+@item Fix CI pipeline.
+@item Revert _updateFieldEditor: on NSTextFieldCell.
+@item GSTheme bug fix by Tom Sheffler <tom.sheffler@@gmail.com>.
+@item Fix memory leaks in test code.
+@item Don't load nil filename in NSImageRep.
+@item Prevent flickering in NSClipView. 
+@item Simplify ICU configuration.
+@item Move GSColorSliderCell into gui itself.
+@item Bugfix for NSMenuView.
+@item Fix single colum handling in NSCollectionView.
+@item Additional GSTheme method(s) for NSTabView. 
+@item Modify NSComboBox to handle attributed strings.
+@item NSTextFieldCell: Decode placeholder string.
+@item Make white default selection highlight color for NSTableView.
+@item Implement showsresizeindicator.
+@item NSApplication: toggle menu item "Hide" title and action on user click.
+@item Add NSCellHitResult typedef, introduced in OSX 10.10.
+@item Make menu visiblity themable.
+@item Fix decoding alternateContents in NSButtonCell.
+@item Font Panel autosizing fix.
+@item Implement integerValue method in NSSliderCell.
+@item NSBox: use macro to decode NSInteger into enum.
+@item Fall back to pkgconfig for resolving libtiff.
+@item GSMemoryPanel: Only call GSDebug* in debug mode.
+@item Add APPKIT_EXPORT_CLASS, APPKIT_EXPORT annotations for some GS* classes.
+@item Push modal window to top later in process.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
+@section Noteworthy changes in version @samp{0.31.1}
+
+This is a bugfix release
+
+@itemize @bullet
+@item Fix bug decoding menu items (breaking archive)
+@item Remove use of deprecated lock from base library
+@end itemize
+
+@section Noteworthy changes in version @samp{0.31.0}
+
+This version adds view based cell support for NSTableView and NSOutlineView.
+Plus the usual bunch of bug fixes.
+
+@itemize @bullet
+@item Add TGA detection for ImageMagick extension.
+@item Correct endianess swapping for saving 16 and 32 bit TIFF images.
+@item NSParagraphStyle restore old behaviour to have default tab stops.
+@item Documentation updates.
+@item A fix for autogsdoc documentation creation.
+@item Improve theming for many classes.
+@item Correct keyEquivalentModifierMask decoding in XIB files.
+@item Add imageViewWithImage: to NSImageView.
+@item Add implementation of NSUserInterfaceItemIdentifier to NSView.
+@item Fix NSImageView intercepting mouse events when not editable
+@item Move NSBox method isOpaque to GSTheme.
+@item Many decoding improvements.
+@item Fix compiler warnings.
+@item Generate and install a gnustep-gui.pc file.
+@item Add support for NSFilenamenPboardType in NSTextView.
+@item Add support for NSPasteboardTypePNG in NSBitmapImageRep if the libpng is present.
+@item Add support for ImageMagick >= 7.0
+@item Increase pasteboard timeout to 30 seconds.
+@item Add NSAppearance implementation.
+@item Make PACKAGE_SCOPE public on MinGW.
+@item Started implementing NSShadow.
+@item Move awakeFromNib implementation to NSObject instead of NSView.
+@item Changes for libGIF 5.2 and later.
+@item Update NSViewController with lifeCycle methods.
+@item Avoid accessing instance variables in inline functions when compiling with MSVC.
+@item Add method removeAllItems to NSMenu.
+@item Add badge handling to NSDockTile.
+@item More improvements to layout constraints.
+@item Add implementation of NSDictionaryController.
+@item Add implementation of the NSCollectionView classes.
+@item Improve NSDrawer opening.
+@item Improver CI pipeline.
+@end itemize
+
 @section Noteworthy changes in version @samp{0.30.0}
 
 This version adds parsing support for layout constraints, compilation with MSVC
@@ -48,11 +142,8 @@ and many new classes. Plus the usual bunch of bug fixes.
 @item Support ImageMagick version >= 7.
 @item Add github workflow.
 @item Add icon for speech synthesizer.
-@item 
-@item 
 @end itemize
 
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.29.0}
 
