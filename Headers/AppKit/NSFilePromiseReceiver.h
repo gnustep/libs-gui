@@ -53,10 +53,6 @@ APPKIT_EXPORT_CLASS
  * These are the Uniform Type Identifiers for file types that
  * this receiver is willing to accept from file promise providers.
  */
-#if GS_HAS_DECLARED_PROPERTIES
-@property (readonly, copy) NSArray *fileTypes;
-@property (readonly, copy) NSArray *fileNames;
-#else
 - (NSArray *)fileTypes;
 
 /** Returns the file names that will be created for the promised files.
@@ -64,7 +60,6 @@ APPKIT_EXPORT_CLASS
  * actual filenames that will be used when the promises are fulfilled.
  */
 - (NSArray *)fileNames;
-#endif
 
 /** Receives the promised files to the specified destination URL.
  * This method initiates the process of fulfilling all file promises
