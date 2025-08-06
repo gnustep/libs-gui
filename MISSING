@@ -4,9 +4,7 @@ MISSING HEADERS ( * = difficult, - = quick, + = placeholder, x = won't do )
 > NSDiffableDataSource.h *
 > NSDraggingItem.h -
 > NSDraggingSession.h -
-> NSFilePromiseProvider.h -
-> NSFilePromiseReceiver.h -
-> NSItemProvider.h + 
+> NSItemProvider.h +
 > NSOpenGLLayer.h +
 > NSTypesetter.h +
 > NSUserActivity.h -
