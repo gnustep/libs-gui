@@ -5,7 +5,7 @@
 
    Copyright (C) 2025 Free Software Foundation, Inc.
 
-   Author: GitHub Copilot <copilot@github.com>
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2025
 
    This file is part of the GNUstep GUI Library.
@@ -29,9 +29,9 @@
 
 #ifndef _GNUstep_H_NSFilePromiseProvider
 #define _GNUstep_H_NSFilePromiseProvider
-#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 #import <AppKit/NSPasteboard.h>
 
 @class NSString;
@@ -45,8 +45,6 @@
 
 // UTI for file promise pasteboard type
 APPKIT_EXPORT NSString * const NSFilePromiseProviderUTI;
-
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
 APPKIT_EXPORT_CLASS
 @interface NSFilePromiseProvider : NSObject <NSPasteboardWriting>
@@ -63,11 +61,6 @@ APPKIT_EXPORT_CLASS
 - (instancetype)initWithFileType:(NSString *)fileType
                         delegate:(id<NSFilePromiseProviderDelegate>)delegate;
 
-#if GS_HAS_DECLARED_PROPERTIES
-@property (readonly, copy) NSString *fileType;
-@property (weak) id<NSFilePromiseProviderDelegate> delegate;
-@property (strong) id userInfo;
-#else
 /** Returns the file type (UTI) that this provider will create.
  * This is the Uniform Type Identifier for the type of file
  * that will be created when the promise is fulfilled.
@@ -96,7 +89,6 @@ APPKIT_EXPORT_CLASS
  * be needed when fulfilling the file promise.
  */
 - (void)setUserInfo:(id)userInfo;
-#endif
 
 @end
 
@@ -118,7 +110,7 @@ APPKIT_EXPORT_CLASS
  */
 - (void)filePromiseProvider:(NSFilePromiseProvider *)filePromiseProvider
           writePromiseToURL:(NSURL *)url
-          completionHandler:(void (^)(NSError * _Nullable error))completionHandler;
+          completionHandler:(void (^)(NSError *error))completionHandler;
 
 @optional
 

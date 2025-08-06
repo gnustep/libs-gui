@@ -5,7 +5,7 @@
 
    Copyright (C) 2025 Free Software Foundation, Inc.
 
-   Author: GitHub Copilot <copilot@github.com>
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2025
 
    This file is part of the GNUstep GUI Library.
@@ -29,14 +29,16 @@
 
 #ifndef _GNUstep_H_NSFilePromiseReceiver
 #define _GNUstep_H_NSFilePromiseReceiver
-#import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
+
+#import <AppKit/AppKitDefines.h>
 #import <AppKit/NSPasteboard.h>
 
 @class NSString;
 @class NSURL;
 @class NSArray;
+@class NSOperationQueue;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
@@ -72,7 +74,7 @@ APPKIT_EXPORT_CLASS
 - (void)receivePromisedFilesAtDestination:(NSURL *)destinationDir
                                   options:(NSDictionary *)options
                         operationQueue:(NSOperationQueue *)operationQueue
-                                reader:(void (^)(NSURL *fileURL, NSError * _Nullable error))reader;
+                                reader:(void (^)(NSURL *fileURL, NSError *error))reader;
 
 @end
 

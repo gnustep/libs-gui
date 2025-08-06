@@ -5,7 +5,7 @@
 
    Copyright (C) 2025 Free Software Foundation, Inc.
 
-   Author: GitHub Copilot <copilot@github.com>
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
    Date: 2025
 
    This file is part of the GNUstep GUI Library.
@@ -28,12 +28,13 @@
 */
 
 #import <AppKit/NSFilePromiseProvider.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSURL.h>
-#import <Foundation/NSOperationQueue.h>
-#import <Foundation/NSError.h>
-#import <Foundation/NSDictionary.h>
+
+#import "Foundation/NSString.h"
+#import "Foundation/NSArray.h"
+#import "Foundation/NSURL.h"
+#import "Foundation/NSOperation.h"
+#import "Foundation/NSError.h"
+#import "Foundation/NSDictionary.h"
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
@@ -58,6 +59,7 @@ NSString * const NSFilePromiseProviderUTI = @"com.apple.NSFilePromiseProvider";
 {
   RELEASE(_fileType);
   RELEASE(_userInfo);
+
   [super dealloc];
 }
 
@@ -90,12 +92,12 @@ NSString * const NSFilePromiseProviderUTI = @"com.apple.NSFilePromiseProvider";
 
 - (NSArray *)writableTypesForPasteboard:(NSPasteboard *)pasteboard
 {
-  return [NSArray arrayWithObject:NSFilePromiseProviderUTI];
+  return [NSArray arrayWithObject: NSFilePromiseProviderUTI];
 }
 
 - (id)pasteboardPropertyListForType:(NSString *)type
 {
-  if ([type isEqualToString:NSFilePromiseProviderUTI])
+  if ([type isEqualToString: NSFilePromiseProviderUTI])
     {
       // Return a dictionary with file type information
       return [NSDictionary dictionaryWithObjectsAndKeys:
@@ -105,8 +107,8 @@ NSString * const NSFilePromiseProviderUTI = @"com.apple.NSFilePromiseProvider";
   return nil;
 }
 
-- (NSPasteboardWritingOptions)writingOptionsForType:(NSString *)type
-                                         pasteboard:(NSPasteboard *)pasteboard
+- (NSPasteboardWritingOptions)writingOptionsForType: (NSString *)type
+                                         pasteboard: (NSPasteboard *)pasteboard
 {
   return 0;
 }

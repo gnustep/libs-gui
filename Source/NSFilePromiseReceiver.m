@@ -5,7 +5,7 @@
 
    Copyright (C) 2025 Free Software Foundation, Inc.
 
-   Author: GitHub Copilot <copilot@github.com>
+   Author: Gregory Casamento <greg.casamento@gmail.com>
    Date: 2025
 
    This file is part of the GNUstep GUI Library.
@@ -29,12 +29,13 @@
 
 #import <AppKit/NSFilePromiseReceiver.h>
 #import <AppKit/NSFilePromiseProvider.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSURL.h>
-#import <Foundation/NSOperationQueue.h>
-#import <Foundation/NSError.h>
-#import <Foundation/NSDictionary.h>
+
+#import "Foundation/NSString.h"
+#import "Foundation/NSArray.h"
+#import "Foundation/NSURL.h"
+#import "Foundation/NSOperation.h"
+#import "Foundation/NSError.h"
+#import "Foundation/NSDictionary.h"
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
