@@ -917,31 +917,6 @@ static BOOL menuBarVisible = YES;
   return _menu.autoenable;
 }
 
-- (void) _updateSubmenu
-{
-  if ([self _isVisible])
-    {
-      // Update the menu items when the menu is visible...
-      [self update];
-    }
-  else
-    {
-      // ...else only progress to submenus
-      NSUInteger i;
-      NSUInteger count = [_items count];
-
-      for (i = 0; i < count; i++)
-        {
-          NSMenuItem *item = [_items objectAtIndex: i];
-          
-          if ([item hasSubmenu])
-            {
-              [[item submenu] _updateSubmenu];
-            }
-        }
-    }
-}
-
 - (void) _updateMenuWithDelegate
 {
   if ([_delegate respondsToSelector: @selector(menuNeedsUpdate:)])
@@ -1069,7 +1044,7 @@ static BOOL menuBarVisible = YES;
 
 	      if ([item hasSubmenu])
                 {
-                  [[item submenu] _updateSubmenu];
+                  [[item submenu] update];
                 }
 
               [self _autoenableItem: item];
