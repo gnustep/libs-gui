@@ -83,34 +83,38 @@
   BOOL _muted;
 }
 
+// Initialize...
 - (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
 		      streamIndex: (int)audioStreamIndex;
+- (void) reset;
 
+// Decode stream...
 - (int) decodePacket: (AVPacket *)packet;
 - (void) submitPacket: (AVPacket *)packet;
 - (void) startAudio;
 - (void) stopAudio;
-
-- (float) volume;
-- (void) setVolume: (float)volume;
-
-- (NSQTMovieLoopMode) loopMode;
-- (void) setLoopMode: (NSQTMovieLoopMode)mode;
-
-- (void) setMuted: (BOOL)muted;
-- (BOOL) isMuted;
 - (void) setPlaying: (BOOL)f;
 - (BOOL) isPlaying;
 
-// Seeking methods
+// Set volume...
+- (float) volume;
+- (void) setVolume: (float)volume;
+- (void) setMuted: (BOOL)muted;
+- (BOOL) isMuted;
+
+// Show loop status...
+- (NSQTMovieLoopMode) loopMode;
+- (void) setLoopMode: (NSQTMovieLoopMode)mode;
+
+// Seeking methods...
 - (BOOL) seekToTime: (int64_t)timestamp;
 
-// Audio clock access for synchronization
+// Audio clock access for synchronization...
 - (int64_t) currentAudioClock;
 - (BOOL) isAudioStarted;
 - (int64_t) currentPlaybackTime; // Returns current playback time in microseconds
 
-// Time stretching support (sample rate based)
+// Time stretching support (sample rate based)...
 - (float) playbackRate;
 - (void) setPlaybackRate: (float)rate; // 0.5 to 2.0, 1.0 = normal speed
 - (BOOL) initializeTimeStretching;

@@ -33,36 +33,26 @@
 #import "GSAudioPlayer.h"
 #import "GSAVUtils.h"
 
+#define BUFFER_SIZE 2048
+
 @implementation GSAudioPlayer
 - (instancetype) init
 {
   self = [super init];
   if (self != nil)
     {
-      _audioCodecCtx = NULL;
-      _audioFrame = NULL;
-      _swrCtx = NULL;
-      _audioClock = 0;
-      _audioPackets = nil;
-      _audioThread = nil;
-      _running = NO;
-      _volume = 1.0;
-      _playbackRate = 1.0;
-      _started = NO;
-      _loopMode = NSQTMovieNormalPlayback;
-
-      // Initialize reusable audio buffer
-      _audioBuffer = NULL;
-      _audioBufferSize = 0;
-
-      // Initialize time stretching components
-      _stretchSwrCtx = NULL;
-      _stretchedFrame = NULL;
+      [self reset];
     }
   return self;
 }
 
 - (void)dealloc
+{
+  [self reset];
+  [super dealloc];
+}
+
+- (void) reset
 {
   [self stopAudio];
   [self cleanupTimeStretching];
@@ -97,7 +87,28 @@
   RELEASE(_audioPackets);
 
   ao_shutdown();
-  [super dealloc];
+
+  // Reset all ivars...
+  _audioPackets = [[NSMutableArray alloc] initWithCapacity: BUFFER_SIZE];
+  _audioThread = nil;
+
+  _audioCodecCtx = NULL;
+  _audioFrame = NULL;
+  _swrCtx = NULL;
+  _audioClock = 0;
+  _running = NO;
+  _volume = 1.0;
+  _playbackRate = 1.0;
+  _started = NO;
+  _loopMode = NSQTMovieNormalPlayback;
+
+  // Initialize reusable audio buffer
+  _audioBuffer = NULL;
+  _audioBufferSize = 0;
+
+  // Initialize time stretching components
+  _stretchSwrCtx = NULL;
+  _stretchedFrame = NULL;
 }
 
 - (void) setPlaying: (BOOL)f
@@ -199,7 +210,6 @@
   ao_free_options(options);
   _timeBase = formatCtx->streams[audioStreamIndex]->time_base;
   _audioClock = av_gettime();
-  _audioPackets = [[NSMutableArray alloc] init];
   _running = YES;
 
   // Initialize time stretching for sample rate changes
@@ -410,14 +420,14 @@
 - (void) stopAudio
 {
   _running = NO;
-  _started = NO; // Reset synchronization state
   [_audioThread cancel];
 
-  while ([_audioThread isFinished] == NO)
+  while ([_audioThread isFinished] == NO && _started)
     {
       usleep(1000);
     }
 
+  _started = NO; // Reset synchronization state
   DESTROY(_audioThread);
   NSLog(@"[GSAudioPlayer] Audio thread stopped | Timestamp: %ld", av_gettime());
 }
