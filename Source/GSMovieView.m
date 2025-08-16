@@ -879,6 +879,7 @@
 
 - (void)videoThreadEntry
 {
+  usleep(5000);
   while (_flags.playing)
     {
       // Create pool...
