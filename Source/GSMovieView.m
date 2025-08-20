@@ -318,7 +318,7 @@
       // Start feed thread if not already started or if it finished
       if (_feedThread == nil || [_feedThread isFinished])
 	{
-	  [self setRate: 1.0 / 30.0];
+	  [self setRate: 1.0];
 	  [self setVolume: 1.0];
 
 	  // Clean up old thread reference if it finished
@@ -879,7 +879,6 @@
 
 - (void)videoThreadEntry
 {
-  usleep(5000);
   while (_flags.playing)
     {
       // Create pool...
