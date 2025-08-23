@@ -138,9 +138,9 @@
   int driver = ao_default_driver_id();
   int out_channels = 2;
 
-  _formatCtx = formatCtx; 
+  _formatCtx = formatCtx;
   _audioStreamIndex = audioStreamIndex;
-  
+
   AVStream *audioStream = formatCtx->streams[_audioStreamIndex];
   AVCodecParameters *audioPar = audioStream->codecpar;
   const AVCodec *audioCodec = avcodec_find_decoder(audioPar->codec_id);
@@ -216,7 +216,7 @@
   ao_free_options(options);
   _timeBase = formatCtx->streams[_audioStreamIndex]->time_base;
   _audioClock = av_gettime();
-  
+
   // Initialize time stretching for sample rate changes
   if (![self initializeTimeStretching])
     {
@@ -470,7 +470,7 @@
 	{
 	  NSLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
 	  _needsRestart = NO;
-	  
+
 	  // Clear existing video packets
 	  @synchronized (_audioPackets)
 	    {
@@ -491,7 +491,7 @@
 	      NSLog(@"[GSAudioPlayer] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
 	    }
 	}
-      
+
       // Start video processing thread
       if (_audioThread == nil || [_audioThread isFinished])
 	{
@@ -524,7 +524,7 @@
       // NSLog(@"[GSAudioPlayer] Stopping audio playback | Timestamp: %ld, lastPts = %ld",
       //    av_gettime(), _lastPts);
 
-      _needsRestart = YES;
+      // _needsRestart = YES;
       _running = NO;
 
       // Cancel and wait for video thread
