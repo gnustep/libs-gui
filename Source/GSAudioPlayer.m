@@ -54,7 +54,7 @@
 
 - (void) reset
 {
-  [self stopAudio];
+  [self stop: nil];
   [self cleanupTimeStretching];
 
   if (_audioFrame)
@@ -138,8 +138,14 @@
   int driver = ao_default_driver_id();
   int out_channels = 2;
 
-  AVCodecParameters *audioPar = formatCtx->streams[audioStreamIndex]->codecpar;
+  _formatCtx = formatCtx; 
+  _audioStreamIndex = audioStreamIndex;
+  
+  AVStream *audioStream = formatCtx->streams[_audioStreamIndex];
+  AVCodecParameters *audioPar = audioStream->codecpar;
   const AVCodec *audioCodec = avcodec_find_decoder(audioPar->codec_id);
+
+  _stream = audioStream;
 
   if (!audioCodec)
     {
@@ -208,10 +214,9 @@
     }
 
   ao_free_options(options);
-  _timeBase = formatCtx->streams[audioStreamIndex]->time_base;
+  _timeBase = formatCtx->streams[_audioStreamIndex]->time_base;
   _audioClock = av_gettime();
-  _running = YES;
-
+  
   // Initialize time stretching for sample rate changes
   if (![self initializeTimeStretching])
     {
@@ -408,6 +413,7 @@
     }
 }
 
+/*
 - (void) startAudio
 {
   _running = YES;
@@ -430,6 +436,124 @@
   _started = NO; // Reset synchronization state
   DESTROY(_audioThread);
   NSLog(@"[GSAudioPlayer] Audio thread stopped | Timestamp: %ld", av_gettime());
+}
+*/
+
+- (IBAction) start: (id)sender
+{
+  @synchronized(self)
+    {
+      if (_running)
+	{
+	  NSLog(@"[GSAudioPlayer] Already running, ignoring start request | Timestamp: %ld", av_gettime());
+	  return;
+	}
+
+      if (!_formatCtx || !_stream)
+	{
+	  NSLog(@"[GSAudioPlayer] Cannot start - no media loaded | Timestamp: %ld", av_gettime());
+	  return;
+	}
+
+      // NSLog(@"[GSAudioPlayer] Starting video playback | Timestamp: %ld, lastPts = %ld",
+      //    av_gettime(), _lastPts);
+
+      _running = YES;
+      _started = NO; // Reset for synchronization
+
+      // If we're restarting and at EOF, seek back to beginning
+      // We can detect this by checking if the feed thread finished but we still have a format context
+      /*
+      BOOL needsRestart = (_formatCtx != NULL);
+      if (needsRestart)
+	{
+	  NSLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
+
+	  // Clear existing video packets
+	  @synchronized (_audioPackets)
+	    {
+	      [_audioPackets removeAllObjects];
+	    }
+
+	  // Seek back to the beginning
+	  if (av_seek_frame(_formatCtx, _audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
+	    {
+	      // Reset codec state
+	      if (_audioCodecCtx)
+		{
+		  avcodec_flush_buffers(_audioCodecCtx);
+		}
+	    }
+	  else
+	    {
+	      NSLog(@"[GSAudioPlayer] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
+	    }
+	}
+      */
+      
+      // Start video processing thread
+      if (_audioThread == nil || [_audioThread isFinished])
+	{
+	  // Clean up old thread reference if it finished
+	  if (_audioThread && [_audioThread isFinished])
+	    {
+	      DESTROY(_audioThread);
+	    }
+
+	  _audioThread = [[NSThread alloc] initWithTarget:self
+						 selector:@selector(audioThreadEntry)
+						   object:nil];
+	  [_audioThread start];
+	}
+
+      NSLog(@"[GSAudioPlayer] Video playback started successfully | Timestamp: %ld", av_gettime());
+    }
+}
+
+- (IBAction) stop: (id)sender
+{
+  @synchronized(self)
+    {
+      if (!_running)
+	{
+	  NSLog(@"[GSAudioPlayer] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
+	  return;
+	}
+
+      // NSLog(@"[GSAudioPlayer] Stopping audio playback | Timestamp: %ld, lastPts = %ld",
+      //    av_gettime(), _lastPts);
+
+      _running = NO;
+
+      // Cancel and wait for video thread
+      if (_audioThread)
+	{
+	  [_audioThread cancel];
+
+	  // Wait for video thread to finish with timeout
+	  int timeout = 1000; // 1 second timeout
+	  while (![_audioThread isFinished] && timeout > 0)
+	    {
+	      usleep(1000); // 1ms
+	      timeout--;
+	    }
+
+	  if (timeout <= 0)
+	    {
+	      NSLog(@"[GSAudioPlayer] Warning: Audio thread did not finish within timeout");
+	    }
+
+	  DESTROY(_audioThread);
+	}
+
+      // Clear video packet queue
+      @synchronized (_audioPackets)
+	{
+	  [_audioPackets removeAllObjects];
+	}
+
+      NSLog(@"[GSAudioPlayer] Audio playback stopped successfully | Timestamp: %ld", av_gettime());
+    }
 }
 
 - (void) setVolume: (float)volume

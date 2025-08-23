@@ -74,7 +74,10 @@
   // Reusable audio buffer for conversion
   uint8_t *_audioBuffer;
   int _audioBufferSize;
-
+  int _audioStreamIndex;
+  AVFormatContext *_formatCtx;
+  AVStream *_stream;
+  
   NSMutableArray *_audioPackets;
   NSThread *_audioThread;
 
@@ -91,10 +94,12 @@
 // Decode stream...
 - (int) decodePacket: (AVPacket *)packet;
 - (void) submitPacket: (AVPacket *)packet;
-- (void) startAudio;
-- (void) stopAudio;
+// - (void) startAudio;
+// - (void) stopAudio;
 - (void) setPlaying: (BOOL)f;
 - (BOOL) isPlaying;
+- (IBAction) start: (id)sender;
+- (IBAction) stop: (id)sender;
 
 // Set volume...
 - (float) volume;

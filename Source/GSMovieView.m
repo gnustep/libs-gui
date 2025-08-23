@@ -74,8 +74,8 @@
     {
       if (ofmt->extensions)
 	{
-	  NSString *extString = [NSString stringWithUTF8String:ofmt->extensions];
-	  NSArray *exts = [extString componentsSeparatedByString:@","];
+	  NSString *extString = [NSString stringWithUTF8String: ofmt->extensions];
+	  NSArray *exts = [extString componentsSeparatedByString: @","];
 	  [extensionsSet addObjectsFromArray: exts];
 	}
     }
@@ -351,7 +351,7 @@
       // Start audio playback
       if (_audioPlayer && _audioStreamIndex >= 0)
 	{
-	  [_audioPlayer startAudio];
+	  [_audioPlayer start: sender];
 	}
 
       NSLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
@@ -376,7 +376,7 @@
       // Stop audio playback first
       if (_audioPlayer)
 	{
-	  [_audioPlayer stopAudio];
+	  [_audioPlayer stop: sender];
 	}
 
       // Cancel and wait for video thread
@@ -1258,7 +1258,7 @@
   // Force stop audio
   if (_audioPlayer)
     {
-      [_audioPlayer stopAudio];
+      [_audioPlayer stop: self];
     }
 
   // Force destroy threads without waiting
