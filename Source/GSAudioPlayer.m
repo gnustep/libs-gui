@@ -54,7 +54,7 @@
 
 - (void) reset
 {
-  [self stop: nil];
+  [self stop];
   [self cleanupTimeStretching];
 
   if (_audioFrame)
@@ -439,7 +439,12 @@
 }
 */
 
-- (IBAction) start: (id)sender
+- (void) setNeedsRestart: (BOOL)f
+{
+  _needsRestart = f;
+}
+
+- (void) start
 {
   @synchronized(self)
     {
@@ -461,14 +466,11 @@
       _running = YES;
       _started = NO; // Reset for synchronization
 
-      // If we're restarting and at EOF, seek back to beginning
-      // We can detect this by checking if the feed thread finished but we still have a format context
-      /*
-      BOOL needsRestart = (_formatCtx != NULL);
-      if (needsRestart)
+      if (_needsRestart)
 	{
 	  NSLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
-
+	  _needsRestart = NO;
+	  
 	  // Clear existing video packets
 	  @synchronized (_audioPackets)
 	    {
@@ -489,7 +491,6 @@
 	      NSLog(@"[GSAudioPlayer] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
 	    }
 	}
-      */
       
       // Start video processing thread
       if (_audioThread == nil || [_audioThread isFinished])
@@ -510,7 +511,7 @@
     }
 }
 
-- (IBAction) stop: (id)sender
+- (void) stop
 {
   @synchronized(self)
     {
@@ -523,6 +524,7 @@
       // NSLog(@"[GSAudioPlayer] Stopping audio playback | Timestamp: %ld, lastPts = %ld",
       //    av_gettime(), _lastPts);
 
+      _needsRestart = YES;
       _running = NO;
 
       // Cancel and wait for video thread

@@ -84,6 +84,7 @@
   BOOL _running;
   BOOL _started;
   BOOL _muted;
+  BOOL _needsRestart;
 }
 
 // Initialize...
@@ -94,12 +95,10 @@
 // Decode stream...
 - (int) decodePacket: (AVPacket *)packet;
 - (void) submitPacket: (AVPacket *)packet;
-// - (void) startAudio;
-// - (void) stopAudio;
 - (void) setPlaying: (BOOL)f;
 - (BOOL) isPlaying;
-- (IBAction) start: (id)sender;
-- (IBAction) stop: (id)sender;
+- (void) start;
+- (void) stop;
 
 // Set volume...
 - (float) volume;
@@ -124,6 +123,8 @@
 - (void) setPlaybackRate: (float)rate; // 0.5 to 2.0, 1.0 = normal speed
 - (BOOL) initializeTimeStretching;
 - (void) cleanupTimeStretching;
+
+- (void) setNeedsRestart: (BOOL)f;
 
 @end
 

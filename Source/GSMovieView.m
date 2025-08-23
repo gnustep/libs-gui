@@ -281,6 +281,7 @@
       // If we're restarting and at EOF, seek back to beginning
       // We can detect this by checking if the feed thread finished but we still have a format context
       BOOL needsRestart = (_feedThread == nil || [_feedThread isFinished]) && _formatCtx != NULL;
+      [_audioPlayer setNeedsRestart: needsRestart];
       if (needsRestart)
 	{
 	  NSLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
@@ -299,15 +300,6 @@
 		{
 		  avcodec_flush_buffers(_videoCodecCtx);
 		}
-
-	      // Ask audio player to seek back as well
-	      if (_audioPlayer)
-		{
-		  [_audioPlayer seekToTime: 0];
-		}
-
-	      // Reset PTS
-	      _lastPts = 0;
 	    }
 	  else
 	    {
@@ -351,7 +343,7 @@
       // Start audio playback
       if (_audioPlayer && _audioStreamIndex >= 0)
 	{
-	  [_audioPlayer start: sender];
+	  [_audioPlayer start];
 	}
 
       NSLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
@@ -376,7 +368,7 @@
       // Stop audio playback first
       if (_audioPlayer)
 	{
-	  [_audioPlayer stop: sender];
+	  [_audioPlayer stop];
 	}
 
       // Cancel and wait for video thread
@@ -427,13 +419,6 @@
   [super setVolume: volume];
   [_audioPlayer setVolume: volume];
 }
-
-/*
-  - (void) setLoopMode: (NSQTMovieLoopMode)mode
-  {
-  [super setLoopMode: mode];
-  }
-*/
 
 - (void) setMovie: (NSMovie *)movie
 {
@@ -1258,7 +1243,7 @@
   // Force stop audio
   if (_audioPlayer)
     {
-      [_audioPlayer stop: self];
+      [_audioPlayer stop];
     }
 
   // Force destroy threads without waiting
