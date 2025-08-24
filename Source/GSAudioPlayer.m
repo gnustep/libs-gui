@@ -96,10 +96,10 @@
   _audioFrame = NULL;
   _swrCtx = NULL;
   _audioClock = 0;
-  _running = NO;
+  _flags.playing = NO;
   _volume = 1.0;
   _playbackRate = 1.0;
-  _started = NO;
+  _flags.started = NO;
   _loopMode = NSQTMovieNormalPlayback;
 
   // Initialize reusable audio buffer
@@ -113,12 +113,12 @@
 
 - (void) setPlaying: (BOOL)f
 {
-  _running = f;
+  _flags.playing = f;
 }
 
 - (BOOL) isPlaying
 {
-  return _running;
+  return _flags.playing;
 }
 
 - (NSQTMovieLoopMode) loopMode
@@ -229,7 +229,7 @@
   int64_t audioStartTime = 0;
   int64_t totalSamplesPlayed = 0;
 
-  while (_running)
+  while (_flags.playing)
     {
       // create pool...
       CREATE_AUTORELEASE_POOL(pool);
@@ -240,16 +240,16 @@
 	  {
 	    if ([_audioPackets count] > 0)
 	      {
-		dict = [[_audioPackets objectAtIndex:0] retain];
+		dict = RETAIN([_audioPackets objectAtIndex:0]);
 		[_audioPackets removeObjectAtIndex:0];
 	      }
 	  }
 
-	if (!_started && dict)
+	if (!_flags.started && dict)
 	  {
 	    audioStartTime = av_gettime();
 	    totalSamplesPlayed = 0;
-	    _started = YES;
+	    _flags.started = YES;
 	    NSLog(@"[GSAudioPlayer] Audio playback started | Timestamp: %ld", audioStartTime);
 	  }
 
@@ -283,7 +283,7 @@
 	    int samplesDecoded = [self decodePacket: &packet];
 	    totalSamplesPlayed += samplesDecoded;
 
-	    [dict release];
+	    RELEASE(dict);
 	  }
 	else
 	  {
@@ -413,42 +413,16 @@
     }
 }
 
-/*
-- (void) startAudio
-{
-  _running = YES;
-  _started = NO; // Will be set to YES when first packet is processed
-  NSLog(@"[GSAudioPlayer] Starting audio thread | Timestamp: %ld", av_gettime());
-  _audioThread = [[NSThread alloc] initWithTarget:self selector:@selector(audioThreadEntry) object:nil];
-  [_audioThread start];
-}
-
-- (void) stopAudio
-{
-  _running = NO;
-  [_audioThread cancel];
-
-  while ([_audioThread isFinished] == NO && _started)
-    {
-      usleep(1000);
-    }
-
-  _started = NO; // Reset synchronization state
-  DESTROY(_audioThread);
-  NSLog(@"[GSAudioPlayer] Audio thread stopped | Timestamp: %ld", av_gettime());
-}
-*/
-
 - (void) setNeedsRestart: (BOOL)f
 {
-  _needsRestart = f;
+  _flags.needsRestart = f;
 }
 
 - (void) start
 {
   @synchronized(self)
     {
-      if (_running)
+      if (_flags.playing)
 	{
 	  NSLog(@"[GSAudioPlayer] Already running, ignoring start request | Timestamp: %ld", av_gettime());
 	  return;
@@ -463,13 +437,13 @@
       // NSLog(@"[GSAudioPlayer] Starting video playback | Timestamp: %ld, lastPts = %ld",
       //    av_gettime(), _lastPts);
 
-      _running = YES;
-      _started = NO; // Reset for synchronization
+      _flags.playing = YES;
+      _flags.started = NO; // Reset for synchronization
 
-      if (_needsRestart)
+      if (_flags.needsRestart)
 	{
 	  NSLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
-	  _needsRestart = NO;
+	  _flags.needsRestart = NO;
 
 	  // Clear existing video packets
 	  @synchronized (_audioPackets)
@@ -517,7 +491,7 @@
 {
   @synchronized(self)
     {
-      if (!_running)
+      if (!_flags.playing)
 	{
 	  NSLog(@"[GSAudioPlayer] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
 	  return;
@@ -526,8 +500,8 @@
       // NSLog(@"[GSAudioPlayer] Stopping audio playback | Timestamp: %ld, lastPts = %ld",
       //    av_gettime(), _lastPts);
 
-      // _needsRestart = YES;
-      _running = NO;
+      // _flags.needsRestart = YES;
+      _flags.playing = NO;
 
       // Cancel and wait for video thread
       if (_audioThread)
@@ -575,11 +549,11 @@
   // Muted...
   if (volume <= 0.0)
     {
-      _muted = YES;
+      _flags.muted = YES;
     }
   else if (volume > 0.0)
     {
-      _muted = NO;
+      _flags.muted = NO;
     }
 
   _volume = volume;
@@ -592,12 +566,12 @@
 
 - (void) setMuted: (BOOL)muted
 {
-  _muted = muted;
+  _flags.muted = muted;
 }
 
 - (BOOL) isMuted
 {
-  return _muted;
+  return _flags.muted;
 }
 
 // Seeking methods
@@ -618,7 +592,7 @@
   // Reset the audio clock and synchronization state
   // The clock will be properly initialized when the next packet is processed
   _audioClock = timestamp;
-  _started = NO; // Will be reset when first packet after seek is processed
+  _flags.started = NO; // Will be reset when first packet after seek is processed
 
   NSLog(@"[GSAudioPlayer] Audio seek to timestamp %ld", timestamp);
   return YES;
@@ -632,12 +606,12 @@
 
 - (BOOL) isAudioStarted
 {
-  return _started;
+  return _flags.started;
 }
 
 - (int64_t) currentPlaybackTime
 {
-  if (_started)
+  if (_flags.started)
     {
       // Return the current audio clock time
       return _audioClock;

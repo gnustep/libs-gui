@@ -81,10 +81,13 @@
   NSMutableArray *_audioPackets;
   NSThread *_audioThread;
 
-  BOOL _running;
-  BOOL _started;
-  BOOL _muted;
-  BOOL _needsRestart;
+  struct GSAudioPlayerFlags {
+    unsigned int playing: 1;
+    unsigned int started: 1;
+    unsigned int muted: 1;
+    unsigned int needsRestart: 1;
+    unsigned int reserved: 28;
+  } _flags;
 }
 
 // Initialize...
