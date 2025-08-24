@@ -280,7 +280,7 @@
 	      }
 
 	    // Decode and play the packet
-	    int samplesDecoded = [self decodePacket:&packet];
+	    int samplesDecoded = [self decodePacket: &packet];
 	    totalSamplesPlayed += samplesDecoded;
 
 	    [dict release];
@@ -478,6 +478,7 @@
 	    }
 
 	  // Seek back to the beginning
+	  /*
 	  if (av_seek_frame(_formatCtx, _audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
 	    {
 	      // Reset codec state
@@ -490,6 +491,7 @@
 	    {
 	      NSLog(@"[GSAudioPlayer] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
 	    }
+	  */
 	}
 
       // Start video processing thread
