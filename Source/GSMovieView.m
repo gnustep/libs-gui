@@ -343,10 +343,9 @@
       // Start audio playback
       if (_audioPlayer && _audioStreamIndex >= 0)
 	{
+	  NSLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
 	  [_audioPlayer start];
 	}
-
-      NSLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
     }
 }
 
