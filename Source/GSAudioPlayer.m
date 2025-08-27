@@ -102,6 +102,10 @@
   _flags.started = NO;
   _loopMode = NSQTMovieNormalPlayback;
 
+  // Initialize new variables for proper pause/resume handling
+  _reachedEOF = NO;
+  _lastPosition = 0;
+
   // Initialize reusable audio buffer
   _audioBuffer = NULL;
   _audioBufferSize = 0;
@@ -440,18 +444,19 @@
       _flags.playing = YES;
       _flags.started = NO; // Reset for synchronization
 
-      if (_flags.needsRestart)
+      // Only restart from beginning if we reached EOF, not for pause/resume
+      if (_reachedEOF)
 	{
 	  NSLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
-	  _flags.needsRestart = NO;
+	  _reachedEOF = NO;
 
-	  // Clear existing video packets
+	  // Clear existing audio packets
 	  @synchronized (_audioPackets)
 	    {
 	      [_audioPackets removeAllObjects];
 	    }
 
-	  // Seek back to the beginning
+	  // Seek back to the beginning only for EOF
 	  if (av_seek_frame(_formatCtx, _audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
 	    {
 	      // Reset codec state
@@ -459,10 +464,29 @@
 		{
 		  avcodec_flush_buffers(_audioCodecCtx);
 		}
+	      _lastPosition = 0;
 	    }
 	  else
 	    {
 	      NSLog(@"[GSAudioPlayer] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
+	    }
+	}
+      else if (_flags.needsRestart)
+	{
+	  // This is a regular pause/resume - don't seek, just clear buffers
+	  NSLog(@"[GSAudioPlayer] Resuming from position %ld | Timestamp: %ld", _lastPosition, av_gettime());
+	  _flags.needsRestart = NO;
+
+	  // Clear existing packets but don't seek
+	  @synchronized (_audioPackets)
+	    {
+	      [_audioPackets removeAllObjects];
+	    }
+
+	  // Reset codec state but maintain position
+	  if (_audioCodecCtx)
+	    {
+	      avcodec_flush_buffers(_audioCodecCtx);
 	    }
 	}
 
@@ -498,7 +522,13 @@
       // NSLog(@"[GSAudioPlayer] Stopping audio playback | Timestamp: %ld, lastPts = %ld",
       //    av_gettime(), _lastPts);
 
-      // _flags.needsRestart = YES;
+      // Save current position for potential resume
+      if (!_reachedEOF)
+	{
+	  _lastPosition = _audioClock;
+	  _flags.needsRestart = YES; // Mark for resume, not EOF restart
+	}
+
       _flags.playing = NO;
 
       // Cancel and wait for video thread
@@ -699,6 +729,14 @@
       swr_free(&_stretchSwrCtx);
       _stretchSwrCtx = NULL;
     }
+}
+
+// Handle end of file - marks for EOF restart
+- (void) handleEndOfFile
+{
+  _reachedEOF = YES;
+  _lastPosition = _audioClock; // Save current position
+  [self stop];
 }
 
 @end

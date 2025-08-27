@@ -77,7 +77,7 @@
   int _audioStreamIndex;
   AVFormatContext *_formatCtx;
   AVStream *_stream;
-  
+
   NSMutableArray *_audioPackets;
   NSThread *_audioThread;
 
@@ -88,6 +88,10 @@
     unsigned int needsRestart: 1;
     unsigned int reserved: 28;
   } _flags;
+
+  // New variables for proper pause/resume handling
+  BOOL _reachedEOF;
+  int64_t _lastPosition;
 }
 
 // Initialize...
@@ -128,6 +132,7 @@
 - (void) cleanupTimeStretching;
 
 - (void) setNeedsRestart: (BOOL)f;
+- (void) handleEndOfFile;
 
 @end
 
