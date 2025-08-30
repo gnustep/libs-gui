@@ -244,8 +244,8 @@
 	  {
 	    if ([_audioPackets count] > 0)
 	      {
-		dict = RETAIN([_audioPackets objectAtIndex:0]);
-		[_audioPackets removeObjectAtIndex:0];
+		dict = RETAIN([_audioPackets objectAtIndex: 0]);
+		[_audioPackets removeObjectAtIndex: 0];
 	      }
 	  }
 
@@ -438,9 +438,6 @@
 	  return;
 	}
 
-      // NSLog(@"[GSAudioPlayer] Starting video playback | Timestamp: %ld, lastPts = %ld",
-      //    av_gettime(), _lastPts);
-
       _flags.playing = YES;
       _flags.started = NO; // Reset for synchronization
 
@@ -518,9 +515,6 @@
 	  NSLog(@"[GSAudioPlayer] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
 	  return;
 	}
-
-      // NSLog(@"[GSAudioPlayer] Stopping audio playback | Timestamp: %ld, lastPts = %ld",
-      //    av_gettime(), _lastPts);
 
       // Save current position for potential resume
       if (!_reachedEOF)
