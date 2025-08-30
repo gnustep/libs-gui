@@ -320,9 +320,9 @@
 	      DESTROY(_feedThread);
 	    }
 
-	  _feedThread = [[NSThread alloc] initWithTarget:self
-						selector:@selector(feed)
-						  object:nil];
+	  _feedThread = [[NSThread alloc] initWithTarget: self
+						selector: @selector(feed)
+						  object: nil];
 	  [_feedThread start];
 	}
 
@@ -335,9 +335,9 @@
 	      DESTROY(_videoThread);
 	    }
 
-	  _videoThread = [[NSThread alloc] initWithTarget:self
-						 selector:@selector(videoThreadEntry)
-						   object:nil];
+	  _videoThread = [[NSThread alloc] initWithTarget: self
+						 selector: @selector(videoThreadEntry)
+						   object: nil];
 	  [_videoThread start];
 	}
 

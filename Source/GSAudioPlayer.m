@@ -498,9 +498,9 @@
 	      DESTROY(_audioThread);
 	    }
 
-	  _audioThread = [[NSThread alloc] initWithTarget:self
-						 selector:@selector(audioThreadEntry)
-						   object:nil];
+	  _audioThread = [[NSThread alloc] initWithTarget: self
+						 selector: @selector(audioThreadEntry)
+						   object: nil];
 	  [_audioThread start];
 	}
 
