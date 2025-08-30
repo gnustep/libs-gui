@@ -456,6 +456,8 @@
 	  // Seek back to the beginning only for EOF
 	  if (av_seek_frame(_formatCtx, _audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
 	    {
+	      NSLog(@"[GSAudioPlayer] rewind successful");
+		      
 	      // Reset codec state
 	      if (_audioCodecCtx)
 		{
@@ -516,13 +518,13 @@
 	  return;
 	}
 
-      // Save current position for potential resume
+      // Save current position for potential resume      
       if (!_reachedEOF)
 	{
 	  _lastPosition = _audioClock;
 	  _flags.needsRestart = YES; // Mark for resume, not EOF restart
 	}
-
+      
       _flags.playing = NO;
 
       // Cancel and wait for video thread
@@ -544,12 +546,6 @@
 	    }
 
 	  DESTROY(_audioThread);
-	}
-
-      // Clear video packet queue
-      @synchronized (_audioPackets)
-	{
-	  [_audioPackets removeAllObjects];
 	}
 
       NSLog(@"[GSAudioPlayer] Audio playback stopped successfully | Timestamp: %ld", av_gettime());

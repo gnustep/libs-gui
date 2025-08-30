@@ -281,7 +281,7 @@
       // If we're restarting and at EOF, seek back to beginning
       // We can detect this by checking if the feed thread finished but we still have a format context
       BOOL needsRestart = (_feedThread == nil || [_feedThread isFinished]) && _formatCtx != NULL;
-      [_audioPlayer setNeedsRestart: needsRestart];
+      [_audioPlayer setNeedsRestart: NO]; // needsRestart];
       if (needsRestart)
 	{
 	  NSLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
@@ -295,6 +295,7 @@
 	  // Seek back to the beginning
 	  if (av_seek_frame(_formatCtx, _videoStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
 	    {
+	      NSLog(@"[GSMovieView] rewind successful");
 	      // Reset codec state
 	      if (_videoCodecCtx)
 		{
@@ -1111,6 +1112,7 @@
       // Ask audio player to seek as well
       if (_audioPlayer)
 	{
+	  NSLog(@"[GSMovieView] seeking to time %ld", timestamp);
 	  [_audioPlayer seekToTime: timestamp];
 	}
 
