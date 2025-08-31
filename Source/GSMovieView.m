@@ -532,14 +532,27 @@
   int64_t duration = [self getDuration];
   if (duration > 0)
     {
-      if ([self seekToTime: duration - 1000000]) // 1 second before end
+      // Seek to a small margin before the absolute end to avoid EOF issues
+      // Use a smaller margin for short videos, larger for long ones
+      int64_t margin = (duration > 10000000) ? 1000000 : (duration / 100); // 1s for long videos, 1% for short ones
+      int64_t targetTime = duration - margin;
+
+      // Ensure we don't go negative
+      if (targetTime < 0)
+        {
+          targetTime = duration - 100000; // 100ms before end as fallback
+        }
+
+      if ([self seekToTime: targetTime])
 	{
 	  [self displayCurrentFrame];
-	  NSLog(@"[GSMovieView] gotoEnd successful | Timestamp: %ld", av_gettime());
+	  NSLog(@"[GSMovieView] gotoEnd successful to time %ld (duration: %ld) | Timestamp: %ld",
+	        targetTime, duration, av_gettime());
 	}
       else
 	{
-	  NSLog(@"[GSMovieView] gotoEnd failed | Timestamp: %ld", av_gettime());
+	  NSLog(@"[GSMovieView] gotoEnd failed to seek to time %ld | Timestamp: %ld",
+	        targetTime, av_gettime());
 	}
     }
   else
