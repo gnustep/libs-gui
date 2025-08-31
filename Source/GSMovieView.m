@@ -611,6 +611,13 @@
   BOOL wasPlaying = [self isPlaying];
   [self stop: sender];
 
+  // Check if we have valid format context and stream
+  if (!_formatCtx || !_stream)
+    {
+      NSLog(@"[GSMovieView] stepBack failed - no media loaded | Timestamp: %ld", av_gettime());
+      return;
+    }
+
   if (_fps > 0.0)
     {
       // Calculate frame duration in microseconds
@@ -623,6 +630,9 @@
 	{
 	  prevFrameTime = 0;
 	}
+
+      NSLog(@"[GSMovieView] stepBack: current=%ld, target=%ld, fps=%.2f | Timestamp: %ld",
+	    currentTime, prevFrameTime, _fps, av_gettime());
 
       if ([self seekToTime: prevFrameTime])
 	{
@@ -640,13 +650,43 @@
 	}
       else
 	{
-	  NSLog(@"[GSMovieView] stepBack failed | Timestamp: %ld", av_gettime());
+	  NSLog(@"[GSMovieView] stepBack failed to seek to time %ld | Timestamp: %ld",
+	        prevFrameTime, av_gettime());
 	}
     }
   else
     {
-      NSLog(@"[GSMovieView] stepBack failed - no frame rate available (fps: %f) | Timestamp: %ld",
-	    _fps, av_gettime());
+      // Fallback: try to step back by a fixed amount if no frame rate is available
+      int64_t currentTime = [self getCurrentTimestamp];
+      int64_t fallbackStep = 1000000 / 30; // Assume 30fps as fallback (~33ms)
+      int64_t prevFrameTime = currentTime - fallbackStep;
+
+      if (prevFrameTime < 0)
+	{
+	  prevFrameTime = 0;
+	}
+
+      NSLog(@"[GSMovieView] stepBack using fallback (no fps), target=%ld | Timestamp: %ld",
+	    prevFrameTime, av_gettime());
+
+      if ([self seekToTime: prevFrameTime])
+	{
+	  [self displayCurrentFrame];
+	  NSLog(@"[GSMovieView] stepBack fallback successful to time %ld | Timestamp: %ld",
+		prevFrameTime, av_gettime());
+
+	  if (wasPlaying)
+	    {
+	      [self performSelector: @selector(start:)
+			 withObject: sender
+			 afterDelay: 0.1];
+	    }
+	}
+      else
+	{
+	  NSLog(@"[GSMovieView] stepBack fallback failed - fps: %f | Timestamp: %ld",
+		_fps, av_gettime());
+	}
     }
 }
 
