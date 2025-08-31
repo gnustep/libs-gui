@@ -1162,13 +1162,14 @@
 	  avcodec_flush_buffers(_videoCodecCtx);
 	}
 
+      /*
       // Ask audio player to seek as well
       if (_audioPlayer)
 	{
 	  NSLog(@"[GSMovieView] seeking to time %ld", timestamp);
 	  [_audioPlayer seekToTime: timestamp];
 	}
-
+      */
       // Reset internal state
       _started = NO;
 
