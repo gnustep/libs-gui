@@ -1256,17 +1256,6 @@
 		   currentSeconds, totalSeconds, _fps, [self isPlaying] ? @"YES" : @"NO"];
 }
 
-// Status field management
-- (void) setStatusField: (NSTextField *)field
-{
-  ASSIGN(_statusField, field);
-}
-
-- (NSTextField *) statusField
-{
-  return _statusField;
-}
-
 // Synchronization monitoring
 - (BOOL) isUsingSynchronizedAudio
 {
