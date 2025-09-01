@@ -210,7 +210,7 @@
     {
       if (_feedThread != nil)
 	{
-	  NSLog(@"[GSMovieView] Feed thread already exists");
+	  NSDebugLog(@"[GSMovieView] Feed thread already exists");
 	  return;
 	}
 
@@ -220,7 +220,7 @@
       _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feed) object:nil];
       [_feedThread start];
 
-      NSLog(@"[GSMovieView] Feed thread started | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSMovieView] Feed thread started | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -242,7 +242,7 @@
 
 	  // Don't destroy the thread reference immediately - let start method handle it
 	  // This allows us to check if the thread finished and needs restarting
-	  NSLog(@"[GSMovieView] Feed thread stopped | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSMovieView] Feed thread stopped | Timestamp: %ld", av_gettime());
 	}
     }
 }
@@ -263,17 +263,17 @@
     {
       if (_flags.playing)
 	{
-	  NSLog(@"[GSMovieView] Already running, ignoring start request | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSMovieView] Already running, ignoring start request | Timestamp: %ld", av_gettime());
 	  return;
 	}
 
       if (!_formatCtx || !_stream)
 	{
-	  NSLog(@"[GSMovieView] Cannot start - no media loaded | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSMovieView] Cannot start - no media loaded | Timestamp: %ld", av_gettime());
 	  return;
 	}
 
-      NSLog(@"[GSMovieView] Starting video playback | Timestamp: %ld, lastPts = %ld",
+      NSDebugLog(@"[GSMovieView] Starting video playback | Timestamp: %ld, lastPts = %ld",
 	    av_gettime(), _lastPts);
 
       _flags.playing = YES;
@@ -285,7 +285,7 @@
       [_audioPlayer setNeedsRestart: NO]; // needsRestart];
       if (needsRestart)
 	{
-	  NSLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
 
 	  // Clear existing video packets
 	  @synchronized (_videoPackets)
@@ -296,7 +296,7 @@
 	  // Seek back to the beginning
 	  if (av_seek_frame(_formatCtx, _videoStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
 	    {
-	      NSLog(@"[GSMovieView] rewind successful");
+	      NSDebugLog(@"[GSMovieView] rewind successful");
 	      // Reset codec state
 	      if (_videoCodecCtx)
 		{
@@ -305,7 +305,7 @@
 	    }
 	  else
 	    {
-	      NSLog(@"[GSMovieView] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
+	      NSDebugLog(@"[GSMovieView] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
 	    }
 	}
 
@@ -345,7 +345,7 @@
       // Start audio playback
       if (_audioPlayer && _audioStreamIndex >= 0)
 	{
-	  NSLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSMovieView] Video playback started successfully | Timestamp: %ld", av_gettime());
 	  [_audioPlayer start];
 	}
     }
@@ -357,11 +357,11 @@
     {
       if (!_flags.playing)
 	{
-	  NSLog(@"[GSMovieView] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSMovieView] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
 	  return;
 	}
 
-      NSLog(@"[GSMovieView] Stopping video playback | Timestamp: %ld, lastPts = %ld",
+      NSDebugLog(@"[GSMovieView] Stopping video playback | Timestamp: %ld, lastPts = %ld",
 	    av_gettime(), _lastPts);
 
       _flags.playing = NO;
@@ -387,7 +387,7 @@
 
 	  if (timeout <= 0)
 	    {
-	      NSLog(@"[GSMovieView] Warning: Video thread did not finish within timeout");
+	      NSDebugLog(@"[GSMovieView] Warning: Video thread did not finish within timeout");
 	    }
 
 	  DESTROY(_videoThread);
@@ -405,7 +405,7 @@
 	  [_videoPackets removeAllObjects];
 	}
 
-      NSLog(@"[GSMovieView] Video playback stopped successfully | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSMovieView] Video playback stopped successfully | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -470,7 +470,7 @@
 	  [self setup];
 	}
 
-      NSLog(@"[GSMovieView] Movie changed | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSMovieView] Movie changed | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -501,11 +501,11 @@
   if ([self seekToFrame: 0])
     {
       [self displayCurrentFrame];
-      NSLog(@"[GSMovieView] gotoPosterFrame successful | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSMovieView] gotoPosterFrame successful | Timestamp: %ld", av_gettime());
     }
   else
     {
-      NSLog(@"[GSMovieView] gotoPosterFrame failed | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSMovieView] gotoPosterFrame failed | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -517,11 +517,11 @@
   if ([self seekToTime: 0])
     {
       [self displayCurrentFrame];
-      NSLog(@"[GSMovieView] gotoBeginning successful | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSMovieView] gotoBeginning successful | Timestamp: %ld", av_gettime());
     }
   else
     {
-      NSLog(@"[GSMovieView] gotoBeginning failed | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSMovieView] gotoBeginning failed | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -547,18 +547,18 @@
       if ([self seekToTime: targetTime])
 	{
 	  [self displayCurrentFrame];
-	  NSLog(@"[GSMovieView] gotoEnd successful to time %ld (duration: %ld) | Timestamp: %ld",
+	  NSDebugLog(@"[GSMovieView] gotoEnd successful to time %ld (duration: %ld) | Timestamp: %ld",
 	        targetTime, duration, av_gettime());
 	}
       else
 	{
-	  NSLog(@"[GSMovieView] gotoEnd failed to seek to time %ld | Timestamp: %ld",
+	  NSDebugLog(@"[GSMovieView] gotoEnd failed to seek to time %ld | Timestamp: %ld",
 	        targetTime, av_gettime());
 	}
     }
   else
     {
-      NSLog(@"[GSMovieView] gotoEnd failed - no duration available | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSMovieView] gotoEnd failed - no duration available | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -584,7 +584,7 @@
       if ([self seekToTime: nextFrameTime])
 	{
 	  [self displayCurrentFrame];
-	  NSLog(@"[GSMovieView] stepForward successful to time %ld | Timestamp: %ld",
+	  NSDebugLog(@"[GSMovieView] stepForward successful to time %ld | Timestamp: %ld",
 		nextFrameTime, av_gettime());
 
 	  // If it was playing before, resume playback after a short delay
@@ -597,12 +597,12 @@
 	}
       else
 	{
-	  NSLog(@"[GSMovieView] stepForward failed | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSMovieView] stepForward failed | Timestamp: %ld", av_gettime());
 	}
     }
   else
     {
-      NSLog(@"[GSMovieView] stepForward failed - no frame rate available (fps: %f) | Timestamp: %ld",
+      NSDebugLog(@"[GSMovieView] stepForward failed - no frame rate available (fps: %f) | Timestamp: %ld",
 	    _fps, av_gettime());
     }
 }
@@ -615,7 +615,7 @@
   // Check if we have valid format context and stream
   if (!_formatCtx || !_stream)
     {
-      NSLog(@"[GSMovieView] stepBack failed - no media loaded | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSMovieView] stepBack failed - no media loaded | Timestamp: %ld", av_gettime());
       return;
     }
 
@@ -632,13 +632,13 @@
 	  prevFrameTime = 0;
 	}
 
-      NSLog(@"[GSMovieView] stepBack: current=%ld, target=%ld, fps=%.2f | Timestamp: %ld",
+      NSDebugLog(@"[GSMovieView] stepBack: current=%ld, target=%ld, fps=%.2f | Timestamp: %ld",
 	    currentTime, prevFrameTime, _fps, av_gettime());
 
       if ([self seekToTime: prevFrameTime])
 	{
 	  [self displayCurrentFrame];
-	  NSLog(@"[GSMovieView] stepBack successful to time %ld | Timestamp: %ld",
+	  NSDebugLog(@"[GSMovieView] stepBack successful to time %ld | Timestamp: %ld",
 		prevFrameTime, av_gettime());
 
 	  // If it was playing before, resume playback after a short delay
@@ -651,7 +651,7 @@
 	}
       else
 	{
-	  NSLog(@"[GSMovieView] stepBack failed to seek to time %ld | Timestamp: %ld",
+	  NSDebugLog(@"[GSMovieView] stepBack failed to seek to time %ld | Timestamp: %ld",
 	        prevFrameTime, av_gettime());
 	}
     }
@@ -667,13 +667,13 @@
 	  prevFrameTime = 0;
 	}
 
-      NSLog(@"[GSMovieView] stepBack using fallback (no fps), target=%ld | Timestamp: %ld",
+      NSDebugLog(@"[GSMovieView] stepBack using fallback (no fps), target=%ld | Timestamp: %ld",
 	    prevFrameTime, av_gettime());
 
       if ([self seekToTime: prevFrameTime])
 	{
 	  [self displayCurrentFrame];
-	  NSLog(@"[GSMovieView] stepBack fallback successful to time %ld | Timestamp: %ld",
+	  NSDebugLog(@"[GSMovieView] stepBack fallback successful to time %ld | Timestamp: %ld",
 		prevFrameTime, av_gettime());
 
 	  if (wasPlaying)
@@ -685,7 +685,7 @@
 	}
       else
 	{
-	  NSLog(@"[GSMovieView] stepBack fallback failed - fps: %f | Timestamp: %ld",
+	  NSDebugLog(@"[GSMovieView] stepBack fallback failed - fps: %f | Timestamp: %ld",
 		_fps, av_gettime());
 	}
     }
@@ -758,7 +758,7 @@
 	  // Video stream...
 	  if (_videoStreamIndex == -1)
 	    {
-	      NSLog(@"[Info] No video stream found. | Timestamp: %ld", av_gettime());
+	      NSDebugLog(@"[Info] No video stream found. | Timestamp: %ld", av_gettime());
 	    }
 	  else
 	    {
@@ -769,7 +769,7 @@
 	  // Audio stream...
 	  if (_audioStreamIndex == -1) // if we do have an audio stream, initialize it... otherwise log it
 	    {
-	      NSLog(@"[Info] No audio stream found. | Timestamp: %ld", av_gettime());
+	      NSDebugLog(@"[Info] No audio stream found. | Timestamp: %ld", av_gettime());
 	    }
 	  else
 	    {
@@ -780,7 +780,7 @@
 	  // Video and Audio stream not present...
 	  if (_videoStreamIndex == -1 && _audioStreamIndex == -1)
 	    {
-	      NSLog(@"[Error] No video or audio stream detected, exiting");
+	      NSDebugLog(@"[Error] No video or audio stream detected, exiting");
 	      avformat_close_input(&_formatCtx);
 	      return NO;
 	    }
@@ -831,13 +831,13 @@
       // if we had a very short video... play it.
       if (i < BUFFER_SIZE && i > 0)
 	{
-	  NSLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
 	  [self start: nil];
 	}
 
       // When we reach EOF, we can seek back to beginning if looping is desired
       // For now, just log that we've reached the end
-      NSLog(@"[GSMovieView] Reached end of stream, frames read: %ld | Timestamp: %ld", i, av_gettime());
+      NSDebugLog(@"[GSMovieView] Reached end of stream, frames read: %ld | Timestamp: %ld", i, av_gettime());
     }
 }
 
@@ -871,7 +871,7 @@
   _fps = av_q2d(fr);
   if (!videoCodec)
     {
-      NSLog(@"[Error] Unsupported video codec. | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[Error] Unsupported video codec. | Timestamp: %ld", av_gettime());
       return;
     }
 
@@ -879,7 +879,7 @@
   avcodec_parameters_to_context(_videoCodecCtx, videoPar);
   if (avcodec_open2(_videoCodecCtx, videoCodec, NULL) < 0)
     {
-      NSLog(@"[Error] Failed to open video codec. | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[Error] Failed to open video codec. | Timestamp: %ld", av_gettime());
       return;
     }
 
@@ -1012,7 +1012,11 @@
 		[_statusField setStringValue: _statusString];
 
 		// Set the position...
-		[_positionField setDoubleValue: [self currentPosition]];
+		if ([_positionField respondsToSelector: @selector(setDoubleValue:)])
+		  {
+		    NSDebugLog(@"currentPosition = %f, %ld / %ld", [self currentPosition], [self getCurrentTimestamp], [self getDuration]);
+		    [_positionField setDoubleValue: [self currentPosition]];
+		  }
 	      }
 
 	    // Show status on the command line...
@@ -1179,7 +1183,7 @@
       return YES;
     }
 
-  NSLog(@"[GSMovieView] Seek to timestamp %ld failed", timestamp);
+  NSDebugLog(@"[GSMovieView] Seek to timestamp %ld failed", timestamp);
   return NO;
 }
 
@@ -1220,7 +1224,7 @@
 
 - (double) currentPosition
 {
-  return (double) ([self getCurrentTimestamp] / [self getDuration]);
+  return (double) ((double)[self getCurrentTimestamp] / (double)[self getDuration]);
 }
 
 - (void) displayCurrentFrame
@@ -1276,7 +1280,7 @@
 // Emergency cleanup (use with caution)
 - (void) forceStop
 {
-  NSLog(@"[GSMovieView] Force stop initiated | Timestamp: %ld", av_gettime());
+  NSDebugLog(@"[GSMovieView] Force stop initiated | Timestamp: %ld", av_gettime());
 
   _flags.playing = NO;
 
@@ -1305,7 +1309,7 @@
       [_videoPackets removeAllObjects];
     }
 
-  NSLog(@"[GSMovieView] Force stop completed | Timestamp: %ld", av_gettime());
+  NSDebugLog(@"[GSMovieView] Force stop completed | Timestamp: %ld", av_gettime());
 }
 
 // Time stretching support
@@ -1323,11 +1327,11 @@
   if (_audioPlayer)
     {
       [_audioPlayer setPlaybackRate: rate];
-      NSLog(@"[GSMovieView] Set audio playback rate to %.2f", rate);
+      NSDebugLog(@"[GSMovieView] Set audio playback rate to %.2f", rate);
     }
   else
     {
-      NSLog(@"[GSMovieView] Cannot set audio playback rate - no audio player");
+      NSDebugLog(@"[GSMovieView] Cannot set audio playback rate - no audio player");
     }
 }
 

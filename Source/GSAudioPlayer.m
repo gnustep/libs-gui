@@ -153,13 +153,13 @@
 
   if (!audioCodec)
     {
-      NSLog(@"Audio codec not found.");
+      NSDebugLog(@"Audio codec not found.");
       return;
     }
 
   if (_audioCodecCtx != NULL)
     {
-      NSLog(@"Audio codec already initialized");
+      NSDebugLog(@"Audio codec already initialized");
       return;
     }
 
@@ -168,7 +168,7 @@
 
   if (avcodec_open2(_audioCodecCtx, audioCodec, NULL) < 0)
     {
-      NSLog(@"Failed to open audio codec.");
+      NSDebugLog(@"Failed to open audio codec.");
       return;
     }
 
@@ -186,7 +186,7 @@
   int r = swr_init(_swrCtx);
   if (r == 0)
     {
-      NSLog(@"[GSAudioPlayer] WARNING: swr_init returned 0");
+      NSDebugLog(@"[GSAudioPlayer] WARNING: swr_init returned 0");
     }
 
   memset(&_aoFmt, 0, sizeof(ao_sample_format));
@@ -206,13 +206,13 @@
   snprintf(bufferSizeStr, sizeof(bufferSizeStr), "%d", bufferSize);
   ao_append_option(&options, "buffer_time", "100000"); // 100ms in microseconds
 
-  NSLog(@"[GSAudioPlayer] Initializing audio: %d Hz, %d channels, buffer size: %d bytes",
+  NSDebugLog(@"[GSAudioPlayer] Initializing audio: %d Hz, %d channels, buffer size: %d bytes",
 	_audioCodecCtx->sample_rate, out_channels, bufferSize);
 
   _aoDev = ao_open_live(driver, &_aoFmt, options);
   if (_aoDev == NULL)
     {
-      NSLog(@"[GSAudioPlayer] Failed to open audio device");
+      NSDebugLog(@"[GSAudioPlayer] Failed to open audio device");
       ao_free_options(options);
       return;
     }
@@ -224,7 +224,7 @@
   // Initialize time stretching for sample rate changes
   if (![self initializeTimeStretching])
     {
-      NSLog(@"[GSAudioPlayer] Warning: Failed to initialize time stretching");
+      NSDebugLog(@"[GSAudioPlayer] Warning: Failed to initialize time stretching");
     }
 }
 
@@ -254,7 +254,7 @@
 	    audioStartTime = av_gettime();
 	    totalSamplesPlayed = 0;
 	    _flags.started = YES;
-	    NSLog(@"[GSAudioPlayer] Audio playback started | Timestamp: %ld", audioStartTime);
+	    NSDebugLog(@"[GSAudioPlayer] Audio playback started | Timestamp: %ld", audioStartTime);
 	  }
 
 	if (dict)
@@ -279,7 +279,7 @@
 	    // Debug logging for audio clock updates (reduced frequency)
 	    if (totalSamplesPlayed % (_audioCodecCtx->sample_rate / 4) == 0) // Log 4 times per second
 	      {
-		NSLog(@"[GSAudioPlayer] Audio clock: %ld | PTS: %ld | Samples: %ld | Timing error: %ld us\n",
+		NSDebugLog(@"[GSAudioPlayer] Audio clock: %ld | PTS: %ld | Samples: %ld | Timing error: %ld us\n",
 			_audioClock, packet.pts, totalSamplesPlayed, timingError);
 	      }
 
@@ -315,7 +315,7 @@
 
   if (packet->flags & AV_PKT_FLAG_CORRUPT)
     {
-      NSLog(@"Skipping corrupt audio packet");
+      NSDebugLog(@"Skipping corrupt audio packet");
       return 0;
     }
 
@@ -366,7 +366,7 @@
 	    }
 	  _audioBuffer = (uint8_t *) malloc(outBytes);
 	  _audioBufferSize = outBytes;
-	  NSLog(@"[GSAudioPlayer] Allocated audio buffer: %d bytes", outBytes);
+	  NSDebugLog(@"[GSAudioPlayer] Allocated audio buffer: %d bytes", outBytes);
 	}
 
       uint8_t *outPtrs[] = { _audioBuffer };
@@ -428,13 +428,13 @@
     {
       if (_flags.playing)
 	{
-	  NSLog(@"[GSAudioPlayer] Already running, ignoring start request | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSAudioPlayer] Already running, ignoring start request | Timestamp: %ld", av_gettime());
 	  return;
 	}
 
       if (!_formatCtx || !_stream)
 	{
-	  NSLog(@"[GSAudioPlayer] Cannot start - no media loaded | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSAudioPlayer] Cannot start - no media loaded | Timestamp: %ld", av_gettime());
 	  return;
 	}
 
@@ -444,7 +444,7 @@
       // Only restart from beginning if we reached EOF, not for pause/resume
       if (_reachedEOF)
 	{
-	  NSLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
 	  _reachedEOF = NO;
 
 	  // Clear existing audio packets
@@ -456,7 +456,7 @@
 	  // Seek back to the beginning only for EOF
 	  if (av_seek_frame(_formatCtx, _audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
 	    {
-	      NSLog(@"[GSAudioPlayer] rewind successful");
+	      NSDebugLog(@"[GSAudioPlayer] rewind successful");
 		      
 	      // Reset codec state
 	      if (_audioCodecCtx)
@@ -467,13 +467,13 @@
 	    }
 	  else
 	    {
-	      NSLog(@"[GSAudioPlayer] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
+	      NSDebugLog(@"[GSAudioPlayer] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
 	    }
 	}
       else if (_flags.needsRestart)
 	{
 	  // This is a regular pause/resume - don't seek, just clear buffers
-	  NSLog(@"[GSAudioPlayer] Resuming from position %ld | Timestamp: %ld", _lastPosition, av_gettime());
+	  NSDebugLog(@"[GSAudioPlayer] Resuming from position %ld | Timestamp: %ld", _lastPosition, av_gettime());
 	  _flags.needsRestart = NO;
 
 	  // Clear existing packets but don't seek
@@ -504,7 +504,7 @@
 	  [_audioThread start];
 	}
 
-      NSLog(@"[GSAudioPlayer] Audio playback started successfully | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSAudioPlayer] Audio playback started successfully | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -514,7 +514,7 @@
     {
       if (!_flags.playing)
 	{
-	  NSLog(@"[GSAudioPlayer] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
+	  NSDebugLog(@"[GSAudioPlayer] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
 	  return;
 	}
 
@@ -542,13 +542,13 @@
 
 	  if (timeout <= 0)
 	    {
-	      NSLog(@"[GSAudioPlayer] Warning: Audio thread did not finish within timeout");
+	      NSDebugLog(@"[GSAudioPlayer] Warning: Audio thread did not finish within timeout");
 	    }
 
 	  DESTROY(_audioThread);
 	}
 
-      NSLog(@"[GSAudioPlayer] Audio playback stopped successfully | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSAudioPlayer] Audio playback stopped successfully | Timestamp: %ld", av_gettime());
     }
 }
 
@@ -612,7 +612,7 @@
   _audioClock = timestamp;
   _flags.started = NO; // Will be reset when first packet after seek is processed
 
-  NSLog(@"[GSAudioPlayer] Audio seek to timestamp %ld", timestamp);
+  NSDebugLog(@"[GSAudioPlayer] Audio seek to timestamp %ld", timestamp);
   return YES;
 }
 
@@ -659,7 +659,7 @@
 	  [self initializeTimeStretching];
 	}
 
-      NSLog(@"[GSAudioPlayer] Set playback rate to %.2f", rate);
+      NSDebugLog(@"[GSAudioPlayer] Set playback rate to %.2f", rate);
     }
 }
 
@@ -667,7 +667,7 @@
 {
   if (!_audioCodecCtx)
     {
-      NSLog(@"[GSAudioPlayer] Cannot initialize time stretching - no audio codec context");
+      NSDebugLog(@"[GSAudioPlayer] Cannot initialize time stretching - no audio codec context");
       return NO;
     }
 
@@ -696,13 +696,13 @@
   int ret = swr_init(_stretchSwrCtx);
   if (ret < 0)
     {
-      NSLog(@"[GSAudioPlayer] Failed to initialize time stretching resampler");
+      NSDebugLog(@"[GSAudioPlayer] Failed to initialize time stretching resampler");
       [self cleanupTimeStretching];
       return NO;
     }
 
-  NSLog(@"[GSAudioPlayer] Time stretching initialized with rate %.2f (sample rate: %d -> %d)",
-	_playbackRate, _audioCodecCtx->sample_rate, stretchedSampleRate);
+  NSDebugLog(@"[GSAudioPlayer] Time stretching initialized with rate %.2f (sample rate: %d -> %d)",
+	     _playbackRate, _audioCodecCtx->sample_rate, stretchedSampleRate);
   return YES;
 }
 
