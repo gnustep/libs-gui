@@ -51,7 +51,9 @@
       _movie = nil;
       _rate = 1.0;
       _volume = 1.0;
-
+      _statusField = nil;
+      _positionField = nil;
+      
       // Flags...
       _flags.muted = NO;
       _flags.loopMode = NSQTMovieNormalPlayback;
@@ -248,7 +250,7 @@
   return _statusField;
 }
 
-- (CGFloat) currentPosition
+- (double) currentPosition
 {
   return 0.0;
 }

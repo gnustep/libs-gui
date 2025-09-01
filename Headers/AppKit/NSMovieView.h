@@ -79,6 +79,8 @@ APPKIT_EXPORT_CLASS
 @interface NSMovieView : NSView
 {
   IBOutlet NSTextField *_statusField;
+  IBOutlet id _positionField;
+  
   NSMovie* _movie;
   
   float _rate;
@@ -289,7 +291,7 @@ APPKIT_EXPORT_CLASS
 /**
  * GNUstep extension, get current position in the movie.
  */
-- (CGFloat) currentPosition;
+- (double) currentPosition;
 
 @end
 

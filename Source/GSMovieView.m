@@ -46,6 +46,7 @@
 #import "AppKit/NSImageRep.h"
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSPasteboard.h"
+#import "AppKit/NSProgressIndicator.h"
 
 #import "GSMovieView.h"
 #import "GSAudioPlayer.h"
@@ -1006,7 +1007,12 @@
 		NSString *syncSource = (_audioPlayer && [_audioPlayer isAudioStarted]) ? @"Audio Clock" : @"System Time";
 		_statusString = [NSString stringWithFormat: @"Rendering video frame PTS: %ld | Delay: %ld us | Sync: %@ | %@",
 					  packet.pts, delay, syncSource, _flags.playing ? @"Running" : @"Stopped"];
+
+		// Show the current decoder status...
 		[_statusField setStringValue: _statusString];
+
+		// Set the position...
+		[_positionField setDoubleValue: [self currentPosition]];
 	      }
 
 	    // Show status on the command line...
@@ -1212,9 +1218,9 @@
   return 0;
 }
 
-- (CGFloat) currentPosition
+- (double) currentPosition
 {
-  return (CGFloat) ([self getCurrentTimestamp]/[self getDuration]);
+  return (double) ([self getCurrentTimestamp] / [self getDuration]);
 }
 
 - (void) displayCurrentFrame
