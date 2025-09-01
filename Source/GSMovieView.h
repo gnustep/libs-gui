@@ -104,10 +104,6 @@ APPKIT_EXPORT_CLASS
 // Playback status
 - (NSString *) playbackStatus;
 
-// Status field management
-- (void) setStatusField: (NSTextField *)field;
-- (NSTextField *) statusField;
-
 // Synchronization monitoring
 - (BOOL) isUsingSynchronizedAudio;
 - (NSString *) synchronizationStatus;

@@ -1269,10 +1269,8 @@
       int64_t audioTime = [_audioPlayer currentPlaybackTime];
       return [NSString stringWithFormat: @"Audio Clock Sync: %ld us", audioTime];
     }
-  else
-    {
-      return @"System Time Sync (No Audio)";
-    }
+
+  return @"System Time Sync (No Audio)";
 }
 
 // Emergency cleanup (use with caution)
