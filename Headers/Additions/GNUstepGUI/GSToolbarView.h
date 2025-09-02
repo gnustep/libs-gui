@@ -1,15 +1,15 @@
-/* 
+/*
    <title>GSToolbarView</title>
 
    <abstract>The private toolbar class which draws the actual toolbar.</abstract>
-   
+
    Copyright (C) 2002 Free Software Foundation, Inc.
 
    Author:  Gregory John Casamento <greg_casamento@yahoo.com>,
             Fabien Vallon <fabien.vallon@fr.alcove.com>,
 	    Quentin Mathe <qmathe@club-internet.fr>
    Date: May 2002
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -24,10 +24,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #ifndef _GSToolbarView_h_INCLUDE
 #define _GSToolbarView_h_INCLUDE

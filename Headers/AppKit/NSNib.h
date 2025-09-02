@@ -2,12 +2,12 @@
    <title>NSNib</title>
 
    <abstract>
-   This class serves as a container for a nib file.  It's possible 
-   to load a nib file from a URL or from a bundle.   Using this 
-   class the nib file can now be "preloaded" and instantiated 
-   multiple times when/if needed.  Also, since it's possible to 
-   initialize this class using a NSURL it's possible to load 
-   nib files from remote locations. 
+   This class serves as a container for a nib file.  It's possible
+   to load a nib file from a URL or from a bundle.   Using this
+   class the nib file can now be "preloaded" and instantiated
+   multiple times when/if needed.  Also, since it's possible to
+   initialize this class using a NSURL it's possible to load
+   nib files from remote locations.
    <b/>
    This class uses: NSNibOwner and NSNibTopLevelObjects to allow
    the caller to specify the owner of the nib during instantiation
@@ -19,7 +19,7 @@
 
    Author: Gregory John Casamento <greg_casamento@yahoo.com>
    Date: 2004
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -34,10 +34,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #ifndef _GNUstep_H_NSNib
 #define _GNUstep_H_NSNib
@@ -75,7 +75,7 @@ APPKIT_EXPORT_CLASS
 - (instancetype)initWithNibNamed: (NSNibName)nibNamed bundle: (NSBundle *)bundle;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
-- (instancetype)initWithNibData: (NSData *)nibData 
+- (instancetype)initWithNibData: (NSData *)nibData
                          bundle: (NSBundle *)bundle;
 #endif
 
@@ -87,7 +87,7 @@ APPKIT_EXPORT_CLASS
 - (BOOL)instantiateNibWithExternalNameTable: (NSDictionary *)externalNameTable withZone: (NSZone *)zone;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
-- (BOOL)instantiateWithOwner: (id)owner 
+- (BOOL)instantiateWithOwner: (id)owner
              topLevelObjects: (NSArray **)topLevelObjects;
 #endif
 @end
