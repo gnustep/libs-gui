@@ -1,5 +1,5 @@
 /* 
-   <title>GSToolbarView.h</title>
+   <title>GSToolbarView</title>
 
    <abstract>The private toolbar class which draws the actual toolbar.</abstract>
    

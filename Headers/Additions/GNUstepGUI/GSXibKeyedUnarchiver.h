@@ -1,4 +1,4 @@
-/** <title>GSXibKeyedUnarchiver.h</title>
+/** <title>GSXibKeyedUnarchiver</title>
  
  <abstract>
  These are templates for use with OSX XIB 5 files.  These classes are the

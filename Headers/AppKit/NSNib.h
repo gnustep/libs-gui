@@ -1,5 +1,5 @@
 /**
-   <title>NSNib.h</title>
+   <title>NSNib</title>
 
    <abstract>
    This class serves as a container for a nib file.  It's possible 
