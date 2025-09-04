@@ -169,9 +169,9 @@ APPKIT_EXPORT_CLASS
  * Returns the bold system font at the specified size.
  * The bold system font is used for emphasis in user interface elements
  * and provides consistent bold text appearance across the system.
- *
- * @param fontSize The desired font size in points. Use 0.0 for the default system size.
- * @return A bold variant of the system font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default system size.
+ * Returns a bold variant of the system font at the specified size.
  */
 + (NSFont*) boldSystemFontOfSize: (CGFloat)fontSize;
 
@@ -179,10 +179,11 @@ APPKIT_EXPORT_CLASS
  * Creates a font with the specified PostScript name and transformation matrix.
  * This method provides the most control over font creation, allowing custom
  * transformation matrices for scaling, rotation, and skewing effects.
- *
- * @param aFontName The PostScript name of the font (e.g., "Helvetica-Bold").
- * @param fontMatrix A 6-element transformation matrix [a b c d tx ty] for font transformation.
- * @return A font object with the specified name and transformation, or nil if the font cannot be created.
+ * The aFontName parameter should contain the PostScript name of the font
+ * (e.g., "Helvetica-Bold"). The fontMatrix parameter should be a 6-element
+ * transformation matrix [a b c d tx ty] for font transformation.
+ * Returns a font object with the specified name and transformation, or nil
+ * if the font cannot be created.
  */
 + (NSFont*) fontWithName: (NSString*)aFontName
 		  matrix: (const CGFloat*)fontMatrix;
@@ -190,10 +191,11 @@ APPKIT_EXPORT_CLASS
 /**
  * Creates a font with the specified PostScript name and size.
  * This is the most commonly used font creation method for standard text rendering.
- *
- * @param aFontName The PostScript name of the font (e.g., "Times-Roman", "Helvetica").
- * @param fontSize The desired font size in points.
- * @return A font object with the specified name and size, or nil if the font cannot be created.
+ * The aFontName parameter should contain the PostScript name of the font
+ * (e.g., "Times-Roman", "Helvetica"). The fontSize parameter specifies
+ * the desired font size in points.
+ * Returns a font object with the specified name and size, or nil if the
+ * font cannot be created.
  */
 + (NSFont*) fontWithName: (NSString*)aFontName
 		    size: (CGFloat)fontSize;
@@ -202,9 +204,9 @@ APPKIT_EXPORT_CLASS
  * Returns the standard system font at the specified size.
  * The system font is the default font used for user interface text throughout
  * the system and provides optimal readability for interface elements.
- *
- * @param fontSize The desired font size in points. Use 0.0 for the default system size.
- * @return The system font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default system size.
+ * Returns the system font at the specified size.
  */
 + (NSFont*) systemFontOfSize: (CGFloat)fontSize;
 
@@ -212,9 +214,9 @@ APPKIT_EXPORT_CLASS
  * Returns the user's preferred fixed-pitch font at the specified size.
  * Fixed-pitch fonts are essential for code editing, terminal applications,
  * and any context where character alignment is important.
- *
- * @param fontSize The desired font size in points. Use 0.0 for the default size.
- * @return The user's preferred fixed-pitch font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default size.
+ * Returns the user's preferred fixed-pitch font at the specified size.
  */
 + (NSFont*) userFixedPitchFontOfSize: (CGFloat)fontSize;
 
@@ -222,66 +224,74 @@ APPKIT_EXPORT_CLASS
  * Returns the user's preferred proportional font at the specified size.
  * This font reflects the user's personal preference for general text display
  * and reading, providing a personalized text experience.
- *
- * @param fontSize The desired font size in points. Use 0.0 for the default size.
- * @return The user's preferred proportional font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default size.
+ * Returns the user's preferred proportional font at the specified size.
  */
 + (NSFont*) userFontOfSize: (CGFloat)fontSize;
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /**
  * Returns the font used in window title bars.
- * @param fontSize The desired font size in points. Use 0.0 for the default size.
- * @return The standard title bar font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default size.
+ * Returns the standard title bar font at the specified size.
  */
 + (NSFont*) titleBarFontOfSize: (CGFloat)fontSize;
 
 /**
  * Returns the font used in menus.
- * @param fontSize The desired font size in points. Use 0.0 for the default size.
- * @return The standard menu font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default size.
+ * Returns the standard menu font at the specified size.
  */
 + (NSFont*) menuFontOfSize: (CGFloat)fontSize;
 
 /**
  * Returns the font used for message text in alerts and dialogs.
- * @param fontSize The desired font size in points. Use 0.0 for the default size.
- * @return The standard message font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default size.
+ * Returns the standard message font at the specified size.
  */
 + (NSFont*) messageFontOfSize: (CGFloat)fontSize;
 
 /**
  * Returns the font used in palette windows and tool palettes.
- * @param fontSize The desired font size in points. Use 0.0 for the default size.
- * @return The standard palette font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default size.
+ * Returns the standard palette font at the specified size.
  */
 + (NSFont*) paletteFontOfSize: (CGFloat)fontSize;
 
 /**
  * Returns the font used for tooltip text.
- * @param fontSize The desired font size in points. Use 0.0 for the default size.
- * @return The standard tooltip font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default size.
+ * Returns the standard tooltip font at the specified size.
  */
 + (NSFont*) toolTipsFontOfSize: (CGFloat)fontSize;
 
 /**
  * Returns the font used for control content (button titles, text field content).
- * @param fontSize The desired font size in points. Use 0.0 for the default size.
- * @return The standard control content font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default size.
+ * Returns the standard control content font at the specified size.
  */
 + (NSFont*) controlContentFontOfSize: (CGFloat)fontSize;
 
 /**
  * Returns the font used for labels and non-editable text.
- * @param fontSize The desired font size in points. Use 0.0 for the default size.
- * @return The standard label font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default size.
+ * Returns the standard label font at the specified size.
  */
 + (NSFont*) labelFontOfSize: (CGFloat)fontSize;
 
 /**
  * Returns the font used in the menu bar.
- * @param fontSize The desired font size in points. Use 0.0 for the default size.
- * @return The standard menu bar font at the specified size.
+ * The fontSize parameter specifies the desired font size in points.
+ * Use 0.0 for the default size.
+ * Returns the standard menu bar font at the specified size.
  */
 + (NSFont*) menuBarFontOfSize: (CGFloat)fontSize;
 #endif
@@ -290,20 +300,18 @@ APPKIT_EXPORT_CLASS
  * Creates a font using a font descriptor and size.
  * Font descriptors provide a more flexible way to specify font characteristics
  * including family, weight, traits, and other attributes.
- *
- * @param descriptor The font descriptor specifying the desired font characteristics.
- * @param size The font size in points.
- * @return A font matching the descriptor at the specified size.
+ * The descriptor parameter specifies the desired font characteristics.
+ * The size parameter sets the font size in points.
+ * Returns a font matching the descriptor at the specified size.
  */
 + (NSFont*) fontWithDescriptor: (NSFontDescriptor*)descriptor size: (CGFloat)size;
 
 /**
  * Creates a font using a font descriptor and transformation matrix.
  * This method combines descriptor-based font selection with custom transformations.
- *
- * @param descriptor The font descriptor specifying the desired font characteristics.
- * @param transform The transformation to apply to the font.
- * @return A font matching the descriptor with the specified transformation applied.
+ * The descriptor parameter specifies the desired font characteristics.
+ * The transform parameter specifies the transformation to apply to the font.
+ * Returns a font matching the descriptor with the specified transformation applied.
  */
 + (NSFont*) fontWithDescriptor: (NSFontDescriptor*)descriptor
                  textTransform: (NSAffineTransform*)transform;
@@ -330,19 +338,19 @@ APPKIT_EXPORT_CLASS
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /**
  * Returns the standard font size for labels.
- * @return The standard label font size in points.
+ * Returns the standard label font size in points.
  */
 + (CGFloat) labelFontSize;
 
 /**
  * Returns the standard small system font size.
- * @return The standard small system font size in points.
+ * Returns the standard small system font size in points.
  */
 + (CGFloat) smallSystemFontSize;
 
 /**
  * Returns the standard system font size.
- * @return The standard system font size in points.
+ * Returns the standard system font size in points.
  */
 + (CGFloat) systemFontSize;
 
@@ -350,9 +358,9 @@ APPKIT_EXPORT_CLASS
  * Returns the appropriate system font size for the given control size.
  * This method provides the correct font size for different control sizes
  * (regular, small, mini) to maintain visual consistency.
- *
- * @param controlSize The control size (NSRegularControlSize, NSSmallControlSize, NSMiniControlSize).
- * @return The appropriate font size for the specified control size.
+ * The controlSize parameter specifies the control size (NSRegularControlSize,
+ * NSSmallControlSize, NSMiniControlSize).
+ * Returns the appropriate font size for the specified control size.
  */
 + (CGFloat) systemFontSizeForControlSize: (NSControlSize)controlSize;
 #endif
@@ -365,8 +373,7 @@ APPKIT_EXPORT_CLASS
  * Returns the list of preferred font names.
  * The preferred fonts list determines the fallback order when a requested
  * font is not available on the system.
- *
- * @return An array of NSString objects containing preferred font names.
+ * Returns an array of NSString objects containing preferred font names.
  */
 + (NSArray*) preferredFontNames;
 
@@ -374,8 +381,8 @@ APPKIT_EXPORT_CLASS
  * Sets the list of preferred font names.
  * This establishes the fallback order for font selection when requested
  * fonts are not available.
- *
- * @param fontNames An array of NSString objects containing preferred font names.
+ * The fontNames parameter should contain an array of NSString objects
+ * with preferred font names.
  */
 + (void) setPreferredFontNames: (NSArray*)fontNames;
 
