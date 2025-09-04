@@ -65,7 +65,7 @@
 	for NSTreeController, a subclass of NSTreeNode.
 	* Source/GSThemeDrawing.m: Optimize code a bit and
 	add changes for bindings.
-	* Source/GSib5KeyedUnarchiver.m: Add support for new keys
+	* Source/GSXib5KeyedUnarchiver.m: Add support for new keys
 	on NSTreeController.
 	* Source/NSKeyValueBinding.m: Add new methods to
 	GSKeyValueBinding

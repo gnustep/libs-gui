@@ -103,7 +103,7 @@
   _loopMode = NSQTMovieNormalPlayback;
 
   // Initialize new variables for proper pause/resume handling
-  _reachedEOF = NO;
+  _flags.reachedEOF = NO;
   _lastPosition = 0;
 
   // Initialize reusable audio buffer
@@ -164,15 +164,30 @@
     }
 
   _audioCodecCtx = avcodec_alloc_context3(audioCodec);
+  if (_audioCodecCtx == NULL)
+    {
+      return;
+    }
+
   avcodec_parameters_to_context(_audioCodecCtx, audioPar);
 
   if (avcodec_open2(_audioCodecCtx, audioCodec, NULL) < 0)
     {
       NSDebugLog(@"Failed to open audio codec.");
+      if (_audioCodecCtx != NULL)
+	{
+	  avcodec_free_context(&_audioCodecCtx);
+	}
+
       return;
     }
 
   _audioFrame = av_frame_alloc();
+  if (_audioFrame == NULL)
+    {
+      return;
+    }
+
   swr_alloc_set_opts2(&_swrCtx,
 		      &(AVChannelLayout){ .order = AV_CHANNEL_ORDER_NATIVE,
 			  .nb_channels = out_channels,
@@ -202,8 +217,7 @@
   // Calculate buffer for about 100ms of audio
   int bufferSamples = _audioCodecCtx->sample_rate / 10; // 100ms
   int bufferSize = bufferSamples * out_channels * 2; // 16-bit stereo
-  char bufferSizeStr[32];
-  snprintf(bufferSizeStr, sizeof(bufferSizeStr), "%d", bufferSize);
+
   ao_append_option(&options, "buffer_time", "100000"); // 100ms in microseconds
 
   NSDebugLog(@"[GSAudioPlayer] Initializing audio: %d Hz, %d channels, buffer size: %d bytes",
@@ -280,7 +294,7 @@
 	    if (totalSamplesPlayed % (_audioCodecCtx->sample_rate / 4) == 0) // Log 4 times per second
 	      {
 		NSDebugLog(@"[GSAudioPlayer] Audio clock: %ld | PTS: %ld | Samples: %ld | Timing error: %ld us\n",
-			_audioClock, packet.pts, totalSamplesPlayed, timingError);
+			   _audioClock, packet.pts, totalSamplesPlayed, timingError);
 	      }
 
 	    // Decode and play the packet
@@ -335,17 +349,20 @@
 	  if (!_stretchedFrame)
 	    {
 	      _stretchedFrame = av_frame_alloc();
-	      _stretchedFrame->format = AV_SAMPLE_FMT_S16;
-	      _stretchedFrame->ch_layout = _audioFrame->ch_layout;
-	      _stretchedFrame->sample_rate = stretchedSampleRate;
+	      if (_stretchedFrame != NULL)
+		{
+		  _stretchedFrame->format = AV_SAMPLE_FMT_S16;
+		  _stretchedFrame->ch_layout = _audioFrame->ch_layout;
+		  _stretchedFrame->sample_rate = stretchedSampleRate;
+		}
 	    }
 
 	  _stretchedFrame->nb_samples = maxOutSamples;
 	  av_frame_get_buffer(_stretchedFrame, 0);
 
 	  int convertedSamples = swr_convert(_stretchSwrCtx,
-					   _stretchedFrame->data, maxOutSamples,
-					   (const uint8_t **)_audioFrame->data, _audioFrame->nb_samples);
+					     _stretchedFrame->data, maxOutSamples,
+					     (const uint8_t **)_audioFrame->data, _audioFrame->nb_samples);
 
 	  if (convertedSamples > 0)
 	    {
@@ -365,8 +382,15 @@
 	      free(_audioBuffer);
 	    }
 	  _audioBuffer = (uint8_t *) malloc(outBytes);
-	  _audioBufferSize = outBytes;
-	  NSDebugLog(@"[GSAudioPlayer] Allocated audio buffer: %d bytes", outBytes);
+	  if (_audioBuffer != NULL)
+	    {
+	      _audioBufferSize = outBytes;
+	      NSDebugLog(@"[GSAudioPlayer] Allocated audio buffer: %d bytes", outBytes);
+	    }
+	  else
+	    {
+	      NSLog(@"[GSAudioPlayer] failed to allocate buffer: %d bytes", outBytes);
+	    }
 	}
 
       uint8_t *outPtrs[] = { _audioBuffer };
@@ -442,10 +466,10 @@
       _flags.started = NO; // Reset for synchronization
 
       // Only restart from beginning if we reached EOF, not for pause/resume
-      if (_reachedEOF)
+      if (_flags.reachedEOF)
 	{
 	  NSDebugLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
-	  _reachedEOF = NO;
+	  _flags.reachedEOF = NO;
 
 	  // Clear existing audio packets
 	  @synchronized (_audioPackets)
@@ -457,7 +481,7 @@
 	  if (av_seek_frame(_formatCtx, _audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
 	    {
 	      NSDebugLog(@"[GSAudioPlayer] rewind successful");
-		      
+
 	      // Reset codec state
 	      if (_audioCodecCtx)
 		{
@@ -518,13 +542,13 @@
 	  return;
 	}
 
-      // Save current position for potential resume      
-      if (!_reachedEOF)
+      // Save current position for potential resume
+      if (!_flags.reachedEOF)
 	{
 	  _lastPosition = _audioClock;
 	  _flags.needsRestart = YES; // Mark for resume, not EOF restart
 	}
-      
+
       _flags.playing = NO;
 
       // Cancel and wait for video thread
@@ -724,7 +748,7 @@
 // Handle end of file - marks for EOF restart
 - (void) handleEndOfFile
 {
-  _reachedEOF = YES;
+  _flags.reachedEOF = YES;
   _lastPosition = _audioClock; // Save current position
   [self stop];
 }

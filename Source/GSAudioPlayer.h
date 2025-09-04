@@ -86,11 +86,10 @@
     unsigned int started: 1;
     unsigned int muted: 1;
     unsigned int needsRestart: 1;
-    unsigned int reserved: 28;
+    unsigned int reachedEOF: 1;
+    unsigned int reserved: 27;
   } _flags;
 
-  // New variables for proper pause/resume handling
-  BOOL _reachedEOF;
   int64_t _lastPosition;
 }
 
