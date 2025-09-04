@@ -1,31 +1,45 @@
-/*
-   NSNibDeclarations.h
+/** <title>NSNibDeclarations</title>
 
-   Declarations for types used by Interface Builder when reading header
-   files.
+    <abstract>Interface Builder annotation macros and declarations</abstract>
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+    This header provides macro definitions and declarations used by Interface
+    Builder and other visual development tools to annotate Objective-C code
+    for automatic user interface construction and connection.
 
-   Author:  Michael Giddings <giddings@genetics.utah.edu>
-   Date: Feb. 1999
+    The primary macros defined here are:
+    * IBOutlet - Marks instance variables as outlets for interface connections
+    * IBAction - Marks methods as actions that can be connected to UI controls
 
-   This file is part of the GNUstep GUI Library.
+    These macros serve as annotations that are recognized by Interface Builder
+    when parsing header files to identify properties and methods that should
+    be available for visual connection in the interface design process.
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+    While these macros expand to empty declarations at compile time (except
+    for IBAction which expands to void), they provide crucial metadata for
+    development tools that generate and maintain user interface connections.
 
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Lesser General Public License for more details.
+    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
-   Boston, MA 02110-1301, USA.
+    Author:  Michael Giddings <giddings@genetics.utah.edu>
+    Date: Feb. 1999
+
+    This file is part of the GNUstep GUI Library.
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; see the file COPYING.LIB.
+    If not, see <http://www.gnu.org/licenses/> or write to the
+    Free Software Foundation, 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #ifndef _NSNibDeclarations_H_
