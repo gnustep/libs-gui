@@ -104,7 +104,7 @@
   BOOL success = YES;
   NSUInteger i, count;
 
-  @try
+  NS_DURING
     {
       count = [_fontDescriptors count];
 
@@ -149,10 +149,10 @@
           [self _updateProgressWithDescription: @"Font download completed successfully"];
         }
     }
-  @catch (NSException *exception)
+  NS_HANDLER
     {
       success = NO;
-      NSString *reason = [exception reason];
+      NSString *reason = [localException reason];
       if (reason == nil)
         {
           reason = @"Unknown error";
@@ -165,6 +165,7 @@
                                          code: -1003
                                      userInfo: userInfo];
     }
+  NS_ENDHANDLER
 
   [self _completeDownloadWithError: downloadError
                  completionHandler: completionHandler];
