@@ -61,10 +61,31 @@ APPKIT_EXPORT_CLASS
 - (instancetype) initWithFontDescriptors: (NSArray *)fontDescriptors
                                  options: (NSFontAssetRequestOptions)options;
 
+/**
+ * Sets the default downloader class to be used for all new font asset requests.
+ * The specified class must be a subclass of GSFontAssetDownloader.
+ * Pass nil to restore the default GSFontAssetDownloader behavior.
+ */
++ (void) setDefaultDownloaderClass: (Class)downloaderClass;
+
+/**
+ * Returns the currently registered default downloader class.
+ */
++ (Class) defaultDownloaderClass;
+
+/**
+ * Returns an array of font descriptors that have been successfully downloaded.
+ */
 - (NSArray *) downloadedFontDescriptors;
 
+/**
+ * Returns the progress object for the font asset request.
+ */
 - (NSProgress *) progress;
 
+/**
+ * Downloads the specified font assets.
+ */
 - (void)downloadFontAssetsWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler;
 
 /**

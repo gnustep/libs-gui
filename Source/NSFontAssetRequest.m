@@ -39,6 +39,16 @@
 
 @implementation NSFontAssetRequest
 
++ (void) setDefaultDownloaderClass: (Class)downloaderClass
+{
+  [GSFontAssetDownloader setDefaultDownloaderClass: downloaderClass];
+}
+
++ (Class) defaultDownloaderClass
+{
+  return [GSFontAssetDownloader defaultDownloaderClass];
+}
+
 - (instancetype) initWithFontDescriptors: (NSArray *)fontDescriptors
                                  options: (NSFontAssetRequestOptions)options
 {
@@ -51,7 +61,7 @@
       _progress = [NSProgress progressWithTotalUnitCount: [fontDescriptors count]];
       [_progress setCompletedUnitCount: 0];
       _downloadInProgress = NO;
-      _downloader = [[GSFontAssetDownloader alloc] initWithOptions: options];
+      _downloader = [GSFontAssetDownloader downloaderWithOptions: options];
 
       // Initialize progress properties
       [_progress setLocalizedDescription: @"Downloading fonts..."];

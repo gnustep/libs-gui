@@ -49,12 +49,63 @@
  * Subclasses can override individual methods to customize specific
  * aspects of the download and installation process while reusing
  * other parts of the default implementation.
+ *
+ * CLASS REPLACEMENT SYSTEM:
+ *
+ * GSFontAssetDownloader supports a class replacement system that allows
+ * applications to register a custom downloader class to be used globally.
+ * This enables complete customization of font downloading behavior without
+ * needing to modify every NSFontAssetRequest instance.
+ *
+ * Example usage:
+ *
+ * // Define a custom downloader class
+ * @interface MyCustomFontDownloader : GSFontAssetDownloader
+ * @end
+ *
+ * @implementation MyCustomFontDownloader
+ * - (NSURL *) fontURLForDescriptor: (NSFontDescriptor *)descriptor {
+ *     // Custom URL resolution logic
+ *     return [NSURL URLWithString: @"https://my-font-service.com/..."];
+ * }
+ * @end
+ *
+ * // Register the custom class globally
+ * [GSFontAssetDownloader setDefaultDownloaderClass: [MyCustomFontDownloader class]];
+ *
+ * // Or through NSFontAssetRequest
+ * [NSFontAssetRequest setDefaultDownloaderClass: [MyCustomFontDownloader class]];
+ *
+ * // All new font asset requests will now use the custom downloader
+ * NSFontAssetRequest *request = [[NSFontAssetRequest alloc]
+ *     initWithFontDescriptors: descriptors options: 0];
  */
 GS_EXPORT_CLASS
 @interface GSFontAssetDownloader : NSObject
 {
   NSUInteger _options;
 }
+
+/**
+ * Registers a custom downloader class to be used instead of the default
+ * GSFontAssetDownloader class. The registered class must be a subclass
+ * of GSFontAssetDownloader. Pass nil to restore the default behavior.
+ */
++ (void) setDefaultDownloaderClass: (Class)downloaderClass;
+
+/**
+ * Returns the currently registered downloader class, or GSFontAssetDownloader
+ * if no custom class has been registered.
+ */
++ (Class) defaultDownloaderClass;
+
+/**
+ * Creates a new font asset downloader instance using the currently
+ * registered downloader class. This is the preferred method for creating
+ * downloader instances as it respects any custom downloader class that
+ * has been registered.
+ */
++ (instancetype) downloaderWithOptions: (NSUInteger)options;
 
 /**
  * Creates a new font asset downloader with the specified options.
