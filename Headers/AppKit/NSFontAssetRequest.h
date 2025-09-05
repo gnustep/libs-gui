@@ -32,6 +32,8 @@
 DEFINE_BLOCK_TYPE(GSFontAssetCompletionHandler, BOOL, NSError*);
 
 @class NSProgress;
+@class NSFontDescriptor;
+@class GSFontAssetDownloader;
 // @protocol NSProgressReporting;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
@@ -53,6 +55,7 @@ APPKIT_EXPORT_CLASS
   NSMutableArray *_downloadedFontDescriptors;
   NSProgress *_progress;
   BOOL _downloadInProgress;
+  GSFontAssetDownloader *_downloader;
 }
 
 - (instancetype) initWithFontDescriptors: (NSArray *)fontDescriptors
@@ -63,6 +66,24 @@ APPKIT_EXPORT_CLASS
 - (NSProgress *) progress;
 
 - (void)downloadFontAssetsWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler;
+
+/**
+ * Sets a custom font asset downloader.
+ * This allows clients to provide custom downloading strategies
+ * by subclassing GSFontAssetDownloader and overriding specific
+ * methods for URL resolution, downloading, validation, or installation.
+ * The downloader parameter specifies the custom downloader to use,
+ * replacing the default downloader instance.
+ */
+- (void) setFontAssetDownloader: (GSFontAssetDownloader *)downloader;
+
+/**
+ * Returns the current font asset downloader.
+ * This can be used to inspect or modify the downloader's configuration,
+ * or to access the downloader for direct use in custom scenarios.
+ * Returns the GSFontAssetDownloader instance currently being used.
+ */
+- (GSFontAssetDownloader *) fontAssetDownloader;
 
 @end
 

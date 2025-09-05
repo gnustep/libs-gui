@@ -1,4 +1,7 @@
-/* Implementation of class NSFontAssetRequest
+/* Implementation of cla#import <Foundation/Foundation.h>
+#import "AppKit/NSFontAssetRequest.h"
+#import "AppKit/NSFontDescriptor.h"
+#import "GNUstepGUI/GSFontAssetDownloader.h"SFontAssetRequest
    Copyright (C) 2019 Free Software Foundation, Inc.
 
    By: Gregory John Casamento
@@ -25,6 +28,7 @@
 #import <Foundation/Foundation.h>
 #import "AppKit/NSFontAssetRequest.h"
 #import "AppKit/NSFontDescriptor.h"
+#import "GNUstepGUI/GSFontAssetDownloader.h"
 
 @interface NSFontAssetRequest (Private)
 - (void) _performFontDownloadWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler;
@@ -47,6 +51,7 @@
       _progress = [NSProgress progressWithTotalUnitCount: [fontDescriptors count]];
       [_progress setCompletedUnitCount: 0];
       _downloadInProgress = NO;
+      _downloader = [[GSFontAssetDownloader alloc] initWithOptions: options];
 
       // Initialize progress properties
       [_progress setLocalizedDescription: @"Downloading fonts..."];
@@ -60,6 +65,7 @@
   RELEASE(_fontDescriptors);
   RELEASE(_downloadedFontDescriptors);
   RELEASE(_progress);
+  RELEASE(_downloader);
   [super dealloc];
 }
 
@@ -112,6 +118,7 @@
       for (i = 0; i < count; i++)
         {
           NSFontDescriptor *descriptor = [_fontDescriptors objectAtIndex: i];
+          NSError *fontError = nil;
 
           // Update progress description
           NSString *fontName = [descriptor objectForKey: NSFontNameAttribute];
@@ -121,9 +128,6 @@
             }
           NSString *progressDescription = [NSString stringWithFormat: @"Processing font: %@", fontName];
           [self _updateProgressWithDescription: progressDescription];
-
-          // Simulate download time
-          [NSThread sleepForTimeInterval: 0.1];
 
           // Check if progress was cancelled
           if ([_progress isCancelled])
@@ -137,8 +141,17 @@
               break;
             }
 
-          // For simulation purposes, assume all fonts are "downloaded" successfully
-          [_downloadedFontDescriptors addObject: descriptor];
+          // Use the downloader to download and install the font
+          if ([_downloader downloadAndInstallFontWithDescriptor: descriptor error: &fontError])
+            {
+              // Successfully downloaded and installed
+              [_downloadedFontDescriptors addObject: descriptor];
+              NSLog(@"Successfully installed font: %@", fontName);
+            }
+          else
+            {
+              NSLog(@"Failed to download/install font %@: %@", fontName, [fontError localizedDescription]);
+            }
 
           // Update progress
           [_progress setCompletedUnitCount: i + 1];
@@ -146,7 +159,7 @@
 
       if (success)
         {
-          [self _updateProgressWithDescription: @"Font download completed successfully"];
+          [self _updateProgressWithDescription: @"Font download and installation completed"];
         }
     }
   NS_HANDLER
@@ -210,5 +223,28 @@
   return _downloadInProgress;
 }
 
-@end
+/**
+ * Sets a custom font asset downloader.
+ * This allows clients to provide custom downloading strategies
+ * by subclassing GSFontAssetDownloader and overriding specific
+ * methods for URL resolution, downloading, validation, or installation.
+ */
+- (void) setFontAssetDownloader: (GSFontAssetDownloader *)downloader
+{
+  if (downloader != _downloader)
+    {
+      RELEASE(_downloader);
+      _downloader = [downloader retain];
+    }
+}
 
+/**
+ * Returns the current font asset downloader.
+ * This can be used to inspect or modify the downloader's configuration.
+ */
+- (GSFontAssetDownloader *) fontAssetDownloader
+{
+  return _downloader;
+}
+
+@end
