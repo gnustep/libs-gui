@@ -95,8 +95,8 @@
       NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font asset download already in progress"
                                                            forKey: NSLocalizedDescriptionKey];
       NSError *error = [NSError errorWithDomain: @"NSFontAssetRequestErrorDomain"
-                                          code: -1001
-                                      userInfo: userInfo];
+					   code: -1001
+				       userInfo: userInfo];
       CALL_NON_NULL_BLOCK(completionHandler, error);
       return;
     }
@@ -139,7 +139,7 @@
             {
               success = NO;
               NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font asset download was cancelled"
-                                                               forKey: NSLocalizedDescriptionKey];
+								   forKey: NSLocalizedDescriptionKey];
               downloadError = [NSError errorWithDomain: @"NSFontAssetRequestErrorDomain"
                                                  code: -1002
                                              userInfo: userInfo];
@@ -180,8 +180,8 @@
                                 reason, NSLocalizedFailureReasonErrorKey,
                                 nil];
       downloadError = [NSError errorWithDomain: @"NSFontAssetRequestErrorDomain"
-                                         code: -1003
-                                     userInfo: userInfo];
+					  code: -1003
+				      userInfo: userInfo];
     }
   NS_ENDHANDLER
 
@@ -215,7 +215,7 @@
 
 - (NSArray *) fontDescriptors
 {
-  return [[_fontDescriptors copy] autorelease];
+  return AUTORELEASE([_fontDescriptors copy]);
 }
 
 - (NSFontAssetRequestOptions) options
@@ -236,11 +236,7 @@
  */
 - (void) setFontAssetDownloader: (GSFontAssetDownloader *)downloader
 {
-  if (downloader != _downloader)
-    {
-      RELEASE(_downloader);
-      _downloader = [downloader retain];
-    }
+  ASSIGN(_downloader, downloader);
 }
 
 /**

@@ -77,7 +77,7 @@ static Class _defaultDownloaderClass = nil;
   if (downloaderClass != nil && ![downloaderClass isSubclassOfClass: [GSFontAssetDownloader class]])
     {
       [NSException raise: NSInvalidArgumentException
-                  format: @"Downloader class must be a subclass of GSFontAssetDownloader"];
+		  format: @"Downloader class must be a subclass of GSFontAssetDownloader"];
       return;
     }
   _defaultDownloaderClass = downloaderClass;
@@ -95,18 +95,18 @@ static Class _defaultDownloaderClass = nil;
 }
 
 - (BOOL) downloadAndInstallFontWithDescriptor: (NSFontDescriptor *)descriptor
-                                        error: (NSError **)error
+					error: (NSError **)error
 {
   if (descriptor == nil)
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font descriptor is nil"
-                                                           forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -1001
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font descriptor is nil"
+							   forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				      code: -1001
+				  userInfo: userInfo];
+	}
       return NO;
     }
 
@@ -119,58 +119,58 @@ static Class _defaultDownloaderClass = nil;
       // Get font URL from descriptor
       NSURL *fontURL = [self fontURLForDescriptor: descriptor];
       if (fontURL == nil)
-        {
-          if (error != NULL)
-            {
-              NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"No font URL available for descriptor"
-                                                               forKey: NSLocalizedDescriptionKey];
-              *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                          code: -1002
-                                      userInfo: userInfo];
-            }
-          return NO;
-        }
+	{
+	  if (error != NULL)
+	    {
+	      NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"No font URL available for descriptor"
+							       forKey: NSLocalizedDescriptionKey];
+	      *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+					  code: -1002
+				      userInfo: userInfo];
+	    }
+	  return NO;
+	}
 
       // Download the font file
       downloadedPath = [self downloadFontFromURL: fontURL error: &localError];
       if (downloadedPath == nil)
-        {
-          if (error != NULL)
-            {
-              *error = localError;
-            }
-          return NO;
-        }
+	{
+	  if (error != NULL)
+	    {
+	      *error = localError;
+	    }
+	  return NO;
+	}
 
       // Validate the downloaded font file
       if (![self validateFontFile: downloadedPath error: &localError])
-        {
-          if (error != NULL)
-            {
-              *error = localError;
-            }
-          return NO;
-        }
+	{
+	  if (error != NULL)
+	    {
+	      *error = localError;
+	    }
+	  return NO;
+	}
 
       // Install the font
       success = [self installFontAtPath: downloadedPath error: &localError];
       if (!success && error != NULL)
-        {
-          *error = localError;
-        }
+	{
+	  *error = localError;
+	}
     }
   NS_HANDLER
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"Font download and installation failed", NSLocalizedDescriptionKey,
-                                    [localException reason], NSLocalizedFailureReasonErrorKey,
-                                    nil];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -1003
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+				    @"Font download and installation failed", NSLocalizedDescriptionKey,
+				    [localException reason], NSLocalizedFailureReasonErrorKey,
+				    nil];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				      code: -1003
+				  userInfo: userInfo];
+	}
       success = NO;
     }
   NS_ENDHANDLER
@@ -214,18 +214,18 @@ static Class _defaultDownloaderClass = nil;
 }
 
 - (NSString *) downloadFontFromURL: (NSURL *)fontURL
-                             error: (NSError **)error
+			     error: (NSError **)error
 {
   if (fontURL == nil)
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font URL is nil"
-                                                           forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -2001
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font URL is nil"
+							   forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				      code: -2001
+				  userInfo: userInfo];
+	}
       return nil;
     }
 
@@ -245,55 +245,55 @@ static Class _defaultDownloaderClass = nil;
     {
       // For HTTPS URLs, try to download
       if ([[fontURL scheme] isEqualToString: @"https"] || [[fontURL scheme] isEqualToString: @"http"])
-        {
-          fontData = [NSData dataWithContentsOfURL: fontURL];
-        }
+	{
+	  fontData = [NSData dataWithContentsOfURL: fontURL];
+	}
       // For file URLs, copy the file
       else if ([[fontURL scheme] isEqualToString: @"file"])
-        {
-          fontData = [NSData dataWithContentsOfURL: fontURL];
-        }
+	{
+	  fontData = [NSData dataWithContentsOfURL: fontURL];
+	}
     }
   NS_HANDLER
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"Failed to download font from URL", NSLocalizedDescriptionKey,
-                                    [localException reason], NSLocalizedFailureReasonErrorKey,
-                                    nil];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -2002
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+						   @"Failed to download font from URL", NSLocalizedDescriptionKey,
+						 [localException reason], NSLocalizedFailureReasonErrorKey,
+						 nil];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -2002
+				   userInfo: userInfo];
+	}
       return nil;
     }
   NS_ENDHANDLER
 
-  if (fontData == nil || [fontData length] == 0)
-    {
-      if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"No data received from font URL"
-                                                           forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -2003
-                                  userInfo: userInfo];
-        }
-      return nil;
-    }
+    if (fontData == nil || [fontData length] == 0)
+      {
+	if (error != NULL)
+	  {
+	    NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"No data received from font URL"
+								 forKey: NSLocalizedDescriptionKey];
+	    *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+					 code: -2003
+				     userInfo: userInfo];
+	  }
+	return nil;
+      }
 
   // Write font data to temporary file
   if (![fontData writeToFile: tempPath atomically: YES])
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Failed to write font data to temporary file"
-                                                           forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -2004
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Failed to write font data to temporary file"
+							       forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -2004
+				   userInfo: userInfo];
+	}
       return nil;
     }
 
@@ -301,18 +301,18 @@ static Class _defaultDownloaderClass = nil;
 }
 
 - (BOOL) validateFontFile: (NSString *)fontPath
-                    error: (NSError **)error
+		    error: (NSError **)error
 {
   if (fontPath == nil)
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font path is nil"
-                                                           forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -3001
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font path is nil"
+							       forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -3001
+				   userInfo: userInfo];
+	}
       return NO;
     }
 
@@ -320,13 +320,13 @@ static Class _defaultDownloaderClass = nil;
   if (![[NSFileManager defaultManager] fileExistsAtPath: fontPath])
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font file does not exist"
-                                                           forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -3002
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font file does not exist"
+							       forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -3002
+				   userInfo: userInfo];
+	}
       return NO;
     }
 
@@ -335,13 +335,13 @@ static Class _defaultDownloaderClass = nil;
   if (fontData == nil || [fontData length] < 12)
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font file is too small or unreadable"
-                                                           forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -3003
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font file is too small or unreadable"
+							       forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -3003
+				   userInfo: userInfo];
+	}
       return NO;
     }
 
@@ -362,27 +362,27 @@ static Class _defaultDownloaderClass = nil;
   if (error != NULL)
     {
       NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font file does not have a valid font signature"
-                                                       forKey: NSLocalizedDescriptionKey];
+							   forKey: NSLocalizedDescriptionKey];
       *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                  code: -3004
-                              userInfo: userInfo];
+				   code: -3004
+			       userInfo: userInfo];
     }
   return NO;
 }
 
 - (BOOL) installFontAtPath: (NSString *)fontPath
-                     error: (NSError **)error
+		     error: (NSError **)error
 {
   if (fontPath == nil)
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font path is nil"
-                                                           forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -4001
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font path is nil"
+							       forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -4001
+				   userInfo: userInfo];
+	}
       return NO;
     }
 
@@ -400,41 +400,41 @@ static Class _defaultDownloaderClass = nil;
       // Try system fonts directory, fall back to user directory
       destinationDir = [self systemFontsDirectory];
       if (destinationDir == nil)
-        {
-          destinationDir = [self userFontsDirectory];
-        }
+	{
+	  destinationDir = [self userFontsDirectory];
+	}
     }
 
   if (destinationDir == nil)
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Cannot determine font installation directory"
-                                                           forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -4002
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Cannot determine font installation directory"
+							       forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -4002
+				   userInfo: userInfo];
+	}
       return NO;
     }
 
   // Create destination directory if needed
   NSError *dirError = nil;
   if (![[NSFileManager defaultManager] createDirectoryAtPath: destinationDir
-                                  withIntermediateDirectories: YES
-                                                   attributes: nil
-                                                        error: &dirError])
+				 withIntermediateDirectories: YES
+						  attributes: nil
+						       error: &dirError])
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"Failed to create font installation directory", NSLocalizedDescriptionKey,
-                                    [dirError localizedDescription], NSLocalizedFailureReasonErrorKey,
-                                    nil];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -4003
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+						   @"Failed to create font installation directory", NSLocalizedDescriptionKey,
+						 [dirError localizedDescription], NSLocalizedFailureReasonErrorKey,
+						 nil];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -4003
+				   userInfo: userInfo];
+	}
       return NO;
     }
 
@@ -449,19 +449,19 @@ static Class _defaultDownloaderClass = nil;
     }
 
   if (![[NSFileManager defaultManager] copyItemAtPath: fontPath
-                                               toPath: destinationPath
-                                                error: &copyError])
+					       toPath: destinationPath
+						error: &copyError])
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                    @"Failed to copy font to installation directory", NSLocalizedDescriptionKey,
-                                    [copyError localizedDescription], NSLocalizedFailureReasonErrorKey,
-                                    nil];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                      code: -4004
-                                  userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+						   @"Failed to copy font to installation directory", NSLocalizedDescriptionKey,
+						 [copyError localizedDescription], NSLocalizedFailureReasonErrorKey,
+						 nil];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -4004
+				   userInfo: userInfo];
+	}
       return NO;
     }
 
