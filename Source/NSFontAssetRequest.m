@@ -59,8 +59,8 @@
       [_progress setCompletedUnitCount: 0];
       _downloadInProgress = NO;
       _downloader = [[GSFontAssetDownloader alloc] initWithOptions: options];
-      // [_progress setLocalizedDescription: @"Downloading fonts..."];
-      // [_progress setLocalizedAdditionalDescription: @"Preparing to download font assets"];
+      [_progress setLocalizedDescription: @"Downloading fonts..."];
+      [_progress setLocalizedAdditionalDescription: @"Preparing to download font assets"];
     }
   return self;
 }
@@ -191,7 +191,7 @@
 
 - (void) _updateProgressWithDescription: (NSString *)description
 {
-  // [_progress setLocalizedAdditionalDescription: description];
+  [_progress setLocalizedAdditionalDescription: description];
 }
 
 - (void) _completeDownloadWithError: (NSError *)downloadError
