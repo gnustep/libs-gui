@@ -36,6 +36,16 @@
 
 @implementation NSFontAssetRequest
 
++ (void) setDefaultDownloaderClass: (Class)downloaderClass
+{
+  [GSFontAssetDownloader setDefaultDownloaderClass: downloaderClass];
+}
+
++ (Class) defaultDownloaderClass
+{
+  return [GSFontAssetDownloader defaultDownloaderClass];
+}
+
 - (instancetype) initWithFontDescriptors: (NSArray *)fontDescriptors
                                  options: (NSFontAssetRequestOptions)options
 {

@@ -27,6 +27,34 @@
 #import "AppKit/NSFontDescriptor.h"
 #import "AppKit/NSFontAssetRequest.h"
 
+static Class _defaultDownloaderClass = nil;
+
+/*
+ * EXAMPLE USAGE OF CLASS REPLACEMENT SYSTEM:
+ *
+ * // Custom downloader that logs all operations
+ * @interface LoggingFontDownloader : GSFontAssetDownloader
+ * @end
+ *
+ * @implementation LoggingFontDownloader
+ * - (NSURL *) fontURLForDescriptor: (NSFontDescriptor *)descriptor {
+ *     NSLog(@"Resolving URL for font: %@", [descriptor objectForKey: NSFontNameAttribute]);
+ *     return [super fontURLForDescriptor: descriptor];
+ * }
+ *
+ * - (NSString *) downloadFontFromURL: (NSURL *)fontURL error: (NSError **)error {
+ *     NSLog(@"Downloading font from: %@", fontURL);
+ *     return [super downloadFontFromURL: fontURL error: error];
+ * }
+ * @end
+ *
+ * // To use the custom downloader globally:
+ * [GSFontAssetDownloader setDefaultDownloaderClass: [LoggingFontDownloader class]];
+ *
+ * // To restore default behavior:
+ * [GSFontAssetDownloader setDefaultDownloaderClass: nil];
+ */
+
 @implementation GSFontAssetDownloader
 
 - (instancetype) initWithOptions: (NSUInteger)options
@@ -42,6 +70,28 @@
 - (instancetype) init
 {
   return [self initWithOptions: 0];
+}
+
++ (void) setDefaultDownloaderClass: (Class)downloaderClass
+{
+  if (downloaderClass != nil && ![downloaderClass isSubclassOfClass: [GSFontAssetDownloader class]])
+    {
+      [NSException raise: NSInvalidArgumentException
+                  format: @"Downloader class must be a subclass of GSFontAssetDownloader"];
+      return;
+    }
+  _defaultDownloaderClass = downloaderClass;
+}
+
++ (Class) defaultDownloaderClass
+{
+  return _defaultDownloaderClass ? _defaultDownloaderClass : [GSFontAssetDownloader class];
+}
+
++ (instancetype) downloaderWithOptions: (NSUInteger)options
+{
+  Class downloaderClass = [self defaultDownloaderClass];
+  return [[downloaderClass alloc] initWithOptions: options];
 }
 
 - (BOOL) downloadAndInstallFontWithDescriptor: (NSFontDescriptor *)descriptor
