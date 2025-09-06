@@ -213,6 +213,146 @@ static Class _defaultDownloaderClass = nil;
   return [NSURL URLWithString: urlString];
 }
 
+- (NSArray *) extractFontURLsFromCSS: (NSString *)cssContent
+                        withFormat: (NSString *)format
+                             error: (NSError **)error
+{
+  if (cssContent == nil || [cssContent length] == 0)
+    {
+      if (error != NULL)
+        {
+          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"CSS content is nil or empty"
+                                                               forKey: NSLocalizedDescriptionKey];
+          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+                                       code: -2100
+                                   userInfo: userInfo];
+        }
+      return nil;
+    }
+
+  NSMutableArray *fontURLs = [NSMutableArray array];
+
+  // Regular expression to match src: url(...) format('...') patterns
+  NSString *pattern = @"src:\\s*url\\(([^)]+)\\)\\s*format\\(['\"]([^'\"]+)['\"]\\)";
+  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern: pattern
+                                                                         options: NSRegularExpressionCaseInsensitive
+                                                                           error: error];
+  if (regex == nil)
+    {
+      return nil;
+    }
+
+  NSArray *matches = [regex matchesInString: cssContent
+                                    options: 0
+                                      range: NSMakeRange(0, [cssContent length])];
+
+  for (NSTextCheckingResult *match in matches)
+    {
+      if ([match numberOfRanges] >= 3)
+        {
+          NSRange urlRange = [match rangeAtIndex: 1];
+          NSRange formatRange = [match rangeAtIndex: 2];
+
+          NSString *urlString = [cssContent substringWithRange: urlRange];
+          NSString *formatString = [cssContent substringWithRange: formatRange];
+
+          // Clean up URL string (remove quotes if present)
+          urlString = [urlString stringByTrimmingCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\"' "]];
+
+          // Check if format matches what we're looking for
+          if (format == nil || [formatString isEqualToString: format])
+            {
+              NSURL *url = [NSURL URLWithString: urlString];
+              if (url != nil)
+                {
+                  [fontURLs addObject: url];
+                }
+            }
+        }
+    }
+
+  return [fontURLs copy];
+}
+
+- (NSString *) downloadFontDataFromCSSURL: (NSURL *)cssURL
+                               withFormat: (NSString *)format
+                                    error: (NSError **)error
+{
+  if (cssURL == nil)
+    {
+      if (error != NULL)
+        {
+          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"CSS URL is nil"
+                                                               forKey: NSLocalizedDescriptionKey];
+          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+                                       code: -2101
+                                   userInfo: userInfo];
+        }
+      return nil;
+    }
+
+  // First, download the CSS content
+  NSString *cssContent = nil;
+  NSError *cssError = nil;
+
+  NS_DURING
+    {
+      NSData *cssData = [NSData dataWithContentsOfURL: cssURL];
+      if (cssData != nil)
+        {
+          cssContent = [[NSString alloc] initWithData: cssData encoding: NSUTF8StringEncoding];
+        }
+    }
+  NS_HANDLER
+    {
+      if (error != NULL)
+        {
+          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                   @"Failed to download CSS from URL", NSLocalizedDescriptionKey,
+                                                 [localException reason], NSLocalizedFailureReasonErrorKey,
+                                                 nil];
+          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+                                       code: -2102
+                                   userInfo: userInfo];
+        }
+      return nil;
+    }
+  NS_ENDHANDLER
+
+  if (cssContent == nil)
+    {
+      if (error != NULL)
+        {
+          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Failed to parse CSS content"
+                                                               forKey: NSLocalizedDescriptionKey];
+          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+                                       code: -2103
+                                   userInfo: userInfo];
+        }
+      return nil;
+    }
+
+  // Extract font URLs from CSS
+  NSArray *fontURLs = [self extractFontURLsFromCSS: cssContent
+                                         withFormat: format
+                                              error: &cssError];
+  if (fontURLs == nil || [fontURLs count] == 0)
+    {
+      if (error != NULL)
+        {
+          *error = cssError ?: [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+                                                   code: -2104
+                                               userInfo: [NSDictionary dictionaryWithObject: @"No font URLs found in CSS"
+                                                                                     forKey: NSLocalizedDescriptionKey]];
+        }
+      return nil;
+    }
+
+  // Download the first matching font URL (you could modify this to download all or let user choose)
+  NSURL *fontURL = [fontURLs firstObject];
+  return [self downloadFontFromURL: fontURL error: error];
+}
+
 - (NSString *) downloadFontFromURL: (NSURL *)fontURL
 			     error: (NSError **)error
 {
@@ -231,10 +371,29 @@ static Class _defaultDownloaderClass = nil;
 
   // Create temporary file for download
   NSString *tempDir = NSTemporaryDirectory();
-  NSString *filename = [[fontURL lastPathComponent] stringByAppendingPathExtension: @"ttf"];
-  if ([filename length] == 0 || [filename isEqualToString: @".ttf"])
+  NSString *filename = [fontURL lastPathComponent];
+
+  // Determine appropriate file extension based on URL or default to ttf
+  if ([filename length] == 0 || [[filename pathExtension] length] == 0)
     {
-      filename = [NSString stringWithFormat: @"font_%d.ttf", (int)[NSDate timeIntervalSinceReferenceDate]];
+      // Try to determine extension from URL path
+      NSString *urlPath = [fontURL path];
+      if ([urlPath containsString: @".woff2"])
+        {
+          filename = [NSString stringWithFormat: @"font_%d.woff2", (int)[NSDate timeIntervalSinceReferenceDate]];
+        }
+      else if ([urlPath containsString: @".woff"])
+        {
+          filename = [NSString stringWithFormat: @"font_%d.woff", (int)[NSDate timeIntervalSinceReferenceDate]];
+        }
+      else if ([urlPath containsString: @".otf"])
+        {
+          filename = [NSString stringWithFormat: @"font_%d.otf", (int)[NSDate timeIntervalSinceReferenceDate]];
+        }
+      else
+        {
+          filename = [NSString stringWithFormat: @"font_%d.ttf", (int)[NSDate timeIntervalSinceReferenceDate]];
+        }
     }
   NSString *tempPath = [tempDir stringByAppendingPathComponent: filename];
 
@@ -345,16 +504,18 @@ static Class _defaultDownloaderClass = nil;
       return NO;
     }
 
-  // Check for common font file signatures (TTF, OTF, WOFF)
+  // Check for common font file signatures (TTF, OTF, WOFF, WOFF2)
   const unsigned char *bytes = [fontData bytes];
 
   // TTF signature: 0x00, 0x01, 0x00, 0x00 or 'true'
   // OTF signature: 'OTTO'
   // WOFF signature: 'wOFF'
+  // WOFF2 signature: 'wOF2'
   if ((bytes[0] == 0x00 && bytes[1] == 0x01 && bytes[2] == 0x00 && bytes[3] == 0x00) ||
       (bytes[0] == 't' && bytes[1] == 'r' && bytes[2] == 'u' && bytes[3] == 'e') ||
       (bytes[0] == 'O' && bytes[1] == 'T' && bytes[2] == 'T' && bytes[3] == 'O') ||
-      (bytes[0] == 'w' && bytes[1] == 'O' && bytes[2] == 'F' && bytes[3] == 'F'))
+      (bytes[0] == 'w' && bytes[1] == 'O' && bytes[2] == 'F' && bytes[3] == 'F') ||
+      (bytes[0] == 'w' && bytes[1] == 'O' && bytes[2] == 'F' && bytes[3] == '2'))
     {
       return YES;
     }
