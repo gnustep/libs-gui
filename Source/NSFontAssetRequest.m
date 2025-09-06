@@ -1,7 +1,4 @@
 /* Implementation of cla#import <Foundation/Foundation.h>
-#import "AppKit/NSFontAssetRequest.h"
-#import "AppKit/NSFontDescriptor.h"
-#import "GNUstepGUI/GSFontAssetDownloader.h"SFontAssetRequest
    Copyright (C) 2019 Free Software Foundation, Inc.
 
    By: Gregory John Casamento
@@ -52,10 +49,8 @@
       [_progress setCompletedUnitCount: 0];
       _downloadInProgress = NO;
       _downloader = [[GSFontAssetDownloader alloc] initWithOptions: options];
-
-      // Initialize progress properties
-      [_progress setLocalizedDescription: @"Downloading fonts..."];
-      [_progress setLocalizedAdditionalDescription: @"Preparing to download font assets"];
+      // [_progress setLocalizedDescription: @"Downloading fonts..."];
+      // [_progress setLocalizedAdditionalDescription: @"Preparing to download font assets"];
     }
   return self;
 }
@@ -186,7 +181,7 @@
 
 - (void) _updateProgressWithDescription: (NSString *)description
 {
-  [_progress setLocalizedAdditionalDescription: description];
+  // [_progress setLocalizedAdditionalDescription: description];
 }
 
 - (void) _completeDownloadWithError: (NSError *)downloadError
