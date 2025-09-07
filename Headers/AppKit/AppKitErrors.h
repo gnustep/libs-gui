@@ -1,26 +1,39 @@
-/* Definition of the AppKitErrors header
-   Copyright (C) 2019 Free Software Foundation, Inc.
-   
-   By: Gregory John Casamento
-   Date: Tues Apr 7 2020
+/** <title>AppKitErrors</title>
 
-   This file is part of the GNUstep Library.
-   
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-   
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-   
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
-   Boston, MA 02110-1301, USA.
+    <abstract>Error constants and domains for AppKit operations</abstract>
+
+    This header defines error domains, error codes, and related constants
+    used throughout the AppKit framework for error reporting and handling.
+    It provides standardized error information for common AppKit operations
+    such as document loading, printing, image processing, and user interface
+    operations.
+
+    The error constants defined here are compatible with NSError and provide
+    localized error descriptions for various failure conditions that can
+    occur during AppKit operations.
+
+    Copyright (C) 2019 Free Software Foundation, Inc.
+
+    By: Gregory John Casamento
+    Date: Tues Apr 7 2020
+
+    This file is part of the GNUstep Library.
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; see the file COPYING.LIB.
+    If not, see <http://www.gnu.org/licenses/> or write to the
+    Free Software Foundation, 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #ifndef _AppKitErrors_h_GNUSTEP_GUI_INCLUDE
@@ -41,7 +54,7 @@ enum
     NSFontAssetDownloadError                 = 66304,
     NSFontErrorMinimum                       = 66304,
     NSFontErrorMaximum                       = 66335,
-    NSServiceApplicationNotFoundError        = 66560,   
+    NSServiceApplicationNotFoundError        = 66560,
     NSServiceApplicationLaunchFailedError    = 66561,
     NSServiceRequestTimedOutError            = 66562,
     NSServiceInvalidPasteboardDataError      = 66563,
