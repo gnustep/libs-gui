@@ -126,6 +126,16 @@ GS_EXPORT_CLASS
                                         error: (NSError **)error;
 
 /**
+ * Downloads and installs a font from the specified descriptor with a preferred format.
+ * This variant allows specifying the preferred font format (e.g., "woff2", "woff", "ttf")
+ * when downloading from CSS URLs. For direct font URLs, the format parameter is ignored.
+ * Returns YES if the font was successfully downloaded and installed, NO otherwise.
+ */
+- (BOOL) downloadAndInstallFontWithDescriptor: (NSFontDescriptor *)descriptor
+                               preferredFormat: (NSString *)format
+                                        error: (NSError **)error;
+
+/**
  * Resolves a font URL from a font descriptor.
  * This method can be overridden to implement custom URL resolution
  * strategies, such as querying different font services or using

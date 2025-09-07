@@ -97,6 +97,16 @@ static Class _defaultDownloaderClass = nil;
 - (BOOL) downloadAndInstallFontWithDescriptor: (NSFontDescriptor *)descriptor
 					error: (NSError **)error
 {
+  // Delegate to the format-specific method with default format
+  return [self downloadAndInstallFontWithDescriptor: descriptor
+                                     preferredFormat: nil
+                                               error: error];
+}
+
+- (BOOL) downloadAndInstallFontWithDescriptor: (NSFontDescriptor *)descriptor
+                               preferredFormat: (NSString *)format
+                                        error: (NSError **)error
+{
   if (descriptor == nil)
     {
       if (error != NULL)
@@ -132,7 +142,25 @@ static Class _defaultDownloaderClass = nil;
 	}
 
       // Download the font file
-      downloadedPath = [self downloadFontFromURL: fontURL error: &localError];
+      // Check if this is a CSS URL (like Google Fonts API) and handle appropriately
+      NSString *urlString = [fontURL absoluteString];
+      if ([urlString containsString: @"fonts.googleapis.com/css"] ||
+          [urlString containsString: @"fonts.google.com/css"] ||
+          [urlString containsString: @"fonts.gstatic.com/css"] ||
+          [urlString hasSuffix: @".css"] ||
+          [[fontURL pathExtension] isEqualToString: @"css"])
+        {
+          // This is a CSS URL containing @font-face declarations
+          // Use the specified format, or default to woff2 if none specified
+          NSString *preferredFormat = format ? format : @"woff2";
+          downloadedPath = [self downloadFontDataFromCSSURL: fontURL withFormat: preferredFormat error: &localError];
+        }
+      else
+        {
+          // This is a direct font file URL
+          downloadedPath = [self downloadFontFromURL: fontURL error: &localError];
+        }
+
       if (downloadedPath == nil)
 	{
 	  if (error != NULL)
@@ -247,7 +275,7 @@ static Class _defaultDownloaderClass = nil;
                                       range: NSMakeRange(0, [cssContent length])];
   NSEnumerator *men = [matches objectEnumerator];
   NSTextCheckingResult *match = nil;
-  
+
   while ((match = [men nextObject]) != nil)
     {
       if ([match numberOfRanges] >= 3)
