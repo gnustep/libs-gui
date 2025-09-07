@@ -151,8 +151,8 @@ static Class _defaultDownloaderClass = nil;
           [[fontURL pathExtension] isEqualToString: @"css"])
         {
           // This is a CSS URL containing @font-face declarations
-          // Use the specified format, or default to woff2 if none specified
-          NSString *preferredFormat = format ? format : @"woff2";
+          // Use the specified format, or default to truetype/ttf if none specified
+          NSString *preferredFormat = format ? format : @"truetype";
           downloadedPath = [self downloadFontDataFromCSSURL: fontURL withFormat: preferredFormat error: &localError];
         }
       else
