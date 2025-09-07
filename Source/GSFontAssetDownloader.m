@@ -214,8 +214,8 @@ static Class _defaultDownloaderClass = nil;
 }
 
 - (NSArray *) extractFontURLsFromCSS: (NSString *)cssContent
-                        withFormat: (NSString *)format
-                             error: (NSError **)error
+			  withFormat: (NSString *)format
+			       error: (NSError **)error
 {
   if (cssContent == nil || [cssContent length] == 0)
     {
@@ -245,8 +245,10 @@ static Class _defaultDownloaderClass = nil;
   NSArray *matches = [regex matchesInString: cssContent
                                     options: 0
                                       range: NSMakeRange(0, [cssContent length])];
-
-  for (NSTextCheckingResult *match in matches)
+  NSEnumerator *men = [matches objectEnumerator];
+  NSTextCheckingResult *match = nil;
+  
+  while ((match = [men nextObject]) != nil)
     {
       if ([match numberOfRanges] >= 3)
         {

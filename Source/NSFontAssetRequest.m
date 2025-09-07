@@ -55,7 +55,7 @@
       _fontDescriptors = [fontDescriptors copy];
       _options = options;
       _downloadedFontDescriptors = [[NSMutableArray alloc] init];
-      _progress = [NSProgress progressWithTotalUnitCount: [fontDescriptors count]];
+      _progress = RETAIN([NSProgress progressWithTotalUnitCount: [fontDescriptors count]]);
       [_progress setCompletedUnitCount: 0];
       _downloadInProgress = NO;
       _downloader = [[GSFontAssetDownloader alloc] initWithOptions: options];
