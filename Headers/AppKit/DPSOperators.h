@@ -1,27 +1,48 @@
-/* DPSOperators - Drawing engine operators that require context
+/** <title>DPSOperators</title>
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
-   Written by:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
-   Based on code by Adam Fedor
-   Date: Feb 1999
-   
-   This file is part of the GNU Objective C User Interface library.
+    <abstract>Display PostScript drawing operators that require graphics context</abstract>
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
+    This header provides the interface for Display PostScript (DPS) drawing
+    operations that require an active graphics context. These functions
+    implement the core drawing primitives used by the AppKit graphics system
+    for rendering paths, shapes, text, and images.
 
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
-   Lesser General Public License for more details.
+    The DPS operators defined here correspond to PostScript drawing commands
+    and provide the foundation for AppKit's graphics rendering system. They
+    handle operations such as:
+    * Path construction and manipulation
+    * Shape drawing and filling
+    * Color and pattern application
+    * Text rendering and font management
+    * Image composition and transformation
+    * Graphics state management
 
-   You should have received a copy of the GNU Lesser General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
-   Boston, MA 02110-1301, USA.
+    These operators work in conjunction with NSGraphicsContext to provide
+    a complete graphics rendering system compatible with PostScript semantics
+    while supporting multiple backend implementations.
+
+    Copyright (C) 1999 Free Software Foundation, Inc.
+    Written by:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+    Based on code by Adam Fedor
+    Date: Feb 1999
+
+    This file is part of the GNU Objective C User Interface library.
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; see the file COPYING.LIB.
+    If not, see <http://www.gnu.org/licenses/> or write to the
+    Free Software Foundation, 51 Franklin Street, Fifth Floor,
+    Boston, MA 02110-1301, USA.
 */
 
 #ifndef _DPSOperators_h_INCLUDE
@@ -842,4 +863,4 @@ DPSWriteData(GSCTXT *ctxt, const char * buf, unsigned int count)
     (ctxt, @selector(DPSWriteData: :), buf, count);
 }
 
-#endif	
+#endif
