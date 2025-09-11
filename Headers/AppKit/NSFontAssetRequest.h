@@ -28,6 +28,7 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSError.h>
+#import <Foundation/NSProgress.h>
 
 /**
  * Block type for font asset download completion handling.
@@ -39,7 +40,6 @@
  */
 DEFINE_BLOCK_TYPE(GSFontAssetCompletionHandler, BOOL, NSError*);
 
-@class NSProgress;
 @class NSFontDescriptor;
 @class GSFontAssetDownloader;
 
@@ -84,7 +84,7 @@ typedef NSUInteger NSFontAssetRequestOptions;
  * operation while fonts are being retrieved.
  */
 APPKIT_EXPORT_CLASS
-@interface NSFontAssetRequest : NSObject // <NSProgressReporting>
+@interface NSFontAssetRequest : NSObject <NSProgressReporting>
 {
   NSArray *_fontDescriptors;
   NSFontAssetRequestOptions _options;
