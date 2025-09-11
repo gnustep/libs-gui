@@ -26,7 +26,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-/*
+/**
  *  Class: NSAlert
  *  Description: Encapsulates and manages alert panels for displaying messages to the user.
  *
@@ -136,7 +136,6 @@ APPKIT_EXPORT_CLASS
 		   alternateButton: (NSString *)alternateButtonTitle
 		       otherButton: (NSString *)otherButtonTitle
 	 informativeTextWithFormat: (NSString *)format, ...;
-
 
 /**
  *  Adds a button with the specified title to the alert.
