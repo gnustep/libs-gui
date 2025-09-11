@@ -26,6 +26,11 @@
 #import "GNUstepGUI/GSFontAssetDownloader.h"
 #import "AppKit/NSFontDescriptor.h"
 #import "AppKit/NSFontAssetRequest.h"
+#import "AppKit/NSPanel.h"
+#import "AppKit/NSProgressIndicator.h"
+#import "AppKit/NSTextField.h"
+#import "AppKit/NSButton.h"
+#import "AppKit/NSApplication.h"
 
 static Class _defaultDownloaderClass = nil;
 
@@ -70,6 +75,12 @@ static Class _defaultDownloaderClass = nil;
 - (instancetype) init
 {
   return [self initWithOptions: 0];
+}
+
+- (void) dealloc
+{
+  [self hideProgressPanel];
+  [super dealloc];
 }
 
 + (void) setDefaultDownloaderClass: (Class)downloaderClass
@@ -124,9 +135,25 @@ static Class _defaultDownloaderClass = nil;
   NSString *downloadedPath = nil;
   BOOL success = NO;
 
+  // Show progress panel if standard UI is requested
+  NSString *fontName = [descriptor objectForKey: NSFontNameAttribute];
+  if (fontName == nil)
+    {
+      fontName = [descriptor objectForKey: NSFontFamilyAttribute];
+    }
+  if (fontName == nil)
+    {
+      fontName = @"Font";
+    }
+
+  NSString *progressMessage = [NSString stringWithFormat: @"Downloading %@...", fontName];
+  [self showProgressPanelWithMessage: progressMessage];
+  [self updateProgressPanel: 0.1 withMessage: progressMessage];
+
   NS_DURING
     {
       // Get font URL from descriptor
+      [self updateProgressPanel: 0.2 withMessage: @"Resolving font URL..."];
       NSURL *fontURL = [self fontURLForDescriptor: descriptor];
       if (fontURL == nil)
 	{
@@ -142,6 +169,7 @@ static Class _defaultDownloaderClass = nil;
 	}
 
       // Download the font file
+      [self updateProgressPanel: 0.3 withMessage: @"Starting download..."];
       // Check if this is a CSS URL (like Google Fonts API) and handle appropriately
       NSString *urlString = [fontURL absoluteString];
       if ([urlString containsString: @"fonts.googleapis.com/css"] ||
@@ -153,16 +181,19 @@ static Class _defaultDownloaderClass = nil;
           // This is a CSS URL containing @font-face declarations
           // Use the specified format, or default to truetype/ttf if none specified
           NSString *preferredFormat = format ? format : @"truetype";
+          [self updateProgressPanel: 0.4 withMessage: @"Downloading CSS and extracting font URLs..."];
           downloadedPath = [self downloadFontDataFromCSSURL: fontURL withFormat: preferredFormat error: &localError];
         }
       else
         {
           // This is a direct font file URL
+          [self updateProgressPanel: 0.4 withMessage: @"Downloading font file..."];
           downloadedPath = [self downloadFontFromURL: fontURL error: &localError];
         }
 
       if (downloadedPath == nil)
 	{
+	  [self hideProgressPanel];
 	  if (error != NULL)
 	    {
 	      *error = localError;
@@ -171,8 +202,10 @@ static Class _defaultDownloaderClass = nil;
 	}
 
       // Validate the downloaded font file
+      [self updateProgressPanel: 0.7 withMessage: @"Validating font file..."];
       if (![self validateFontFile: downloadedPath error: &localError])
 	{
+	  [self hideProgressPanel];
 	  if (error != NULL)
 	    {
 	      *error = localError;
@@ -181,14 +214,22 @@ static Class _defaultDownloaderClass = nil;
 	}
 
       // Install the font
+      [self updateProgressPanel: 0.8 withMessage: @"Installing font..."];
       success = [self installFontAtPath: downloadedPath error: &localError];
-      if (!success && error != NULL)
+      if (success)
+        {
+          [self updateProgressPanel: 1.0 withMessage: @"Font installed successfully!"];
+          // Brief delay to show completion
+          [NSThread sleepForTimeInterval: 0.5];
+        }
+      else if (error != NULL)
 	{
 	  *error = localError;
 	}
     }
   NS_HANDLER
     {
+      [self hideProgressPanel];
       if (error != NULL)
 	{
 	  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -208,6 +249,9 @@ static Class _defaultDownloaderClass = nil;
     {
       [[NSFileManager defaultManager] removeItemAtPath: downloadedPath error: nil];
     }
+
+  // Hide progress panel
+  [self hideProgressPanel];
 
   return success;
 }
@@ -230,8 +274,6 @@ static Class _defaultDownloaderClass = nil;
       return nil;
     }
 
-  // For demo purposes, construct URLs to Google Fonts or system font repositories
-  // In a real implementation, this would use actual font service APIs
   NSString *searchName = fontName ? fontName : familyName;
   NSString *encodedName = [searchName stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
 
@@ -325,6 +367,8 @@ static Class _defaultDownloaderClass = nil;
   NSString *cssContent = nil;
   NSError *cssError = nil;
 
+  [self updateProgressPanel: 0.45 withMessage: @"Downloading CSS file..."];
+
   NS_DURING
     {
       NSData *cssData = [NSData dataWithContentsOfURL: cssURL];
@@ -363,6 +407,7 @@ static Class _defaultDownloaderClass = nil;
     }
 
   // Extract font URLs from CSS
+  [self updateProgressPanel: 0.5 withMessage: @"Parsing CSS and extracting font URLs..."];
   NSArray *fontURLs = [self extractFontURLsFromCSS: cssContent
                                          withFormat: format
                                               error: &cssError];
@@ -379,6 +424,7 @@ static Class _defaultDownloaderClass = nil;
     }
 
   // Download the first matching font URL (you could modify this to download all or let user choose)
+  [self updateProgressPanel: 0.6 withMessage: @"Downloading font file from extracted URL..."];
   NSURL *fontURL = [fontURLs firstObject];
   return [self downloadFontFromURL: fontURL error: error];
 }
@@ -699,6 +745,147 @@ static Class _defaultDownloaderClass = nil;
 - (NSUInteger) options
 {
   return _options;
+}
+
+- (void) showProgressPanelWithMessage: (NSString *)message
+{
+  if (!(_options & NSFontAssetRequestOptionUsesStandardUI))
+    {
+      return; // Don't show UI if not requested
+    }
+
+  if (_progressPanel != nil)
+    {
+      [self hideProgressPanel]; // Hide existing panel if any
+    }
+
+  // Create the progress panel
+  NSRect panelFrame = NSMakeRect(0, 0, 400, 120);
+  _progressPanel = [[NSPanel alloc] initWithContentRect: panelFrame
+                                              styleMask: NSWindowStyleMaskTitled | NSWindowStyleMaskClosable
+                                                backing: NSBackingStoreBuffered
+                                                  defer: NO];
+  [_progressPanel setTitle: @"Font Download"];
+  [_progressPanel setLevel: NSModalPanelWindowLevel];
+  [_progressPanel setReleasedWhenClosed: NO];
+
+  // Create and configure the status label
+  NSRect labelFrame = NSMakeRect(20, 70, 360, 20);
+  _statusLabel = [[NSTextField alloc] initWithFrame: labelFrame];
+  [_statusLabel setStringValue: message ? message : @"Downloading font..."];
+  [_statusLabel setBezeled: NO];
+  [_statusLabel setDrawsBackground: NO];
+  [_statusLabel setEditable: NO];
+  [_statusLabel setSelectable: NO];
+  [[_progressPanel contentView] addSubview: _statusLabel];
+
+  // Create and configure the progress indicator
+  NSRect progressFrame = NSMakeRect(20, 40, 360, 20);
+  _progressIndicator = [[NSProgressIndicator alloc] initWithFrame: progressFrame];
+  [_progressIndicator setStyle: NSProgressIndicatorStyleBar];
+  [_progressIndicator setIndeterminate: NO];
+  [_progressIndicator setMinValue: 0.0];
+  [_progressIndicator setMaxValue: 1.0];
+  [_progressIndicator setDoubleValue: 0.0];
+  [[_progressPanel contentView] addSubview: _progressIndicator];
+
+  // Create and configure the cancel button
+  NSRect buttonFrame = NSMakeRect(310, 10, 80, 25);
+  _cancelButton = [[NSButton alloc] initWithFrame: buttonFrame];
+  [_cancelButton setTitle: @"Cancel"];
+  [_cancelButton setTarget: self];
+  [_cancelButton setAction: @selector(cancelDownload:)];
+  [[_progressPanel contentView] addSubview: _cancelButton];
+
+  // Center and show the panel
+  [_progressPanel center];
+  [_progressPanel makeKeyAndOrderFront: nil];
+}
+
+- (void) updateProgressPanel: (double)progress withMessage: (NSString *)message
+{
+  if (_progressPanel == nil || !(_options & NSFontAssetRequestOptionUsesStandardUI))
+    {
+      return;
+    }
+
+  if (_progressIndicator != nil)
+    {
+      [_progressIndicator setDoubleValue: progress];
+    }
+
+  if (_statusLabel != nil && message != nil)
+    {
+      [_statusLabel setStringValue: message];
+    }
+
+  // Process events to update the UI
+  NSEvent *event;
+  while ((event = [NSApp nextEventMatchingMask: NSEventMaskAny
+                                     untilDate: [NSDate distantPast]
+                                        inMode: NSDefaultRunLoopMode
+                                       dequeue: YES]))
+    {
+      [NSApp sendEvent: event];
+    }
+}
+
+- (void) hideProgressPanel
+{
+  if (_progressPanel != nil)
+    {
+      [_progressPanel orderOut: nil];
+      DESTROY(_progressPanel);
+    }
+
+  if (_statusLabel != nil)
+    {
+      DESTROY(_statusLabel);
+    }
+
+  if (_progressIndicator != nil)
+    {
+      DESTROY(_progressIndicator);
+    }
+
+  if (_cancelButton != nil)
+    {
+      DESTROY(_cancelButton);
+    }
+}
+
+- (void) cancelDownload: (id)sender
+{
+  // For now, just hide the panel
+  // In a full implementation, this would cancel the actual download operation
+  [self hideProgressPanel];
+
+  // Post a notification that download was cancelled
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: @"GSFontAssetDownloadCancelled"
+                  object: self];
+}
+
++ (void) demonstrateProgressPanel
+{
+  // Create a downloader with standard UI enabled
+  GSFontAssetDownloader *downloader = [GSFontAssetDownloader downloaderWithOptions: NSFontAssetRequestOptionUsesStandardUI];
+
+  // Show the progress panel
+  [downloader showProgressPanelWithMessage: @"Demonstrating progress panel..."];
+
+  // Simulate progress updates
+  for (int i = 1; i <= 10; i++)
+    {
+      double progress = i / 10.0;
+      NSString *message = [NSString stringWithFormat: @"Step %d of 10...", i];
+      [downloader updateProgressPanel: progress withMessage: message];
+      [NSThread sleepForTimeInterval: 0.5]; // Simulate work
+    }
+
+  // Hide the panel
+  [downloader hideProgressPanel];
+  RELEASE(downloader);
 }
 
 @end

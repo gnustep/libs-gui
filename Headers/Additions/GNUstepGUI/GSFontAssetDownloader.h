@@ -32,6 +32,10 @@
 @class NSFontDescriptor;
 @class NSURL;
 @class NSString;
+@class NSPanel;
+@class NSProgressIndicator;
+@class NSTextField;
+@class NSButton;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
 
@@ -79,11 +83,29 @@
  * // All new font asset requests will now use the custom downloader
  * NSFontAssetRequest *request = [[NSFontAssetRequest alloc]
  *     initWithFontDescriptors: descriptors options: 0];
+ *
+ * PROGRESS PANEL USAGE:
+ *
+ * To show a progress panel during font download, use the NSFontAssetRequestOptionUsesStandardUI option:
+ *
+ * NSFontDescriptor *descriptor = [NSFontDescriptor fontDescriptorWithName: @"Inconsolata" size: 12];
+ * GSFontAssetDownloader *downloader = [GSFontAssetDownloader downloaderWithOptions: NSFontAssetRequestOptionUsesStandardUI];
+ * NSError *error = nil;
+ * BOOL success = [downloader downloadAndInstallFontWithDescriptor: descriptor error: &error];
+ *
+ * The progress panel will automatically appear with:
+ * - A progress bar showing download/installation progress
+ * - Status messages describing the current operation
+ * - A cancel button (posts GSFontAssetDownloadCancelled notification when pressed)
  */
 GS_EXPORT_CLASS
 @interface GSFontAssetDownloader : NSObject
 {
   NSUInteger _options;
+  NSPanel *_progressPanel;
+  NSProgressIndicator *_progressIndicator;
+  NSTextField *_statusLabel;
+  NSButton *_cancelButton;
 }
 
 /**
@@ -212,6 +234,34 @@ GS_EXPORT_CLASS
  * Returns the options that were specified when creating this downloader.
  */
 - (NSUInteger) options;
+
+/**
+ * Shows a progress panel for font downloading when NSFontAssetRequestOptionUsesStandardUI is set.
+ * This method creates and displays a modal panel with a progress indicator and status text.
+ */
+- (void) showProgressPanelWithMessage: (NSString *)message;
+
+/**
+ * Updates the progress panel with current status and progress value.
+ * The progress parameter should be a value between 0.0 and 1.0.
+ */
+- (void) updateProgressPanel: (double)progress withMessage: (NSString *)message;
+
+/**
+ * Hides and releases the progress panel.
+ */
+- (void) hideProgressPanel;
+
+/**
+ * Action method called when the cancel button in the progress panel is pressed.
+ */
+- (void) cancelDownload: (id)sender;
+
+/**
+ * Test method to demonstrate the progress panel functionality.
+ * Creates a downloader with standard UI and simulates a download process.
+ */
++ (void) demonstrateProgressPanel;
 
 @end
 
