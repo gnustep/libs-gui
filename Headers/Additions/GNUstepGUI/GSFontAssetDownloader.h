@@ -145,7 +145,7 @@ GS_EXPORT_CLASS
  * successfully downloaded and installed, NO otherwise.
  */
 - (BOOL) downloadAndInstallFontWithDescriptor: (NSFontDescriptor *)descriptor
-                                        error: (NSError **)error;
+					error: (NSError **)error;
 
 /**
  * Downloads and installs a font from the specified descriptor with a preferred format.
@@ -154,8 +154,8 @@ GS_EXPORT_CLASS
  * Returns YES if the font was successfully downloaded and installed, NO otherwise.
  */
 - (BOOL) downloadAndInstallFontWithDescriptor: (NSFontDescriptor *)descriptor
-                               preferredFormat: (NSString *)format
-                                        error: (NSError **)error;
+			       preferredFormat: (NSString *)format
+					error: (NSError **)error;
 
 /**
  * Resolves a font URL from a font descriptor.
@@ -174,7 +174,7 @@ GS_EXPORT_CLASS
  * file, or nil on failure.
  */
 - (NSString *) downloadFontFromURL: (NSURL *)fontURL
-                             error: (NSError **)error;
+			     error: (NSError **)error;
 
 /**
  * Downloads a font file from the specified URL with a given font name.
@@ -184,8 +184,8 @@ GS_EXPORT_CLASS
  * or nil on failure.
  */
 - (NSString *) downloadFontFromURL: (NSURL *)fontURL
-                          fontName: (NSString *)fontName
-                             error: (NSError **)error;
+			  fontName: (NSString *)fontName
+			     error: (NSError **)error;
 
 /**
  * Extracts font URLs from CSS content based on the specified format.
@@ -194,8 +194,8 @@ GS_EXPORT_CLASS
  * Returns an array of NSURL objects, or nil on error.
  */
 - (NSArray *) extractFontURLsFromCSS: (NSString *)cssContent
-                          withFormat: (NSString *)format
-                               error: (NSError **)error;
+			  withFormat: (NSString *)format
+			       error: (NSError **)error;
 
 /**
  * Downloads font data from a CSS URL that contains @font-face declarations.
@@ -204,8 +204,8 @@ GS_EXPORT_CLASS
  * Returns the path to the downloaded temporary file, or nil on failure.
  */
 - (NSString *) downloadFontDataFromCSSURL: (NSURL *)cssURL
-                               withFormat: (NSString *)format
-                                    error: (NSError **)error;
+			       withFormat: (NSString *)format
+				    error: (NSError **)error;
 
 /**
  * Downloads font data from a CSS URL with a given font name.
@@ -215,9 +215,9 @@ GS_EXPORT_CLASS
  * or nil on failure.
  */
 - (NSString *) downloadFontDataFromCSSURL: (NSURL *)cssURL
-                               withFormat: (NSString *)format
-                                 fontName: (NSString *)fontName
-                                    error: (NSError **)error;
+			       withFormat: (NSString *)format
+				 fontName: (NSString *)fontName
+				    error: (NSError **)error;
 
 /**
  * Validates a downloaded font file.
@@ -227,7 +227,7 @@ GS_EXPORT_CLASS
  * checks file existence, size, and format signatures.
  */
 - (BOOL) validateFontFile: (NSString *)fontPath
-                    error: (NSError **)error;
+		    error: (NSError **)error;
 
 /**
  * Installs a font file to the appropriate system location.
@@ -237,7 +237,7 @@ GS_EXPORT_CLASS
  * YES if installation was successful, NO otherwise.
  */
 - (BOOL) installFontAtPath: (NSString *)fontPath
-                     error: (NSError **)error;
+		     error: (NSError **)error;
 
 /**
  * Returns the system fonts directory for the current platform.

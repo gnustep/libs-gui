@@ -112,13 +112,13 @@ static Class _defaultDownloaderClass = nil;
 {
   // Delegate to the format-specific method with default format
   return [self downloadAndInstallFontWithDescriptor: descriptor
-                                     preferredFormat: nil
-                                               error: error];
+				     preferredFormat: nil
+					       error: error];
 }
 
 - (BOOL) downloadAndInstallFontWithDescriptor: (NSFontDescriptor *)descriptor
-                               preferredFormat: (NSString *)format
-                                        error: (NSError **)error
+			       preferredFormat: (NSString *)format
+					error: (NSError **)error
 {
   if (descriptor == nil)
     {
@@ -162,10 +162,10 @@ static Class _defaultDownloaderClass = nil;
 	  if (error != NULL)
 	    {
 	      NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"No font URL available for descriptor"
-							       forKey: NSLocalizedDescriptionKey];
+								   forKey: NSLocalizedDescriptionKey];
 	      *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-					  code: -1002
-				      userInfo: userInfo];
+					   code: -1002
+				       userInfo: userInfo];
 	    }
 	  return NO;
 	}
@@ -175,23 +175,23 @@ static Class _defaultDownloaderClass = nil;
       // Check if this is a CSS URL (like Google Fonts API) and handle appropriately
       NSString *urlString = [fontURL absoluteString];
       if ([urlString containsString: @"fonts.googleapis.com/css"] ||
-          [urlString containsString: @"fonts.google.com/css"] ||
-          [urlString containsString: @"fonts.gstatic.com/css"] ||
-          [urlString hasSuffix: @".css"] ||
-          [[fontURL pathExtension] isEqualToString: @"css"])
-        {
-          // This is a CSS URL containing @font-face declarations
-          // Use the specified format, or default to truetype/ttf if none specified
-          NSString *preferredFormat = format ? format : @"truetype";
-          [self updateProgressPanel: 0.4 withMessage: @"Downloading CSS and extracting font URLs..."];
-          downloadedPath = [self downloadFontDataFromCSSURL: fontURL withFormat: preferredFormat fontName: fontName error: &localError];
-        }
+	  [urlString containsString: @"fonts.google.com/css"] ||
+	  [urlString containsString: @"fonts.gstatic.com/css"] ||
+	  [urlString hasSuffix: @".css"] ||
+	  [[fontURL pathExtension] isEqualToString: @"css"])
+	{
+	  // This is a CSS URL containing @font-face declarations
+	  // Use the specified format, or default to truetype/ttf if none specified
+	  NSString *preferredFormat = format ? format : @"truetype";
+	  [self updateProgressPanel: 0.4 withMessage: @"Downloading CSS and extracting font URLs..."];
+	  downloadedPath = [self downloadFontDataFromCSSURL: fontURL withFormat: preferredFormat fontName: fontName error: &localError];
+	}
       else
-        {
-          // This is a direct font file URL
-          [self updateProgressPanel: 0.4 withMessage: @"Downloading font file..."];
-          downloadedPath = [self downloadFontFromURL: fontURL fontName: fontName error: &localError];
-        }
+	{
+	  // This is a direct font file URL
+	  [self updateProgressPanel: 0.4 withMessage: @"Downloading font file..."];
+	  downloadedPath = [self downloadFontFromURL: fontURL fontName: fontName error: &localError];
+	}
 
       if (downloadedPath == nil)
 	{
@@ -219,11 +219,11 @@ static Class _defaultDownloaderClass = nil;
       [self updateProgressPanel: 0.8 withMessage: @"Installing font..."];
       success = [self installFontAtPath: downloadedPath error: &localError];
       if (success)
-        {
-          [self updateProgressPanel: 1.0 withMessage: @"Font installed successfully!"];
-          // Brief delay to show completion
-          [NSThread sleepForTimeInterval: 0.5];
-        }
+	{
+	  [self updateProgressPanel: 1.0 withMessage: @"Font installed successfully!"];
+	  // Brief delay to show completion
+	  [NSThread sleepForTimeInterval: 0.5];
+	}
       else if (error != NULL)
 	{
 	  *error = localError;
@@ -235,22 +235,22 @@ static Class _defaultDownloaderClass = nil;
       if (error != NULL)
 	{
 	  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-				    @"Font download and installation failed", NSLocalizedDescriptionKey,
-				    [localException reason], NSLocalizedFailureReasonErrorKey,
-				    nil];
+						   @"Font download and installation failed", NSLocalizedDescriptionKey,
+						 [localException reason], NSLocalizedFailureReasonErrorKey,
+						 nil];
 	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-				      code: -1003
-				  userInfo: userInfo];
+				       code: -1003
+				   userInfo: userInfo];
 	}
       success = NO;
     }
   NS_ENDHANDLER
 
-  // Clean up temporary download file
-  if (downloadedPath != nil)
-    {
-      [[NSFileManager defaultManager] removeItemAtPath: downloadedPath error: nil];
-    }
+    // Clean up temporary download file
+    if (downloadedPath != nil)
+      {
+	[[NSFileManager defaultManager] removeItemAtPath: downloadedPath error: nil];
+      }
 
   // Hide progress panel
   [self hideProgressPanel];
@@ -292,13 +292,13 @@ static Class _defaultDownloaderClass = nil;
   if (cssContent == nil || [cssContent length] == 0)
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"CSS content is nil or empty"
-                                                               forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                       code: -2100
-                                   userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"CSS content is nil or empty"
+							       forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -2100
+				   userInfo: userInfo];
+	}
       return nil;
     }
 
@@ -307,50 +307,50 @@ static Class _defaultDownloaderClass = nil;
   // Regular expression to match src: url(...) format('...') patterns
   NSString *pattern = @"src:\\s*url\\(([^)]+)\\)\\s*format\\(['\"]([^'\"]+)['\"]\\)";
   NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern: pattern
-                                                                         options: NSRegularExpressionCaseInsensitive
-                                                                           error: error];
+									 options: NSRegularExpressionCaseInsensitive
+									   error: error];
   if (regex == nil)
     {
       return nil;
     }
 
   NSArray *matches = [regex matchesInString: cssContent
-                                    options: 0
-                                      range: NSMakeRange(0, [cssContent length])];
+				    options: 0
+				      range: NSMakeRange(0, [cssContent length])];
   NSEnumerator *men = [matches objectEnumerator];
   NSTextCheckingResult *match = nil;
 
   while ((match = [men nextObject]) != nil)
     {
       if ([match numberOfRanges] >= 3)
-        {
-          NSRange urlRange = [match rangeAtIndex: 1];
-          NSRange formatRange = [match rangeAtIndex: 2];
+	{
+	  NSRange urlRange = [match rangeAtIndex: 1];
+	  NSRange formatRange = [match rangeAtIndex: 2];
 
-          NSString *urlString = [cssContent substringWithRange: urlRange];
-          NSString *formatString = [cssContent substringWithRange: formatRange];
+	  NSString *urlString = [cssContent substringWithRange: urlRange];
+	  NSString *formatString = [cssContent substringWithRange: formatRange];
 
-          // Clean up URL string (remove quotes if present)
-          urlString = [urlString stringByTrimmingCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\"' "]];
+	  // Clean up URL string (remove quotes if present)
+	  urlString = [urlString stringByTrimmingCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\"' "]];
 
-          // Check if format matches what we're looking for
-          if (format == nil || [formatString isEqualToString: format])
-            {
-              NSURL *url = [NSURL URLWithString: urlString];
-              if (url != nil)
-                {
-                  [fontURLs addObject: url];
-                }
-            }
-        }
+	  // Check if format matches what we're looking for
+	  if (format == nil || [formatString isEqualToString: format])
+	    {
+	      NSURL *url = [NSURL URLWithString: urlString];
+	      if (url != nil)
+		{
+		  [fontURLs addObject: url];
+		}
+	    }
+	}
     }
 
   return [fontURLs copy];
 }
 
 - (NSString *) downloadFontDataFromCSSURL: (NSURL *)cssURL
-                               withFormat: (NSString *)format
-                                    error: (NSError **)error
+			       withFormat: (NSString *)format
+				    error: (NSError **)error
 {
   // Use a generic font name since we don't have the font descriptor here
   NSString *genericFontName = @"WebFont";
@@ -362,27 +362,27 @@ static Class _defaultDownloaderClass = nil;
       // Try to extract font family from URL parameters
       NSString *query = [cssURL query];
       if (query != nil)
-        {
-          NSArray *queryParts = [query componentsSeparatedByString: @"&"];
-          for (NSString *part in queryParts)
-            {
-              if ([part hasPrefix: @"family="])
-                {
-                  NSString *familyPart = [part substringFromIndex: 7]; // Skip "family="
-                  // Take first font name if multiple are specified
-                  NSArray *families = [familyPart componentsSeparatedByString: @"|"];
-                  if ([families count] > 0)
-                    {
-                      genericFontName = [families objectAtIndex: 0];
-                      // Clean up URL encoding
-                      genericFontName = [genericFontName stringByReplacingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
-                      // Replace + with spaces (URL encoding)
-                      genericFontName = [genericFontName stringByReplacingOccurrencesOfString: @"+" withString: @" "];
-                      break;
-                    }
-                }
-            }
-        }
+	{
+	  NSArray *queryParts = [query componentsSeparatedByString: @"&"];
+	  for (NSString *part in queryParts)
+	    {
+	      if ([part hasPrefix: @"family="])
+		{
+		  NSString *familyPart = [part substringFromIndex: 7]; // Skip "family="
+		  // Take first font name if multiple are specified
+		  NSArray *families = [familyPart componentsSeparatedByString: @"|"];
+		  if ([families count] > 0)
+		    {
+		      genericFontName = [families objectAtIndex: 0];
+		      // Clean up URL encoding
+		      genericFontName = [genericFontName stringByReplacingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
+		      // Replace + with spaces (URL encoding)
+		      genericFontName = [genericFontName stringByReplacingOccurrencesOfString: @"+" withString: @" "];
+		      break;
+		    }
+		}
+	    }
+	}
     }
 
   // Delegate to the method that takes font name
@@ -390,20 +390,20 @@ static Class _defaultDownloaderClass = nil;
 }
 
 - (NSString *) downloadFontDataFromCSSURL: (NSURL *)cssURL
-                               withFormat: (NSString *)format
-                                 fontName: (NSString *)fontName
-                                    error: (NSError **)error
+			       withFormat: (NSString *)format
+				 fontName: (NSString *)fontName
+				    error: (NSError **)error
 {
   if (cssURL == nil)
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"CSS URL is nil"
-                                                               forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                       code: -2101
-                                   userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"CSS URL is nil"
+							       forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -2101
+				   userInfo: userInfo];
+	}
       return nil;
     }
 
@@ -417,53 +417,53 @@ static Class _defaultDownloaderClass = nil;
     {
       NSData *cssData = [NSData dataWithContentsOfURL: cssURL];
       if (cssData != nil)
-        {
-          cssContent = [[NSString alloc] initWithData: cssData encoding: NSUTF8StringEncoding];
-        }
+	{
+	  cssContent = [[NSString alloc] initWithData: cssData encoding: NSUTF8StringEncoding];
+	}
     }
   NS_HANDLER
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                   @"Failed to download CSS from URL", NSLocalizedDescriptionKey,
-                                                 [localException reason], NSLocalizedFailureReasonErrorKey,
-                                                 nil];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                       code: -2102
-                                   userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+						   @"Failed to download CSS from URL", NSLocalizedDescriptionKey,
+						 [localException reason], NSLocalizedFailureReasonErrorKey,
+						 nil];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -2102
+				   userInfo: userInfo];
+	}
       return nil;
     }
   NS_ENDHANDLER
 
-  if (cssContent == nil)
-    {
-      if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Failed to parse CSS content"
-                                                               forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                       code: -2103
-                                   userInfo: userInfo];
-        }
-      return nil;
-    }
+    if (cssContent == nil)
+      {
+	if (error != NULL)
+	  {
+	    NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Failed to parse CSS content"
+								 forKey: NSLocalizedDescriptionKey];
+	    *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+					 code: -2103
+				     userInfo: userInfo];
+	  }
+	return nil;
+      }
 
   // Extract font URLs from CSS
   [self updateProgressPanel: 0.5 withMessage: @"Parsing CSS and extracting font URLs..."];
   NSArray *fontURLs = [self extractFontURLsFromCSS: cssContent
-                                         withFormat: format
-                                              error: &cssError];
+					withFormat: format
+					     error: &cssError];
   if (fontURLs == nil || [fontURLs count] == 0)
     {
       if (error != NULL)
-        {
-          *error = cssError ?: [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                                   code: -2104
-                                               userInfo: [NSDictionary dictionaryWithObject: @"No font URLs found in CSS"
-                                                                                     forKey: NSLocalizedDescriptionKey]];
-        }
+	{
+	  *error = cssError ?: [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+						   code: -2104
+					       userInfo: [NSDictionary dictionaryWithObject: @"No font URLs found in CSS"
+										     forKey: NSLocalizedDescriptionKey]];
+	}
       return nil;
     }
 
@@ -484,9 +484,9 @@ static Class _defaultDownloaderClass = nil;
       // Remove file extension to get just the name
       fontName = [lastComponent stringByDeletingPathExtension];
       if ([fontName length] == 0)
-        {
-          fontName = @"UnknownFont";
-        }
+	{
+	  fontName = @"UnknownFont";
+	}
     }
 
   // Delegate to the method that takes font name
@@ -494,19 +494,19 @@ static Class _defaultDownloaderClass = nil;
 }
 
 - (NSString *) downloadFontFromURL: (NSURL *)fontURL
-                          fontName: (NSString *)fontName
-                             error: (NSError **)error
+			  fontName: (NSString *)fontName
+			     error: (NSError **)error
 {
   if (fontURL == nil)
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font URL is nil"
-                                                               forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                       code: -2001
-                                   userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font URL is nil"
+							       forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -2001
+				   userInfo: userInfo];
+	}
       return nil;
     }
 
@@ -562,55 +562,55 @@ static Class _defaultDownloaderClass = nil;
     {
       // For HTTPS URLs, try to download
       if ([[fontURL scheme] isEqualToString: @"https"] || [[fontURL scheme] isEqualToString: @"http"])
-        {
-          fontData = [NSData dataWithContentsOfURL: fontURL];
-        }
+	{
+	  fontData = [NSData dataWithContentsOfURL: fontURL];
+	}
       // For file URLs, copy the file
       else if ([[fontURL scheme] isEqualToString: @"file"])
-        {
-          fontData = [NSData dataWithContentsOfURL: fontURL];
-        }
+	{
+	  fontData = [NSData dataWithContentsOfURL: fontURL];
+	}
     }
   NS_HANDLER
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                   @"Failed to download font from URL", NSLocalizedDescriptionKey,
-                                                 [localException reason], NSLocalizedFailureReasonErrorKey,
-                                                 nil];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                       code: -2002
-                                   userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+						   @"Failed to download font from URL", NSLocalizedDescriptionKey,
+						 [localException reason], NSLocalizedFailureReasonErrorKey,
+						 nil];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -2002
+				   userInfo: userInfo];
+	}
       return nil;
     }
   NS_ENDHANDLER
 
-  if (fontData == nil || [fontData length] == 0)
-    {
-      if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"No data received from font URL"
-                                                               forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                       code: -2003
-                                   userInfo: userInfo];
-        }
-      return nil;
-    }
+    if (fontData == nil || [fontData length] == 0)
+      {
+	if (error != NULL)
+	  {
+	    NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"No data received from font URL"
+								 forKey: NSLocalizedDescriptionKey];
+	    *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+					 code: -2003
+				     userInfo: userInfo];
+	  }
+	return nil;
+      }
 
   // Write font data to temporary file
   if (![fontData writeToFile: tempPath atomically: YES])
     {
       if (error != NULL)
-        {
-          NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Failed to write font data to temporary file"
-                                                               forKey: NSLocalizedDescriptionKey];
-          *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-                                       code: -2004
-                                   userInfo: userInfo];
-        }
+	{
+	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Failed to write font data to temporary file"
+							       forKey: NSLocalizedDescriptionKey];
+	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
+				       code: -2004
+				   userInfo: userInfo];
+	}
       return nil;
     }
 
@@ -844,9 +844,9 @@ static Class _defaultDownloaderClass = nil;
   // Create the progress panel
   NSRect panelFrame = NSMakeRect(0, 0, 400, 120);
   _progressPanel = [[NSPanel alloc] initWithContentRect: panelFrame
-                                              styleMask: NSWindowStyleMaskTitled | NSWindowStyleMaskClosable
-                                                backing: NSBackingStoreBuffered
-                                                  defer: NO];
+					      styleMask: NSWindowStyleMaskTitled | NSWindowStyleMaskClosable
+						backing: NSBackingStoreBuffered
+						  defer: NO];
   [_progressPanel setTitle: @"Font Download"];
   [_progressPanel setLevel: NSModalPanelWindowLevel];
   [_progressPanel setReleasedWhenClosed: NO];
@@ -904,9 +904,9 @@ static Class _defaultDownloaderClass = nil;
   // Process events to update the UI
   NSEvent *event;
   while ((event = [NSApp nextEventMatchingMask: NSAnyEventMask
-                                     untilDate: [NSDate distantPast]
-                                        inMode: NSDefaultRunLoopMode
-                                       dequeue: YES]))
+				     untilDate: [NSDate distantPast]
+					inMode: NSDefaultRunLoopMode
+				       dequeue: YES]))
     {
       [NSApp sendEvent: event];
     }
@@ -945,7 +945,7 @@ static Class _defaultDownloaderClass = nil;
   // Post a notification that download was cancelled
   [[NSNotificationCenter defaultCenter]
     postNotificationName: @"GSFontAssetDownloadCancelled"
-                  object: self];
+		  object: self];
 }
 
 @end
