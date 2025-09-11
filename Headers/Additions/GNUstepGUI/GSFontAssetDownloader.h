@@ -177,6 +177,17 @@ GS_EXPORT_CLASS
                              error: (NSError **)error;
 
 /**
+ * Downloads a font file from the specified URL with a given font name.
+ * This variant allows specifying the font name for better filename generation.
+ * The downloaded file will be saved with a name based on the font name and
+ * appropriate extension. Returns the path to the downloaded temporary file,
+ * or nil on failure.
+ */
+- (NSString *) downloadFontFromURL: (NSURL *)fontURL
+                          fontName: (NSString *)fontName
+                             error: (NSError **)error;
+
+/**
  * Extracts font URLs from CSS content based on the specified format.
  * This method parses CSS @font-face declarations and extracts URLs
  * that match the given format (e.g., "woff2", "woff", "ttf").
@@ -194,6 +205,18 @@ GS_EXPORT_CLASS
  */
 - (NSString *) downloadFontDataFromCSSURL: (NSURL *)cssURL
                                withFormat: (NSString *)format
+                                    error: (NSError **)error;
+
+/**
+ * Downloads font data from a CSS URL with a given font name.
+ * This variant allows specifying the font name for better filename generation.
+ * The downloaded file will be saved with a name based on the font name and
+ * appropriate extension. Returns the path to the downloaded temporary file,
+ * or nil on failure.
+ */
+- (NSString *) downloadFontDataFromCSSURL: (NSURL *)cssURL
+                               withFormat: (NSString *)format
+                                 fontName: (NSString *)fontName
                                     error: (NSError **)error;
 
 /**
