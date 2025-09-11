@@ -24,6 +24,8 @@
 
 #import <Foundation/Foundation.h>
 #import "GNUstepGUI/GSFontAssetDownloader.h"
+
+#import "AppKit/NSEvent.h"
 #import "AppKit/NSFontDescriptor.h"
 #import "AppKit/NSFontAssetRequest.h"
 #import "AppKit/NSPanel.h"
@@ -821,7 +823,7 @@ static Class _defaultDownloaderClass = nil;
 
   // Process events to update the UI
   NSEvent *event;
-  while ((event = [NSApp nextEventMatchingMask: NSEventMaskAny
+  while ((event = [NSApp nextEventMatchingMask: NSAnyEventMask
                                      untilDate: [NSDate distantPast]
                                         inMode: NSDefaultRunLoopMode
                                        dequeue: YES]))
@@ -864,28 +866,6 @@ static Class _defaultDownloaderClass = nil;
   [[NSNotificationCenter defaultCenter]
     postNotificationName: @"GSFontAssetDownloadCancelled"
                   object: self];
-}
-
-+ (void) demonstrateProgressPanel
-{
-  // Create a downloader with standard UI enabled
-  GSFontAssetDownloader *downloader = [GSFontAssetDownloader downloaderWithOptions: NSFontAssetRequestOptionUsesStandardUI];
-
-  // Show the progress panel
-  [downloader showProgressPanelWithMessage: @"Demonstrating progress panel..."];
-
-  // Simulate progress updates
-  for (int i = 1; i <= 10; i++)
-    {
-      double progress = i / 10.0;
-      NSString *message = [NSString stringWithFormat: @"Step %d of 10...", i];
-      [downloader updateProgressPanel: progress withMessage: message];
-      [NSThread sleepForTimeInterval: 0.5]; // Simulate work
-    }
-
-  // Hide the panel
-  [downloader hideProgressPanel];
-  RELEASE(downloader);
 }
 
 @end

@@ -257,12 +257,6 @@ GS_EXPORT_CLASS
  */
 - (void) cancelDownload: (id)sender;
 
-/**
- * Test method to demonstrate the progress panel functionality.
- * Creates a downloader with standard UI and simulates a download process.
- */
-+ (void) demonstrateProgressPanel;
-
 @end
 
 #endif	/* GS_API_MACOSX */
