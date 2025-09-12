@@ -249,7 +249,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
   // Observe font manager notifications to refresh panel when fonts are updated
   [[NSNotificationCenter defaultCenter] addObserver: self
                                             selector: @selector(fontManagerDidChangeAvailableFonts:)
-                                                name: NSFontManagerAvailableFontsDidChangeNotification
+                                                name: GSFontManagerAvailableFontsDidChangeNotification
                                               object: nil];
 
   return self;

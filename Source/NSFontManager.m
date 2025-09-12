@@ -44,7 +44,7 @@
 #import "GNUstepGUI/GSFontInfo.h"
 
 /* Notification names */
-NSString * const NSFontManagerAvailableFontsDidChangeNotification = @"NSFontManagerAvailableFontsDidChangeNotification";
+NSString * const GSFontManagerAvailableFontsDidChangeNotification = @"GSFontManagerAvailableFontsDidChangeNotification";
 
 /*
  * Class variables
@@ -153,7 +153,7 @@ static Class         fontPanelClass = Nil;
   [_fontEnumerator refreshFontCache];
 
   // Post notification that available fonts have changed
-  [[NSNotificationCenter defaultCenter] postNotificationName: NSFontManagerAvailableFontsDidChangeNotification
+  [[NSNotificationCenter defaultCenter] postNotificationName: GSFontManagerAvailableFontsDidChangeNotification
                                                        object: self];
 }
 

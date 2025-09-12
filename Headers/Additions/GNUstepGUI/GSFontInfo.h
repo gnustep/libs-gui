@@ -48,12 +48,18 @@ APPKIT_EXPORT_CLASS
 
 + (void) setDefaultClass: (Class)defaultClass;
 + (GSFontEnumerator*) sharedEnumerator;
+
+// Font enumeration and caching
 - (void) enumerateFontsAndFamilies;
 - (void) refreshFontCache;
+
+// Querying available fonts
 - (NSArray*) availableFonts;
 - (NSArray*) availableFontFamilies;
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family;
 - (NSArray*) availableFontDescriptors;
+
+// Font matching and searching
 - (NSArray *) availableFontNamesMatchingFontDescriptor: (NSFontDescriptor *)descriptor;
 - (NSArray *) matchingFontDescriptorsFor: (NSDictionary *)attributes;
 - (NSArray *) matchingDescriptorsForFamily: (NSString *)family
@@ -61,6 +67,7 @@ APPKIT_EXPORT_CLASS
                                  inclusion: (NSArray *)queryDescriptors
                                  exculsion: (NSArray *)exclusionDescriptors;
 
+// Default system font names (called once, backends may override)
 /* Note that these are only called once. NSFont will remember the returned
 values. Backends may override these. */
 - (NSString *) defaultSystemFontName;

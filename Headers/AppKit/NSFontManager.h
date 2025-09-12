@@ -114,11 +114,6 @@ APPKIT_EXPORT_CLASS
 - (NSString *) localizedNameForFamily:(NSString *)family face:(NSString *)face;
 
 //
-// Refresh font cache
-//
-- (void) refreshAvailableFonts;
-
-//
 // Selecting fonts
 //
 - (void)setSelectedFont:(NSFont *)fontObject
@@ -219,6 +214,15 @@ APPKIT_EXPORT_CLASS
 #endif
 @end
 
+#if OS_API_VERSION(GS_API_NONE, GS_API_LATEST)
+@interface NSFontManager (GNUstep)
+//
+// GNUstep extensions
+//
+- (void) refreshAvailableFonts;
+@end
+#endif
+
 @interface NSObject (NSFontManagerDelegate)
 //
 // Methods Implemented by the Delegate
@@ -227,7 +231,7 @@ APPKIT_EXPORT_CLASS
 @end
 
 // Notifications
-APPKIT_EXPORT NSString * const NSFontManagerAvailableFontsDidChangeNotification;
+APPKIT_EXPORT NSString * const GSFontManagerAvailableFontsDidChangeNotification;
 
 #endif // _GNUstep_H_NSFontManager
 
