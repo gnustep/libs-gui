@@ -125,10 +125,10 @@ static Class _defaultDownloaderClass = nil;
       if (error != NULL)
 	{
 	  NSDictionary *userInfo = [NSDictionary dictionaryWithObject: @"Font descriptor is nil"
-							   forKey: NSLocalizedDescriptionKey];
+							       forKey: NSLocalizedDescriptionKey];
 	  *error = [NSError errorWithDomain: @"GSFontAssetDownloaderErrorDomain"
-				      code: -1001
-				  userInfo: userInfo];
+				       code: -1001
+				   userInfo: userInfo];
 	}
       return NO;
     }
