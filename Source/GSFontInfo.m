@@ -90,6 +90,22 @@ static GSFontEnumerator *sharedEnumerator = nil;
   [self subclassResponsibility: _cmd];
 }
 
+- (void) refreshFontCache
+{
+  // Release old cached data
+  RELEASE(allFontNames);
+  RELEASE(allFontFamilies);
+  RELEASE(allFontDescriptors);
+
+  // Reset to nil so they get rebuilt
+  allFontNames = nil;
+  allFontFamilies = nil;
+  allFontDescriptors = nil;
+
+  // Re-enumerate fonts and families to rebuild cache
+  [self enumerateFontsAndFamilies];
+}
+
 - (NSArray*) availableFonts
 {
   return allFontNames;

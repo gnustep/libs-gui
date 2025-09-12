@@ -8,7 +8,7 @@
    Date: Febuary 2000
    Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: January 2001 - sizings and resizings
- 
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -23,10 +23,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #include "config.h"
 #import <Foundation/NSDebug.h>
@@ -56,7 +56,7 @@
 
 static inline void _setFloatValue (NSTextField *field, float size)
 {
-  /* If casting size to int and then back to float we get no change, 
+  /* If casting size to int and then back to float we get no change,
      it means it's an integer */
   if ((float)((int)size) == size)
     {
@@ -133,7 +133,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 
   if (_autoresizingMask == NSViewNotSizable)
     return;
-  
+
   if (!NSEqualRects(NSZeroRect, _autoresizingFrameError))
     {
       newFrame.origin.x -= _autoresizingFrameError.origin.x;
@@ -216,7 +216,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
     }
 }
 
-/** <p>Creates ( if needed ) and returns the shared NSFontPanel.</p> 
+/** <p>Creates ( if needed ) and returns the shared NSFontPanel.</p>
  */
 + (NSFontPanel*) sharedFontPanel
 {
@@ -246,11 +246,19 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
   [self reloadDefaultFontFamilies];
   [self _getOriginalSize];
 
+  // Observe font manager notifications to refresh panel when fonts are updated
+  [[NSNotificationCenter defaultCenter] addObserver: self
+                                            selector: @selector(fontManagerDidChangeAvailableFonts:)
+                                                name: NSFontManagerAvailableFontsDidChangeNotification
+                                              object: nil];
+
   return self;
 }
 
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+
   RELEASE(_panelFont);
   RELEASE(_familyList);
   TEST_RELEASE(_faceList);
@@ -314,11 +322,17 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 
   DESTROY(_familyList);
   _familyList = familyList;
-  // Reload the display. 
+  // Reload the display.
   [familyBrowser loadColumnZero];
   // Reselect the current font. (Hopefully still there)
   [self setPanelFont: [fm selectedFont]
 	isMultiple: [fm isMultiple]];
+}
+
+- (void) fontManagerDidChangeAvailableFonts: (NSNotification *)notification
+{
+  // Reload the font families when the font cache is updated
+  [self reloadDefaultFontFamilies];
 }
 
 - (void) setPanelFont: (NSFont *)fontObject
@@ -330,7 +344,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 
   ASSIGN(_panelFont, fontObject);
   _multiple = flag;
-  
+
   if (fontObject == nil)
     {
       return;
@@ -353,11 +367,11 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
       NSBrowser *faceBrowser = [[self contentView] viewWithTag: NSFPFaceBrowser];
       NSString *face = @"";
       unsigned int i;
- 
+
       // Store style information for font
       _traits = [fm traitsOfFont: fontObject];
       _weight = [fm weightOfFont: fontObject];
-      
+
       // Select the row for the font family
       for (i = 0; i < [_familyList count]; i++)
 	{
@@ -376,7 +390,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
       // Select the row for the font face
       for (i = 0; i < [_faceList count]; i++)
 	{
-	  if ([[[_faceList objectAtIndex: i] objectAtIndex: 0] 
+	  if ([[[_faceList objectAtIndex: i] objectAtIndex: 0]
 		isEqualToString: fontName])
 	    break;
 	}
@@ -393,7 +407,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
       // Use in preview
       [previewArea setFont: fontObject];
       if (_previewString == nil)
-        { 
+        {
 	  [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
 						 family, face, (int)size]];
 	}
@@ -408,13 +422,13 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 
   if (_multiple)
     {
-      //TODO: We go over every item in the panel and check if a 
+      //TODO: We go over every item in the panel and check if a
       // value is selected. If so we send it on to the manager
       //  newFont = [fm convertFont: fontObject toHaveTrait: NSItalicFontMask];
       NSLog(@"Multiple font conversion not implemented in NSFontPanel");
       newFont = [self _fontForSelection: fontObject];
     }
-  else 
+  else
     {
       newFont = [self _fontForSelection: fontObject];
     }
@@ -423,7 +437,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
     {
       newFont = fontObject;
     }
-  
+
   return newFont;
 }
 
@@ -454,7 +468,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 
   if (aView == _accessoryView)
     return;
-  
+
   /* The following code is very tricky.  Please think and test a lot
      before changing it. */
 
@@ -469,8 +483,8 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 	 could be a problem. */
       [self setMinSize: _originalMinSize];
 
-      /* Resize the panel to the height without the accessory view. 
-	 This must be done with the special care of not resizing 
+      /* Resize the panel to the height without the accessory view.
+	 This must be done with the special care of not resizing
 	 the heights of the other views. */
       addedHeight = accessoryViewFrame.size.height + (_SAVE_PANEL_Y_PAD * 2);
       contentSize = [[self contentView] frame].size;
@@ -480,15 +494,15 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
       [self setContentSize: contentSize];
       [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     }
-  
+
   /* Resize the panel to its original size.  This resizes freely the
      heights of the views.  NB: minSize *must* come first */
   [self setMinSize: _originalMinSize];
   [self setContentSize: _originalSize];
-  
+
   /* Set the new accessory view */
   _accessoryView = aView;
-  
+
   /* If there is a new accessory view, plug it in */
   if (_accessoryView != nil)
     {
@@ -496,9 +510,9 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
        * and its position relative to the bottom of the superview must not
        * change	- so its position rlative to the top must be changable. */
       [_accessoryView setAutoresizingMask: NSViewMaxYMargin
-	| ([_accessoryView autoresizingMask] 
-	& ~(NSViewHeightSizable | NSViewMinYMargin))];  
-      
+	| ([_accessoryView autoresizingMask]
+	& ~(NSViewHeightSizable | NSViewMinYMargin))];
+
       /* Compute size taken by the new accessory view */
       accessoryViewFrame = [_accessoryView frame];
       addedHeight = accessoryViewFrame.size.height + (_SAVE_PANEL_Y_PAD * 2);
@@ -511,7 +525,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 	{
 	  contentSize.width = accessoryWidth;
 	}
-      
+
       /* Set new content size without resizing heights of topView, bottomView */
       // Our views should resize horizontally if needed, but not vertically
       [_topView setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
@@ -524,7 +538,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
       contentMinSize.height += addedHeight;
       // width is more delicate
       tmpRect = NSMakeRect (0, 0, contentMinSize.width, contentMinSize.height);
-      tmpRect = [NSWindow contentRectForFrameRect: tmpRect 
+      tmpRect = [NSWindow contentRectForFrameRect: tmpRect
 			  styleMask: [self styleMask]];
       if (accessoryWidth > tmpRect.size.width)
 	{
@@ -541,7 +555,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
       bottomFrame = [_bottomView frame];
 
       /* AccessoryView */
-      accessoryViewFrame.origin.x 
+      accessoryViewFrame.origin.x
 	= (contentSize.width - accessoryViewFrame.size.width) / 2;
       accessoryViewFrame.origin.y =  NSMaxY (bottomFrame) + _SAVE_PANEL_Y_PAD;
       [_accessoryView setFrameOrigin: accessoryViewFrame.origin];
@@ -641,7 +655,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
   unsigned int style = NSTitledWindowMask | NSClosableWindowMask
                      | NSResizableWindowMask | NSUtilityWindowMask;
 
-  self = [super initWithContentRect: contentRect 
+  self = [super initWithContentRect: contentRect
 			  styleMask: style
 			    backing: NSBackingStoreRetained
 			      defer: YES
@@ -662,7 +676,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
   _topView = topArea;
 
   splitView = [[NSSplitView alloc] initWithFrame: splitViewRect];
-  [splitView setVertical: NO]; 
+  [splitView setVertical: NO];
   [splitView setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
 
   topSplit = [[NSView alloc] initWithFrame: topSplitRect];
@@ -869,7 +883,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 
   [self setInitialFirstResponder: setButton];
   [self setBecomesKeyOnlyIfNeeded: YES];
-  
+
   return self;
 }
 
@@ -896,12 +910,12 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
     }
 
   if (_previewString == nil)
-    { 
+    {
       NSTextField *sizeField = [[self contentView] viewWithTag: NSFPSizeField];
       float	size = [sizeField floatValue];
       NSString	*faceName;
       NSString	*familyName;
-      
+
       if (size == 0 && font != nil)
 	{
 	  size = [font pointSize];
@@ -924,7 +938,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 	}
       [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
 					     familyName, faceName, (int)size]];
-    }    
+    }
 }
 
 - (void) ok: (id)sender
@@ -941,7 +955,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 
   /*
    * The cancel button has been pushed
-   * we should reset the items in the panel 
+   * we should reset the items in the panel
    */
   [self setPanelFont: _panelFont
 	  isMultiple: _multiple];
@@ -993,7 +1007,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
       else
 	return nil;
     }
-  
+
   // FIXME: We should check if the font is correct
   return [NSFont fontWithName: fontName size: size];
 }
@@ -1012,8 +1026,8 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
       sizeField = [[self contentView] viewWithTag: NSFPSizeField];
       _setFloatValue (sizeField, size);
     }
-        
-  /* Make sure our column is loaded. */ 
+
+  /* Make sure our column is loaded. */
   [sizeBrowser loadColumnZero];
 
   for (i = 0; i < sizeof(sizes) / sizeof(float); i++)
@@ -1202,7 +1216,7 @@ static int score_difference(int weight1, int traits1,
 
   sizeField = [[self contentView] viewWithTag: NSFPSizeField];
   _setFloatValue (sizeField, sizes[row]);
-  
+
   [self _doPreview];
 }
 
@@ -1211,7 +1225,7 @@ static int score_difference(int weight1, int traits1,
 {
   switch ([sender tag])
     {
-    case NSFPFamilyBrowser: 
+    case NSFPFamilyBrowser:
       {
 	return [_familyList count];
       }
@@ -1249,9 +1263,9 @@ static int score_difference(int weight1, int traits1,
     }
 }
 
-- (void) browser: (NSBrowser *)sender 
- willDisplayCell: (id)cell 
-	   atRow: (NSInteger)row 
+- (void) browser: (NSBrowser *)sender
+ willDisplayCell: (id)cell
+	   atRow: (NSInteger)row
 	  column: (NSInteger)column
 {
   NSString *value = nil;
@@ -1274,7 +1288,7 @@ static int score_difference(int weight1, int traits1,
 	if ([_faceList count] > (NSUInteger)row)
 	  {
 	    value = [[_faceList objectAtIndex: row] objectAtIndex: 1];
-	  } 
+	  }
 	break;
       }
     case NSFPSizeBrowser:
@@ -1283,12 +1297,12 @@ static int score_difference(int weight1, int traits1,
 	value = [NSString stringWithFormat: @"%d", (int) sizes[row]];
       }
     }
-  
+
   [cell setStringValue: value];
   [cell setLeaf: YES];
 }
 
-- (BOOL) browser: (NSBrowser *)sender 
+- (BOOL) browser: (NSBrowser *)sender
    isColumnValid: (NSInteger)column;
 {
   return NO;
@@ -1298,8 +1312,8 @@ static int score_difference(int weight1, int traits1,
 
 @implementation NSFontPanel (NSSplitViewDelegate)
 
-- (void) splitView: (NSSplitView *)splitView  
-constrainMinCoordinate: (CGFloat *)min 
+- (void) splitView: (NSSplitView *)splitView
+constrainMinCoordinate: (CGFloat *)min
      maxCoordinate: (CGFloat *)max
        ofSubviewAt: (NSInteger)offset
 {

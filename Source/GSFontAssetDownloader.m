@@ -28,6 +28,7 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSFontDescriptor.h"
 #import "AppKit/NSFontAssetRequest.h"
+#import "AppKit/NSFontManager.h"
 #import "AppKit/NSPanel.h"
 #import "AppKit/NSProgressIndicator.h"
 #import "AppKit/NSTextField.h"
@@ -221,6 +222,10 @@ static Class _defaultDownloaderClass = nil;
       if (success)
 	{
 	  [self updateProgressPanel: 1.0 withMessage: @"Font installed successfully!"];
+
+	  // Refresh font cache so newly installed font appears in font panel
+	  [[NSFontManager sharedFontManager] refreshAvailableFonts];
+
 	  // Brief delay to show completion
 	  [NSThread sleepForTimeInterval: 0.5];
 	}

@@ -7,7 +7,7 @@
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: January 2000
    Almost complete rewrite.
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -22,10 +22,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #include "config.h"
 #import <Foundation/NSArray.h>
@@ -43,6 +43,8 @@
 #import "AppKit/NSMenuItem.h"
 #import "GNUstepGUI/GSFontInfo.h"
 
+/* Notification names */
+NSString * const NSFontManagerAvailableFontsDidChangeNotification = @"NSFontManagerAvailableFontsDidChangeNotification";
 
 /*
  * Class variables
@@ -146,6 +148,15 @@ static Class         fontPanelClass = Nil;
   return [_fontEnumerator availableFontFamilies];
 }
 
+- (void) refreshAvailableFonts
+{
+  [_fontEnumerator refreshFontCache];
+
+  // Post notification that available fonts have changed
+  [[NSNotificationCenter defaultCenter] postNotificationName: NSFontManagerAvailableFontsDidChangeNotification
+                                                       object: self];
+}
+
 - (NSArray*) availableFontNamesWithTraits: (NSFontTraitMask)fontTraitMask
 {
   unsigned int i, j;
@@ -160,9 +171,9 @@ static Class         fontPanelClass = Nil;
 
   for (i = 0; i < [fontFamilies count]; i++)
     {
-      NSArray *fontDefs = [self availableMembersOfFontFamily: 
+      NSArray *fontDefs = [self availableMembersOfFontFamily:
                                  [fontFamilies objectAtIndex: i]];
-      
+
       for (j = 0; j < [fontDefs count]; j++)
         {
           NSArray *fontDef = [fontDefs objectAtIndex: j];
@@ -193,7 +204,7 @@ static Class         fontPanelClass = Nil;
   return [_fontEnumerator matchingFontDescriptorsFor: attributes];
 }
 
-- (NSString*) localizedNameForFamily: (NSString*)family 
+- (NSString*) localizedNameForFamily: (NSString*)family
                                 face: (NSString*)face
 {
   // TODO
@@ -227,7 +238,7 @@ static Class         fontPanelClass = Nil;
     {
       [fontPanel setPanelFont: fontObject isMultiple: flag];
     }
-  
+
   if (_fontMenu != nil)
     {
       id <NSMenuItem> menuItem;
@@ -369,7 +380,7 @@ static Class         fontPanelClass = Nil;
 
 /**<p>Converts the NSFont <var>fontObject</var> according to user changes
    in the Font panel or the font menu</p>
-   <p>See Also: -addFontTrait: -removeFontTrait: -modifyFont: 
+   <p>See Also: -addFontTrait: -removeFontTrait: -modifyFont:
    -modifyFontViaPanel: -convertFont:toHaveTrait: -convertFont:toNotHaveTrait:
    -convertFont:toSize: -convertFont:toFamily: -convertWeight:ofFont:</p>
  */
@@ -378,7 +389,7 @@ static Class         fontPanelClass = Nil;
   NSFont *newFont = fontObject;
   int i;
   float size;
-  float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 
+  float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
                    14.0, 16.0, 18.0, 24.0, 36.0, 48.0, 64.0};
 
   if (fontObject == nil)
@@ -386,21 +397,21 @@ static Class         fontPanelClass = Nil;
 
   switch (_storedTag)
     {
-      case NSNoFontChangeAction: 
+      case NSNoFontChangeAction:
         break;
-      case NSViaPanelFontAction: 
+      case NSViaPanelFontAction:
         if (fontPanel != nil)
           {
             newFont = [fontPanel panelConvertFont: fontObject];
           }
         break;
-      case NSAddTraitFontAction: 
+      case NSAddTraitFontAction:
         newFont = [self convertFont: fontObject toHaveTrait: _trait];
         break;
-      case NSRemoveTraitFontAction: 
+      case NSRemoveTraitFontAction:
          newFont = [self convertFont: fontObject toNotHaveTrait: _trait];
         break;
-      case NSSizeUpFontAction: 
+      case NSSizeUpFontAction:
         size = [fontObject pointSize];
         for (i = 0; i < sizeof(sizes)/sizeof(float); i++)
           {
@@ -410,10 +421,10 @@ static Class         fontPanelClass = Nil;
                 break;
               }
           }
-        newFont = [self convertFont: fontObject 
+        newFont = [self convertFont: fontObject
                         toSize: size];
         break;
-      case NSSizeDownFontAction: 
+      case NSSizeDownFontAction:
         size = [fontObject pointSize];
         for (i = sizeof(sizes)/sizeof(float) -1; i >= 0; i--)
           {
@@ -423,14 +434,14 @@ static Class         fontPanelClass = Nil;
                 break;
               }
           }
-        newFont = [self convertFont: fontObject 
+        newFont = [self convertFont: fontObject
                         toSize: size];
         break;
-      case NSHeavierFontAction: 
-        newFont = [self convertWeight: YES ofFont: fontObject]; 
+      case NSHeavierFontAction:
+        newFont = [self convertWeight: YES ofFont: fontObject];
         break;
-      case NSLighterFontAction: 
-        newFont = [self convertWeight: NO ofFont: fontObject]; 
+      case NSLighterFontAction:
+        newFont = [self convertWeight: NO ofFont: fontObject];
         break;
     }
 
@@ -454,13 +465,13 @@ static Class         fontPanelClass = Nil;
       int weight = [self weightOfFont: fontObject];
       float size = [fontObject pointSize];
 
-      newFont = [self fontWithFamily: family 
+      newFont = [self fontWithFamily: family
                               traits: trait
                               weight: weight
                                 size: size];
       if (newFont == nil)
         return fontObject;
-      else 
+      else
         return newFont;
     }
 }
@@ -479,7 +490,7 @@ static Class         fontPanelClass = Nil;
   newFont = [NSFont fontWithName: typeface size: [fontObject pointSize]];
   if (newFont == nil)
     return fontObject;
-  else 
+  else
     return newFont;
 }
 
@@ -525,14 +536,14 @@ static Class         fontPanelClass = Nil;
 
       t = t | trait;
 
-      newFont = [self fontWithFamily: family 
+      newFont = [self fontWithFamily: family
                               traits: t
                               weight: weight
                                 size: size];
 
       if (newFont == nil)
         return fontObject;
-      else 
+      else
         return newFont;
     }
 }
@@ -576,15 +587,15 @@ static Class         fontPanelClass = Nil;
         {
           t = (t | NSItalicFontMask);
         }
- 
+
       t &= ~trait;
-      newFont = [self fontWithFamily: family 
+      newFont = [self fontWithFamily: family
                               traits: t
                               weight: weight
                                 size: size];
       if (newFont == nil)
         return fontObject;
-      else 
+      else
         return newFont;
     }
 }
@@ -602,11 +613,11 @@ static Class         fontPanelClass = Nil;
       // Else convert it
       NSFont *newFont;
 
-      newFont = [NSFont fontWithName: [fontObject fontName] 
+      newFont = [NSFont fontWithName: [fontObject fontName]
                         size: size];
       if (newFont == nil)
         return fontObject;
-      else 
+      else
         return newFont;
     }
 }
@@ -636,7 +647,7 @@ static Class         fontPanelClass = Nil;
           NSArray *fontDef = [fontDefs objectAtIndex: i];
           int w1 = [[fontDef objectAtIndex: 2] intValue];
 
-          if (w1 > w && w1 < next_w && 
+          if (w1 > w && w1 < next_w &&
               [[fontDef objectAtIndex: 3] unsignedIntValue] == trait)
             {
               next_w = w1;
@@ -648,13 +659,13 @@ static Class         fontPanelClass = Nil;
         {
           // Not found, try again with changed trait
           trait |= NSBoldFontMask;
-          
+
           for (i = 0; i < [fontDefs count]; i++)
-            { 
+            {
               NSArray *fontDef = [fontDefs objectAtIndex: i];
               int w1 = [[fontDef objectAtIndex: 2] intValue];
 
-              if (w1 > w && w1 < next_w && 
+              if (w1 > w && w1 < next_w &&
                   [[fontDef objectAtIndex: 3] unsignedIntValue] == trait)
                 {
                   next_w = w1;
@@ -690,7 +701,7 @@ static Class         fontPanelClass = Nil;
             {
               NSArray *fontDef = [fontDefs objectAtIndex: i];
               int w1 = [[fontDef objectAtIndex: 2] intValue];
-              
+
               if (w1 < w && w1 > next_w
                 && [[fontDef objectAtIndex: 3] unsignedIntValue] == trait)
                 {
@@ -708,7 +719,7 @@ static Class         fontPanelClass = Nil;
     }
   if (newFont == nil)
     return fontObject;
-  else 
+  else
     return newFont;
 }
 
@@ -730,14 +741,14 @@ static Class         fontPanelClass = Nil;
     {
       NSArray *fontDef = [fontDefs objectAtIndex: i];
 
-      //NSLog(@"Testing font %@: %i: %i", [fontDef objectAtIndex: 0], 
-      //          [[fontDef objectAtIndex: 2] intValue], 
-      //          [[fontDef objectAtIndex: 3] unsignedIntValue]);  
+      //NSLog(@"Testing font %@: %i: %i", [fontDef objectAtIndex: 0],
+      //          [[fontDef objectAtIndex: 2] intValue],
+      //          [[fontDef objectAtIndex: 3] unsignedIntValue]);
       if (([[fontDef objectAtIndex: 2] intValue] == weight) &&
           ([[fontDef objectAtIndex: 3] unsignedIntValue] == traits))
         {
             //NSLog(@"Found font");
-          return [NSFont fontWithName: [fontDef objectAtIndex: 0] 
+          return [NSFont fontWithName: [fontDef objectAtIndex: 0]
                          size: size];
         }
     }
@@ -756,7 +767,7 @@ static Class         fontPanelClass = Nil;
           (t == traits))
         {
             //NSLog(@"Found font");
-          return [NSFont fontWithName: [fontDef objectAtIndex: 0] 
+          return [NSFont fontWithName: [fontDef objectAtIndex: 0]
                          size: size];
         }
     }
@@ -774,12 +785,12 @@ static Class         fontPanelClass = Nil;
           if (t == traits)
             {
               //NSLog(@"Found font");
-              return [NSFont fontWithName: [fontDef objectAtIndex: 0] 
+              return [NSFont fontWithName: [fontDef objectAtIndex: 0]
                              size: size];
             }
         }
     }
-  
+
   if (weight == 5 || weight == 6)
     {
       //NSLog(@"Trying alternate non-bold weights for non-bold font");
@@ -795,13 +806,13 @@ static Class         fontPanelClass = Nil;
               (t == traits))
             {
               //NSLog(@"Found font");
-              return [NSFont fontWithName: [fontDef objectAtIndex: 0] 
+              return [NSFont fontWithName: [fontDef objectAtIndex: 0]
                              size: size];
             }
         }
     }
 
-  //NSLog(@"Didnt find font");  
+  //NSLog(@"Didnt find font");
   return nil;
 }
 
@@ -820,24 +831,24 @@ static Class         fontPanelClass = Nil;
   return [[fontObject fontInfo] weight];
 }
 
-- (BOOL) fontNamed: (NSString*)typeface 
+- (BOOL) fontNamed: (NSString*)typeface
          hasTraits: (NSFontTraitMask)fontTraitMask
 {
-  // TODO: This method is implemented very slow, but I dont 
+  // TODO: This method is implemented very slow, but I dont
   // see any use for it, so why change it?
   unsigned int i, j;
   NSArray *fontFamilies = [self availableFontFamilies];
   NSFontTraitMask traits;
-  
+
   for (i = 0; i < [fontFamilies count]; i++)
     {
-      NSArray *fontDefs = [self availableMembersOfFontFamily: 
+      NSArray *fontDefs = [self availableMembersOfFontFamily:
                                   [fontFamilies objectAtIndex: i]];
-      
+
       for (j = 0; j < [fontDefs count]; j++)
         {
           NSArray *fontDef = [fontDefs objectAtIndex: j];
-          
+
           if ([[fontDef objectAtIndex: 0] isEqualToString: typeface])
             {
               traits = [[fontDef objectAtIndex: 3] unsignedIntValue];
@@ -851,11 +862,11 @@ static Class         fontPanelClass = Nil;
             }
         }
     }
-  
+
   return NO;
 }
 
-/**<p>Returns whether the NSFontPanel is enabled ( if exists )</p> 
+/**<p>Returns whether the NSFontPanel is enabled ( if exists )</p>
  */
 - (BOOL) isEnabled
 {
@@ -867,7 +878,7 @@ static Class         fontPanelClass = Nil;
     return NO;
 }
 
-/**<p>Enables/disables the NSFontPanel and the font menu ( if they exist )</p> 
+/**<p>Enables/disables the NSFontPanel and the font menu ( if they exist )</p>
    <p>See Also: -isEnabled</p>
  */
 - (void) setEnabled: (BOOL)flag
@@ -886,7 +897,7 @@ static Class         fontPanelClass = Nil;
     [fontPanel setEnabled: flag];
 }
 
-/**<p>Returns the font menu, creates it (if needed ) if <var>create</var> 
+/**<p>Returns the font menu, creates it (if needed ) if <var>create</var>
    is YES.</p><p>See Also: -setFontMenu:</p>
  */
 - (NSMenu*) fontMenu: (BOOL)create
@@ -894,8 +905,8 @@ static Class         fontPanelClass = Nil;
   if (create && _fontMenu == nil)
     {
       id <NSMenuItem> menuItem;
-      
-      // As the font menu is stored in a instance variable we 
+
+      // As the font menu is stored in a instance variable we
       // dont autorelease it
       _fontMenu = [NSMenu new];
       [_fontMenu setTitle: @"Font Menu"];
@@ -926,14 +937,14 @@ static Class         fontPanelClass = Nil;
                             keyEquivalent: @""];
       [menuItem setTag: NSHeavierFontAction];
       [menuItem setTarget: self];
- 
+
       // Entry to decrease weight
       menuItem = [_fontMenu addItemWithTitle: @"Lighter"
                             action: @selector(modifyFont:)
                             keyEquivalent: @""];
       [menuItem setTag: NSLighterFontAction];
       [menuItem setTarget: self];
- 
+
       // Entry to increase size
       menuItem = [_fontMenu addItemWithTitle: @"Larger"
                             action: @selector(modifyFont:)
@@ -956,7 +967,7 @@ static Class         fontPanelClass = Nil;
  */
 - (void) setFontMenu: (NSMenu*)newMenu
 {
-  ASSIGN(_fontMenu, newMenu); 
+  ASSIGN(_fontMenu, newMenu);
 }
 
 /**<p>Returns the NSFontPanel, creates it ( if needed ) if <var>create</var>
@@ -1053,7 +1064,7 @@ static Class         fontPanelClass = Nil;
   return [_collections allKeys];
 }
 
-- (void) addFontDescriptors: (NSArray *)descriptors 
+- (void) addFontDescriptors: (NSArray *)descriptors
                toCollection: (NSString *)collection
 {
   NSMutableArray *a = [_collections objectForKey: collection];
@@ -1064,7 +1075,7 @@ static Class         fontPanelClass = Nil;
     }
 }
 
-- (void) removeFontDescriptor: (NSFontDescriptor *)descriptor 
+- (void) removeFontDescriptor: (NSFontDescriptor *)descriptor
                fromCollection: (NSString *)collection
 {
   NSMutableArray *a = [_collections objectForKey: collection];
@@ -1085,7 +1096,7 @@ static Class         fontPanelClass = Nil;
   NSMutableDictionary *newAttributes;
   int i;
   float size;
-  float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 
+  float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
                    14.0, 16.0, 18.0, 24.0, 36.0, 48.0, 64.0};
   NSFontTraitMask t;
 
@@ -1095,14 +1106,14 @@ static Class         fontPanelClass = Nil;
   newAttributes = AUTORELEASE([attributes mutableCopy]);
   switch (_storedTag)
     {
-      case NSNoFontChangeAction: 
+      case NSNoFontChangeAction:
         break;
-      case NSViaPanelFontAction: 
+      case NSViaPanelFontAction:
         // FIXME
         break;
-      case NSAddTraitFontAction: 
+      case NSAddTraitFontAction:
         t = [[attributes objectForKey: NSFontSymbolicTrait] unsignedIntValue];
-        
+
         if (t & _trait)
           {
             return newAttributes;
@@ -1123,9 +1134,9 @@ static Class         fontPanelClass = Nil;
         [newAttributes setObject: [NSNumber numberWithUnsignedInt: t]
                        forKey: NSFontSymbolicTrait];
         break;
-      case NSRemoveTraitFontAction: 
+      case NSRemoveTraitFontAction:
         t = [[attributes objectForKey: NSFontSymbolicTrait] unsignedIntValue];
-        
+
         if (!(t & _trait))
           {
             return newAttributes;
@@ -1146,7 +1157,7 @@ static Class         fontPanelClass = Nil;
         [newAttributes setObject: [NSNumber numberWithUnsignedInt: t]
                        forKey: NSFontSymbolicTrait];
         break;
-      case NSSizeUpFontAction: 
+      case NSSizeUpFontAction:
         size = [[attributes objectForKey: NSFontSizeAttribute] floatValue];
         for (i = 0; i < sizeof(sizes)/sizeof(float); i++)
           {
@@ -1159,7 +1170,7 @@ static Class         fontPanelClass = Nil;
         [newAttributes setObject: [NSString stringWithFormat: @"%f", size]
                        forKey: NSFontSizeAttribute];
         break;
-      case NSSizeDownFontAction: 
+      case NSSizeDownFontAction:
         size = [[attributes objectForKey: NSFontSizeAttribute] floatValue];
         for (i = sizeof(sizes)/sizeof(float) -1; i >= 0; i--)
           {
@@ -1172,10 +1183,10 @@ static Class         fontPanelClass = Nil;
         [newAttributes setObject: [NSString stringWithFormat: @"%f", size]
                        forKey: NSFontSizeAttribute];
         break;
-      case NSHeavierFontAction: 
+      case NSHeavierFontAction:
         // FIXME
         break;
-      case NSLighterFontAction: 
+      case NSLighterFontAction:
         // FIXME
         break;
     }
@@ -1183,7 +1194,7 @@ static Class         fontPanelClass = Nil;
   return newAttributes;
 }
 
-- (void) setSelectedAttributes: (NSDictionary *)attributes 
+- (void) setSelectedAttributes: (NSDictionary *)attributes
                     isMultiple: (BOOL)flag
 {
   ASSIGN(_selectedAttributes, attributes);

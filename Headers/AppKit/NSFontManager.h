@@ -1,4 +1,4 @@
-/* 
+/*
    NSFontManager.h
 
    Manages system and user fonts
@@ -25,10 +25,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #ifndef _GNUstep_H_NSFontManager
 #define _GNUstep_H_NSFontManager
@@ -114,6 +114,11 @@ APPKIT_EXPORT_CLASS
 - (NSString *) localizedNameForFamily:(NSString *)family face:(NSString *)face;
 
 //
+// Refresh font cache
+//
+- (void) refreshAvailableFonts;
+
+//
 // Selecting fonts
 //
 - (void)setSelectedFont:(NSFont *)fontObject
@@ -163,7 +168,7 @@ APPKIT_EXPORT_CLASS
 //
 - (NSFontTraitMask)traitsOfFont:(NSFont *)aFont;
 - (int)weightOfFont:(NSFont *)fontObject;
-- (BOOL)fontNamed:(NSString *)typeface 
+- (BOOL)fontNamed:(NSString *)typeface
         hasTraits:(NSFontTraitMask)fontTraitMask;
 
 //
@@ -201,15 +206,15 @@ APPKIT_EXPORT_CLASS
 - (BOOL)removeCollection:(NSString *)collection;
 - (NSArray *)collectionNames;
 
-- (void)addFontDescriptors:(NSArray *)descriptors 
+- (void)addFontDescriptors:(NSArray *)descriptors
               toCollection:(NSString *)collection;
-- (void)removeFontDescriptor:(NSFontDescriptor *)descriptor 
+- (void)removeFontDescriptor:(NSFontDescriptor *)descriptor
               fromCollection:(NSString *)collection;
 - (NSArray *)fontDescriptorsInCollection:(NSString *)collection;
 
 - (NSArray *)availableFontNamesMatchingFontDescriptor:(NSFontDescriptor *)descriptor;
 - (NSDictionary *)convertAttributes:(NSDictionary *)attributes;
-- (void)setSelectedAttributes:(NSDictionary *)attributes 
+- (void)setSelectedAttributes:(NSDictionary *)attributes
                    isMultiple:(BOOL)flag;
 #endif
 @end
@@ -220,6 +225,9 @@ APPKIT_EXPORT_CLASS
 //
 - (BOOL)fontManager:(id)sender willIncludeFont:(NSString *)fontName;
 @end
+
+// Notifications
+APPKIT_EXPORT NSString * const NSFontManagerAvailableFontsDidChangeNotification;
 
 #endif // _GNUstep_H_NSFontManager
 
