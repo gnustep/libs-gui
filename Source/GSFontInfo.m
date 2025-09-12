@@ -76,9 +76,9 @@ static GSFontEnumerator *sharedEnumerator = nil;
 + (GSFontEnumerator*) sharedEnumerator
 {
   NSAssert(fontEnumeratorClass,
-    @"Called with fontEnumeratorClass unset."
-    @" The shared NSApplication instance must be created before methods that"
-    @" need the backend may be called.");
+	   @"Called with fontEnumeratorClass unset."
+	   @" The shared NSApplication instance must be created before methods that"
+	   @" need the backend may be called.");
   if (!sharedEnumerator)
     sharedEnumerator = [[fontEnumeratorClass alloc] init];
   return sharedEnumerator;
@@ -133,38 +133,38 @@ static GSFontEnumerator *sharedEnumerator = nil;
       fontDescriptors = [[NSMutableArray alloc] init];
       keyEnumerator = [allFontFamilies keyEnumerator];
       while ((family = [keyEnumerator nextObject]) != nil)
-        {
-          NSArray *fontDefs = [allFontFamilies objectForKey: family];
-          NSEnumerator *fdEnumerator;
-          NSArray *fontDef;
+	{
+	  NSArray *fontDefs = [allFontFamilies objectForKey: family];
+	  NSEnumerator *fdEnumerator;
+	  NSArray *fontDef;
 
-          fdEnumerator = [fontDefs objectEnumerator];
-          while ((fontDef = [fdEnumerator nextObject]) != nil)
-            {
-              NSFontDescriptor *fd;
-              NSDictionary *attributes;
-              NSNumber *weight = [fontDef objectAtIndex: 2];
-              NSNumber *traits = [fontDef objectAtIndex: 3];
-              NSDictionary *fontTraits;
-              float fweight = ([weight intValue] - 6) / 6.0;
+	  fdEnumerator = [fontDefs objectEnumerator];
+	  while ((fontDef = [fdEnumerator nextObject]) != nil)
+	    {
+	      NSFontDescriptor *fd;
+	      NSDictionary *attributes;
+	      NSNumber *weight = [fontDef objectAtIndex: 2];
+	      NSNumber *traits = [fontDef objectAtIndex: 3];
+	      NSDictionary *fontTraits;
+	      float fweight = ([weight intValue] - 6) / 6.0;
 
-              fontTraits = [NSDictionary dictionaryWithObjectsAndKeys:
-                                           traits, NSFontSymbolicTrait,
-                                         [NSNumber numberWithFloat: fweight],
-                                         NSFontWeightTrait,
-                                         nil];
-              attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                           family, NSFontFamilyAttribute,
-                                         [fontDef objectAtIndex: 0], NSFontNameAttribute,
-                                     [fontDef objectAtIndex: 1], NSFontFaceAttribute,
-                                         fontTraits, NSFontTraitsAttribute,
-                                         nil];
-              fd = [[NSFontDescriptor alloc] initWithFontAttributes: attributes];
+	      fontTraits = [NSDictionary dictionaryWithObjectsAndKeys:
+					   traits, NSFontSymbolicTrait,
+					 [NSNumber numberWithFloat: fweight],
+					 NSFontWeightTrait,
+					 nil];
+	      attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+					   family, NSFontFamilyAttribute,
+					 [fontDef objectAtIndex: 0], NSFontNameAttribute,
+				     [fontDef objectAtIndex: 1], NSFontFaceAttribute,
+					 fontTraits, NSFontTraitsAttribute,
+					 nil];
+	      fd = [[NSFontDescriptor alloc] initWithFontAttributes: attributes];
 
-              [fontDescriptors addObject: fd];
-              RELEASE(fd);
-            }
-        }
+	      [fontDescriptors addObject: fd];
+	      RELEASE(fd);
+	    }
+	}
 
       allFontDescriptors = fontDescriptors;
     }
@@ -194,9 +194,9 @@ static GSFontEnumerator *sharedEnumerator = nil;
     {
       fontName = [fd objectForKey: NSFontNameAttribute];
       if (fontName != nil)
-        {
-          [found addObject: fontName];
-        }
+	{
+	  [found addObject: fontName];
+	}
     }
 
   return found;
@@ -216,47 +216,47 @@ static GSFontEnumerator *sharedEnumerator = nil;
       id valueA = [attributes objectForKey: key];
 
       if (valueA != nil)
-        {
-          id valueB = [fd objectForKey: key];
+	{
+	  id valueB = [fd objectForKey: key];
 
-          if (valueB == nil)
-            {
-              match = NO;
-              break;
-            }
+	  if (valueB == nil)
+	    {
+	      match = NO;
+	      break;
+	    }
 
-          // Special handling for NSFontTraitsAttribute
-          if ([key isEqual: NSFontTraitsAttribute])
-            {
-              NSNumber *traitsA = [valueA objectForKey: NSFontSymbolicTrait];
-              NSNumber *traitsB = [valueB objectForKey: NSFontSymbolicTrait];
+	  // Special handling for NSFontTraitsAttribute
+	  if ([key isEqual: NSFontTraitsAttribute])
+	    {
+	      NSNumber *traitsA = [valueA objectForKey: NSFontSymbolicTrait];
+	      NSNumber *traitsB = [valueB objectForKey: NSFontSymbolicTrait];
 
-              // FIXME: For now we only compare symbolic traits
-              if ((traitsA != nil) &&
-                  ((traitsB == nil) ||
-                   ([traitsA unsignedIntValue] != [traitsB unsignedIntValue])))
-                {
-                  match = NO;
-                  break;
-                }
-            }
-          else if ([key isEqual: NSFontCharacterSetAttribute])
-            {
-              if (![valueB isSupersetOfSet: valueA])
-                {
-                  match = NO;
-                  break;
-                }
-            }
-          else
-            {
-              if (![valueA isEqual: valueB])
-                {
-                  match = NO;
-                  break;
-                }
-            }
-        }
+	      // FIXME: For now we only compare symbolic traits
+	      if ((traitsA != nil) &&
+		  ((traitsB == nil) ||
+		   ([traitsA unsignedIntValue] != [traitsB unsignedIntValue])))
+		{
+		  match = NO;
+		  break;
+		}
+	    }
+	  else if ([key isEqual: NSFontCharacterSetAttribute])
+	    {
+	      if (![valueB isSupersetOfSet: valueA])
+		{
+		  match = NO;
+		  break;
+		}
+	    }
+	  else
+	    {
+	      if (![valueA isEqual: valueB])
+		{
+		  match = NO;
+		  break;
+		}
+	    }
+	}
     }
 
   return match;
@@ -274,9 +274,9 @@ static GSFontEnumerator *sharedEnumerator = nil;
   while ((fd = [fdEnumerator nextObject]) != nil)
     {
       if ([self _fontDescriptor: fd matches: attributes])
-        {
-          [found addObject: fd];
-        }
+	{
+	  [found addObject: fd];
+	}
     }
 
   return found;
@@ -292,9 +292,9 @@ static GSFontEnumerator *sharedEnumerator = nil;
   while ((o = [en nextObject]) != nil)
     {
       if ([self _fontDescriptor: fd matches: [o fontAttributes]])
-        {
-          return YES;
-        }
+	{
+	  return YES;
+	}
     }
 
   return NO;
@@ -306,9 +306,9 @@ static GSFontEnumerator *sharedEnumerator = nil;
  * Currently we ignore the options as these may only be implemented in the backend.
  */
 - (NSArray *) matchingDescriptorsForFamily: (NSString *)family
-                                   options: (NSDictionary *)options
-                                 inclusion: (NSArray *)queryDescriptors
-                                 exculsion: (NSArray *)exclusionDescriptors
+				   options: (NSDictionary *)options
+				 inclusion: (NSArray *)queryDescriptors
+				 exculsion: (NSArray *)exclusionDescriptors
 {
   NSMutableArray *r = [NSMutableArray arrayWithCapacity: 50];
   NSEnumerator *en = [[self availableFontDescriptors] objectEnumerator];
@@ -318,22 +318,22 @@ static GSFontEnumerator *sharedEnumerator = nil;
     {
       // Check if the font descriptor matches the family value if one is given
       if ((family != nil) &&
-          ![[fd objectForKey: NSFontFamilyAttribute] isEqualToString: family])
-        {
-          continue;
-        }
+	  ![[fd objectForKey: NSFontFamilyAttribute] isEqualToString: family])
+	{
+	  continue;
+	}
 
       // Check if the font descriptor matches any of the query descriptors
       if (![self _fontDescriptor: fd matchesAny: queryDescriptors])
-        {
-          continue;
-        }
+	{
+	  continue;
+	}
 
       // Check if the font descriptor matches none of the exclusion descriptors
       if ([self _fontDescriptor: fd matchesAny: exclusionDescriptors])
-        {
-          continue;
-        }
+	{
+	  continue;
+	}
 
       // Add it to the result
       [r addObject: fd];
@@ -373,7 +373,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 }
 
 + (GSFontInfo*) fontInfoForFontName: (NSString*)nfontName
-                             matrix: (const CGFloat *)fmatrix
+			     matrix: (const CGFloat *)fmatrix
 			 screenFont: (BOOL)screenFont;
 {
   NSAssert(fontInfoClass,
@@ -522,53 +522,53 @@ static GSFontEnumerator *sharedEnumerator = nil;
 
       [fontDictionary setObject: fontName forKey: NSAFMFontName];
       if (familyName != nil)
-        {
+	{
 	  [fontDictionary setObject: familyName
 			  forKey: NSAFMFamilyName];
 	}
       if (ascender != 0.0)
-        {
+	{
 	  [fontDictionary setObject: [NSNumber numberWithFloat: ascender]
 			  forKey: NSAFMAscender];
 	}
       if (descender != 0.0)
-        {
+	{
 	  [fontDictionary setObject: [NSNumber numberWithFloat: descender]
 			  forKey: NSAFMDescender];
 	}
       if (xHeight != 0.0)
-        {
+	{
 	  [fontDictionary setObject: [NSNumber numberWithFloat: xHeight]
 			  forKey: NSAFMXHeight];
 	}
       if (capHeight != 0.0)
-        {
+	{
 	  [fontDictionary setObject: [NSNumber numberWithFloat: capHeight]
 			  forKey: NSAFMCapHeight];
 	}
       if (italicAngle != 0.0)
-        {
+	{
 	  [fontDictionary setObject: [NSNumber numberWithFloat: italicAngle]
 			  forKey: NSAFMItalicAngle];
 	}
       if (underlinePosition != 0.0)
-        {
+	{
 	  [fontDictionary setObject: [NSNumber numberWithFloat: underlinePosition]
 			  forKey: NSAFMUnderlinePosition];
 	}
       if (underlineThickness != 0.0)
-        {
+	{
 	  [fontDictionary setObject: [NSNumber numberWithFloat: underlineThickness]
 			  forKey: NSAFMUnderlineThickness];
 	}
 
       weightString = [GSFontInfo stringForWeight: weight];
       if (weightString != nil)
-        {
+	{
 	  [fontDictionary setObject: weightString forKey: NSAFMWeight];
 	}
       if (encodingScheme != nil)
-        {
+	{
 	  [fontDictionary setObject: encodingScheme
 			  forKey: NSAFMEncodingScheme];
 	}
@@ -853,32 +853,32 @@ static GSFontEnumerator *sharedEnumerator = nil;
     {
       // Create a new one
       if ((matrix[0] == matrix[3]) && (matrix[1] == 0.0) &&
-          (matrix[2] == 0.0) && (matrix[4] == 0.0) && (matrix[5] == 0.0))
-        {
-          ASSIGN(fontDescriptor, [NSFontDescriptor fontDescriptorWithName: fontName
-                                                                     size: matrix[0]]);
-        }
+	  (matrix[2] == 0.0) && (matrix[4] == 0.0) && (matrix[5] == 0.0))
+	{
+	  ASSIGN(fontDescriptor, [NSFontDescriptor fontDescriptorWithName: fontName
+								     size: matrix[0]]);
+	}
       else
-        {
-          NSAffineTransform *transform = [NSAffineTransform new];
-          NSAffineTransformStruct ats;
-          NSDictionary *attributes;
+	{
+	  NSAffineTransform *transform = [NSAffineTransform new];
+	  NSAffineTransformStruct ats;
+	  NSDictionary *attributes;
 
-          ats.m11 = matrix[0];
-          ats.m12 = matrix[1];
-          ats.m21 = matrix[2];
-          ats.m22 = matrix[3];
-          ats.tX = matrix[4];
-          ats.tY = matrix[5];
-          [transform setTransformStruct: ats];
+	  ats.m11 = matrix[0];
+	  ats.m12 = matrix[1];
+	  ats.m21 = matrix[2];
+	  ats.m22 = matrix[3];
+	  ats.tX = matrix[4];
+	  ats.tY = matrix[5];
+	  [transform setTransformStruct: ats];
 
-          attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                       fontName, NSFontNameAttribute,
-                                     transform, NSFontMatrixAttribute,
-                                     nil];
-          RELEASE(transform);
-          fontDescriptor = [[NSFontDescriptor alloc] initWithFontAttributes: attributes];
-        }
+	  attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+				       fontName, NSFontNameAttribute,
+				     transform, NSFontMatrixAttribute,
+				     nil];
+	  RELEASE(transform);
+	  fontDescriptor = [[NSFontDescriptor alloc] initWithFontAttributes: attributes];
+	}
     }
   return fontDescriptor;
 }

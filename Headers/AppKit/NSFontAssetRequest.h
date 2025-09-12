@@ -110,18 +110,6 @@ APPKIT_EXPORT_CLASS
                                  options: (NSFontAssetRequestOptions)options;
 
 /**
- * Sets the default downloader class to be used for all new font asset requests.
- * The specified class must be a subclass of GSFontAssetDownloader.
- * Pass nil to restore the default GSFontAssetDownloader behavior.
- */
-+ (void) setDefaultDownloaderClass: (Class)downloaderClass;
-
-/**
- * Returns the currently registered default downloader class.
- */
-+ (Class) defaultDownloaderClass;
-
-/**
  * Returns an array of font descriptors for fonts that have been successfully downloaded.
  * This method returns the subset of requested fonts that are now available on
  * the local system after successful download. The returned descriptors can be
@@ -156,6 +144,22 @@ APPKIT_EXPORT_CLASS
  * NSError object on failure.
  */
 - (void)downloadFontAssetsWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler;
+
+@end
+
+@interface NSFontAssetRequest (GNUstep)
+
+/**
+ * Sets the default downloader class to be used for all new font asset requests.
+ * The specified class must be a subclass of GSFontAssetDownloader.
+ * Pass nil to restore the default GSFontAssetDownloader behavior.
+ */
++ (void) setDefaultDownloaderClass: (Class)downloaderClass;
+
+/**
+ * Returns the currently registered default downloader class.
+ */
++ (Class) defaultDownloaderClass;
 
 /**
  * Sets a custom font asset downloader.

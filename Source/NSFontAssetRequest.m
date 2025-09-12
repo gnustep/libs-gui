@@ -34,7 +34,7 @@
                   completionHandler: (GSFontAssetCompletionHandler)completionHandler;
 @end
 
-@implementation NSFontAssetRequest
+@implementation NSFontAssetRequest (GNUstep)
 
 + (void) setDefaultDownloaderClass: (Class)downloaderClass
 {
@@ -45,6 +45,21 @@
 {
   return [GSFontAssetDownloader defaultDownloaderClass];
 }
+
+- (void) setFontAssetDownloader: (GSFontAssetDownloader *)downloader
+{
+  ASSIGN(_downloader, downloader);
+}
+
+- (GSFontAssetDownloader *) fontAssetDownloader
+{
+  return _downloader;
+}
+
+@end
+
+
+@implementation NSFontAssetRequest
 
 - (instancetype) initWithFontDescriptors: (NSArray *)fontDescriptors
                                  options: (NSFontAssetRequestOptions)options
@@ -226,26 +241,6 @@
 - (BOOL) isDownloadInProgress
 {
   return _downloadInProgress;
-}
-
-/**
- * Sets a custom font asset downloader.
- * This allows clients to provide custom downloading strategies
- * by subclassing GSFontAssetDownloader and overriding specific
- * methods for URL resolution, downloading, validation, or installation.
- */
-- (void) setFontAssetDownloader: (GSFontAssetDownloader *)downloader
-{
-  ASSIGN(_downloader, downloader);
-}
-
-/**
- * Returns the current font asset downloader.
- * This can be used to inspect or modify the downloader's configuration.
- */
-- (GSFontAssetDownloader *) fontAssetDownloader
-{
-  return _downloader;
 }
 
 @end
