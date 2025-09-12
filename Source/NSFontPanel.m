@@ -248,9 +248,9 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
 
   // Observe font manager notifications to refresh panel when fonts are updated
   [[NSNotificationCenter defaultCenter] addObserver: self
-                                            selector: @selector(fontManagerDidChangeAvailableFonts:)
-                                                name: GSFontManagerAvailableFontsDidChangeNotification
-                                              object: nil];
+					    selector: @selector(fontManagerDidChangeAvailableFonts:)
+						name: GSFontManagerAvailableFontsDidChangeNotification
+					      object: nil];
 
   return self;
 }
@@ -407,7 +407,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
       // Use in preview
       [previewArea setFont: fontObject];
       if (_previewString == nil)
-        {
+	{
 	  [previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
 						 family, face, (int)size]];
 	}
@@ -600,11 +600,11 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
       && ([anObject tag] == NSFPSizeField))
     {
       if ((sizeFieldText == nil) && createFlag)
-        {
-          sizeFieldText = [NSText new];
-          [sizeFieldText setUsesFontPanel: NO];
-          [sizeFieldText setFieldEditor: YES];
-        }
+	{
+	  sizeFieldText = [NSText new];
+	  [sizeFieldText setUsesFontPanel: NO];
+	  [sizeFieldText setFieldEditor: YES];
+	}
       return sizeFieldText;
     }
 
@@ -653,7 +653,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
   NSBox *slash;
 
   unsigned int style = NSTitledWindowMask | NSClosableWindowMask
-                     | NSResizableWindowMask | NSUtilityWindowMask;
+		     | NSResizableWindowMask | NSUtilityWindowMask;
 
   self = [super initWithContentRect: contentRect
 			  styleMask: style
@@ -1034,7 +1034,7 @@ autoresize(CGFloat oldContainerSize, CGFloat newContainerSize,
     {
       if (size == sizes[i])
 	{
-          /* select the cell */
+	  /* select the cell */
 	  [sizeBrowser selectRow: i inColumn: 0];
 	  break;
 	}
@@ -1123,7 +1123,7 @@ static int score_difference(int weight1, int traits1,
   NSMutableArray *faceList;
 
   entireFaceList = [fm availableMembersOfFontFamily:
-  			[_familyList objectAtIndex: row]];
+			[_familyList objectAtIndex: row]];
 
   faceList = [[NSMutableArray alloc] initWithCapacity: [entireFaceList count]];
 
