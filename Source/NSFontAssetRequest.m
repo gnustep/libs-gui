@@ -102,7 +102,7 @@
 - (void) downloadFontAssetsWithCompletionHandler:
   (GSFontAssetCompletionHandler)completionHandler
 {
-  NSAssert(completionHandler != NULL, @"Completion handler cannot be nil");
+  NSAssert(completionHandler != NULL, NSInvalidArgumentException);
 
   if (_downloadInProgress)
     {
