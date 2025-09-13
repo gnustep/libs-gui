@@ -5,7 +5,7 @@
    Copyright <copy>(C) 2003 Free Software Foundation, Inc.</copy>
 
    Author: Gregory John Casamento <greg.casamento@gmail.com>
-   Date: May 2025
+   Date: March 2003
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: March 2003
 
