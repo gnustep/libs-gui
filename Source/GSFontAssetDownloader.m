@@ -795,21 +795,27 @@ static Class _defaultDownloaderClass = nil;
   NSLog(@"Font installed to: %@", destinationPath);
 #elif defined(__linux__)
   // On Linux, run fc-cache to update font cache
-  @try {
-    NSTask *task = [[NSTask alloc] init];
-    [task setLaunchPath: @"/usr/bin/fc-cache"];
-    [task setArguments: @[@"-f"]];
-    [task launch];
-    [task waitUntilExit];
-    if ([task terminationStatus] == 0) {
-      NSLog(@"Font installed and cache updated: %@", destinationPath);
-    } else {
-      NSLog(@"Font installed, but fc-cache failed with status: %d", [task terminationStatus]);
+  NS_DURING
+    {
+      NSTask *task = [[NSTask alloc] init];
+      [task setLaunchPath: @"/usr/bin/fc-cache"];
+      [task setArguments: [NSArray arrayWithObject: @"-f"]];
+      [task launch];
+      [task waitUntilExit];
+      if ([task terminationStatus] == 0)
+	{
+	  NSLog(@"Font installed and cache updated: %@", destinationPath);
+	}
+      else
+	{
+	  NSLog(@"Font installed, but fc-cache failed with status: %d", [task terminationStatus]);
+	}
     }
-  }
-  @catch (NSException *exception) {
-    NSLog(@"Font installed, but failed to run fc-cache: %@", exception);
-  }
+  NS_HANDLER
+    {
+      NSLog(@"Font installed, but failed to run fc-cache: %@", localException);
+    }
+  NS_ENDHANDLER;  
 #else
   NSLog(@"Font installed to: %@", destinationPath);
 #endif
