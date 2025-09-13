@@ -380,7 +380,7 @@ static Class _defaultDownloaderClass = nil;
 		    {
 		      genericFontName = [families objectAtIndex: 0];
 		      // Clean up URL encoding
-		      genericFontName = [genericFontName stringByReplacingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
+		      genericFontName = [genericFontName stringByRemovingPercentEncoding];
 		      // Replace + with spaces (URL encoding)
 		      genericFontName = [genericFontName stringByReplacingOccurrencesOfString: @"+" withString: @" "];
 		      break;
