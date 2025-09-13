@@ -793,8 +793,7 @@ static Class _defaultDownloaderClass = nil;
 #ifdef __APPLE__
   // On macOS, fonts are automatically detected when placed in font directories
   NSLog(@"Font installed to: %@", destinationPath);
-#elif defined(__linux__)
-  // On Linux, run fc-cache to update font cache
+#else
   NS_DURING
     {
       NSTask *task = [[NSTask alloc] init];
@@ -816,8 +815,6 @@ static Class _defaultDownloaderClass = nil;
       NSLog(@"Font installed, but failed to run fc-cache: %@", localException);
     }
   NS_ENDHANDLER;  
-#else
-  NSLog(@"Font installed to: %@", destinationPath);
 #endif
 
   return YES;
@@ -827,10 +824,8 @@ static Class _defaultDownloaderClass = nil;
 {
 #ifdef __APPLE__
   return @"/Library/Fonts";
-#elif defined(__linux__)
-  return @"/usr/local/share/fonts";
 #else
-  return nil; // Platform not supported for system font installation
+  return @"/usr/local/share/fonts";
 #endif
 }
 
@@ -840,8 +835,6 @@ static Class _defaultDownloaderClass = nil;
 
 #ifdef __APPLE__
   return [homeDir stringByAppendingPathComponent: @"Library/Fonts"];
-#elif defined(__linux__)
-  return [homeDir stringByAppendingPathComponent: @".fonts"];
 #else
   // Generic Unix/other systems
   return [homeDir stringByAppendingPathComponent: @".fonts"];
