@@ -1,4 +1,4 @@
-/* Implementation of cla#import <Foundation/Foundation.h>
+/* Implementation of class NSFontAssetRequest
    Copyright (C) 2019 Free Software Foundation, Inc.
 
    By: Gregory John Casamento
