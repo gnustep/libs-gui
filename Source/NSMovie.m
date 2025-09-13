@@ -48,10 +48,10 @@ NSString *_writeDataToTempFile(NSData *data)
   BOOL success = [data writeToFile: filepath options: NSDataWritingAtomic error: &error];
   if (success)
     {
-      return nil;
+      return filepath;
     }
 
-  return filepath;
+  return nil;
 }
 
 @implementation NSMovie
