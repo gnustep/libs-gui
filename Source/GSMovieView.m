@@ -10,7 +10,7 @@
     Copyright <copy>(C) 2025 Free Software Foundation, Inc.</copy>
 
     Author: Gregory Casamento <greg.casamento@gmail.com>
-    Date: May 2025
+    Date: June 2024
 
     This file is part of the GNUstep GUI Library.
 
