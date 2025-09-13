@@ -282,7 +282,7 @@ static Class _defaultDownloaderClass = nil;
     }
 
   NSString *searchName = fontName ? fontName : familyName;
-  NSString *encodedName = [searchName stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
+  NSString *encodedName = [searchName stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 
   // Example: Try Google Fonts API (this is simplified - real implementation would use proper API)
   NSString *urlString = [NSString stringWithFormat: @"https://fonts.googleapis.com/css2?family=%@", encodedName];
