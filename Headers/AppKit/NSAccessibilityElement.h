@@ -24,9 +24,11 @@
 
 #ifndef _NSAccessibilityElement_h_GNUSTEP_GUI_INCLUDE
 #define _NSAccessibilityElement_h_GNUSTEP_GUI_INCLUDE
-#import <AppKit/AppKitDefines.h>
 
+#import <Foundation/NSGeometry.h>
 #import <Foundation/NSObject.h>
+
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
 
@@ -34,11 +36,24 @@
 extern "C" {
 #endif
 
+@class NSString;
+  
 APPKIT_EXPORT_CLASS
 @interface NSAccessibilityElement : NSObject
+{
+   NSString *_accessibilityLabel;
+   NSString *_accessibilityIdentifier;
+   NSString *_accessibilityRole;
+   NSString *_accessibilitySubrole;
+   NSRect _accessibilityFrame;
+   id _accessibilityParent; // weak (not retained) similar to Cocoa patterns
+   BOOL _accessibilityFocused;
+}
 
-/* Convenience factory for creating a simple accessibility element with the
- * specified role, frame, label and parent. Role/label are copied. */
+/**
+ * Convenience factory for creating a simple accessibility element with the
+ * specified role, frame, label and parent. Role/label are copied.
+ */
 + (instancetype) accessibilityElementWithRole: (NSString *)role
                                          frame: (NSRect)frame
                                          label: (NSString *)label
@@ -46,9 +61,9 @@ APPKIT_EXPORT_CLASS
 
 /* Designated initializer. */
 - (instancetype) initWithRole: (NSString *)role
-                         frame: (NSRect)frame
-                         label: (NSString *)label
-                        parent: (id)parent;
+                        frame: (NSRect)frame
+                        label: (NSString *)label
+                       parent: (id)parent;
 
 // Basic attribute accessors (mirroring Cocoa style naming) -----------------
 - (NSString *) accessibilityLabel;

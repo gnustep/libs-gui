@@ -22,35 +22,27 @@
    Boston, MA 02110 USA.
 */
 
+#import <Foundation/NSString.h>
 #import "AppKit/NSAccessibilityElement.h"
 
 @implementation NSAccessibilityElement
-{
-   NSString *_accessibilityLabel;
-   NSString *_accessibilityIdentifier;
-   NSString *_accessibilityRole;
-   NSString *_accessibilitySubrole;
-   NSRect _accessibilityFrame;
-   id _accessibilityParent; // weak (not retained) similar to Cocoa patterns
-   BOOL _accessibilityFocused;
-}
 
 + (instancetype) accessibilityElementWithRole: (NSString *)role
-                                                             frame: (NSRect)frame
-                                                             label: (NSString *)label
-                                                            parent: (id)parent
+					frame: (NSRect)frame
+					label: (NSString *)label
+				       parent: (id)parent
 {
    NSAccessibilityElement *e = [[self alloc] initWithRole: role
-                                                                            frame: frame
-                                                                            label: label
-                                                                           parent: parent];
+						    frame: frame
+						    label: label
+						   parent: parent];
    return AUTORELEASE(e);
 }
 
 - (instancetype) initWithRole: (NSString *)role
-                                     frame: (NSRect)frame
-                                     label: (NSString *)label
-                                    parent: (id)parent
+			frame: (NSRect)frame
+			label: (NSString *)label
+		       parent: (id)parent
 {
    self = [super init];
    if (self != nil)
@@ -73,32 +65,82 @@
    [super dealloc];
 }
 
-- (NSString *) accessibilityLabel { return _accessibilityLabel; }
-- (void) setAccessibilityLabel: (NSString *)label { ASSIGN(_accessibilityLabel, label); }
+- (NSString *) accessibilityLabel
+{
+  return _accessibilityLabel;
+}
 
-- (NSString *) accessibilityIdentifier { return _accessibilityIdentifier; }
-- (void) setAccessibilityIdentifier: (NSString *)identifier { ASSIGN(_accessibilityIdentifier, identifier); }
+- (void) setAccessibilityLabel: (NSString *)label
+{
+  ASSIGN(_accessibilityLabel, label);
+}
 
-- (NSRect) accessibilityFrame { return _accessibilityFrame; }
-- (void) setAccessibilityFrame: (NSRect)frame { _accessibilityFrame = frame; }
+- (NSString *) accessibilityIdentifier
+{
+  return _accessibilityIdentifier;
+}
 
-- (id) accessibilityParent { return _accessibilityParent; }
-- (void) setAccessibilityParent: (id)parent { _accessibilityParent = parent; }
+- (void) setAccessibilityIdentifier: (NSString *)identifier
+{
+  ASSIGN(_accessibilityIdentifier, identifier);
+}
 
-- (BOOL) isAccessibilityFocused { return _accessibilityFocused; }
-- (void) setAccessibilityFocused: (BOOL)focused { _accessibilityFocused = focused; }
+- (NSRect) accessibilityFrame
+{
+  return _accessibilityFrame;
+}
 
-- (NSString *) accessibilityRole { return _accessibilityRole; }
-- (void) setAccessibilityRole: (NSString *)role { ASSIGN(_accessibilityRole, role); }
+- (void) setAccessibilityFrame: (NSRect)frame
+{
+  _accessibilityFrame = frame;
+}
 
-- (NSString *) accessibilitySubrole { return _accessibilitySubrole; }
-- (void) setAccessibilitySubrole: (NSString *)subrole { ASSIGN(_accessibilitySubrole, subrole); }
+- (id) accessibilityParent
+{
+  return _accessibilityParent;
+}
+
+- (void) setAccessibilityParent: (id)parent
+{
+  _accessibilityParent = parent;
+}
+
+- (BOOL) isAccessibilityFocused
+{
+  return _accessibilityFocused;
+}
+
+- (void) setAccessibilityFocused: (BOOL)focused
+{
+  _accessibilityFocused = focused;
+}
+
+- (NSString *) accessibilityRole
+{
+  return _accessibilityRole;
+}
+
+- (void) setAccessibilityRole: (NSString *)role
+{
+  ASSIGN(_accessibilityRole, role);
+}
+
+- (NSString *) accessibilitySubrole
+{
+  return _accessibilitySubrole;
+}
+
+- (void) setAccessibilitySubrole: (NSString *)subrole
+{
+  ASSIGN(_accessibilitySubrole, subrole);
+}
 
 - (NSString *) accessibilityRoleDescription
 {
    if (_accessibilitySubrole != nil)
       {
-         return [NSString stringWithFormat: @"%@ (%@)", _accessibilityRole, _accessibilitySubrole];
+         return [NSString stringWithFormat: @"%@ (%@)", _accessibilityRole,
+			  _accessibilitySubrole];
       }
    return _accessibilityRole;
 }
