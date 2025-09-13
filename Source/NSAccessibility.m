@@ -814,19 +814,25 @@ NSString *NSAccessibilityRoleDescriptionForUIElement(id element)
   // Attempt Key-Value coding queries to fetch role/subrole from object.
   NSString *role = nil;
   NSString *subrole = nil;
-  @try {
-    if ([element respondsToSelector: @selector(accessibilityRole)])
-      {
-        role = [element accessibilityRole];
-      }
-    if ([element respondsToSelector: @selector(accessibilitySubrole)])
-      {
-        subrole = [element accessibilitySubrole];
-      }
-  }
-  @catch (id e) { /* ignore */ }
-  if (role == nil)
-    return nil;
+
+  NS_DURING
+    {
+      if ([element respondsToSelector: @selector(accessibilityRole)])
+	{
+	  role = [element accessibilityRole];
+	}
+      if ([element respondsToSelector: @selector(accessibilitySubrole)])
+	{
+	  subrole = [element accessibilitySubrole];
+	}
+    }
+  NS_HANDLER
+    {
+      if (role == nil)
+	return nil;
+    }
+  NS_ENDHANDLER;
+
   return NSAccessibilityRoleDescription(role, subrole);
 }
 

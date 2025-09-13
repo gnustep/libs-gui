@@ -131,16 +131,16 @@
 {
   if (_handler != NULL)
     {
-      _handler(YES); // Cocoa's block signature is usually BOOL(^)(void) or void(^)(id); adapt: pass YES to indicate invocation context
+      CALL_BLOCK(_handler, YES); // Cocoa's block signature is usually BOOL(^)(void) or void(^)(id); adapt: pass YES to indicate invocation context
       return YES;
     }
   if (_target != nil && _selector != NULL && [_target respondsToSelector: _selector])
     {
       // Suppress potential leak warning for performSelector (intentional dynamic invocation)
-      #pragma clang diagnostic push
-      #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
       [_target performSelector: _selector withObject: self];
-      #pragma clang diagnostic pop
+#pragma clang diagnostic pop
       return YES;
     }
   return NO;
