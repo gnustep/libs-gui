@@ -85,7 +85,7 @@ NSString *_writeDataToTempFile(NSData *data)
   self = [super init];
   if (self != nil)
     {
-      NSString *filepath = _writeDataToTempFile(_movie);
+      NSString *filepath = _writeDataToTempFile(movie);
 
       _url = [NSURL fileURLWithPath: filepath];
       _tmp = YES;
