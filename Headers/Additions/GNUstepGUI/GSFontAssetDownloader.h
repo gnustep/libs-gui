@@ -2,7 +2,7 @@
    Copyright (C) 2024 Free Software Foundation, Inc.
 
    By: Gregory John Casamento <greg.casamento@gmail.com>
-   Date: September 5, 2025
+   Date: September 5, 2024
 
    This file is part of the GNUstep Library.
 
