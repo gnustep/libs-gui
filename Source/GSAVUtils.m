@@ -54,12 +54,13 @@ AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
   NSNumber *duration = [dict objectForKey: @"duration"];
   NSNumber *flags = [dict objectForKey: @"flags"];
 
-  AVPacket packet;
-  packet.data = (uint8_t *)[data bytes];
-  packet.size = (int)[data length];
-  packet.pts = [pts longLongValue];
-  packet.duration = [duration intValue];
-  packet.flags = [flags intValue];
+  AVPacket *packet = av_packet_alloc();
 
-  return packet;
+  packet->data = (uint8_t *)[data bytes];
+  packet->size = (int)[data length];
+  packet->pts = [pts longLongValue];
+  packet->duration = [duration intValue];
+  packet->flags = [flags intValue];
+
+  return *packet;
 }
