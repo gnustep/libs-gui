@@ -9,6 +9,51 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.32.0}
+
+This version adds binding support for NSBrowser, NSOutlineView and NSTableView.
+Plus the usual bunch of bug fixes.
+ 
+@itemize @bullet
+@item Add support for bindings in NSBrowser.
+@item Return top level object when loading .gorm files.
+@item Add bindings support to NSOutlineView,
+@item Add support for 10.6 item-based delegate methods to NSBrowser.
+@item Add NSMenuToolbarItem.
+@item Add view based rendering to NSTableView and NSOutlineView.
+@item Add code to NSTreeController.
+@item Fix display of icons if the home is a symlink.
+@item Make some ivars in NSView protected instead of package scoped.
+@item Fix CI pipeline.
+@item Revert _updateFieldEditor: on NSTextFieldCell.
+@item GSTheme bug fix by Tom Sheffler <tom.sheffler@@gmail.com>.
+@item Fix memory leaks in test code.
+@item Don't load nil filename in NSImageRep.
+@item Prevent flickering in NSClipView. 
+@item Simplify ICU configuration.
+@item Move GSColorSliderCell into gui itself.
+@item Bugfix for NSMenuView.
+@item Fix single colum handling in NSCollectionView.
+@item Additional GSTheme method(s) for NSTabView. 
+@item Modify NSComboBox to handle attributed strings.
+@item NSTextFieldCell: Decode placeholder string.
+@item Make white default selection highlight color for NSTableView.
+@item Implement showsresizeindicator.
+@item NSApplication: toggle menu item "Hide" title and action on user click.
+@item Add NSCellHitResult typedef, introduced in OSX 10.10.
+@item Make menu visiblity themable.
+@item Fix decoding alternateContents in NSButtonCell.
+@item Font Panel autosizing fix.
+@item Implement integerValue method in NSSliderCell.
+@item NSBox: use macro to decode NSInteger into enum.
+@item Fall back to pkgconfig for resolving libtiff.
+@item GSMemoryPanel: Only call GSDebug* in debug mode.
+@item Add APPKIT_EXPORT_CLASS, APPKIT_EXPORT annotations for some GS* classes.
+@item Push modal window to top later in process.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.31.1}
 
 This is a bugfix release
@@ -17,8 +62,6 @@ This is a bugfix release
 @item Fix bug decoding menu items (breaking archive)
 @item Remove use of deprecated lock from base library
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.31.0}
 

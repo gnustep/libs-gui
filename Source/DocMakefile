@@ -313,7 +313,8 @@ GuiAdditions_AGSDOC_FILES = $(AUTOGSDOC_HEADERS_GUIADD) \
 # directory.
 #
 Gui_AGSDOC_FLAGS = \
-	-MakeFrames YES \
+	-MakeFrames NO \
+	-IndexFile Gui \
 	-DocumentationDirectory ../Documentation/Gui \
 	-HeaderDirectory ../Headers/AppKit \
 	-Declared AppKit \

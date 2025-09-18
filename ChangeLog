@@ -1,7 +1,21 @@
+2025-04-30 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSColorSpace.h: Add NSColorSpaceModel* enumerated values.
+
+2025-02-11 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* ANNOUNCE:
+	* BUGS:
+	* INSTALL:
+	* NEWS:
+	* Source/DocMakefile:
+	* Version:
+	Updates for 0.32.0 release
+
 2024-11-08 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Headers/AppKit/NSBrowser.h: Add dictionary to hold relationships.
-	* Source/NSBrowser.m: Add logic in methods to support binfings,
+	* Source/NSBrowser.m: Add logic in methods to support bindings,
 	expose bindings in +initialize.
 	* Source/NSTextFieldCell.m: Minor fix to NSTextField for displaying
 	binding values.

@@ -465,12 +465,16 @@ static int _gs_gui_color_picker_mode = NSWheelModeColorPanel;
   return (_gs_gui_color_panel == nil) ? NO : YES;
 }
 
+/**
+ * Determines color selection modes availible to the the NSApplications colorPanel.
+ */
 + (void) setPickerMask: (int)mask
 {
   _gs_gui_color_picker_mask = mask;
 }
 
 /**
+ * Specifies color panel's initial picker.
  */
 + (void) setPickerMode: (int)mode
 {
@@ -687,12 +691,19 @@ static int _gs_gui_color_picker_mode = NSWheelModeColorPanel;
 //
 // Attaching a Color List
 //
+
+/**
+ * Adds a color list to all of the color pickers of the receiver.
+ */
 - (void) attachColorList: (NSColorList *)aColorList
 {
   [_pickers makeObjectsPerformSelector: @selector(attachColorList:)
                             withObject: aColorList];
 }
 
+/**
+ * Removes the referenced color list to all of the color pickers of the receiver.
+ */
 - (void) detachColorList: (NSColorList *)aColorList
 {
   [_pickers makeObjectsPerformSelector: @selector(detachColorList:)

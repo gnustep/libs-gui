@@ -28,7 +28,7 @@
    If not, see <http://www.gnu.org/licenses/> or write to the 
    Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #import "config.h"
 
@@ -794,10 +794,10 @@ static NSDictionary		*urlPreferences = nil;
     }
 
   if (sysDir != nil)
-    [folderPathIconDict setObject: @"GSFolder" forKey: sysDir];
+    [folderPathIconDict setObject: @"GSFolder" forKey: [sysDir stringByResolvingSymlinksInPath]];
 
   [folderPathIconDict setObject: @"HomeDirectory"
-    forKey: NSHomeDirectory()];
+			 forKey: [NSHomeDirectory() stringByResolvingSymlinksInPath]];
 
   /* it would be nice to use different root icons... */
   [folderPathIconDict setObject: @"Root_PC" forKey: NSOpenStepRootDirectory()];
@@ -805,42 +805,42 @@ static NSDictionary		*urlPreferences = nil;
   for (i = 0; i < [libraryDirs count]; i++)
     {
       [folderPathIconDict setObject: @"LibraryFolder"
-	forKey: [libraryDirs objectAtIndex: i]];
+	forKey: [[libraryDirs objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
   for (i = 0; i < [appDirs count]; i++)
     {
       [folderPathIconDict setObject: @"ApplicationFolder"
-	forKey: [appDirs objectAtIndex: i]];
+	forKey: [[appDirs objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
   for (i = 0; i < [documentDir count]; i++)
     {
       [folderPathIconDict setObject: @"DocsFolder"
-	forKey: [documentDir objectAtIndex: i]];
+	forKey: [[documentDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
   for (i = 0; i < [downloadDir count]; i++)
     {
       [folderPathIconDict setObject: @"DownloadFolder"
-	forKey: [downloadDir objectAtIndex: i]];
+	forKey: [[downloadDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
   for (i = 0; i < [desktopDir count]; i++)
     {
       [folderPathIconDict setObject: @"Desktop"
-	forKey: [desktopDir objectAtIndex: i]];
+	forKey: [[desktopDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
   for (i = 0; i < [imgDir count]; i++)
     {
       [folderPathIconDict setObject: @"ImageFolder"
-	forKey: [imgDir objectAtIndex: i]];
+	forKey: [[imgDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
   for (i = 0; i < [musicDir count]; i++)
     {
       [folderPathIconDict setObject: @"MusicFolder"
-	forKey: [musicDir objectAtIndex: i]];
+	forKey: [[musicDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
   for (i = 0; i < [videoDir count]; i++)
     {
       [folderPathIconDict setObject: @"VideoFolder"
-	forKey: [videoDir objectAtIndex: i]];
+	forKey: [[videoDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
   folderIconCache = [[NSMutableDictionary alloc] init];
 
@@ -1514,13 +1514,13 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   if ([fileType isEqual: NSFileTypeDirectory] == YES)
     {
       NSString *iconPath = nil;
-      
+
       if ([pathExtension isEqualToString: @"app"]
 	|| [pathExtension isEqualToString: @"debug"]
 	|| [pathExtension isEqualToString: @"profile"])
 	{
 	  image = [self appIconForApp: fullPath];
-	  
+
 	  if (image == nil)
 	    {
 	      /*
