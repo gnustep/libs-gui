@@ -418,8 +418,6 @@
 
 #pragma mark - NSCoding
 
-#pragma mark - NSCoding Protocol
-
 /**
  * Initializes a press gesture recognizer from encoded data during
  * deserialization. This method decodes the minimum press duration,
