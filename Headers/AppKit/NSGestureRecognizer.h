@@ -35,6 +35,7 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSGeometry.h>
+#import <Foundation/NSArray.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
@@ -183,10 +184,11 @@ APPKIT_EXPORT_CLASS
 - (NSUInteger)numberOfTouches;
 
 // Getting and Setting the Gesture Recognizer's State
-@property(readonly) NSGestureRecognizerState state;
+- (NSGestureRecognizerState) state;
 
 // Enabling and Disabling a Gesture Recognizer
-@property(getter=isEnabled) BOOL enabled;
+- (BOOL) isEnabled;
+- (void) setEnabled: (BOOL)enabled;
 
 // Specifying Dependencies Between Gesture Recognizers
 /**
@@ -207,16 +209,24 @@ APPKIT_EXPORT_CLASS
 - (void)requireGestureRecognizerToFail:(NSGestureRecognizer *)otherGestureRecognizer;
 
 // Setting and Getting the Delegate
-@property(weak) id<NSGestureRecognizerDelegate> delegate;
+- (id<NSGestureRecognizerDelegate>) delegate;
+- (void) setDelegate: (id<NSGestureRecognizerDelegate>)delegate;
 
 // Getting the Gesture Recognizer's View
-@property(readonly, weak) NSView *view;
+- (NSView *) view;
 
 // Delaying Touches
-@property BOOL delaysPrimaryMouseButtonEvents;
-@property BOOL delaysSecondaryMouseButtonEvents;
-@property BOOL delaysOtherMouseButtonEvents;
-@property BOOL delaysKeyEvents;
+- (BOOL) delaysPrimaryMouseButtonEvents;
+- (void) setDelaysPrimaryMouseButtonEvents: (BOOL)delays;
+
+- (BOOL) delaysSecondaryMouseButtonEvents;
+- (void) setDelaysSecondaryMouseButtonEvents: (BOOL)delays;
+
+- (BOOL) delaysOtherMouseButtonEvents;
+- (void) setDelaysOtherMouseButtonEvents: (BOOL)delays;
+
+- (BOOL) delaysKeyEvents;
+- (void) setDelaysKeyEvents: (BOOL)delays;
 
 // Methods for Subclasses
 /**
