@@ -33,7 +33,7 @@
   if (self != nil)
     {
       _type = NSAccessibilityCustomRotorTypeCustom; // default when label initializer used
-      ASSIGN(_label, label);
+      ASSIGNCOPY(_label, label);
       _itemSearchDelegate = delegate; // delegates not retained in Cocoa typically (weak)
     }
   return self;
@@ -68,7 +68,7 @@
 
 - (void) setLabel: (NSString *)label
 {
-  ASSIGN(_label, label);
+  ASSIGNCOPY(_label, label);
 }
 
 - (id<NSAccessibilityCustomRotorItemSearchDelegate>) itemSearchDelegate
