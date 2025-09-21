@@ -36,7 +36,7 @@
 
 @implementation NSMagnificationGestureRecognizer
 
-#pragma mark - Class Methods
+// Class Methods
 
 + (void)initialize
 {
@@ -46,7 +46,7 @@
     }
 }
 
-#pragma mark - Initialization
+// Initialization
 
 - (instancetype)initWithTarget:(id)target action:(SEL)action
 {
@@ -70,7 +70,7 @@
   [super dealloc];
 }
 
-#pragma mark - Properties
+// Properties
 
 - (CGFloat)magnification
 {
@@ -82,7 +82,7 @@
   return _velocity;
 }
 
-#pragma mark - Gesture Recognition Override Methods
+// Gesture Recognition Override Methods
 
 - (void)reset
 {
@@ -236,7 +236,7 @@
   [self mouseUp:event];
 }
 
-#pragma mark - Private Methods
+// Private Methods
 
 - (void)_updateMagnificationWithEvent:(NSEvent *)event
 {
