@@ -72,7 +72,7 @@
 
 - (void) setAccessibilityLabel: (NSString *)label
 {
-  ASSIGN(_accessibilityLabel, label);
+  ASSIGNCOPY(_accessibilityLabel, label);
 }
 
 - (NSString *) accessibilityIdentifier
@@ -82,7 +82,7 @@
 
 - (void) setAccessibilityIdentifier: (NSString *)identifier
 {
-  ASSIGN(_accessibilityIdentifier, identifier);
+  ASSIGNCOPY(_accessibilityIdentifier, identifier);
 }
 
 - (NSRect) accessibilityFrame
@@ -122,7 +122,7 @@
 
 - (void) setAccessibilityRole: (NSString *)role
 {
-  ASSIGN(_accessibilityRole, role);
+  ASSIGNCOPY(_accessibilityRole, role);
 }
 
 - (NSString *) accessibilitySubrole
@@ -132,7 +132,7 @@
 
 - (void) setAccessibilitySubrole: (NSString *)subrole
 {
-  ASSIGN(_accessibilitySubrole, subrole);
+  ASSIGNCOPY(_accessibilitySubrole, subrole);
 }
 
 - (NSString *) accessibilityRoleDescription
