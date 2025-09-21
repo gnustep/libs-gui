@@ -1,4 +1,4 @@
-/* 
+/*
    NSDocument.h
 
    The abstract document class
@@ -10,7 +10,7 @@
    Modifications: Fred Kiefer <fredkiefer@gmx.de>
    Date: Dec 2006
    Added MacOS 10.4 methods.
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -25,10 +25,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #ifndef _GNUstep_H_NSDocument
 #define _GNUstep_H_NSDocument
@@ -85,6 +85,22 @@ typedef enum _NSSaveOperationType {
 } NSSaveOperationType;
 
 APPKIT_EXPORT_CLASS
+/**
+ * NSDocument is the abstract base class for document-based applications in
+ * the AppKit framework. This class provides a comprehensive foundation for
+ * managing individual documents within a multi-document application
+ * architecture. NSDocument handles the complete document lifecycle including
+ * creation, loading, saving, printing, and closing operations. The class
+ * integrates seamlessly with NSDocumentController for application-level
+ * document management and NSWindowController for document presentation and
+ * user interaction. Key responsibilities include file I/O operations, change
+ * tracking with undo support, window management, print operations, and user
+ * interface validation. NSDocument supports various file formats, automatic
+ * and manual save operations, error handling, and delegate-based callbacks
+ * for asynchronous operations. Subclasses must override specific methods to
+ * provide document-specific functionality while leveraging the extensive
+ * infrastructure provided by the base class.
+ */
 @interface NSDocument : NSObject
 {
   @private
@@ -116,13 +132,82 @@ APPKIT_EXPORT_CLASS
     void 		*_reserved1;
 }
 
+/**
+ * Returns an array of file types that this document class can read and open.
+ * The returned array contains type identifier strings that correspond to
+ * file formats supported for document loading operations. These types are
+ * typically UTI strings or file extensions that define the readable formats
+ * for this document class. The document controller uses this information to
+ * determine which document classes can handle specific file types during
+ * open operations. Subclasses should override this method to specify their
+ * supported input formats, enabling proper document type resolution and
+ * automatic document class selection based on file characteristics.
+ */
 + (NSArray *)readableTypes;
+/**
+ * Returns an array of file types that this document class can write and save.
+ * The returned array contains type identifier strings that correspond to
+ * file formats supported for document saving operations. These types define
+ * the available output formats that users can select when saving documents
+ * of this class. The document controller and save panels use this information
+ * to populate format selection controls and validate save operations.
+ * Subclasses should override this method to specify their supported output
+ * formats, enabling appropriate save format options and proper file type
+ * handling during save operations.
+ */
 + (NSArray *)writableTypes;
+/**
+ * Tests whether the specified type represents a native file format for this
+ * document class. Native types are formats that preserve all document
+ * information without data loss and represent the primary or preferred
+ * storage format for this document type. This method helps distinguish
+ * between native formats and export/import formats that may not preserve
+ * complete document fidelity. The document controller uses this information
+ * for save operation behavior, determining when to prompt users about
+ * potential data loss or format limitations. Subclasses should override
+ * this method to identify their native file formats accurately.
+ */
 + (BOOL)isNativeType:(NSString *)type;
 
 /*" Initialization "*/
+/**
+ * Initializes a new empty document instance with default settings. This
+ * designated initializer creates a new document without loading content from
+ * any file source, suitable for creating blank documents that users will
+ * populate with content. The initialization process establishes default
+ * document state, creates necessary internal structures, and prepares the
+ * document for content editing and user interaction. Subclasses should
+ * override this method to perform document-specific initialization while
+ * ensuring proper super class initialization. This method is typically used
+ * when creating new documents through menu actions or programmatic document
+ * creation workflows.
+ */
 - (id)init;
+/**
+ * Initializes a new document instance by loading content from the specified
+ * file path with the given file type. The fileName parameter specifies the
+ * complete path to the source file, while fileType identifies the format
+ * for proper content interpretation and loading. This initialization method
+ * handles file reading, content parsing, and document state setup in a
+ * single operation. The document's file location and type properties are
+ * automatically configured based on the provided parameters. Subclasses
+ * typically override this method to implement format-specific loading logic
+ * while leveraging the base class infrastructure for standard document
+ * management operations.
+ */
 - (id)initWithContentsOfFile:(NSString *)fileName ofType:(NSString *)fileType;
+/**
+ * Initializes a new document instance by loading content from the specified
+ * URL with the given file type. The url parameter specifies the source
+ * location using URL syntax, supporting both local file URLs and potentially
+ * remote resources depending on implementation. The fileType parameter
+ * identifies the content format for proper interpretation during loading.
+ * This method provides URL-based initialization with automatic content
+ * loading and document configuration. Modern document implementations should
+ * prefer URL-based methods for enhanced flexibility and network resource
+ * support. Subclasses override this method to implement format-specific
+ * URL-based loading while maintaining standard document lifecycle behavior.
+ */
 - (id)initWithContentsOfURL:(NSURL *)url ofType:(NSString *)fileType;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (id)initForURL:(NSURL *)forUrl
@@ -137,14 +222,36 @@ withContentsOfURL:(NSURL *)url
 #endif
 
 /*" Window management "*/
+/**
+ * Returns an array of window controllers currently associated with this
+ * document. Window controllers manage the presentation and user interface
+ * aspects of the document, with each controller typically corresponding to
+ * a document window. This method provides access to all window controllers
+ * for document-wide operations, window enumeration, or controller-specific
+ * customization. The returned array contains NSWindowController instances
+ * that handle window lifecycle, user interface updates, and user interaction
+ * coordination. Multiple window controllers enable complex document
+ * presentations with multiple views or specialized interface panels.
+ */
 - (NSArray *)windowControllers;
+/**
+ * Adds the specified window controller to this document's controller
+ * collection. The windowController parameter represents an NSWindowController
+ * instance that will manage document presentation and user interface
+ * coordination. This method establishes the bidirectional relationship
+ * between the document and its window controller, enabling proper document
+ * lifecycle management and user interface synchronization. The document
+ * retains the window controller and configures it for document-specific
+ * operations. Multiple window controllers can be added to support complex
+ * document presentations with specialized interface components.
+ */
 - (void)addWindowController:(NSWindowController *)windowController;
 #if OS_API_VERSION(GS_API_MACOSX, MAC_OS_X_VERSION_10_4)
 - (BOOL)shouldCloseWindowController:(NSWindowController *)windowController;
 #endif
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (void)shouldCloseWindowController:(NSWindowController *)windowController 
-			   delegate:(id)delegate 
+- (void)shouldCloseWindowController:(NSWindowController *)windowController
+			   delegate:(id)delegate
 		shouldCloseSelector:(SEL)callback
 			contextInfo:(void *)contextInfo;
 #endif
@@ -165,7 +272,30 @@ withContentsOfURL:(NSURL *)url
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController;
 
 /*" Edited flag "*/
+/**
+ * Returns whether this document has unsaved changes that require saving.
+ * The document maintains an internal change count that tracks modifications
+ * since the last save operation, and this method reports the current edited
+ * state based on that count. The edited state affects user interface
+ * elements like window titles, close confirmations, and save menu items.
+ * Document controllers and window managers use this information to provide
+ * appropriate user feedback and prevent accidental data loss. The method
+ * returns YES when the document contains unsaved changes and NO when all
+ * changes have been saved or the document is in its original state.
+ */
 - (BOOL)isDocumentEdited;
+/**
+ * Updates the document's change tracking state based on the specified change
+ * type. The change parameter indicates whether a modification was made,
+ * undone, or cleared, allowing the document to maintain accurate change
+ * counts and edited status. NSChangeDone increments the change count for
+ * new modifications, NSChangeUndone decrements for undo operations, and
+ * NSChangeCleared resets the count after save operations. This method
+ * automatically updates user interface elements and triggers appropriate
+ * notifications to maintain consistent document state representation.
+ * Proper change tracking enables undo support, save prompts, and accurate
+ * document status reporting.
+ */
 - (void)updateChangeCount:(NSDocumentChangeType)change;
 
 /*" Display Name (window title) "*/
@@ -180,8 +310,8 @@ withContentsOfURL:(NSURL *)url
 - (BOOL)canCloseDocument;
 #endif
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
-- (void)canCloseDocumentWithDelegate:(id)delegate 
-		 shouldCloseSelector:(SEL)shouldCloseSelector 
+- (void)canCloseDocumentWithDelegate:(id)delegate
+		 shouldCloseSelector:(SEL)shouldCloseSelector
 			 contextInfo:(void *)contextInfo;
 #endif
 
@@ -205,7 +335,7 @@ withContentsOfURL:(NSURL *)url
 - (BOOL)loadDataRepresentation:(NSData *)data ofType:(NSString *)type;
 
 - (NSFileWrapper *)fileWrapperRepresentationOfType:(NSString *)type;
-- (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper 
+- (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper
 			       ofType:(NSString *)type;
 
 - (BOOL)writeToFile:(NSString *)fileName ofType:(NSString *)type;
@@ -236,8 +366,8 @@ withContentsOfURL:(NSURL *)url
                   ofType:(NSString *)type
         forSaveOperation:(NSSaveOperationType)op
                    error:(NSError **)error;
-- (BOOL)writeToURL:(NSURL *)url 
-            ofType:(NSString *)type 
+- (BOOL)writeToURL:(NSURL *)url
+            ofType:(NSString *)type
              error:(NSError **)error;
 - (BOOL)writeToURL:(NSURL *)url
             ofType:(NSString *)type
@@ -251,17 +381,17 @@ originalContentsURL:(NSURL *)orig
 #if OS_API_VERSION(GS_API_MACOSX, MAC_OS_X_VERSION_10_4)
 - (NSString *)fileNameFromRunningSavePanelForSaveOperation:(NSSaveOperationType)saveOperation;
 - (NSInteger)runModalSavePanel:(NSSavePanel *)savePanel withAccessoryView:(NSView *)accessoryView;
-#endif 
+#endif
 - (NSString *)fileTypeFromLastRunSavePanel;
-- (NSDictionary *)fileAttributesToWriteToFile: (NSString *)fullDocumentPath 
-				       ofType: (NSString *)docType 
+- (NSDictionary *)fileAttributesToWriteToFile: (NSString *)fullDocumentPath
+				       ofType: (NSString *)docType
 				saveOperation: (NSSaveOperationType)saveOperationType;
-- (BOOL)writeToFile:(NSString *)fileName 
-	     ofType:(NSString *)type 
+- (BOOL)writeToFile:(NSString *)fileName
+	     ofType:(NSString *)type
        originalFile:(NSString *)origFileName
       saveOperation:(NSSaveOperationType)saveOp;
-- (BOOL)writeWithBackupToFile:(NSString *)fileName 
-		       ofType:(NSString *)fileType 
+- (BOOL)writeWithBackupToFile:(NSString *)fileName
+		       ofType:(NSString *)fileType
 		saveOperation:(NSSaveOperationType)saveOp;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 - (NSArray *)writableTypesForSaveOperation:(NSSaveOperationType)op;
@@ -270,14 +400,14 @@ originalContentsURL:(NSURL *)orig
                             forSaveOperation:(NSSaveOperationType)op
                          originalContentsURL:(NSURL *)original
                                        error:(NSError **)error;
-#endif 
+#endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_1, GS_API_LATEST)
 - (BOOL)fileNameExtensionWasHiddenInLastRunSavePanel;
-#endif 
+#endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 - (NSString *)fileNameExtensionForType:(NSString *)typeName
                          saveOperation:(NSSaveOperationType)saveOperation;
-#endif 
+#endif
 
 /*" Printing "*/
 - (NSPrintInfo *)printInfo;
@@ -307,9 +437,55 @@ originalContentsURL:(NSURL *)orig
 #endif
 
 /*" IB Actions "*/
+/**
+ * Performs a save operation for the current document, preserving changes to
+ * the existing file location. This action method is typically connected to
+ * Save menu items or toolbar buttons and initiates the standard document
+ * save process. If the document has an established file location, the save
+ * operation writes changes directly to that location. For new documents
+ * without a file location, this method automatically presents a save panel
+ * to allow the user to specify a save location and file name. The method
+ * handles all aspects of the save process including user interface updates,
+ * error handling, and change count management. Successful saves reset the
+ * document's edited status and update the modification date.
+ */
 - (IBAction)saveDocument:(id)sender;
+/**
+ * Performs a save-as operation, allowing the user to specify a new save
+ * location and potentially change the file format. This action method
+ * presents a save panel regardless of whether the document has an existing
+ * file location, enabling users to create copies or save in different
+ * formats. The save-as operation preserves the original file while creating
+ * a new file at the specified location. After successful completion, the
+ * document's file location is updated to the new location, making it the
+ * target for subsequent save operations. This method supports workflow
+ * flexibility and file management by enabling document duplication and
+ * format conversion capabilities.
+ */
 - (IBAction)saveDocumentAs:(id)sender;
+/**
+ * Performs a save-to operation, creating a copy of the document at a
+ * specified location without changing the current document's file location.
+ * Unlike save-as, this operation preserves the original document's location
+ * as the target for future save operations while creating an independent
+ * copy at the new location. This action is useful for creating backups,
+ * exporting to different locations, or generating copies for distribution
+ * without affecting the primary document workflow. The save-to operation
+ * maintains the current document's edited status and file associations
+ * while ensuring the copy reflects the current document content.
+ */
 - (IBAction)saveDocumentTo:(id)sender;
+/**
+ * Reverts the document to its last saved state, discarding all unsaved
+ * changes since the last save operation. This action method presents user
+ * confirmation when appropriate and then reloads the document content from
+ * its file source. The revert operation restores the document to its
+ * previously saved state, resetting the change count and edited status.
+ * This method provides a mechanism for abandoning unwanted changes and
+ * returning to known good document state. The revert process includes
+ * user interface updates and proper window controller coordination to
+ * maintain consistent document presentation after content restoration.
+ */
 - (IBAction)revertDocumentToSaved:(id)sender;
 
 /*" Menus "*/
@@ -317,24 +493,70 @@ originalContentsURL:(NSURL *)orig
 - (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem;
 
 /*" Undo "*/
+/**
+ * Returns the undo manager instance associated with this document. The undo
+ * manager coordinates undo and redo operations for document modifications,
+ * maintaining a history of changes that can be reversed or reapplied. Each
+ * document typically maintains its own undo manager to provide isolated
+ * undo functionality that doesn't interfere with other documents. The
+ * returned undo manager integrates with the document's change tracking
+ * system to provide accurate change counts and edited status updates.
+ * Applications can customize undo behavior by configuring the undo manager
+ * or providing custom undo implementations through the standard NSUndoManager
+ * interface.
+ */
 - (NSUndoManager *)undoManager;
+/**
+ * Sets the undo manager instance for this document. The undoManager parameter
+ * specifies the NSUndoManager instance that will handle undo and redo
+ * operations for this document. Setting a custom undo manager allows
+ * applications to provide specialized undo behavior, shared undo management
+ * across multiple documents, or enhanced undo functionality beyond the
+ * standard implementation. The document integrates the provided undo manager
+ * with its change tracking and user interface validation systems. Setting
+ * nil removes undo support from the document, which may be appropriate for
+ * certain document types or application configurations.
+ */
 - (void)setUndoManager:(NSUndoManager *)undoManager;
+/**
+ * Returns whether this document has an active undo manager available for
+ * undo and redo operations. This method indicates the document's undo
+ * capability without requiring access to the actual undo manager instance.
+ * Documents with undo managers can track and reverse changes, while those
+ * without undo managers operate in a linear modification mode without
+ * change reversal capabilities. User interface elements like Undo menu
+ * items use this information to determine their availability and enabled
+ * state. Applications can use this method to conditionally enable undo-
+ * dependent features and provide appropriate user feedback about available
+ * functionality.
+ */
 - (BOOL)hasUndoManager;
+/**
+ * Configures whether this document should maintain an undo manager for
+ * change tracking and reversal operations. The flag parameter determines
+ * whether the document creates and maintains an undo manager instance.
+ * When YES, the document provides full undo and redo functionality with
+ * change history tracking. When NO, the document operates without undo
+ * support, which may improve performance for large documents or specialized
+ * applications where undo functionality is not required. This setting
+ * affects user interface validation, change count management, and the
+ * availability of undo-related menu items and toolbar buttons.
+ */
 - (void)setHasUndoManager:(BOOL)flag;
 
 /* NEW delegate operations*/
-- (void)saveToFile:(NSString *)fileName 
-     saveOperation:(NSSaveOperationType)saveOperation 
+- (void)saveToFile:(NSString *)fileName
+     saveOperation:(NSSaveOperationType)saveOperation
 	  delegate:(id)delegate
-   didSaveSelector:(SEL)didSaveSelector 
+   didSaveSelector:(SEL)didSaveSelector
        contextInfo:(void *)contextInfo;
 - (BOOL)prepareSavePanel:(NSSavePanel *)savePanel;
-- (void)saveDocumentWithDelegate:(id)delegate 
-		 didSaveSelector:(SEL)didSaveSelector 
+- (void)saveDocumentWithDelegate:(id)delegate
+		 didSaveSelector:(SEL)didSaveSelector
 		     contextInfo:(void *)contextInfo;
-- (void)runModalSavePanelForSaveOperation:(NSSaveOperationType)saveOperation 
+- (void)runModalSavePanelForSaveOperation:(NSSaveOperationType)saveOperation
 				 delegate:(id)delegate
-			  didSaveSelector:(SEL)didSaveSelector 
+			  didSaveSelector:(SEL)didSaveSelector
 			      contextInfo:(void *)contextInfo;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
@@ -348,7 +570,7 @@ originalContentsURL:(NSURL *)orig
          delegate:(id)delegate
   didSaveSelector:(SEL)didSaveSelector
       contextInfo:(void *)contextInfo;
- 
+
 /* Autosaving */
 - (NSURL *)autosavedContentsFileURL;
 - (void)setAutosavedContentsFileURL:(NSURL *)url;
