@@ -48,9 +48,9 @@
 
 // Initialization
 
-- (instancetype)initWithTarget:(id)target action:(SEL)action
+- (instancetype)initWithTarget: (id)target action: (SEL)action
 {
-  self = [super initWithTarget:target action:action];
+  self = [super initWithTarget: target action: action];
   if (self)
     {
       _magnification = 0.0;
@@ -90,9 +90,9 @@
   [self _resetMagnificationTracking];
 }
 
-- (void)scrollWheel:(NSEvent *)event
+- (void)scrollWheel: (NSEvent *)event
 {
-  [super scrollWheel:event];
+  [super scrollWheel: event];
 
   if (![self isEnabled])
     {
@@ -104,7 +104,7 @@
 
   if (magnificationDelta != 0.0)
     {
-      [self _updateMagnificationWithEvent:event];
+      [self _updateMagnificationWithEvent: event];
     }
   else
     {
@@ -121,7 +121,7 @@
                [self state] == NSGestureRecognizerStateChanged)
         {
           // End gesture if no more magnification input
-          [self _setState:NSGestureRecognizerStateEnded];
+          [self _setState: NSGestureRecognizerStateEnded];
         }
     }
 }
@@ -135,7 +135,7 @@
       return;
     }
 
-  _initialLocation = [self locationInView:[self view]];
+  _initialLocation = [self locationInView: [self view]];
   [self _resetMagnificationTracking];
 }
 
@@ -163,11 +163,11 @@
         {
           _initialTime = [NSDate timeIntervalSinceReferenceDate];
           _magnificationStarted = YES;
-          [self _setState:NSGestureRecognizerStateBegan];
+          [self _setState: NSGestureRecognizerStateBegan];
         }
       else
         {
-          [self _setState:NSGestureRecognizerStateChanged];
+          [self _setState: NSGestureRecognizerStateChanged];
         }
 
       _magnification = magnificationDelta;
@@ -191,54 +191,54 @@
     {
       if (_magnificationStarted)
         {
-          [self _setState:NSGestureRecognizerStateEnded];
+          [self _setState: NSGestureRecognizerStateEnded];
         }
       else
         {
-          [self _setState:NSGestureRecognizerStateFailed];
+          [self _setState: NSGestureRecognizerStateFailed];
         }
     }
 }
 
-- (void)rightMouseDown:(NSEvent *)event
+- (void) rightMouseDown: (NSEvent *)event
 {
-  [super rightMouseDown:event];
-  [self mouseDown:event];
+  [super rightMouseDown: event];
+  [self mouseDown: event];
 }
 
-- (void)rightMouseDragged:(NSEvent *)event
+- (void) rightMouseDragged: (NSEvent *)event
 {
-  [super rightMouseDragged:event];
-  [self mouseDragged:event];
+  [super rightMouseDragged: event];
+  [self mouseDragged: event];
 }
 
-- (void)rightMouseUp:(NSEvent *)event
+- (void) rightMouseUp: (NSEvent *)event
 {
-  [super rightMouseUp:event];
-  [self mouseUp:event];
+  [super rightMouseUp: event];
+  [self mouseUp: event];
 }
 
-- (void)otherMouseDown:(NSEvent *)event
+- (void) otherMouseDown: (NSEvent *)event
 {
-  [super otherMouseDown:event];
-  [self mouseDown:event];
+  [super otherMouseDown: event];
+  [self mouseDown: event];
 }
 
-- (void)otherMouseDragged:(NSEvent *)event
+- (void) otherMouseDragged: (NSEvent *)event
 {
-  [super otherMouseDragged:event];
-  [self mouseDragged:event];
+  [super otherMouseDragged: event];
+  [self mouseDragged: event];
 }
 
-- (void)otherMouseUp:(NSEvent *)event
+- (void) otherMouseUp: (NSEvent *)event
 {
-  [super otherMouseUp:event];
-  [self mouseUp:event];
+  [super otherMouseUp: event];
+  [self mouseUp: event];
 }
 
 // Private Methods
 
-- (void)_updateMagnificationWithEvent:(NSEvent *)event
+- (void) _updateMagnificationWithEvent: (NSEvent *)event
 {
   CGFloat magnificationDelta = [event magnification];
 
@@ -261,11 +261,11 @@
       _initialTime = [NSDate timeIntervalSinceReferenceDate];
       _magnificationStarted = YES;
       _cumulativeMagnification = 0.0;
-      [self _setState:NSGestureRecognizerStateBegan];
+      [self _setState: NSGestureRecognizerStateBegan];
     }
   else
     {
-      [self _setState:NSGestureRecognizerStateChanged];
+      [self _setState: NSGestureRecognizerStateChanged];
     }
 
   _magnification = magnificationDelta;
@@ -280,7 +280,7 @@
     }
 }
 
-- (void)_resetMagnificationTracking
+- (void) _resetMagnificationTracking
 {
   _magnification = 0.0;
   _velocity = 0.0;
@@ -294,9 +294,9 @@
 
 #pragma mark - NSCoding Protocol
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (instancetype) initWithCoder: (NSCoder *)coder
 {
-  self = [super initWithCoder:coder];
+  self = [super initWithCoder: coder];
   if (self)
     {
       _magnification = 0.0;
@@ -311,11 +311,10 @@
   return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
+- (void)encodeWithCoder: (NSCoder *)coder
 {
   [super encodeWithCoder:coder];
   // Transient state is not encoded since it should not persist
 }
 
 @end
-

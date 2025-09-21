@@ -32,7 +32,7 @@
 
 - (instancetype)initWithTarget:(id)target action:(SEL)action
 {
-  self = [super initWithTarget:target action:action];
+  self = [super initWithTarget: target action: action];
   if (self != nil)
     {
       _buttonMask = 1; // Default to left mouse button
@@ -44,29 +44,29 @@
 
 - (instancetype)init
 {
-  return [self initWithTarget:nil action:NULL];
+  return [self initWithTarget: nil action: NULL];
 }
 
 // Button Mask Property
 
-- (NSUInteger)buttonMask
+- (NSUInteger) buttonMask
 {
   return _buttonMask;
 }
 
-- (void)setButtonMask:(NSUInteger)mask
+- (void) setButtonMask:(NSUInteger)mask
 {
   _buttonMask = mask;
 }
 
 // Number of Clicks Required Property
 
-- (NSUInteger)numberOfClicksRequired
+- (NSUInteger) numberOfClicksRequired
 {
   return _numberOfClicksRequired;
 }
 
-- (void)setNumberOfClicksRequired:(NSUInteger)clicks
+- (void) setNumberOfClicksRequired:(NSUInteger)clicks
 {
   if (clicks >= 1)
     {
@@ -76,12 +76,12 @@
 
 // Number of Touches Required Property
 
-- (NSUInteger)numberOfTouchesRequired
+- (NSUInteger) numberOfTouchesRequired
 {
   return _numberOfTouchesRequired;
 }
 
-- (void)setNumberOfTouchesRequired:(NSUInteger)touches
+- (void) setNumberOfTouchesRequired:(NSUInteger)touches
 {
   if (touches >= 1)
     {
@@ -91,9 +91,9 @@
 
 // Gesture Recognition Event Handlers
 
-- (void)mouseDown:(NSEvent *)event
+- (void) mouseDown:(NSEvent *)event
 {
-  [super mouseDown:event];
+  [super mouseDown: event];
 
   if (![self isEnabled])
     {
@@ -106,7 +106,7 @@
 
   if ((_buttonMask & eventButtonMask) == 0)
     {
-      [self setState:NSGestureRecognizerStateFailed];
+      [self setState: NSGestureRecognizerStateFailed];
       return;
     }
 
@@ -114,21 +114,21 @@
   NSInteger clickCount = [event clickCount];
   if (clickCount == _numberOfClicksRequired)
     {
-      [self setState:NSGestureRecognizerStateRecognized];
+      [self setState: NSGestureRecognizerStateRecognized];
     }
   else if (clickCount < _numberOfClicksRequired)
     {
-      [self setState:NSGestureRecognizerStatePossible];
+      [self setState: NSGestureRecognizerStatePossible];
     }
   else
     {
-      [self setState:NSGestureRecognizerStateFailed];
+      [self setState: NSGestureRecognizerStateFailed];
     }
 }
 
-- (void)rightMouseDown:(NSEvent *)event
+- (void) rightMouseDown:(NSEvent *)event
 {
-  [super rightMouseDown:event];
+  [super rightMouseDown: event];
 
   if (![self isEnabled])
     {
@@ -140,7 +140,7 @@
 
   if ((_buttonMask & eventButtonMask) == 0)
     {
-      [self setState:NSGestureRecognizerStateFailed];
+      [self setState: NSGestureRecognizerStateFailed];
       return;
     }
 
@@ -148,21 +148,21 @@
   NSInteger clickCount = [event clickCount];
   if (clickCount == _numberOfClicksRequired)
     {
-      [self setState:NSGestureRecognizerStateRecognized];
+      [self setState: NSGestureRecognizerStateRecognized];
     }
   else if (clickCount < _numberOfClicksRequired)
     {
-      [self setState:NSGestureRecognizerStatePossible];
+      [self setState: NSGestureRecognizerStatePossible];
     }
   else
     {
-      [self setState:NSGestureRecognizerStateFailed];
+      [self setState: NSGestureRecognizerStateFailed];
     }
 }
 
-- (void)otherMouseDown:(NSEvent *)event
+- (void) otherMouseDown:(NSEvent *)event
 {
-  [super otherMouseDown:event];
+  [super otherMouseDown: event];
 
   if (![self isEnabled])
     {
@@ -175,7 +175,7 @@
 
   if ((_buttonMask & eventButtonMask) == 0)
     {
-      [self setState:NSGestureRecognizerStateFailed];
+      [self setState: NSGestureRecognizerStateFailed];
       return;
     }
 
@@ -183,73 +183,73 @@
   NSInteger clickCount = [event clickCount];
   if (clickCount == _numberOfClicksRequired)
     {
-      [self setState:NSGestureRecognizerStateRecognized];
+      [self setState: NSGestureRecognizerStateRecognized];
     }
   else if (clickCount < _numberOfClicksRequired)
     {
-      [self setState:NSGestureRecognizerStatePossible];
+      [self setState: NSGestureRecognizerStatePossible];
     }
   else
     {
-      [self setState:NSGestureRecognizerStateFailed];
+      [self setState: NSGestureRecognizerStateFailed];
     }
 }
 
-- (void)mouseDragged:(NSEvent *)event
+- (void) mouseDragged:(NSEvent *)event
 {
-  [super mouseDragged:event];
+  [super mouseDragged: event];
 
   // If we're in possible state and user starts dragging, fail the gesture
   if ([self state] == NSGestureRecognizerStatePossible)
     {
-      [self setState:NSGestureRecognizerStateFailed];
+      [self setState: NSGestureRecognizerStateFailed];
     }
 }
 
-- (void)rightMouseDragged:(NSEvent *)event
+- (void) rightMouseDragged:(NSEvent *)event
 {
-  [super rightMouseDragged:event];
+  [super rightMouseDragged: event];
 
   // If we're in possible state and user starts dragging, fail the gesture
   if ([self state] == NSGestureRecognizerStatePossible)
     {
-      [self setState:NSGestureRecognizerStateFailed];
+      [self setState: NSGestureRecognizerStateFailed];
     }
 }
 
-- (void)otherMouseDragged:(NSEvent *)event
+- (void) otherMouseDragged:(NSEvent *)event
 {
-  [super otherMouseDragged:event];
+  [super otherMouseDragged: event];
 
   // If we're in possible state and user starts dragging, fail the gesture
   if ([self state] == NSGestureRecognizerStatePossible)
     {
-      [self setState:NSGestureRecognizerStateFailed];
+      [self setState: NSGestureRecognizerStateFailed];
     }
 }
 
 // NSCoding Support
 
-- (void)encodeWithCoder:(NSCoder *)coder
+- (void) encodeWithCoder:(NSCoder *)coder
 {
-  [super encodeWithCoder:coder];
-  [coder encodeObject:[NSNumber numberWithUnsignedInteger:_buttonMask] forKey:@"NSClickGestureRecognizer.buttonMask"];
-  [coder encodeObject:[NSNumber numberWithUnsignedInteger:_numberOfClicksRequired] forKey:@"NSClickGestureRecognizer.numberOfClicksRequired"];
-  [coder encodeObject:[NSNumber numberWithUnsignedInteger:_numberOfTouchesRequired] forKey:@"NSClickGestureRecognizer.numberOfTouchesRequired"];
+  [super encodeWithCoder: coder];
+  [coder encodeObject: [NSNumber numberWithUnsignedInteger: _buttonMask] forKey: @"NSClickGestureRecognizer.buttonMask"];
+  [coder encodeObject: [NSNumber numberWithUnsignedInteger: _numberOfClicksRequired] forKey: @"NSClickGestureRecognizer.numberOfClicksRequired"];
+  [coder encodeObject: [NSNumber numberWithUnsignedInteger: _numberOfTouchesRequired] forKey: @"NSClickGestureRecognizer.numberOfTouchesRequired"];
 }
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (instancetype) initWithCoder:(NSCoder *)coder
 {
-  self = [super initWithCoder:coder];
+  self = [super initWithCoder: coder];
   if (self != nil)
     {
-      NSNumber *buttonMask = [coder decodeObjectForKey:@"NSClickGestureRecognizer.buttonMask"];
+      NSNumber *buttonMask = [coder decodeObjectForKey: @"NSClickGestureRecognizer.buttonMask"];
       _buttonMask = buttonMask ? [buttonMask unsignedIntegerValue] : 1;
 
-      NSNumber *clicksRequired = [coder decodeObjectForKey:@"NSClickGestureRecognizer.numberOfClicksRequired"];
+      NSNumber *clicksRequired = [coder decodeObjectForKey: @"NSClickGestureRecognizer.numberOfClicksRequired"];
       _numberOfClicksRequired = clicksRequired ? [clicksRequired unsignedIntegerValue] : 1;
 
-      NSNumber *touchesRequired = [coder decodeObjectForKey:@"NSClickGestureRecognizer.numberOfTouchesRequired"];
+      NSNumber *touchesRequired = [coder decodeObjectForKey: @"NSClickGestureRecognizer.numberOfTouchesRequired"];
       _numberOfTouchesRequired = touchesRequired ? [touchesRequired unsignedIntegerValue] : 1;
     }
   return self;
@@ -257,9 +257,9 @@
 
 // NSCopying Support
 
-- (id)copyWithZone:(NSZone *)zone
+- (id) copyWithZone:(NSZone *)zone
 {
-  NSClickGestureRecognizer *copy = [super copyWithZone:zone];
+  NSClickGestureRecognizer *copy = [super copyWithZone: zone];
   if (copy != nil)
     {
       copy->_buttonMask = _buttonMask;
@@ -271,9 +271,9 @@
 
 // Description
 
-- (NSString *)description
+- (NSString *) description
 {
-  return [NSString stringWithFormat:@"<%@: %p; state = %ld; buttonMask = %lu; numberOfClicksRequired = %lu; numberOfTouchesRequired = %lu>",
+  return [NSString stringWithFormat: @"<%@: %p; state = %ld; buttonMask = %lu; numberOfClicksRequired = %lu; numberOfTouchesRequired = %lu>",
           [self class], self, (long)[self state], (unsigned long)_buttonMask,
           (unsigned long)_numberOfClicksRequired, (unsigned long)_numberOfTouchesRequired];
 }
