@@ -30,6 +30,8 @@
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
+@class NSTimer;
+
 #if	defined(__cplusplus)
 extern "C" {
 #endif
