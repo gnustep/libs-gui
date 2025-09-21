@@ -131,8 +131,7 @@
 {
   if (_handler != NULL)
     {
-      CALL_BLOCK(_handler, YES); // Cocoa's block signature is usually BOOL(^)(void) or void(^)(id); adapt: pass YES to indicate invocation context
-      return YES;
+      return CALL_BLOCK(_handler, self);
     }
   if (_target != nil && _selector != NULL && [_target respondsToSelector: _selector])
     {
