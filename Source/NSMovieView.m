@@ -4,6 +4,8 @@
 
    Copyright <copy>(C) 2003 Free Software Foundation, Inc.</copy>
 
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
+   Date: May 2025
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: March 2003
 
@@ -21,19 +23,47 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSTimer.h>
 #import <Foundation/NSURL.h>
+
+#import "AppKit/NSColor.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSImageRep.h"
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSMovieView.h"
 #import "AppKit/NSPasteboard.h"
 
 @implementation NSMovieView
+
+- (instancetype) initWithFrame: (NSRect)frame
+{
+  self = [super initWithFrame: frame];
+  if (self != nil)
+    {
+      _movie = nil;
+      _rate = 1.0;
+      _volume = 1.0;
+      _statusField = nil;
+      _positionField = nil;
+      
+      // Flags...
+      _flags.muted = NO;
+      _flags.loopMode = NSQTMovieNormalPlayback;
+      _flags.plays_selection_only = NO;
+      _flags.plays_every_frame = YES;
+      _flags.is_controller_visible = YES;
+      _flags.editable = NO;
+    }
+  return self;
+}
 
 - (void) setMovie: (NSMovie*)movie
 {
@@ -45,45 +75,37 @@
   return _movie;
 }
 
-- (void) start: (id)sender
+- (IBAction) start: (id)sender
 {
-  //FIXME
 }
 
-- (void) stop: (id)sender
+- (IBAction) stop: (id)sender
 {
-  //FIXME
 }
 
 - (BOOL) isPlaying
 {
-  //FIXME
-  return NO;  
+  return NO;
 }
 
-- (void) gotoPosterFrame: (id)sender
+- (IBAction) gotoPosterFrame: (id)sender
 {
-  //FIXME
 }
 
-- (void) gotoBeginning: (id)sender
+- (IBAction) gotoBeginning: (id)sender
 {
-  //FIXME
 }
 
-- (void) gotoEnd: (id)sender
+- (IBAction) gotoEnd: (id)sender
 {
-  //FIXME
 }
 
-- (void) stepForward: (id)sender
+- (IBAction) stepForward: (id)sender
 {
-  //FIXME
 }
 
-- (void) stepBack: (id)sender
+- (IBAction) stepBack: (id)sender
 {
-  //FIXME
 }
 
 - (void) setRate: (float)rate
@@ -99,6 +121,14 @@
 - (void) setVolume: (float)volume
 {
   _volume = volume;
+  if (volume <= 0.0)
+    {
+      _flags.muted = YES;
+    }
+  else if (volume > 0.0)
+    {
+      _flags.muted = NO;
+    }
 }
 
 - (float) volume
@@ -148,13 +178,11 @@
 
 - (void) showController: (BOOL)show adjustingSize: (BOOL)adjustSize
 {
-  //FIXME
-  _flags.is_controller_visible = show; 
+  _flags.is_controller_visible = show;
 }
 
 - (void*) movieController
 {
-  //FIXME
   return NULL;
 }
 
@@ -170,11 +198,10 @@
 
 - (void) resizeWithMagnification: (float)magnification
 {
-  //FIXME
 }
+
 - (NSSize) sizeForMagnification: (float)magnification
 {
-  //FIXME
   return NSMakeSize(0, 0);
 }
 
@@ -188,34 +215,44 @@
   return _flags.editable;
 }
 
-- (void) cut: (id)sender
+- (IBAction) cut: (id)sender
 {
-  //FIXME
 }
 
-- (void) copy: (id)sender
+- (IBAction) copy: (id)sender
 {
-  //FIXME
 }
 
-- (void) paste: (id)sender
+- (IBAction) paste: (id)sender
 {
-  //FIXME
 }
 
-- (void) clear: (id)sender
+- (IBAction) clear: (id)sender
 {
-  //FIXME
 }
 
-- (void) undo: (id)sender
+- (IBAction) undo: (id)sender
 {
-  //FIXME
 }
 
-- (void) selectAll: (id)sender
+- (IBAction) selectAll: (id)sender
 {
-  //FIXME
+}
+
+// GNUstep specific extensions...
+- (void) setStatusField: (id)field
+{
+  ASSIGN(_statusField, field);
+}
+
+- (id) statusField
+{
+  return _statusField;
+}
+
+- (double) currentPosition
+{
+  return 0.0;
 }
 
 @end
