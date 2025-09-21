@@ -28,7 +28,7 @@
 #import <Foundation/NSCoder.h>
 #import <math.h>
 
-@interface NSMagnificationGestureRecognizer ()
+@interface NSMagnificationGestureRecognizer (Private)
 - (void)_setState:(NSGestureRecognizerState)state;
 - (void)_updateMagnificationWithEvent:(NSEvent *)event;
 - (void)_resetMagnificationTracking;
