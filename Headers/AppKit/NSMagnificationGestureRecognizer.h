@@ -27,6 +27,7 @@
 #define _NSMagnificationGestureRecognizer_h_GNUSTEP_GUI_INCLUDE
 
 #import <AppKit/NSGestureRecognizer.h>
+#import <Foundation/NSTimer.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_0, GS_API_LATEST)
 
@@ -35,6 +36,26 @@ extern "C" {
 #endif
 
 APPKIT_EXPORT_CLASS
+/**
+ * NSMagnificationGestureRecognizer is a concrete subclass of NSGestureRecognizer
+ * that recognizes magnification gestures, commonly known as pinch-to-zoom or
+ * zoom gestures. This recognizer detects when the user performs a magnification
+ * gesture using trackpad pinch gestures, scroll wheel events with modifier keys,
+ * or mouse drag movements to indicate zooming intent.
+ *
+ * The recognizer monitors various input sources including trackpad magnification
+ * events, Command+scroll wheel combinations, and distance-based mouse drag
+ * gestures. When magnification input is detected, the recognizer transitions
+ * from the possible state to began, then to changed for continued magnification,
+ * and finally to ended when the magnification gesture completes.
+ *
+ * Key properties include magnification which provides the current magnification
+ * factor as a floating-point value, and velocity which indicates the rate of
+ * magnification change over time. Positive magnification values indicate zoom-in
+ * operations while negative values represent zoom-out operations. The recognizer
+ * accumulates magnification values throughout the gesture duration and calculates
+ * velocity based on the total magnification change over elapsed time.
+ */
 @interface NSMagnificationGestureRecognizer : NSGestureRecognizer
 {
 @private
@@ -49,8 +70,28 @@ APPKIT_EXPORT_CLASS
 }
 
 // Getting the Magnification Values
+/**
+ * Returns the current magnification factor for the gesture. This value
+ * represents the incremental magnification change detected in the most
+ * recent gesture update. Positive values indicate zoom-in magnification
+ * while negative values indicate zoom-out magnification. The magnification
+ * value is calculated from trackpad pinch gestures, scroll wheel events
+ * with modifier keys, or mouse drag distance measurements. The value is
+ * reset to zero when the gesture begins and updated continuously as the
+ * magnification gesture progresses through its recognition cycle.
+ */
 - (CGFloat) magnification;
 
+/**
+ * Returns the velocity of the magnification gesture in magnification units
+ * per second. This value indicates the rate at which the magnification is
+ * changing over time, providing information about the speed and intensity
+ * of the zoom gesture. Positive velocity values correspond to accelerating
+ * zoom-in operations while negative values indicate accelerating zoom-out
+ * operations. The velocity is calculated by dividing the cumulative
+ * magnification change by the elapsed time since the gesture began. This
+ * property is useful for implementing momentum-based zooming behaviors.
+ */
 - (CGFloat) velocity;
 
 @end
