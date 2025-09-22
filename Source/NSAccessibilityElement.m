@@ -48,8 +48,8 @@
    if (self != nil)
       {
          _accessibilityFrame = frame;
-         ASSIGN(_accessibilityRole, role);
-         ASSIGN(_accessibilityLabel, label);
+         ASSIGNCOPY(_accessibilityRole, role);
+         ASSIGNCOPY(_accessibilityLabel, label);
          _accessibilityParent = parent;
          _accessibilityFocused = NO;
       }
@@ -72,7 +72,7 @@
 
 - (void) setAccessibilityLabel: (NSString *)label
 {
-  ASSIGN(_accessibilityLabel, label);
+  ASSIGNCOPY(_accessibilityLabel, label);
 }
 
 - (NSString *) accessibilityIdentifier

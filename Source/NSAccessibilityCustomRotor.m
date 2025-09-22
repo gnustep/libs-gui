@@ -120,7 +120,7 @@
   if (self != nil)
     {
       _itemLoadingToken = token;
-      ASSIGN(_customLabel, customLabel);
+      ASSIGNCOPY(_customLabel, customLabel);
       _targetRange = NSMakeRange(0, 0);
     }
   return self;
