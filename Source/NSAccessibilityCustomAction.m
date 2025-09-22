@@ -33,7 +33,7 @@
   self = [super init];
   if (self != nil)
     {
-      ASSIGN(_name, name);
+      ASSIGNCOPY(_name, name);
       if (_handler != handler)
         {
           if (_handler != NULL) { Block_release(_handler); }
@@ -50,7 +50,7 @@
   self = [super init];
   if (self != nil)
     {
-      ASSIGN(_name, name);
+      ASSIGNCOPY(_name, name);
       _target = target;
       _selector = selector;
     }
@@ -75,7 +75,7 @@
 
 - (void) setName: (NSString *)name
 {
-  ASSIGN(_name, name);
+  ASSIGNCOPY(_name, name);
 }
 
 - (GSAccessibilityCustomActionHandler) handler
@@ -131,7 +131,7 @@
 {
   if (_handler != NULL)
     {
-      CALL_BLOCK(_handler, YES); // Cocoa's block signature is usually BOOL(^)(void) or void(^)(id); adapt: pass YES to indicate invocation context
+      CALL_BLOCK(_handler, YES);
       return YES;
     }
   if (_target != nil && _selector != NULL && [_target respondsToSelector: _selector])
