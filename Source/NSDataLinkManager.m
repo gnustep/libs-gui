@@ -6,7 +6,7 @@
    Date: 2005
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -21,20 +21,40 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #include "config.h"
+#import <Foundation/NSArchiver.h>
+#import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSEnumerator.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSArchiver.h>
+#import <Foundation/NSThread.h>
+#import <Foundation/NSValue.h>
+
+#import "AppKit/NSPanel.h"
 #import "AppKit/NSDataLinkManager.h"
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSPasteboard.h"
 
+#ifdef HAVE_INOTIFY_H
+#import <sys/inotify.h>
+#endif
+
+#import <unistd.h>
+#import <fcntl.h>
+
+#import "GSFastEnumeration.h"
+
+@interface NSDataLinkManager (Private)
+- (void) stopMonitoring;
+- (void) startMonitoring;
+- (void) monitorLoop;
+@end
+
+// Private setters/getters for links...
 @interface NSDataLink (Private)
 - (void) setLastUpdateTime: (NSDate *)date;
 - (void) setSourceFilename: (NSString *)src;
@@ -48,37 +68,37 @@
 @implementation NSDataLink (Private)
 - (void) setLastUpdateTime: (NSDate *)date
 {
-  ASSIGN(lastUpdateTime, date);
+  ASSIGN(_lastUpdateTime, date);
 }
 
 - (void) setSourceFilename: (NSString *)src
 {
-  ASSIGN(sourceFilename,src);
+  ASSIGN(_sourceFilename,src);
 }
 
 - (void) setDestinationFilename: (NSString *)dst
 {
-  ASSIGN(destinationFilename, dst);
+  ASSIGN(_destinationFilename, dst);
 }
 
 - (void) setSourceManager: (id)src
 {
-  ASSIGN(sourceManager,src);
+  ASSIGN(_sourceManager,src);
 }
 
 - (void) setDestinationManager: (id)dst
 {
-  ASSIGN(destinationManager,dst);
+  ASSIGN(_destinationManager,dst);
 }
 
 - (void) setSourceSelection: (id)src
 {
-  ASSIGN(sourceSelection,src);
+  ASSIGN(_sourceSelection,src);
 }
 
 - (void) setDestinationSelection: (id)dst
 {
-  ASSIGN(destinationSelection,dst);
+  ASSIGN(_destinationSelection,dst);
 }
 
 - (void) setIsMarker: (BOOL)flag
@@ -108,71 +128,172 @@
 //
 // Initializing and Freeing a Link Manager
 //
-- (id)initWithDelegate:(id)anObject
+- (id) initWithDelegate: (id)anObject
+	       fromFile: (NSString *)path
 {
   self = [super init];
 
   if (self != nil)
     {
-      ASSIGN(delegate,anObject);
-      filename = nil;
+      _delegate = anObject; // don't retain...
+      ASSIGN(_filename,path);
       _flags.delegateVerifiesLinks = NO;
       _flags.interactsWithUser = NO;
       _flags.isEdited = NO;
       _flags.areLinkOutlinesVisible = NO;
+
+      _sourceLinks = [[NSMutableArray alloc] init];
+      _destinationLinks = [[NSMutableArray alloc] init];
+      _watchDescriptors = [[NSMutableDictionary alloc] init];
+      _nextLinkNumber = 1;
+#ifdef HAVE_INOTIFY_H
+      _inotifyFD = inotify_init();
+#endif
+      if (_inotifyFD < 0)
+	{
+	  NSLog(@"Failed to initialize inotify");
+	}
+      [self startMonitoring];
     }
 
   return self;
 }
 
-- (id)initWithDelegate:(id)anObject
-	      fromFile:(NSString *)path
+- (id)initWithDelegate: (id)anObject
 {
-  self = [super init];
+  return [self initWithDelegate: anObject fromFile: nil];
+}
 
-  if (self != nil)
+- (void) dealloc
+{
+  RELEASE(_sourceLinks);
+  RELEASE(_destinationLinks);
+  RELEASE(_watchDescriptors);
+
+  [self stopMonitoring];
+  [super dealloc];
+}
+
+//
+// Monitoring methods
+//
+- (void)stopMonitoring
+{
+#ifdef HAVE_INOTIFY_H
+  NSArray *allKeys = [_watchDescriptors allKeys];
+  NSEnumerator *en = [allKeys objectEnumerator];
+  NSNumber *key = nil;
+
+  while ((key = [en nextObject]) != nil)
     {
-      ASSIGN(delegate,anObject);
-      ASSIGN(filename,path);
-      _flags.delegateVerifiesLinks = NO;
-      _flags.interactsWithUser = NO;
-      _flags.isEdited = NO;
-      _flags.areLinkOutlinesVisible = NO;
+      inotify_rm_watch(_inotifyFD, [key intValue]);
     }
 
-  return self;
+  [_watchDescriptors removeAllObjects];
+
+  if (_inotifyFD >= 0)
+    {
+      close(_inotifyFD);
+      _inotifyFD = -1;
+    }
+
+  if (_monitorThread && [_monitorThread isExecuting])
+    {
+      [_monitorThread cancel];  // thread must check isCancelled
+    }
+#endif
+}
+
+- (void)startMonitoring
+{
+  _monitorThread = [[NSThread alloc] initWithTarget:self selector:@selector(monitorLoop) object:nil];
+  [_monitorThread start];
+}
+
+- (void)monitorLoop
+{
+#ifdef HAVE_INOTIFY_H
+  char buffer[1024];
+  while (![[NSThread currentThread] isCancelled])
+    {
+      ssize_t length = read(_inotifyFD, buffer, sizeof(buffer));
+      if (length < 0)
+	{
+	  continue;
+	}
+
+      ssize_t i = 0;
+      while (i < length)
+	{
+	  struct inotify_event *event = (struct inotify_event *)&buffer[i];
+	  NSNumber *key = [NSNumber numberWithInt:event->wd];
+	  NSDataLink *link = [_watchDescriptors objectForKey: key];
+	  if (link != nil)
+	    {
+	      [link noteSourceEdited];
+	      NSLog(@"Source file changed for link #%d", [link linkNumber]);
+
+	      // Check if delegate wants to verify this update
+	      if ([_delegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
+		{
+		  BOOL needsUpdate = [_delegate dataLinkManager: self isUpdateNeededForLink: link];
+		  if (needsUpdate)
+		    {
+		      [link updateDestination];
+		    }
+		}
+	    }
+	  i += sizeof(struct inotify_event) + event->len;
+	}
+    }
+#endif
+}
+
+- (void) _checkLink: (NSDataLink *)link
+{
+  if (link == nil)
+    {
+      NSRunAlertPanel(@"Links", @"You must save the source document before you can link to it.", @"OK", nil, nil);
+    }
 }
 
 //
 // Adding and Removing Links
 //
-- (BOOL)addLink:(NSDataLink *)link
-	     at:(NSSelection *)selection
+- (BOOL) addLink: (NSDataLink *)link
+	      at: (NSSelection *)selection
 {
   BOOL result = NO;
 
+  [self _checkLink: link];
   [link setDestinationSelection: selection];
   [link setDestinationManager: self];
 
-  if ([destinationLinks containsObject: link] == NO)
+  if ([_destinationLinks containsObject: link] == NO)
     {
-      [destinationLinks addObject: link];
+      [_destinationLinks addObject: link];
       result = YES;
+
+      // Notify delegate that we're starting to track this link
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:startTrackingLink:)])
+	{
+	  [_delegate dataLinkManager: self startTrackingLink: link];
+	}
     }
 
   return result;
 }
 
-- (BOOL)addLinkAsMarker:(NSDataLink *)link
-		     at:(NSSelection *)selection
+- (BOOL) addLinkAsMarker: (NSDataLink *)link
+		      at: (NSSelection *)selection
 {
   [link setIsMarker: YES];
   return [self addLink: link at: selection];
 }
 
-- (NSDataLink *)addLinkPreviouslyAt:(NSSelection *)oldSelection
-		     fromPasteboard:(NSPasteboard *)pasteboard
-                                 at:(NSSelection *)selection
+- (NSDataLink *) addLinkPreviouslyAt: (NSSelection *)oldSelection
+		      fromPasteboard: (NSPasteboard *)pasteboard
+				  at: (NSSelection *)selection
 {
   NSData *data = [pasteboard dataForType: NSDataLinkPboardType];
   NSArray *links = [NSUnarchiver unarchiveObjectWithData: data];
@@ -181,86 +302,157 @@
 
   while ((link = [en nextObject]) != nil)
     {
-	if ([link destinationSelection] == oldSelection)
-	{	    
+      if ([link destinationSelection] == oldSelection)
+	{
 	}
     }
 
   return nil;
 }
 
-- (void)breakAllLinks
+- (void) breakAllLinks
 {
-  NSArray *allLinks = [sourceLinks arrayByAddingObjectsFromArray: destinationLinks];
-  NSEnumerator *en = [allLinks objectEnumerator];
-  id obj = nil;
-
-  while ((obj = [en nextObject]) != nil)
+  FOR_IN(NSDataLink*, src, _sourceLinks)
     {
-      [obj break];
+      // Notify delegate we're stopping tracking
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
+	{
+	  [_delegate dataLinkManager: self stopTrackingLink: src];
+	}
+      [src break];
+    }
+  END_FOR_IN(_sourceLinks);
+
+  FOR_IN(NSDataLink*, dst, _destinationLinks)
+    {
+      // Notify delegate we're stopping tracking
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
+	{
+	  [_delegate dataLinkManager: self stopTrackingLink: dst];
+	}
+      [dst break];
+    }
+  END_FOR_IN(_destinationLinks);
+}
+
+- (void) removeLink: (NSDataLink *)link
+{
+  if ([_sourceLinks containsObject: link])
+    {
+      // Notify delegate we're stopping tracking
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
+	{
+	  [_delegate dataLinkManager: self stopTrackingLink: link];
+	}
+      [_sourceLinks removeObject: link];
+    }
+
+  if ([_destinationLinks containsObject: link])
+    {
+      // Notify delegate we're stopping tracking
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:stopTrackingLink:)])
+	{
+	  [_delegate dataLinkManager: self stopTrackingLink: link];
+	}
+      [_destinationLinks removeObject: link];
     }
 }
 
-- (void)writeLinksToPasteboard:(NSPasteboard *)pasteboard
+- (BOOL) addSourceLink: (NSDataLink *)link
 {
-  NSArray *allLinks = [sourceLinks arrayByAddingObjectsFromArray: destinationLinks];
-  NSEnumerator *en = [allLinks objectEnumerator];
-  id obj = nil;
+  BOOL result = NO;
 
-  while ((obj = [en nextObject]) != nil)
+  [link setSourceManager: self];
+
+  if ([_sourceLinks containsObject: link] == NO)
+    {
+      [_sourceLinks addObject: link];
+      result = YES;
+
+      // Notify delegate that we're starting to track this link
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:startTrackingLink:)])
+	{
+	  [_delegate dataLinkManager: self startTrackingLink: link];
+	}
+    }
+
+  return result;
+}
+
+- (void) writeLinksToPasteboard: (NSPasteboard *)pasteboard
+{
+  FOR_IN(NSDataLink*, obj, _sourceLinks)
     {
       [obj writeToPasteboard: pasteboard];
     }
+  END_FOR_IN(_sourceLinks);
 }
 
 //
 // Informing the Link Manager of Document Status
 //
-- (void)noteDocumentClosed
+- (void) noteDocumentClosed
 {
-    if ([delegate respondsToSelector: @selector(dataLinkManagerCloseDocument:)])
+  if ([_delegate respondsToSelector: @selector(dataLinkManagerCloseDocument:)])
     {
-	[delegate dataLinkManagerCloseDocument: self];
+      [_delegate dataLinkManagerCloseDocument: self];
     }
 }
 
-- (void)noteDocumentEdited
+- (void) noteDocumentEdited
 {
-    if ([delegate respondsToSelector: @selector(dataLinkManagerDidEditLinks:)])
+  if ([_delegate respondsToSelector: @selector(dataLinkManagerDidEditLinks:)])
     {
-	[delegate dataLinkManagerDidEditLinks: self];
+      [_delegate dataLinkManagerDidEditLinks: self];
     }
 }
 
-- (void)noteDocumentReverted
+- (void) noteDocumentReverted
 {
-    if ([delegate respondsToSelector: @selector(dataLinkManagerDidEditLinks:)])
+  if ([_delegate respondsToSelector: @selector(dataLinkManagerDidEditLinks:)])
     {
-	[delegate dataLinkManagerDidEditLinks: self];
+      [_delegate dataLinkManagerDidEditLinks: self];
     }
 }
 
-- (void)noteDocumentSaved
+- (void) noteDocumentSaved
 {
-    // implemented by subclass
+  // Update all source links when document is saved
+  FOR_IN(NSDataLink*, link, _sourceLinks)
+    {
+      [link setLastUpdateTime: [NSDate date]];
+    }
+  END_FOR_IN(_sourceLinks);
+
+  // Check if any destination links need updates
+  [self checkForLinkUpdates];
 }
 
-- (void)noteDocumentSavedAs:(NSString *)path
+- (void) noteDocumentSavedAs:(NSString *)path
 {
-    // implemented by subclass
+  ASSIGN(_filename, path);
+  [self noteDocumentSaved];
 }
 
 - (void)noteDocumentSavedTo:(NSString *)path
 {
-    // implemented by subclass
+  // When saving to a different location, update source links if applicable
+  FOR_IN(NSDataLink*, link, _sourceLinks)
+    {
+      if ([[link sourceFilename] isEqualToString: _filename])
+	{
+	  [link setSourceFilename: path];
+	}
+    }
+  END_FOR_IN(_sourceLinks);
 }
 
 //
 // Getting and Setting Information about the Link Manager
 //
-- (id)delegate
+- (id) delegate
 {
-  return delegate;
+  return _delegate;
 }
 
 - (BOOL)delegateVerifiesLinks
@@ -270,7 +462,7 @@
 
 - (NSString *)filename
 {
-  return filename;
+  return _filename;
 }
 
 - (BOOL)interactsWithUser
@@ -303,33 +495,40 @@
 
 - (NSEnumerator *)destinationLinkEnumerator
 {
-  return [destinationLinks objectEnumerator];
+  return [_destinationLinks objectEnumerator];
 }
 
 - (NSDataLink *)destinationLinkWithSelection:(NSSelection *)destSel
 {
-  NSEnumerator *en = [self destinationLinkEnumerator];
-  id obj = nil;
+  id result = nil;
 
-  while ((obj = [en nextObject]) != nil)
+  FOR_IN(id, obj, _destinationLinks)
     {
-      if ([obj destinationSelection] == destSel)
+      if ([[obj destinationSelection] isEqual: destSel])
 	{
+	  result = obj;
 	  break;
 	}
     }
+  END_FOR_IN(_destinationLinks);
 
-  return obj;
+  return result;
 }
 
 - (void)setLinkOutlinesVisible:(BOOL)flag
 {
   _flags.areLinkOutlinesVisible = flag;
+
+  // Notify delegate to redraw outlines when visibility changes
+  if ([_delegate respondsToSelector: @selector(dataLinkManagerRedrawLinkOutlines:)])
+    {
+      [_delegate dataLinkManagerRedrawLinkOutlines: self];
+    }
 }
 
 - (NSEnumerator *)sourceLinkEnumerator
 {
-  return [sourceLinks objectEnumerator];
+  return [_sourceLinks objectEnumerator];
 }
 
 //
@@ -341,10 +540,10 @@
 
   if ([aCoder allowsKeyedCoding])
     {
-      [aCoder encodeObject: filename forKey: @"GSFilename"];
-      [aCoder encodeObject: sourceLinks forKey: @"GSSourceLinks"];
-      [aCoder encodeObject: destinationLinks forKey: @"GSDestinationLinks"];
-      
+      [aCoder encodeObject: _filename forKey: @"GSFilename"];
+      [aCoder encodeObject: _sourceLinks forKey: @"GSSourceLinks"];
+      [aCoder encodeObject: _destinationLinks forKey: @"GSDestinationLinks"];
+
       flag = _flags.areLinkOutlinesVisible;
       [aCoder encodeBool: flag forKey: @"GSAreLinkOutlinesVisible"];
       flag = _flags.delegateVerifiesLinks;
@@ -356,10 +555,10 @@
     }
   else
     {
-      [aCoder encodeValueOfObjCType: @encode(id)  at: &filename];
-      [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceLinks];
-      [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationLinks];
-      
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &_filename];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &_sourceLinks];
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &_destinationLinks];
+
       flag = _flags.areLinkOutlinesVisible;
       [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
       flag = _flags.delegateVerifiesLinks;
@@ -379,13 +578,13 @@
       id obj;
 
       obj = [aCoder decodeObjectForKey: @"GSFilename"];
-      ASSIGN(filename,obj);
+      ASSIGN(_filename,obj);
       obj = [aCoder decodeObjectForKey: @"GSSourceLinks"];
-      ASSIGN(sourceLinks,obj);
+      ASSIGN(_sourceLinks,obj);
       obj = [aCoder decodeObjectForKey: @"GSDestinationLinks"];
-      ASSIGN(destinationLinks,obj);
-      
-      flag = [aCoder decodeBoolForKey: @"GSAreLinkOutlinesVisible"]; 
+      ASSIGN(_destinationLinks,obj);
+
+      flag = [aCoder decodeBoolForKey: @"GSAreLinkOutlinesVisible"];
       _flags.areLinkOutlinesVisible = flag;
       flag = [aCoder decodeBoolForKey: @"GSDelegateVerifiesLinks"];
       _flags.delegateVerifiesLinks = flag;
@@ -400,11 +599,11 @@
       if (version == 0)
 	{
 	  BOOL flag = NO;
-	  
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &filename];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceLinks];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationLinks];
-	  
+
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_filename];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_sourceLinks];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_destinationLinks];
+
 	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
 	  _flags.areLinkOutlinesVisible = flag;
 	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
@@ -418,6 +617,42 @@
 	return nil;
     }
   return self;
+}
+
+//
+// Additional delegate callback methods
+//
+- (void) checkForLinkUpdates
+{
+  FOR_IN(NSDataLink*, link, _destinationLinks)
+    {
+      if ([_delegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
+	{
+	  BOOL needsUpdate = [_delegate dataLinkManager: self isUpdateNeededForLink: link];
+	  if (needsUpdate)
+	    {
+	      [link updateDestination];
+	    }
+	}
+    }
+  END_FOR_IN(_destinationLinks);
+}
+
+- (void) redrawLinkOutlines
+{
+  if ([_delegate respondsToSelector: @selector(dataLinkManagerRedrawLinkOutlines:)])
+    {
+      [_delegate dataLinkManagerRedrawLinkOutlines: self];
+    }
+}
+
+- (BOOL) tracksLinksIndividually
+{
+  if ([_delegate respondsToSelector: @selector(dataLinkManagerTracksLinksIndividually:)])
+    {
+      return [_delegate dataLinkManagerTracksLinksIndividually: self];
+    }
+  return YES; // Default behavior
 }
 
 @end
