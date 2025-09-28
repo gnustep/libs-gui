@@ -7,7 +7,7 @@
 
    Author: Adam Fedor <fedor@gnu.org>
    Date: Mar 2000
-   
+
    This file is part of the GNUstep.
 
    This library is free software; you can redistribute it and/or
@@ -22,8 +22,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -48,11 +48,18 @@ APPKIT_EXPORT_CLASS
 
 + (void) setDefaultClass: (Class)defaultClass;
 + (GSFontEnumerator*) sharedEnumerator;
+
+// Font enumeration and caching
 - (void) enumerateFontsAndFamilies;
+- (void) refreshFontCache;
+
+// Querying available fonts
 - (NSArray*) availableFonts;
 - (NSArray*) availableFontFamilies;
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family;
 - (NSArray*) availableFontDescriptors;
+
+// Font matching and searching
 - (NSArray *) availableFontNamesMatchingFontDescriptor: (NSFontDescriptor *)descriptor;
 - (NSArray *) matchingFontDescriptorsFor: (NSDictionary *)attributes;
 - (NSArray *) matchingDescriptorsForFamily: (NSString *)family
@@ -60,6 +67,7 @@ APPKIT_EXPORT_CLASS
                                  inclusion: (NSArray *)queryDescriptors
                                  exculsion: (NSArray *)exclusionDescriptors;
 
+// Default system font names (called once, backends may override)
 /* Note that these are only called once. NSFont will remember the returned
 values. Backends may override these. */
 - (NSString *) defaultSystemFontName;
@@ -97,7 +105,7 @@ APPKIT_EXPORT_CLASS
   NSFontDescriptor *fontDescriptor;
 }
 
-+ (GSFontInfo*) fontInfoForFontName: (NSString*)fontName 
++ (GSFontInfo*) fontInfoForFontName: (NSString*)fontName
                              matrix: (const CGFloat*)fmatrix
 			 screenFont: (BOOL)screenFont;
 + (void) setDefaultClass: (Class)defaultClass;
@@ -132,22 +140,22 @@ APPKIT_EXPORT_CLASS
 - (NSSize) minimumAdvancement;
 - (NSStringEncoding) mostCompatibleStringEncoding;
 - (NSUInteger) numberOfGlyphs;
-- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
-               forCharacter: (unichar)aChar 
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph
+               forCharacter: (unichar)aChar
              struckOverRect: (NSRect)aRect;
 - (NSPoint) positionOfGlyph: (NSGlyph)curGlyph
 	    precededByGlyph: (NSGlyph)prevGlyph
 		  isNominal: (BOOL*)nominal;
-- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
-	    struckOverGlyph: (NSGlyph)baseGlyph 
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph
+	    struckOverGlyph: (NSGlyph)baseGlyph
 	       metricsExist: (BOOL *)flag;
-- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
-	     struckOverRect: (NSRect)aRect 
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph
+	     struckOverRect: (NSRect)aRect
 	       metricsExist: (BOOL *)flag;
-- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph 
-	       withRelation: (NSGlyphRelation)relation 
+- (NSPoint) positionOfGlyph: (NSGlyph)aGlyph
+	       withRelation: (NSGlyphRelation)relation
 		toBaseGlyph: (NSGlyph)baseGlyph
-	   totalAdvancement: (NSSize *)offset 
+	   totalAdvancement: (NSSize *)offset
 	       metricsExist: (BOOL *)flag;
 - (NSFontTraitMask) traits;
 - (CGFloat) underlinePosition;
