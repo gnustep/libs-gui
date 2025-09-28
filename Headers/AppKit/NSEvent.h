@@ -452,6 +452,8 @@ APPKIT_EXPORT_CLASS
           CGFloat deltaY;
           /** Z-axis scroll delta for 3D scroll devices */
           CGFloat deltaZ;
+          /** Magnification factor for gesture events */
+          CGFloat magnification;
         } mouse;
       /** Keyboard event data including characters and key codes */
       struct
@@ -588,6 +590,7 @@ APPKIT_EXPORT_CLASS
  * deltaX: Horizontal scroll delta for scroll events
  * deltaY: Vertical scroll delta for scroll events
  * deltaZ: Z-axis scroll delta for 3D scroll devices
+ * magnificationValue: Magnification factor for gesture events
  * Returns: A new NSEvent object with extended mouse information
  */
 + (NSEvent*) mouseEventWithType: (NSEventType)type
@@ -602,7 +605,8 @@ APPKIT_EXPORT_CLASS
                    buttonNumber: (NSInteger)buttonNum
                          deltaX: (CGFloat)deltaX
                          deltaY: (CGFloat)deltaY
-                         deltaZ: (CGFloat)deltaZ;
+                         deltaZ: (CGFloat)deltaZ
+                  magnification: (CGFloat)magnificationValue;
 #endif
 
 /**
@@ -756,6 +760,17 @@ APPKIT_EXPORT_CLASS
  * Returns: The z-axis scroll distance for this scroll event
  */
 - (CGFloat)deltaZ;
+
+/**
+ * Returns the magnification factor for gesture events.
+ * For trackpad pinch/zoom gestures, this indicates the magnification
+ * change requested by the user. Positive values indicate zoom-in
+ * (magnification increase) while negative values indicate zoom-out
+ * (magnification decrease). The magnitude represents the relative
+ * change in scale factor for the gesture.
+ * Returns: The magnification factor for this gesture event
+ */
+- (CGFloat)magnification;
 #endif
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 /**
