@@ -36,6 +36,12 @@ extern "C" {
 
 DEFINE_BLOCK_TYPE(GSAccessibilityCustomActionHandler, void, BOOL);
 
+/**
+ * This class defines an accessibility action to be taken for a
+ * given accessibility object. An instance of this object should
+ * be added to accessibilityCustomActions so that it is
+ * accessible by the NSAccessibilityCustomRotor.
+ */
 APPKIT_EXPORT_CLASS
 @interface NSAccessibilityCustomAction : NSObject
 {
@@ -45,35 +51,79 @@ APPKIT_EXPORT_CLASS
   SEL _selector;
 }
 
+/**
+ * Create an action with a name and handler
+ */
 - (instancetype) initWithName: (NSString *)name
-                      handler: (GSAccessibilityCustomActionHandler)handler;
+		      handler: (GSAccessibilityCustomActionHandler)handler;
 
+/**
+ * Create an action with a name, handler, and selector.
+ */
 - (instancetype) initWithName: (NSString *)name
-                       target: (id)target
-                     selector: (SEL)selector;
+		       target: (id)target
+		     selector: (SEL)selector;
 
-/* Convenience factory returning an autoreleased custom action that invokes a block. */
-+ (instancetype) actionWithName: (NSString *)name
-                         handler: (GSAccessibilityCustomActionHandler)handler;
-
-/* Convenience factory returning an autoreleased custom action that sends selector to target. */
-+ (instancetype) actionWithName: (NSString *)name
-                          target: (id)target
-                        selector: (SEL)selector;
-
+/**
+ * Return name
+ */
 - (NSString *) name;
+
+/**
+ * Set name
+ */
 - (void) setName: (NSString *)name;
 
+/**
+ * Return handler
+ */
 - (GSAccessibilityCustomActionHandler) handler;
+
+/**
+ * Set handler
+ */
 - (void) setHandler: (GSAccessibilityCustomActionHandler)handler;
 
+/**
+ * Return target
+ */
 - (id) target;
+
+/**
+ * Set target
+ */
 - (void) setTarget: (id)target;
 
+/**
+ * Return selector
+ */
 - (SEL) selector;
+
+/**
+ * Set selector
+ */
 - (void) setSelector: (SEL)selector;
 
-/* Perform the custom action. Returns YES on success (block executed or target responded) */
+@end
+
+@interface NSAccessibilityCustomAction (GNUstep)
+
+/**
+ * Convenience factory returning an autoreleased custom action that invokes a block.
+ */
++ (instancetype) actionWithName: (NSString *)name
+			 handler: (GSAccessibilityCustomActionHandler)handler;
+
+/**
+ * Convenience factory returning an autoreleased custom action that sends selector to target.
+ */
++ (instancetype) actionWithName: (NSString *)name
+			  target: (id)target
+			selector: (SEL)selector;
+
+/**
+ * Perform the custom action. Returns YES on success (block executed or target responded)
+ */
 - (BOOL) perform;
 
 @end
@@ -85,4 +135,3 @@ APPKIT_EXPORT_CLASS
 #endif	/* GS_API_MACOSX */
 
 #endif	/* _NSAccessibilityCustomAction_h_GNUSTEP_GUI_INCLUDE */
-
