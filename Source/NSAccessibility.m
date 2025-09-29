@@ -27,6 +27,7 @@
 */
 
 #import <AppKit/NSAccessibility.h>
+#import <AppKit/NSAccessibilityProtocols.h>
 
 NSString *const NSAccessibilityErrorCodeExceptionInfo
   = @"NSAccessibilityErrorCodeExceptionInfo";
