@@ -73,7 +73,7 @@
       _progress = RETAIN([NSProgress progressWithTotalUnitCount: [fontDescriptors count]]);
       [_progress setCompletedUnitCount: 0];
       _downloadInProgress = NO;
-      // _downloader = [[GSFontAssetDownloader alloc] initWithOptions: options];
+      _downloader = [[GSFontAssetDownloader alloc] initWithOptions: options];
       [_progress setLocalizedDescription: @"Downloading fonts..."];
       [_progress setLocalizedAdditionalDescription: @"Preparing to download font assets"];
     }
@@ -102,7 +102,6 @@
 - (void) downloadFontAssetsWithCompletionHandler:
   (GSFontAssetCompletionHandler)completionHandler
 {
-  /*
   NSAssert(completionHandler != NULL, NSInvalidArgumentException);
 
   if (_downloadInProgress)
@@ -123,7 +122,6 @@
   [self performSelector: @selector(_performFontDownloadWithCompletionHandler:)
              withObject: completionHandler
              afterDelay: 0.0];
-  */
 }
 
 - (void) _performFontDownloadWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler
