@@ -28,6 +28,7 @@
 
 #import <Foundation/NSObject.h>
 #import <Foundation/NSError.h>
+#import <Foundation/NSProgress.h>
 
 /**
  * Block type for font asset download completion handling.
@@ -39,8 +40,8 @@
  */
 DEFINE_BLOCK_TYPE(GSFontAssetCompletionHandler, BOOL, NSError*);
 
-@class NSProgress;
-// @protocol NSProgressReporting;
+@class NSFontDescriptor;
+@class GSFontAssetDownloader;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
 
@@ -83,7 +84,15 @@ typedef NSUInteger NSFontAssetRequestOptions;
  * operation while fonts are being retrieved.
  */
 APPKIT_EXPORT_CLASS
-@interface NSFontAssetRequest : NSObject // <NSProgressReporting>
+@interface NSFontAssetRequest : NSObject <NSProgressReporting>
+{
+  NSArray *_fontDescriptors;
+  NSFontAssetRequestOptions _options;
+  NSMutableArray *_downloadedFontDescriptors;
+  NSProgress *_progress;
+  BOOL _downloadInProgress;
+  GSFontAssetDownloader *_downloader;
+}
 
 /**
  * Initializes a font asset request with the specified font descriptors and options.
@@ -135,6 +144,40 @@ APPKIT_EXPORT_CLASS
  * NSError object on failure.
  */
 - (void)downloadFontAssetsWithCompletionHandler: (GSFontAssetCompletionHandler)completionHandler;
+
+@end
+
+@interface NSFontAssetRequest (GNUstep)
+
+/**
+ * Sets the default downloader class to be used for all new font asset requests.
+ * The specified class must be a subclass of GSFontAssetDownloader.
+ * Pass nil to restore the default GSFontAssetDownloader behavior.
+ */
++ (void) setDefaultDownloaderClass: (Class)downloaderClass;
+
+/**
+ * Returns the currently registered default downloader class.
+ */
++ (Class) defaultDownloaderClass;
+
+/**
+ * Sets a custom font asset downloader.
+ * This allows clients to provide custom downloading strategies
+ * by subclassing GSFontAssetDownloader and overriding specific
+ * methods for URL resolution, downloading, validation, or installation.
+ * The downloader parameter specifies the custom downloader to use,
+ * replacing the default downloader instance.
+ */
+- (void) setFontAssetDownloader: (GSFontAssetDownloader *)downloader;
+
+/**
+ * Returns the current font asset downloader.
+ * This can be used to inspect or modify the downloader's configuration,
+ * or to access the downloader for direct use in custom scenarios.
+ * Returns the GSFontAssetDownloader instance currently being used.
+ */
+- (GSFontAssetDownloader *) fontAssetDownloader;
 
 @end
 
