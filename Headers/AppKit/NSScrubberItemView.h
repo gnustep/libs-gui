@@ -33,13 +33,39 @@
 extern "C" {
 #endif
 
+/**
+ * NSScrubberArrangedView is the base class for views that can be arranged
+ * within a scrubber layout.
+ */
 APPKIT_EXPORT_CLASS
 @interface NSScrubberArrangedView : NSView
 
 @end
 
+/**
+ * NSScrubberItemView represents an individual item within an NSScrubber.
+ * This is the base class for custom item views in a scrubber control.
+ */
 APPKIT_EXPORT_CLASS
 @interface NSScrubberItemView : NSScrubberArrangedView
+
+/**
+ * Returns the reuse identifier associated with this item view.
+ * Used by the scrubber to efficiently reuse item views.
+ */
+- (NSString *) reuseIdentifier;
+
+/**
+ * Sets the reuse identifier associated with this item view.
+ * reuseIdentifier is the identifier string.
+ */
+- (void) setReuseIdentifier: (NSString *)reuseIdentifier;
+
+/**
+ * Prepares the item view for reuse by clearing any view-specific content.
+ * Subclasses should override this method to reset their content to a default state.
+ */
+- (void) prepareForReuse;
 
 @end
 
