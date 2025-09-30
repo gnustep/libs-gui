@@ -42,29 +42,29 @@ extern "C" {
 /**
  * Alignment options for scrubber items.
  */
-typedef NS_ENUM(NSInteger, NSScrubberAlignment) {
+typedef enum _NSScrubberAlignment {
     NSScrubberAlignmentNone,
     NSScrubberAlignmentLeading,
     NSScrubberAlignmentTrailing,
     NSScrubberAlignmentCenter
-};
+} NSScrubberAlignment;
 
 /**
  * Mode options for scrubber interaction.
  */
-typedef NS_ENUM(NSInteger, NSScrubberMode) {
+typedef enum _NSScrubberMode {
     NSScrubberModeFree,
     NSScrubberModeFixed
-};
+} NSScrubberMode;
 
 /**
  * Selection background style options.
  */
-typedef NS_ENUM(NSInteger, NSScrubberSelectionStyle) {
+typedef enum _NSScrubberSelectionStyle {
     NSScrubberSelectionStyleNone,
     NSScrubberSelectionStyleOutline,
     NSScrubberSelectionStyleRoundedBackground
-};
+} NSScrubberSelectionStyle;
 
 /**
  * Protocol defining data source methods for NSScrubber.
@@ -142,6 +142,38 @@ didHighlightItemAt: (NSInteger)highlightedIndex;
  */
 APPKIT_EXPORT_CLASS
 @interface NSScrubber : NSView
+{
+    // Data source and delegate
+    id<NSScrubberDataSource> _dataSource;
+    id<NSScrubberDelegate> _delegate;
+    
+    // Layout and appearance
+    NSScrubberLayout *_scrubberLayout;
+    NSColor *_backgroundColor;
+    NSView *_backgroundView;
+    NSScrubberAlignment _itemAlignment;
+    
+    // Selection and highlighting
+    NSInteger _selectedIndex;
+    NSInteger _highlightedIndex;
+    NSView *_selectionBackgroundStyle;
+    NSView *_selectionOverlayStyle;
+    BOOL _floatsSelectionViews;
+    
+    // Behavior
+    NSScrubberMode _mode;
+    BOOL _continuous;
+    BOOL _showsArrowButtons;
+    BOOL _showsAdditionalContentIndicators;
+    
+    // Item management
+    NSMutableDictionary *_registeredClasses;
+    NSMutableDictionary *_registeredNibs;
+    NSMutableArray *_itemViews;
+    NSMutableArray *_reusableItemViews;
+    BOOL _isUpdating;
+    BOOL _needsReload;
+}
 
 // MARK: - Initialization
 
@@ -406,14 +438,6 @@ APPKIT_EXPORT_CLASS
  */
 - (void) scrollItemAtIndex: (NSInteger)index 
               toAlignment: (NSScrubberAlignment)alignment;
-
-// MARK: - Batch Updates
-
-/**
- * Performs a batch of updates to the scrubber in sequence.
- * updates is a block containing the updates to perform.
- */
-- (void) performSequentialBatchUpdates: (void (^)(void))updates;
 
 @end
 

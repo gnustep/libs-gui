@@ -25,11 +25,7 @@
 #import "AppKit/NSScrubberLayout.h"
 #import "Foundation/NSArray.h"
 
-@interface NSScrubberLayout()
-{
-    __weak NSScrubber *_scrubber;
-}
-@end
+
 
 @implementation NSScrubberLayoutAttributes 
 
@@ -46,9 +42,9 @@
 + (NSScrubberLayoutAttributes *) layoutAttributesForItemAtIndex: (NSInteger)index
 {
     NSScrubberLayoutAttributes *attributes = [[self alloc] init];
-    attributes.itemIndex = index;
-    attributes.alpha = 1.0;
-    attributes.frame = NSZeroRect;
+    [attributes setItemIndex: index];
+    [attributes setAlpha: 1.0];
+    [attributes setFrame: NSZeroRect];
     return [attributes autorelease];
 }
 
@@ -71,9 +67,9 @@
 - (id) copyWithZone: (NSZone *)zone
 {
     NSScrubberLayoutAttributes *copy = [[[self class] allocWithZone: zone] init];
-    copy.alpha = _alpha;
-    copy.frame = _frame;
-    copy.itemIndex = _itemIndex;
+    [copy setAlpha: _alpha];
+    [copy setFrame: _frame];
+    [copy setItemIndex: _itemIndex];
     return copy;
 }
 
@@ -203,7 +199,7 @@
     return nil;
 }
 
-- (NSArray<NSScrubberLayoutAttributes *> *) layoutAttributesForItemsInRect: (NSRect)rect
+- (NSArray *) layoutAttributesForItemsInRect: (NSRect)rect
 {
     /**
      * Default implementation returns an empty array.

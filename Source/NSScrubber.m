@@ -33,14 +33,6 @@
 
 // Private interface for internal state management
 @interface NSScrubber()
-{
-    NSMutableDictionary *_registeredClasses;
-    NSMutableDictionary *_registeredNibs;
-    NSMutableArray *_itemViews;
-    NSMutableArray *_reusableItemViews;
-    BOOL _isUpdating;
-    BOOL _needsReload;
-}
 
 - (void) _commonInit;
 - (void) _layoutItemViews;
@@ -498,7 +490,9 @@
     if (!_dataSource || _isUpdating)
         return;
     
-    [indexes enumerateIndexesUsingBlock: ^(NSUInteger idx, BOOL *stop) {
+    NSUInteger idx = [indexes firstIndex];
+    while (idx != NSNotFound)
+    {
         if (idx < [_itemViews count])
         {
             // Remove existing item view
@@ -523,7 +517,8 @@
                 }
             }
         }
-    }];
+        idx = [indexes indexGreaterThanIndex: idx];
+    }
     
     [self _layoutItemViews];
 }
@@ -535,10 +530,13 @@
     
     _isUpdating = YES;
     
-    // Insert null placeholders for the new items
-    [indexes enumerateIndexesWithOptions: NSEnumerationReverse usingBlock: ^(NSUInteger idx, BOOL *stop) {
+    // Insert null placeholders for the new items (in reverse order)
+    NSUInteger idx = [indexes lastIndex];
+    while (idx != NSNotFound)
+    {
         [_itemViews insertObject: [NSNull null] atIndex: idx];
-    }];
+        idx = [indexes indexLessThanIndex: idx];
+    }
     
     // Reload the inserted items
     [self reloadItemsAtIndexes: indexes];
@@ -553,8 +551,10 @@
     
     _isUpdating = YES;
     
-    // Remove item views and update selection/highlighting
-    [indexes enumerateIndexesWithOptions: NSEnumerationReverse usingBlock: ^(NSUInteger idx, BOOL *stop) {
+    // Remove item views and update selection/highlighting (in reverse order)
+    NSUInteger idx = [indexes lastIndex];
+    while (idx != NSNotFound)
+    {
         if (idx < [_itemViews count])
         {
             NSScrubberItemView *itemView = [_itemViews objectAtIndex: idx];
@@ -589,7 +589,8 @@
                 _highlightedIndex--;
             }
         }
-    }];
+        idx = [indexes indexLessThanIndex: idx];
+    }
     
     _isUpdating = NO;
     [self _layoutItemViews];
@@ -765,24 +766,6 @@
 }
 
 // MARK: - Batch Updates
-
-- (void) performSequentialBatchUpdates: (void (^)(void))updates
-{
-    if (!updates)
-        return;
-    
-    BOOL wasUpdating = _isUpdating;
-    _isUpdating = YES;
-    
-    updates();
-    
-    _isUpdating = wasUpdating;
-    
-    if (!_isUpdating)
-    {
-        [self _layoutItemViews];
-    }
-}
 
 // MARK: - NSView Overrides
 

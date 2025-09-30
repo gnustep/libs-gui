@@ -45,6 +45,11 @@ extern "C" {
  */
 APPKIT_EXPORT_CLASS
 @interface NSScrubberLayoutAttributes : NSObject <NSCopying>
+{
+    CGFloat _alpha;
+    NSRect _frame;
+    NSInteger _itemIndex;
+}
 
 /**
  * Creates layout attributes for an item at the specified index.
@@ -95,6 +100,9 @@ APPKIT_EXPORT_CLASS
  */
 APPKIT_EXPORT_CLASS
 @interface NSScrubberLayout : NSObject <NSCoding>
+{
+    NSScrubber *_scrubber; // weak reference
+}
 
 // MARK: - Layout Configuration
 
@@ -147,7 +155,7 @@ APPKIT_EXPORT_CLASS
  * rect is the rectangle to query.
  * Returns an array of layout attributes.
  */
-- (NSArray<NSScrubberLayoutAttributes *> *) layoutAttributesForItemsInRect: (NSRect)rect;
+- (NSArray *) layoutAttributesForItemsInRect: (NSRect)rect;
 
 /**
  * Returns whether the layout should be invalidated when highlighting changes.

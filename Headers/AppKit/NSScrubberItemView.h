@@ -48,6 +48,9 @@ APPKIT_EXPORT_CLASS
  */
 APPKIT_EXPORT_CLASS
 @interface NSScrubberItemView : NSScrubberArrangedView
+{
+    NSString *_reuseIdentifier;
+}
 
 /**
  * Returns the reuse identifier associated with this item view.
