@@ -44,7 +44,7 @@ extern "C" {
  * and item index.
  */
 APPKIT_EXPORT_CLASS
-@interface NSScrubberLayoutAttributes : NSObject <NSCopying>
+@interface NSScrubberLayoutAttributes : NSObject <NSCopying, NSCoding>
 {
     CGFloat _alpha;
     NSRect _frame;

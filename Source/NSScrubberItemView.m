@@ -77,9 +77,9 @@
     self = [super initWithCoder: coder];
     if (self)
     {
-        if ([coder containsValueForKey: @"reuseIdentifier"])
+        if ([coder containsValueForKey: @"NSScrubberItemView.reuseIdentifier"])
         {
-            _reuseIdentifier = [[coder decodeObjectForKey: @"reuseIdentifier"] copy];
+            _reuseIdentifier = [[coder decodeObjectForKey: @"NSScrubberItemView.reuseIdentifier"] copy];
         }
     }
     return self;
@@ -91,7 +91,7 @@
     
     if (_reuseIdentifier)
     {
-        [coder encodeObject: _reuseIdentifier forKey: @"reuseIdentifier"];
+        [coder encodeObject: _reuseIdentifier forKey: @"NSScrubberItemView.reuseIdentifier"];
     }
 }
 

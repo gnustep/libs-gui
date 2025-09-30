@@ -26,10 +26,11 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSScrollView.h"
-#import "Foundation/NSIndexSet.h"
-#import "Foundation/NSString.h"
-#import "Foundation/NSMutableDictionary.h"
-#import "Foundation/NSMutableArray.h"
+
+#import <Foundation/NSIndexSet.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSArray.h>
 
 // Private interface for internal state management
 @interface NSScrubber()
@@ -85,49 +86,49 @@
         [self _commonInit];
         
         // Decode properties from the coder if needed
-        if ([coder containsValueForKey: @"backgroundColor"])
+        if ([coder containsValueForKey: @"NSScrubber.backgroundColor"])
         {
-            _backgroundColor = [coder decodeObjectForKey: @"backgroundColor"];
+            _backgroundColor = [coder decodeObjectForKey: @"NSScrubber.backgroundColor"];
         }
         
-        if ([coder containsValueForKey: @"selectedIndex"])
+        if ([coder containsValueForKey: @"NSScrubber.selectedIndex"])
         {
-            _selectedIndex = [coder decodeIntegerForKey: @"selectedIndex"];
+            _selectedIndex = [coder decodeIntegerForKey: @"NSScrubber.selectedIndex"];
         }
         
-        if ([coder containsValueForKey: @"highlightedIndex"])
+        if ([coder containsValueForKey: @"NSScrubber.highlightedIndex"])
         {
-            _highlightedIndex = [coder decodeIntegerForKey: @"highlightedIndex"];
+            _highlightedIndex = [coder decodeIntegerForKey: @"NSScrubber.highlightedIndex"];
         }
         
-        if ([coder containsValueForKey: @"itemAlignment"])
+        if ([coder containsValueForKey: @"NSScrubber.itemAlignment"])
         {
-            _itemAlignment = [coder decodeIntegerForKey: @"itemAlignment"];
+            _itemAlignment = [coder decodeIntegerForKey: @"NSScrubber.itemAlignment"];
         }
         
-        if ([coder containsValueForKey: @"mode"])
+        if ([coder containsValueForKey: @"NSScrubber.mode"])
         {
-            _mode = [coder decodeIntegerForKey: @"mode"];
+            _mode = [coder decodeIntegerForKey: @"NSScrubber.mode"];
         }
         
-        if ([coder containsValueForKey: @"continuous"])
+        if ([coder containsValueForKey: @"NSScrubber.continuous"])
         {
-            _continuous = [coder decodeBoolForKey: @"continuous"];
+            _continuous = [coder decodeBoolForKey: @"NSScrubber.continuous"];
         }
         
-        if ([coder containsValueForKey: @"showsArrowButtons"])
+        if ([coder containsValueForKey: @"NSScrubber.showsArrowButtons"])
         {
-            _showsArrowButtons = [coder decodeBoolForKey: @"showsArrowButtons"];
+            _showsArrowButtons = [coder decodeBoolForKey: @"NSScrubber.showsArrowButtons"];
         }
         
-        if ([coder containsValueForKey: @"showsAdditionalContentIndicators"])
+        if ([coder containsValueForKey: @"NSScrubber.showsAdditionalContentIndicators"])
         {
-            _showsAdditionalContentIndicators = [coder decodeBoolForKey: @"showsAdditionalContentIndicators"];
+            _showsAdditionalContentIndicators = [coder decodeBoolForKey: @"NSScrubber.showsAdditionalContentIndicators"];
         }
         
-        if ([coder containsValueForKey: @"floatsSelectionViews"])
+        if ([coder containsValueForKey: @"NSScrubber.floatsSelectionViews"])
         {
-            _floatsSelectionViews = [coder decodeBoolForKey: @"floatsSelectionViews"];
+            _floatsSelectionViews = [coder decodeBoolForKey: @"NSScrubber.floatsSelectionViews"];
         }
     }
     return self;
@@ -137,15 +138,15 @@
 {
     [super encodeWithCoder: coder];
     
-    [coder encodeObject: _backgroundColor forKey: @"backgroundColor"];
-    [coder encodeInteger: _selectedIndex forKey: @"selectedIndex"];
-    [coder encodeInteger: _highlightedIndex forKey: @"highlightedIndex"];
-    [coder encodeInteger: _itemAlignment forKey: @"itemAlignment"];
-    [coder encodeInteger: _mode forKey: @"mode"];
-    [coder encodeBool: _continuous forKey: @"continuous"];
-    [coder encodeBool: _showsArrowButtons forKey: @"showsArrowButtons"];
-    [coder encodeBool: _showsAdditionalContentIndicators forKey: @"showsAdditionalContentIndicators"];
-    [coder encodeBool: _floatsSelectionViews forKey: @"floatsSelectionViews"];
+    [coder encodeObject: _backgroundColor forKey: @"NSScrubber.backgroundColor"];
+    [coder encodeInteger: _selectedIndex forKey: @"NSScrubber.selectedIndex"];
+    [coder encodeInteger: _highlightedIndex forKey: @"NSScrubber.highlightedIndex"];
+    [coder encodeInteger: _itemAlignment forKey: @"NSScrubber.itemAlignment"];
+    [coder encodeInteger: _mode forKey: @"NSScrubber.mode"];
+    [coder encodeBool: _continuous forKey: @"NSScrubber.continuous"];
+    [coder encodeBool: _showsArrowButtons forKey: @"NSScrubber.showsArrowButtons"];
+    [coder encodeBool: _showsAdditionalContentIndicators forKey: @"NSScrubber.showsAdditionalContentIndicators"];
+    [coder encodeBool: _floatsSelectionViews forKey: @"NSScrubber.floatsSelectionViews"];
 }
 
 - (void) dealloc

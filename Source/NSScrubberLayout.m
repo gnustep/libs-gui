@@ -91,6 +91,27 @@
     return _itemIndex ^ (NSUInteger)_alpha ^ NSStringFromRect(_frame).hash;
 }
 
+// MARK: - NSCoding Protocol
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+    self = [super init];
+    if (self)
+    {
+        _itemIndex = [coder decodeIntegerForKey: @"NSScrubberLayoutAttributes.itemIndex"];
+        _frame = [coder decodeRectForKey: @"NSScrubberLayoutAttributes.frame"];
+        _alpha = [coder decodeDoubleForKey: @"NSScrubberLayoutAttributes.alpha"];
+    }
+    return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+    [coder encodeInteger: _itemIndex forKey: @"NSScrubberLayoutAttributes.itemIndex"];
+    [coder encodeRect: _frame forKey: @"NSScrubberLayoutAttributes.frame"];
+    [coder encodeDouble: _alpha forKey: @"NSScrubberLayoutAttributes.alpha"];
+}
+
 // MARK: - Description
 
 - (NSString *) description
