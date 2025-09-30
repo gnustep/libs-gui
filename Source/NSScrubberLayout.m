@@ -23,112 +23,238 @@
 */
 
 #import "AppKit/NSScrubberLayout.h"
+#import "Foundation/NSArray.h"
+
+
 
 @implementation NSScrubberLayoutAttributes 
 
+// MARK: - Class Methods
+
++ (void) initialize
+{
+    if (self == [NSScrubberLayoutAttributes class])
+    {
+        [self setVersion: 1];
+    }
+}
+
 + (NSScrubberLayoutAttributes *) layoutAttributesForItemAtIndex: (NSInteger)index
 {
-  return nil;
+    NSScrubberLayoutAttributes *attributes = [[self alloc] init];
+    [attributes setItemIndex: index];
+    [attributes setAlpha: 1.0];
+    [attributes setFrame: NSZeroRect];
+    return [attributes autorelease];
 }
 
-- (CGFloat) alpha
+// MARK: - Initialization
+
+- (id) init
 {
-  return 0.0;
+    self = [super init];
+    if (self)
+    {
+        _alpha = 1.0;
+        _frame = NSZeroRect;
+        _itemIndex = NSNotFound;
+    }
+    return self;
 }
 
-- (NSRect) frame
+// MARK: - NSCopying Protocol
+
+- (id) copyWithZone: (NSZone *)zone
 {
-  return NSZeroRect;
+    NSScrubberLayoutAttributes *copy = [[[self class] allocWithZone: zone] init];
+    [copy setAlpha: _alpha];
+    [copy setFrame: _frame];
+    [copy setItemIndex: _itemIndex];
+    return copy;
 }
 
-- (NSInteger) itemIndex
+// MARK: - Equality and Hashing
+
+- (BOOL) isEqual: (id)other
 {
-  return 0;
+    if (![other isKindOfClass: [NSScrubberLayoutAttributes class]])
+        return NO;
+    
+    NSScrubberLayoutAttributes *otherAttrs = (NSScrubberLayoutAttributes *)other;
+    return _itemIndex == otherAttrs.itemIndex &&
+           _alpha == otherAttrs.alpha &&
+           NSEqualRects(_frame, otherAttrs.frame);
 }
 
-- (instancetype) copyWithZone: (NSZone *)z
+- (NSUInteger) hash
 {
-  return nil;
+    return _itemIndex ^ (NSUInteger)_alpha ^ NSStringFromRect(_frame).hash;
+}
+
+// MARK: - Description
+
+- (NSString *) description
+{
+    return [NSString stringWithFormat: @"<%@: %p; itemIndex: %ld; frame: %@; alpha: %g>",
+            [self className], self, (long)_itemIndex, NSStringFromRect(_frame), _alpha];
 }
 
 @end
 
 @implementation NSScrubberLayout
-// Configuring
+
+// MARK: - Class Methods
+
++ (void) initialize
+{
+    if (self == [NSScrubberLayout class])
+    {
+        [self setVersion: 1];
+    }
+}
+
+// MARK: - Initialization
+
+- (id) init
+{
+    self = [super init];
+    if (self)
+    {
+        _scrubber = nil;
+    }
+    return self;
+}
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+    self = [super init];
+    if (self)
+    {
+        _scrubber = nil;
+        // Decode any layout-specific properties here if needed
+    }
+    return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+    // Encode any layout-specific properties here if needed
+}
+
+// MARK: - Layout Configuration
+
 - (Class) layoutAttributesClass
 {
-  return nil;
+    return [NSScrubberLayoutAttributes class];
 }
 
 - (NSScrubber *) scrubber
 {
-  return nil;
+    return _scrubber;
 }
 
 - (NSRect) visibleRect
 {
-  return NSZeroRect;
+    if (_scrubber)
+    {
+        return [_scrubber visibleRect];
+    }
+    return NSZeroRect;
 }
 
 - (void) invalidateLayout
 {
+    // Default implementation does nothing
+    // Subclasses should override to perform invalidation-specific logic
 }
 
-// Subclassing layout
+// MARK: - Subclassing Methods
+
 - (void) prepareLayout
 {
+    /**
+     * Default implementation does nothing.
+     * Subclasses should override this method to perform any setup
+     * required before layout attributes are calculated.
+     */
 }
 
 - (NSSize) scrubberContentSize
 {
-  return NSZeroSize;
+    /**
+     * Default implementation returns zero size.
+     * Subclasses must override this method to return the total
+     * content size needed to display all items.
+     */
+    return NSZeroSize;
 }
 
 - (NSScrubberLayoutAttributes *) layoutAttributesForItemAtIndex: (NSInteger)index
 {
-  return nil;
+    /**
+     * Default implementation returns nil.
+     * Subclasses must override this method to provide layout
+     * attributes for the item at the specified index.
+     */
+    return nil;
 }
 
-- (NSScrubberLayoutAttributes *) layoutAttributesForItemsInRect: (NSRect)rect
+- (NSArray *) layoutAttributesForItemsInRect: (NSRect)rect
 {
-  return nil;
+    /**
+     * Default implementation returns an empty array.
+     * Subclasses should override this method to return layout
+     * attributes for all items that intersect with the given rectangle.
+     */
+    return [NSArray array];
 }
 
 - (BOOL) shouldInvalidateLayoutForHighlightChange
 {
-  return NO;
+    /**
+     * Default implementation returns NO.
+     * Subclasses can override this to return YES if highlighting
+     * changes require layout recalculation.
+     */
+    return NO;
 }
 
 - (BOOL) shouldInvalidateLayoutForSelectionChange
 {
-  return NO;
+    /**
+     * Default implementation returns NO.
+     * Subclasses can override this to return YES if selection
+     * changes require layout recalculation.
+     */
+    return NO;
 }
 
 - (BOOL) shouldInvalidateLayoutForChangeFromVisibleRect: (NSRect)fromRect
                                           toVisibleRect: (NSRect)toRect
 {
-  return NO;
+    /**
+     * Default implementation returns NO.
+     * Subclasses can override this to return YES if visible rect
+     * changes require layout recalculation.
+     */
+    return NO;
 }
 
 - (BOOL) automaticallyMirrorsInRightToLeftLayout
 {
-  return NO;
+    /**
+     * Default implementation returns NO.
+     * Subclasses can override this to return YES if the layout
+     * should automatically mirror in right-to-left environments.
+     */
+    return NO;
 }
 
-- (instancetype) init
-{
-  self = [super init];
-  return self;
-}
+// MARK: - Internal Methods (called by NSScrubber)
 
-- (instancetype) initWithCoder: (NSCoder *)coder
+- (void) _setScrubber: (NSScrubber *)scrubber
 {
-  self = [super init];
-  return self;
-}
-
-- (void) encodeWithCoder: (NSCoder *)coder
-{
+    _scrubber = scrubber;
 }
 
 @end
