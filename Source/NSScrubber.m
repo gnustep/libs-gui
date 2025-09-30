@@ -26,11 +26,13 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSScrollView.h"
+#import "AppKit/NSNib.h"
 
 #import <Foundation/NSIndexSet.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSGeometry.h>
 
 // Private interface for internal state management
 @interface NSScrubber()
@@ -196,9 +198,10 @@
         [_scrubberLayout prepareLayout];
         
         NSSize contentSize = [_scrubberLayout scrubberContentSize];
-        
+        NSInteger i = 0;
+
         // Layout each visible item view
-        for (NSInteger i = 0; i < [_itemViews count]; i++)
+        for (i = 0; i < [_itemViews count]; i++)
         {
             NSScrubberItemView *itemView = [_itemViews objectAtIndex: i];
             if (itemView && itemView != (id)[NSNull null])
@@ -226,7 +229,8 @@
 
 - (NSScrubberItemView *) _dequeueReusableItemViewWithIdentifier: (NSString *)identifier
 {
-    for (NSInteger i = [_reusableItemViews count] - 1; i >= 0; i--)
+   NSInteger i = 0;
+    for (i = [_reusableItemViews count] - 1; i >= 0; i--)
     {
         NSScrubberItemView *itemView = [_reusableItemViews objectAtIndex: i];
         if ([[itemView reuseIdentifier] isEqualToString: identifier])
@@ -458,9 +462,10 @@
     
     // Get the number of items from the data source
     NSInteger itemCount = [self numberOfItems];
-    
+    NSInteger i = 0;
+
     // Create placeholder array for item views
-    for (NSInteger i = 0; i < itemCount; i++)
+    for (i = 0; i < itemCount; i++)
     {
         [_itemViews addObject: [NSNull null]];
     }
