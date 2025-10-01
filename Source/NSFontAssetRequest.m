@@ -23,8 +23,10 @@
 */
 
 #import <Foundation/Foundation.h>
+
 #import "AppKit/NSFontAssetRequest.h"
 #import "AppKit/NSFontDescriptor.h"
+
 #import "GNUstepGUI/GSFontAssetDownloader.h"
 
 @interface NSFontAssetRequest (Private)
