@@ -375,7 +375,8 @@ GSCSEditInfo.m \
 GSCSEditVariableManager.m \
 GSCSTableau.m \
 GSColorSliderCell.m \
-GSFontAssetDownloader.m
+GSFontAssetDownloader.m \
+GSFontAssetInstaller.m
 
 ifeq ($(BUILD_MOVIE), yes)
 libgnustep-gui_OBJC_FILES += GSMovieView.m
@@ -701,7 +702,8 @@ GSXibElement.h \
 GSXibLoading.h \
 GSXibKeyedUnarchiver.h \
 GSHelpAttachment.h \
-GSFontAssetDownloader.h
+GSFontAssetDownloader.h \
+GSFontAssetInstaller.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 
