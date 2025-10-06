@@ -375,7 +375,8 @@ GSCSEditInfo.m \
 GSCSEditVariableManager.m \
 GSCSTableau.m \
 GSColorSliderCell.m \
-GSFontAssetDownloader.m
+GSFontAssetDownloader.m \
+GSFontAssetInstaller.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -695,7 +696,8 @@ GSXibElement.h \
 GSXibLoading.h \
 GSXibKeyedUnarchiver.h \
 GSHelpAttachment.h \
-GSFontAssetDownloader.h
+GSFontAssetDownloader.h \
+GSFontAssetInstaller.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 

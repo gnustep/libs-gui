@@ -220,40 +220,6 @@ GS_EXPORT_CLASS
 				    error: (NSError **)error;
 
 /**
- * Validates a downloaded font file.
- * This method can be overridden to implement custom validation
- * logic, such as checking font metadata, licensing information,
- * or performing security scans. The default implementation
- * checks file existence, size, and format signatures.
- */
-- (BOOL) validateFontFile: (NSString *)fontPath
-		    error: (NSError **)error;
-
-/**
- * Installs a font file to the appropriate system location.
- * This method can be overridden to implement custom installation
- * strategies, such as using system APIs, registering with font
- * management services, or applying custom permissions. Returns
- * YES if installation was successful, NO otherwise.
- */
-- (BOOL) installFontAtPath: (NSString *)fontPath
-		     error: (NSError **)error;
-
-/**
- * Returns the system fonts directory for the current platform.
- * This method can be overridden to customize the system font
- * installation location or to support additional platforms.
- */
-- (NSString *) systemFontsDirectory;
-
-/**
- * Returns the user fonts directory for the current platform.
- * This method can be overridden to customize the user font
- * installation location or to support additional platforms.
- */
-- (NSString *) userFontsDirectory;
-
-/**
  * Returns the options that were specified when creating this downloader.
  */
 - (NSUInteger) options;
