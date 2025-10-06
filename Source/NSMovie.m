@@ -97,7 +97,11 @@ NSString *_writeDataToTempFile(NSData *data)
 
 - (instancetype) initWithMovie: (void *)movie
 {
-  return [self initWithData: movie];
+  //
+  // Unsupported, as we don't really know what the arg will point to.
+  // On macOS10.4 when this appeared it was assumed to be a QTMovie.
+  //
+  return nil;
 }
 
 - (instancetype) initWithURL: (NSURL *)url byReference: (BOOL)byRef

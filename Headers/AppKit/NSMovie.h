@@ -1,6 +1,7 @@
-/* <title>NSMovie</title>
+/**
+   <title>NSMovie</title>
 
-   <abstract>Encapsulate a Quicktime movie</abstract>
+   <abstract>Encapsulate a movie</abstract>
 
    Copyright <copy>(C) 2003 Free Software Foundation, Inc.</copy>
 
