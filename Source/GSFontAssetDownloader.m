@@ -669,7 +669,7 @@ static Class _defaultDownloaderClass = nil;
   [_statusLabel setSelectable: NO];
   [[_progressPanel contentView] addSubview: _statusLabel];
   RELEASE(_statusLabel);
-  
+
   // Create and configure the progress indicator
   NSRect progressFrame = NSMakeRect(20, 40, 360, 20);
   _progressIndicator = [[NSProgressIndicator alloc] initWithFrame: progressFrame];
@@ -680,7 +680,7 @@ static Class _defaultDownloaderClass = nil;
   [_progressIndicator setDoubleValue: 0.0];
   [[_progressPanel contentView] addSubview: _progressIndicator];
   RELEASE(_progressIndicator);
-  
+
   // Create and configure the cancel button
   NSRect buttonFrame = NSMakeRect(310, 10, 80, 25);
   _cancelButton = [[NSButton alloc] initWithFrame: buttonFrame];
@@ -689,7 +689,7 @@ static Class _defaultDownloaderClass = nil;
   [_cancelButton setAction: @selector(cancelDownload:)];
   [[_progressPanel contentView] addSubview: _cancelButton];
   RELEASE(_cancelButton);
-  
+
   // Center and show the panel
   [_progressPanel center];
   [_progressPanel makeKeyAndOrderFront: nil];

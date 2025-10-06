@@ -42,7 +42,7 @@ static Class fontAssetClass = Nil;
       sharedFontAssetInstaller = [[fontAssetClass alloc] init];
     }
 
-  return sharedFontAssetInstaller;  
+  return sharedFontAssetInstaller;
 }
 
 + (void) setDefaultClass: (Class)cls
