@@ -378,6 +378,12 @@ GSColorSliderCell.m \
 GSFontAssetDownloader.m \
 GSFontAssetInstaller.m
 
+ifeq ($(BUILD_MOVIE), yes)
+libgnustep-gui_OBJC_FILES += GSMovieView.m
+libgnustep-gui_OBJC_FILES += GSAudioPlayer.m
+libgnustep-gui_OBJC_FILES += GSAVUtils.m
+endif
+
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
 # their implementation)
