@@ -1770,6 +1770,60 @@ void NSBeginInformationalAlertSheet(NSString *title,
   NSReleaseAlertPanel(panel);
 }
 
+// Synchronous sheet-aware alert. If docWindow is nil, fall back to
+// NSRunAlertPanel which shows a modal alert. Otherwise display a sheet
+// attached to docWindow and run a modal loop until it completes.
+NSInteger
+NSRunAlertPanelReletiveToWindow(NSWindow *docWindow,
+                               NSString *title,
+                               NSString *msg,
+                               NSString *defaultButton,
+                               NSString *alternateButton,
+                               NSString *otherButton, ...)
+{
+  va_list ap;
+  NSString *message;
+  GSAlertPanel *panel;
+  NSInteger result;
+
+  va_start(ap, otherButton);
+  message = [NSString stringWithFormat: msg arguments: ap];
+  va_end(ap);
+
+  if (docWindow == nil)
+    {
+      if (defaultButton == nil)
+        defaultButton = @"OK";
+      panel = getSomePanel(&standardAlertPanel, defaultTitle, title, message,
+                           defaultButton, alternateButton, otherButton);
+      result = [panel runModal];
+      NSReleaseAlertPanel(panel);
+      return result;
+    }
+
+  if (defaultButton == nil)
+    defaultButton = @"OK";
+
+  panel = getSomeSheet(&standardAlertPanel, defaultTitle, title, message,
+                       defaultButton, alternateButton, otherButton);
+
+  /* Begin sheet synchronously; under GNUstep beginSheet calls runModalForWindow
+     which will invoke the modalDelegate didEndSelector; we call beginSheet
+     and then return the panel result. */
+  [NSApp beginSheet: panel
+       modalForWindow: docWindow
+        modalDelegate: nil
+       didEndSelector: NULL
+          contextInfo: NULL];
+
+  /* The sheet will run its modal session in -beginSheet; by the time
+     beginSheet returns, the sheet has already completed. Retrieve
+     the result and cleanup. */
+  result = [panel result];
+  NSReleaseAlertPanel(panel);
+  return result;
+}
+
 
 @implementation	NSAlert
 
