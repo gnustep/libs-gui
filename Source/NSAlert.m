@@ -1774,7 +1774,7 @@ void NSBeginInformationalAlertSheet(NSString *title,
 // NSRunAlertPanel which shows a modal alert. Otherwise display a sheet
 // attached to docWindow and run a modal loop until it completes.
 NSInteger
-NSRunAlertPanelReletiveToWindow(NSWindow *docWindow,
+NSRunAlertPanelRelativeToWindow(NSWindow *docWindow,
                                NSString *title,
                                NSString *msg,
                                NSString *defaultButton,
