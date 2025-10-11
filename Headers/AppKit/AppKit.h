@@ -269,6 +269,8 @@
 #import <AppKit/NSTouch.h>
 #import <AppKit/NSTouchBar.h>
 #import <AppKit/NSTouchBarItem.h>
+#import <AppKit/GSTouchBarWindow.h>
+#import <AppKit/NSScrubberTouchBarItem.h>
 #import <AppKit/NSTokenField.h>
 #import <AppKit/NSTokenFieldCell.h>
 #import <AppKit/NSToolbar.h>

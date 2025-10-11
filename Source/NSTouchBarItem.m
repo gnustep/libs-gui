@@ -23,8 +23,117 @@
 */
 
 #import <AppKit/NSTouchBarItem.h>
+#import <AppKit/NSView.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSCoder.h>
+
+// Standard touch bar item identifiers
+NSString * const NSTouchBarItemIdentifierFixedSpaceSmall = @"NSTouchBarItemIdentifierFixedSpaceSmall";
+NSString * const NSTouchBarItemIdentifierFixedSpaceLarge = @"NSTouchBarItemIdentifierFixedSpaceLarge";
+NSString * const NSTouchBarItemIdentifierFlexibleSpace = @"NSTouchBarItemIdentifierFlexibleSpace";
 
 @implementation NSTouchBarItem
+
+/*
+ * Class methods
+ */
+
++ (void) initialize
+{
+    if (self == [NSTouchBarItem class])
+    {
+        [self setVersion: 1];
+    }
+}
+
+/*
+ * Initialization and deallocation
+ */
+
+- (id) init
+{
+    return [self initWithIdentifier: nil];
+}
+
+- (id) initWithIdentifier: (NSString *)identifier
+{
+    self = [super init];
+    if (self)
+    {
+        ASSIGNCOPY(_identifier, identifier);
+        _view = nil;
+        _customizationLabel = nil;
+        _isVisible = YES;
+    }
+    return self;
+}
+
+- (void) dealloc
+{
+    RELEASE(_identifier);
+    RELEASE(_view);
+    RELEASE(_customizationLabel);
+    [super dealloc];
+}
+
+/*
+ * NSCoding protocol implementation
+ */
+
+- (id) initWithCoder: (NSCoder *)coder
+{
+    self = [super init];
+    if (self)
+    {
+        ASSIGNCOPY(_identifier, [coder decodeObjectForKey: @"NSTouchBarItem.identifier"]);
+        ASSIGN(_view, [coder decodeObjectForKey: @"NSTouchBarItem.view"]);
+        ASSIGNCOPY(_customizationLabel, [coder decodeObjectForKey: @"NSTouchBarItem.customizationLabel"]);
+        _isVisible = [coder decodeBoolForKey: @"NSTouchBarItem.isVisible"];
+    }
+    return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+    [coder encodeObject: _identifier forKey: @"NSTouchBarItem.identifier"];
+    [coder encodeObject: _view forKey: @"NSTouchBarItem.view"];
+    [coder encodeObject: _customizationLabel forKey: @"NSTouchBarItem.customizationLabel"];
+    [coder encodeBool: _isVisible forKey: @"NSTouchBarItem.isVisible"];
+}
+
+/*
+ * Accessor methods
+ */
+
+- (NSString *) identifier
+{
+    return _identifier;
+}
+
+- (NSView *) view
+{
+    return _view;
+}
+
+- (void) setView: (NSView *)view
+{
+    ASSIGN(_view, view);
+}
+
+- (NSString *) customizationLabel
+{
+    return _customizationLabel;
+}
+
+- (void) setCustomizationLabel: (NSString *)label
+{
+    ASSIGNCOPY(_customizationLabel, label);
+}
+
+- (BOOL) isVisible
+{
+    return _isVisible;
+}
 
 @end
 

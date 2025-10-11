@@ -55,6 +55,8 @@
 #import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSArray.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
@@ -62,8 +64,101 @@
 extern "C" {
 #endif
 
+@class NSTouchBarItem;
+@class NSView;
+@class NSWindow;
+
+/**
+ * NSTouchBar manages a collection of touch bar items and their presentation.
+ * On systems without physical touch bar hardware, it can display items in
+ * a fallback window.
+ */
 APPKIT_EXPORT_CLASS
-@interface NSTouchBar : NSObject
+@interface NSTouchBar : NSObject <NSCoding>
+{
+    NSString *_customizationIdentifier;
+    NSArray *_defaultItemIdentifiers;
+    NSArray *_itemIdentifiers;
+    NSString *_principalItemIdentifier;
+    id _delegate;
+    NSMutableDictionary *_items;
+    NSWindow *_fallbackWindow;
+    NSView *_fallbackContentView;
+    BOOL _isVisible;
+    BOOL _showsFallbackWindow;
+}
+
+/**
+ * A string that uniquely identifies the touch bar for customization purposes.
+ */
+- (NSString *) customizationIdentifier;
+- (void) setCustomizationIdentifier: (NSString *)identifier;
+
+/**
+ * An array of item identifiers that defines the default set of items.
+ */
+- (NSArray *) defaultItemIdentifiers;
+- (void) setDefaultItemIdentifiers: (NSArray *)identifiers;
+
+/**
+ * An array of item identifiers for the items currently in the touch bar.
+ */
+- (NSArray *) itemIdentifiers;
+- (void) setItemIdentifiers: (NSArray *)identifiers;
+
+/**
+ * The identifier of the principal item, which receives special treatment.
+ */
+- (NSString *) principalItemIdentifier;
+- (void) setPrincipalItemIdentifier: (NSString *)identifier;
+
+/**
+ * The delegate object that provides touch bar items.
+ */
+- (id) delegate;
+- (void) setDelegate: (id)delegate;
+
+/**
+ * Returns the touch bar item with the specified identifier.
+ */
+- (NSTouchBarItem *) itemForIdentifier: (NSString *)identifier;
+
+/**
+ * Whether the touch bar is currently visible.
+ */
+- (BOOL) isVisible;
+
+/**
+ * Shows or hides the touch bar fallback window on systems without hardware.
+ */
+- (void) setShowsFallbackWindow: (BOOL)shows;
+- (BOOL) showsFallbackWindow;
+
+/**
+ * Shows the fallback window containing touch bar items.
+ */
+- (void) showFallbackWindow;
+
+/**
+ * Hides the fallback window.
+ */
+- (void) hideFallbackWindow;
+
+@end
+
+/**
+ * Informal protocol for NSTouchBar delegate methods.
+ * Delegates may implement these methods to provide items dynamically.
+ */
+@interface NSObject (NSTouchBarDelegate)
+
+/**
+ * Returns the touch bar item for the specified identifier.
+ * This method will be called when the touch bar needs an item
+ * that is not already cached.
+ */
+- (NSTouchBarItem *) touchBar: (NSTouchBar *)touchBar 
+                makeItemForIdentifier: (NSString *)identifier;
 
 @end
 
