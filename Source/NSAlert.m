@@ -1802,6 +1802,18 @@ void NSBeginInformationalAlertSheet(NSString *title,
 
 - (void)runSheetOnMainThread
 {
+  if (_docWindow)
+    {
+      // Ensure the document window is in front so the sheet appears on top
+      if ([_docWindow respondsToSelector: @selector(makeKeyAndOrderFront:)])
+        {
+          [_docWindow makeKeyAndOrderFront: nil];
+        }
+      else if ([_docWindow respondsToSelector: @selector(orderFront:)])
+        {
+          [_docWindow orderFront: nil];
+        }
+    }
   [NSApp beginSheet: _panel
        modalForWindow: _docWindow
         modalDelegate: nil
