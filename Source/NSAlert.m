@@ -1770,62 +1770,6 @@ void NSBeginInformationalAlertSheet(NSString *title,
   NSReleaseAlertPanel(panel);
 }
 
-// Helper to run a sheet on the main thread and capture the result.
-@interface _GSRunSheetHelper : NSObject
-{
-  GSAlertPanel *_panel;
-  NSWindow *_docWindow;
-  NSInteger _result;
-}
-- (id)initWithPanel:(GSAlertPanel *)panel docWindow:(NSWindow *)docWindow;
-- (void)runSheetOnMainThread;
-- (NSInteger)result;
-@end
-
-@implementation _GSRunSheetHelper
-- (id)initWithPanel:(GSAlertPanel *)panel docWindow:(NSWindow *)docWindow
-{
-  if ((self = [super init]) != nil)
-    {
-      _panel = RETAIN(panel);
-      _docWindow = docWindow; // not retaining window to avoid cycles
-      _result = NSAlertErrorReturn;
-    }
-  return self;
-}
-
-- (void)dealloc
-{
-  RELEASE(_panel);
-  [super dealloc];
-}
-
-- (void)runSheetOnMainThread
-{
-  if (_docWindow)
-    {
-      // Ensure the document window is in front so the sheet appears on top
-      if ([_docWindow respondsToSelector: @selector(makeKeyAndOrderFront:)])
-        {
-          [_docWindow makeKeyAndOrderFront: nil];
-        }
-      else if ([_docWindow respondsToSelector: @selector(orderFront:)])
-        {
-          [_docWindow orderFront: nil];
-        }
-    }
-  [NSApp beginSheet: _panel
-       modalForWindow: _docWindow
-        modalDelegate: nil
-       didEndSelector: NULL
-          contextInfo: NULL];
-  _result = [_panel result];
-}
-
-- (NSInteger)result { return _result; }
-
-@end
-
 // Synchronous sheet-aware alert. If docWindow is nil, fall back to
 // NSRunAlertPanel which shows a modal alert. Otherwise display a sheet
 // attached to docWindow and run a modal loop until it completes.
@@ -1862,26 +1806,14 @@ NSRunAlertPanelRelativeToWindow(NSWindow *docWindow,
 
   panel = getSomeSheet(&standardAlertPanel, defaultTitle, title, message,
                        defaultButton, alternateButton, otherButton);
-  /* Run the sheet on the main thread to ensure it is presented. */
-  if (GSCurrentThread() != GSAppKitThread)
-    {
-      _GSRunSheetHelper *h = [[_GSRunSheetHelper alloc] initWithPanel: panel
-                                                            docWindow: docWindow];
-      [h performSelectorOnMainThread: @selector(runSheetOnMainThread)
-                          withObject: nil
-                       waitUntilDone: YES];
-      result = [h result];
-      RELEASE(h);
-    }
-  else
-    {
-      [NSApp beginSheet: panel
-           modalForWindow: docWindow
-            modalDelegate: nil
-           didEndSelector: NULL
-              contextInfo: NULL];
-      result = [panel result];
-    }
+
+  [panel makeKeyAndOrderFront: nil];
+  [NSApp beginSheet: panel
+     modalForWindow: docWindow
+      modalDelegate: nil
+     didEndSelector: NULL
+	contextInfo: NULL];
+  result = [panel result];
 
   NSReleaseAlertPanel(panel);
   return result;
