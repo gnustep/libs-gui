@@ -1774,46 +1774,55 @@ void NSBeginInformationalAlertSheet(NSString *title,
 // NSRunAlertPanel which shows a modal alert. Otherwise display a sheet
 // attached to docWindow and run a modal loop until it completes.
 NSInteger
-NSRunAlertPanelRelativeToWindow(NSWindow *docWindow,
-                               NSString *title,
-                               NSString *msg,
-                               NSString *defaultButton,
-                               NSString *alternateButton,
-                               NSString *otherButton, ...)
+NSRunAlertPanelRelativeToWindow(NSString *title,
+				NSString *msg,
+				NSString *defaultButton,
+				NSString *alternateButton,
+				NSString *otherButton,
+				NSWindow *docWindow, ...)
 {
   va_list ap;
-  NSString *message;
-  GSAlertPanel *panel;
-  NSInteger result;
+  NSString *message = nil;
+  GSAlertPanel *panel = nil;
+  NSInteger result = 0;
 
-  va_start(ap, otherButton);
+  va_start(ap, docWindow);
   message = [NSString stringWithFormat: msg arguments: ap];
   va_end(ap);
 
-  if (docWindow == nil)
+  // Set the default button...
+  if (defaultButton == nil)
     {
-      if (defaultButton == nil)
-        defaultButton = @"OK";
-      panel = getSomePanel(&standardAlertPanel, defaultTitle, title, message,
-                           defaultButton, alternateButton, otherButton);
-      result = [panel runModal];
-      NSReleaseAlertPanel(panel);
-      return result;
+      defaultButton = @"OK";
     }
 
-  if (defaultButton == nil)
-    defaultButton = @"OK";
+  // Show a panel or a sheet depending on if we have a window...
+  if (docWindow == nil)
+    {
+      panel = getSomePanel(&standardAlertPanel,
+			   defaultTitle,
+			   title,
+			   message,
+                           defaultButton, alternateButton, otherButton);
 
-  panel = getSomeSheet(&standardAlertPanel, defaultTitle, title, message,
-                       defaultButton, alternateButton, otherButton);
+      result = [panel runModal];
+    }
+  else
+    {
+      panel = getSomeSheet(&standardAlertPanel,
+			   defaultTitle,
+			   title,
+			   message,
+			   defaultButton, alternateButton, otherButton);
 
-  [panel makeKeyAndOrderFront: nil];
-  [NSApp beginSheet: panel
-     modalForWindow: docWindow
-      modalDelegate: nil
-     didEndSelector: NULL
-	contextInfo: NULL];
-  result = [panel result];
+      [NSApp beginSheet: panel
+	 modalForWindow: docWindow
+	  modalDelegate: nil
+	 didEndSelector: NULL
+	    contextInfo: NULL];
+      
+      result = [panel result];
+    }
 
   NSReleaseAlertPanel(panel);
   return result;

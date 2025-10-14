@@ -125,12 +125,12 @@ APPKIT_EXPORT NSInteger NSRunAlertPanel(NSString *title,
 
 // Synchronous alert that is displayed as a sheet attached to the provided
 // window. If docWindow is nil it falls back to NSRunAlertPanel.
-APPKIT_EXPORT NSInteger NSRunAlertPanelRelativeToWindow(NSWindow *docWindow,
-                                                        NSString *title,
+APPKIT_EXPORT NSInteger NSRunAlertPanelRelativeToWindow(NSString *title,
                                                         NSString *msg,
                                                         NSString *defaultButton,
                                                         NSString *alternateButton,
-                                                        NSString *otherButton, ...);
+                                                        NSString *otherButton,
+							NSWindow *docWindow, ...);
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 APPKIT_EXPORT NSInteger NSRunCriticalAlertPanel(NSString *title,
