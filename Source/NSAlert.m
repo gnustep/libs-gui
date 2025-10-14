@@ -1809,7 +1809,7 @@ NSRunAlertPanelRelativeToWindow(NSString *title,
     }
   else
     {
-      panel = getSomeSheet(&standardAlertPanel,
+      panel = getSomeSheet(&informationalAlertPanel,
 			   defaultTitle,
 			   title,
 			   message,
