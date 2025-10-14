@@ -1770,6 +1770,64 @@ void NSBeginInformationalAlertSheet(NSString *title,
   NSReleaseAlertPanel(panel);
 }
 
+// Synchronous sheet-aware alert. If docWindow is nil, fall back to
+// NSRunAlertPanel which shows a modal alert. Otherwise display a sheet
+// attached to docWindow and run a modal loop until it completes.
+NSInteger
+NSRunAlertPanelRelativeToWindow(NSString *title,
+				NSString *msg,
+				NSString *defaultButton,
+				NSString *alternateButton,
+				NSString *otherButton,
+				NSWindow *docWindow, ...)
+{
+  va_list ap;
+  NSString *message = nil;
+  GSAlertPanel *panel = nil;
+  NSInteger result = 0;
+
+  va_start(ap, docWindow);
+  message = [NSString stringWithFormat: msg arguments: ap];
+  va_end(ap);
+
+  // Set the default button...
+  if (defaultButton == nil)
+    {
+      defaultButton = @"OK";
+    }
+
+  // Show a panel or a sheet depending on if we have a window...
+  if (docWindow == nil)
+    {
+      panel = getSomePanel(&standardAlertPanel,
+			   defaultTitle,
+			   title,
+			   message,
+                           defaultButton, alternateButton, otherButton);
+
+      result = [panel runModal];
+    }
+  else
+    {
+      panel = getSomeSheet(&informationalAlertPanel,
+			   defaultTitle,
+			   title,
+			   message,
+			   defaultButton, alternateButton, otherButton);
+
+      [NSApp beginSheet: panel
+	 modalForWindow: docWindow
+	  modalDelegate: nil
+	 didEndSelector: NULL
+	    contextInfo: NULL];
+      
+      result = [panel result];
+    }
+
+  NSReleaseAlertPanel(panel);
+  return result;
+}
+
 
 @implementation	NSAlert
 
