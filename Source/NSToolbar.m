@@ -536,7 +536,7 @@ static GSValidationCenter *vc = nil;
   return self;
 }
 
-- (NSArray *) _identifiersForItems: (NSArray*)items
+- (NSArray *) _identifiersForItems: (NSArray *)items
 {
   NSMutableArray *result = [NSMutableArray arrayWithCapacity: [items count]];
   NSEnumerator *e = [items objectEnumerator];
@@ -549,35 +549,87 @@ static GSValidationCenter *vc = nil;
     {
       [result addObject: [item itemIdentifier]];
     }
+
+  return result;
+}
+
+- (NSArray *) _itemsForIdentifiers: (NSArray *)identifiers
+{
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity: [identifiers count]];
+  NSEnumerator *e = [identifiers objectEnumerator];
+  NSString *identifier = nil;
+  
+  if (identifiers == nil)
+    return nil;
+
+  while ((identifier = [e nextObject]) != nil)
+    {
+      NSToolbarItem *item = [[NSToolbarItem alloc] initWithItemIdentifier: identifier];
+      [result addObject: item];
+    }
+
   return result;
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  NSArray *items = nil;
+    
   if ([aCoder allowsKeyedCoding])
     {
-      // FIXME
+      [aCoder encodeObject: _identifier forKey: @"NSToolbarIdentifier"];
+      
+      [aCoder encodeObject: _interfaceBuilderItemsByIdentifier forKey: @"NSToolbarIBIdentifiedItems"];
+      items = [self _itemsForIdentifiers: _interfaceBuilderAllowedItemIdentifiers];
+      [aCoder encodeObject: items forKey: @"NSToolbarIBAllowedItems"];
+      items = [self _itemsForIdentifiers: _interfaceBuilderDefaultItemIdentifiers];
+      [aCoder encodeObject: items forKey: @"NSToolbarIBDefaultItems"];
+      items = [self _itemsForIdentifiers: _interfaceBuilderSelectableItemIdentifiers];
+      [aCoder encodeObject: items forKey: @"NSToolbarIBSelectableItems"];
+
+      [aCoder encodeBool: _allowsUserCustomization forKey: @"NSToolbarAllowsUserCustomization"];
+      [aCoder encodeBool: _autosavesConfiguration forKey:  @"NSToolbarAutosavesConfiguration"];
+      [aCoder encodeInt: _displayMode forKey: @"NSToolbarDisplayMode"];
+      [aCoder encodeBool: _showsBaselineSeparator forKey: @"NSToolbarShowsBaselineSeparator"];
+      [aCoder encodeInt: _sizeMode forKey: @"NSToolbarSizeMode"];
+      [aCoder encodeBool: _visible forKey: @"NSToolbarPrefersToBeShown"];
+      [aCoder encodeObject: _delegate forKey: @"NSToolbarDelegate"];
     }
   else
     {
-      // FIXME
+      [aCoder encodeObject: _identifier];
+
+      [aCoder encodeObject: _interfaceBuilderItemsByIdentifier];
+      items = [self _itemsForIdentifiers: _interfaceBuilderAllowedItemIdentifiers];
+      [aCoder encodeObject: items];
+      items = [self _itemsForIdentifiers: _interfaceBuilderDefaultItemIdentifiers];
+      [aCoder encodeObject: items];
+      items = [self _itemsForIdentifiers: _interfaceBuilderSelectableItemIdentifiers];
+      [aCoder encodeObject: items];
+
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsUserCustomization];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autosavesConfiguration];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_displayMode];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_showsBaselineSeparator];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_sizeMode];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_visible];
+      [aCoder encodeObject: _delegate];
     }
 }
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
+  _items = [[NSMutableArray alloc] init];
+  _customizationPaletteIsRunning = NO;
+  _configurationDictionary = nil;
+
   if ([aCoder allowsKeyedCoding])
     {
       ASSIGN(_identifier, [aCoder decodeObjectForKey: @"NSToolbarIdentifier"]);
-      _items = [[NSMutableArray alloc] init];
-
       ASSIGN(_interfaceBuilderItemsByIdentifier, [aCoder decodeObjectForKey: @"NSToolbarIBIdentifiedItems"]);
       ASSIGN(_interfaceBuilderAllowedItemIdentifiers, [self _identifiersForItems: [aCoder decodeObjectForKey: @"NSToolbarIBAllowedItems"]]);
       ASSIGN(_interfaceBuilderDefaultItemIdentifiers, [self _identifiersForItems: [aCoder decodeObjectForKey: @"NSToolbarIBDefaultItems"]]);
       ASSIGN(_interfaceBuilderSelectableItemIdentifiers, [self _identifiersForItems: [aCoder decodeObjectForKey: @"NSToolbarIBSelectableItems"]]);
-
-      _customizationPaletteIsRunning = NO;
-      _configurationDictionary = nil;
 
       [self setAllowsUserCustomization: [aCoder decodeBoolForKey: @"NSToolbarAllowsUserCustomization"]];
       [self setAutosavesConfiguration: [aCoder decodeBoolForKey: @"NSToolbarAutosavesConfiguration"]];
@@ -589,7 +641,19 @@ static GSValidationCenter *vc = nil;
     }
   else
     {
-      // FIXME
+      ASSIGN(_identifier, [aCoder decodeObject]);
+      ASSIGN(_interfaceBuilderItemsByIdentifier, [aCoder decodeObject]);
+      ASSIGN(_interfaceBuilderAllowedItemIdentifiers, [self _identifiersForItems: [aCoder decodeObject]]);
+      ASSIGN(_interfaceBuilderDefaultItemIdentifiers, [self _identifiersForItems: [aCoder decodeObject]]);
+      ASSIGN(_interfaceBuilderSelectableItemIdentifiers, [self _identifiersForItems: [aCoder decodeObject]]);
+
+      [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsUserCustomization];
+      [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_autosavesConfiguration];
+      [aCoder decodeValueOfObjCType: @encode(NSInteger) at: &_displayMode];
+      [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_showsBaselineSeparator];
+      [aCoder decodeValueOfObjCType: @encode(NSInteger) at: &_sizeMode];
+      [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_visible];
+      [self setDelegate: [aCoder decodeObject]];
     }
 
   [self _build];
