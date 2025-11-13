@@ -5,7 +5,7 @@
 
    Copyright (C) 2002 Free Software Foundation, Inc.
 
-   Author:  Gregory John Casamento <greg_casamento@yahoo.com>,
+   Author:  Gregory John Casamento <greg.casamento@gmail.com>,
 	    Fabien Vallon <fabien.vallon@fr.alcove.com>,
 	    Quentin Mathe <qmathe@club-internet.fr>
    Date: May 2002
@@ -615,11 +615,11 @@ static GSValidationCenter *vc = nil;
 
       [aCoder encodeObject: _interfaceBuilderItemsByIdentifier];
       items = [self _itemsForIdentifiers: _interfaceBuilderAllowedItemIdentifiers];
-      [aCoder encodeObject: items]; // _interfaceBuilderAllowedItemIdentifiers];
+      [aCoder encodeObject: items];
       items = [self _itemsForIdentifiers: _interfaceBuilderDefaultItemIdentifiers];
-      [aCoder encodeObject: items]; // _interfaceBuilderDefaultItemIdentifiers];
+      [aCoder encodeObject: items];
       items = [self _itemsForIdentifiers: _interfaceBuilderSelectableItemIdentifiers];
-      [aCoder encodeObject: items]; // _interfaceBuilderSelectableItemIdentifiers];
+      [aCoder encodeObject: items];
 
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsUserCustomization];
       [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autosavesConfiguration];
