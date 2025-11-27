@@ -26,8 +26,7 @@
 */
 
 /**
- * <title>NSInputManager</title>
- * <abstract>Advanced text input management with sophisticated keybinding system</abstract>
+ * Advanced text input management with sophisticated keybinding system.
  *
  * NSInputManager provides comprehensive text input processing capabilities with
  * a sophisticated keybinding system that supports complex keystroke sequences,
@@ -72,9 +71,6 @@
 @class NSImage;
 
 /**
- * <title>NSTextInput</title>
- * <abstract>Protocol for text input client objects</abstract>
- *
  * The NSTextInput protocol defines the interface that text-capable objects
  * must implement to work with input managers. This protocol enables sophisticated
  * text input processing including marked text composition and character-level
@@ -192,9 +188,6 @@
 @class GSKeyBindingTable;
 
 /**
- * <title>NSInputManager Class Interface</title>
- * <abstract>Concrete input manager implementation with keybinding system</abstract>
- *
  * NSInputManager provides the complete implementation of sophisticated text input
  * management, including customizable keybinding processing, multi-client support,
  * and advanced text composition capabilities.

@@ -64,9 +64,6 @@ enum {
 typedef NSUInteger NSFontAssetRequestOptions;
 
 /**
- * <title>NSFontAssetRequest</title>
- * <abstract>Manages asynchronous downloading of font assets</abstract>
- *
  * NSFontAssetRequest provides a mechanism for downloading font assets that are
  * not currently available on the local system. This is particularly useful for
  * applications that need to access fonts that may be available through system

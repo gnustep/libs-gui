@@ -1,3 +1,35 @@
+2025-11-27 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/AppKit/NSBezierPath.h:
+	* Headers/AppKit/NSColor.h:
+	* Headers/AppKit/NSColorPanel.h:
+	* Headers/AppKit/NSColorPicker.h:
+	* Headers/AppKit/NSColorWell.h:
+	* Headers/AppKit/NSComboBox.h:
+	* Headers/AppKit/NSComboBoxCell.h:
+	* Headers/AppKit/NSControl.h:
+	* Headers/AppKit/NSController.h:
+	* Headers/AppKit/NSCursor.h:
+	* Headers/AppKit/NSCustomImageRep.h:
+	* Headers/AppKit/NSDatePicker.h:
+	* Headers/AppKit/NSDockTile.h:
+	* Headers/AppKit/NSDrawer.h:
+	* Headers/AppKit/NSEPSImageRep.h:
+	* Headers/AppKit/NSEvent.h:
+	* Headers/AppKit/NSFileWrapper.h:
+	* Headers/AppKit/NSFileWrapperExtensions.h:
+	* Headers/AppKit/NSFont.h:
+	* Headers/AppKit/NSFontAssetRequest.h:
+	* Headers/AppKit/NSFontCollection.h:
+	* Headers/AppKit/NSImageView.h:
+	* Headers/AppKit/NSInputManager.h:
+	* Headers/AppKit/NSInputServer.h:
+	Remove incorrectly placed <title> and <abstract> elements in comments
+	to prevent breakage of documentation generation.
+	* Source/DocMakefile:
+	* Documentation/GNUmakefile.postamble:
+	Use new xxx_DOC_INSTALL_BUNDLE to for relative links between projects.
+	
 2025-05-29 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* config.make.in: Add HAVE_* variables.

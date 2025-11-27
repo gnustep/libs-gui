@@ -107,9 +107,6 @@ typedef enum _NSFontRenderingMode
 APPKIT_EXPORT const CGFloat NSFontIdentityMatrix[6];
 
 /**
- * <title>NSFont</title>
- * <abstract>Represents fonts for text rendering and measurement</abstract>
- *
  * NSFont encapsulates all the information needed to render text with a specific
  * typeface, size, and style. It provides comprehensive font creation, measurement,
  * and glyph manipulation capabilities for text layout and rendering systems.

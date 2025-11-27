@@ -298,8 +298,10 @@ GSVbox.h
 
 DOCUMENT_NAME = Gui GuiAdditions
 
-Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
-GuiAdditions_DOC_INSTALL_DIR = Developer/Gui/Reference
+Gui_DOC_INSTALL_BUNDLE = Reference
+Gui_DOC_INSTALL_DIR = Developer/Gui
+GuiAdditions_DOC_INSTALL_BUNDLE = Reference
+GuiAdditions_DOC_INSTALL_DIR = Developer/Gui
 
 Gui_AGSDOC_FILES = ../Documentation/Gui.gsdoc \
 	$(AUTOGSDOC_HEADERS_GUI)
