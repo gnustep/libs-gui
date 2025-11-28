@@ -25,6 +25,8 @@
 
 MAKEFILE_NAME = DocMakefile
 
+include ../Version
+
 include $(GNUSTEP_MAKEFILES)/common.make
 
 ADD_THESE_QUESTION_MARK = \
