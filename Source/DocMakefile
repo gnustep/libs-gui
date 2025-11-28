@@ -298,14 +298,14 @@ GSVbox.h
 
 DOCUMENT_NAME = Gui GuiAdditions
 
-# Using xxx_DOC_LOCAL_DIR puts our output in the documentation directory.
+# Using xxx_AGSDOC_LOCAL_DIR puts our output in the documentation directory.
 #
-Gui_DOC_INSTALL_BUNDLE = Reference
+Gui_AGSDOC_INSTALL_BUNDLE = Reference
+Gui_AGSDOC_LOCAL_DIR = ../Documentation/Gui
 Gui_DOC_INSTALL_DIR = Developer/Gui
-Gui_DOC_LOCAL_DIR = ../Documentation/Gui
-GuiAdditions_DOC_INSTALL_BUNDLE = Additions
+GuiAdditions_AGSDOC_INSTALL_BUNDLE = Additions
+GuiAdditions_AGSDOC_LOCAL_DIR = ../Documentation/GuiAdditions
 GuiAdditions_DOC_INSTALL_DIR = Developer/Gui
-GuiAdditions_DOC_LOCAL_DIR = ../Documentation/GuiAdditions
 
 Gui_AGSDOC_FILES = ../Documentation/Gui.gsdoc \
 	$(AUTOGSDOC_HEADERS_GUI)

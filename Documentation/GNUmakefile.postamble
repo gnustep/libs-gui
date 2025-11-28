@@ -39,13 +39,13 @@ after-all::
 #
 after-install::
 	rm -rf $(GNUSTEP_DOC)/$(Gui_DOC_INSTALL_DIR)
-	$(MKINSTALLDIRS) $(GNUSTEP_DOC)/$(Gui_DOC_INSTALL_DIR)/$(Gui_DOC_INSTALL_BUNDLE)
+	$(MKINSTALLDIRS) $(GNUSTEP_DOC)/$(Gui_DOC_INSTALL_DIR)/$(Gui_AGSDOC_INSTALL_BUNDLE)
 	(cd Gui; $(TAR) cf - .) | \
-	  (cd $(GNUSTEP_DOC)/$(Gui_DOC_INSTALL_DIR)/$(Gui_DOC_INSTALL_BUNDLE); $(TAR) xf -)
+	  (cd $(GNUSTEP_DOC)/$(Gui_DOC_INSTALL_DIR)/$(Gui_AGSDOC_INSTALL_BUNDLE); $(TAR) xf -)
 	rm -rf $(GNUSTEP_DOC)/$(GuiAdditions_DOC_INSTALL_DIR)
-	$(MKINSTALLDIRS) $(GNUSTEP_DOC)/$(GuiAdditions_DOC_INSTALL_DIR)/$(GuiAdditions_DOC_INSTALL_BUNDLE)
+	$(MKINSTALLDIRS) $(GNUSTEP_DOC)/$(GuiAdditions_DOC_INSTALL_DIR)/$(GuiAdditions_AGSDOC_INSTALL_BUNDLE)
 	(cd GuiAdditions; $(TAR) cf - .) | \
-	  (cd $(GNUSTEP_DOC)/$(GuiAdditions_DOC_INSTALL_DIR)/$(GuiAdditions_DOC_INSTALL_BUNDLE); $(TAR) xf -)
+	  (cd $(GNUSTEP_DOC)/$(GuiAdditions_DOC_INSTALL_DIR)/$(GuiAdditions_AGSDOC_INSTALL_BUNDLE); $(TAR) xf -)
 	( cd $(GNUSTEP_DOC)/$(GuiUser_DOC_INSTALL_DIR) ; \
 	mv GuiUser/* . ; \
 	rm -rf GuiUser )

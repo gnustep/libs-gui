@@ -28,7 +28,8 @@
 	to prevent breakage of documentation generation.
 	* Source/DocMakefile:
 	* Documentation/GNUmakefile.postamble:
-	Use new xxx_DOC_INSTALL_BUNDLE to for relative links between projects.
+	Use new xxx_AGSDOC_INSTALL_BUNDLE to for relative links between
+	projects.
 	
 2025-05-29 Gregory John Casamento <greg.casamento@gmail.com>
 
