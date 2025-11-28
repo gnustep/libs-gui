@@ -110,9 +110,6 @@ const CGFloat NSViewNoInstrinsicMetric = -1;
 const CGFloat NSViewNoIntrinsicMetric = -1;
 
 /**
-  <unit>
-  <heading>NSView</heading>
-
   <p>NSView is an abstract class which provides facilities for drawing
   in a window and receiving events.  It is the superclass of many of
   the visual elements of the GUI.</p>
@@ -125,8 +122,6 @@ const CGFloat NSViewNoIntrinsicMetric = -1;
   <p>Subclasses can override -drawRect: in order to
   implement their appearance.  Other methods of NSView and NSResponder
   can also be overridden to handle user generated events.</p>
-
-  </unit>
 */
   
 @implementation NSView
