@@ -4967,12 +4967,13 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 }
 
 /**
- * <p>NSResponder's method, overriden by NSView.</p>
+ * <p>NSResponder's method, overriden by NSView.
+ * </p>
  * <p>If no menu has been set through the use of setMenu:, or 
  *    if a nil value has been set through setMenu:, then the 
  *    value returned by defaultMenu is used. Otherwise this
  *    method returns the menu set through NSResponder.
- * <p>
+ * </p>
  * <p> see [NSResponder -menu], [NSResponder -setMenu:],
  *     [NSView +defaultMenu] and [NSView -menuForEvent:].
  * </p>

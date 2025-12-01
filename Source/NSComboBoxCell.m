@@ -1575,7 +1575,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 /**
  * Initializes the combo box cell with data linked to <var>decoder</var>. Take
  * note that when the decoded instance uses a data source,
- * <code>initWithCoder:<var> decodes the data source. 
+ * <code>initWithCoder:</code> decodes the data source. 
  * Finally, returns thr initialized object.
  */
 - (id) initWithCoder: (NSCoder *)aDecoder
