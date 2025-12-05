@@ -46,7 +46,6 @@
 #import <Foundation/NSSerialization.h>
 #import <Foundation/NSPort.h>
 #import <Foundation/NSPortNameServer.h>
-#import <Foundation/NSTask.h>
 #import <Foundation/NSObjCRuntime.h>
 #import <Foundation/NSInvocation.h>
 
@@ -89,6 +88,26 @@ static GSListener	*listener = nil;
 static id		servicesProvider = nil;
 static NSString		*providerName = nil;
 
+/* Check every NSPort entry in the NSServices array in our info plist.
+ */
+static BOOL
+isServicePort(NSString *name)
+{
+  NSDictionary	*info = [[NSBundle mainBundle] infoDictionary];
+  NSEnumerator	*svcs = [[info objectForKey: @"NSServices"] objectEnumerator];
+
+  while ((info = [svcs nextObject]) != nil)
+    {
+      NSString	*portName = [info objectForKey: @"NSPortName"];
+
+      if ([name isEqual: portName])
+	{
+	  return YES;
+	}
+    }
+  return NO;
+}
+
 /**
  * Unregisters the service provider registered on the named port.<br />
  * Applications should use [NSApplication-setServicesProvider:] with a nil
@@ -97,6 +116,14 @@ static NSString		*providerName = nil;
 void
 NSUnregisterServicesProvider(NSString *name)
 {
+  if (NO == isServicePort(name))
+    {
+      NSLog(@"WARNING The NSUnregisterServicesProvider(%@) function"
+	@" was called with on port name not present as the NSPort entry in"
+	@" any service in the NSServices array in this processes info plist.",
+	name);
+    }
+    
   if (listenerConnection != nil)
     {
       /*
@@ -153,6 +180,14 @@ NSRegisterServicesProvider(id provider, NSString *name)
       [NSException raise: NSInvalidArgumentException
 		  format: @"NSRegisterServicesProvider() %@ already in use",
 	name];
+    }
+
+  if (NO == isServicePort(name))
+    {
+      NSLog(@"WARNING The NSRegisterServicesProvider(provider, %@) function"
+	@" was called with on port name not present as the NSPort entry in"
+	@" any service in the NSServices array in this processes info plist.",
+	name);
     }
 
   if (listenerConnection != nil)
