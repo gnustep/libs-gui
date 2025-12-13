@@ -43,6 +43,28 @@ APPKIT_EXPORT_CLASS
 
 @end
 
+/**
+ * NSScrubberTextItemView displays a text label in a scrubber item.
+ */
+APPKIT_EXPORT_CLASS
+@interface NSScrubberTextItemView : NSScrubberItemView
+{
+    NSTextField *_textField;
+}
+
+/**
+ * The title displayed by this text item view.
+ */
+- (NSString *) title;
+- (void) setTitle: (NSString *)title;
+
+/**
+ * The text field that displays the title.
+ */
+- (NSTextField *) textField;
+
+@end
+
 #if	defined(__cplusplus)
 }
 #endif
