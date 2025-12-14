@@ -1,13 +1,18 @@
 2025-12-14 Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/GSServicesManager.m: Improve reliability of GSProviddeService()
+	* Source/GSServicesManager.h: New method to provide services.
+	* Source/GSServicesManager.m: Improve reliability of GSProvideService()
 	by ensuring that the data types of the pasteboard are used to find any
-	matching service.
+	matching service.  Implement a version which doesn't generate alert
+	panels,. so we can quietly go on to tryign to open URLs some other way.
 	* Source/NSPasteboard.m: Make reading/writing string data from/to a
 	pasteboard work for URLs.
 	* Source/NSWorkspace.m: When looking for an Open URL service, use the
-	correct name and use boith string and URL types so that services can
+	correct name and use both string and URL types so that services can
 	work whether they are expecting strings or more specific URL data.
+	If we can't open a URL using a service, try to use the NSWebBrowser
+	user default to launch a non-gnustep browser before resorting to treat
+	a URL as an unknown file type.
 	* Tools/make_services.m: Added some diagnostics and fixed the code to
 	check that dynamically registered services are still available (the
 	app that registered them is still running).

@@ -42,6 +42,7 @@
 @class	NSMutableArray;
 @class	NSMutableDictionary;
 @class	NSMutableSet;
+@class	NSPasteboard;
 @class	NSString;
 @class	NSTimer;
 
@@ -80,6 +81,9 @@ APPKIT_EXPORT_CLASS
 - (NSString*) item2title: (id<NSMenuItem>)item;
 - (void) loadServices;
 - (NSDictionary*) menuServices;
+- (BOOL) performService: (NSString*)serviceItem
+         withPasteboard: (NSPasteboard*)pboard
+           alertOnError: (BOOL)showAlerts;
 - (NSString*) port;
 - (void) rebuildServices;
 - (void) rebuildServicesMenu;
