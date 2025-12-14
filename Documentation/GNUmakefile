@@ -87,8 +87,6 @@ ReleaseNotes_DOC_INSTALL_DIR =  Developer/Gui
 # library, you need to modify that file to get the autogsdoc tool to use them.
 #
 DOCUMENT_NAME += Gui GuiAdditions
-Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
-GuiAdditions_DOC_INSTALL_DIR = Developer/Gui/Additions
 
 -include GNUmakefile.preamble
 
