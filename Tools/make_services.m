@@ -942,17 +942,9 @@ validateEntry(id svcs, NSString *path, BOOL checkLive)
 		  app = [NSConnection
 		    rootProxyForConnectionWithRegisteredName: p  
 							host: h];
-		  while (nil == app
-		    && [limit timeIntervalSinceNow] > 0.1)
+		  while (nil == app && [limit timeIntervalSinceNow] > 0.1)
 		    {
-		      NSRunLoop	*loop = [NSRunLoop currentRunLoop];
-		      NSDate	*next;
-
-		      [NSTimer scheduledTimerWithTimeInterval: 0.1
-						   invocation: nil
-						      repeats: NO];
-		      next = [NSDate dateWithTimeIntervalSinceNow: 0.2];
-		      [loop runUntilDate: next];
+		      [NSThread sleepForTimeInterval: 0.1];
 		      app = [NSConnection
 			rootProxyForConnectionWithRegisteredName: p  
 							    host: h];
