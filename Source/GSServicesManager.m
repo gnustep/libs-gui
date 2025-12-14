@@ -956,9 +956,10 @@ static NSString         *disabledName = @".GNUstepDisabled";
     {
       /* If we have changed the enabled/disabled services,
        * or there have been services added/removed
-       * then we must rebuild the services menu to add/remove
+       * then we must rebuild the services and menu to add/remove
        * items as appropriate.
        */
+      [self rebuildServices];
       [self rebuildServicesMenu];
     }
 }
@@ -1691,7 +1692,7 @@ serviceFromAnyLocalizedTitle(NSString *title)
  * <p>Given the name of a serviceItem, and some data in a pasteboard
  * this function sends the data to the service provider (launching
  * another application if necessary) and retrieves the result of
- * the service in the pastebaord.
+ * the service in the pasteboard.
  * </p>
  * Returns YES on success, NO otherwise.
  */
@@ -1711,6 +1712,16 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   NSString		*error = nil;
 
   service = serviceFromAnyLocalizedTitle(serviceItem);
+  if (nil == service)
+    {
+      /* If this function was used in a command-line tool this lookup may
+       * have failed because no types have been registered by the app.
+       * Try again after registering the types provided in the pasteboard.
+       */
+      [[GSServicesManager manager] registerSendTypes: [pboard types]
+                                         returnTypes: nil];
+      service = serviceFromAnyLocalizedTitle(serviceItem);
+    }
   if (service == nil)
     {
       NSRunAlertPanel(nil,

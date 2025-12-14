@@ -1,3 +1,17 @@
+2025-12-14 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: Improve reliability of GSProviddeService()
+	by ensuring that the data types of the pasteboard are used to find any
+	matching service.
+	* Source/NSPasteboard.m: Make reading/writing string data from/to a
+	pasteboard work for URLs.
+	* Source/NSWorkspace.m: When looking for an Open URL service, use the
+	correct name and use boith string and URL types so that services can
+	work whether they are expecting strings or more specific URL data.
+	* Tools/make_services.m: Added some diagnostics and fixed the code to
+	check that dynamically registered services are still available (the
+	app that registered them is still running).
+
 2025-11-27 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSBezierPath.h:

@@ -1089,17 +1089,18 @@ static NSDictionary		*urlPreferences = nil;
        * Try any OpenURL service available.
        */
       pb = [NSPasteboard pasteboardWithUniqueName];
-      [pb declareTypes: [NSArray arrayWithObject: NSURLPboardType]
-                         owner: nil];
-     [url writeToPasteboard: pb];
-     if (NSPerformService(@"OpenURL", pb))
-       {
-         return YES;
-       }
-     else
-       {
-         return [self _openUnknown: [url absoluteString]];
-       }
+      [pb declareTypes:
+	[NSArray arrayWithObjects: NSURLPboardType, NSStringPboardType, nil]
+		 owner: nil];
+      [url writeToPasteboard: pb];
+      if (NSPerformService(@"Open URL", pb))
+        {
+          return YES;
+        }
+      else
+        {
+          return [self _openUnknown: [url absoluteString]];
+        }
     }
 }
 
