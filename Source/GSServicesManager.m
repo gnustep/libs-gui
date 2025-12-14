@@ -1721,6 +1721,10 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
       [[GSServicesManager manager] registerSendTypes: [pboard types]
                                          returnTypes: nil];
       service = serviceFromAnyLocalizedTitle(serviceItem);
+      if (nil == service && [serviceItem isEqualToString: @"Open URL"])
+	{
+          service = serviceFromAnyLocalizedTitle(@"openURL");
+	}
     }
   if (service == nil)
     {
