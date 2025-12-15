@@ -1025,7 +1025,19 @@ static NSString         *disabledName = @".GNUstepDisabled";
     }
   else
     {
-      seconds = 30.0;
+      id	t = [service objectForKey: @"NSReturnTypes"];
+
+      if (NO == [t isKindOfClass: [NSArray class]] || 0 == [t count])
+	{
+	  /* A service which does not return anything should not normally
+	   * require us to wait, so default to a short timeout.
+	   */
+	  seconds = 1.0;
+	}
+      else
+	{
+          seconds = 30.0;
+	}
     }
   finishBy = [NSDate dateWithTimeIntervalSinceNow: seconds];
   appPath = [service objectForKey: @"ServicePath"];
