@@ -4,7 +4,7 @@
    Copyright (C) 1998 Free Software Foundation, Inc.
 
    Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
-   Date: Novemeber 1998
+   Date: November 1998
   
    This file is part of the GNUstep GUI Library.
 

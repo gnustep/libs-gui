@@ -15,7 +15,7 @@
 	If we can't open a URL using a service, try to use the NSWebBrowser
 	user default to launch a non-gnustep browser before resorting to treat
 	a URL as an unknown file type.  Don't raise alert panels on service
-	failure since we have a couple more options to try oafter that.
+	failure since we have a couple more options to try after that.
 	* Tools/make_services.m: Added some diagnostics and fixed the code to
 	check that dynamically registered services are still available (the
 	app that registered them is still running).
