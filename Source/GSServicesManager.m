@@ -90,26 +90,6 @@ static NSString		*providerName = nil;
 
 static NSDictionary *serviceFromAnyLocalizedTitle(NSString *title);
 
-/* Check every NSPort entry in the NSServices array in our info plist.
- */
-static BOOL
-isServicePort(NSString *name)
-{
-  NSDictionary	*info = [[NSBundle mainBundle] infoDictionary];
-  NSEnumerator	*svcs = [[info objectForKey: @"NSServices"] objectEnumerator];
-
-  while ((info = [svcs nextObject]) != nil)
-    {
-      NSString	*portName = [info objectForKey: @"NSPortName"];
-
-      if ([name isEqual: portName])
-	{
-	  return YES;
-	}
-    }
-  return NO;
-}
-
 /**
  * Unregisters the service provider registered on the named port.<br />
  * Applications should use [NSApplication-setServicesProvider:] with a nil
@@ -118,14 +98,6 @@ isServicePort(NSString *name)
 void
 NSUnregisterServicesProvider(NSString *name)
 {
-  if (NO == isServicePort(name))
-    {
-      NSLog(@"WARNING The NSUnregisterServicesProvider(%@) function"
-	@" was called with on port name not present as the NSPort entry in"
-	@" any service in the NSServices array in this processes info plist.",
-	name);
-    }
-    
   if (listenerConnection != nil)
     {
       /*
@@ -184,12 +156,34 @@ NSRegisterServicesProvider(id provider, NSString *name)
 	name];
     }
 
-  if (NO == isServicePort(name))
+  /* An application may always register its own name as a services port
+   * but we check other names to see if they match NSServices entry in
+   * the plist.
+   */
+  if (NO == [name isEqual: [[NSProcessInfo processInfo] processName]])
     {
-      NSLog(@"WARNING The NSRegisterServicesProvider(provider, %@) function"
-	@" was called with on port name not present as the NSPort entry in"
-	@" any service in the NSServices array in this processes info plist.",
-	name);
+      NSDictionary	*info = [[NSBundle mainBundle] infoDictionary];
+      NSEnumerator	*svcs;
+      BOOL		found = NO;
+
+      svcs = [[info objectForKey: @"NSServices"] objectEnumerator];
+      while ((info = [svcs nextObject]) != nil)
+	{
+	  NSString	*portName = [info objectForKey: @"NSPortName"];
+
+	  if ([name isEqual: portName])
+	    {
+	      found = YES;
+	      break;
+	    }
+	}
+      if (NO == found)
+	{
+	  NSLog(@"WARNING The NSRegisterServicesProvider(provider, %@) function"
+	    @" was called with a port name not present as the NSPort entry in"
+	    @" any service in the NSServices array in the info plist.",
+	    name);
+	}
     }
 
   if (listenerConnection != nil)
