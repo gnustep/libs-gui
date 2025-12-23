@@ -105,8 +105,8 @@
 #import "AppKit/NSPanel.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSScreen.h"
-#import "GNUstepGUI/GSServicesManager.h"
 #import "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSServicesManager.h"
 #import "GSGuiPrivate.h"
 
 /* Informal protocol for method to ask an app to open a URL.
@@ -852,18 +852,21 @@ static NSDictionary		*urlPreferences = nil;
  */
 - (BOOL) _openUnknown: (NSString*)fullPath
 {
-  NSString *tool = [[NSUserDefaults standardUserDefaults] objectForKey: @"GSUnknownFileTool"];
-  NSString *launchPath;
+  NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+  NSString 		*tool = [defs objectForKey: @"GSUnknownFileTool"];
+  NSString 		*launchPath;
 
   if ((tool == nil) || (launchPath = [NSTask launchPathForTool: tool]) == nil)
     {
 #ifdef __MINGW32__
       // Maybe we should rather use "Explorer.exe /e, " as the tool name
-      unichar *buffer = (unichar *)calloc(1, ([fullPath length] + 1) * sizeof(unichar));
+      unichar *buffer;
+
+      buffer = (unichar *)calloc(1, ([fullPath length] + 1) * sizeof(unichar));
       [fullPath getCharacters: buffer range: NSMakeRange(0, [fullPath length])];
       buffer[[fullPath length]] = 0;
-      BOOL success = ((int)ShellExecuteW(GetDesktopWindow(), L"open", buffer, NULL, 
-                                    NULL, SW_SHOWNORMAL) > 32);
+      BOOL success = ((int)ShellExecuteW(GetDesktopWindow(), L"open",
+	buffer, NULL, NULL, SW_SHOWNORMAL) > 32);
       free(buffer);
       return success;
 #else
@@ -874,8 +877,9 @@ static NSDictionary		*urlPreferences = nil;
 
   if (launchPath)
     {
-      NSTask * task = [NSTask launchedTaskWithLaunchPath: launchPath
-                                               arguments: [NSArray arrayWithObject: fullPath]];
+      NSArray	*args = [NSArray arrayWithObject: fullPath];
+      NSTask 	*task = [NSTask launchedTaskWithLaunchPath: launchPath
+					         arguments: args];
       if (task != nil)
         {
           [task waitUntilExit];
@@ -1086,21 +1090,54 @@ static NSDictionary		*urlPreferences = nil;
 	    }
 	}
       /* No application found to open the URL.
-       * Try any OpenURL service available.
+       * Try any Open URL service available.
        */
       pb = [NSPasteboard pasteboardWithUniqueName];
-      [pb declareTypes: [NSArray arrayWithObject: NSURLPboardType]
-                         owner: nil];
-     [url writeToPasteboard: pb];
-     if (NSPerformService(@"OpenURL", pb))
-       {
-         return YES;
-       }
-     else
-       {
-         return [self _openUnknown: [url absoluteString]];
-       }
+      [pb declareTypes:
+	[NSArray arrayWithObjects: NSURLPboardType, NSStringPboardType, nil]
+		 owner: nil];
+      [url writeToPasteboard: pb];
+      if ([[GSServicesManager manager] performService: @"Open URL"
+				       withPasteboard: pb
+					 alertOnError: NO])
+        {
+          [NSApp deactivate];
+          return YES;
+        }
+      else
+        {
+	  NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+	  NSString		*browser = [defs stringForKey: @"NSWebBrowser"];
+
+// if (nil == browser) browser = @"firefox -new-window \"%@\"";
+	  if ([browser length] > 0)
+	    {
+	      NSString	*path;
+	      NSArray	*args;
+	      NSTask	*task;
+
+	      args = [NSTask argumentsFromString:
+		[NSString stringWithFormat: browser, url]];
+
+	      path = [NSTask launchPathForTool: [args firstObject]];
+	      task = [NSTask launchedTaskWithLaunchPath: path
+					      arguments: args];
+	      [task waitUntilExit];
+	      if (task && [task terminationStatus] == 0)
+		{
+		  [NSApp deactivate];
+		  return YES;
+		}
+	    }     
+
+          if ([self _openUnknown: [url absoluteString]])
+	    {
+	      [NSApp deactivate];
+	      return YES;
+	    }
+        }
     }
+  return NO;
 }
 
 /*

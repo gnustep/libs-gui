@@ -27,24 +27,12 @@
 */
 
 #include <stdlib.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSBundle.h>
-#import <Foundation/NSDictionary.h>
-#import <Foundation/NSSet.h>
-#import <Foundation/NSFileManager.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSProcessInfo.h>
-#import <Foundation/NSData.h>
-#import <Foundation/NSDebug.h>
-#import <Foundation/NSDistributedLock.h>
-#import <Foundation/NSAutoreleasePool.h>
-#import <Foundation/NSPathUtilities.h>
-#import <Foundation/NSSerialization.h>
+#import <Foundation/Foundation.h>
 
 static void scanApplications(NSMutableDictionary *services, NSString *path);
 static void scanServices(NSMutableDictionary *services, NSString *path);
 static void scanDynamic(NSMutableDictionary *services, NSString *path);
-static NSMutableArray *validateEntry(id svcs, NSString* path);
+static NSMutableArray *validateEntry(id svcs, NSString* path, BOOL checkLive);
 static NSMutableDictionary *validateService(NSDictionary *service, NSString* path, unsigned i);
 
 static NSString		*appsName = @".GNUstepAppList";
@@ -170,7 +158,7 @@ main(int argc, char** argv, char **env_c)
 
 		  if (svcs)
 		    {
-		      validateEntry(svcs, file);
+		      validateEntry(svcs, file, NO);
 		    }
 		  else if (verbose > 0)
 		    {
@@ -581,10 +569,15 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 		    {
 		      NSMutableArray	*entry;
 
-		      entry = validateEntry(obj, newPath);
+		      entry = validateEntry(obj, newPath, NO);
 		      if (entry)
 			{
 			  [services setObject: entry forKey: newPath];
+			  if (verbose > 1)
+			    {
+			      NSLog(@"Add service from %@: %@",
+				entry, newPath);
+			    }
 			}
 		    }
 
@@ -620,10 +613,15 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 		    {
 		      NSMutableArray	*entry;
 
-		      entry = validateEntry(svcs, newPath);
+		      entry = validateEntry(svcs, newPath, NO);
 		      if (entry)
 			{
 			  [services setObject: entry forKey: newPath];
+			  if (verbose > 1)
+			    {
+			      NSLog(@"Add service from %@: %@",
+				entry, newPath);
+			    }
 			}
 		    }
 		  else if (verbose > 0)
@@ -724,10 +722,15 @@ scanApplications(NSMutableDictionary *services, NSString *path)
 		    {
 		      NSMutableArray	*entry;
 
-		      entry = validateEntry(obj, newPath);
+		      entry = validateEntry(obj, newPath, NO);
 		      if (entry)
 			{
 			  [services setObject: entry forKey: newPath];
+			  if (verbose > 1)
+			    {
+			      NSLog(@"Add application service from %@: %@",
+				entry, newPath);
+			    }
 			}
 		    }
 
@@ -794,10 +797,15 @@ scanDynamic(NSMutableDictionary *services, NSString *path)
 	    {
 	      NSMutableArray	*entry;
 
-	      entry = validateEntry(svcs, infPath);
+	      entry = validateEntry(svcs, infPath, YES);
 	      if (entry)
 		{
 		  [services setObject: entry forKey: infPath];
+		  if (verbose > 1)
+		    {
+		      NSLog(@"Add dynamic service from %@: %@",
+			entry, infPath);
+		    }
 		}
 	    }
 	}
@@ -850,10 +858,15 @@ scanServices(NSMutableDictionary *services, NSString *path)
 		    {
 		      NSMutableArray	*entry;
 
-		      entry = validateEntry(svcs, newPath);
+		      entry = validateEntry(svcs, newPath, NO);
 		      if (entry)
 			{
 			  [services setObject: entry forKey: newPath];
+			  if (verbose > 1)
+			    {
+			      NSLog(@"Add service from %@: %@",
+				entry, newPath);
+			    }
 			}
 		    }
 		  else if (verbose > 0)
@@ -884,8 +897,9 @@ scanServices(NSMutableDictionary *services, NSString *path)
   [arp drain];
 }
 
+
 static NSMutableArray*
-validateEntry(id svcs, NSString *path)
+validateEntry(id svcs, NSString *path, BOOL checkLive)
 {
   NSMutableArray	*newServices;
   NSArray		*services;
@@ -911,6 +925,47 @@ validateEntry(id svcs, NSString *path)
 	  NSMutableDictionary	*newService;
 
 	  newService = validateService(service, path, pos);
+	  if (checkLive && newService)
+	    {
+	      ENTER_POOL
+	      NSString	*p = [newService objectForKey: @"NSPortName"];
+	      NSString	*h = [newService objectForKey: @"NSHost"];
+	      id	app = nil;
+
+	      if (nil == h) h = @"";
+
+	      NS_DURING
+		{
+		  NSDate	*limit;
+
+		  limit = [NSDate dateWithTimeIntervalSinceNow: 2.0];
+		  app = [NSConnection
+		    rootProxyForConnectionWithRegisteredName: p  
+							host: h];
+		  while (nil == app && [limit timeIntervalSinceNow] > 0.1)
+		    {
+		      [NSThread sleepForTimeInterval: 0.1];
+		      app = [NSConnection
+			rootProxyForConnectionWithRegisteredName: p  
+							    host: h];
+		    }
+		}
+	      NS_HANDLER
+		{
+		  app = nil;
+		}
+	      NS_ENDHANDLER
+	      if (nil == app)
+		{
+		  newService = nil;
+		  if (verbose > 0)
+		    {
+		      NSLog(@"NSServices entry %u app is not live - %@",
+			pos, path);
+		    }
+		}
+	      LEAVE_POOL
+	    }
 	  if (newService)
 	    {
 	      [newServices addObject: newService];

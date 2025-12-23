@@ -4,7 +4,7 @@
    Copyright (C) 1998 Free Software Foundation, Inc.
 
    Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
-   Date: Novemeber 1998
+   Date: November 1998
   
    This file is part of the GNUstep GUI Library.
 
@@ -88,25 +88,7 @@ static GSListener	*listener = nil;
 static id		servicesProvider = nil;
 static NSString		*providerName = nil;
 
-/* Check every NSPort entry in the NSServices array in our info plist.
- */
-static BOOL
-isServicePort(NSString *name)
-{
-  NSDictionary	*info = [[NSBundle mainBundle] infoDictionary];
-  NSEnumerator	*svcs = [[info objectForKey: @"NSServices"] objectEnumerator];
-
-  while ((info = [svcs nextObject]) != nil)
-    {
-      NSString	*portName = [info objectForKey: @"NSPortName"];
-
-      if ([name isEqual: portName])
-	{
-	  return YES;
-	}
-    }
-  return NO;
-}
+static NSDictionary *serviceFromAnyLocalizedTitle(NSString *title);
 
 /**
  * Unregisters the service provider registered on the named port.<br />
@@ -116,14 +98,6 @@ isServicePort(NSString *name)
 void
 NSUnregisterServicesProvider(NSString *name)
 {
-  if (NO == isServicePort(name))
-    {
-      NSLog(@"WARNING The NSUnregisterServicesProvider(%@) function"
-	@" was called with on port name not present as the NSPort entry in"
-	@" any service in the NSServices array in this processes info plist.",
-	name);
-    }
-    
   if (listenerConnection != nil)
     {
       /*
@@ -182,12 +156,34 @@ NSRegisterServicesProvider(id provider, NSString *name)
 	name];
     }
 
-  if (NO == isServicePort(name))
+  /* An application may always register its own name as a services port
+   * but we check other names to see if they match NSServices entry in
+   * the plist.
+   */
+  if (NO == [name isEqual: [[NSProcessInfo processInfo] processName]])
     {
-      NSLog(@"WARNING The NSRegisterServicesProvider(provider, %@) function"
-	@" was called with on port name not present as the NSPort entry in"
-	@" any service in the NSServices array in this processes info plist.",
-	name);
+      NSDictionary	*info = [[NSBundle mainBundle] infoDictionary];
+      NSEnumerator	*svcs;
+      BOOL		found = NO;
+
+      svcs = [[info objectForKey: @"NSServices"] objectEnumerator];
+      while ((info = [svcs nextObject]) != nil)
+	{
+	  NSString	*portName = [info objectForKey: @"NSPortName"];
+
+	  if ([name isEqual: portName])
+	    {
+	      found = YES;
+	      break;
+	    }
+	}
+      if (NO == found)
+	{
+	  NSLog(@"WARNING The NSRegisterServicesProvider(provider, %@) function"
+	    @" was called with a port name not present as the NSPort entry in"
+	    @" any service in the NSServices array in the info plist.",
+	    name);
+	}
     }
 
   if (listenerConnection != nil)
@@ -956,9 +952,10 @@ static NSString         *disabledName = @".GNUstepDisabled";
     {
       /* If we have changed the enabled/disabled services,
        * or there have been services added/removed
-       * then we must rebuild the services menu to add/remove
+       * then we must rebuild the services and menu to add/remove
        * items as appropriate.
        */
+      [self rebuildServices];
       [self rebuildServicesMenu];
     }
 }
@@ -970,6 +967,166 @@ static NSString         *disabledName = @".GNUstepDisabled";
       [self loadServices];
     }
   return _title2info;
+}
+
+- (BOOL) performService: (NSString*)serviceItem
+	 withPasteboard: (NSPasteboard*)pboard
+	   alertOnError: (BOOL)showAlerts
+{
+  NSDictionary		*service;
+  NSString		*port;
+  NSString		*timeout;
+  double		seconds;
+  NSDate		*finishBy;
+  NSString		*appPath;
+  id			provider;
+  NSString		*message;
+  NSString		*selName;
+  NSString		*userData;
+  NSString		*error = nil;
+
+  service = serviceFromAnyLocalizedTitle(serviceItem);
+  if (nil == service)
+    {
+      /* If this function was used in a command-line tool this lookup may
+       * have failed because no types have been registered by the app.
+       * Try again after registering the types provided in the pasteboard.
+       */
+      [self registerSendTypes: [pboard types] returnTypes: nil];
+      service = serviceFromAnyLocalizedTitle(serviceItem);
+      if (nil == service && [serviceItem isEqualToString: @"Open URL"])
+	{
+          service = serviceFromAnyLocalizedTitle(@"openURL");
+	}
+    }
+  if (nil == service)
+    {
+      if (showAlerts)
+	{
+	  NSRunAlertPanel(nil,
+	    @"No service matching '%@'",
+	    @"Continue", nil, nil,
+	    serviceItem);
+	}
+      return NO;			/* No matching service.	*/
+    }
+
+  port = [service objectForKey: @"NSPortName"];
+  timeout = [service objectForKey: @"NSTimeout"];
+  if (timeout && [timeout floatValue] > 100)
+    {
+      seconds = [timeout floatValue] / 1000.0;
+    }
+  else
+    {
+      id	t = [service objectForKey: @"NSReturnTypes"];
+
+      if (NO == [t isKindOfClass: [NSArray class]] || 0 == [t count])
+	{
+	  /* A service which does not return anything should not normally
+	   * require us to wait, so default to a short timeout.
+	   */
+	  seconds = 1.0;
+	}
+      else
+	{
+          seconds = 30.0;
+	}
+    }
+  finishBy = [NSDate dateWithTimeIntervalSinceNow: seconds];
+  appPath = [service objectForKey: @"ServicePath"];
+  userData = [service objectForKey: @"NSUserData"];
+  message = [service objectForKey: @"NSMessage"];
+  selName = [message stringByAppendingString: @":userData:error:"];
+
+  /*
+   * Locate the service provider ... this will be a proxy to the remote
+   * object, or a local object (if we provide the service ourself)
+   */
+  provider = GSContactApplication(appPath, port, finishBy);
+  if (provider == nil)
+    {
+      if (showAlerts)
+	{
+	  NSRunAlertPanel(nil,
+	    @"Failed to contact service provider for '%@'",
+	    @"Continue", nil, nil,
+	    serviceItem);
+	}
+      return NO;
+    }
+
+  /*
+   * If the service provider is a remote object, we can set timeouts on
+   * the NSConnection so we don't hang waiting for it to reply.
+   */
+  /*
+  This check for a remote object is ugly. When GSListener is reworked,
+  this should be improved.
+
+  For now, we can't use -isProxy since GSListener is a proxy, and we can't
+  use -isKindOfClass: since it gets forwarded. Fortunately, -class isn't
+  forwarded, so that's what we use.
+
+  (Note, though, that we can't even use
+  [provider class] == [GSListener class] since [GSListener -class] returns
+  NULL instead of the real class.)
+  */
+  if ([provider class] == [NSDistantObject class])
+    {
+      NSConnection	*connection;
+
+      connection = [(NSDistantObject*)provider connectionForProxy];
+      seconds = [finishBy timeIntervalSinceNow];
+      [connection setRequestTimeout: seconds];
+      [connection setReplyTimeout: seconds];
+    }
+
+  /*
+   * At last, we ask for the service to be performed.
+   * We create an untyped selector matching the message name we have,
+   * Using that, we get a method signature from the provider, and
+   * take the type information from that to make a fully typed
+   * selector, with which we can create and use an invocation.
+   */
+  NS_DURING
+    {
+      SEL		sel = NSSelectorFromString(selName); 
+      NSMethodSignature	*sig = [provider methodSignatureForSelector: sel];
+
+      if (sig != nil)
+	{
+	  NSInvocation	*inv;
+	  NSString	**errPtr = &error;
+
+	  inv = [NSInvocation invocationWithMethodSignature: sig];
+	  [inv setTarget: provider];
+	  [inv setSelector: sel];
+	  [inv setArgument: (void*)&pboard atIndex: 2];
+	  [inv setArgument: (void*)&userData atIndex: 3];
+	  [inv setArgument: (void*)&errPtr atIndex: 4];
+	  [inv invoke];
+	}
+    }
+  NS_HANDLER
+    {
+      error = [NSString stringWithFormat: @"%@", [localException reason]];
+    }
+  NS_ENDHANDLER
+
+  if (error != nil)
+    {
+      if (showAlerts)
+	{
+	  NSRunAlertPanel(nil,
+	    @"Failed to contact service provider for '%@': %@",
+	    @"Continue", nil, nil,
+	    serviceItem, error);
+	}
+      return NO;
+    }
+
+  return YES;
 }
 
 /**
@@ -1691,133 +1848,16 @@ serviceFromAnyLocalizedTitle(NSString *title)
  * <p>Given the name of a serviceItem, and some data in a pasteboard
  * this function sends the data to the service provider (launching
  * another application if necessary) and retrieves the result of
- * the service in the pastebaord.
+ * the service in the pasteboard.
  * </p>
  * Returns YES on success, NO otherwise.
  */
 BOOL
 NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
 {
-  NSDictionary		*service;
-  NSString		*port;
-  NSString		*timeout;
-  double		seconds;
-  NSDate		*finishBy;
-  NSString		*appPath;
-  id			provider;
-  NSString		*message;
-  NSString		*selName;
-  NSString		*userData;
-  NSString		*error = nil;
-
-  service = serviceFromAnyLocalizedTitle(serviceItem);
-  if (service == nil)
-    {
-      NSRunAlertPanel(nil,
-	@"No service matching '%@'",
-	@"Continue", nil, nil,
-	serviceItem);
-      return NO;			/* No matching service.	*/
-    }
-
-  port = [service objectForKey: @"NSPortName"];
-  timeout = [service objectForKey: @"NSTimeout"];
-  if (timeout && [timeout floatValue] > 100)
-    {
-      seconds = [timeout floatValue] / 1000.0;
-    }
-  else
-    {
-      seconds = 30.0;
-    }
-  finishBy = [NSDate dateWithTimeIntervalSinceNow: seconds];
-  appPath = [service objectForKey: @"ServicePath"];
-  userData = [service objectForKey: @"NSUserData"];
-  message = [service objectForKey: @"NSMessage"];
-  selName = [message stringByAppendingString: @":userData:error:"];
-
-  /*
-   * Locate the service provider ... this will be a proxy to the remote
-   * object, or a local object (if we provide the service ourself)
-   */
-  provider = GSContactApplication(appPath, port, finishBy);
-  if (provider == nil)
-    {
-      NSRunAlertPanel(nil,
-	@"Failed to contact service provider for '%@'",
-	@"Continue", nil, nil,
-	serviceItem);
-      return NO;
-    }
-
-  /*
-   * If the service provider is a remote object, we can set timeouts on
-   * the NSConnection so we don't hang waiting for it to reply.
-   */
-  /*
-  This check for a remote object is ugly. When GSListener is reworked,
-  this should be improved.
-
-  For now, we can't use -isProxy since GSListener is a proxy, and we can't
-  use -isKindOfClass: since it gets forwarded. Fortunately, -class isn't
-  forwarded, so that's what we use.
-
-  (Note, though, that we can't even use
-  [provider class] == [GSListener class] since [GSListener -class] returns
-  NULL instead of the real class.)
-  */
-  if ([provider class] == [NSDistantObject class])
-    {
-      NSConnection	*connection;
-
-      connection = [(NSDistantObject*)provider connectionForProxy];
-      seconds = [finishBy timeIntervalSinceNow];
-      [connection setRequestTimeout: seconds];
-      [connection setReplyTimeout: seconds];
-    }
-
-  /*
-   * At last, we ask for the service to be performed.
-   * We create an untyped selector matching the message name we have,
-   * Using that, we get a method signature from the provider, and
-   * take the type information from that to make a fully typed
-   * selector, with which we can create and use an invocation.
-   */
-  NS_DURING
-    {
-      SEL		sel = NSSelectorFromString(selName); 
-      NSMethodSignature	*sig = [provider methodSignatureForSelector: sel];
-
-      if (sig != nil)
-	{
-	  NSInvocation	*inv;
-	  NSString	**errPtr = &error;
-
-	  inv = [NSInvocation invocationWithMethodSignature: sig];
-	  [inv setTarget: provider];
-	  [inv setSelector: sel];
-	  [inv setArgument: (void*)&pboard atIndex: 2];
-	  [inv setArgument: (void*)&userData atIndex: 3];
-	  [inv setArgument: (void*)&errPtr atIndex: 4];
-	  [inv invoke];
-	}
-    }
-  NS_HANDLER
-    {
-      error = [NSString stringWithFormat: @"%@", [localException reason]];
-    }
-  NS_ENDHANDLER
-
-  if (error != nil)
-    {
-      NSRunAlertPanel(nil,
-	@"Failed to contact service provider for '%@': %@",
-	@"Continue", nil, nil,
-	serviceItem, error);
-      return NO;
-    }
-
-  return YES;
+  return [[GSServicesManager manager] performService: serviceItem
+				      withPasteboard: pboard
+					alertOnError: YES];
 }
 
 /**
