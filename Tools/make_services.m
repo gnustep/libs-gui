@@ -139,7 +139,7 @@ main(int argc, char** argv, char **env_c)
 "\n"
 "You may use 'make_services --test filename' to test that the property list\n"
 "in 'filename' contains a valid services definition.\n"
-"You may use 'make_services --verbose' to produce descriptive output.\n"
+"You may use 'make_services --verbose' to get descriptive/diagnostic output.\n"
 "or --quiet to suppress any output (not recommended)\n",
 [cacheName cString]);
 	  exit(EXIT_SUCCESS);
@@ -958,7 +958,7 @@ validateEntry(id svcs, NSString *path, BOOL checkLive)
 	      if (nil == app)
 		{
 		  newService = nil;
-		  if (verbose > 0)
+		  if (verbose > 1)
 		    {
 		      NSLog(@"NSServices entry %u app is not live - %@",
 			pos, path);
