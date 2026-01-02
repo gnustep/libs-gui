@@ -106,11 +106,33 @@
     }
   [args addObject: _path];
 
+  NSString *lprPath = [NSTask launchPathForTool: @"lpr"];
+  if (lprPath == nil)
+    {
+      NSRunAlertPanel(@"Printing Error",
+        @"The 'lpr' program could not be found. Printing is unavailable. Please install 'lpr' and try again.",
+        @"OK", nil, nil);
+      status = [NSString stringWithFormat: _(@"Spooling failed: 'lpr' not found for printer %@."), name];
+      [[self printPanel] _setStatusStringValue: status];
+      return NO;
+    }
+
   task = [NSTask new];
-  [task setLaunchPath: @"lpr"];
+  [task setLaunchPath: lprPath];
   [task setArguments: args];
-  [task launch];
-  [task waitUntilExit];
+  NS_DURING
+  {
+    [task launch];
+    [task waitUntilExit];
+  }
+  NS_HANDLER
+  {
+    NSString *errmsg = [NSString stringWithFormat: _(@"Spooling failed: %@"), [localException reason]];
+    NSRunAlertPanel(@"Printing Error", errmsg, @"OK", nil, nil);
+    AUTORELEASE(task);
+    return NO;
+  }
+  NS_ENDHANDLER
   AUTORELEASE(task);
   return YES;
 }
