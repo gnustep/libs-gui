@@ -28,6 +28,7 @@
 #define _GNUstep_H_NSDiffableDataSource
 #import <AppKit/AppKitDefines.h>
 #import <Foundation/Foundation.h>
+#import <AppKit/NSTableView.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
 
