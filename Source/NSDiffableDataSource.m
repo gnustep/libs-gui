@@ -56,15 +56,6 @@ GSDiffableDefaultSectionIdentifier()
   return defaultIdentifier;
 }
 
-@interface NSDiffableDataSourceSnapshot ()
-{
-  NSMutableArray *_sections;
-  NSMutableDictionary *_itemsBySection;
-  NSMutableSet *_reloadedSections;
-  NSMutableSet *_reloadedItems;
-}
-@end
-
 @implementation NSDiffableDataSourceSnapshot
 
 - (id) init

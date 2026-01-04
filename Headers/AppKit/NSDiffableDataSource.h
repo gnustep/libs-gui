@@ -45,6 +45,13 @@
 
 APPKIT_EXPORT_CLASS
 @interface NSDiffableDataSourceSnapshot : NSObject <NSCopying, NSMutableCopying>
+{
+@private
+  NSMutableArray *_sections;
+  NSMutableDictionary *_itemsBySection;
+  NSMutableSet *_reloadedSections;
+  NSMutableSet *_reloadedItems;
+}
 - (NSArray *)sectionIdentifiers;
 - (NSArray *)itemIdentifiers;
 - (NSArray *)itemIdentifiersInSectionWithIdentifier: (id)sectionIdentifier;
