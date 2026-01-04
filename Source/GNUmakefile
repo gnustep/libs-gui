@@ -100,6 +100,7 @@ NSController.m \
 NSCursor.m \
 NSCustomImageRep.m \
 NSCustomTouchBarItem.m \
+NSDiffableDataSource.m \
 NSDataAsset.m \
 NSDataLink.m \
 NSDataLinkManager.m \
@@ -464,6 +465,7 @@ NSDataLinkPanel.h \
 NSDatePicker.h \
 NSDatePickerCell.h \
 NSDictionaryController.h \
+NSDiffableDataSource.h \
 NSDockTile.h \
 NSDocument.h \
 NSDocumentController.h \
