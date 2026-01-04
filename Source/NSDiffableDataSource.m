@@ -56,13 +56,16 @@ GSDiffableDefaultSectionIdentifier()
   return defaultIdentifier;
 }
 
-@implementation NSDiffableDataSourceSnapshot
+@interface NSDiffableDataSourceSnapshot ()
 {
   NSMutableArray *_sections;
   NSMutableDictionary *_itemsBySection;
   NSMutableSet *_reloadedSections;
   NSMutableSet *_reloadedItems;
 }
+@end
+
+@implementation NSDiffableDataSourceSnapshot
 
 - (id) init
 {
@@ -326,7 +329,9 @@ GSDiffableDefaultSectionIdentifier()
                    inSection: (id *)sectionOut
                        index: (NSUInteger *)indexOut
 {
-  for (NSUInteger sectionIndex = 0; sectionIndex < [_sections count]; sectionIndex++)
+  NSUInteger sectionIndex = 0;
+
+  for (sectionIndex = 0; sectionIndex < [_sections count]; sectionIndex++)
     {
       id section = [_sections objectAtIndex: sectionIndex];
       NSMutableArray *items = [_itemsBySection objectForKey: section];
@@ -471,7 +476,9 @@ GSDiffableDefaultSectionIdentifier()
   FOR_IN(id, section, sections)
     {
       NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
-      for (NSUInteger itemIndex = 0; itemIndex < [items count]; itemIndex++)
+      NSUInteger itemIndex = 0;
+
+      for (itemIndex = 0; itemIndex < [items count]; itemIndex++)
         {
           NSIndexPath *path = [NSIndexPath indexPathForItem: itemIndex inSection: sectionIndex];
           [_identifierToIndexPath setObject: path forKey: [items objectAtIndex: itemIndex]];
@@ -629,7 +636,9 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
   FOR_IN(id, section, sections)
     {
       NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
-      for (NSUInteger itemIndex = 0; itemIndex < [items count]; itemIndex++)
+      NSUInteger itemIndex = 0;
+
+      for (itemIndex = 0; itemIndex < [items count]; itemIndex++)
         {
           NSIndexPath *path = [NSIndexPath indexPathForItem: itemIndex inSection: sectionIndex];
           [_identifierToIndexPath setObject: path forKey: [items objectAtIndex: itemIndex]];
