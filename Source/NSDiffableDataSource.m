@@ -37,6 +37,8 @@
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSColor.h"
 
+#import "GSFastEnumeration.h"
+
 #import "GSGuiPrivate.h"
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
