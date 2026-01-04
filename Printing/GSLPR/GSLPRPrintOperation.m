@@ -129,6 +129,8 @@
   {
     NSString *errmsg = [NSString stringWithFormat: _(@"Spooling failed: %@"), [localException reason]];
     NSRunAlertPanel(@"Printing Error", errmsg, @"OK", nil, nil);
+    status = errmsg;
+    [[self printPanel] _setStatusStringValue: status];
     AUTORELEASE(task);
     return NO;
   }
