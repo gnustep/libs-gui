@@ -41,8 +41,6 @@
 
 #import "GSGuiPrivate.h"
 
-#if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
-
 static id
 GSDiffableDefaultSectionIdentifier()
 {
@@ -753,5 +751,3 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
 }
 
 @end
-
-#endif /* OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST) */

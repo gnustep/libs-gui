@@ -1610,34 +1610,49 @@ static NSString *_placeholderItem = nil;
 
 - (NSNib *) _nibForClass: (Class)cls
 {
-  NSString *clsName = NSStringFromClass(cls);
-  NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
-					bundle: [NSBundle bundleForClass: cls]];
-  AUTORELEASE(nib);
+  NSNib *nib = nil;
+
+  if (cls != nil)
+    {
+      NSString *clsName = NSStringFromClass(cls);
+
+      nib = [[NSNib alloc] initWithNibNamed: clsName
+				     bundle: [NSBundle bundleForClass: cls]];
+      AUTORELEASE(nib);
+    }
+
   return nib;
 }
 
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
-  NSCollectionViewItem *item =
-    [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: indexPath];
+  NSCollectionViewItem *item = [_dataSource collectionView: self
+					    itemForRepresentedObjectAtIndexPath: indexPath];
   NSNib *nib = [self _nibForClass: [item class]];
-  BOOL loaded = [nib instantiateWithOwner: item
-			  topLevelObjects: NULL];
 
-  if (loaded == NO)
+  if (nib != nil)
     {
-      item = nil;
-      NSLog(@"Could not load model %@", nib);
+      BOOL loaded = [nib instantiateWithOwner: item
+			      topLevelObjects: NULL];
+
+      if (loaded == NO)
+	{
+	  item = nil;
+	  NSLog(@"Could not load model %@", nib);
+	}
+      else
+	{
+	  // Add to maps...
+	  [_itemsToIndexPaths setObject: indexPath
+				 forKey: item];
+	  [_indexPathsToItems setObject: item
+				 forKey: indexPath];
+	}
     }
   else
     {
-      // Add to maps...
-      [_itemsToIndexPaths setObject: indexPath
-			     forKey: item];
-      [_indexPathsToItems setObject: item
-			     forKey: indexPath];
+      NSLog(@"No nib loaded for %@", item);
     }
 
   return item;
