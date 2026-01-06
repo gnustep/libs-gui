@@ -26,12 +26,17 @@
 
 #ifndef _GNUstep_H_NSDiffableDataSource
 #define _GNUstep_H_NSDiffableDataSource
-#import <AppKit/AppKitDefines.h>
-#import <Foundation/Foundation.h>
-#import <AppKit/NSTableView.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
 
+#import <AppKit/AppKitDefines.h>
+#import <Foundation/NSObject.h>
+#import <AppKit/NSTableView.h>
+
+@class NSArray;
+@class NSMutableArray;
+@class NSMutableDictionary;
+@class NSMutableSet;
 @class NSCollectionView;
 @class NSCollectionViewItem;
 @class NSTableView;
@@ -88,8 +93,8 @@ APPKIT_EXPORT_CLASS
 @protocol NSTableViewDiffableCellProvider
 - (NSView *)tableView: (NSTableView *)tableView
     viewForIdentifier: (id)itemIdentifier
-             tableColumn: (NSTableColumn *)tableColumn
-                    row: (NSInteger)row;
+          tableColumn: (NSTableColumn *)tableColumn
+                  row: (NSInteger)row;
 @end
 
 APPKIT_EXPORT_CLASS
@@ -101,9 +106,9 @@ APPKIT_EXPORT_CLASS
   NSMutableDictionary *_identifierToIndexPath;
 }
 - (id)initWithCollectionView: (NSCollectionView *)collectionView
-                 itemProvider: (id)itemProvider;
+                itemProvider: (id)itemProvider;
 - (void)applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
-  animatingDifferences: (BOOL)animatingDifferences;
+ animatingDifferences: (BOOL)animatingDifferences;
 - (NSDiffableDataSourceSnapshot *)snapshot;
 - (NSIndexPath *)indexPathForItemIdentifier: (id)itemIdentifier;
 - (id)itemIdentifierForIndexPath: (NSIndexPath *)indexPath;
@@ -127,6 +132,6 @@ APPKIT_EXPORT_CLASS
 - (id)itemIdentifierForRow: (NSInteger)row;
 @end
 
-#endif /* OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST) */
+#endif /* end of #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST) */
 
 #endif /* _GNUstep_H_NSDiffableDataSource */

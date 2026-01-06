@@ -1610,22 +1610,45 @@ static NSString *_placeholderItem = nil;
 
 - (NSNib *) _nibForClass: (Class)cls
 {
-  NSString *clsName = NSStringFromClass(cls);
-  NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
-					bundle: [NSBundle bundleForClass: cls]];
-  AUTORELEASE(nib);
+  NSNib *nib = nil;
+
+  if (cls != nil)
+    {
+      NSString *clsName = NSStringFromClass(cls);
+
+      nib = [[NSNib alloc] initWithNibNamed: clsName
+				     bundle: [NSBundle bundleForClass: cls]];
+      AUTORELEASE(nib);
+    }
+
   return nib;
 }
 
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
-  NSCollectionViewItem *item =
-    [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: indexPath];
-  
-  if (item == nil)
+  NSCollectionViewItem *item = [_dataSource collectionView: self
+					    itemForRepresentedObjectAtIndexPath: indexPath];
+  NSNib *nib = [self _nibForClass: [item class]];
+
+  if (nib != nil)
     {
-      return nil;
+      BOOL loaded = [nib instantiateWithOwner: item
+			      topLevelObjects: NULL];
+
+      if (loaded == NO)
+	{
+	  item = nil;
+	  NSLog(@"Could not load model %@", nib);
+	}
+      else
+	{
+	  // Add to maps...
+	  [_itemsToIndexPaths setObject: indexPath
+				 forKey: item];
+	  [_indexPathsToItems setObject: item
+				 forKey: indexPath];
+	}
     }
 
   // Only try to load NIB if item doesn't already have a view
@@ -1646,10 +1669,7 @@ static NSString *_placeholderItem = nil;
   // Add to maps only if we have a valid item
   if (item != nil)
     {
-      [_itemsToIndexPaths setObject: indexPath
-			     forKey: item];
-      [_indexPathsToItems setObject: item
-			     forKey: indexPath];
+      NSLog(@"No nib loaded for %@", item);
     }
 
   return item;
