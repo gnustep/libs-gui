@@ -1610,34 +1610,51 @@ static NSString *_placeholderItem = nil;
 
 - (NSNib *) _nibForClass: (Class)cls
 {
-  NSString *clsName = NSStringFromClass(cls);
-  NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
-					bundle: [NSBundle bundleForClass: cls]];
-  AUTORELEASE(nib);
+  NSNib *nib = nil;
+
+  if (cls != nil)
+    {
+      NSString *clsName = NSStringFromClass(cls);
+
+      nib = [[NSNib alloc] initWithNibNamed: clsName
+				     bundle: [NSBundle bundleForClass: cls]];
+      AUTORELEASE(nib);
+    }
+
   return nib;
 }
 
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
-  NSCollectionViewItem *item =
-    [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: indexPath];
+  NSLog(@"indexPath = %@", indexPath);
+  NSIndexPath *ip = [indexPath copy];
+  NSCollectionViewItem *item = [_dataSource collectionView: self
+					    itemForRepresentedObjectAtIndexPath: ip];
   NSNib *nib = [self _nibForClass: [item class]];
-  BOOL loaded = [nib instantiateWithOwner: item
-			  topLevelObjects: NULL];
 
-  if (loaded == NO)
+  if (nib != nil)
     {
-      item = nil;
-      NSLog(@"Could not load model %@", nib);
+      BOOL loaded = [nib instantiateWithOwner: item
+			      topLevelObjects: NULL];
+
+      if (loaded == NO)
+	{
+	  item = nil;
+	  NSLog(@"Could not load model %@", nib);
+	}
+      else
+	{
+	  // Add to maps...
+	  [_itemsToIndexPaths setObject: ip
+				 forKey: item];
+	  [_indexPathsToItems setObject: item
+				 forKey: ip];
+	}
     }
   else
     {
-      // Add to maps...
-      [_itemsToIndexPaths setObject: indexPath
-			     forKey: item];
-      [_indexPathsToItems setObject: item
-			     forKey: indexPath];
+      NSLog(@"No nib loaded for %@", item);
     }
 
   return item;
@@ -1680,7 +1697,7 @@ static NSString *_placeholderItem = nil;
 			     forKey: kind];
     }
 
-  [t setObject: viewClass forKey: identifier];
+  [t setObject: viewClass forKey: [identifier copy]];
 }
 
 - (void) registerNib: (NSNib *)nib
@@ -1697,7 +1714,7 @@ static NSString *_placeholderItem = nil;
 			  forKey: kind];
     }
 
-  [t setObject: nib forKey: identifier];
+  [t setObject: nib forKey: [identifier copy]];
 }
 
 /* Providing the collection view's data */
