@@ -1,6 +1,9 @@
 /*
    NSDiffableDataSource.h
 
+   Author: Gregory John Casamento <greg.casamento@gmail.com>
+   Date: Jan 2026
+
    Diffable data source support for NSCollectionView and NSTableView.
 
    Copyright (C) 2026 Free Software Foundation, Inc.
@@ -48,6 +51,9 @@
 @protocol NSCollectionViewPrefetching;
 @protocol NSTableViewDataSource;
 
+DEFINE_BLOCK_TYPE(GSCollectionViewItemProviderBlock, NSCollectionViewItem*, NSCollectionView*, id, NSIndexPath*);
+DEFINE_BLOCK_TYPE(GSTableViewCellProviderBlock, NSView*, NSTableView*, id, NSTableColumn*, NSInteger);
+
 APPKIT_EXPORT_CLASS
 @interface NSDiffableDataSourceSnapshot : NSObject <NSCopying, NSMutableCopying>
 {
@@ -64,9 +70,9 @@ APPKIT_EXPORT_CLASS
 - (NSInteger)numberOfItems;
 - (void)appendSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
 - (void)insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
-            beforeSectionWithIdentifier: (id)sectionIdentifier;
+	    beforeSectionWithIdentifier: (id)sectionIdentifier;
 - (void)insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
-             afterSectionWithIdentifier: (id)sectionIdentifier;
+	     afterSectionWithIdentifier: (id)sectionIdentifier;
 - (void)deleteSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
 - (void)moveSectionWithIdentifier: (id)sectionIdentifier
       beforeSectionWithIdentifier: (id)otherSectionIdentifier;
@@ -74,11 +80,11 @@ APPKIT_EXPORT_CLASS
        afterSectionWithIdentifier: (id)otherSectionIdentifier;
 - (void)appendItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 - (void)appendItemsWithIdentifiers: (NSArray *)itemIdentifiers
-           intoSectionWithIdentifier: (id)sectionIdentifier;
+	   intoSectionWithIdentifier: (id)sectionIdentifier;
 - (void)insertItemsWithIdentifiers: (NSArray *)itemIdentifiers
-          beforeItemWithIdentifier: (id)beforeIdentifier;
+	  beforeItemWithIdentifier: (id)beforeIdentifier;
 - (void)insertItemsWithIdentifiers: (NSArray *)itemIdentifiers
-           afterItemWithIdentifier: (id)afterIdentifier;
+	   afterItemWithIdentifier: (id)afterIdentifier;
 - (void)deleteItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 - (void)reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
 - (void)reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
@@ -86,15 +92,15 @@ APPKIT_EXPORT_CLASS
 
 @protocol NSCollectionViewDiffableItemProvider
 - (NSCollectionViewItem *)collectionView: (NSCollectionView *)collectionView
-                     itemForIdentifier: (id)itemIdentifier
-                               atIndexPath: (NSIndexPath *)indexPath;
+		     itemForIdentifier: (id)itemIdentifier
+			       atIndexPath: (NSIndexPath *)indexPath;
 @end
 
 @protocol NSTableViewDiffableCellProvider
 - (NSView *)tableView: (NSTableView *)tableView
     viewForIdentifier: (id)itemIdentifier
-          tableColumn: (NSTableColumn *)tableColumn
-                  row: (NSInteger)row;
+	  tableColumn: (NSTableColumn *)tableColumn
+		  row: (NSInteger)row;
 @end
 
 APPKIT_EXPORT_CLASS
@@ -102,11 +108,11 @@ APPKIT_EXPORT_CLASS
 {
   NSCollectionView *_collectionView;
   NSDiffableDataSourceSnapshot *_snapshot;
-  id _itemProvider;
+  GSCollectionViewItemProviderBlock _itemProvider;
   NSMutableDictionary *_identifierToIndexPath;
 }
 - (id)initWithCollectionView: (NSCollectionView *)collectionView
-                itemProvider: (id)itemProvider;
+		itemProvider: (GSCollectionViewItemProviderBlock)itemProvider;
 - (void)applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
  animatingDifferences: (BOOL)animatingDifferences;
 - (NSDiffableDataSourceSnapshot *)snapshot;
@@ -119,11 +125,11 @@ APPKIT_EXPORT_CLASS
 {
   NSTableView *_tableView;
   NSDiffableDataSourceSnapshot *_snapshot;
-  id _cellProvider;
+  GSTableViewCellProviderBlock _cellProvider;
   NSMutableDictionary *_identifierToIndexPath;
 }
 - (id)initWithTableView: (NSTableView *)tableView
-           cellProvider: (id)cellProvider;
+	   cellProvider: (GSTableViewCellProviderBlock)cellProvider;
 - (void)applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
   animatingDifferences: (BOOL)animatingDifferences;
 - (NSDiffableDataSourceSnapshot *)snapshot;
