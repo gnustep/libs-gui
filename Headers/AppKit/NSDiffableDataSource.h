@@ -51,7 +51,8 @@
 @protocol NSCollectionViewPrefetching;
 @protocol NSTableViewDataSource;
 
-DEFINE_BLOCK_TYPE(GSCollectionViewItemProviderBlock, NSCollectionViewItem*, NSCollectionView*, id, NSIndexPath*);
+/* Apple-compatible signature: (collectionView, indexPath, identifier) */
+DEFINE_BLOCK_TYPE(GSCollectionViewItemProviderBlock, NSCollectionViewItem*, NSCollectionView*, NSIndexPath*, id);
 DEFINE_BLOCK_TYPE(GSTableViewCellProviderBlock, NSView*, NSTableView*, id, NSTableColumn*, NSInteger);
 
 APPKIT_EXPORT_CLASS

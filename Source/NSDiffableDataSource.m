@@ -503,7 +503,7 @@ GSDiffableDefaultSectionIdentifier()
       for (itemIndex = 0; itemIndex < [items count]; itemIndex++)
         {
           NSIndexPath *path = [NSIndexPath indexPathForItem: itemIndex inSection: sectionIndex];
-          [_identifierToIndexPath setObject: path forKey: [items objectAtIndex: itemIndex]];
+          [_identifierToIndexPath setObject: RETAIN(path) forKey: [items objectAtIndex: itemIndex]];
         }
       sectionIndex++;
     }
@@ -583,7 +583,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 - (NSCollectionViewItem *) collectionView: (NSCollectionView *)collectionView
-    itemForRepresentedObjectAtIndexPath: (NSIndexPath *)indexPath
+      itemForRepresentedObjectAtIndexPath: (NSIndexPath *)indexPath
 {
   id identifier = [self itemIdentifierForIndexPath: indexPath];
   if (identifier == nil || _itemProvider == nil)
@@ -605,7 +605,8 @@ GSDiffableDefaultSectionIdentifier()
   */
   if (_itemProvider != nil)
     {
-      NSCollectionViewItem *item = (NSCollectionViewItem *)CALL_NON_NULL_BLOCK(_itemProvider, collectionView, identifier, indexPath);
+      /* Apple-compatible block order: collectionView, indexPath, identifier */
+      NSCollectionViewItem *item = (NSCollectionViewItem *)CALL_NON_NULL_BLOCK(_itemProvider, collectionView, indexPath, identifier);
       if ([item respondsToSelector: @selector(setRepresentedObject:)])
         {
           [item setRepresentedObject: identifier];
@@ -673,7 +674,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
       for (itemIndex = 0; itemIndex < [items count]; itemIndex++)
         {
           NSIndexPath *path = [NSIndexPath indexPathForItem: itemIndex inSection: sectionIndex];
-          [_identifierToIndexPath setObject: path forKey: [items objectAtIndex: itemIndex]];
+          [_identifierToIndexPath setObject: RETAIN(path) forKey: [items objectAtIndex: itemIndex]];
         }
       sectionIndex++;
     }

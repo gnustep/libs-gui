@@ -1627,8 +1627,10 @@ static NSString *_placeholderItem = nil;
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
+  NSLog(@"indexPath = %@", indexPath);
+  NSIndexPath *ip = [indexPath copy];
   NSCollectionViewItem *item = [_dataSource collectionView: self
-					    itemForRepresentedObjectAtIndexPath: indexPath];
+					    itemForRepresentedObjectAtIndexPath: ip];
   NSNib *nib = [self _nibForClass: [item class]];
 
   if (nib != nil)
@@ -1644,10 +1646,10 @@ static NSString *_placeholderItem = nil;
       else
 	{
 	  // Add to maps...
-	  [_itemsToIndexPaths setObject: indexPath
+	  [_itemsToIndexPaths setObject: ip
 				 forKey: item];
 	  [_indexPathsToItems setObject: item
-				 forKey: indexPath];
+				 forKey: ip];
 	}
     }
 
