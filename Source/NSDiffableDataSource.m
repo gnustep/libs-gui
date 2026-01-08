@@ -28,6 +28,8 @@
 #import <Foundation/NSIndexPath.h>
 #import <Foundation/NSIndexSet.h>
 #import <Foundation/NSSet.h>
+#import <GNUstepBase/GSBlocks.h>
+#import <objc/runtime.h>
 
 #import "AppKit/NSCollectionView.h"
 #import "AppKit/NSCollectionViewItem.h"
@@ -40,6 +42,37 @@
 #import "GSFastEnumeration.h"
 
 #import "GSGuiPrivate.h"
+
+/* 
+#ifndef GS_BLOCKS_AVAILABLE
+#define GS_BLOCKS_AVAILABLE 1
+#endif
+
+// Helper macro for checking blocks; fall back to runtime probing when GNUstep does not supply one.
+#ifndef GS_IS_BLOCK
+static inline BOOL
+GS_IS_BLOCK(id obj)
+{
+  if (obj == nil)
+    {
+      return NO;
+    }
+
+  Class blockClass = objc_getClass("NSBlock");
+  Class stackBlockClass = objc_getClass("_NSConcreteStackBlock");
+  Class globalBlockClass = objc_getClass("_NSConcreteGlobalBlock");
+
+  if ((blockClass != Nil && [obj isKindOfClass: blockClass])
+      || (stackBlockClass != Nil && [obj isKindOfClass: stackBlockClass])
+      || (globalBlockClass != Nil && [obj isKindOfClass: globalBlockClass]))
+    {
+      return YES;
+    }
+
+  return NO;
+}
+#endif
+*/
 
 static id
 GSDiffableDefaultSectionIdentifier()
@@ -430,14 +463,14 @@ GSDiffableDefaultSectionIdentifier()
 @implementation NSCollectionViewDiffableDataSource
 
 - (id) initWithCollectionView: (NSCollectionView *)collectionView
-                  itemProvider: (id)itemProvider
+                  itemProvider: (GSCollectionViewItemProviderBlock)itemProvider
 {
   self = [super init];
   if (self != nil)
     {
       _collectionView = collectionView;
       _snapshot = [NSDiffableDataSourceSnapshot new];
-      _itemProvider = RETAIN(itemProvider);
+      _itemProvider = RETAIN( itemProvider );
       _identifierToIndexPath = [NSMutableDictionary new];
       [_collectionView setDataSource: self];
       if ([_collectionView respondsToSelector: @selector(setPrefetchDataSource:)])
@@ -451,7 +484,7 @@ GSDiffableDefaultSectionIdentifier()
 - (void) dealloc
 {
   DESTROY(_snapshot);
-  DESTROY(_itemProvider);
+  // DESTROY(_itemProvider);
   DESTROY(_identifierToIndexPath);
   [super dealloc];
 }
@@ -557,12 +590,22 @@ GSDiffableDefaultSectionIdentifier()
     {
       return nil;
     }
-
+  /*
   if ([_itemProvider respondsToSelector: @selector(collectionView:itemForIdentifier:atIndexPath:)])
     {
       NSCollectionViewItem *item = [(id)_itemProvider collectionView: collectionView
                                                    itemForIdentifier: identifier
                                                          atIndexPath: indexPath];
+      if ([item respondsToSelector: @selector(setRepresentedObject:)])
+        {
+          [item setRepresentedObject: identifier];
+        }
+      return item;
+    }
+  */
+  if (_itemProvider != nil)
+    {
+      NSCollectionViewItem *item = (NSCollectionViewItem *)CALL_NON_NULL_BLOCK(_itemProvider, collectionView, identifier, indexPath);
       if ([item respondsToSelector: @selector(setRepresentedObject:)])
         {
           [item setRepresentedObject: identifier];
@@ -594,7 +637,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 @implementation NSTableViewDiffableDataSource
 
 - (id) initWithTableView: (NSTableView *)tableView
-             cellProvider: (id)cellProvider
+            cellProvider: (GSTableViewCellProviderBlock)cellProvider
 {
   self = [super init];
   if (self != nil)
@@ -735,6 +778,15 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
                                   viewForIdentifier: identifier
                                        tableColumn: tableColumn
                                               row: rowIndex];
+      if (view != nil)
+        {
+          return view;
+        }
+    }
+
+  if (_cellProvider != nil) // (GS_BLOCKS_AVAILABLE && GS_IS_BLOCK(_cellProvider))
+    {
+      NSView *view = (NSView *)CALL_NON_NULL_BLOCK(_cellProvider, tableView, identifier, tableColumn, rowIndex);
       if (view != nil)
         {
           return view;

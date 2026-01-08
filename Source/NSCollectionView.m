@@ -1712,7 +1712,7 @@ static NSString *_placeholderItem = nil;
 			     forKey: kind];
     }
 
-  [t setObject: viewClass forKey: identifier];
+  [t setObject: viewClass forKey: [identifier copy]];
 }
 
 - (void) registerNib: (NSNib *)nib
@@ -1729,7 +1729,7 @@ static NSString *_placeholderItem = nil;
 			  forKey: kind];
     }
 
-  [t setObject: nib forKey: identifier];
+  [t setObject: nib forKey: [identifier copy]];
 }
 
 /* Providing the collection view's data */
