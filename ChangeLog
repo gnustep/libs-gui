@@ -1,5 +1,18 @@
 2026-01-09 Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Headers/Additions/GNUstepGUI/GSServicesManager.h:
+	* Source/NSApplication.m:
+	* Source/NSWorkspace.m:
+	Allow non-gnustep apps to be used via app wrappers (a bundle of a
+	script to launch the program and an info plist describing it etc)
+	to open URLs.  The -GSOpenURL command line parameter tells the script
+	which URL to open (like the -GSFilePath parameter already supported
+	for opening files).  The info plist would need to contain the normal
+	CFBundleURLTypes entry used to spewcify the roles (Editor/Viewer) and
+	URL schemes the app supports.
+
+2026-01-09 Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/NSWorkspace.m: Remove NSWebBrowser as its addition only seems
         to confuse things.
 
