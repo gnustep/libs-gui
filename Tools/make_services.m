@@ -81,13 +81,17 @@ main(int argc, char** argv, char **env_c)
   NSMutableDictionary	*services;
   NSArray		*args;
   NSString		*usrRoot;
-  NSString		*str;
+  NSString		*appsPath;
+  NSString		*cachePath;
   unsigned		index;
   NSMutableDictionary	*fullMap;
   NSDictionary		*oldMap;
   NSEnumerator		*enumerator;
   NSString		*path;
-  NSError *error;
+  NSError 		*error;
+  NSString		*serviceName = nil;
+  BOOL			extensions = NO;
+  BOOL			schemes = NO;
 
 #ifdef GS_PASS_ARGUMENTS
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env_c];
@@ -118,6 +122,12 @@ main(int argc, char** argv, char **env_c)
   extensionsMap = [NSMutableDictionary dictionaryWithCapacity: 64];
   schemesMap = [NSMutableDictionary dictionaryWithCapacity: 64];
 
+  usrRoot = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+    NSUserDomainMask, YES) lastObject];
+  usrRoot = [usrRoot stringByAppendingPathComponent: @"Services"];
+  appsPath = [usrRoot stringByAppendingPathComponent: appsName];
+  cachePath = [usrRoot stringByAppendingPathComponent: cacheName];
+
   args = [proc arguments];
 
   for (index = 1; index < [args count]; index++)
@@ -130,18 +140,37 @@ main(int argc, char** argv, char **env_c)
 	{
 	  verbose--;
 	}
+      if ([[args objectAtIndex: index] isEqual: @"--extensions"])
+	{
+	  extensions = YES;
+	}
+      if ([[args objectAtIndex: index] isEqual: @"--schemes"])
+	{
+	  schemes = YES;
+	}
+      if ([[args objectAtIndex: index] hasPrefix: @"--service="])
+	{
+	  serviceName = [[args objectAtIndex: index] substringFromIndex: 10];
+	}
       if ([[args objectAtIndex: index] isEqual: @"--help"])
 	{
 	  printf(
 "make_services builds a validated cache of service information for use by\n"
-"programs that want to use the OpenStep services facility.\n"
-"This cache is stored in '%s' in the users GNUstep directory.\n"
+"programs that want to use the OpenStep services facility, and a cache of\n"
+"file extensions and URL schemes supported by different applications.\n"
+"These caches are stored in '%s' and '%s'.\n"
+"The caches are in binary format (may be displayed using the pldes tool).\n"
 "\n"
 "You may use 'make_services --test filename' to test that the property list\n"
 "in 'filename' contains a valid services definition.\n"
 "You may use 'make_services --verbose' to get descriptive/diagnostic output.\n"
-"or --quiet to suppress any output (not recommended)\n",
-[cacheName cString]);
+"or --quiet to suppress any output (not recommended).\n"
+"You may use 'make_services with other options for diagnostic output:\n"
+"  --extensions   lists file extensions and the applications supporting them\n"
+"  --schemes      lists URL schemes and the applications supporting them\n"
+"  --service=XXX  lists the service with the default/canonical name XXX.\n"
+"",
+[cachePath cString], [appsPath cString]);
 	  exit(EXIT_SUCCESS);
 	}
       if ([[args objectAtIndex: index] isEqual: @"--test"])
@@ -179,9 +208,6 @@ main(int argc, char** argv, char **env_c)
   /*
    *	Make sure that the users 'Services' directory exists.
    */
-  usrRoot = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-    NSUserDomainMask, YES) lastObject];
-  usrRoot = [usrRoot stringByAppendingPathComponent: @"Services"];
   if (!CheckDirectory(usrRoot, &error))
     {
       if (verbose > 0)
@@ -228,10 +254,9 @@ main(int argc, char** argv, char **env_c)
   [fullMap setObject: printMap forKey: @"ByPrint"];
   [fullMap setObject: spellMap forKey: @"BySpell"];
 
-  str = [usrRoot stringByAppendingPathComponent: cacheName];
-  if ([mgr fileExistsAtPath: str])
+  if ([mgr fileExistsAtPath: cachePath])
     {
-      data = [NSData dataWithContentsOfFile: str];
+      data = [NSData dataWithContentsOfFile: cachePath];
       oldMap = [NSDeserializer deserializePropertyListFromData: data
 					     mutableContainers: NO];
     }
@@ -242,18 +267,17 @@ main(int argc, char** argv, char **env_c)
   if ([fullMap isEqual: oldMap] == NO)
     {
       data = [NSSerializer serializePropertyList: fullMap];
-      if ([data writeToFile: str atomically: YES] == NO)
+      if ([data writeToFile: cachePath atomically: YES] == NO)
 	{
 	  if (verbose > 0)
-	    NSLog(@"couldn't write %@", str);
+	    NSLog(@"couldn't write %@", cachePath);
 	  exit(EXIT_FAILURE);
 	}
     }
 
-  str = [usrRoot stringByAppendingPathComponent: appsName];
-  if ([mgr fileExistsAtPath: str])
+  if ([mgr fileExistsAtPath: appsPath])
     {
-      data = [NSData dataWithContentsOfFile: str];
+      data = [NSData dataWithContentsOfFile: appsPath];
       oldMap = [NSDeserializer deserializePropertyListFromData: data
 					     mutableContainers: NO];
     }
@@ -266,11 +290,121 @@ main(int argc, char** argv, char **env_c)
   if ([applicationMap isEqual: oldMap] == NO)
     {
       data = [NSSerializer serializePropertyList: applicationMap];
-      if ([data writeToFile: str atomically: YES] == NO)
+      if ([data writeToFile: appsPath atomically: YES] == NO)
 	{
 	  if (verbose > 0)
-	    NSLog(@"couldn't write %@", str);
+	    NSLog(@"couldn't write %@", appsPath);
 	  exit(EXIT_FAILURE);
+	}
+    }
+  if (extensions && [extensionsMap count] > 0)
+    {
+      NSEnumerator	*exts;
+      NSString		*ext;
+
+      GSPrintf(stdout, @"Extension       Applications\n");
+
+      exts = [[[extensionsMap allKeys]
+	sortedArrayUsingSelector: @selector(compare:)] objectEnumerator];
+      while ((ext = [exts nextObject]) != nil)
+	{
+	  NSArray	*apps;
+	  NSUInteger	count;
+	  NSUInteger	index;
+
+	  GSPrintf(stdout, @"%-16s", [ext cString]);
+	  apps = [[[extensionsMap objectForKey: ext] allKeys]
+	    sortedArrayUsingSelector: @selector(compare:)];
+	  count = [apps count];
+	  for (index = 0; index < count; index++)
+	    {
+	      NSString	*app = [apps objectAtIndex: index];
+
+	      if (0 == index)
+		{
+		  GSPrintf(stdout, @"%@\n", app);
+		}
+	      else
+		{
+		  GSPrintf(stdout, @"                %@\n", app);
+		}
+	    }
+	}
+    }
+  else if (extensions)
+    {
+      GSPrintf(stdout, @"No file extension support available.\n");
+    }
+
+  if (schemes && [schemesMap count] > 0)
+    {
+      NSEnumerator	*schemes;
+      NSString		*scheme;
+
+      GSPrintf(stdout, @"URL Scheme      Applications\n");
+
+      schemes = [[[schemesMap allKeys]
+	sortedArrayUsingSelector: @selector(compare:)] objectEnumerator];
+      while ((scheme = [schemes nextObject]) != nil)
+	{
+	  NSArray	*apps;
+	  NSUInteger	count;
+	  NSUInteger	index;
+
+	  GSPrintf(stdout, @"%-16s", [scheme cString]);
+	  apps = [[[schemesMap objectForKey: scheme] allKeys]
+	    sortedArrayUsingSelector: @selector(compare:)];
+	  count = [apps count];
+	  for (index = 0; index < count; index++)
+	    {
+	      NSString	*app = [apps objectAtIndex: index];
+
+	      if (0 == index)
+		{
+		  GSPrintf(stdout, @"%@\n", app);
+		}
+	      else
+		{
+		  GSPrintf(stdout, @"                %@\n", app);
+		}
+	    }
+	}
+    }
+  else if (schemes)
+    {
+      GSPrintf(stdout, @"No URL scheme support available.\n");
+    }
+
+  if (serviceName)
+    {
+      NSDictionary	*d;
+      NSDictionary	*e;
+
+      /* Get map by default/canonical service names
+       */
+      d = [serviceMap objectForKey: @"default"];
+      e = [d objectForKey: serviceName];
+      if (nil == e)
+	{
+	  NSEnumerator	*enumerator = [d keyEnumerator];
+	  NSString	*key;
+
+	  while ((key = [enumerator nextObject]) != nil)
+	    {
+	      if ([serviceName caseInsensitiveCompare: key] == NSOrderedSame)
+		{
+		  e = [d objectForKey: key];
+		  break;
+		}
+	    }
+	}
+      if (nil == e)
+	{
+	  GSPrintf(stdout, @"Service named '%@' not found.\n", serviceName);
+	}
+      else
+	{
+	  GSPrintf(stdout, @"Service named '%@' is %@.\n", serviceName, e);
 	}
     }
 
