@@ -1106,29 +1106,9 @@ static NSDictionary		*urlPreferences = nil;
         }
       else
         {
-	  NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
-	  NSString		*browser = [defs stringForKey: @"NSWebBrowser"];
-
-// if (nil == browser) browser = @"firefox -new-window \"%@\"";
-	  if ([browser length] > 0)
-	    {
-	      NSString	*path;
-	      NSArray	*args;
-	      NSTask	*task;
-
-	      args = [NSTask argumentsFromString:
-		[NSString stringWithFormat: browser, url]];
-
-	      path = [NSTask launchPathForTool: [args firstObject]];
-	      task = [NSTask launchedTaskWithLaunchPath: path
-					      arguments: args];
-	      [task waitUntilExit];
-	      if (task && [task terminationStatus] == 0)
-		{
-		  [NSApp deactivate];
-		  return YES;
-		}
-	    }     
+	  NSRunAlertPanel(nil,
+	    @"Unable to use Application or Service to open URL",
+	    @"Continue", nil, nil);
 
           if ([self _openUnknown: [url absoluteString]])
 	    {
