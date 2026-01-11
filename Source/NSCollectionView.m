@@ -1627,10 +1627,29 @@ static NSString *_placeholderItem = nil;
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
-  NSLog(@"indexPath = %@", indexPath);
+  NSLog(@"makeItemWithIdentifier:forIndexPath: identifier=%@ path=%@", identifier, indexPath);
   NSIndexPath *ip = [indexPath copy];
   NSCollectionViewItem *item = [_dataSource collectionView: self
 					    itemForRepresentedObjectAtIndexPath: ip];
+  
+  if (item == nil)
+    {
+      NSLog(@"Data source returned nil item");
+      AUTORELEASE(ip);
+      return nil;
+    }
+
+  // If the item already has a view (created by diffable data source provider),
+  // skip nib loading and just track it.
+  if ([item view] != nil)
+    {
+      NSLog(@"Item already has a view (from provider), skipping nib load");
+      [_itemsToIndexPaths setObject: ip forKey: item];
+      [_indexPathsToItems setObject: item forKey: ip];
+      AUTORELEASE(ip);
+      return item;
+    }
+
   NSNib *nib = [self _nibForClass: [item class]];
 
   if (nib != nil)
@@ -1674,6 +1693,7 @@ static NSString *_placeholderItem = nil;
       NSLog(@"No nib loaded for %@", item);
     }
 
+  AUTORELEASE(ip);
   return item;
 }
 
@@ -1852,7 +1872,12 @@ static NSString *_placeholderItem = nil;
 
   for (ci = 0; ci < ni; ci++)
     {
-      NSIndexPath *p = [NSIndexPath indexPathForItem: ci inSection: cs];
+      // Build index path explicitly (section, then item) to avoid
+      // reliance on convenience methods that may return incorrect values.
+      NSIndexPath *p = [NSIndexPath indexPathWithIndex: cs];
+      p = [p indexPathByAddingIndex: ci];
+
+      NSLog(@"p = %@", p);
       [self _loadItemAtIndexPath: p];
     }
 }
@@ -1949,6 +1974,10 @@ static NSString *_placeholderItem = nil;
       [self _updateParentViewFrame];
       [self setPostsFrameChangedNotifications: f]; // reset
       _allowReload = YES;
+    }
+  else
+    {
+      NSLog(@"Reload disabled");
     }
 }
 

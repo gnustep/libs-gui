@@ -43,37 +43,6 @@
 
 #import "GSGuiPrivate.h"
 
-/* 
-#ifndef GS_BLOCKS_AVAILABLE
-#define GS_BLOCKS_AVAILABLE 1
-#endif
-
-// Helper macro for checking blocks; fall back to runtime probing when GNUstep does not supply one.
-#ifndef GS_IS_BLOCK
-static inline BOOL
-GS_IS_BLOCK(id obj)
-{
-  if (obj == nil)
-    {
-      return NO;
-    }
-
-  Class blockClass = objc_getClass("NSBlock");
-  Class stackBlockClass = objc_getClass("_NSConcreteStackBlock");
-  Class globalBlockClass = objc_getClass("_NSConcreteGlobalBlock");
-
-  if ((blockClass != Nil && [obj isKindOfClass: blockClass])
-      || (stackBlockClass != Nil && [obj isKindOfClass: stackBlockClass])
-      || (globalBlockClass != Nil && [obj isKindOfClass: globalBlockClass]))
-    {
-      return YES;
-    }
-
-  return NO;
-}
-#endif
-*/
-
 static id
 GSDiffableDefaultSectionIdentifier()
 {
@@ -502,7 +471,10 @@ GSDiffableDefaultSectionIdentifier()
 
       for (itemIndex = 0; itemIndex < [items count]; itemIndex++)
         {
-          NSIndexPath *path = [NSIndexPath indexPathForItem: itemIndex inSection: sectionIndex];
+          // Build an index path explicitly to avoid any Foundation-specific
+          // convenience method issues with item/section on some platforms.
+          NSIndexPath *path = [NSIndexPath indexPathWithIndex: sectionIndex];
+          path = [path indexPathByAddingIndex: itemIndex];
           [_identifierToIndexPath setObject: RETAIN(path) forKey: [items objectAtIndex: itemIndex]];
         }
       sectionIndex++;
@@ -545,7 +517,29 @@ GSDiffableDefaultSectionIdentifier()
     }
 
   NSArray *sections = [_snapshot sectionIdentifiers];
-  NSUInteger sectionIndex = [indexPath section];
+
+  // Avoid relying on section/item accessors which may return 0 on some platforms.
+  NSUInteger sectionIndex = 0;
+  NSUInteger itemIndex = 0;
+
+  if ([indexPath respondsToSelector: @selector(length)] && [indexPath length] >= 2)
+    {
+      sectionIndex = [indexPath indexAtPosition: 0];
+      itemIndex = [indexPath indexAtPosition: 1];
+    }
+  else
+    {
+      // Fallback to accessors if available
+      if ([indexPath respondsToSelector: @selector(section)])
+        {
+          sectionIndex = [indexPath section];
+        }
+      if ([indexPath respondsToSelector: @selector(item)])
+        {
+          itemIndex = [indexPath item];
+        }
+    }
+
   if (sectionIndex >= [sections count])
     {
       return nil;
@@ -553,7 +547,6 @@ GSDiffableDefaultSectionIdentifier()
 
   id sectionIdentifier = [sections objectAtIndex: sectionIndex];
   NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: sectionIdentifier];
-  NSUInteger itemIndex = [indexPath item];
   if (itemIndex >= [items count])
     {
       return nil;
@@ -565,7 +558,9 @@ GSDiffableDefaultSectionIdentifier()
 - (NSInteger) numberOfSectionsInCollectionView: (NSCollectionView *)collectionView
 {
   (void)collectionView;
-  return [_snapshot numberOfSections];
+  NSInteger count = [_snapshot numberOfSections];
+  NSLog(@"[DiffableDataSource] numberOfSectionsInCollectionView: %ld", (long)count);
+  return count;
 }
 
 - (NSInteger) collectionView: (NSCollectionView *)collectionView
@@ -575,38 +570,53 @@ GSDiffableDefaultSectionIdentifier()
   NSArray *sections = [_snapshot sectionIdentifiers];
   if (section < 0 || section >= (NSInteger)[sections count])
     {
+      NSLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> 0 (invalid)", (long)section);
       return 0;
     }
 
   id sectionIdentifier = [sections objectAtIndex: section];
-  return [[_snapshot itemIdentifiersInSectionWithIdentifier: sectionIdentifier] count];
+  NSInteger count = [[_snapshot itemIdentifiersInSectionWithIdentifier: sectionIdentifier] count];
+  NSLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> %ld", (long)section, (long)count);
+  return count;
 }
 
 - (NSCollectionViewItem *) collectionView: (NSCollectionView *)collectionView
       itemForRepresentedObjectAtIndexPath: (NSIndexPath *)indexPath
 {
+  NSLog(@"[DiffableDataSource] itemForRepresentedObjectAtIndexPath: %@", indexPath);
   id identifier = [self itemIdentifierForIndexPath: indexPath];
+  NSLog(@"[DiffableDataSource]   identifier: %@", identifier);
   if (identifier == nil || _itemProvider == nil)
     {
       return nil;
     }
-  /*
-  if ([_itemProvider respondsToSelector: @selector(collectionView:itemForIdentifier:atIndexPath:)])
-    {
-      NSCollectionViewItem *item = [(id)_itemProvider collectionView: collectionView
-                                                   itemForIdentifier: identifier
-                                                         atIndexPath: indexPath];
-      if ([item respondsToSelector: @selector(setRepresentedObject:)])
-        {
-          [item setRepresentedObject: identifier];
-        }
-      return item;
-    }
-  */
+
   if (_itemProvider != nil)
     {
+      /* Build a provider-friendly index path using item/section semantics. */
+      NSUInteger sectionIndex = 0;
+      NSUInteger itemIndex = 0;
+      if ([indexPath respondsToSelector: @selector(length)] && [indexPath length] >= 2)
+        {
+          sectionIndex = [indexPath indexAtPosition: 0];
+          itemIndex = [indexPath indexAtPosition: 1];
+        }
+      else
+        {
+          if ([indexPath respondsToSelector: @selector(section)])
+            {
+              sectionIndex = [indexPath section];
+            }
+          if ([indexPath respondsToSelector: @selector(item)])
+            {
+              itemIndex = [indexPath item];
+            }
+        }
+
+      NSIndexPath *providerIndexPath = [NSIndexPath indexPathForItem: itemIndex inSection: sectionIndex];
+
       /* Apple-compatible block order: collectionView, indexPath, identifier */
-      NSCollectionViewItem *item = (NSCollectionViewItem *)CALL_NON_NULL_BLOCK(_itemProvider, collectionView, indexPath, identifier);
+      NSCollectionViewItem *item = (NSCollectionViewItem *)CALL_NON_NULL_BLOCK(_itemProvider, collectionView, providerIndexPath, identifier);
       if ([item respondsToSelector: @selector(setRepresentedObject:)])
         {
           [item setRepresentedObject: identifier];
@@ -711,14 +721,33 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 - (id) itemIdentifierForIndexPath: (NSIndexPath *)indexPath
 {
   NSArray *sections = [_snapshot sectionIdentifiers];
-  NSUInteger sectionIndex = [indexPath section];
+
+  NSUInteger sectionIndex = 0;
+  NSUInteger itemIndex = 0;
+
+  if ([indexPath respondsToSelector: @selector(length)] && [indexPath length] >= 2)
+    {
+      sectionIndex = [indexPath indexAtPosition: 0];
+      itemIndex = [indexPath indexAtPosition: 1];
+    }
+  else
+    {
+      if ([indexPath respondsToSelector: @selector(section)])
+        {
+          sectionIndex = [indexPath section];
+        }
+      if ([indexPath respondsToSelector: @selector(item)])
+        {
+          itemIndex = [indexPath item];
+        }
+    }
+
   if (sectionIndex >= [sections count])
     {
       return nil;
     }
   id sectionIdentifier = [sections objectAtIndex: sectionIndex];
   NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: sectionIdentifier];
-  NSUInteger itemIndex = [indexPath item];
   if (itemIndex >= [items count])
     {
       return nil;
