@@ -612,9 +612,8 @@ GSDiffableDefaultSectionIdentifier()
             }
         }
 
-      NSIndexPath *providerIndexPath = [NSIndexPath indexPathForItem: itemIndex inSection: sectionIndex];
-
-      /* Apple-compatible block order: collectionView, indexPath, identifier */
+      NSIndexPath *providerIndexPath = [NSIndexPath indexPathForItem: itemIndex
+							   inSection: sectionIndex];
       NSCollectionViewItem *item = (NSCollectionViewItem *)
 	CALL_NON_NULL_BLOCK(_itemProvider,
 			    collectionView,
