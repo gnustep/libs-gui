@@ -586,6 +586,7 @@ GSDiffableDefaultSectionIdentifier()
   NSLog(@"[DiffableDataSource] itemForRepresentedObjectAtIndexPath: %@", indexPath);
   id identifier = [self itemIdentifierForIndexPath: indexPath];
   NSLog(@"[DiffableDataSource]   identifier: %@", identifier);
+
   if (identifier == nil || _itemProvider == nil)
     {
       return nil;
@@ -616,7 +617,12 @@ GSDiffableDefaultSectionIdentifier()
       NSIndexPath *providerIndexPath = [NSIndexPath indexPathForItem: itemIndex inSection: sectionIndex];
 
       /* Apple-compatible block order: collectionView, indexPath, identifier */
-      NSCollectionViewItem *item = (NSCollectionViewItem *)CALL_NON_NULL_BLOCK(_itemProvider, collectionView, providerIndexPath, identifier);
+      NSCollectionViewItem *item = (NSCollectionViewItem *)
+	CALL_NON_NULL_BLOCK(_itemProvider,
+			    collectionView,
+			    providerIndexPath,
+			    identifier);
+
       if ([item respondsToSelector: @selector(setRepresentedObject:)])
         {
           [item setRepresentedObject: identifier];
