@@ -1628,14 +1628,12 @@ static NSString *_placeholderItem = nil;
 				     forIndexPath: (NSIndexPath *)indexPath
 {
   NSLog(@"makeItemWithIdentifier:forIndexPath: identifier=%@ path=%@", identifier, indexPath);
-  NSIndexPath *ip = [indexPath copy];
   NSCollectionViewItem *item = [_dataSource collectionView: self
-					    itemForRepresentedObjectAtIndexPath: ip];
+					    itemForRepresentedObjectAtIndexPath: indexPath];
   
   if (item == nil)
     {
       NSLog(@"Data source returned nil item");
-      AUTORELEASE(ip);
       return nil;
     }
 
@@ -1644,9 +1642,8 @@ static NSString *_placeholderItem = nil;
   if ([item view] != nil)
     {
       NSLog(@"Item already has a view (from provider), skipping nib load");
-      [_itemsToIndexPaths setObject: ip forKey: item];
-      [_indexPathsToItems setObject: item forKey: ip];
-      AUTORELEASE(ip);
+      [_itemsToIndexPaths setObject: indexPath forKey: item];
+      [_indexPathsToItems setObject: item forKey: indexPath];
       return item;
     }
 
@@ -1665,10 +1662,10 @@ static NSString *_placeholderItem = nil;
       else
 	{
 	  // Add to maps...
-	  [_itemsToIndexPaths setObject: ip
+	  [_itemsToIndexPaths setObject: indexPath
 				 forKey: item];
 	  [_indexPathsToItems setObject: item
-				 forKey: ip];
+				 forKey: indexPath];
 	}
     }
 
@@ -1693,7 +1690,6 @@ static NSString *_placeholderItem = nil;
       NSLog(@"No nib loaded for %@", item);
     }
 
-  AUTORELEASE(ip);
   return item;
 }
 
