@@ -633,16 +633,12 @@ GSDiffableDefaultSectionIdentifier()
 - (void) collectionView: (NSCollectionView *)collectionView
    prefetchItemsAtIndexPaths: (NSArray *)indexPaths
 {
-  (void)collectionView;
-  (void)indexPaths;
   /* Prefetch is currently a no-op; snapshot drives item creation. */
 }
 
 - (void) collectionView: (NSCollectionView *)collectionView
 cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 {
-  (void)collectionView;
-  (void)indexPaths;
   /* Prefetch cancellation is currently a no-op. */
 }
 
@@ -781,7 +777,6 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 
 - (NSInteger) numberOfRowsInTableView: (NSTableView *)tableView
 {
-  (void)tableView;
   return [_snapshot numberOfItems];
 }
 
@@ -789,8 +784,6 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 objectValueForTableColumn: (NSTableColumn *)tableColumn
              row: (NSInteger)rowIndex
 {
-  (void)tableView;
-  (void)tableColumn;
   return [self itemIdentifierForRow: rowIndex];
 }
 
@@ -802,19 +795,6 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
   if (identifier == nil)
     {
       return nil;
-    }
-
-  if (_cellProvider != nil
-      && [_cellProvider respondsToSelector: @selector(tableView:viewForIdentifier:tableColumn:row:)])
-    {
-      NSView *view = [(id)_cellProvider tableView: tableView
-                                  viewForIdentifier: identifier
-                                       tableColumn: tableColumn
-                                              row: rowIndex];
-      if (view != nil)
-        {
-          return view;
-        }
     }
 
   if (_cellProvider != nil) // (GS_BLOCKS_AVAILABLE && GS_IS_BLOCK(_cellProvider))
