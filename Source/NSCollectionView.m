@@ -1610,34 +1610,67 @@ static NSString *_placeholderItem = nil;
 
 - (NSNib *) _nibForClass: (Class)cls
 {
-  NSString *clsName = NSStringFromClass(cls);
-  NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
-					bundle: [NSBundle bundleForClass: cls]];
-  AUTORELEASE(nib);
+  NSNib *nib = nil;
+
+  if (cls != nil)
+    {
+      NSString *clsName = NSStringFromClass(cls);
+
+      nib = [[NSNib alloc] initWithNibNamed: clsName
+				     bundle: [NSBundle bundleForClass: cls]];
+      AUTORELEASE(nib);
+    }
+
   return nib;
 }
 
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
-  NSCollectionViewItem *item =
-    [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: indexPath];
-  NSNib *nib = [self _nibForClass: [item class]];
-  BOOL loaded = [nib instantiateWithOwner: item
-			  topLevelObjects: NULL];
-
-  if (loaded == NO)
+  NSLog(@"makeItemWithIdentifier:forIndexPath: identifier=%@ path=%@", identifier, indexPath);
+  NSCollectionViewItem *item = [_dataSource collectionView: self
+					    itemForRepresentedObjectAtIndexPath: indexPath];
+  
+  if (item == nil)
     {
-      item = nil;
-      NSLog(@"Could not load model %@", nib);
+      NSLog(@"Data source returned nil item");
+      return nil;
+    }
+
+  // If the item already has a view (created by diffable data source provider),
+  // skip nib loading and just track it.
+  if ([item view] != nil)
+    {
+      NSLog(@"Item already has a view (from provider), skipping nib load");
+      [_itemsToIndexPaths setObject: indexPath forKey: item];
+      [_indexPathsToItems setObject: item forKey: indexPath];
+      return item;
+    }
+
+  NSNib *nib = [self _nibForClass: [item class]];
+
+  if (nib != nil)
+    {
+      BOOL loaded = [nib instantiateWithOwner: item
+			      topLevelObjects: NULL];
+
+      if (loaded == NO)
+	{
+	  item = nil;
+	  NSLog(@"Could not load model %@", nib);
+	}
+      else
+	{
+	  // Add to maps...
+	  [_itemsToIndexPaths setObject: indexPath
+				 forKey: item];
+	  [_indexPathsToItems setObject: item
+				 forKey: indexPath];
+	}
     }
   else
     {
-      // Add to maps...
-      [_itemsToIndexPaths setObject: indexPath
-			     forKey: item];
-      [_indexPathsToItems setObject: item
-			     forKey: indexPath];
+      NSLog(@"No nib loaded for %@", item);
     }
 
   return item;
@@ -1680,7 +1713,7 @@ static NSString *_placeholderItem = nil;
 			     forKey: kind];
     }
 
-  [t setObject: viewClass forKey: identifier];
+  [t setObject: viewClass forKey: [identifier copy]];
 }
 
 - (void) registerNib: (NSNib *)nib
@@ -1697,7 +1730,7 @@ static NSString *_placeholderItem = nil;
 			  forKey: kind];
     }
 
-  [t setObject: nib forKey: identifier];
+  [t setObject: nib forKey: [identifier copy]];
 }
 
 /* Providing the collection view's data */
@@ -1793,7 +1826,12 @@ static NSString *_placeholderItem = nil;
 
   for (ci = 0; ci < ni; ci++)
     {
-      NSIndexPath *p = [NSIndexPath indexPathForItem: ci inSection: cs];
+      // Build index path explicitly (section, then item) to avoid
+      // reliance on convenience methods that may return incorrect values.
+      NSIndexPath *p = [NSIndexPath indexPathWithIndex: cs];
+      p = [p indexPathByAddingIndex: ci];
+
+      NSLog(@"p = %@", p);
       [self _loadItemAtIndexPath: p];
     }
 }
@@ -1881,6 +1919,10 @@ static NSString *_placeholderItem = nil;
       [self _updateParentViewFrame];
       [self setPostsFrameChangedNotifications: f]; // reset
       _allowReload = YES;
+    }
+  else
+    {
+      NSLog(@"Reload disabled");
     }
 }
 
