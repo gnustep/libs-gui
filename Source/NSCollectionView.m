@@ -1627,67 +1627,47 @@ static NSString *_placeholderItem = nil;
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
-  NSLog(@"makeItemWithIdentifier:forIndexPath: identifier=%@ path=%@", identifier, indexPath);
+  // NSLog(@"makeItemWithIdentifier:forIndexPath: identifier=%@ path=%@", identifier, indexPath);
   NSCollectionViewItem *item = [_dataSource collectionView: self
 					    itemForRepresentedObjectAtIndexPath: indexPath];
   
-  if (item == nil)
+  if (item != nil)
     {
-      NSLog(@"Data source returned nil item");
-      return nil;
-    }
-
-  // If the item already has a view (created by diffable data source provider),
-  // skip nib loading and just track it.
-  if ([item view] != nil)
-    {
-      NSLog(@"Item already has a view (from provider), skipping nib load");
-      [_itemsToIndexPaths setObject: indexPath forKey: item];
-      [_indexPathsToItems setObject: item forKey: indexPath];
-      return item;
-    }
-
-  NSNib *nib = [self _nibForClass: [item class]];
-
-  if (nib != nil)
-    {
-      BOOL loaded = [nib instantiateWithOwner: item
-			      topLevelObjects: NULL];
-
-      if (loaded == NO)
+      // If the item already has a view (created by diffable data source provider),
+      // skip nib loading and just track it.
+      if ([item view] != nil)
 	{
-	  item = nil;
-	  NSLog(@"Could not load model %@", nib);
+	  NSLog(@"Item already has a view (from provider), skipping nib load");
+	  [_itemsToIndexPaths setObject: indexPath forKey: item];
+	  [_indexPathsToItems setObject: item forKey: indexPath];
+	  return item;
+	}
+
+      NSNib *nib = [self _nibForClass: [item class]];
+
+      if (nib != nil)
+	{
+	  BOOL loaded = [nib instantiateWithOwner: item
+				  topLevelObjects: NULL];
+
+	  if (loaded == NO)
+	    {
+	      item = nil;
+	      NSLog(@"Could not load model %@", nib);
+	    }
+	  else
+	    {
+	      // Add to maps...
+	      [_itemsToIndexPaths setObject: indexPath
+				     forKey: item];
+	      [_indexPathsToItems setObject: item
+				     forKey: indexPath];
+	    }
 	}
       else
 	{
-	  // Add to maps...
-	  [_itemsToIndexPaths setObject: indexPath
-				 forKey: item];
-	  [_indexPathsToItems setObject: item
-				 forKey: indexPath];
+	  NSLog(@"No nib loaded for %@", item);
 	}
-    }
-
-  // Only try to load NIB if item doesn't already have a view
-  if ([item view] == nil)
-    {
-      NSNib *nib = [self _nibForClass: [item class]];
-      BOOL loaded = [nib instantiateWithOwner: item
-			      topLevelObjects: NULL];
-
-      if (loaded == NO)
-        {
-          // If NIB loading fails but item exists, continue anyway
-          // The item might be configured programmatically
-          NSLog(@"Could not load NIB %@ for item %@, continuing with programmatic item", nib, item);
-        }
-    }
-
-  // Add to maps only if we have a valid item
-  if (item != nil)
-    {
-      NSLog(@"No nib loaded for %@", item);
     }
 
   return item;
@@ -1871,7 +1851,7 @@ static NSString *_placeholderItem = nil;
       // Build index path explicitly (section, then item) to avoid
       // reliance on convenience methods that may return incorrect values.
       NSIndexPath *p = [NSIndexPath indexPathWithIndex: cs];
-      p = [p indexPathByAddingIndex: ci];
+      p = RETAIN([p indexPathByAddingIndex: ci]);
 
       NSLog(@"p = %@", p);
       [self _loadItemAtIndexPath: p];

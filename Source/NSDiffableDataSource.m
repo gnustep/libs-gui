@@ -43,6 +43,17 @@
 
 #import "GSGuiPrivate.h"
 
+@interface NSCollectionView (Private)
+- (NSCollectionViewItem *) _itemForIndexPath: (NSIndexPath *)p;
+@end
+
+@implementation NSCollectionView (Private)
+- (NSCollectionViewItem *) _itemForIndexPath: (NSIndexPath *)p
+{
+  return [_itemsToIndexPaths objectForKey: p];
+}
+@end
+
 static id
 GSDiffableDefaultSectionIdentifier()
 {
@@ -93,17 +104,21 @@ GSDiffableDefaultSectionIdentifier()
         {
           NSMutableArray *sectionItems = [items mutableCopy];
           [copiedItems setObject: sectionItems forKey: section];
-          RELEASE(sectionItems);
+          // RELEASE(sectionItems);
         }
     }
   END_FOR_IN(_sections);
 
-  DESTROY(copy->_sections);
-  DESTROY(copy->_itemsBySection);
-  copy->_sections = copiedSections;
-  copy->_itemsBySection = RETAIN(copiedItems);
-  copy->_reloadedSections = [_reloadedSections mutableCopy];
-  copy->_reloadedItems = [_reloadedItems mutableCopy];
+  //DESTROY(copy->_sections);
+  //DESTROY(copy->_itemsBySection);
+  //DESTROY(copy->_reloadedSections);
+  //DESTROY(copy->_reloadedItems);
+
+  ASSIGNCOPY(copy->_sections, copiedSections);
+  ASSIGNCOPY(copy->_itemsBySection, copiedItems);
+  ASSIGNCOPY(copy->_reloadedSections, _reloadedSections);
+  ASSIGNCOPY(copy->_reloadedItems, _reloadedItems);
+
   return copy;
 }
 
@@ -114,7 +129,11 @@ GSDiffableDefaultSectionIdentifier()
 
 - (NSArray *) sectionIdentifiers
 {
-  return AUTORELEASE([_sections copy]);
+  if (_sections == nil)
+    {
+      return [NSArray array];
+    }
+  return [_sections copy];
 }
 
 - (NSArray *) itemIdentifiers
@@ -131,7 +150,7 @@ GSDiffableDefaultSectionIdentifier()
     }
   END_FOR_IN(_sections);
 
-  return AUTORELEASE([result copy]);
+  return [result copy];
 }
 
 - (NSArray *) itemIdentifiersInSectionWithIdentifier: (id)sectionIdentifier
@@ -143,11 +162,15 @@ GSDiffableDefaultSectionIdentifier()
       return [NSArray array];
     }
 
-  return AUTORELEASE([items copy]);
+  return [items copy];
 }
 
 - (NSInteger) numberOfSections
 {
+  if (_sections == nil)
+    {
+      return 0;
+    }
   return [_sections count];
 }
 
@@ -501,7 +524,7 @@ GSDiffableDefaultSectionIdentifier()
 
 - (NSDiffableDataSourceSnapshot *) snapshot
 {
-  return AUTORELEASE([_snapshot copy]);
+  return [_snapshot copy];
 }
 
 - (NSIndexPath *) indexPathForItemIdentifier: (id)itemIdentifier
@@ -511,12 +534,17 @@ GSDiffableDefaultSectionIdentifier()
 
 - (id) itemIdentifierForIndexPath: (NSIndexPath *)indexPath
 {
-  if (_snapshot == nil)
+  NSLog(@"- (id) itemIdentifierForIndexPath: %@", indexPath);
+  if (_snapshot == nil || indexPath == nil)
     {
       return nil;
     }
 
   NSArray *sections = [_snapshot sectionIdentifiers];
+  if (sections == nil)
+    {
+      return nil;
+    }
 
   // Avoid relying on section/item accessors which may return 0 on some platforms.
   NSUInteger sectionIndex = 0;
@@ -549,8 +577,11 @@ GSDiffableDefaultSectionIdentifier()
   NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: sectionIdentifier];
   if (itemIndex >= [items count])
     {
+      NSLog(@"No items");
       return nil;
     }
+
+  NSLog(@"items = %@", items);
 
   return [items objectAtIndex: itemIndex];
 }
@@ -558,6 +589,11 @@ GSDiffableDefaultSectionIdentifier()
 - (NSInteger) numberOfSectionsInCollectionView: (NSCollectionView *)collectionView
 {
   (void)collectionView;
+  if (_snapshot == nil)
+    {
+      NSLog(@"[DiffableDataSource] numberOfSectionsInCollectionView: 0 (nil snapshot)");
+      return 0;
+    }
   NSInteger count = [_snapshot numberOfSections];
   NSLog(@"[DiffableDataSource] numberOfSectionsInCollectionView: %ld", (long)count);
   return count;
@@ -567,14 +603,26 @@ GSDiffableDefaultSectionIdentifier()
        numberOfItemsInSection: (NSInteger)section
 {
   (void)collectionView;
+  if (_snapshot == nil)
+    {
+      NSLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> 0 (nil snapshot)", (long)section);
+      return 0;
+    }
+  
   NSArray *sections = [_snapshot sectionIdentifiers];
-  if (section < 0 || section >= (NSInteger)[sections count])
+  if (sections == nil || section < 0 || section >= (NSInteger)[sections count])
     {
       NSLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> 0 (invalid)", (long)section);
       return 0;
     }
 
   id sectionIdentifier = [sections objectAtIndex: section];
+  if (sectionIdentifier == nil)
+    {
+      NSLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> 0 (nil section identifier)", (long)section);
+      return 0;
+    }
+  
   NSInteger count = [[_snapshot itemIdentifiersInSectionWithIdentifier: sectionIdentifier] count];
   NSLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> %ld", (long)section, (long)count);
   return count;
@@ -584,50 +632,54 @@ GSDiffableDefaultSectionIdentifier()
       itemForRepresentedObjectAtIndexPath: (NSIndexPath *)indexPath
 {
   id identifier = [self itemIdentifierForIndexPath: indexPath];
+  NSCollectionViewItem *result = [collectionView _itemForIndexPath: indexPath];
 
-  if (identifier == nil || _itemProvider == nil)
+  if (result == nil)
     {
-      return nil;
+      if (identifier == nil || _itemProvider == nil)
+	{
+	  return nil;
+	}
+
+      if (_itemProvider != nil)
+	{
+	  /* Build a provider-friendly index path using item/section semantics. */
+	  NSUInteger sectionIndex = 0;
+	  NSUInteger itemIndex = 0;
+
+	  if ([indexPath respondsToSelector: @selector(length)] && [indexPath length] >= 2)
+	    {
+	      sectionIndex = [indexPath indexAtPosition: 0];
+	      itemIndex = [indexPath indexAtPosition: 1];
+	    }
+	  else
+	    {
+	      if ([indexPath respondsToSelector: @selector(section)])
+		{
+		  sectionIndex = [indexPath section];
+		}
+	      if ([indexPath respondsToSelector: @selector(item)])
+		{
+		  itemIndex = [indexPath item];
+		}
+	    }
+
+	  NSIndexPath *providerIndexPath = [NSIndexPath indexPathForItem: itemIndex
+							       inSection: sectionIndex];
+	  result = (NSCollectionViewItem *)
+	    CALL_NON_NULL_BLOCK(_itemProvider,
+				collectionView,
+				providerIndexPath,
+				identifier);
+
+	  if ([result respondsToSelector: @selector(setRepresentedObject:)])
+	    {
+	      [result setRepresentedObject: identifier];
+	    }
+	}
     }
 
-  if (_itemProvider != nil)
-    {
-      /* Build a provider-friendly index path using item/section semantics. */
-      NSUInteger sectionIndex = 0;
-      NSUInteger itemIndex = 0;
-      if ([indexPath respondsToSelector: @selector(length)] && [indexPath length] >= 2)
-        {
-          sectionIndex = [indexPath indexAtPosition: 0];
-          itemIndex = [indexPath indexAtPosition: 1];
-        }
-      else
-        {
-          if ([indexPath respondsToSelector: @selector(section)])
-            {
-              sectionIndex = [indexPath section];
-            }
-          if ([indexPath respondsToSelector: @selector(item)])
-            {
-              itemIndex = [indexPath item];
-            }
-        }
-
-      NSIndexPath *providerIndexPath = [NSIndexPath indexPathForItem: itemIndex
-							   inSection: sectionIndex];
-      NSCollectionViewItem *item = (NSCollectionViewItem *)
-	CALL_NON_NULL_BLOCK(_itemProvider,
-			    collectionView,
-			    providerIndexPath,
-			    identifier);
-
-      if ([item respondsToSelector: @selector(setRepresentedObject:)])
-        {
-          [item setRepresentedObject: identifier];
-        }
-      return item;
-    }
-
-  return nil;
+  return result;
 }
 
 - (void) collectionView: (NSCollectionView *)collectionView
@@ -709,7 +761,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 
 - (NSDiffableDataSourceSnapshot *) snapshot
 {
-  return AUTORELEASE([_snapshot copy]);
+  return [_snapshot copy];
 }
 
 - (NSIndexPath *) indexPathForItemIdentifier: (id)itemIdentifier
@@ -807,7 +859,7 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
     }
 
   // Fallback to a simple text field if no provider is supplied.
-  NSTextField *textField = AUTORELEASE([NSTextField new]);
+  NSTextField *textField = [NSTextField new];
   [textField setEditable: NO];
   [textField setBordered: NO];
   [textField setBackgroundColor: [NSColor clearColor]];
