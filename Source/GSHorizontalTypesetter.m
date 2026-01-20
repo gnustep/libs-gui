@@ -711,7 +711,7 @@ restart: ;
       line_frags_num = 0;
       rect = [curTextContainer lineFragmentRectForProposedRect: remain
                                                 sweepDirection: NSLineSweepRight
-                                             movementDirection: line_frags_num?NSLineDoesntMove:NSLineMovesDown
+                                             movementDirection: NSLineMovesDown
                                                  remainingRect: &remain];
       while (!NSIsEmptyRect(rect))
         {
@@ -725,7 +725,7 @@ restart: ;
 
           rect = [curTextContainer lineFragmentRectForProposedRect: remain
                                                     sweepDirection: NSLineSweepRight
-                                                 movementDirection: line_frags_num?NSLineDoesntMove:NSLineMovesDown
+                                                 movementDirection: NSLineDoesntMove
                                                      remainingRect: &remain];
         }
       if (line_frags_num == 0)
