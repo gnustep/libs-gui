@@ -1627,7 +1627,6 @@ static NSString *_placeholderItem = nil;
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
-  // NSLog(@"makeItemWithIdentifier:forIndexPath: identifier=%@ path=%@", identifier, indexPath);
   NSCollectionViewItem *item = [_dataSource collectionView: self
 					    itemForRepresentedObjectAtIndexPath: indexPath];
   
@@ -1655,19 +1654,28 @@ static NSString *_placeholderItem = nil;
 	      item = nil;
 	      NSLog(@"Could not load model %@", nib);
 	    }
-	  else
-	    {
-	      // Add to maps...
-	      [_itemsToIndexPaths setObject: indexPath
-				     forKey: item];
-	      [_indexPathsToItems setObject: item
-				     forKey: indexPath];
-	    }
 	}
       else
 	{
 	  NSLog(@"No nib loaded for %@", item);
 	}
+    }
+  else
+    {
+      NSRect frame = NSMakeRect(0,0,48,48);
+      NSView *view = [[NSView alloc] initWithFrame: frame];
+      
+      item = [[NSCollectionViewItem alloc] init]; 
+      [item setView: view];
+    }
+
+  if (item != nil)
+    {
+      // Add to maps...
+      [_itemsToIndexPaths setObject: indexPath
+			     forKey: item];
+      [_indexPathsToItems setObject: item
+			     forKey: indexPath];
     }
 
   return item;
