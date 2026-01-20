@@ -706,15 +706,12 @@ restart: ;
   width 1e8)
   */
   line_frags_num = 0;
-  while (1)
+  rect = [curTextContainer lineFragmentRectForProposedRect: remain
+                                            sweepDirection: NSLineSweepRight
+                                         movementDirection: line_frags_num?NSLineDoesntMove:NSLineMovesDown
+                                             remainingRect: &remain];
+  while (!NSIsEmptyRect(rect))
     {
-      rect = [curTextContainer lineFragmentRectForProposedRect: remain
-			     sweepDirection: NSLineSweepRight
-			     movementDirection: line_frags_num?NSLineDoesntMove:NSLineMovesDown
-			     remainingRect: &remain];
-      if (NSIsEmptyRect(rect))
-        break;
-
       line_frags_num++;
       if (line_frags_num > line_frags_size)
 	{
@@ -722,6 +719,11 @@ restart: ;
 	  line_frags = realloc(line_frags, sizeof(line_frag_t) * line_frags_size);
 	}
       line_frags[line_frags_num - 1].rect = rect;
+
+      rect = [curTextContainer lineFragmentRectForProposedRect: remain
+                                                sweepDirection: NSLineSweepRight
+                                             movementDirection: line_frags_num?NSLineDoesntMove:NSLineMovesDown
+                                                 remainingRect: &remain];
     }
   if (!line_frags_num)
     {
