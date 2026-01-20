@@ -50,7 +50,9 @@
 @implementation NSCollectionView (Private)
 - (NSCollectionViewItem *) _itemForIndexPath: (NSIndexPath *)p
 {
-  return [_itemsToIndexPaths objectForKey: p];
+  NSCollectionViewItem *item = [_indexPathsToItems objectForKey: p];
+  NSLog(@"[DiffableDataSource] _itemForIndexPath:%@ -> %@", p, item);
+  return item;
 }
 @end
 
@@ -464,6 +466,7 @@ GSDiffableDefaultSectionIdentifier()
       _snapshot = [NSDiffableDataSourceSnapshot new];
       _itemProvider = RETAIN( itemProvider );
       _identifierToIndexPath = [NSMutableDictionary new];
+      _creatingIndexPaths = [NSMutableSet new];
       [_collectionView setDataSource: self];
       if ([_collectionView respondsToSelector: @selector(setPrefetchDataSource:)])
         {
@@ -478,6 +481,7 @@ GSDiffableDefaultSectionIdentifier()
   DESTROY(_snapshot);
   // DESTROY(_itemProvider);
   DESTROY(_identifierToIndexPath);
+  DESTROY(_creatingIndexPaths);
   [super dealloc];
 }
 
@@ -631,54 +635,86 @@ GSDiffableDefaultSectionIdentifier()
 - (NSCollectionViewItem *) collectionView: (NSCollectionView *)collectionView
       itemForRepresentedObjectAtIndexPath: (NSIndexPath *)indexPath
 {
+  NSLog(@"[DiffableDataSource] itemForRepresentedObjectAtIndexPath:%@", indexPath);
+
+  // Recursion guard: if we're already creating an item for this index path, return nil
+  if ([_creatingIndexPaths containsObject: indexPath])
+    {
+      NSLog(@"[DiffableDataSource] Preventing recursive call for indexPath %@", indexPath);
+      return nil;
+    }
+
   id identifier = [self itemIdentifierForIndexPath: indexPath];
   NSCollectionViewItem *result = [collectionView _itemForIndexPath: indexPath];
+
+  NSLog(@"[DiffableDataSource] identifier=%@, existing result=%@", identifier, result);
 
   if (result == nil)
     {
       if (identifier == nil || _itemProvider == nil)
 	{
+	  NSLog(@"[DiffableDataSource] Cannot create item: identifier=%@, itemProvider=%@", identifier, _itemProvider);
 	  return nil;
 	}
 
       if (_itemProvider != nil)
 	{
-	  /* Build a provider-friendly index path using item/section semantics. */
-	  NSUInteger sectionIndex = 0;
-	  NSUInteger itemIndex = 0;
+	  NSLog(@"[DiffableDataSource] Creating new item for identifier=%@", identifier);
+	  
+	  // Mark that we're creating an item for this index path
+	  [_creatingIndexPaths addObject: indexPath];
 
-	  if ([indexPath respondsToSelector: @selector(length)] && [indexPath length] >= 2)
+	  @try
 	    {
-	      sectionIndex = [indexPath indexAtPosition: 0];
-	      itemIndex = [indexPath indexAtPosition: 1];
-	    }
-	  else
-	    {
-	      if ([indexPath respondsToSelector: @selector(section)])
+	      /* Build a provider-friendly index path using item/section semantics. */
+	      NSUInteger sectionIndex = 0;
+	      NSUInteger itemIndex = 0;
+
+	      if ([indexPath respondsToSelector: @selector(length)] && [indexPath length] >= 2)
 		{
-		  sectionIndex = [indexPath section];
+		  sectionIndex = [indexPath indexAtPosition: 0];
+		  itemIndex = [indexPath indexAtPosition: 1];
 		}
-	      if ([indexPath respondsToSelector: @selector(item)])
+	      else
 		{
-		  itemIndex = [indexPath item];
+		  if ([indexPath respondsToSelector: @selector(section)])
+		    {
+		      sectionIndex = [indexPath section];
+		    }
+		  if ([indexPath respondsToSelector: @selector(item)])
+		    {
+		      itemIndex = [indexPath item];
+		    }
+		}
+
+	      NSIndexPath *providerIndexPath = [NSIndexPath indexPathForItem: itemIndex
+								 inSection: sectionIndex];
+	      
+	      NSLog(@"[DiffableDataSource] Calling item provider with indexPath=%@, identifier=%@", providerIndexPath, identifier);
+	      
+	      result = (NSCollectionViewItem *)
+		CALL_NON_NULL_BLOCK(_itemProvider,
+				    collectionView,
+				    providerIndexPath,
+				    identifier);
+
+	      NSLog(@"[DiffableDataSource] Item provider returned: %@", result);
+
+	      if ([result respondsToSelector: @selector(setRepresentedObject:)])
+		{
+		  [result setRepresentedObject: identifier];
 		}
 	    }
-
-	  NSIndexPath *providerIndexPath = [NSIndexPath indexPathForItem: itemIndex
-							       inSection: sectionIndex];
-	  result = (NSCollectionViewItem *)
-	    CALL_NON_NULL_BLOCK(_itemProvider,
-				collectionView,
-				providerIndexPath,
-				identifier);
-
-	  if ([result respondsToSelector: @selector(setRepresentedObject:)])
+	  @finally
 	    {
-	      [result setRepresentedObject: identifier];
+	      // Always remove from the creating set, even if an exception occurs
+	      [_creatingIndexPaths removeObject: indexPath];
+	      NSLog(@"[DiffableDataSource] Removed indexPath %@ from creating set", indexPath);
 	    }
 	}
     }
 
+  NSLog(@"[DiffableDataSource] Returning result: %@", result);
   return result;
 }
 
@@ -692,7 +728,7 @@ GSDiffableDefaultSectionIdentifier()
 cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 {
   /* Prefetch cancellation is currently a no-op. */
-}
+} 
 
 @end
 
@@ -708,6 +744,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
       _snapshot = [NSDiffableDataSourceSnapshot new];
       _cellProvider = RETAIN(cellProvider);
       _identifierToIndexPath = [NSMutableDictionary new];
+      _creatingIndexPaths = [NSMutableSet new];
       [_tableView setDataSource: self];
     }
   return self;
@@ -718,6 +755,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
   DESTROY(_snapshot);
   DESTROY(_cellProvider);
   DESTROY(_identifierToIndexPath);
+  DESTROY(_creatingIndexPaths);
   [super dealloc];
 }
 

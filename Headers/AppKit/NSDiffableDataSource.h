@@ -269,6 +269,7 @@ APPKIT_EXPORT_CLASS
   NSDiffableDataSourceSnapshot *_snapshot;
   GSCollectionViewItemProviderBlock _itemProvider;
   NSMutableDictionary *_identifierToIndexPath;
+  NSMutableSet *_creatingIndexPaths;
 }
 
 /**
@@ -333,6 +334,7 @@ APPKIT_EXPORT_CLASS
   NSDiffableDataSourceSnapshot *_snapshot;
   GSTableViewCellProviderBlock _cellProvider;
   NSMutableDictionary *_identifierToIndexPath;
+  NSMutableSet *_creatingIndexPaths;
 }
 
 /**
