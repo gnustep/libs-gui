@@ -1670,8 +1670,9 @@ static NSString *_placeholderItem = nil;
     {
       NSView *view = [[NSView alloc] initWithFrame: NSZeroRect];
       
-      item = [[NSCollectionViewItem alloc] init]; 
+      item = AUTORELEASE([[NSCollectionViewItem alloc] init]);
       [item setView: view];
+      RELEASE(view);
     }
 
   if (item != nil)
@@ -1934,7 +1935,7 @@ static NSString *_placeholderItem = nil;
       
       if (ns == 0)
         {
-          NSLog(@"NSCollectionView: No sections to load - check dataSource implementation");
+          NSDebugLog(@"NSCollectionView: No sections to load - check dataSource implementation");
           return;
         }
       
