@@ -1662,8 +1662,7 @@ static NSString *_placeholderItem = nil;
     }
   else
     {
-      NSRect frame = NSMakeRect(0,0,48,48);
-      NSView *view = [[NSView alloc] initWithFrame: frame];
+      NSView *view = [[NSView alloc] initWithFrame: NSZeroRect];
       
       item = [[NSCollectionViewItem alloc] init]; 
       [item setView: view];
