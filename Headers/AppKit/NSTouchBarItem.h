@@ -28,6 +28,7 @@
 #import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSString.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 
@@ -35,8 +36,53 @@
 extern "C" {
 #endif
 
+@class NSView;
+
+/**
+ * Standard touch bar item identifiers
+ */
+extern NSString * const NSTouchBarItemIdentifierFixedSpaceSmall;
+extern NSString * const NSTouchBarItemIdentifierFixedSpaceLarge;
+extern NSString * const NSTouchBarItemIdentifierFlexibleSpace;
+
+/**
+ * NSTouchBarItem represents a single item in a touch bar.
+ */
 APPKIT_EXPORT_CLASS
-@interface NSTouchBarItem : NSObject
+@interface NSTouchBarItem : NSObject <NSCoding>
+{
+    NSString *_identifier;
+    NSView *_view;
+    NSString *_customizationLabel;
+    BOOL _isVisible;
+}
+
+/**
+ * The unique identifier for this item.
+ */
+- (NSString *) identifier;
+
+/**
+ * The view that represents this item's content.
+ */
+- (NSView *) view;
+- (void) setView: (NSView *)view;
+
+/**
+ * The localized string labeling this item during customization.
+ */
+- (NSString *) customizationLabel;
+- (void) setCustomizationLabel: (NSString *)label;
+
+/**
+ * Whether this item is currently visible.
+ */
+- (BOOL) isVisible;
+
+/**
+ * Creates a new touch bar item with the specified identifier.
+ */
+- (id) initWithIdentifier: (NSString *)identifier;
 
 @end
 

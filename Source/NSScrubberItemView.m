@@ -23,12 +23,79 @@
 */
 
 #import "AppKit/NSScrubberItemView.h"
+#import <AppKit/NSTextField.h>
+#import <AppKit/NSFont.h>
+#import <Foundation/NSString.h>
 
 @implementation NSScrubberArrangedView
 
 @end
 
 @implementation NSScrubberItemView
+
+@end
+
+@implementation NSScrubberTextItemView
+
+/*
+ * Class methods
+ */
+
++ (void) initialize
+{
+    if (self == [NSScrubberTextItemView class])
+    {
+        [self setVersion: 1];
+    }
+}
+
+/*
+ * Initialization and deallocation
+ */
+
+- (id) initWithFrame: (NSRect)frame
+{
+    self = [super initWithFrame: frame];
+    if (self)
+    {
+        _textField = [[NSTextField alloc] initWithFrame: NSMakeRect(0, 0, frame.size.width, frame.size.height)];
+        [_textField setBezeled: NO];
+        [_textField setDrawsBackground: NO];
+        [_textField setEditable: NO];
+        [_textField setSelectable: NO];
+        [_textField setFont: [NSFont systemFontOfSize: [NSFont smallSystemFontSize]]];
+        [_textField setAlignment: NSTextAlignmentCenter];
+        [_textField setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+        
+        [self addSubview: _textField];
+    }
+    return self;
+}
+
+- (void) dealloc
+{
+    RELEASE(_textField);
+    [super dealloc];
+}
+
+/*
+ * Accessor methods
+ */
+
+- (NSString *) title
+{
+    return [_textField stringValue];
+}
+
+- (void) setTitle: (NSString *)title
+{
+    [_textField setStringValue: title ? title : @""];
+}
+
+- (NSTextField *) textField
+{
+    return _textField;
+}
 
 @end
 
