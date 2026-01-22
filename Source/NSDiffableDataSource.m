@@ -509,7 +509,7 @@ GSDiffableDefaultSectionIdentifier()
 - (void) dealloc
 {
   DESTROY(_snapshot);
-  // DESTROY(_itemProvider);
+  DESTROY(_itemProvider);
   DESTROY(_identifierToIndexPath);
   DESTROY(_creatingIndexPaths);
   [super dealloc];
