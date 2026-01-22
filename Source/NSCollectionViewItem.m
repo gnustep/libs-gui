@@ -201,7 +201,7 @@
 
 - (NSString *) description
 {
-  return [NSString stringWithFormat: @"%@ - selected = %@, representedObject = %@", [super description], _isSelected ? @"YES" : @"NO", [self representedObject]]; 
+  return [NSString stringWithFormat: @"%@ - selected = %@, teztField = %@, representedObject = %@", [super description], _isSelected ? @"YES" : @"NO", textField, [self representedObject]]; 
 }
 
 @end
