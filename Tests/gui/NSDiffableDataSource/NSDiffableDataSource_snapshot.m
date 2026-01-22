@@ -1,7 +1,7 @@
 /*
   Test of NSDiffableDataSourceSnapshot
 
-  Author: GitHub Copilot
+  Author: Gregory J. Casamento
   Date: January 2026
 
   Test for NSDiffableDataSource snapshot functionality in the GNUstep GUI Library.
@@ -11,13 +11,11 @@
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>
-#include <AppKit/NSApplication.h>
 #include <AppKit/NSDiffableDataSource.h>
 
 int main()
 {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  NSApplication *app = [NSApplication sharedApplication];
   
   START_SET("NSDiffableDataSourceSnapshot basic functionality")
     
@@ -31,7 +29,7 @@ int main()
     PASS([[snapshot itemIdentifiers] count] == 0, "Empty snapshot item identifiers");
     
     // Test 2: Add sections
-    NSArray *sections = @[@"Section1", @"Section2", @"Section3"];
+    NSArray *sections = [NSArray arrayWithObjects:@"Section1", @"Section2", @"Section3", nil];
     [snapshot appendSectionsWithIdentifiers: sections];
     
     PASS([snapshot numberOfSections] == 3, "Snapshot has 3 sections after append");
@@ -39,8 +37,8 @@ int main()
     PASS([snapshot numberOfItems] == 0, "No items after adding sections");
     
     // Test 3: Add items to sections
-    NSArray *items1 = @[@"Item1", @"Item2"];
-    NSArray *items2 = @[@"Item3", @"Item4", @"Item5"];
+    NSArray *items1 = [NSArray arrayWithObjects:@"Item1", @"Item2", nil];
+    NSArray *items2 = [NSArray arrayWithObjects:@"Item3", @"Item4", @"Item5", nil];
     
     [snapshot appendItemsWithIdentifiers: items1 intoSectionWithIdentifier: @"Section1"];
     [snapshot appendItemsWithIdentifiers: items2 intoSectionWithIdentifier: @"Section2"];
@@ -56,31 +54,31 @@ int main()
     PASS([section3Items count] == 0, "Section3 is empty");
     
     // Test 4: Insert sections
-    NSArray *newSections = @[@"InsertedSection"];
+    NSArray *newSections = [NSArray arrayWithObjects:@"InsertedSection", nil];
     [snapshot insertSectionsWithIdentifiers: newSections beforeSectionWithIdentifier: @"Section2"];
     
-    NSArray *expectedSections = @[@"Section1", @"InsertedSection", @"Section2", @"Section3"];
+    NSArray *expectedSections = [NSArray arrayWithObjects:@"Section1", @"InsertedSection", @"Section2", @"Section3", nil];
     PASS([[snapshot sectionIdentifiers] isEqualToArray: expectedSections], "Section insertion order correct");
     PASS([snapshot numberOfSections] == 4, "Section count after insertion");
     
     // Test 5: Insert items
-    NSArray *insertedItems = @[@"InsertedItem"];
+    NSArray *insertedItems = [NSArray arrayWithObjects:@"InsertedItem", nil];
     [snapshot insertItemsWithIdentifiers: insertedItems beforeItemWithIdentifier: @"Item2"];
     
     NSArray *updatedSection1Items = [snapshot itemIdentifiersInSectionWithIdentifier: @"Section1"];
-    NSArray *expectedSection1Items = @[@"Item1", @"InsertedItem", @"Item2"];
+    NSArray *expectedSection1Items = [NSArray arrayWithObjects:@"Item1", @"InsertedItem", @"Item2", nil];
     PASS([updatedSection1Items isEqualToArray: expectedSection1Items], "Item insertion in section");
     
     // Test 6: Delete items
-    [snapshot deleteItemsWithIdentifiers: @[@"Item3"]];
+    [snapshot deleteItemsWithIdentifiers: [NSArray arrayWithObjects:@"Item3", nil]];
     NSArray *updatedSection2Items = [snapshot itemIdentifiersInSectionWithIdentifier: @"Section2"];
-    NSArray *expectedSection2ItemsAfterDelete = @[@"Item4", @"Item5"];
+    NSArray *expectedSection2ItemsAfterDelete = [NSArray arrayWithObjects:@"Item4", @"Item5", nil];
     PASS([updatedSection2Items isEqualToArray: expectedSection2ItemsAfterDelete], "Item deletion from section");
     PASS([snapshot numberOfItems] == 5, "Item count after deletion");
     
     // Test 7: Delete sections
-    [snapshot deleteSectionsWithIdentifiers: @[@"InsertedSection"]];
-    NSArray *sectionsAfterDelete = @[@"Section1", @"Section2", @"Section3"];
+    [snapshot deleteSectionsWithIdentifiers: [NSArray arrayWithObjects:@"InsertedSection", nil]];
+    NSArray *sectionsAfterDelete = [NSArray arrayWithObjects:@"Section1", @"Section2", @"Section3", nil];
     PASS([[snapshot sectionIdentifiers] isEqualToArray: sectionsAfterDelete], "Section deletion");
     PASS([snapshot numberOfSections] == 3, "Section count after deletion");
     
@@ -92,7 +90,7 @@ int main()
     
     // Test 9: Move sections
     [snapshot moveSectionWithIdentifier: @"Section3" beforeSectionWithIdentifier: @"Section1"];
-    NSArray *sectionsAfterMove = @[@"Section3", @"Section1", @"Section2"];
+    NSArray *sectionsAfterMove = [NSArray arrayWithObjects:@"Section3", @"Section1", @"Section2", nil];
     PASS([[snapshot sectionIdentifiers] isEqualToArray: sectionsAfterMove], "Section move operation");
     
     [snapshot release];

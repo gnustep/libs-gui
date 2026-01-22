@@ -1,7 +1,7 @@
 /*
   Test of NSDiffableDataSource with NSCollectionView
 
-  Author: GitHub Copilot
+  Author: Gregory J. Casamento
   Date: January 2026
 
   Test for NSDiffableDataSource integration with NSCollectionView.
@@ -42,7 +42,6 @@
 int main()
 {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  NSApplication *app = [NSApplication sharedApplication];
   
   START_SET("NSDiffableDataSource with NSCollectionView")
     
@@ -73,11 +72,11 @@ int main()
     NSDiffableDataSourceSnapshot *snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
     
     // Add sections
-    [snapshot appendSectionsWithIdentifiers:@[@"Section1", @"Section2"]];
+    [snapshot appendSectionsWithIdentifiers:[NSArray arrayWithObjects:@"Section1", @"Section2", nil]];
     
     // Add items
-    [snapshot appendItemsWithIdentifiers:@[@"Item1", @"Item2"] intoSectionWithIdentifier:@"Section1"];
-    [snapshot appendItemsWithIdentifiers:@[@"Item3", @"Item4", @"Item5"] intoSectionWithIdentifier:@"Section2"];
+    [snapshot appendItemsWithIdentifiers:[NSArray arrayWithObjects:@"Item1", @"Item2", nil] intoSectionWithIdentifier:@"Section1"];
+    [snapshot appendItemsWithIdentifiers:[NSArray arrayWithObjects:@"Item3", @"Item4", @"Item5", nil] intoSectionWithIdentifier:@"Section2"];
     
     // Apply snapshot (may have limited functionality without item provider)
     [dataSource applySnapshot:snapshot animatingDifferences:NO];
@@ -93,7 +92,7 @@ int main()
     // Test 6: Basic snapshot updates
     NSDiffableDataSourceSnapshot *updatedSnapshot = [dataSource snapshot];
     if (updatedSnapshot) {
-      [updatedSnapshot appendItemsWithIdentifiers:@[@"Item6"] intoSectionWithIdentifier:@"Section2"];
+      [updatedSnapshot appendItemsWithIdentifiers:[NSArray arrayWithObjects:@"Item6", nil] intoSectionWithIdentifier:@"Section2"];
       [dataSource applySnapshot:updatedSnapshot animatingDifferences:NO];
       PASS(YES, "Snapshot update completed");
     } else {
