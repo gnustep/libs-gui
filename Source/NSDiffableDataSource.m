@@ -335,11 +335,11 @@ GSDiffableDefaultSectionIdentifier()
     }
 
   [_sections removeObjectAtIndex: fromIndex];
-  if (fromIndex <= toIndex)
+  if (fromIndex < toIndex)
     {
-      toIndex++;
+      toIndex--;
     }
-  [_sections insertObject: sectionIdentifier atIndex: toIndex];
+  [_sections insertObject: sectionIdentifier atIndex: toIndex + 1];
 }
 
 - (void) appendItemsWithIdentifiers: (NSArray *)itemIdentifiers
