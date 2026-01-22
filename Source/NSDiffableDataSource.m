@@ -51,7 +51,7 @@
 - (NSCollectionViewItem *) _itemForIndexPath: (NSIndexPath *)p
 {
   NSCollectionViewItem *item = [_indexPathsToItems objectForKey: p];
-  NSLog(@"[DiffableDataSource] _itemForIndexPath:%@ -> %@", p, item);
+  NSDebugLog(@"[DiffableDataSource] _itemForIndexPath:%@ -> %@", p, item);
   return item;
 }
 @end
@@ -571,7 +571,7 @@ GSDiffableDefaultSectionIdentifier()
 
 - (id) itemIdentifierForIndexPath: (NSIndexPath *)indexPath
 {
-  NSLog(@"- (id) itemIdentifierForIndexPath: %@", indexPath);
+  NSDebugLog(@"- (id) itemIdentifierForIndexPath: %@", indexPath);
   if (_snapshot == nil || indexPath == nil)
     {
       return nil;
@@ -618,7 +618,7 @@ GSDiffableDefaultSectionIdentifier()
       return nil;
     }
 
-  NSLog(@"items = %@", items);
+  NSDebugLog(@"items = %@", items);
 
   return [items objectAtIndex: itemIndex];
 }
@@ -628,11 +628,11 @@ GSDiffableDefaultSectionIdentifier()
   (void)collectionView;
   if (_snapshot == nil)
     {
-      NSLog(@"[DiffableDataSource] numberOfSectionsInCollectionView: 0 (nil snapshot)");
+      NSDebugLog(@"[DiffableDataSource] numberOfSectionsInCollectionView: 0 (nil snapshot)");
       return 0;
     }
   NSInteger count = [_snapshot numberOfSections];
-  NSLog(@"[DiffableDataSource] numberOfSectionsInCollectionView: %ld", (long)count);
+  NSDebugLog(@"[DiffableDataSource] numberOfSectionsInCollectionView: %ld", (long)count);
   return count;
 }
 
@@ -642,57 +642,57 @@ GSDiffableDefaultSectionIdentifier()
   (void)collectionView;
   if (_snapshot == nil)
     {
-      NSLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> 0 (nil snapshot)", (long)section);
+      NSDebugLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> 0 (nil snapshot)", (long)section);
       return 0;
     }
   
   NSArray *sections = [_snapshot sectionIdentifiers];
   if (sections == nil || section < 0 || section >= (NSInteger)[sections count])
     {
-      NSLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> 0 (invalid)", (long)section);
+      NSDebugLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> 0 (invalid)", (long)section);
       return 0;
     }
 
   id sectionIdentifier = [sections objectAtIndex: section];
   if (sectionIdentifier == nil)
     {
-      NSLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> 0 (nil section identifier)", (long)section);
+      NSDebugLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> 0 (nil section identifier)", (long)section);
       return 0;
     }
   
   NSInteger count = [[_snapshot itemIdentifiersInSectionWithIdentifier: sectionIdentifier] count];
-  NSLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> %ld", (long)section, (long)count);
+  NSDebugLog(@"[DiffableDataSource] numberOfItemsInSection:%ld -> %ld", (long)section, (long)count);
   return count;
 }
 
 - (NSCollectionViewItem *) collectionView: (NSCollectionView *)collectionView
       itemForRepresentedObjectAtIndexPath: (NSIndexPath *)indexPath
 {
-  NSLog(@"[DiffableDataSource] itemForRepresentedObjectAtIndexPath:%@", indexPath);
+  NSDebugLog(@"[DiffableDataSource] itemForRepresentedObjectAtIndexPath:%@", indexPath);
 
   // Recursion guard: if we're already creating an item for this index path, return nil
   if ([_creatingIndexPaths containsObject: indexPath])
     {
-      NSLog(@"[DiffableDataSource] Preventing recursive call for indexPath %@", indexPath);
+      NSDebugLog(@"[DiffableDataSource] Preventing recursive call for indexPath %@", indexPath);
       return nil;
     }
 
   id identifier = [self itemIdentifierForIndexPath: indexPath];
   NSCollectionViewItem *result = [collectionView _itemForIndexPath: indexPath];
 
-  NSLog(@"[DiffableDataSource] identifier=%@, existing result=%@", identifier, result);
+  NSDebugLog(@"[DiffableDataSource] identifier=%@, existing result=%@", identifier, result);
 
   if (result == nil)
     {
       if (identifier == nil || _itemProvider == nil)
 	{
-	  NSLog(@"[DiffableDataSource] Cannot create item: identifier=%@, itemProvider=%@", identifier, _itemProvider);
+	  NSDebugLog(@"[DiffableDataSource] Cannot create item: identifier=%@, itemProvider=%@", identifier, _itemProvider);
 	  return nil;
 	}
 
       if (_itemProvider != nil)
 	{
-	  NSLog(@"[DiffableDataSource] Creating new item for identifier=%@", identifier);
+	  NSDebugLog(@"[DiffableDataSource] Creating new item for identifier=%@", identifier);
 	  
 	  // Mark that we're creating an item for this index path
 	  [_creatingIndexPaths addObject: indexPath];
@@ -722,7 +722,7 @@ GSDiffableDefaultSectionIdentifier()
 	    NSIndexPath *providerIndexPath = [NSIndexPath indexPathForItem: itemIndex
 							       inSection: sectionIndex];
 	    
-	    NSLog(@"[DiffableDataSource] Calling item provider with indexPath=%@, identifier=%@", providerIndexPath, identifier);
+	    NSDebugLog(@"[DiffableDataSource] Calling item provider with indexPath=%@, identifier=%@", providerIndexPath, identifier);
 	    
 	    result = (NSCollectionViewItem *)
 	      CALL_NON_NULL_BLOCK(_itemProvider,
@@ -730,7 +730,7 @@ GSDiffableDefaultSectionIdentifier()
 				  providerIndexPath,
 				  identifier);
 
-	    NSLog(@"[DiffableDataSource] Item provider returned: %@", result);
+	    NSDebugLog(@"[DiffableDataSource] Item provider returned: %@", result);
 
 	    if ([result respondsToSelector: @selector(setRepresentedObject:)])
 	      {
@@ -740,11 +740,11 @@ GSDiffableDefaultSectionIdentifier()
 	  
 	  // Always remove from the creating set
 	  [_creatingIndexPaths removeObject: indexPath];
-	  NSLog(@"[DiffableDataSource] Removed indexPath %@ from creating set", indexPath);
+	  NSDebugLog(@"[DiffableDataSource] Removed indexPath %@ from creating set", indexPath);
 	}
     }
 
-  NSLog(@"[DiffableDataSource] Returning result: %@", result);
+  NSDebugLog(@"[DiffableDataSource] Returning result: %@", result);
   return result;
 }
 
