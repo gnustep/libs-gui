@@ -63,7 +63,7 @@ DEFINE_BLOCK_TYPE(GSCollectionViewItemProviderBlock, NSCollectionViewItem*, NSCo
  * Takes a table view, item identifier, table column, and row number,
  * and returns a configured NSView for the cell.
  */
-DEFINE_BLOCK_TYPE(GSTableViewCellProviderBlock, NSView*, NSTableView*, id, NSTableColumn*, NSInteger);
+DEFINE_BLOCK_TYPE(GSTableViewCellProviderBlock, NSView*, NSTableView*, NSTableColumn*, NSInteger, id);
 
 /**
  * <p>NSDiffableDataSourceSnapshot represents a snapshot of the current state

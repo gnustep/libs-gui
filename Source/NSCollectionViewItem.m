@@ -1,11 +1,11 @@
 /** <title>NSCollectionViewItem</title>
- 
+
    Copyright (C) 2013 Free Software Foundation, Inc.
- 
+
    Author: Doug Simons (doug.simons@testplant.com)
-           Frank LeGrand (frank.legrand@testplant.com)
+	   Frank LeGrand (frank.legrand@testplant.com)
    Date: February 2013
- 
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -20,8 +20,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -111,22 +111,22 @@
     {
       if (YES == [aCoder allowsKeyedCoding])
 	{
-          if ([aCoder containsValueForKey: @"textField"])
-            {
-              [self setTextField: [aCoder decodeObjectForKey: @"textField"]];
-            }
-          else
-            {
-              textField = [[NSTextField alloc] initWithFrame: NSMakeRect(0.0, 0.0, 100.0, 20.0)];
-            }
-          if ([aCoder containsValueForKey: @"imageView"])
-            {
-              [self setImageView: [aCoder decodeObjectForKey: @"imageView"]];
-            }
-          else
-            {
-              imageView = [[NSImageView alloc] initWithFrame: NSMakeRect(0.0, 0.0, 100.0, 100.0)];
-            }
+	  if ([aCoder containsValueForKey: @"textField"])
+	    {
+	      [self setTextField: [aCoder decodeObjectForKey: @"textField"]];
+	    }
+	  else
+	    {
+	      textField = [[NSTextField alloc] initWithFrame: NSMakeRect(0.0, 0.0, 100.0, 20.0)];
+	    }
+	  if ([aCoder containsValueForKey: @"imageView"])
+	    {
+	      [self setImageView: [aCoder decodeObjectForKey: @"imageView"]];
+	    }
+	  else
+	    {
+	      imageView = [[NSImageView alloc] initWithFrame: NSMakeRect(0.0, 0.0, 100.0, 100.0)];
+	    }
 	}
       else
 	{
@@ -153,8 +153,8 @@
 }
 
 - (void) copyBindingsTo: (NSCollectionViewItem*)newItem
-                   from: (NSView*)view
-                   onto: (NSView*)newView
+		   from: (NSView*)view
+		   onto: (NSView*)newView
 {
   NSArray *exposedBindings = [view exposedBindings];
   NSEnumerator *e = [exposedBindings objectEnumerator];
@@ -163,16 +163,16 @@
     {
       NSDictionary *info = [view infoForBinding: binding];
       if (info != nil)
-        {
-          NSObject *target = [info objectForKey: NSObservedObjectKey];
-          if (target == self)
-            {
-              [newView bind: binding
-                   toObject: newItem
-                withKeyPath: [info objectForKey: NSObservedKeyPathKey]
-                    options: [info objectForKey: NSOptionsKey]];
-            }
-        }
+	{
+	  NSObject *target = [info objectForKey: NSObservedObjectKey];
+	  if (target == self)
+	    {
+	      [newView bind: binding
+		   toObject: newItem
+		withKeyPath: [info objectForKey: NSObservedKeyPathKey]
+		    options: [info objectForKey: NSOptionsKey]];
+	    }
+	}
     }
 
   NSView *sub1 = nil;
@@ -184,24 +184,24 @@
       sub2 = [e2 nextObject];
       [self copyBindingsTo: newItem from: sub1 onto: sub2];
     }
- }
+}
 
-- (id) copyWithZone: (NSZone *)zone 
+- (id) copyWithZone: (NSZone *)zone
 {
   // FIXME: Cache this data, as we need a lot of copies
   NSData *itemAsData = [NSKeyedArchiver archivedDataWithRootObject: self];
-  NSCollectionViewItem *newItem = 
+  NSCollectionViewItem *newItem =
     [NSKeyedUnarchiver unarchiveObjectWithData: itemAsData];
 
   // Try to copy bindings too
   [self copyBindingsTo: newItem from: [self view] onto: [newItem view]];
- 
+
   return RETAIN(newItem);
 }
 
 - (NSString *) description
 {
-  return [NSString stringWithFormat: @"%@ - selected = %@, teztField = %@, representedObject = %@", [super description], _isSelected ? @"YES" : @"NO", textField, [self representedObject]]; 
+  return [NSString stringWithFormat: @"%@ - selected = %@, teztField = %@, representedObject = %@", [super description], _isSelected ? @"YES" : @"NO", textField, [self representedObject]];
 }
 
 @end
