@@ -41,6 +41,7 @@
 #import "AppKit/NSCollectionViewItem.h"
 #import "AppKit/NSCollectionViewLayout.h"
 #import "AppKit/NSCollectionViewGridLayout.h"
+#import "AppKit/NSColor.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
@@ -362,13 +363,18 @@ static NSString *_placeholderItem = nil;
 
 - (void) drawRect: (NSRect)dirtyRect
 {
-  // TODO: Implement "use Alternating Colors"
-  if (_backgroundColors && [_backgroundColors count] > 0)
+  // Use window background color for consistency
+  NSColor *bgColor = [NSColor windowBackgroundColor];
+  
+  // Set parent view background color if it supports it
+  NSView *parentView = [self superview];
+  if (parentView && [parentView respondsToSelector: @selector(setBackgroundColor:)])
     {
-      NSColor *bgColor = [_backgroundColors objectAtIndex: 0];
-      [bgColor set];
-      NSRectFill(dirtyRect);
+      [parentView performSelector: @selector(setBackgroundColor:) withObject: bgColor];
     }
+  
+  [bgColor set];
+  NSRectFill(dirtyRect);
 
   NSPoint origin = dirtyRect.origin;
   NSSize size = dirtyRect.size;
