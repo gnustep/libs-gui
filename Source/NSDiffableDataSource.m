@@ -109,16 +109,10 @@ GSDiffableDefaultSectionIdentifier()
           {
             NSMutableArray *sectionItems = [items mutableCopy];
             [copiedItems setObject: sectionItems forKey: section];
-            // RELEASE(sectionItems);
+            RELEASE(sectionItems);
           }
       }
   }
-
-  //DESTROY(copy->_sections);
-  //DESTROY(copy->_itemsBySection);
-  //DESTROY(copy->_reloadedSections);
-  //DESTROY(copy->_reloadedItems);
-
   ASSIGNCOPY(copy->_sections, copiedSections);
   ASSIGNCOPY(copy->_itemsBySection, copiedItems);
   ASSIGNCOPY(copy->_reloadedSections, _reloadedSections);
