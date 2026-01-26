@@ -611,7 +611,7 @@ Return values 0, 1, 2 are mostly the same as from
   This calculation should match the calculation in [GSFontInfo
   -defaultLineHeightForFont], or text will look odd.
   */
-#define COMPUTE_BASELINE  baseline = line_height - descender
+#define COMPUTE_BASELINE  baseline = line_height - descender;
 
 
   /* TODO: doesn't have to be a simple horizontal container, but it's easier
@@ -655,8 +655,6 @@ Return values 0, 1, 2 are mostly the same as from
     ascender = [cache->font ascender];
     descender = -[cache->font descender];
 
-    COMPUTE_BASELINE;
-
     if (line_height < min)
       line_height = min;
 
@@ -687,7 +685,6 @@ Return values 0, 1, 2 are mostly the same as from
     if (__new_height > line_height) \
       { \
 	line_height = __new_height; \
-	COMPUTE_BASELINE; \
 	goto restart; \
       } \
   } while (0)
@@ -841,8 +838,6 @@ restart: ;
 	    if (f_descender > descender)
 	      descender = f_descender;
 
-	    COMPUTE_BASELINE;
-
 	    WANT_LINE_HEIGHT(new_height);
 	  }
 
@@ -965,7 +960,6 @@ restart: ;
 	  if (y > 0 && f_descender + y > descender)
 	    descender = f_descender + y;
 
-	  COMPUTE_BASELINE;
 	  WANT_LINE_HEIGHT(ascender + descender);
 	}
 
@@ -990,6 +984,8 @@ restart: ;
 		last_glyph = NSNullGlyph;
 		continue;
 	      }
+
+            COMPUTE_BASELINE
 
 	    r = [cell cellFrameForTextContainer: curTextContainer
 		  proposedLineFragment: lf->rect
@@ -1016,7 +1012,7 @@ restart: ;
 
 	    /* Update ascender and descender. Adjust line height and
 	    baseline if necessary. */
-	    COMPUTE_BASELINE;
+
 	    WANT_LINE_HEIGHT(ascender + descender);
 
 	    g->size = r.size;
@@ -1186,6 +1182,8 @@ restart: ;
       unsigned int i, j;
       glyph_cache_t *g;
       NSRect used_rect;
+
+      COMPUTE_BASELINE
 
       for (lf = line_frags, i = 0, g = cache; lfi >= 0; lfi--, lf++)
 	{
