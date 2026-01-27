@@ -1,4 +1,4 @@
-/* 
+/*
    AppKit.h
 
    Main include file for GNUstep GUI Library
@@ -7,7 +7,7 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -22,10 +22,10 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-*/ 
+*/
 
 #ifndef _GNUstep_H_AppKit
 #define _GNUstep_H_AppKit
@@ -170,6 +170,8 @@
 #import <AppKit/NSDocumentController.h>
 #import <AppKit/NSDictionaryController.h>
 #import <AppKit/NSDrawer.h>
+#import <AppKit/NSFilePromiseProvider.h>
+#import <AppKit/NSFilePromiseReceiver.h>
 #import <AppKit/NSFileWrapperExtensions.h>
 #import <AppKit/NSFontAssetRequest.h>
 #import <AppKit/NSFontCollection.h>
