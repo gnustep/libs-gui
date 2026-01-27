@@ -897,7 +897,9 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 
 - (NSInteger) numberOfRowsInTableView: (NSTableView *)tableView
 {
-  return [_snapshot numberOfItems];
+  NSInteger n = [_snapshot numberOfItems];
+  NSLog(@"Number of rows = %ld", n);
+  return n;
 }
 
 - (id) tableView: (NSTableView *)tableView

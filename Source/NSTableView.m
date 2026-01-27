@@ -70,6 +70,7 @@
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSCustomImageRep.h"
+#import "AppKit/NSDiffableDataSource.h"
 
 #import "GNUstepGUI/GSTheme.h"
 #import "GSBindingHelpers.h"
@@ -7093,6 +7094,13 @@ For a more detailed explanation, -setSortDescriptors:. */
 	  view = [_delegate tableView: self
 		   viewForTableColumn: tb
 				  row: row];
+	}
+      else if ([_dataSource respondsToSelector: @selector(tableView:viewForTableColumn:row:)] &&
+	       [_dataSource isKindOfClass: [NSTableViewDiffableDataSource class]])
+	{
+	  view = [_dataSource tableView: self
+		     viewForTableColumn: tb
+				    row: row];
 	}
       else
 	{

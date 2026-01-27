@@ -34,6 +34,7 @@
 
 #import <AppKit/AppKitDefines.h>
 #import <Foundation/NSObject.h>
+#import <AppKit/NSCollectionView.h>
 #import <AppKit/NSTableView.h>
 
 @class NSArray;
