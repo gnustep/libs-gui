@@ -678,7 +678,7 @@ Return values 0, 1, 2 are mostly the same as from
 
 
 #define WANT_LINE_HEIGHT(h) \
-  do { \
+  { \
     CGFloat __new_height = (h); \
     if (max_line_height > 0 && __new_height > max_line_height) \
       __new_height = max_line_height; \
@@ -687,7 +687,7 @@ Return values 0, 1, 2 are mostly the same as from
 	line_height = __new_height; \
 	goto restart; \
       } \
-  } while (0)
+  }
 
 
 restart: ;
@@ -838,7 +838,7 @@ restart: ;
 	    if (f_descender > descender)
 	      descender = f_descender;
 
-	    WANT_LINE_HEIGHT(new_height);
+	    WANT_LINE_HEIGHT(new_height)
 	  }
 
 	if (g->g == NSControlGlyph)
@@ -960,7 +960,7 @@ restart: ;
 	  if (y > 0 && f_descender + y > descender)
 	    descender = f_descender + y;
 
-	  WANT_LINE_HEIGHT(ascender + descender);
+	  WANT_LINE_HEIGHT(ascender + descender)
 	}
 
 	if (g->g == GSAttachmentGlyph)
@@ -1013,7 +1013,7 @@ restart: ;
 	    /* Update ascender and descender. Adjust line height and
 	    baseline if necessary. */
 
-	    WANT_LINE_HEIGHT(ascender + descender);
+	    WANT_LINE_HEIGHT(ascender + descender)
 
 	    g->size = r.size;
 	    g->pos.x = p.x + r.origin.x;
