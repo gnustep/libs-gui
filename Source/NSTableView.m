@@ -2110,6 +2110,13 @@ static void computeNewSelection
 	  name: NSTableViewColumnDidResizeNotification
 	  object: self];
     }
+  // Remove window resize observer
+  if ([self window] != nil)
+    {
+      [nc removeObserver: self 
+          name: NSWindowDidResizeNotification 
+          object: [self window]];
+    }
   TEST_RELEASE (_autosaveName);
   if (_numberOfColumns > 0)
     {
@@ -2126,6 +2133,36 @@ static void computeNewSelection
 - (BOOL) isFlipped
 {
   return YES;
+}
+
+- (void) viewDidMoveToWindow
+{
+  // Remove existing observer if any
+  if ([self window] != nil)
+    {
+      [nc removeObserver: self 
+          name: NSWindowDidResizeNotification 
+          object: [self window]];
+    }
+  
+  [super viewDidMoveToWindow];
+  
+  // Add observer for new window if view-based
+  if ([self window] != nil && _viewBased)
+    {
+      [nc addObserver: self
+          selector: @selector(_windowDidResize:)
+          name: NSWindowDidResizeNotification
+          object: [self window]];
+    }
+}
+
+- (void) _windowDidResize: (NSNotification *)notification
+{
+  if (_viewBased)
+    {
+      [self reloadData];
+    }
 }
 
 /*
@@ -2391,9 +2428,23 @@ static void computeNewSelection
 {
   if (_viewBased)
     {
+      // Remove all existing row views from the table view
+      NSArray *subviews = [[self subviews] copy];
+      NSEnumerator *enumerator = [subviews objectEnumerator];
+      NSView *subview;
+      
+      while ((subview = [enumerator nextObject]) != nil)
+        {
+          if ([subview isKindOfClass: [NSTableRowView class]])
+            {
+              [subview removeFromSuperview];
+            }
+        }
+      
       [_renderedViewPaths removeAllObjects];
       [_pathsToViews removeAllObjects];
       [_rowViews removeAllObjects];
+      RELEASE(subviews);
     }
 
   [self noteNumberOfRowsChanged];
@@ -5055,37 +5106,48 @@ This method is deprecated, use -columnIndexesInRect:. */
 		     endingColumn: &endingColumn
 		       inClipRect: clipRect];
 
-  /* Draw the row between startingColumn and endingColumn */
+  // Create and position the row view for this row
+  id rowView = [self rowViewAtRow: rowIndex
+		  makeIfNecessary: YES];
+  
+
+  
+  if (rowView != nil)
+    {
+      NSRect cellFrame = [self frameOfCellAtColumn: 0
+					     row: rowIndex];
+      CGFloat x = 0.0;
+      CGFloat y = cellFrame.origin.y;
+      CGFloat w = [self frame].size.width;
+      CGFloat h = [self rowHeight];
+
+      NSRect rvFrame = NSMakeRect(x, y, w, h);
+      NSAutoresizingMaskOptions options = NSViewWidthSizable
+	| NSViewMaxYMargin;
+
+
+
+      // Add as subview if not already added
+      if ([[self subviews] containsObject: rowView] == NO)
+	{
+	  [self addSubview: rowView];
+	  [rowView setAutoresizingMask: options];
+
+	}
+      
+      // Always update the frame to ensure correct positioning
+      [rowView setFrame: rvFrame];
+    }
+
+  /* Create and add the cell views for each column in the row */
   for (columnIndex = startingColumn; columnIndex <= endingColumn; columnIndex++)
     {
-      id rowView = [self rowViewAtRow: rowIndex
-		      makeIfNecessary: YES];
       NSView *view = [self viewAtColumn: columnIndex
 				    row: rowIndex
 			makeIfNecessary: YES];
 
-      // If the view is already part of the table, don't re-add it...
-      if (rowView != nil
-	  && [[self subviews] containsObject: rowView] == NO)
-	{
-	  NSRect cellFrame = [self frameOfCellAtColumn: 0
-						   row: rowIndex];
-	  CGFloat x = 0.0;
-	  CGFloat y = cellFrame.origin.y;
-	  CGFloat w = [self frame].size.width;
-	  CGFloat h = [self rowHeight];
-
-	  NSRect rvFrame = NSMakeRect(x, y, w, h);
-	  NSAutoresizingMaskOptions options = NSViewWidthSizable
-	    | NSViewMinYMargin;
-
-	  [self addSubview: rowView];
-	  [rowView setAutoresizingMask: options];
-	  [rowView setFrame: rvFrame];
-	}
-
       // Create the view if needed...
-      if (view != nil &&
+      if (view != nil && rowView != nil &&
 	  [[rowView subviews] containsObject: view] == NO)
 	{
 	  // Add the view to the row...
@@ -5386,6 +5448,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 {
   const SEL sel = @selector(tableView:willDisplayCell:forTableColumn:row:);
   const SEL vbsel = @selector(tableView:viewForTableColumn:row:);
+  BOOL oldViewBased = _viewBased;
 
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
@@ -5407,6 +5470,26 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   /* Test to see if it is view based */
   _viewBased = [_delegate respondsToSelector: vbsel];
+  
+  // Handle window resize observer when view-based status changes
+  if ([self window] != nil)
+    {
+      if (oldViewBased && !_viewBased)
+        {
+          // Changed from view-based to cell-based, remove observer
+          [nc removeObserver: self 
+              name: NSWindowDidResizeNotification 
+              object: [self window]];
+        }
+      else if (!oldViewBased && _viewBased)
+        {
+          // Changed from cell-based to view-based, add observer  
+          [nc addObserver: self
+              selector: @selector(_windowDidResize:)
+              name: NSWindowDidResizeNotification
+              object: [self window]];
+        }
+    }
 }
 
 - (id) delegate
@@ -7052,22 +7135,22 @@ For a more detailed explanation, -setSortDescriptors:. */
       NSNumber *aRow = [NSNumber numberWithInteger: row];
 
       rv = [_rowViews objectForKey: aRow];
-      if (rv == nil)
+      if (rv == nil && flag == YES)
 	{
-	  if (flag == YES)
+	  if ([_delegate respondsToSelector: @selector(tableView:rowViewForRow:)])
 	    {
-	      if ([_delegate respondsToSelector: @selector(tableView:rowViewForRow:)])
-		{
-		  rv = [_delegate tableView: self rowViewForRow: row];
-		}
-	      if (rv == nil)
-		{
-		  rv = AUTORELEASE([[NSTableRowView alloc] init]);
-		}
+	      rv = [_delegate tableView: self rowViewForRow: row];
+	    }
+	  if (rv == nil)
+	    {
+	      rv = AUTORELEASE([[NSTableRowView alloc] init]);
 	    }
 
-	  [_rowViews setObject: rv
-			forKey: aRow];
+	  if (rv != nil)
+	    {
+	      [_rowViews setObject: rv
+			    forKey: aRow];
+	    }
 	}
     }
 
