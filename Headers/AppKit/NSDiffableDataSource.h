@@ -86,42 +86,42 @@ APPKIT_EXPORT_CLASS
  * Returns an array of all section identifiers in the snapshot,
  * in the order they appear.
  */
-- (NSArray *)sectionIdentifiers;
+- (NSArray *) sectionIdentifiers;
 
 /**
  * Returns an array of all item identifiers across all sections
  * in the snapshot, in the order they appear.
  */
-- (NSArray *)itemIdentifiers;
+- (NSArray *) itemIdentifiers;
 
 /**
  * Returns an array of item identifiers in the specified section.
  * sectionIdentifier: The unique identifier for the section.
  */
-- (NSArray *)itemIdentifiersInSectionWithIdentifier: (id)sectionIdentifier;
+- (NSArray *) itemIdentifiersInSectionWithIdentifier: (id)sectionIdentifier;
 
 /**
  * Returns the number of sections in the snapshot.
  */
-- (NSInteger)numberOfSections;
+- (NSInteger) numberOfSections;
 
 /**
  * Returns the total number of items across all sections in the snapshot.
  */
-- (NSInteger)numberOfItems;
+- (NSInteger) numberOfItems;
 
 /**
  * Appends the specified sections to the end of the snapshot.
  * sectionIdentifiers: An array of unique identifiers for the sections to append.
  */
-- (void)appendSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
+- (void) appendSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
 
 /**
  * Inserts the specified sections before the given section.
  * sectionIdentifiers: An array of unique identifiers for the sections to insert.
  * sectionIdentifier: The identifier of the section before which to insert.
  */
-- (void)insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
+- (void) insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
 	    beforeSectionWithIdentifier: (id)sectionIdentifier;
 
 /**
@@ -129,21 +129,21 @@ APPKIT_EXPORT_CLASS
  * sectionIdentifiers: An array of unique identifiers for the sections to insert.
  * sectionIdentifier: The identifier of the section after which to insert.
  */
-- (void)insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
+- (void) insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
 	     afterSectionWithIdentifier: (id)sectionIdentifier;
 
 /**
  * Removes the specified sections from the snapshot.
  * sectionIdentifiers: An array of unique identifiers for the sections to delete.
  */
-- (void)deleteSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
+- (void) deleteSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
 
 /**
  * Moves the specified section to a position before another section.
  * sectionIdentifier: The identifier of the section to move.
  * otherSectionIdentifier: The identifier of the section before which to move.
  */
-- (void)moveSectionWithIdentifier: (id)sectionIdentifier
+- (void) moveSectionWithIdentifier: (id)sectionIdentifier
       beforeSectionWithIdentifier: (id)otherSectionIdentifier;
 
 /**
@@ -151,21 +151,21 @@ APPKIT_EXPORT_CLASS
  * sectionIdentifier: The identifier of the section to move.
  * otherSectionIdentifier: The identifier of the section after which to move.
  */
-- (void)moveSectionWithIdentifier: (id)sectionIdentifier
+- (void) moveSectionWithIdentifier: (id)sectionIdentifier
        afterSectionWithIdentifier: (id)otherSectionIdentifier;
 
 /**
  * Appends the specified items to the last section in the snapshot.
  * itemIdentifiers: An array of unique identifiers for the items to append.
  */
-- (void)appendItemsWithIdentifiers: (NSArray *)itemIdentifiers;
+- (void) appendItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 
 /**
  * Appends the specified items to the given section.
  * itemIdentifiers: An array of unique identifiers for the items to append.
  * sectionIdentifier: The identifier of the section into which to append items.
  */
-- (void)appendItemsWithIdentifiers: (NSArray *)itemIdentifiers
+- (void) appendItemsWithIdentifiers: (NSArray *)itemIdentifiers
 	   intoSectionWithIdentifier: (id)sectionIdentifier;
 
 /**
@@ -173,7 +173,7 @@ APPKIT_EXPORT_CLASS
  * itemIdentifiers: An array of unique identifiers for the items to insert.
  * beforeIdentifier: The identifier of the item before which to insert.
  */
-- (void)insertItemsWithIdentifiers: (NSArray *)itemIdentifiers
+- (void) insertItemsWithIdentifiers: (NSArray *)itemIdentifiers
 	  beforeItemWithIdentifier: (id)beforeIdentifier;
 
 /**
@@ -181,28 +181,28 @@ APPKIT_EXPORT_CLASS
  * itemIdentifiers: An array of unique identifiers for the items to insert.
  * afterIdentifier: The identifier of the item after which to insert.
  */
-- (void)insertItemsWithIdentifiers: (NSArray *)itemIdentifiers
+- (void) insertItemsWithIdentifiers: (NSArray *)itemIdentifiers
 	   afterItemWithIdentifier: (id)afterIdentifier;
 
 /**
  * Removes the specified items from the snapshot.
  * itemIdentifiers: An array of unique identifiers for the items to delete.
  */
-- (void)deleteItemsWithIdentifiers: (NSArray *)itemIdentifiers;
+- (void) deleteItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 
 /**
  * Marks the specified sections for reloading.
  * When the snapshot is applied, these sections will be reloaded.
  * sectionIdentifiers: An array of unique identifiers for the sections to reload.
  */
-- (void)reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
+- (void) reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
 
 /**
  * Marks the specified items for reloading.
  * When the snapshot is applied, these items will be reloaded.
  * itemIdentifiers: An array of unique identifiers for the items to reload.
  */
-- (void)reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
+- (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 @end
 
 /**
@@ -219,7 +219,7 @@ APPKIT_EXPORT_CLASS
  * indexPath: The index path where the item will appear.
  * Returns: A configured NSCollectionViewItem.
  */
-- (NSCollectionViewItem *)collectionView: (NSCollectionView *)collectionView
+- (NSCollectionViewItem *) collectionView: (NSCollectionView *)collectionView
 		     itemForIdentifier: (id)itemIdentifier
 			       atIndexPath: (NSIndexPath *)indexPath;
 @end
@@ -239,7 +239,7 @@ APPKIT_EXPORT_CLASS
  * row: The row number where the cell will appear.
  * Returns: A configured NSView for the cell.
  */
-- (NSView *)tableView: (NSTableView *)tableView
+- (NSView *) tableView: (NSTableView *)tableView
     viewForIdentifier: (id)itemIdentifier
 	  tableColumn: (NSTableColumn *)tableColumn
 		  row: (NSInteger)row;
@@ -276,7 +276,7 @@ APPKIT_EXPORT_CLASS
  *               based on their identifiers and index paths.
  * Returns: An initialized NSCollectionViewDiffableDataSource.
  */
-- (id)initWithCollectionView: (NSCollectionView *)collectionView
+- (id) initWithCollectionView: (NSCollectionView *)collectionView
 		itemProvider: (GSCollectionViewItemProviderBlock)itemProvider;
 
 /**
@@ -285,28 +285,28 @@ APPKIT_EXPORT_CLASS
  * animatingDifferences: Whether to animate the changes between the current
  *                       state and the new snapshot.
  */
-- (void)applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
+- (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
  animatingDifferences: (BOOL)animatingDifferences;
 
 /**
  * Returns the current snapshot representing the state of the data.
  * Returns: An NSDiffableDataSourceSnapshot containing all current sections and items.
  */
-- (NSDiffableDataSourceSnapshot *)snapshot;
+- (NSDiffableDataSourceSnapshot *) snapshot;
 
 /**
  * Returns the index path for the item with the specified identifier.
  * itemIdentifier: The unique identifier for the item.
  * Returns: The index path where the item appears, or nil if not found.
  */
-- (NSIndexPath *)indexPathForItemIdentifier: (id)itemIdentifier;
+- (NSIndexPath *) indexPathForItemIdentifier: (id)itemIdentifier;
 
 /**
  * Returns the item identifier for the item at the specified index path.
  * indexPath: The index path of the item.
  * Returns: The unique identifier for the item at that location, or nil if not found.
  */
-- (id)itemIdentifierForIndexPath: (NSIndexPath *)indexPath;
+- (id) itemIdentifierForIndexPath: (NSIndexPath *)indexPath;
 @end
 
 /**
@@ -341,8 +341,8 @@ APPKIT_EXPORT_CLASS
  *               their identifiers, columns, and row numbers.
  * Returns: An initialized NSTableViewDiffableDataSource.
  */
-- (id)initWithTableView: (NSTableView *)tableView
-	   cellProvider: (GSTableViewCellProviderBlock)cellProvider;
+- (id) initWithTableView: (NSTableView *)tableView
+cellProvider: (GSTableViewCellProviderBlock)cellProvider;
 
 /**
  * Applies a snapshot to the data source, updating the table view.
@@ -350,35 +350,35 @@ APPKIT_EXPORT_CLASS
  * animatingDifferences: Whether to animate the changes between the current
  *                       state and the new snapshot.
  */
-- (void)applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
-  animatingDifferences: (BOOL)animatingDifferences;
+- (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
+animatingDifferences: (BOOL)animatingDifferences;
 
 /**
  * Returns the current snapshot representing the state of the data.
  * Returns: An NSDiffableDataSourceSnapshot containing all current sections and items.
  */
-- (NSDiffableDataSourceSnapshot *)snapshot;
+- (NSDiffableDataSourceSnapshot *) snapshot;
 
 /**
  * Returns the index path for the item with the specified identifier.
  * itemIdentifier: The unique identifier for the item.
  * Returns: The index path where the item appears, or nil if not found.
  */
-- (NSIndexPath *)indexPathForItemIdentifier: (id)itemIdentifier;
+- (NSIndexPath *) indexPathForItemIdentifier: (id)itemIdentifier;
 
 /**
  * Returns the item identifier for the item at the specified index path.
  * indexPath: The index path of the item.
  * Returns: The unique identifier for the item at that location, or nil if not found.
  */
-- (id)itemIdentifierForIndexPath: (NSIndexPath *)indexPath;
+- (id) itemIdentifierForIndexPath: (NSIndexPath *)indexPath;
 
 /**
  * Returns the item identifier for the item at the specified row.
  * row: The row number of the item.
  * Returns: The unique identifier for the item at that row, or nil if not found.
  */
-- (id)itemIdentifierForRow: (NSInteger)row;
+- (id) itemIdentifierForRow: (NSInteger)row;
 @end
 
 #endif /* end of #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST) */
