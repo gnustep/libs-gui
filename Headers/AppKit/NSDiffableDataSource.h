@@ -41,10 +41,6 @@
 @class NSMutableArray;
 @class NSMutableDictionary;
 @class NSMutableSet;
-@class NSCollectionView;
-@class NSCollectionViewItem;
-@class NSTableView;
-@class NSTableColumn;
 @class NSIndexPath;
 @class NSView;
 
