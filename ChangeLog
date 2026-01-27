@@ -1,6 +1,97 @@
+2026-01-09 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/Additions/GNUstepGUI/GSServicesManager.h:
+	* Source/NSApplication.m:
+	* Source/NSWorkspace.m:
+	Allow non-gnustep apps to be used via app wrappers (a bundle of a
+	script to launch the program and an info plist describing it etc)
+	to open URLs.  The -GSOpenURL command line parameter tells the script
+	which URL to open (like the -GSFilePath parameter already supported
+	for opening files).  The info plist would need to contain the normal
+	CFBundleURLTypes entry used to spewcify the roles (Editor/Viewer) and
+	URL schemes the app supports.
+
+2026-01-09 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Remove NSWebBrowser as its addition only seems
+        to confuse things.
+
+2025-12-14 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.h: New method to provide services.
+	* Source/GSServicesManager.m: Improve reliability of GSProvideService()
+	by ensuring that the data types of the pasteboard are used to find any
+	matching service.  Implement a version which doesn't generate alert
+	panels, so we can quietly go on to trying to open URLs some other way.
+	Set the default timeout for services which do not return a result to
+	be 1 second rather than 30.
+	* Source/NSPasteboard.m: Make reading/writing string data from/to a
+	pasteboard work for URLs.
+	* Source/NSWorkspace.m: When looking for an Open URL service, use the
+	correct name and use both string and URL types so that services can
+	work whether they are expecting strings or more specific URL data.
+	If we can't open a URL using a service, raise an alert panel and then
+	treat the URL as an unknown file type.
+	* Tools/make_services.m: Added some diagnostics and fixed the code to
+	check that dynamically registered services are still available (the
+	app that registered them is still running).
+
+2025-11-27 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/AppKit/NSBezierPath.h:
+	* Headers/AppKit/NSColor.h:
+	* Headers/AppKit/NSColorPanel.h:
+	* Headers/AppKit/NSColorPicker.h:
+	* Headers/AppKit/NSColorWell.h:
+	* Headers/AppKit/NSComboBox.h:
+	* Headers/AppKit/NSComboBoxCell.h:
+	* Headers/AppKit/NSControl.h:
+	* Headers/AppKit/NSController.h:
+	* Headers/AppKit/NSCursor.h:
+	* Headers/AppKit/NSCustomImageRep.h:
+	* Headers/AppKit/NSDatePicker.h:
+	* Headers/AppKit/NSDockTile.h:
+	* Headers/AppKit/NSDrawer.h:
+	* Headers/AppKit/NSEPSImageRep.h:
+	* Headers/AppKit/NSEvent.h:
+	* Headers/AppKit/NSFileWrapper.h:
+	* Headers/AppKit/NSFileWrapperExtensions.h:
+	* Headers/AppKit/NSFont.h:
+	* Headers/AppKit/NSFontAssetRequest.h:
+	* Headers/AppKit/NSFontCollection.h:
+	* Headers/AppKit/NSImageView.h:
+	* Headers/AppKit/NSInputManager.h:
+	* Headers/AppKit/NSInputServer.h:
+	Remove incorrectly placed <title> and <abstract> elements in comments
+	to prevent breakage of documentation generation.
+	* Source/DocMakefile:
+	* Documentation/GNUmakefile.postamble:
+	Use new xxx_AGSDOC_INSTALL_BUNDLE to for relative links between
+	projects.
+	
+2025-05-29 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* config.make.in: Add HAVE_* variables.
+	* configure
+	* configure.ac: Look for relevant libraries
+	* Headers/Additions/GNUstepGUI/config.h.in
+	* Headers/AppKit/NSMovie.h
+	* Headers/AppKit/NSMovieView.h
+	* Source/GNUmakefile
+	* Source/GNUmakefile.preamble
+	* Source/GSAudioPlayer.h
+	* Source/GSAudioPlayer.m: Added to play audio from avcodec
+	* Source/GSMovieView.h
+	* Source/GSMovieView.m: Subclass to handle video playback
+	* Source/NSMovie.m
+	* Source/NSMovieView.m: Cleanup and add textfield.
+	* Source/NSSound.m: Cleanup NSSound, add support for playing
+	ffmpeg movies using NSMovie, NSMovieView.
+
 2025-04-30 Gregory John Casamento <greg.casamento@gmail.com>
 
-	* Headers/AppKit/NSColorSpace.h: Add NSColorSpaceModel* enumerated values.
+	* Headers/AppKit/NSColorSpace.h: Add NSColorSpaceModel*
+	enumerated values.
 
 2025-02-11 Richard Frith-Macdonald <rfm@gnu.org>
 
@@ -9,8 +100,7 @@
 	* INSTALL:
 	* NEWS:
 	* Source/DocMakefile:
-	* Version:
-	Updates for 0.32.0 release
+	* Version: Updates for 0.32.0 release
 
 2024-11-08 Gregory John Casamento <greg.casamento@gmail.com>
 
@@ -27,7 +117,8 @@
 
 2024-10-29 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Headers/AppKit/NSLayoutAnchor.h: Add missing include that is required after a change in base.
+	* Headers/AppKit/NSLayoutAnchor.h: Add missing include that is
+	required after a change in base.
 	* Source/NSTableView.m: Forward declare new methods.
 
 2024-08-29 Gregory John Casamento <greg.casamento@gmail.com>

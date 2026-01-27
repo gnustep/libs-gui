@@ -36,9 +36,6 @@
 @class NSImage;
 
 /**
- * <title>NSFileWrapperExtensions</title>
- * <abstract>AppKit extensions to NSFileWrapper for icon support</abstract>
- *
  * This category extends the Foundation NSFileWrapper class with AppKit-specific
  * functionality, primarily adding support for associating icons with file wrappers.
  * These extensions allow file wrappers to carry visual representations that can

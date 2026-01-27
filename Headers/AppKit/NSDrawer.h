@@ -28,8 +28,6 @@
 */
 
 /**
- * <title>NSDrawer</title>
- * <abstract>Sliding panel attachment for window interfaces</abstract>
  *
  * NSDrawer provides a sliding panel interface that can be attached to any
  * edge of a parent window. The drawer slides out from the window edge to
@@ -273,9 +271,6 @@ APPKIT_EXPORT_CLASS
 @end
 
 /**
- * <title>NSDrawerDelegate</title>
- * <abstract>Protocol for drawer delegate methods</abstract>
- *
  * The NSDrawerDelegate protocol defines methods that a delegate object
  * can implement to control drawer behavior and respond to state changes.
  * Delegate methods provide fine-grained control over opening/closing

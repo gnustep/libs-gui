@@ -710,7 +710,7 @@ static NSNotificationCenter *nc = nil;
 {
   if (self == [NSWindow class])
     {
-      [self setVersion: 3];
+      [self setVersion: 4];
       ccSel = @selector(_checkCursorRectangles:forEvent:);
       ctSel = @selector(_checkTrackingRectangles:forEvent:);
       ccImp = [self instanceMethodForSelector: ccSel];
@@ -5777,6 +5777,8 @@ current key view.<br />
 
   [aCoder encodeObject: _miniaturizedImage];
   [aCoder encodeConditionalObject: _initialFirstResponder];
+
+  [aCoder encodeObject: _toolbar];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -5882,6 +5884,12 @@ current key view.<br />
 
       [aDecoder decodeValueOfObjCType: @encode(id)
                                    at: &_initialFirstResponder];
+
+      // Decode the toolbar...
+      if (version > 3)
+	{
+	  [self setToolbar: [aDecoder decodeObject]];
+	}
 
       [self setFrameTopLeftPoint: p];
     }

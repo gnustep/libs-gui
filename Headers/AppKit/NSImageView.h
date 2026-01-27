@@ -26,9 +26,6 @@
 */
 
 /**
- * <title>NSImageView</title>
- * <abstract>Control for displaying and editing images</abstract>
- *
  * NSImageView provides a specialized control for displaying images with
  * various presentation options including alignment, scaling, and framing.
  * The view extends NSControl to provide image-specific functionality while

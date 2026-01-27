@@ -1523,7 +1523,7 @@ attachmentSize(linefrag_t *lf, NSUInteger glyphIndex)
 
   if (la)
     {
-      while (la->pos != glyphIndex && la_i < lf->num_attachments)
+      while (la_i < lf->num_attachments && la->pos != glyphIndex)
         {
           la++;
           la_i++;

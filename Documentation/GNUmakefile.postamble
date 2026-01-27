@@ -38,16 +38,7 @@ after-all::
 # Install the library reference documentation manually
 #
 after-install::
-	rm -rf $(GNUSTEP_DOC)/$(Gui_DOC_INSTALL_DIR)
-	$(MKINSTALLDIRS) $(GNUSTEP_DOC)/$(Gui_DOC_INSTALL_DIR)
-	(cd Gui; $(TAR) cf - .) | \
-	  (cd $(GNUSTEP_DOC)/$(Gui_DOC_INSTALL_DIR); $(TAR) xf -)
-	rm -rf $(GNUSTEP_DOC)/$(Gui_DOC_INSTALL_DIR)/CVS
-	rm -rf $(GNUSTEP_DOC)/$(GuiAdditions_DOC_INSTALL_DIR)
-	$(MKINSTALLDIRS) $(GNUSTEP_DOC)/$(GuiAdditions_DOC_INSTALL_DIR)
-	(cd GuiAdditions; $(TAR) cf - .) | \
-	  (cd $(GNUSTEP_DOC)/$(GuiAdditions_DOC_INSTALL_DIR); $(TAR) xf -)
-	rm -rf $(GNUSTEP_DOC)/$(GuiAdditions_DOC_INSTALL_DIR)/CVS
+	$(MAKE) -C ../Source -f DocMakefile install; \
 	( cd $(GNUSTEP_DOC)/$(GuiUser_DOC_INSTALL_DIR) ; \
 	mv GuiUser/* . ; \
 	rm -rf GuiUser )

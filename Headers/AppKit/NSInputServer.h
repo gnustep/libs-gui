@@ -26,9 +26,6 @@
 */
 
 /**
- * <title>NSInputServer</title>
- * <abstract>Input method server for text input processing and internationalization</abstract>
- *
  * NSInputServer provides a framework for implementing input method servers that
  * handle complex text input, particularly for international languages that require
  * composition, conversion, or special input techniques. The server acts as an
@@ -66,9 +63,6 @@
 @class NSString;
 
 /**
- * <title>NSInputServerMouseTracker</title>
- * <abstract>Protocol for handling mouse events in input server contexts</abstract>
- *
  * The NSInputServerMouseTracker protocol defines methods for handling mouse
  * events that occur over text content managed by an input server. This enables
  * character-level mouse interaction during text composition and input processing.
@@ -115,9 +109,6 @@
 @end
 
 /**
- * <title>NSInputServiceProvider</title>
- * <abstract>Protocol for providing input method services</abstract>
- *
  * The NSInputServiceProvider protocol defines the comprehensive interface for
  * input method service providers. This protocol handles all aspects of text
  * input processing, from client state management to text insertion and
@@ -228,9 +219,6 @@
 @end
 
 /**
- * <title>NSInputServer Class Interface</title>
- * <abstract>Concrete input server implementation</abstract>
- *
  * NSInputServer provides a concrete implementation of input method server
  * functionality, conforming to both NSInputServerMouseTracker and
  * NSInputServiceProvider protocols. This class serves as the foundation

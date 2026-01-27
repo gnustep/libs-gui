@@ -54,6 +54,9 @@
 #if !defined(IBAction)
 #define IBAction void
 #endif
+#if !defined(IBOutletCollection)
+#define IBOutletCollection(ClassName)
+#endif
 #endif
 
 #endif

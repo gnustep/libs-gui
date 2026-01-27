@@ -42,9 +42,6 @@
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 
 /**
- * <title>NSDatePicker</title>
- * <abstract>A control for selecting dates and times</abstract>
- *
  * NSDatePicker provides an interactive user interface for selecting dates and times.
  * It can display various combinations of date and time elements (day, month, year,
  * hour, minute, second) and supports different presentation styles including text

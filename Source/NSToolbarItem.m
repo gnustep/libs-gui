@@ -1671,36 +1671,102 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
-  self = [self initWithItemIdentifier: [aCoder decodeObjectForKey:@"NSToolbarItemIdentifier"]];
-
-  if ([aCoder containsValueForKey: @"NSToolbarItemTarget"])
-    [self setTarget: [aCoder decodeObjectForKey:@"NSToolbarItemTarget"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemAction"])
-    [self setAction: NSSelectorFromString([aCoder decodeObjectForKey:@"NSToolbarItemAction"])];
-  if ([aCoder containsValueForKey: @"NSToolbarItemToolTip"])
-    [self setToolTip: [aCoder decodeObjectForKey:@"NSToolbarItemToolTip"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemTag"])
-    [self setTag: [aCoder decodeIntForKey:@"NSToolbarItemTag"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemImage"])
-    [self setImage: [aCoder decodeObjectForKey:@"NSToolbarItemImage"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemEnabled"])
-    [self setEnabled: [aCoder decodeBoolForKey:@"NSToolbarItemEnabled"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemPaletteLabel"])
-    [self setPaletteLabel: [aCoder decodeObjectForKey:@"NSToolbarItemPaletteLabel"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemLabel"])
-    [self setLabel: [aCoder decodeObjectForKey:@"NSToolbarItemLabel"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemMinSize"])
-    [self setMinSize: [aCoder decodeSizeForKey:@"NSToolbarItemMinSize"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemMaxSize"])
-    [self setMaxSize: [aCoder decodeSizeForKey:@"NSToolbarItemMaxSize"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemAutovalidates"])
-    [self setAutovalidates: [aCoder decodeBoolForKey:@"NSToolbarItemAutovalidates"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemVisibilityPriority"])
-    [self setVisibilityPriority: [aCoder decodeIntForKey:@"NSToolbarItemVisibilityPriority"]];
-  if ([aCoder containsValueForKey: @"NSToolbarItemView"])
-    [self setView: [aCoder decodeObjectForKey: @"NSToolbarItemView"]];
+  if ([aCoder allowsKeyedCoding])
+    {
+      self = [self initWithItemIdentifier: [aCoder decodeObjectForKey:@"NSToolbarItemIdentifier"]];
+      if (self != nil)
+	{
+	  if ([aCoder containsValueForKey: @"NSToolbarItemTarget"])
+	    [self setTarget: [aCoder decodeObjectForKey:@"NSToolbarItemTarget"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemAction"])
+	    [self setAction: NSSelectorFromString([aCoder decodeObjectForKey:@"NSToolbarItemAction"])];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemToolTip"])
+	    [self setToolTip: [aCoder decodeObjectForKey:@"NSToolbarItemToolTip"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemTag"])
+	    [self setTag: [aCoder decodeIntForKey:@"NSToolbarItemTag"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemImage"])
+	    [self setImage: [aCoder decodeObjectForKey:@"NSToolbarItemImage"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemEnabled"])
+	    [self setEnabled: [aCoder decodeBoolForKey:@"NSToolbarItemEnabled"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemPaletteLabel"])
+	    [self setPaletteLabel: [aCoder decodeObjectForKey:@"NSToolbarItemPaletteLabel"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemLabel"])
+	    [self setLabel: [aCoder decodeObjectForKey:@"NSToolbarItemLabel"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemMinSize"])
+	    [self setMinSize: [aCoder decodeSizeForKey:@"NSToolbarItemMinSize"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemMaxSize"])
+	    [self setMaxSize: [aCoder decodeSizeForKey:@"NSToolbarItemMaxSize"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemAutovalidates"])
+	    [self setAutovalidates: [aCoder decodeBoolForKey:@"NSToolbarItemAutovalidates"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemVisibilityPriority"])
+	    [self setVisibilityPriority: [aCoder decodeIntForKey:@"NSToolbarItemVisibilityPriority"]];
+	  if ([aCoder containsValueForKey: @"NSToolbarItemView"])
+	    [self setView: [aCoder decodeObjectForKey: @"NSToolbarItemView"]];
+	}
+    }
+  else
+    {
+      self = [self initWithItemIdentifier: [aCoder decodeObject]];
+      if (self != nil)
+	{
+	  [self setTarget: [aCoder decodeObject]];
+	  [self setAction: NSSelectorFromString([aCoder decodeObject])];
+	  [self setToolTip: [aCoder decodeObject]];
+	  [aCoder decodeValueOfObjCType: @encode(NSInteger) at: &_tag];
+	  [self setImage: [aCoder decodeObject]];
+	  BOOL f = NO;
+	  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &f];
+	  [self setEnabled: f];
+	  [self setPaletteLabel: [aCoder decodeObject]];
+	  [self setLabel: [aCoder decodeObject]];
+	  [aCoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
+	  [aCoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
+	  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_autovalidates];
+	  [aCoder decodeValueOfObjCType: @encode(NSInteger) at: &_visibilityPriority];
+	  [self setView: [aCoder decodeObject]];
+	}
+    }
 
   return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  if ([aCoder allowsKeyedCoding])
+    {
+      [aCoder encodeObject: _itemIdentifier forKey: @"NSToolbarItemIdentifier"];
+      [aCoder encodeObject: [self target] forKey: @"NSToolbarItemTarget"];
+      [aCoder encodeObject: NSStringFromSelector([self action]) forKey: @"NSToolbarItemAction"];
+      [aCoder encodeObject: _toolTip forKey: @"NSToolbarItemToolTip"];
+      [aCoder encodeInt: _tag forKey: @"NSToolbarItemTag"];
+      [aCoder encodeObject: _image forKey: @"NSToolbarItemImage"];
+      [aCoder encodeBool: [self isEnabled] forKey: @"NSToolbarItemEnabled"];
+      [aCoder encodeObject: _paletteLabel forKey: @"NSToolbarItemPaletteLabel"];
+      [aCoder encodeObject: _label forKey: @"NSToolbarItemLabel"];
+      [aCoder encodeSize: _minSize forKey: @"NSToolbarItemMinSize"];
+      [aCoder encodeSize: _maxSize forKey: @"NSToolbarItemMaxSize"];
+      [aCoder encodeBool: _autovalidates forKey: @"NSToolbarItemAutovalidates"];
+      [aCoder encodeInt: _visibilityPriority forKey: @"NSToolbarItemVisibilityPriority"];
+      [aCoder encodeObject: _view forKey: @"NSToolbarItemView"];
+    }
+  else
+    {
+      [aCoder encodeObject: _itemIdentifier];
+      [aCoder encodeObject: [self target]];
+      [aCoder encodeObject: NSStringFromSelector([self action])];
+      [aCoder encodeObject: _toolTip];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_tag];
+      [aCoder encodeObject: _image];
+      BOOL enabled = [self isEnabled];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &enabled];
+      [aCoder encodeObject: _paletteLabel];
+      [aCoder encodeObject: _label];
+      [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_minSize];
+      [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autovalidates];
+      [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &_visibilityPriority];
+      [aCoder encodeObject: _view];
+    }
 }
 
 @end

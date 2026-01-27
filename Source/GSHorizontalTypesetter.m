@@ -694,50 +694,56 @@ Return values 0, 1, 2 are mostly the same as from
 
 
 restart: ;
-  remain = [self _getProposedRectFor: newParagraph
-                 withLineHeight: line_height];
 
-  /*
-  Build a list of all line frag rects for this line.
-
-  TODO: it's very convenient to do this in advance, but it might be
-  inefficient, and in theory, we might end up with an insane number of line
-  rects (eg. a text container with "hole"-columns every 100 points and
-  width 1e8)
-  */
-  line_frags_num = 0;
-  while (1)
+  do
     {
+      remain = [self _getProposedRectFor: newParagraph
+                          withLineHeight: line_height];
+
+      /*
+        Build a list of all line frag rects for this line.
+
+        TODO: it's very convenient to do this in advance, but it might be
+        inefficient, and in theory, we might end up with an insane number of line
+        rects (eg. a text container with "hole"-columns every 100 points and
+        width 1e8)
+      */
+      line_frags_num = 0;
       rect = [curTextContainer lineFragmentRectForProposedRect: remain
-			     sweepDirection: NSLineSweepRight
-			     movementDirection: line_frags_num?NSLineDoesntMove:NSLineMovesDown
-			     remainingRect: &remain];
-      if (NSIsEmptyRect(rect))
-        break;
+                                                sweepDirection: NSLineSweepRight
+                                             movementDirection: NSLineMovesDown
+                                                 remainingRect: &remain];
+      while (!NSIsEmptyRect(rect))
+        {
+          line_frags_num++;
+          if (line_frags_num > line_frags_size)
+            {
+              line_frags_size += 2;
+              line_frags = realloc(line_frags, sizeof(line_frag_t) * line_frags_size);
+            }
+          line_frags[line_frags_num - 1].rect = rect;
 
-      line_frags_num++;
-      if (line_frags_num > line_frags_size)
-	{
-	  line_frags_size += 2;
-	  line_frags = realloc(line_frags, sizeof(line_frag_t) * line_frags_size);
-	}
-      line_frags[line_frags_num - 1].rect = rect;
+          rect = [curTextContainer lineFragmentRectForProposedRect: remain
+                                                    sweepDirection: NSLineSweepRight
+                                                 movementDirection: NSLineDoesntMove
+                                                     remainingRect: &remain];
+        }
+      if (line_frags_num == 0)
+        {
+          if (curPoint.y == 0.0 &&
+              line_height > [curTextContainer containerSize].height &&
+              [curTextContainer containerSize].height > 0.0)
+            {
+              /* Try to make sure each container contains at least one line frag
+                 rect by shrinking our line height. */
+              line_height = [curTextContainer containerSize].height;
+              max_line_height = line_height;
+              continue;
+            }
+          return 1;
+        }
     }
-  if (!line_frags_num)
-    {
-      if (curPoint.y == 0.0 &&
-	  line_height > [curTextContainer containerSize].height &&
-	  [curTextContainer containerSize].height > 0.0)
-	{
-	  /* Try to make sure each container contains at least one line frag
-	  rect by shrinking our line height. */
-	  line_height = [curTextContainer containerSize].height;
-	  max_line_height = line_height;
-	  goto restart;
-	}
-      return 1;
-    }
-
+  while (line_frags_num == 0);
 
   {
     unsigned int i = 0;
