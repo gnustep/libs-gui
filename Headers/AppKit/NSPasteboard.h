@@ -193,6 +193,10 @@ APPKIT_EXPORT NSString *const NSPasteboardTypeMultipleTextSelection;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
 APPKIT_EXPORT NSString *const NSPasteboardTypeTextFinderOptions;
 #endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
+typedef NSString *NSPasteboardType;
+#endif
 #endif
 
 

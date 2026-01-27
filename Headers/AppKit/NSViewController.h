@@ -96,7 +96,12 @@ APPKIT_EXPORT_CLASS
 - (void) viewDidAppear: (BOOL)animated;
 - (void) viewWillDisappear: (BOOL)animated;
 - (void) viewDidDisappear: (BOOL)animated;
-
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+- (void) viewWillAppear;
+- (void) viewDidAppear;
+- (void) viewWillDisappear;
+- (void) viewDidDisappear;
+#endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 - (void) dismissViewController: (NSViewController *)viewController;
 - (void) dismissController: (id)sender;
