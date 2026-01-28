@@ -2134,23 +2134,21 @@ static void computeNewSelection
 
 - (void) viewDidMoveToWindow
 {
-  // Remove existing observer if any
-  if ([self window] != nil)
-    {
-      [nc removeObserver: self 
-          name: NSWindowDidResizeNotification 
-          object: [self window]];
-    }
-  
+  /* Remove any existing resize observers for this table view before it
+     moves to a new window or is detached. */
+  [nc removeObserver: self
+                 name: NSWindowDidResizeNotification
+               object: nil];
+
   [super viewDidMoveToWindow];
-  
-  // Add observer for new window if view-based
+
+  // Add observer for the new window if view-based
   if ([self window] != nil && _viewBased)
     {
       [nc addObserver: self
           selector: @selector(_windowDidResize:)
-          name: NSWindowDidResizeNotification
-          object: [self window]];
+              name: NSWindowDidResizeNotification
+            object: [self window]];
     }
 }
 
