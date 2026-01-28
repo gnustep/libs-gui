@@ -70,6 +70,7 @@
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSCustomImageRep.h"
+#import "AppKit/NSDiffableDataSource.h"
 
 #import "GNUstepGUI/GSTheme.h"
 #import "GSBindingHelpers.h"
@@ -7093,6 +7094,18 @@ For a more detailed explanation, -setSortDescriptors:. */
 	  view = [_delegate tableView: self
 		   viewForTableColumn: tb
 				  row: row];
+	}
+      else if ([_dataSource respondsToSelector: @selector(tableView:viewForTableColumn:row:)] &&
+	       [_dataSource isKindOfClass: [NSTableViewDiffableDataSource class]])
+	{
+	  /*
+	   * Doing this here because observed behavior on macOS indicates that the
+	   * diffable data source implements this delegate method to provide
+	   * the view for the table to use in the cell referenced by this method.
+	   */
+	  view = [_dataSource tableView: self
+		     viewForTableColumn: tb
+				    row: row];
 	}
       else
 	{

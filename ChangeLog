@@ -1,3 +1,17 @@
+2026-01-22 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/NSDiffableDataSource.m: Fix recursive loop in
+	collectionView:itemForRepresentedObjectAtIndexPath: by correcting
+	_itemForIndexPath method to use _indexPathsToItems instead of
+	_itemsToIndexPaths. Add recursion guards with _creatingIndexPaths
+	to prevent infinite loops during item creation.
+	* Source/NSDiffableDataSource.m: Implement diffable data source for both
+	collection view and table view.
+	* Headers/AppKit/NSDiffableDataSource.h: Add _creatingIndexPaths instance
+	variable to both NSCollectionViewDiffableDataSource and 
+	NSTableViewDiffableDataSource for recursion protection.
+	* Source/NSCollectionView.m: Fix makeItemWithIdentifier method.
+
 2026-01-09 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSServicesManager.h:

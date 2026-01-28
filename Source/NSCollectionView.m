@@ -41,6 +41,7 @@
 #import "AppKit/NSCollectionViewItem.h"
 #import "AppKit/NSCollectionViewLayout.h"
 #import "AppKit/NSCollectionViewGridLayout.h"
+#import "AppKit/NSColor.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
@@ -362,13 +363,18 @@ static NSString *_placeholderItem = nil;
 
 - (void) drawRect: (NSRect)dirtyRect
 {
-  // TODO: Implement "use Alternating Colors"
-  if (_backgroundColors && [_backgroundColors count] > 0)
+  // Use window background color for consistency
+  NSColor *bgColor = [NSColor windowBackgroundColor];
+  
+  // Set parent view background color if it supports it
+  NSView *parentView = [self superview];
+  if (parentView && [parentView respondsToSelector: @selector(setBackgroundColor:)])
     {
-      NSColor *bgColor = [_backgroundColors objectAtIndex: 0];
-      [bgColor set];
-      NSRectFill(dirtyRect);
+      [parentView performSelector: @selector(setBackgroundColor:) withObject: bgColor];
     }
+  
+  [bgColor set];
+  NSRectFill(dirtyRect);
 
   NSPoint origin = dirtyRect.origin;
   NSSize size = dirtyRect.size;
@@ -1610,42 +1616,68 @@ static NSString *_placeholderItem = nil;
 
 - (NSNib *) _nibForClass: (Class)cls
 {
-  NSString *clsName = NSStringFromClass(cls);
-  NSNib *nib = [[NSNib alloc] initWithNibNamed: clsName
-					bundle: [NSBundle bundleForClass: cls]];
-  AUTORELEASE(nib);
+  NSNib *nib = nil;
+
+  if (cls != nil)
+    {
+      NSString *clsName = NSStringFromClass(cls);
+
+      nib = [[NSNib alloc] initWithNibNamed: clsName
+				     bundle: [NSBundle bundleForClass: cls]];
+      AUTORELEASE(nib);
+    }
+
   return nib;
 }
 
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
-  NSCollectionViewItem *item =
-    [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: indexPath];
+  NSCollectionViewItem *item = [_dataSource collectionView: self
+					    itemForRepresentedObjectAtIndexPath: indexPath];
   
-  if (item == nil)
-    {
-      return nil;
-    }
-
-  // Only try to load NIB if item doesn't already have a view
-  if ([item view] == nil)
-    {
-      NSNib *nib = [self _nibForClass: [item class]];
-      BOOL loaded = [nib instantiateWithOwner: item
-			      topLevelObjects: NULL];
-
-      if (loaded == NO)
-        {
-          // If NIB loading fails but item exists, continue anyway
-          // The item might be configured programmatically
-          NSLog(@"Could not load NIB %@ for item %@, continuing with programmatic item", nib, item);
-        }
-    }
-
-  // Add to maps only if we have a valid item
   if (item != nil)
     {
+      // If the item already has a view (created by diffable data source provider),
+      // skip nib loading and just track it.
+      if ([item view] != nil)
+	{
+	  NSDebugLog(@"Item already has a view (from provider), skipping nib load");
+	  [_itemsToIndexPaths setObject: indexPath forKey: item];
+	  [_indexPathsToItems setObject: item forKey: indexPath];
+	  return item;
+	}
+
+      NSNib *nib = [self _nibForClass: [item class]];
+
+      if (nib != nil)
+	{
+	  BOOL loaded = [nib instantiateWithOwner: item
+				  topLevelObjects: NULL];
+
+	  if (loaded == NO)
+	    {
+	      item = nil;
+	      NSDebugLog(@"Could not load model %@", nib);
+	    }
+	}
+      else
+	{
+	  NSDebugLog(@"No nib loaded for %@", item);
+	}
+    }
+  else
+    {
+      NSView *view = [[NSView alloc] initWithFrame: NSZeroRect];
+      
+      item = AUTORELEASE([[NSCollectionViewItem alloc] init]);
+      [item setView: view];
+      RELEASE(view);
+    }
+
+  if (item != nil)
+    {
+      // Add to maps...
       [_itemsToIndexPaths setObject: indexPath
 			     forKey: item];
       [_indexPathsToItems setObject: item
@@ -1692,7 +1724,7 @@ static NSString *_placeholderItem = nil;
 			     forKey: kind];
     }
 
-  [t setObject: viewClass forKey: identifier];
+  [t setObject: viewClass forKey: [identifier copy]];
 }
 
 - (void) registerNib: (NSNib *)nib
@@ -1709,7 +1741,7 @@ static NSString *_placeholderItem = nil;
 			  forKey: kind];
     }
 
-  [t setObject: nib forKey: identifier];
+  [t setObject: nib forKey: [identifier copy]];
 }
 
 /* Providing the collection view's data */
@@ -1767,7 +1799,7 @@ static NSString *_placeholderItem = nil;
   NSCollectionViewItem *item = [self makeItemWithIdentifier: nil
 					       forIndexPath: path];
 
-  NSLog(@"NSCollectionView _loadItemAtIndexPath:%@ item=%@ view=%@", path, item, [item view]);
+  NSDebugLog(@"NSCollectionView _loadItemAtIndexPath:%@ item=%@ view=%@", path, item, [item view]);
 
   if (item != nil)
     {
@@ -1775,7 +1807,7 @@ static NSString *_placeholderItem = nil;
       
       if (v == nil)
         {
-          NSLog(@"NSCollectionView: Item %@ has no view - items must have a view to be displayed", item);
+          NSDebugLog(@"NSCollectionView: Item %@ has no view - items must have a view to be displayed", item);
           return;
         }
         
@@ -1813,7 +1845,7 @@ static NSString *_placeholderItem = nil;
 				 forKey: item];
 
 	  [self addSubview: v];
-	  NSLog(@"NSCollectionView: Added item view %@ at frame %@", v, NSStringFromRect(frame));
+	  NSDebugLog(@"NSCollectionView: Added item view %@ at frame %@", v, NSStringFromRect(frame));
 	}
       else
 	{
@@ -1825,13 +1857,18 @@ static NSString *_placeholderItem = nil;
 - (void) _loadSectionAtIndex: (NSUInteger)cs
 {
   NSInteger ni = [self numberOfItemsInSection: cs];
-  NSLog(@"NSCollectionView _loadSectionAtIndex:%lu numberOfItems=%ld", (unsigned long)cs, (long)ni);
+  NSDebugLog(@"NSCollectionView _loadSectionAtIndex:%lu numberOfItems=%ld", (unsigned long)cs, (long)ni);
   NSInteger ci = 0;
 
   for (ci = 0; ci < ni; ci++)
     {
-      NSIndexPath *p = [NSIndexPath indexPathForItem: ci inSection: cs];
-      [self _loadItemAtIndexPath: p];
+      // Build index path explicitly (section, then item) to avoid
+      // reliance on convenience methods that may return incorrect values.
+      NSIndexPath *path = [NSIndexPath indexPathWithIndex: cs];
+      path = RETAIN([path indexPathByAddingIndex: ci]);
+
+      NSDebugLog(@"path = %@", path);
+      [self _loadItemAtIndexPath: path];
     }
 }
 
@@ -1893,12 +1930,12 @@ static NSString *_placeholderItem = nil;
   if (_allowReload)
     {
       NSInteger ns = [self numberOfSections];
-      NSLog(@"NSCollectionView reloadData: numberOfSections=%ld, dataSource=%@, layout=%@", 
+      NSDebugLog(@"NSCollectionView reloadData: numberOfSections=%ld, dataSource=%@, layout=%@", 
             (long)ns, _dataSource, _collectionViewLayout);
       
       if (ns == 0)
         {
-          NSLog(@"NSCollectionView: No sections to load - check dataSource implementation");
+          NSDebugLog(@"NSCollectionView: No sections to load - check dataSource implementation");
           return;
         }
       
@@ -1927,6 +1964,10 @@ static NSString *_placeholderItem = nil;
       [self _updateParentViewFrame];
       [self setPostsFrameChangedNotifications: f]; // reset
       _allowReload = YES;
+    }
+  else
+    {
+      NSDebugLog(@"Reload disabled");
     }
 }
 
