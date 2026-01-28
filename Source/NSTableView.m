@@ -7098,6 +7098,11 @@ For a more detailed explanation, -setSortDescriptors:. */
       else if ([_dataSource respondsToSelector: @selector(tableView:viewForTableColumn:row:)] &&
 	       [_dataSource isKindOfClass: [NSTableViewDiffableDataSource class]])
 	{
+	  /*
+	   * Doing this here because observed behavior on macOS indicates that the
+	   * diffable data source implements this delegate method to provide
+	   * the view for the table to use in the cell referenced by this method.
+	   */
 	  view = [_dataSource tableView: self
 		     viewForTableColumn: tb
 				    row: row];
