@@ -570,6 +570,23 @@ For bigger values the width gets ignored.
     }
 }
 
+static inline BOOL wantNewLineHeight(CGFloat h, CGFloat *lineHeight, CGFloat maxLineHeight)
+{
+  CGFloat newHeight = h;
+
+  if (maxLineHeight > 0 && newHeight > maxLineHeight)
+    {
+      newHeight = maxLineHeight;
+    }
+
+  if (newHeight > *lineHeight)
+    {
+      *lineHeight = newHeight;
+      return YES;
+    }
+  return NO;
+}
+
 /*
 Return values 0, 1, 2 are mostly the same as from
 -layoutGlyphsInLayoutManager:.... Additions:
@@ -675,20 +692,6 @@ Return values 0, 1, 2 are mostly the same as from
   can always extend the current line frag rects as long as they don't extend
   past the bottom of the container.
   */
-
-
-#define WANT_LINE_HEIGHT(h) \
-  { \
-    CGFloat __new_height = (h); \
-    if (max_line_height > 0 && __new_height > max_line_height) \
-      __new_height = max_line_height; \
-    if (__new_height > line_height) \
-      { \
-	line_height = __new_height; \
-	goto restart; \
-      } \
-  }
-
 
 restart: ;
 
@@ -838,7 +841,9 @@ restart: ;
 	    if (f_descender > descender)
 	      descender = f_descender;
 
-	    WANT_LINE_HEIGHT(new_height)
+	    //WANT_LINE_HEIGHT(new_height)
+            if (wantNewLineHeight(new_height, &line_height, max_line_height))
+              goto restart;
 	  }
 
 	if (g->g == NSControlGlyph)
@@ -960,7 +965,8 @@ restart: ;
 	  if (y > 0 && f_descender + y > descender)
 	    descender = f_descender + y;
 
-	  WANT_LINE_HEIGHT(ascender + descender)
+          if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
+            goto restart;
 	}
 
 	if (g->g == GSAttachmentGlyph)
@@ -1013,7 +1019,8 @@ restart: ;
 	    /* Update ascender and descender. Adjust line height and
 	    baseline if necessary. */
 
-	    WANT_LINE_HEIGHT(ascender + descender)
+            if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
+              goto restart;
 
 	    g->size = r.size;
 	    g->pos.x = p.x + r.origin.x;
