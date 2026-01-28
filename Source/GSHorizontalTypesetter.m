@@ -841,7 +841,6 @@ restart: ;
 	    if (f_descender > descender)
 	      descender = f_descender;
 
-	    //WANT_LINE_HEIGHT(new_height)
             if (wantNewLineHeight(new_height, &line_height, max_line_height))
               goto restart;
 	  }
