@@ -109,12 +109,6 @@
 #import "GNUstepGUI/GSServicesManager.h"
 #import "GSGuiPrivate.h"
 
-/* Informal protocol for method to ask an app to open a URL.
- */
-@interface NSObject (OpenURL)
-- (BOOL) application: (NSApplication*)a openURL: (NSURL*)u;
-@end
-
 /* Private method to check that a process exists.
  */
 @interface NSProcessInfo (Private)
@@ -554,7 +548,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
  * method passing it the file name.
  * </p>
  * <p>This command line argument mechanism provides a way for non-gnustep
- * applications to be used to open files simply by provideing a wrapper
+ * applications to be used to open files simply by providing a wrapper
  * for them containing the appropriate Info-gnustep.plist.<br />
  * For instance - you could set up xv.app to contain a shellscript 'xv'
  * that would start the real xv binary passing it a file to open if the
@@ -575,9 +569,32 @@ static id GSLaunched(NSNotification *notification, BOOL active)
  *       NSIcon = "xbm.tiff";
  *       NSUnixExtensions = (xbm);
  *     }
- *);
+ *   );
  * }
  * </example>
+ * <p>A similar mechanism exists for opening URLs.  In this case URL schema
+ * information is provided in the CFBundleURLTypes entry of Info-gnustep.plist
+ * and when launching an application to open one or more URLs the application
+ * receives a '-GSOpenURL' argument telling it which URL to open.<br />
+ * For a GNUstep application, the application will recognize this and invoke
+ * the -application:openURL: method passing it the URL argument.<br />
+ * The Info-gnustep.plist file could look like this:
+ * </p>
+ * <example>
+ * 
+ * {
+ *   NSExecutable = "firefox";
+ *   NSIcon = "firefox.png";
+ *   CFBundleURLTypes = (
+ *     {
+ *       CFBundleTypeRole = Viewer;
+ *       CFBundleURLSchemes = (
+ *         http,
+ *         https
+ *       );
+ *     }
+ *   );
+ * }
  */
 @implementation	NSWorkspace
 
@@ -1072,7 +1089,7 @@ static NSDictionary		*urlPreferences = nil;
 
 	  /* Now try to get the application to open the URL.
 	   */
-	  app = GSContactApplication(appName, nil, nil);
+	  app = [self _connectApplication: appName];
 	  if (app != nil)
 	    {
 	      NS_DURING
@@ -1081,12 +1098,26 @@ static NSDictionary		*urlPreferences = nil;
 		}
 	      NS_HANDLER
 		{
-		  NSWarnLog(@"Failed to contact '%@' to open file", appName);
+		  NSWarnLog(@"Failed to get '%@' to open file", appName);
 		  return NO;
 		}
 	      NS_ENDHANDLER
 	      [NSApp deactivate];
 	      return YES;
+	    }
+	  else
+	    {
+	      NSArray *args;
+
+	      args = [NSArray arrayWithObjects:
+		@"-GSOpenURL", [url absoluteString], nil];
+	      if ([self _launchApplication: appName arguments: args])
+		{
+		  [NSApp deactivate];
+		  return YES;
+		}
+	      NSWarnLog(@"Failed to launch '%@' to open file", appName);
+	      return NO;
 	    }
 	}
       /* No application found to open the URL.

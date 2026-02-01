@@ -45,6 +45,7 @@
 @class	NSPasteboard;
 @class	NSString;
 @class	NSTimer;
+@class	NSURL;
 
 APPKIT_EXPORT_CLASS
 @interface      GSServicesManager : NSObject
@@ -73,6 +74,8 @@ APPKIT_EXPORT_CLASS
    openFileWithoutUI: (NSString*)file;
 - (BOOL) application: (NSApplication*)theApp
 	openTempFile: (NSString*)file;
+- (BOOL) application: (NSApplication*)theApp
+             openURL: (NSURL*)aURL;
 - (BOOL) application: (NSApplication*)theApp
 	   printFile: (NSString*)file;
 - (void) doService: (NSMenuItem*)item;

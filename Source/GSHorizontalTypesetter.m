@@ -570,6 +570,23 @@ For bigger values the width gets ignored.
     }
 }
 
+static inline BOOL wantNewLineHeight(CGFloat h, CGFloat *lineHeight, CGFloat maxLineHeight)
+{
+  CGFloat newHeight = h;
+
+  if (maxLineHeight > 0 && newHeight > maxLineHeight)
+    {
+      newHeight = maxLineHeight;
+    }
+
+  if (newHeight > *lineHeight)
+    {
+      *lineHeight = newHeight;
+      return YES;
+    }
+  return NO;
+}
+
 /*
 Return values 0, 1, 2 are mostly the same as from
 -layoutGlyphsInLayoutManager:.... Additions:
@@ -611,7 +628,7 @@ Return values 0, 1, 2 are mostly the same as from
   This calculation should match the calculation in [GSFontInfo
   -defaultLineHeightForFont], or text will look odd.
   */
-#define COMPUTE_BASELINE  baseline = line_height - descender
+#define COMPUTE_BASELINE  baseline = line_height - descender;
 
 
   /* TODO: doesn't have to be a simple horizontal container, but it's easier
@@ -655,8 +672,6 @@ Return values 0, 1, 2 are mostly the same as from
     ascender = [cache->font ascender];
     descender = -[cache->font descender];
 
-    COMPUTE_BASELINE;
-
     if (line_height < min)
       line_height = min;
 
@@ -678,66 +693,57 @@ Return values 0, 1, 2 are mostly the same as from
   past the bottom of the container.
   */
 
-
-#define WANT_LINE_HEIGHT(h) \
-  do { \
-    CGFloat __new_height = (h); \
-    if (max_line_height > 0 && __new_height > max_line_height) \
-      __new_height = max_line_height; \
-    if (__new_height > line_height) \
-      { \
-	line_height = __new_height; \
-	COMPUTE_BASELINE; \
-	goto restart; \
-      } \
-  } while (0)
-
-
 restart: ;
-  remain = [self _getProposedRectFor: newParagraph
-                 withLineHeight: line_height];
 
-  /*
-  Build a list of all line frag rects for this line.
-
-  TODO: it's very convenient to do this in advance, but it might be
-  inefficient, and in theory, we might end up with an insane number of line
-  rects (eg. a text container with "hole"-columns every 100 points and
-  width 1e8)
-  */
-  line_frags_num = 0;
-  while (1)
+  do
     {
+      remain = [self _getProposedRectFor: newParagraph
+                          withLineHeight: line_height];
+
+      /*
+        Build a list of all line frag rects for this line.
+
+        TODO: it's very convenient to do this in advance, but it might be
+        inefficient, and in theory, we might end up with an insane number of line
+        rects (eg. a text container with "hole"-columns every 100 points and
+        width 1e8)
+      */
+      line_frags_num = 0;
       rect = [curTextContainer lineFragmentRectForProposedRect: remain
-			     sweepDirection: NSLineSweepRight
-			     movementDirection: line_frags_num?NSLineDoesntMove:NSLineMovesDown
-			     remainingRect: &remain];
-      if (NSIsEmptyRect(rect))
-        break;
+                                                sweepDirection: NSLineSweepRight
+                                             movementDirection: NSLineMovesDown
+                                                 remainingRect: &remain];
+      while (!NSIsEmptyRect(rect))
+        {
+          line_frags_num++;
+          if (line_frags_num > line_frags_size)
+            {
+              line_frags_size += 2;
+              line_frags = realloc(line_frags, sizeof(line_frag_t) * line_frags_size);
+            }
+          line_frags[line_frags_num - 1].rect = rect;
 
-      line_frags_num++;
-      if (line_frags_num > line_frags_size)
-	{
-	  line_frags_size += 2;
-	  line_frags = realloc(line_frags, sizeof(line_frag_t) * line_frags_size);
-	}
-      line_frags[line_frags_num - 1].rect = rect;
+          rect = [curTextContainer lineFragmentRectForProposedRect: remain
+                                                    sweepDirection: NSLineSweepRight
+                                                 movementDirection: NSLineDoesntMove
+                                                     remainingRect: &remain];
+        }
+      if (line_frags_num == 0)
+        {
+          if (curPoint.y == 0.0 &&
+              line_height > [curTextContainer containerSize].height &&
+              [curTextContainer containerSize].height > 0.0)
+            {
+              /* Try to make sure each container contains at least one line frag
+                 rect by shrinking our line height. */
+              line_height = [curTextContainer containerSize].height;
+              max_line_height = line_height;
+              continue;
+            }
+          return 1;
+        }
     }
-  if (!line_frags_num)
-    {
-      if (curPoint.y == 0.0 &&
-	  line_height > [curTextContainer containerSize].height &&
-	  [curTextContainer containerSize].height > 0.0)
-	{
-	  /* Try to make sure each container contains at least one line frag
-	  rect by shrinking our line height. */
-	  line_height = [curTextContainer containerSize].height;
-	  max_line_height = line_height;
-	  goto restart;
-	}
-      return 1;
-    }
-
+  while (line_frags_num == 0);
 
   {
     unsigned int i = 0;
@@ -835,9 +841,8 @@ restart: ;
 	    if (f_descender > descender)
 	      descender = f_descender;
 
-	    COMPUTE_BASELINE;
-
-	    WANT_LINE_HEIGHT(new_height);
+            if (wantNewLineHeight(new_height, &line_height, max_line_height))
+              goto restart;
 	  }
 
 	if (g->g == NSControlGlyph)
@@ -959,8 +964,8 @@ restart: ;
 	  if (y > 0 && f_descender + y > descender)
 	    descender = f_descender + y;
 
-	  COMPUTE_BASELINE;
-	  WANT_LINE_HEIGHT(ascender + descender);
+          if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
+            goto restart;
 	}
 
 	if (g->g == GSAttachmentGlyph)
@@ -984,6 +989,8 @@ restart: ;
 		last_glyph = NSNullGlyph;
 		continue;
 	      }
+
+            COMPUTE_BASELINE
 
 	    r = [cell cellFrameForTextContainer: curTextContainer
 		  proposedLineFragment: lf->rect
@@ -1010,8 +1017,9 @@ restart: ;
 
 	    /* Update ascender and descender. Adjust line height and
 	    baseline if necessary. */
-	    COMPUTE_BASELINE;
-	    WANT_LINE_HEIGHT(ascender + descender);
+
+            if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
+              goto restart;
 
 	    g->size = r.size;
 	    g->pos.x = p.x + r.origin.x;
@@ -1180,6 +1188,8 @@ restart: ;
       unsigned int i, j;
       glyph_cache_t *g;
       NSRect used_rect;
+
+      COMPUTE_BASELINE
 
       for (lf = line_frags, i = 0, g = cache; lfi >= 0; lfi--, lf++)
 	{
