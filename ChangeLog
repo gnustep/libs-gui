@@ -12,6 +12,21 @@
 	NSTableViewDiffableDataSource for recursion protection.
 	* Source/NSCollectionView.m: Fix makeItemWithIdentifier method.
 
+2026-02-01 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Tools/say/say.m: Fix warning about casting a non-mutalbe string to
+	a mutable one.
+
+2026-02-01 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSTableView.h: Add references to NSTableRowView.h for
+	view-based rendering.
+	* Source/NSTableView.m: Refactored to support view-based rendering
+	using NSTableRowView. Updated implementation to utilize NSTableRowView
+	when in view-based mode.
+	* Source/GSThemeDrawing.m: Factored out NSTableView and NSOutlineView
+	rendering logic for improved modularity.
+
 2026-01-09 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/Additions/GNUstepGUI/GSServicesManager.h:

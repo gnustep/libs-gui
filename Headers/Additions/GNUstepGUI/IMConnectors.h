@@ -33,13 +33,11 @@
 #define _GNUstep_H_IMConnectors
 
 #ifndef GNUSTEP
-#import <Foundation/Foundation.h>
+#include <Foundation/Foundation.h>
 #else
-#import <Foundation/NSObject.h>
-#import <AppKit/AppKit.h>
+#include <Foundation/NSObject.h>
 #endif
 
-APPKIT_EXPORT_CLASS
 @interface IMConnector : NSObject
 {
   id source;
@@ -52,12 +50,10 @@ APPKIT_EXPORT_CLASS
 - label;
 @end
 
-APPKIT_EXPORT_CLASS
 @interface IMControlConnector:IMConnector
 - (void)establishConnection;
 @end
 
-APPKIT_EXPORT_CLASS
 @interface IMOutletConnector : IMConnector
 - (void)establishConnection;
 @end
