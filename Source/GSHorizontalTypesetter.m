@@ -487,7 +487,7 @@ For bigger values the width gets ignored.
 				      withShift: shift
 				inTextContainer: curTextContainer];
 
-  curGlyph = g;
+  curGlyphIndex = g;
   return YES;
 }
 
@@ -528,9 +528,9 @@ For bigger values the width gets ignored.
     frag rect match it. This call makes sure that curParagraphStyle
     and curFont are set.
   */
-  if (curGlyph)
+  if (curGlyphIndex)
     {
-      [self _cacheMoveTo: curGlyph - 1];
+      [self _cacheMoveTo: curGlyphIndex - 1];
     }
   else
     {
@@ -634,14 +634,14 @@ Return values 0, 1, 2 are mostly the same as from
   /* TODO: doesn't have to be a simple horizontal container, but it's easier
   to handle that way. */
   if ([curTextContainer isSimpleRectangularTextContainer] &&
-      [curLayoutManager _softInvalidateFirstGlyphInTextContainer: curTextContainer] == curGlyph)
+      [curLayoutManager _softInvalidateFirstGlyphInTextContainer: curTextContainer] == curGlyphIndex)
     {
       if ([self _reuseSoftInvalidatedLayout])
         return 4;
     }
 
 
-  [self _cacheMoveTo: curGlyph];
+  [self _cacheMoveTo: curGlyphIndex];
   if (!cache_length)
     [self _cacheGlyphs: CACHE_INITIAL];
   if (!cache_length && at_end)
@@ -1181,7 +1181,7 @@ restart: ;
     /* Layout is complete. Package it and give it to the layout manager. */
     [curLayoutManager setTextContainer: curTextContainer
 		      forGlyphRange: NSMakeRange(cache_base, i)];
-    curGlyph = i + cache_base;
+    curGlyphIndex = i + cache_base;
     {
       line_frag_t *lf;
       NSPoint p;
@@ -1292,7 +1292,7 @@ NS_DURING
 /*	printf("*** layout some stuff |%@|\n", curTextStorage);
 	[curLayoutManager _glyphDumpRuns];*/
 
-  curGlyph = glyphIndex;
+  curGlyphIndex = glyphIndex;
 
   [self _cacheClear];
 
@@ -1307,7 +1307,7 @@ NS_DURING
 	  first glyph of a paragraph so it can apply eg. -firstLineHeadIndent and
 	  paragraph spacing properly.
 	  */
-	  if (!curGlyph)
+	  if (!curGlyphIndex)
 	    {
 	      newParagraph = YES;
 	    }
@@ -1315,7 +1315,7 @@ NS_DURING
 	    {
 	      unsigned int chi;
 	      unichar ch;
-	      chi = [curLayoutManager characterRangeForGlyphRange: NSMakeRange(curGlyph - 1, 1)
+	      chi = [curLayoutManager characterRangeForGlyphRange: NSMakeRange(curGlyphIndex - 1, 1)
 						 actualGlyphRange: NULL].location;
 	      ch = [[curTextStorage string] characterAtIndex: chi];
 	
@@ -1348,7 +1348,7 @@ NS_DURING
 	  break;
    }
 
-  *nextGlyphIndex = curGlyph;
+  *nextGlyphIndex = curGlyphIndex;
 NS_HANDLER
   NSLog(@"GSHorizontalTypesetter - %@", [localException reason]);
   [lock unlock];
