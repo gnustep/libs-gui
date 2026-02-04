@@ -758,7 +758,7 @@ restart: ;
     NSGlyph last_glyph = NSNullGlyph;
     NSPoint last_p;
 
-    unsigned int first_glyph;
+    unsigned int firstGlyphIndex;
     line_frag_t *lf = line_frags;
     int lfi = 0;
 
@@ -768,7 +768,7 @@ restart: ;
     last_p = p = NSMakePoint(0, 0);
 
     g = cache;
-    first_glyph = 0;
+    firstGlyphIndex = 0;
     prev_had_non_nominal_width = NO;
     /*
     Main glyph layout loop.
@@ -813,7 +813,7 @@ restart: ;
 	  glyph and its position. If there's no previous glyph (for kerning
 	  purposes), last_glyph is NSNullGlyph and last_p is undefined.
 
-	  lf and lfi track the current line frag rect. first_glyph is the
+	  lf and lfi track the current line frag rect. firstGlyphIndex is the
 	  first glyph in the current line frag rect.
 
 	Note that the variables tracking the previous glyph shouldn't be
@@ -1064,7 +1064,7 @@ restart: ;
 
 	      case NSLineBreakByWordWrapping:
 		lf->lastGlyphIndex = [self breakLineByWordWrappingBefore: cache_base + i] - cache_base;
-		if (lf->lastGlyphIndex <= first_glyph)
+		if (lf->lastGlyphIndex <= firstGlyphIndex)
 		  goto char_wrapping;
 		break;
 
@@ -1113,7 +1113,7 @@ restart: ;
 	    /* We force at least one glyph into each line frag rect. This
 	    ensures that typesetting will never get stuck (ie. if the text
 	    container is too narrow to fit even a single glyph). */
-	    if (lf->lastGlyphIndex <= first_glyph)
+	    if (lf->lastGlyphIndex <= firstGlyphIndex)
 	      lf->lastGlyphIndex = i + 1;
 
 	    last_p = p = NSMakePoint(0, 0);
@@ -1132,7 +1132,7 @@ restart: ;
 		newParagraph = NO;
 		break;
 	      }
-	    first_glyph = i;
+	    firstGlyphIndex = i;
 	  }
 	else
 	  {
