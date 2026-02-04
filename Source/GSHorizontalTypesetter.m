@@ -925,9 +925,9 @@ restart: ;
 	/* Set up glyph information. */
 
 	/*
-	TODO:
-	Currently, the attributes of the attachment character (eg. font)
-	affect the layout. Think hard about this.
+          TODO:
+          Currently, the attributes of the attachment character (eg. font)
+          affect the layout. Think hard about this.
 	*/
 	g->nominal = !prev_had_non_nominal_width;
 
@@ -1186,13 +1186,13 @@ restart: ;
     {
       line_frag_t *lf;
       NSPoint p;
-      unsigned int i, j;
+      unsigned int lineFragCounter, lineFragCounter2;
       glyph_cache_t *g;
       NSRect used_rect;
 
       COMPUTE_BASELINE
 
-      for (lf = line_frags, i = 0, g = cache; lfi >= 0; lfi--, lf++)
+      for (lf = line_frags, lineFragCounter = 0, g = cache; lfi >= 0; lfi--, lf++)
 	{
 	  used_rect.origin.x = g->pos.x + lf->rect.origin.x;
 	  used_rect.size.width = lf->last_used - g->pos.x;
@@ -1201,47 +1201,47 @@ restart: ;
 	  used_rect.size.height = lf->rect.size.height;
 
 	  [curLayoutManager setLineFragmentRect: lf->rect
-			    forGlyphRange: NSMakeRange(cache_base + i, lf->lastGlyphIndex - i)
+			    forGlyphRange: NSMakeRange(cache_base + lineFragCounter, lf->lastGlyphIndex - lineFragCounter)
 			    usedRect: used_rect];
 	  p = g->pos;
 	  p.y += baseline;
-	  j = i;
-	  while (i < lf->lastGlyphIndex)
+	  lineFragCounter2 = lineFragCounter;
+	  while (lineFragCounter < lf->lastGlyphIndex)
 	    {
 	      if (g->outside_line_frag)
 		{
 		  [curLayoutManager setDrawsOutsideLineFragment: YES
-		    forGlyphAtIndex: cache_base + i];
+		    forGlyphAtIndex: cache_base + lineFragCounter];
 		}
 	      if (g->dont_show)
 		{
 		  [curLayoutManager setNotShownAttribute: YES
-					 forGlyphAtIndex: cache_base + i];
+					 forGlyphAtIndex: cache_base + lineFragCounter];
 		}
-	      if (!g->nominal && i != j)
+	      if (!g->nominal && lineFragCounter != lineFragCounter2)
 		{
 		  [curLayoutManager setLocation: p
-				    forStartOfGlyphRange: NSMakeRange(cache_base + j, i - j)];
+				    forStartOfGlyphRange: NSMakeRange(cache_base + lineFragCounter2, lineFragCounter - lineFragCounter2)];
 		  if (g[-1].g == GSAttachmentGlyph)
 		    {
 		      [curLayoutManager setAttachmentSize: g[-1].size
-			forGlyphRange: NSMakeRange(cache_base + j, i - j)];
+			forGlyphRange: NSMakeRange(cache_base + lineFragCounter2, lineFragCounter - lineFragCounter2)];
 		    }
 		  p = g->pos;
 		  p.y += baseline;
-		  j = i;
+		  lineFragCounter2 = lineFragCounter;
 		}
-	      i++;
+	      lineFragCounter++;
 	      g++;
 	    }
-	  if (i != j)
+	  if (lineFragCounter != lineFragCounter2)
 	    {
 	      [curLayoutManager setLocation: p
-				forStartOfGlyphRange: NSMakeRange(cache_base + j, i - j)];
+				forStartOfGlyphRange: NSMakeRange(cache_base + lineFragCounter2, lineFragCounter - lineFragCounter2)];
 	      if (g[-1].g == GSAttachmentGlyph)
 		{
 		  [curLayoutManager setAttachmentSize: g[-1].size
-		    forGlyphRange: NSMakeRange(cache_base + j, i - j)];
+		    forGlyphRange: NSMakeRange(cache_base + lineFragCounter2, lineFragCounter - lineFragCounter2)];
 		}
 	    }
 	}
