@@ -330,7 +330,7 @@ struct GSHorizontalTypesetter_line_frag_s
 {
   NSRect rect;
   CGFloat last_used;
-  unsigned int last_glyph; /* last_glyph+1, actually */
+  unsigned int lastGlyphIndex; /* lastGlyphIndex+1, actually */
 };
 typedef struct GSHorizontalTypesetter_line_frag_s line_frag_t;
 
@@ -357,7 +357,7 @@ For bigger values the width gets ignored.
   for (start = 0; num_line_frags; num_line_frags--, lf++)
     {
       num_spaces = 0;
-      for (i = start, g = cache + i; i < lf->last_glyph; i++, g++)
+      for (i = start, g = cache + i; i < lf->lastGlyphIndex; i++, g++)
 	{
 	  if (g->dont_show)
 	    continue;
@@ -371,17 +371,17 @@ For bigger values the width gets ignored.
       extra_space = lf->rect.size.width - lf->last_used;
       extra_space /= num_spaces;
       delta = 0;
-      for (i = start, g = cache + i; i < lf->last_glyph; i++, g++)
+      for (i = start, g = cache + i; i < lf->lastGlyphIndex; i++, g++)
 	{
 	  g->pos.x += delta;
 	  if (!g->dont_show && [str characterAtIndex: g->char_index] == 0x20)
 	    {
-	      if (i < lf->last_glyph)
+	      if (i < lf->lastGlyphIndex)
 		g[1].nominal = NO;
 	      delta += extra_space;
 	    }
 	}
-      start = lf->last_glyph;
+      start = lf->lastGlyphIndex;
       lf->last_used = lf->rect.size.width;
     }
 }
@@ -400,7 +400,7 @@ For bigger values the width gets ignored.
   for (i = 0, g = cache; num_line_frags; num_line_frags--, lf++)
     {
       delta = lf->rect.size.width - lf->last_used;
-      for (; i < lf->last_glyph; i++, g++)
+      for (; i < lf->lastGlyphIndex; i++, g++)
 	g->pos.x += delta;
       lf->last_used += delta;
     }
@@ -420,7 +420,7 @@ For bigger values the width gets ignored.
   for (i = 0, g = cache; num_line_frags; num_line_frags--, lf++)
     {
       delta = (lf->rect.size.width - lf->last_used) / 2.0;
-      for (; i < lf->last_glyph; i++, g++)
+      for (; i < lf->lastGlyphIndex; i++, g++)
 	g->pos.x += delta;
       lf->last_used += delta;
     }
@@ -1059,12 +1059,12 @@ restart: ;
 	      default:
 	      case NSLineBreakByCharWrapping:
 	      char_wrapping:
-		lf->last_glyph = i;
+		lf->lastGlyphIndex = i;
 		break;
 
 	      case NSLineBreakByWordWrapping:
-		lf->last_glyph = [self breakLineByWordWrappingBefore: cache_base + i] - cache_base;
-		if (lf->last_glyph <= first_glyph)
+		lf->lastGlyphIndex = [self breakLineByWordWrappingBefore: cache_base + i] - cache_base;
+		if (lf->lastGlyphIndex <= first_glyph)
 		  goto char_wrapping;
 		break;
 
@@ -1106,18 +1106,18 @@ restart: ;
 			       characterAtIndex: g->char_index] == 0xa)
 		      break;
 		  }
-		lf->last_glyph = i + 1;
+		lf->lastGlyphIndex = i + 1;
 		break;
 	      }
 
 	    /* We force at least one glyph into each line frag rect. This
 	    ensures that typesetting will never get stuck (ie. if the text
 	    container is too narrow to fit even a single glyph). */
-	    if (lf->last_glyph <= first_glyph)
-	      lf->last_glyph = i + 1;
+	    if (lf->lastGlyphIndex <= first_glyph)
+	      lf->lastGlyphIndex = i + 1;
 
 	    last_p = p = NSMakePoint(0, 0);
-	    i = lf->last_glyph;
+	    i = lf->lastGlyphIndex;
 	    g = cache + i;
 	    /* The -1 is always valid since there's at least one glyph in the
 	    line frag rect (see above). */
@@ -1156,7 +1156,7 @@ restart: ;
     /* Take care of the alignments. */
     if (lfi != line_frags_num)
       {
-	lf->last_glyph = i;
+	lf->lastGlyphIndex = i;
 	lf->last_used = p.x;
 
 	/* TODO: incorrect if there is more than one line frag */
@@ -1200,12 +1200,12 @@ restart: ;
 	  used_rect.size.height = lf->rect.size.height;
 
 	  [curLayoutManager setLineFragmentRect: lf->rect
-			    forGlyphRange: NSMakeRange(cache_base + i, lf->last_glyph - i)
+			    forGlyphRange: NSMakeRange(cache_base + i, lf->lastGlyphIndex - i)
 			    usedRect: used_rect];
 	  p = g->pos;
 	  p.y += baseline;
 	  j = i;
-	  while (i < lf->last_glyph)
+	  while (i < lf->lastGlyphIndex)
 	    {
 	      if (g->outside_line_frag)
 		{
