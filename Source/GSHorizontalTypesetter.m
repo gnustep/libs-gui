@@ -880,11 +880,12 @@ restart: ;
 		if (defaultInterval == 0.0) {
                   defaultInterval = 100.0;
 		}
-		int i, c = [tabs count];
+		unsigned tabIndex;
+                unsigned tabCount = [tabs count];
 		/* Find first tab beyond our current position. */
-		for (i = 0; i < c; i++)
+		for (tabIndex = 0; tabIndex < tabCount; i++)
 		  {
-		    tab = [tabs objectAtIndex: i];
+		    tab = [tabs objectAtIndex: tabIndex];
 		    /*
 		    We cannot use a tab at our exact location; we must
 		    use one beyond it. The reason is that several tabs in
@@ -898,7 +899,7 @@ restart: ;
                         break;
                       }
 		  }
-		if (i == c)
+		if (tabIndex == tabCount)
 		  {
 		    /*
 		    Tabs after the last value in tabStops should use the
