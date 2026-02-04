@@ -1059,14 +1059,16 @@ restart: ;
 	      { /* TODO: implement all modes */
 	      default:
 	      case NSLineBreakByCharWrapping:
-	      char_wrapping:
 		lf->lastGlyphIndex = i;
 		break;
 
 	      case NSLineBreakByWordWrapping:
 		lf->lastGlyphIndex = [self breakLineByWordWrappingBefore: cache_base + i] - cache_base;
 		if (lf->lastGlyphIndex <= firstGlyphIndex)
-		  goto char_wrapping;
+		  {
+                    // same operation as for NSLineBreakByCharWrapping
+                    lf->lastGlyphIndex = i;
+                  }
 		break;
 
 	      case NSLineBreakByTruncatingHead:
