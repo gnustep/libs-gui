@@ -896,7 +896,7 @@ restart: ;
 		unsigned tabIndex;
                 unsigned tabCount = [tabs count];
 		/* Find first tab beyond our current position. */
-		for (tabIndex = 0; tabIndex < tabCount; i++)
+		for (tabIndex = 0; tabIndex < tabCount; tabIndex++)
 		  {
 		    tab = [tabs objectAtIndex: tabIndex];
 		    /*
