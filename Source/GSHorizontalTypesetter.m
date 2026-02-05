@@ -777,6 +777,8 @@ restart: ;
     from this loop */
     while (1)
       {
+        BOOL didLastGlyphFit = YES;
+
 //        printf("at %3i+%3i\n", cache_base, i);
 	/* Update the cache. */
 	if (i >= cache_length)
@@ -834,15 +836,26 @@ restart: ;
 	    f_descender = -[f descender];
 	    last_glyph = NSNullGlyph;
 
-	    new_height = [f defaultLineHeightForFont];
+            /* does the glyph fit ?*/
+            if (p.x + g->size.width > lf->rect.size.width)
+              {
+                // did not fit
+                didLastGlyphFit = NO;
+              }
+            else
+              {
+                // glyh did fit
+                didLastGlyphFit = YES;
+                new_height = [f defaultLineHeightForFont];
 
-	    if (f_ascender > ascender)
-	      ascender = f_ascender;
-	    if (f_descender > descender)
-	      descender = f_descender;
+                if (f_ascender > ascender)
+                  ascender = f_ascender;
+                if (f_descender > descender)
+                  descender = f_descender;
 
-            if (wantNewLineHeight(new_height, &line_height, max_line_height))
-              goto restart;
+                if (wantNewLineHeight(new_height, &line_height, max_line_height))
+                  goto restart;
+              }
 	  }
 
 	if (g->g == NSControlGlyph)
@@ -959,14 +972,26 @@ restart: ;
 	      g->nominal = NO;
 	    }
 
-	  /* The y==0 case is taken care of when the font is changed. */
-	  if (y < 0 && f_ascender - y > ascender)
-	    ascender = f_ascender - y;
-	  if (y > 0 && f_descender + y > descender)
-	    descender = f_descender + y;
+          /* does the glyph fit ? */
+          if (p.x + g->size.width > lf->rect.size.width)
+            {
+              // did not fit
+              didLastGlyphFit = NO;
+            }
+          else
+            {
+              /* Glyph did fit */
+              didLastGlyphFit = YES;
 
-          if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
-            goto restart;
+              /* The y==0 case is taken care of when the font is changed. */
+              if (y < 0 && f_ascender - y > ascender)
+                ascender = f_ascender - y;
+              if (y > 0 && f_descender + y > descender)
+                descender = f_descender + y;
+
+              if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
+                goto restart;
+            }
 	}
 
 	if (g->g == GSAttachmentGlyph)
@@ -1010,23 +1035,35 @@ restart: ;
 	    compared to everything else here, and has it's origin in p.
 	    (Makes sense from the cell's pov, though.) */
 
-	    if (-NSMinY(r) > descender)
-	      descender = -NSMinY(r);
+            /* does the attachment fit (and it is not the first element in line) ?*/
+            if ((i > firstGlyphIndex) && (p.x + NSMaxX(r) > lf->rect.size.width))
+              {
+                // did not fit
+                didLastGlyphFit = NO;
+              }
+            else
+              {
+                /* Attachment did fit */
+                didLastGlyphFit = YES;
 
-	    if (NSMaxY(r) > ascender)
-	      ascender = NSMaxY(r);
+                if (-NSMinY(r) > descender)
+                  descender = -NSMinY(r);
 
-	    /* Update ascender and descender. Adjust line height and
-	    baseline if necessary. */
+                if (NSMaxY(r) > ascender)
+                  ascender = NSMaxY(r);
 
-            if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
-              goto restart;
+                /* Update ascender and descender. Adjust line height and
+                   baseline if necessary. */
 
-	    g->size = r.size;
-	    g->pos.x = p.x + r.origin.x;
-	    g->pos.y = p.y - r.origin.y;
+                if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
+                  goto restart;
+              }
 
-	    p.x = g->pos.x + g->size.width;
+            g->size = r.size;
+            g->pos.x = p.x + r.origin.x;
+            g->pos.y = p.y - r.origin.y;
+
+            p.x = g->pos.x + g->size.width;
 
 	    /* An attachment is always in a point range of its own. */
 	    g->nominal = NO;
@@ -1052,7 +1089,7 @@ restart: ;
 	  }
 
 	/* Did the glyph fit in the line frag rect? */
-	if (p.x > lf->rect.size.width)
+	if (!didLastGlyphFit || p.x > lf->rect.size.width)
 	  {
 	    /* It didn't. Try to break the line. */
 	    switch ([curParagraphStyle lineBreakMode])
