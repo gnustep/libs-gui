@@ -1069,7 +1069,7 @@ restart: ;
 	  }
 
 	/* Did the glyph fit in the line frag rect? */
-	if (!didLastGlyphFit || p.x > lf->rect.size.width)
+	if (!didLastGlyphFit)
 	  {
 	    /* It didn't. Try to break the line. */
 	    switch ([curParagraphStyle lineBreakMode])
