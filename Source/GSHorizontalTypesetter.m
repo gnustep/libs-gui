@@ -837,15 +837,9 @@ restart: ;
 	    last_glyph = NSNullGlyph;
 
             /* does the glyph fit ?*/
-            if (p.x + g->size.width > lf->rect.size.width)
+            didLastGlyphFit = !(p.x + g->size.width > lf->rect.size.width);
+            if (didLastGlyphFit)
               {
-                // did not fit
-                didLastGlyphFit = NO;
-              }
-            else
-              {
-                // glyh did fit
-                didLastGlyphFit = YES;
                 new_height = [f defaultLineHeightForFont];
 
                 if (f_ascender > ascender)
@@ -973,16 +967,9 @@ restart: ;
 	    }
 
           /* does the glyph fit ? */
-          if (p.x + g->size.width > lf->rect.size.width)
+          didLastGlyphFit = !(p.x + g->size.width > lf->rect.size.width);
+          if (didLastGlyphFit)
             {
-              // did not fit
-              didLastGlyphFit = NO;
-            }
-          else
-            {
-              /* Glyph did fit */
-              didLastGlyphFit = YES;
-
               /* The y==0 case is taken care of when the font is changed. */
               if (y < 0 && f_ascender - y > ascender)
                 ascender = f_ascender - y;
@@ -1036,16 +1023,9 @@ restart: ;
 	    (Makes sense from the cell's pov, though.) */
 
             /* does the attachment fit (and it is not the first element in line) ?*/
-            if ((i > firstGlyphIndex) && (p.x + NSMaxX(r) > lf->rect.size.width))
+            didLastGlyphFit = !((i > firstGlyphIndex) && (p.x + NSMaxX(r) > lf->rect.size.width));
+            if (didLastGlyphFit)
               {
-                // did not fit
-                didLastGlyphFit = NO;
-              }
-            else
-              {
-                /* Attachment did fit */
-                didLastGlyphFit = YES;
-
                 if (-NSMinY(r) > descender)
                   descender = -NSMinY(r);
 
