@@ -967,7 +967,7 @@ restart: ;
 	    }
 
           /* does the glyph fit ? */
-          didLastGlyphFit = !(p.x + g->size.width > lf->rect.size.width);
+          didLastGlyphFit = !((i > firstGlyphIndex) && (p.x + g->size.width > lf->rect.size.width));
           if (didLastGlyphFit)
             {
               /* The y==0 case is taken care of when the font is changed. */
