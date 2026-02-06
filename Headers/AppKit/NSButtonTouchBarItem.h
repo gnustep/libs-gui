@@ -62,6 +62,29 @@
 extern "C" {
 #endif
 
+/**
+ * NSButtonTouchBarItem provides a touch-optimized button control specifically
+ * designed for Touch Bar interfaces. It extends the basic NSTouchBarItem
+ * functionality to provide button-specific features such as titles, images,
+ * colors, and action handling optimized for touch interaction.
+ *
+ * This Touch Bar item supports text labels with automatic font optimization
+ * for Touch Bar display, icon and image display with appropriate sizing and
+ * rendering, background colors and visual styling for touch interfaces,
+ * target-action pattern for handling touch events, enabled/disabled state
+ * management, and integration with accessibility services.
+ *
+ * The button automatically adapts its appearance for the Touch Bar environment
+ * with optimized sizing and spacing for finger-based interaction, high-contrast
+ * rendering for the Touch Bar display characteristics, dynamic type support for
+ * accessibility and user preferences, and visual feedback for touch interactions
+ * and state changes.
+ *
+ * NSButtonTouchBarItem is commonly used for primary actions and commands relevant
+ * to the current context, quick access to frequently used application functions,
+ * modal confirmations and secondary action options, and navigation and workflow
+ * control within Touch Bar interfaces.
+ */
 APPKIT_EXPORT_CLASS
 @interface NSButtonTouchBarItem : NSTouchBarItem
 

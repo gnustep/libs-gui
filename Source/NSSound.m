@@ -277,9 +277,9 @@ static inline void _loadNSSoundPlugIns (void)
   NSEnumerator *enumerator;
   Class sourceClass,
         sinkClass;
-    
-  _data = data;
-  RETAIN(_data);
+
+  // Use new data...
+  ASSIGN(_data, data);
   
   // Search for an GSSoundSource bundle that can play this data.
   enumerator = [sourcePlugIns objectEnumerator];
@@ -298,9 +298,9 @@ static inline void _loadNSSoundPlugIns (void)
         }
     }
   
-  enumerator = [sinkPlugIns objectEnumerator];
   /* FIXME: Grab the first available sink/device for now.  In the future
-       look for what is set in the GSSoundDeviceBundle default first. */
+     look for what is set in the GSSoundDeviceBundle default first. */
+  enumerator = [sinkPlugIns objectEnumerator];
   while ((sinkClass = [enumerator nextObject]) != nil)
     {
       if ([sinkClass canInitWithPlaybackDevice: nil])
@@ -335,7 +335,7 @@ static inline void _loadNSSoundPlugIns (void)
   if ([object_getClass(self) canInitWithPasteboard: pasteboard] == YES)
     {
       /* FIXME: Should this be @"NSGeneralPboardType" or @"NSSoundPboardType"?
-           Apple also defines "NSString *NSSoundPboardType". */
+	 Apple also defines "NSString *NSSoundPboardType". */
       NSData *d = [pasteboard dataForType: @"NSGeneralPboardType"];	
       return [self initWithData: d];	
     }

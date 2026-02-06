@@ -36,8 +36,6 @@
 @class NSNotification;
 
 /**
- * <title>NSComboBox</title>
- * <abstract>Text field with dropdown list for selection and entry</abstract>
  * NSComboBox combines a text field with a dropdown list, providing users with
  * both direct text entry and selection from predefined options. It extends
  * NSTextField to add list management, selection handling, and dropdown display

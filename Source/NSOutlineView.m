@@ -147,6 +147,7 @@ static NSImage *unexpandable  = nil;
 - (id) _prototypeCellViewFromTableColumn: (NSTableColumn *)tb;
 - (void) _drawCellViewRow: (NSInteger)rowIndex
 		 clipRect: (NSRect)clipRect;
+- (void) _sendDoubleActionForColumn: (NSInteger)columnIndex;
 @end
 
 @interface NSTableColumn (Private)
@@ -2078,6 +2079,55 @@ Also returns the child index relative to this parent. */
 - (NSInteger) _numRows
 {
   return [_items count];
+}
+
+- (BOOL) _usesVariableRowHeights
+{
+  return ([_delegate respondsToSelector:
+    @selector(outlineView:heightOfRowByItem:)] == YES);
+}
+
+- (CGFloat) _rowHeightForRow: (NSInteger)rowIndex
+{
+  if (rowIndex < 0 || rowIndex >= _numberOfRows)
+    {
+      return [self rowHeight];
+    }
+
+  if ([_delegate respondsToSelector:
+    @selector(outlineView:heightOfRowByItem:)] == YES)
+    {
+      id item = [self itemAtRow: rowIndex];
+      CGFloat height = [_delegate outlineView: self heightOfRowByItem: item];
+      if (height > 0.0)
+        {
+          return height;
+        }
+    }
+
+  return [self rowHeight];
+}
+
+- (void) _sendDoubleActionForColumn: (NSInteger)columnIndex
+{
+  if ([_delegate respondsToSelector:
+    @selector(outlineView:sizeToFitWidthOfColumn:)] == YES)
+    {
+      CGFloat width = [_delegate outlineView: self
+                     sizeToFitWidthOfColumn: columnIndex];
+
+      if (width > 0.0 && columnIndex >= 0 && columnIndex < _numberOfColumns)
+        {
+          NSTableColumn *tb = [_tableColumns objectAtIndex: columnIndex];
+          if ([tb isResizable] == YES)
+            {
+              [tb setWidth: width];
+              return;
+            }
+        }
+    }
+
+  [super _sendDoubleActionForColumn: columnIndex];
 }
 
 @end
