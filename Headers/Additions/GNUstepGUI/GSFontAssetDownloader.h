@@ -1,0 +1,253 @@
+/* Definition of class GSFontAssetDownloader
+   Copyright (C) 2024 Free Software Foundation, Inc.
+
+   By: Gregory John Casamento <greg.casamento@gmail.com>
+   Date: September 5, 2024
+
+   This file is part of the GNUstep Library.
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110 USA.
+*/
+
+#ifndef _GSFontAssetDownloader_h_GNUSTEP_GUI_INCLUDE
+#define _GSFontAssetDownloader_h_GNUSTEP_GUI_INCLUDE
+#import <AppKit/AppKitDefines.h>
+
+#import <Foundation/NSObject.h>
+#import <Foundation/NSError.h>
+
+@class NSFontDescriptor;
+@class NSURL;
+@class NSString;
+@class NSPanel;
+@class NSProgressIndicator;
+@class NSTextField;
+@class NSButton;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
+
+/**
+ * GSFontAssetDownloader provides a pluggable mechanism for downloading
+ * and installing font assets from various sources. This class can be
+ * subclassed to implement custom font downloading strategies, such as
+ * downloading from different font services, using authentication, or
+ * implementing custom validation and installation procedures.
+ *
+ * The default implementation supports downloading fonts from HTTP/HTTPS
+ * URLs and local file URLs, with basic validation and cross-platform
+ * installation to standard font directories.
+ *
+ * Subclasses can override individual methods to customize specific
+ * aspects of the download and installation process while reusing
+ * other parts of the default implementation.
+ *
+ * CLASS REPLACEMENT SYSTEM:
+ *
+ * GSFontAssetDownloader supports a class replacement system that allows
+ * applications to register a custom downloader class to be used globally.
+ * This enables complete customization of font downloading behavior without
+ * needing to modify every NSFontAssetRequest instance.
+ *
+ * Example usage:
+ *
+ * // Define a custom downloader class
+ * @interface MyCustomFontDownloader : GSFontAssetDownloader
+ * @end
+ *
+ * @implementation MyCustomFontDownloader
+ * - (NSURL *) fontURLForDescriptor: (NSFontDescriptor *)descriptor {
+ *     // Custom URL resolution logic
+ *     return [NSURL URLWithString: @"https://my-font-service.com/..."];
+ * }
+ * @end
+ *
+ * // Register the custom class globally
+ * [GSFontAssetDownloader setDefaultDownloaderClass: [MyCustomFontDownloader class]];
+ *
+ * // Or through NSFontAssetRequest
+ * [NSFontAssetRequest setDefaultDownloaderClass: [MyCustomFontDownloader class]];
+ *
+ * // All new font asset requests will now use the custom downloader
+ * NSFontAssetRequest *request = [[NSFontAssetRequest alloc]
+ *     initWithFontDescriptors: descriptors options: 0];
+ *
+ * PROGRESS PANEL USAGE:
+ *
+ * To show a progress panel during font download, use the NSFontAssetRequestOptionUsesStandardUI option:
+ *
+ * NSFontDescriptor *descriptor = [NSFontDescriptor fontDescriptorWithName: @"Inconsolata" size: 12];
+ * GSFontAssetDownloader *downloader = [GSFontAssetDownloader downloaderWithOptions: NSFontAssetRequestOptionUsesStandardUI];
+ * NSError *error = nil;
+ * BOOL success = [downloader downloadAndInstallFontWithDescriptor: descriptor error: &error];
+ *
+ * The progress panel will automatically appear with:
+ * - A progress bar showing download/installation progress
+ * - Status messages describing the current operation
+ * - A cancel button (posts GSFontAssetDownloadCancelled notification when pressed)
+ */
+GS_EXPORT_CLASS
+@interface GSFontAssetDownloader : NSObject
+{
+  NSUInteger _options;
+  NSPanel *_progressPanel;
+  NSProgressIndicator *_progressIndicator;
+  NSTextField *_statusLabel;
+  NSButton *_cancelButton;
+}
+
+/**
+ * Registers a custom downloader class to be used instead of the default
+ * GSFontAssetDownloader class. The registered class must be a subclass
+ * of GSFontAssetDownloader. Pass nil to restore the default behavior.
+ */
++ (void) setDefaultDownloaderClass: (Class)downloaderClass;
+
+/**
+ * Returns the currently registered downloader class, or GSFontAssetDownloader
+ * if no custom class has been registered.
+ */
++ (Class) defaultDownloaderClass;
+
+/**
+ * Creates a new font asset downloader instance using the currently
+ * registered downloader class. This is the preferred method for creating
+ * downloader instances as it respects any custom downloader class that
+ * has been registered.
+ */
++ (instancetype) downloaderWithOptions: (NSUInteger)options;
+
+/**
+ * Creates a new font asset downloader with the specified options.
+ * The options parameter contains flags that control the download
+ * and installation behavior, such as whether to use standard UI
+ * or install to user vs system directories.
+ */
+- (instancetype) initWithOptions: (NSUInteger)options;
+
+/**
+ * Downloads and installs a font from the specified descriptor.
+ * This is the main entry point for font downloading. The method
+ * orchestrates the complete process: URL resolution, download,
+ * validation, and installation. Returns YES if the font was
+ * successfully downloaded and installed, NO otherwise.
+ */
+- (BOOL) downloadAndInstallFontWithDescriptor: (NSFontDescriptor *)descriptor
+					error: (NSError **)error;
+
+/**
+ * Downloads and installs a font from the specified descriptor with a preferred format.
+ * This variant allows specifying the preferred font format (e.g., "woff2", "woff", "ttf")
+ * when downloading from CSS URLs. For direct font URLs, the format parameter is ignored.
+ * Returns YES if the font was successfully downloaded and installed, NO otherwise.
+ */
+- (BOOL) downloadAndInstallFontWithDescriptor: (NSFontDescriptor *)descriptor
+			       preferredFormat: (NSString *)format
+					error: (NSError **)error;
+
+/**
+ * Resolves a font URL from a font descriptor.
+ * This method can be overridden to implement custom URL resolution
+ * strategies, such as querying different font services or using
+ * authentication tokens. The default implementation looks for a
+ * custom URL attribute or constructs URLs from font names.
+ */
+- (NSURL *) fontURLForDescriptor: (NSFontDescriptor *)descriptor;
+
+/**
+ * Downloads a font file from the specified URL.
+ * This method can be overridden to implement custom download
+ * strategies, such as using authentication, custom headers, or
+ * progress callbacks. Returns the path to the downloaded temporary
+ * file, or nil on failure.
+ */
+- (NSString *) downloadFontFromURL: (NSURL *)fontURL
+			     error: (NSError **)error;
+
+/**
+ * Downloads a font file from the specified URL with a given font name.
+ * This variant allows specifying the font name for better filename generation.
+ * The downloaded file will be saved with a name based on the font name and
+ * appropriate extension. Returns the path to the downloaded temporary file,
+ * or nil on failure.
+ */
+- (NSString *) downloadFontFromURL: (NSURL *)fontURL
+			  fontName: (NSString *)fontName
+			     error: (NSError **)error;
+
+/**
+ * Extracts font URLs from CSS content based on the specified format.
+ * This method parses CSS @font-face declarations and extracts URLs
+ * that match the given format (e.g., "woff2", "woff", "ttf").
+ * Returns an array of NSURL objects, or nil on error.
+ */
+- (NSArray *) extractFontURLsFromCSS: (NSString *)cssContent
+			  withFormat: (NSString *)format
+			       error: (NSError **)error;
+
+/**
+ * Downloads font data from a CSS URL that contains @font-face declarations.
+ * This method first downloads the CSS content, parses it to extract font URLs
+ * based on the specified format, and then downloads the first matching font.
+ * Returns the path to the downloaded temporary file, or nil on failure.
+ */
+- (NSString *) downloadFontDataFromCSSURL: (NSURL *)cssURL
+			       withFormat: (NSString *)format
+				    error: (NSError **)error;
+
+/**
+ * Downloads font data from a CSS URL with a given font name.
+ * This variant allows specifying the font name for better filename generation.
+ * The downloaded file will be saved with a name based on the font name and
+ * appropriate extension. Returns the path to the downloaded temporary file,
+ * or nil on failure.
+ */
+- (NSString *) downloadFontDataFromCSSURL: (NSURL *)cssURL
+			       withFormat: (NSString *)format
+				 fontName: (NSString *)fontName
+				    error: (NSError **)error;
+
+/**
+ * Returns the options that were specified when creating this downloader.
+ */
+- (NSUInteger) options;
+
+/**
+ * Shows a progress panel for font downloading when NSFontAssetRequestOptionUsesStandardUI is set.
+ * This method creates and displays a modal panel with a progress indicator and status text.
+ */
+- (void) showProgressPanelWithMessage: (NSString *)message;
+
+/**
+ * Updates the progress panel with current status and progress value.
+ * The progress parameter should be a value between 0.0 and 1.0.
+ */
+- (void) updateProgressPanel: (double)progress withMessage: (NSString *)message;
+
+/**
+ * Hides and releases the progress panel.
+ */
+- (void) hideProgressPanel;
+
+/**
+ * Action method called when the cancel button in the progress panel is pressed.
+ */
+- (void) cancelDownload: (id)sender;
+
+@end
+
+#endif	/* GS_API_MACOSX */
+
+#endif	/* _GSFontAssetDownloader_h_GNUSTEP_GUI_INCLUDE */

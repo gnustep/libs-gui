@@ -541,10 +541,14 @@ BUILD_SOUND=
 AC_CHECK_HEADERS(sndfile.h, have_sndfile=yes, have_sndfile=no)
 AC_CHECK_HEADERS(ao/ao.h, have_ao=yes, have_ao=no)
 # Only if we have both...
-if test $have_sndfile = yes -a $have_ao = yes -a $enable_sound = yes; then
+if test "$have_sndfile" = yes -a "$have_ao" = yes -a "$enable_sound" = yes; then
    BUILD_SOUND="sound"
+   SOUND_LIBS=`pkg-config --libs sndfile ao`
+   SOUND_CFLAGS=`pkg-config --cflags sndfile ao`
 fi
 AC_SUBST(BUILD_SOUND)
+AC_SUBST(SOUND_LIBS)
+AC_SUBST(SOUND_CFLAGS)
 
 #--------------------------------------------------------------------
 # NSSpeechSynthesizer
@@ -557,7 +561,7 @@ BUILD_SPEECH=
 # has flite, for speech synthesis.
 AC_CHECK_LIB(flite, new_utterance, have_speech=yes, have_speech=no)
 AC_CHECK_HEADERS(flite/flite.h, have_flite=yes, have_flite=no)
-if test $have_flite = yes -a $have_speech = yes -a $enable_speech = yes; then
+if test "$have_flite" = yes -a "$have_speech" = yes -a "$enable_speech" = yes; then
    BUILD_SPEECH="speech say"
    FLITE_BASE_LIBS="-lflite_usenglish -lflite_cmulex -lflite"
    AC_CHECK_LIB(flite_cmu_us_kal16, register_cmu_us_kal16, have_kal16=yes, have_kal16=no, $FLITE_BASE_LIBS)
@@ -578,7 +582,7 @@ BUILD_SPEECH_RECOGNIZER=
 # has pocketsphinx, for speech recognition.
 AC_CHECK_LIB(pocketsphinx, ps_start_utt, have_speech_recognizer=yes, have_speech_recognizer=no)
 AC_CHECK_HEADERS(pocketsphinx/pocketsphinx_export.h, have_pocketsphinx=yes, have_pocketsphinx=no)
-if test $have_pocketsphinx = yes -a $have_speech_recognizer = yes -a $enable_speech_recognizer = yes; then
+if test "$have_pocketsphinx" = yes -a "$have_speech_recognizer" = yes -a "$enable_speech_recognizer" = yes; then
    BUILD_SPEECH_RECOGNIZER="speech_recognizer"
    RECOGNIZER_BASE_LIBS=`pkg-config --libs pocketsphinx sphinxbase`
    RECOGNIZER_BASE_CFLAGS=`pkg-config --cflags pocketsphinx sphinxbase`
@@ -588,6 +592,27 @@ AC_SUBST(BUILD_SPEECH_RECOGNIZER)
 AC_SUBST(RECOGNIZER_BASE_LIBS)
 AC_SUBST(RECOGNIZER_BASE_CFLAGS)
 AC_SUBST(RECOGNIZER_ENGINE_CLASS)
+
+#--------------------------------------------------------------------
+# NSMovie / NSMovieView
+#--------------------------------------------------------------------
+AC_ARG_ENABLE(movie, 
+  [  --disable-movie          Disable NSMovie/NSMovieView functionality],,
+  enable_movie=yes)
+BUILD_MOVIE=
+
+# has avcodec
+AC_CHECK_LIB(avcodec, avcodec_find_decoder, have_avcodec=yes, have_avcodec=no)
+AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
+if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$enable_movie" = yes; then
+   AC_DEFINE(HAVE_AVCODEC,1,[Define if you have avcodec for NSMovie])
+   BUILD_MOVIE="yes"
+   MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale`
+   MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale`
+fi
+AC_SUBST(MOVIE_BASE_LIBS)
+AC_SUBST(MOVIE_BASE_CFLAGS)
+AC_SUBST(BUILD_MOVIE)
 
 #--------------------------------------------------------------------
 # Find CUPS

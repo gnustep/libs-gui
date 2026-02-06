@@ -148,6 +148,9 @@
 /* MagickCore >= 7 */
 #undef MAGICKCORE_7_OR_NEWER
 
+/* avcodec */
+#undef HAVE_AVCODEC
+
 /* mntent structure member name */
 #undef MNT_FSNAME
 
