@@ -50,12 +50,33 @@
     }
 }
 
-//
-//
-// Instance methods
-//
-// Initializing a Link
-//
+- (id)init
+{
+  if ((self = [super init]) != nil)
+    {
+      linkNumber = 0;
+      disposition = NSLinkInDestination;
+      updateMode = NSUpdateContinuously;
+      lastUpdateTime = nil;
+      sourceApplicationName = nil;
+      sourceFilename = nil;
+      sourceSelection = nil;
+      sourceManager = nil;
+      destinationApplicationName = nil;
+      destinationFilename = nil;
+      destinationSelection = nil;
+      destinationManager = nil;
+      types = nil;
+      _flags.appVerifies = NO;
+      _flags.broken = NO;
+      _flags.canUpdateContinuously = YES;
+      _flags.isDirty = NO;
+      _flags.willOpenSource = NO;
+      _flags.willUpdate = NO;
+      _flags.isMarker = NO;
+    }
+  return self;
+}
 - (id)initLinkedToFile:(NSString *)filename
 {
   if ((self = [self init]) != nil)
@@ -63,6 +84,7 @@
       NSData *data = [NSData dataWithBytes: [filename cString] length: [filename cStringLength]];
       NSSelection *selection = [NSSelection selectionWithDescriptionData: data];
       ASSIGN(sourceSelection, selection);
+      ASSIGN(sourceFilename, filename);
     }
   return self;
 }
@@ -267,6 +289,59 @@
   return updateMode;
 }
 
+- (BOOL)isEqual:(id)object
+{
+  if (self == object)
+    return YES;
+  if (![object isKindOfClass: [NSDataLink class]])
+    return NO;
+  
+  NSDataLink *other = (NSDataLink *)object;
+  
+  // Compare basic properties
+  if (linkNumber != other->linkNumber)
+    return NO;
+  if (disposition != other->disposition)
+    return NO;
+  if (updateMode != other->updateMode)
+    return NO;
+  
+  // Compare object properties - handle nil cases
+  // Don't compare managers as they are not encoded/decoded
+  if (![self isObject:lastUpdateTime equalTo:other->lastUpdateTime])
+    return NO;
+  if (![self isObject:sourceApplicationName equalTo:other->sourceApplicationName])
+    return NO;
+  if (![self isObject:sourceFilename equalTo:other->sourceFilename])
+    return NO;
+  if (![self isObject:sourceSelection equalTo:other->sourceSelection])
+    return NO;
+  if (![self isObject:destinationApplicationName equalTo:other->destinationApplicationName])
+    return NO;
+  if (![self isObject:destinationFilename equalTo:other->destinationFilename])
+    return NO;
+  if (![self isObject:destinationSelection equalTo:other->destinationSelection])
+    return NO;
+  if (![self isObject:types equalTo:other->types])
+    return NO;
+  
+  return YES;
+}
+
+- (NSUInteger)hash
+{
+  return linkNumber ^ disposition ^ updateMode ^ [sourceFilename hash] ^ [sourceSelection hash];
+}
+
+- (BOOL)isObject:(id)obj1 equalTo:(id)obj2
+{
+  if (obj1 == obj2)
+    return YES;
+  if (obj1 == nil || obj2 == nil)
+    return NO;
+  return [obj1 isEqual:obj2];
+}
+
 //
 // NSCoding protocol
 //
@@ -277,20 +352,22 @@
   if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeInt: linkNumber forKey: @"GSLinkNumber"];
-      [aCoder encodeInt: disposition forKey: @"GSUpdateMode"];
-      [aCoder encodeInt: updateMode forKey: @"GSLastUpdateMode"];
+      [aCoder encodeInt: disposition forKey: @"GSDisposition"];
+      [aCoder encodeInt: updateMode forKey: @"GSUpdateMode"];
 
       [aCoder encodeObject: lastUpdateTime forKey: @"GSLastUpdateTime"];      
 
       [aCoder encodeObject: sourceApplicationName forKey: @"GSSourceApplicationName"];
       [aCoder encodeObject: sourceFilename forKey: @"GSSourceFilename"];
       [aCoder encodeObject: sourceSelection forKey: @"GSSourceSelection"];
-      [aCoder encodeObject: sourceManager forKey: @"GSSourceManager"];
+      // Don't encode sourceManager - it's typically a weak reference
+      [aCoder encodeObject: nil forKey: @"GSSourceManager"];
 
       [aCoder encodeObject: destinationApplicationName forKey: @"GSDestinationApplicationName"];
       [aCoder encodeObject: destinationFilename forKey: @"GSDestinationFilename"];
       [aCoder encodeObject: destinationSelection forKey: @"GSDestinationSelection"];
-      [aCoder encodeObject: destinationManager forKey: @"GSDestinationManager"];
+      // Don't encode destinationManager - it's typically a weak reference
+      [aCoder encodeObject: nil forKey: @"GSDestinationManager"];
       
       [aCoder encodeObject: types forKey: @"GSTypes"]; 
       
@@ -316,12 +393,15 @@
       [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceApplicationName];
       [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceFilename];
       [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceSelection];
-      [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceManager];
+      // Don't encode sourceManager - it's typically a weak reference
+      id nilManager = nil;
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &nilManager];
       
       [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationApplicationName];
       [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationFilename];
       [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationSelection];
-      [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationManager];
+      // Don't encode destinationManager - it's typically a weak reference
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &nilManager];
       
       [aCoder encodeValueOfObjCType: @encode(id)  at: &types];
       
@@ -349,28 +429,29 @@
       disposition = [aCoder decodeIntForKey: @"GSDisposition"];
       updateMode = [aCoder decodeIntForKey: @"GSUpdateMode"];
 
-      obj = [aCoder decodeObjectForKey: @"GSSourceManager"];
-      ASSIGN(sourceManager,obj);
-      obj = [aCoder decodeObjectForKey: @"GSDestinationManager"];
-      ASSIGN(destinationManager,obj);
       obj = [aCoder decodeObjectForKey: @"GSLastUpdateTime"];
       ASSIGN(lastUpdateTime, obj);
+
       obj = [aCoder decodeObjectForKey: @"GSSourceApplicationName"];
       ASSIGN(sourceApplicationName,obj);
       obj = [aCoder decodeObjectForKey: @"GSSourceFilename"];
-      ASSIGN(sourceFilename,obj);
+      ASSIGN(sourceFilename,obj); 
       obj = [aCoder decodeObjectForKey: @"GSSourceSelection"];
       ASSIGN(sourceSelection,obj);
-      obj = [aCoder decodeObjectForKey: @"GSSourceManager"];
-      ASSIGN(sourceManager,obj);
+      // Decode and discard the encoded nil manager
+      [aCoder decodeObjectForKey: @"GSSourceManager"];
+      sourceManager = nil;
+
       obj = [aCoder decodeObjectForKey: @"GSDestinationApplicationName"];
       ASSIGN(destinationApplicationName,obj);
       obj = [aCoder decodeObjectForKey: @"GSDestinationFilename"];
       ASSIGN(destinationFilename,obj);
       obj = [aCoder decodeObjectForKey: @"GSDestinationSelection"];
-      ASSIGN(destinationSelection,obj);
-      obj = [aCoder decodeObjectForKey: @"GSDestinationManager"];
-      ASSIGN(destinationManager,obj);      
+      ASSIGN(destinationSelection,obj);  
+      // Decode and discard the encoded nil manager
+      [aCoder decodeObjectForKey: @"GSDestinationManager"];
+      destinationManager = nil;
+
       obj = [aCoder decodeObjectForKey: @"GSTypes"];
       ASSIGN(types,obj);
 
@@ -380,6 +461,8 @@
       _flags.isDirty = [aCoder decodeBoolForKey: @"GSIsDirty"];
       _flags.willOpenSource = [aCoder decodeBoolForKey: @"GSWillOpenSource"];
       _flags.willUpdate = [aCoder decodeBoolForKey: @"GSWillUpdate"];
+      _flags.broken = NO;
+      _flags.isMarker = NO;
     }
   else
     {
@@ -387,23 +470,26 @@
       if (version == 0)
 	{
 	  BOOL flag = NO;
+	  id obj;
 	  
 	  [aCoder decodeValueOfObjCType: @encode(int) at: &linkNumber];
 	  [aCoder decodeValueOfObjCType: @encode(int) at: &disposition];
 	  [aCoder decodeValueOfObjCType: @encode(int) at: &updateMode];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceManager];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationManager];
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &lastUpdateTime];
 	  
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceApplicationName];
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceFilename];
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceSelection];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceManager];
+	  // Skip the encoded nil manager
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  sourceManager = nil;
 	  
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationApplicationName];
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationFilename];
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationSelection];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationManager];
+	  // Skip the encoded nil manager
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  destinationManager = nil;
 	  
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &types];
 	  
@@ -418,6 +504,8 @@
 	  _flags.willOpenSource = flag;
 	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
 	  _flags.willUpdate = flag;
+	  _flags.broken = NO;
+	  _flags.isMarker = NO;
 	}
       else
 	return nil;

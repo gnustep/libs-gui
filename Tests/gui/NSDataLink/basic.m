@@ -87,22 +87,34 @@ int main()
   if ([self updateMode] != [anObject updateMode])
     return NO;
   
-  // Compare strings
-  if (![[self sourceApplicationName] isEqual: [anObject sourceApplicationName]])
-    return NO;
-  if (![[self sourceFilename] isEqual: [anObject sourceFilename]])
-    return NO;
-  if (![[self destinationApplicationName] isEqual: [anObject destinationApplicationName]])
-    return NO;
-  if (![[self destinationFilename] isEqual: [anObject destinationFilename]])
+  // Compare dates
+  if (([self lastUpdateTime] || [anObject lastUpdateTime]) && ![[self lastUpdateTime] isEqual: [anObject lastUpdateTime]])
     return NO;
   
-  // Compare selections (basic check)
+  // Compare strings
+  if (([self sourceApplicationName] || [anObject sourceApplicationName]) && ![[self sourceApplicationName] isEqual: [anObject sourceApplicationName]])
+    return NO;
+  if (([self sourceFilename] || [anObject sourceFilename]) && ![[self sourceFilename] isEqual: [anObject sourceFilename]])
+    return NO;
+  if (([self destinationApplicationName] || [anObject destinationApplicationName]) && ![[self destinationApplicationName] isEqual: [anObject destinationApplicationName]])
+    return NO;
+  if (([self destinationFilename] || [anObject destinationFilename]) && ![[self destinationFilename] isEqual: [anObject destinationFilename]])
+    return NO;
+  
+  // Compare selections
   if ([self sourceSelection] != [anObject sourceSelection] &&
       ![[self sourceSelection] isEqual: [anObject sourceSelection]])
     return NO;
   if ([self destinationSelection] != [anObject destinationSelection] &&
       ![[self destinationSelection] isEqual: [anObject destinationSelection]])
+    return NO;
+  
+  // Compare managers - note: these are often nil and weak references, so just check if both are nil or both are not nil
+  if (([self manager] == nil) != ([anObject manager] == nil))
+    return NO;
+  
+  // Compare types array
+  if (([self types] || [anObject types]) && ![[self types] isEqual: [anObject types]])
     return NO;
   
   return YES;
