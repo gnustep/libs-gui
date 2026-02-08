@@ -1,3 +1,31 @@
+2026-02-08 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Headers/AppKit/NSDataLink.h: Improved ivar names and updated
+	interface for better clarity.
+	* Headers/AppKit/NSDataLinkManager.h: Enhanced interface with
+	additional delegate callbacks and improved method signatures.
+	* Source/NSDataLink.m: Complete implementation of NSDataLink
+	functionality including file monitoring, link updates, and
+	delegate callbacks. Improved code structure and fixed issues.
+	* Source/NSDataLinkManager.m: Full implementation of
+	NSDataLinkManager with proper link tracking, file monitoring,
+	and notification handling. Added support for delegate callbacks
+	and link registration.
+	* Source/NSDataLinkPanel.m: Enhanced NSDataLinkPanel implementation
+	with proper UI controls and link management.
+	* Documentation/NSDataLinkDelegateCallbacks.md: Added comprehensive
+	documentation for NSDataLinkDelegate callback methods.
+	* Examples/NSDataLinkExample.m: Added example code demonstrating
+	usage of NSDataLink and NSDataLinkManager.
+	* Panels/English.lproj/GSDataLinkPanel.gorm/data.classes:
+	* Panels/English.lproj/GSDataLinkPanel.gorm/data.info:
+	* Panels/English.lproj/GSDataLinkPanel.gorm/objects.gorm:
+	* Panels/Spanish.lproj/GSDataLinkPanel.gorm/data.classes:
+	* Panels/Spanish.lproj/GSDataLinkPanel.gorm/data.info:
+	* Panels/Spanish.lproj/GSDataLinkPanel.gorm/objects.gorm:
+	Updated GSDataLinkPanel UI resources for English and Spanish
+	localizations.
+
 2026-02-01 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* Tools/say/say.m: Fix warning about casting a non-mutalbe string to
