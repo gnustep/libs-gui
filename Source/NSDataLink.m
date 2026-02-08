@@ -77,6 +77,21 @@
     }
   return self;
 }
+
+- (void)dealloc
+{
+  RELEASE(_lastUpdateTime);
+  RELEASE(_sourceApplicationName);
+  RELEASE(_sourceFilename);
+  RELEASE(_sourceSelection);
+  RELEASE(_destinationApplicationName);
+  RELEASE(_destinationFilename);
+  RELEASE(_destinationSelection);
+  RELEASE(_types);
+  
+  [super dealloc];
+}
+
 - (id)initLinkedToFile:(NSString *)filename
 {
   if ((self = [self init]) != nil)
