@@ -60,14 +60,25 @@
   [self setReleasedWhenClosed: NO];
   [self setMiniwindowImage: nil];
 }
+- (void) applicationDidChangeScreenParameters: (NSNotification *)aNotif
+{
+  /* An image rep cache is an off-screen window, so we should ignore any
+   * screen change information.  If the nominal screen of the window has
+   * been destroyed, that should not effect the cached info.
+   */
+  return;
+}
 - (void) display
 {
+  return;
 }
 - (void) displayIfNeeded
 {
+  return;
 }
 - (void) setViewsNeedDisplay: (BOOL)f
 {
+  return;
 }
 @end
 

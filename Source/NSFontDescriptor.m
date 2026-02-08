@@ -66,7 +66,7 @@
   return [self fontDescriptorWithFontAttributes:
     [NSDictionary dictionaryWithObjectsAndKeys:
       name, NSFontNameAttribute,
-      [NSString stringWithFormat: @"%f", size], NSFontSizeAttribute,
+      [NSNumber numberWithDouble: size], NSFontSizeAttribute,
       nil]];
 }
 
@@ -110,7 +110,7 @@
 - (NSFontDescriptor*) fontDescriptorWithSize: (CGFloat)size
 {
   return [self fontDescriptorByAddingAttributes:
-    [NSDictionary dictionaryWithObject: [NSString stringWithFormat:@"%f", size]
+    [NSDictionary dictionaryWithObject: [NSNumber numberWithDouble: size]
 				forKey: NSFontSizeAttribute]];
 }
 
