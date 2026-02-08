@@ -1,7 +1,10 @@
 #import "ObjectTesting.h"
+
 #import <Foundation/NSArray.h>
 #import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSData.h>
+
+#import <AppKit/NSApplication.h>
 #import <AppKit/NSDataLink.h>
 #import <AppKit/NSSelection.h>
 #import <AppKit/NSPasteboard.h>
@@ -15,6 +18,17 @@ int main()
   NSArray *testObjects;
 
   START_SET("NSDataLink GNUstep basic")
+
+  NS_DURING
+  {
+    [NSApplication sharedApplication];
+  }
+  NS_HANDLER
+  {
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException ])
+      SKIP("It looks like GNUstep backend is not yet installed")
+  }
+  NS_ENDHANDLER
 
   test_alloc(@"NSDataLink");
 
