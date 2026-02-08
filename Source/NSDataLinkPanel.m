@@ -26,14 +26,19 @@
 */ 
 
 #import "config.h"
+
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSDateFormatter.h>
+
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSDataLinkPanel.h"
 #import "AppKit/NSDataLinkManager.h"
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSPopUpButton.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSNibLoading.h"
+
 #import "GSGuiPrivate.h"
 
 static NSDataLinkPanel *_sharedDataLinkPanel;
@@ -169,9 +174,24 @@ static NSDataLinkPanel *_sharedDataLinkPanel;
 	manager:(NSDataLinkManager *)linkManager
      isMultiple:(BOOL)flag
 {
+  NSDate *date = [link lastUpdateTime];
+  NSDateFormatter *formatter = [_lastUpdateField formatter];
+  NSString *dateString = @"Never";
+
+  // Set the date string if it's set...
+  if (date != nil)
+    {
+      dateString = [formatter stringFromDate: date];
+    }
+  
   ASSIGN(_currentDataLink, link);
   ASSIGN(_currentDataLinkManager, linkManager);
   _multipleSelection = flag;
+  
+  // Set panel to reflect the settings in the link...
+  [_sourceField setStringValue: [link sourceFilename]];
+  [_lastUpdateField setStringValue: dateString];
+  [_updateModeButton selectItemWithTag: [link updateMode]];
 }
 
 //
