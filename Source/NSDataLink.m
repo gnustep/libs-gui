@@ -6,7 +6,7 @@
    Date: 2005
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
-
+   
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -21,18 +21,15 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the
-   Free Software Foundation, 51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
-*/
+*/ 
 
 #include "config.h"
-
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSData.h>
-#import <Foundation/NSKeyedArchiver.h>
-
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSDataLinkManager.h"
 #import "AppKit/NSPasteboard.h"
@@ -41,7 +38,10 @@
 
 @implementation NSDataLink
 
-+ (void) initialize
+//
+// Class methods
+//
++ (void)initialize
 {
   if (self == [NSDataLink class])
     {
@@ -50,79 +50,144 @@
     }
 }
 
-- (id) initLinkedToFile: (NSString * )filename
+- (id)init
 {
-  if ((self = [super init]))
+  if ((self = [super init]) != nil)
     {
-      NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:filename error:nil];
-
-      _sourceFilename = [filename copy];
-      _disposition = NSLinkInSource;
-      _lastUpdateTime = [dict objectForKey: NSFileModificationDate];
-      _updateMode = NSUpdateWhenSourceSaved;
+      _linkNumber = 0;
+      _disposition = NSLinkInDestination;
+      _updateMode = NSUpdateContinuously;
+      _lastUpdateTime = nil;
+      _sourceApplicationName = nil;
+      _sourceFilename = nil;
+      _sourceSelection = nil;
+      _sourceManager = nil;
+      _destinationApplicationName = nil;
+      _destinationFilename = nil;
+      _destinationSelection = nil;
+      _destinationManager = nil;
+      _types = nil;
+      _flags.appVerifies = NO;
       _flags.broken = NO;
+      _flags.canUpdateContinuously = YES;
+      _flags.isDirty = NO;
+      _flags.willOpenSource = NO;
+      _flags.willUpdate = NO;
+      _flags.isMarker = NO;
     }
   return self;
 }
 
-- (id) initLinkedToSourceSelection: (NSSelection *)selection
-			 managedBy: (NSDataLinkManager *)linkManager
-		   supportingTypes: (NSArray *)newTypes
+- (void)dealloc
 {
-  if ((self = [super init]))
+  RELEASE(_lastUpdateTime);
+  RELEASE(_sourceApplicationName);
+  RELEASE(_sourceFilename);
+  RELEASE(_sourceSelection);
+  RELEASE(_destinationApplicationName);
+  RELEASE(_destinationFilename);
+  RELEASE(_destinationSelection);
+  RELEASE(_types);
+  
+  [super dealloc];
+}
+
+- (id)initLinkedToFile:(NSString *)filename
+{
+  if ((self = [self init]) != nil)
     {
-      _sourceSelection = [selection retain];
-      _sourceManager = [linkManager retain];
-      _types = [newTypes retain];
-      _disposition = NSLinkInSource;
-      _updateMode = NSUpdateWhenSourceSaved;
-      _flags.broken = NO;
+      NSData *data = [NSData dataWithBytes: [filename cString] length: [filename cStringLength]];
+      NSSelection *selection = [NSSelection selectionWithDescriptionData: data];
+      ASSIGN(_sourceSelection, selection);
+      ASSIGN(_sourceFilename, filename);
     }
   return self;
 }
 
-- (id) initWithContentsOfFile: (NSString *)filename
+- (id)initLinkedToSourceSelection:(NSSelection *)selection
+			managedBy:(NSDataLinkManager *)linkManager
+		  supportingTypes:(NSArray *)newTypes
 {
-  NSData *data = [NSData dataWithContentsOfFile:filename];
-  if (data)
+  if ((self = [self init]) != nil)
     {
-      return [NSKeyedUnarchiver unarchiveObjectWithData:data];
+      ASSIGN(_sourceSelection,selection);
+      ASSIGN(_sourceManager,linkManager);
+      ASSIGN(_types,newTypes);
     }
-  return nil;
+  return self;
 }
 
-- (id) initWithPasteboard: (NSPasteboard *)pasteboard
+- (id)initWithContentsOfFile:(NSString *)filename
 {
-  NSData *data = [pasteboard dataForType:NSDataLinkPboardType];
-  if (data)
-    {
-      return [NSKeyedUnarchiver unarchiveObjectWithData:data];
-    }
-  return nil;
+  NSData *data = [[NSData alloc] initWithContentsOfFile: filename];
+  id object = [NSUnarchiver unarchiveObjectWithData: data];
+
+  RELEASE(data);
+  RELEASE(self);
+  return RETAIN(object);
 }
 
+- (id)initWithPasteboard:(NSPasteboard *)pasteboard
+{
+  NSData *data = [pasteboard dataForType: NSDataLinkPboardType];
+  id object = [NSUnarchiver unarchiveObjectWithData: data];
+
+  RELEASE(self);
+  return RETAIN(object);
+}
+
+//
+// Exporting a Link
+//
 - (BOOL)saveLinkIn:(NSString *)directoryName
 {
-  NSString *filePath = [directoryName stringByAppendingPathComponent:
-			 [NSString stringWithFormat:@"Link_%d.link", _linkNumber]];
-  return [self writeToFile:filePath];
+  NSSavePanel		*sp;
+  int			result;
+
+  sp = [NSSavePanel savePanel];
+  [sp setRequiredFileType: NSDataLinkFilenameExtension];
+  result = [sp runModalForDirectory: directoryName file: @""];
+  if (result == NSOKButton)
+    {
+      NSFileManager	*mgr = [NSFileManager defaultManager];
+      NSString		*path = [sp filename];
+
+      if ([mgr fileExistsAtPath: path] == YES)
+	{
+	  /* NSSavePanel has already asked if it's ok to replace */
+	  NSString	*bPath = [path stringByAppendingString: @"~"];
+	  
+	  [mgr removeFileAtPath: bPath handler: nil];
+	  [mgr movePath: path toPath: bPath handler: nil];
+	}
+
+      // save it.
+      return [self writeToFile: path];
+    }
+  return NO;
 }
 
 - (BOOL)writeToFile:(NSString *)filename
 {
-  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self];
-  return [data writeToFile:filename atomically:YES];
+  NSString *path = filename;
+
+  if ([[path pathExtension] isEqual: NSDataLinkFilenameExtension] == NO)
+    {
+      path = [filename stringByAppendingPathExtension: NSDataLinkFilenameExtension];
+    }
+
+  return [NSArchiver archiveRootObject: self toFile: path];
 }
 
 - (void)writeToPasteboard:(NSPasteboard *)pasteboard
 {
-  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self];
-  NSArray *array = [NSArray arrayWithObject: NSDataLinkPboardType];
-
-  [pasteboard declareTypes: array owner: nil];
+  NSData *data = [NSArchiver archivedDataWithRootObject: self];
   [pasteboard setData: data forType: NSDataLinkPboardType];
 }
 
+//
+// Information about the Link
+//
 - (NSDataLinkDisposition)disposition
 {
   return _disposition;
@@ -135,9 +200,12 @@
 
 - (NSDataLinkManager *)manager
 {
-  return (_disposition == NSLinkInSource) ? _sourceManager : _destinationManager;
+  return _sourceManager;
 }
 
+//
+// Information about the Link's Source
+//
 - (NSDate *)lastUpdateTime
 {
   return _lastUpdateTime;
@@ -145,7 +213,7 @@
 
 - (BOOL)openSource
 {
-  return NO; /* Stub */
+  return NO;
 }
 
 - (NSString *)sourceApplicationName
@@ -168,6 +236,9 @@
   return _types;
 }
 
+//
+// Information about the Link's Destination
+//
 - (NSString *)destinationApplicationName
 {
   return _destinationApplicationName;
@@ -191,11 +262,9 @@
   id srcDelegate = [_sourceManager delegate];
   id dstDelegate = [_destinationManager delegate];
 
-  // The spec is quite vague here.  I don't know under what
-  // circumstances a link cannot be broken, so this method
+  // The spec is quite vague here.  I don't know under what 
+  // circumstances a link cannot be broken, so this method 
   // always returns YES.
-
-  _disposition = NSLinkBroken;
 
   if ([srcDelegate respondsToSelector: @selector(dataLinkManager:didBreakLink:)])
     {
@@ -227,28 +296,65 @@
 
 - (BOOL)updateDestination
 {
-  id dstDelegate = [_destinationManager delegate];
-
-  if (_flags.broken || _updateMode == NSUpdateNever)
-    return NO;
-
-  // Check with delegate if update is needed
-  if ([dstDelegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
-    {
-      BOOL needsUpdate = [dstDelegate dataLinkManager: _destinationManager isUpdateNeededForLink: self];
-      if (!needsUpdate)
-        return NO;
-    }
-
-  _flags.isDirty = NO;
-  _lastUpdateTime = [NSDate date];
-
-  return YES;
+  return NO;
 }
 
 - (NSDataLinkUpdateMode)updateMode
 {
   return _updateMode;
+}
+
+- (BOOL)isEqual:(id)object
+{
+  if (self == object)
+    return YES;
+  if (![object isKindOfClass: [NSDataLink class]])
+    return NO;
+  
+  NSDataLink *other = (NSDataLink *)object;
+  
+  // Compare basic properties
+  if (_linkNumber != other->_linkNumber)
+    return NO;
+  if (_disposition != other->_disposition)
+    return NO;
+  if (_updateMode != other->_updateMode)
+    return NO;
+  
+  // Compare object properties - handle nil cases
+  // Don't compare managers as they are not encoded/decoded
+  if (![self isObject:_lastUpdateTime equalTo:other->_lastUpdateTime])
+    return NO;
+  if (![self isObject:_sourceApplicationName equalTo:other->_sourceApplicationName])
+    return NO;
+  if (![self isObject:_sourceFilename equalTo:other->_sourceFilename])
+    return NO;
+  if (![self isObject:_sourceSelection equalTo:other->_sourceSelection])
+    return NO;
+  if (![self isObject:_destinationApplicationName equalTo:other->_destinationApplicationName])
+    return NO;
+  if (![self isObject:_destinationFilename equalTo:other->_destinationFilename])
+    return NO;
+  if (![self isObject:_destinationSelection equalTo:other->_destinationSelection])
+    return NO;
+  if (![self isObject:_types equalTo:other->_types])
+    return NO;
+  
+  return YES;
+}
+
+- (NSUInteger)hash
+{
+  return _linkNumber ^ _disposition ^ _updateMode ^ [_sourceFilename hash] ^ [_sourceSelection hash];
+}
+
+- (BOOL)isObject:(id)obj1 equalTo:(id)obj2
+{
+  if (obj1 == obj2)
+    return YES;
+  if (obj1 == nil || obj2 == nil)
+    return NO;
+  return [obj1 isEqual:obj2];
 }
 
 //
@@ -257,27 +363,29 @@
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   BOOL flag = NO;
-
+      
   if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeInt: _linkNumber forKey: @"GSLinkNumber"];
-      [aCoder encodeInt: _disposition forKey: @"GSUpdateMode"];
-      [aCoder encodeInt: _updateMode forKey: @"GSLastUpdateMode"];
+      [aCoder encodeInt: _disposition forKey: @"GSDisposition"];
+      [aCoder encodeInt: _updateMode forKey: @"GSUpdateMode"];
 
-      [aCoder encodeObject: _lastUpdateTime forKey: @"GSLastUpdateTime"];
+      [aCoder encodeObject: _lastUpdateTime forKey: @"GSLastUpdateTime"];      
 
       [aCoder encodeObject: _sourceApplicationName forKey: @"GSSourceApplicationName"];
       [aCoder encodeObject: _sourceFilename forKey: @"GSSourceFilename"];
       [aCoder encodeObject: _sourceSelection forKey: @"GSSourceSelection"];
-      [aCoder encodeObject: _sourceManager forKey: @"GSSourceManager"];
+      // Don't encode sourceManager - it's typically a weak reference
+      [aCoder encodeObject: nil forKey: @"GSSourceManager"];
 
       [aCoder encodeObject: _destinationApplicationName forKey: @"GSDestinationApplicationName"];
       [aCoder encodeObject: _destinationFilename forKey: @"GSDestinationFilename"];
       [aCoder encodeObject: _destinationSelection forKey: @"GSDestinationSelection"];
-      [aCoder encodeObject: _destinationManager forKey: @"GSDestinationManager"];
-
-      [aCoder encodeObject: _types forKey: @"GSTypes"];
-
+      // Don't encode destinationManager - it's typically a weak reference
+      [aCoder encodeObject: nil forKey: @"GSDestinationManager"];
+      
+      [aCoder encodeObject: _types forKey: @"GSTypes"]; 
+      
       // flags...
       flag = _flags.appVerifies;
       [aCoder encodeBool: flag forKey: @"GSAppVerifies"];
@@ -296,19 +404,22 @@
       [aCoder encodeValueOfObjCType: @encode(int) at: &_disposition];
       [aCoder encodeValueOfObjCType: @encode(int) at: &_updateMode];
       [aCoder encodeValueOfObjCType: @encode(id)  at: &_lastUpdateTime];
-
+      
       [aCoder encodeValueOfObjCType: @encode(id)  at: &_sourceApplicationName];
       [aCoder encodeValueOfObjCType: @encode(id)  at: &_sourceFilename];
       [aCoder encodeValueOfObjCType: @encode(id)  at: &_sourceSelection];
-      [aCoder encodeValueOfObjCType: @encode(id)  at: &_sourceManager];
-
+      // Don't encode sourceManager - it's typically a weak reference
+      id nilManager = nil;
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &nilManager];
+      
       [aCoder encodeValueOfObjCType: @encode(id)  at: &_destinationApplicationName];
       [aCoder encodeValueOfObjCType: @encode(id)  at: &_destinationFilename];
       [aCoder encodeValueOfObjCType: @encode(id)  at: &_destinationSelection];
-      [aCoder encodeValueOfObjCType: @encode(id)  at: &_destinationManager];
-
+      // Don't encode destinationManager - it's typically a weak reference
+      [aCoder encodeValueOfObjCType: @encode(id)  at: &nilManager];
+      
       [aCoder encodeValueOfObjCType: @encode(id)  at: &_types];
-
+      
       // flags...
       flag = _flags.appVerifies;
       [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &flag];
@@ -331,30 +442,31 @@
 
       _linkNumber = [aCoder decodeIntForKey: @"GSLinkNumber"];
       _disposition = [aCoder decodeIntForKey: @"GSDisposition"];
-      _updateMode = [aCoder decodeIntForKey: @"GSLastUpdateMode"];
+      _updateMode = [aCoder decodeIntForKey: @"GSUpdateMode"];
 
-      obj = [aCoder decodeObjectForKey: @"GSSourceManager"];
-      ASSIGN(_sourceManager,obj);
-      obj = [aCoder decodeObjectForKey: @"GSDestinationManager"];
-      ASSIGN(_destinationManager,obj);
       obj = [aCoder decodeObjectForKey: @"GSLastUpdateTime"];
       ASSIGN(_lastUpdateTime, obj);
+
       obj = [aCoder decodeObjectForKey: @"GSSourceApplicationName"];
       ASSIGN(_sourceApplicationName,obj);
       obj = [aCoder decodeObjectForKey: @"GSSourceFilename"];
-      ASSIGN(_sourceFilename,obj);
+      ASSIGN(_sourceFilename,obj); 
       obj = [aCoder decodeObjectForKey: @"GSSourceSelection"];
       ASSIGN(_sourceSelection,obj);
-      obj = [aCoder decodeObjectForKey: @"GSSourceManager"];
-      ASSIGN(_sourceManager,obj);
+      // Decode and discard the encoded nil manager
+      [aCoder decodeObjectForKey: @"GSSourceManager"];
+      _sourceManager = nil;
+
       obj = [aCoder decodeObjectForKey: @"GSDestinationApplicationName"];
       ASSIGN(_destinationApplicationName,obj);
       obj = [aCoder decodeObjectForKey: @"GSDestinationFilename"];
       ASSIGN(_destinationFilename,obj);
       obj = [aCoder decodeObjectForKey: @"GSDestinationSelection"];
-      ASSIGN(_destinationSelection,obj);
-      obj = [aCoder decodeObjectForKey: @"GSDestinationManager"];
-      ASSIGN(_destinationManager,obj);
+      ASSIGN(_destinationSelection,obj);  
+      // Decode and discard the encoded nil manager
+      [aCoder decodeObjectForKey: @"GSDestinationManager"];
+      _destinationManager = nil;
+
       obj = [aCoder decodeObjectForKey: @"GSTypes"];
       ASSIGN(_types,obj);
 
@@ -364,6 +476,8 @@
       _flags.isDirty = [aCoder decodeBoolForKey: @"GSIsDirty"];
       _flags.willOpenSource = [aCoder decodeBoolForKey: @"GSWillOpenSource"];
       _flags.willUpdate = [aCoder decodeBoolForKey: @"GSWillUpdate"];
+      _flags.broken = NO;
+      _flags.isMarker = NO;
     }
   else
     {
@@ -371,26 +485,29 @@
       if (version == 0)
 	{
 	  BOOL flag = NO;
-
+	  id obj;
+	  
 	  [aCoder decodeValueOfObjCType: @encode(int) at: &_linkNumber];
 	  [aCoder decodeValueOfObjCType: @encode(int) at: &_disposition];
 	  [aCoder decodeValueOfObjCType: @encode(int) at: &_updateMode];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_sourceManager];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_destinationManager];
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_lastUpdateTime];
-
+	  
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_sourceApplicationName];
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_sourceFilename];
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_sourceSelection];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_sourceManager];
-
+	  // Skip the encoded nil manager
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  _sourceManager = nil;
+	  
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_destinationApplicationName];
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_destinationFilename];
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_destinationSelection];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_destinationManager];
-
+	  // Skip the encoded nil manager
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  _destinationManager = nil;
+	  
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_types];
-
+	  
 	  // flags...
 	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
 	  _flags.appVerifies = flag;
@@ -402,47 +519,14 @@
 	  _flags.willOpenSource = flag;
 	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
 	  _flags.willUpdate = flag;
+	  _flags.broken = NO;
+	  _flags.isMarker = NO;
 	}
       else
 	return nil;
     }
 
   return self;
-}
-
-- (NSString *) description
-{
-  NSString *description = [NSString stringWithFormat:
-				      @"%@ <_linkNumber = %d, _disposition = %d, _updateMode = %d, "
-				    "_sourceManager = %@, _destinationManager = %@, _lastUpdateTime = %@, "
-				    "_sourceApplicationName = %@, _sourceFilename = %@, _sourceSelection = %@, _sourceManager = %@, "
-				    "_destinationApplicationName = %@, _destinationFilename = %@, _destinationSelection = %@, _destinationManager = %@, "
-				    "%d, %d, %d, %d, %d",
-				    [super description],
-				    _linkNumber,
-				    _disposition,
-				    _updateMode,
-				    // objects...
-				    _sourceManager,
-				    _destinationManager,
-				    _lastUpdateTime,
-				    // source...
-				    _sourceApplicationName,
-				    _sourceFilename,
-				    _sourceSelection,
-				    _sourceManager,
-				    // destination...
-				    _destinationApplicationName,
-				    _destinationFilename,
-				    _destinationSelection,
-				    _destinationManager,
-				    // flags
-				    _flags.appVerifies,
-				    _flags.canUpdateContinuously,
-				    _flags.isDirty,
-				    _flags.willOpenSource,
-				    _flags.willUpdate];
-  return description;
 }
 
 @end
