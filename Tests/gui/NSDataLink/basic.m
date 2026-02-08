@@ -4,6 +4,7 @@
 #import <Foundation/NSData.h>
 #import <AppKit/NSDataLink.h>
 #import <AppKit/NSSelection.h>
+#import <AppKit/NSPasteboard.h>
 
 int main()
 {
@@ -38,6 +39,30 @@ int main()
   test_NSObject(@"NSDataLink", testObjects);
   test_NSCoding(testObjects);
   test_keyed_NSCoding(testObjects);
+
+  // Test additional methods
+  testObject = [NSDataLink new];
+  PASS([testObject disposition] == NSLinkInDestination, "Default disposition is NSLinkInDestination");
+  PASS([testObject updateMode] == NSUpdateContinuously, "Default update mode is NSUpdateContinuously");
+  
+  // Test break
+  PASS([testObject break] == YES, "break method returns YES");
+  
+  // Test setUpdateMode
+  [testObject setUpdateMode: NSUpdateManually];
+  PASS([testObject updateMode] == NSUpdateManually, "setUpdateMode works");
+  
+  // Test noteSourceEdited
+  [testObject noteSourceEdited]; // Should not crash
+  
+  // Test pasteboard operations
+  NSPasteboard *pb = [NSPasteboard pasteboardWithName: @"test link"];
+  [testObject writeToPasteboard: pb];
+  NSDataLink *restored = [[NSDataLink alloc] initWithPasteboard: pb];
+  PASS(restored != nil, "Can create link from pasteboard");
+  RELEASE(restored);
+  
+  RELEASE(testObject);
 
   END_SET("NSDataLink GNUstep basic")
 
