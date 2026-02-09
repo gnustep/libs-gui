@@ -163,6 +163,13 @@ typedef struct _tableViewFlags
 - (BOOL) _isCellEditableColumn: (NSInteger)columnIndex
 			   row: (NSInteger)rowIndex;
 - (NSInteger) _numRows;
+- (BOOL) _usesVariableRowHeights;
+- (CGFloat) _rowHeightForRow: (NSInteger)rowIndex;
+- (CGFloat) _rowsHeight;
+- (CGFloat) _yOriginForRow: (NSInteger)rowIndex;
+- (NSInteger) _rowAtPointUsingVariableHeights: (NSPoint)aPoint;
+- (CGFloat) _positionInRowAtPoint: (NSPoint)aPoint
+                               row: (NSInteger)rowIndex;
 - (CGFloat*) _columnOrigins;
 - (NSView*)  _renderedViewForPath: (NSIndexPath*)path;
 - (void) _setRenderedView: (NSView*)view forPath: (NSIndexPath*)path;
@@ -4432,7 +4439,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
   rect.origin.x = _columnOrigins[columnIndex];
   rect.origin.y = _bounds.origin.y;
   rect.size.width = [[_tableColumns objectAtIndex: columnIndex] width];
-  rect.size.height = _numberOfRows * _rowHeight;
+	rect.size.height = [self _rowsHeight];
   return rect;
 }
 
@@ -4447,9 +4454,9 @@ static BOOL selectContiguousRegion(NSTableView *self,
     }
 
   rect.origin.x = _bounds.origin.x;
-  rect.origin.y = _bounds.origin.y + (_rowHeight * rowIndex);
+	rect.origin.y = [self _yOriginForRow: rowIndex];
   rect.size.width = _bounds.size.width;
-  rect.size.height = _rowHeight;
+	rect.size.height = [self _rowHeightForRow: rowIndex];
   return rect;
 }
 
@@ -4534,28 +4541,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (NSInteger) rowAtPoint: (NSPoint)aPoint
 {
-  /* NB: Y coordinate system is flipped in NSTableView */
-  if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
-    {
-      return -1;
-    }
-  else if (_rowHeight == 0.0)
-    {
-      return -1;
-    }
-  else
-    {
-      NSInteger return_value;
-
-      aPoint.y -= _bounds.origin.y;
-      return_value = (NSInteger) (aPoint.y / _rowHeight);
-      /* This could happen if point lies on the grid line or below the last row */
-      if (return_value >= _numberOfRows)
-	{
-	  return_value = -1;
-	}
-      return return_value;
-    }
+	/* NB: Y coordinate system is flipped in NSTableView */
+	return [self _rowAtPointUsingVariableHeights: aPoint];
 }
 
 - (NSRect) frameOfCellAtColumn: (NSInteger)columnIndex
@@ -4569,9 +4556,10 @@ This method is deprecated, use -columnIndexesInRect:. */
       || (rowIndex > (_numberOfRows - 1)))
     return NSZeroRect;
 
-  frameRect.origin.y  = _bounds.origin.y + (rowIndex * _rowHeight);
+	frameRect.origin.y  = [self _yOriginForRow: rowIndex];
   frameRect.origin.y += _intercellSpacing.height / 2;
-  frameRect.size.height = _rowHeight - _intercellSpacing.height;
+	frameRect.size.height = [self _rowHeightForRow: rowIndex]
+		- _intercellSpacing.height;
 
   frameRect.origin.x = _columnOrigins[columnIndex];
   frameRect.origin.x  += _intercellSpacing.width / 2;
@@ -4640,7 +4628,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
-      CGFloat rowsHeight = ((_numberOfRows * _rowHeight) + 1);
+			CGFloat rowsHeight = ([self _rowsHeight] + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
 
       if (rowsHeight < docRect.size.height)
@@ -4662,7 +4650,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
-      CGFloat rowsHeight = ((_numberOfRows * _rowHeight) + 1);
+			CGFloat rowsHeight = ([self _rowsHeight] + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
 
       if (rowsHeight < docRect.size.height)
@@ -4971,7 +4959,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 
   newFrame = _frame;
-  newFrame.size.height = (_numberOfRows * _rowHeight) + 1;
+	newFrame.size.height = [self _rowsHeight] + 1;
   if (NO == NSEqualRects(newFrame, NSUnionRect(newFrame, _frame)))
     {
       [_super_view setNeedsDisplayInRect: _frame];
@@ -5016,7 +5004,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	}
     }
   /* + 1 for the last grid line */
-  table_height = (_numberOfRows * _rowHeight) + 1;
+	table_height = [self _rowsHeight] + 1;
   [self setFrameSize: NSMakeSize (table_width, table_height)];
   [self setNeedsDisplay: YES];
 
@@ -5115,7 +5103,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       CGFloat x = 0.0;
       CGFloat y = cellFrame.origin.y;
       CGFloat w = [self frame].size.width;
-      CGFloat h = [self rowHeight];
+	CGFloat h = [self _rowHeightForRow: rowIndex];
 
       NSRect rvFrame = NSMakeRect(x, y, w, h);
       NSAutoresizingMaskOptions options = NSViewWidthSizable
@@ -6446,21 +6434,21 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  if (currentDropRow == 0)
 		{
 		  newRect = NSMakeRect([self visibleRect].origin.x,
-					currentDropRow * _rowHeight,
+					[self _yOriginForRow: currentDropRow],
 					[self visibleRect].size.width,
 					3);
 		}
 	  else if (currentDropRow == _numberOfRows)
 		{
 		  newRect = NSMakeRect([self visibleRect].origin.x,
-					currentDropRow * _rowHeight - 2,
+					[self _yOriginForRow: currentDropRow] - 2,
 					[self visibleRect].size.width,
 					3);
 		}
 	  else
 	    {
 	  newRect = NSMakeRect([self visibleRect].origin.x,
-				    currentDropRow * _rowHeight - 1,
+				    [self _yOriginForRow: currentDropRow] - 1,
 				    [self visibleRect].size.width,
 				    3);
 	    }
@@ -6522,7 +6510,36 @@ view to drag. */
 
 - (NSInteger) _computedRowAtPoint: (NSPoint)p
 {
-  return (NSInteger)(p.y - _bounds.origin.y) / (NSInteger)_rowHeight;
+	if ([self _usesVariableRowHeights] == NO)
+		{
+			return (NSInteger)(p.y - _bounds.origin.y) / (NSInteger)_rowHeight;
+		}
+
+	if (_numberOfRows <= 0)
+		{
+			return 0;
+		}
+
+	CGFloat y = p.y - _bounds.origin.y;
+	if (y <= 0.0)
+		{
+			return 0;
+		}
+
+	CGFloat currentY = 0.0;
+	NSInteger rowIndex;
+
+	for (rowIndex = 0; rowIndex < _numberOfRows; rowIndex++)
+		{
+			CGFloat height = [self _rowHeightForRow: rowIndex];
+			if (y < currentY + height)
+				{
+					return rowIndex;
+				}
+			currentY += height;
+		}
+
+	return _numberOfRows;
 }
 
 - (void) _setDropOperationAndRow: (NSInteger)row
@@ -6530,8 +6547,9 @@ view to drag. */
 			 atPoint: (NSPoint)p
 {
   NSParameterAssert(row > -1);
-  BOOL isPositionInsideMiddleQuartersOfRow =
-    (positionInRow > _rowHeight / 4 && positionInRow <= (3 * _rowHeight) / 4);
+	CGFloat rowHeight = [self _rowHeightForRow: row];
+	BOOL isPositionInsideMiddleQuartersOfRow =
+		(positionInRow > rowHeight / 4 && positionInRow <= (3 * rowHeight) / 4);
   BOOL isDropOn = (row > _numberOfRows || isPositionInsideMiddleQuartersOfRow);
 
   [self setDropRow: (isDropOn ? [self _computedRowAtPoint: p] : row)
@@ -6554,9 +6572,34 @@ view to drag. */
 - (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
 {
   NSPoint p = [self convertPoint: [sender draggingLocation] fromView: nil];
-  NSInteger positionInRow = (NSInteger)(p.y - _bounds.origin.y) % (NSInteger)_rowHeight;
-  NSInteger quarterPosition = (NSInteger)([self _computedRowAtPoint: p] * 4.);
-  NSInteger row = [self _dropRowFromQuarterPosition: quarterPosition];
+	NSInteger computedRow = [self _computedRowAtPoint: p];
+	NSInteger rowForPosition = computedRow;
+	if (rowForPosition >= _numberOfRows)
+		{
+			rowForPosition = _numberOfRows - 1;
+		}
+	if (rowForPosition < 0)
+		{
+			rowForPosition = 0;
+		}
+	NSInteger positionInRow = (NSInteger)[self _positionInRowAtPoint: p
+																															row: rowForPosition];
+	CGFloat rowHeight = [self _rowHeightForRow: rowForPosition];
+	NSInteger quarterInRow = 0;
+	if (rowHeight > 0.0)
+		{
+			quarterInRow = (NSInteger)(positionInRow / (rowHeight / 4.0));
+			if (quarterInRow < 0)
+				{
+					quarterInRow = 0;
+				}
+			else if (quarterInRow > 3)
+				{
+					quarterInRow = 3;
+				}
+		}
+	NSInteger quarterPosition = (computedRow * 4) + quarterInRow;
+	NSInteger row = [self _dropRowFromQuarterPosition: quarterPosition];
   NSDragOperation dragOperation = [sender draggingSourceOperationMask];
   BOOL isSameDropTargetThanBefore = (lastQuarterPosition == quarterPosition
     && currentDragOperation == dragOperation);
@@ -6985,6 +7028,121 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       return 0;
     }
+}
+
+- (BOOL) _usesVariableRowHeights
+{
+	return NO;
+}
+
+- (CGFloat) _rowHeightForRow: (NSInteger)rowIndex
+{
+	return _rowHeight;
+}
+
+- (CGFloat) _rowsHeight
+{
+	if ([self _usesVariableRowHeights] == NO)
+		{
+			return _numberOfRows * _rowHeight;
+		}
+
+	if (_numberOfRows <= 0)
+		{
+			return 0.0;
+		}
+
+	CGFloat totalHeight = 0.0;
+	NSInteger i;
+
+	for (i = 0; i < _numberOfRows; i++)
+		{
+			totalHeight += [self _rowHeightForRow: i];
+		}
+
+	return totalHeight;
+}
+
+- (CGFloat) _yOriginForRow: (NSInteger)rowIndex
+{
+	if (rowIndex <= 0)
+		{
+			return _bounds.origin.y;
+		}
+
+	if ([self _usesVariableRowHeights] == NO)
+		{
+			return _bounds.origin.y + (_rowHeight * rowIndex);
+		}
+
+	CGFloat y = _bounds.origin.y;
+	NSInteger i;
+
+	for (i = 0; i < rowIndex && i < _numberOfRows; i++)
+		{
+			y += [self _rowHeightForRow: i];
+		}
+
+	return y;
+}
+
+- (NSInteger) _rowAtPointUsingVariableHeights: (NSPoint)aPoint
+{
+	if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
+		{
+			return -1;
+		}
+
+	if (_numberOfRows <= 0)
+		{
+			return -1;
+		}
+
+	if ([self _usesVariableRowHeights] == NO)
+		{
+			if (_rowHeight == 0.0)
+				{
+					return -1;
+				}
+
+			aPoint.y -= _bounds.origin.y;
+			NSInteger row = (NSInteger)(aPoint.y / _rowHeight);
+
+			if (row >= _numberOfRows)
+				{
+					return -1;
+				}
+
+			return row;
+		}
+
+	CGFloat y = aPoint.y - _bounds.origin.y;
+	if (y < 0.0)
+		{
+			return -1;
+		}
+
+	CGFloat currentY = 0.0;
+	NSInteger rowIndex;
+
+	for (rowIndex = 0; rowIndex < _numberOfRows; rowIndex++)
+		{
+			CGFloat height = [self _rowHeightForRow: rowIndex];
+			if (y < currentY + height)
+				{
+					return rowIndex;
+				}
+			currentY += height;
+		}
+
+	return -1;
+}
+
+- (CGFloat) _positionInRowAtPoint: (NSPoint)aPoint
+															 row: (NSInteger)rowIndex
+{
+	CGFloat rowOrigin = [self _yOriginForRow: rowIndex];
+	return aPoint.y - rowOrigin;
 }
 
 - (BOOL) _isDraggingSource

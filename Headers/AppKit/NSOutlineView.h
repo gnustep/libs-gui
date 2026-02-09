@@ -275,6 +275,12 @@ shouldSelectTableColumn: (NSTableColumn *)tableColumn;
 - (NSCell *) outlineView: (NSOutlineView *)outlineView 
   dataCellForTableColumn: (NSTableColumn *)aTableColumn
 		    item: (id)item;
+
+- (CGFloat) outlineView: (NSOutlineView *)outlineView
+  heightOfRowByItem: (id)item;
+
+- (CGFloat) outlineView: (NSOutlineView *)outlineView
+  sizeToFitWidthOfColumn: (NSInteger)column;
 #endif
 
 /**

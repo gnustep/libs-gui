@@ -330,7 +330,7 @@ struct GSHorizontalTypesetter_line_frag_s
 {
   NSRect rect;
   CGFloat last_used;
-  unsigned int last_glyph; /* last_glyph+1, actually */
+  unsigned int lastGlyphIndex; /* lastGlyphIndex+1, actually */
 };
 typedef struct GSHorizontalTypesetter_line_frag_s line_frag_t;
 
@@ -357,7 +357,7 @@ For bigger values the width gets ignored.
   for (start = 0; num_line_frags; num_line_frags--, lf++)
     {
       num_spaces = 0;
-      for (i = start, g = cache + i; i < lf->last_glyph; i++, g++)
+      for (i = start, g = cache + i; i < lf->lastGlyphIndex; i++, g++)
 	{
 	  if (g->dont_show)
 	    continue;
@@ -371,17 +371,17 @@ For bigger values the width gets ignored.
       extra_space = lf->rect.size.width - lf->last_used;
       extra_space /= num_spaces;
       delta = 0;
-      for (i = start, g = cache + i; i < lf->last_glyph; i++, g++)
+      for (i = start, g = cache + i; i < lf->lastGlyphIndex; i++, g++)
 	{
 	  g->pos.x += delta;
 	  if (!g->dont_show && [str characterAtIndex: g->char_index] == 0x20)
 	    {
-	      if (i < lf->last_glyph)
+	      if (i < lf->lastGlyphIndex)
 		g[1].nominal = NO;
 	      delta += extra_space;
 	    }
 	}
-      start = lf->last_glyph;
+      start = lf->lastGlyphIndex;
       lf->last_used = lf->rect.size.width;
     }
 }
@@ -400,7 +400,7 @@ For bigger values the width gets ignored.
   for (i = 0, g = cache; num_line_frags; num_line_frags--, lf++)
     {
       delta = lf->rect.size.width - lf->last_used;
-      for (; i < lf->last_glyph; i++, g++)
+      for (; i < lf->lastGlyphIndex; i++, g++)
 	g->pos.x += delta;
       lf->last_used += delta;
     }
@@ -420,7 +420,7 @@ For bigger values the width gets ignored.
   for (i = 0, g = cache; num_line_frags; num_line_frags--, lf++)
     {
       delta = (lf->rect.size.width - lf->last_used) / 2.0;
-      for (; i < lf->last_glyph; i++, g++)
+      for (; i < lf->lastGlyphIndex; i++, g++)
 	g->pos.x += delta;
       lf->last_used += delta;
     }
@@ -487,7 +487,7 @@ For bigger values the width gets ignored.
 				      withShift: shift
 				inTextContainer: curTextContainer];
 
-  curGlyph = g;
+  curGlyphIndex = g;
   return YES;
 }
 
@@ -528,9 +528,9 @@ For bigger values the width gets ignored.
     frag rect match it. This call makes sure that curParagraphStyle
     and curFont are set.
   */
-  if (curGlyph)
+  if (curGlyphIndex)
     {
-      [self _cacheMoveTo: curGlyph - 1];
+      [self _cacheMoveTo: curGlyphIndex - 1];
     }
   else
     {
@@ -634,14 +634,14 @@ Return values 0, 1, 2 are mostly the same as from
   /* TODO: doesn't have to be a simple horizontal container, but it's easier
   to handle that way. */
   if ([curTextContainer isSimpleRectangularTextContainer] &&
-      [curLayoutManager _softInvalidateFirstGlyphInTextContainer: curTextContainer] == curGlyph)
+      [curLayoutManager _softInvalidateFirstGlyphInTextContainer: curTextContainer] == curGlyphIndex)
     {
       if ([self _reuseSoftInvalidatedLayout])
         return 4;
     }
 
 
-  [self _cacheMoveTo: curGlyph];
+  [self _cacheMoveTo: curGlyphIndex];
   if (!cache_length)
     [self _cacheGlyphs: CACHE_INITIAL];
   if (!cache_length && at_end)
@@ -758,7 +758,7 @@ restart: ;
     NSGlyph last_glyph = NSNullGlyph;
     NSPoint last_p;
 
-    unsigned int first_glyph;
+    unsigned int firstGlyphIndex;
     line_frag_t *lf = line_frags;
     int lfi = 0;
 
@@ -768,7 +768,7 @@ restart: ;
     last_p = p = NSMakePoint(0, 0);
 
     g = cache;
-    first_glyph = 0;
+    firstGlyphIndex = 0;
     prev_had_non_nominal_width = NO;
     /*
     Main glyph layout loop.
@@ -813,7 +813,7 @@ restart: ;
 	  glyph and its position. If there's no previous glyph (for kerning
 	  purposes), last_glyph is NSNullGlyph and last_p is undefined.
 
-	  lf and lfi track the current line frag rect. first_glyph is the
+	  lf and lfi track the current line frag rect. firstGlyphIndex is the
 	  first glyph in the current line frag rect.
 
 	Note that the variables tracking the previous glyph shouldn't be
@@ -880,11 +880,12 @@ restart: ;
 		if (defaultInterval == 0.0) {
                   defaultInterval = 100.0;
 		}
-		int i, c = [tabs count];
+		unsigned tabIndex;
+                unsigned tabCount = [tabs count];
 		/* Find first tab beyond our current position. */
-		for (i = 0; i < c; i++)
+		for (tabIndex = 0; tabIndex < tabCount; tabIndex++)
 		  {
-		    tab = [tabs objectAtIndex: i];
+		    tab = [tabs objectAtIndex: tabIndex];
 		    /*
 		    We cannot use a tab at our exact location; we must
 		    use one beyond it. The reason is that several tabs in
@@ -898,7 +899,7 @@ restart: ;
                         break;
                       }
 		  }
-		if (i == c)
+		if (tabIndex == tabCount)
 		  {
 		    /*
 		    Tabs after the last value in tabStops should use the
@@ -924,9 +925,9 @@ restart: ;
 	/* Set up glyph information. */
 
 	/*
-	TODO:
-	Currently, the attributes of the attachment character (eg. font)
-	affect the layout. Think hard about this.
+          TODO:
+          Currently, the attributes of the attachment character (eg. font)
+          affect the layout. Think hard about this.
 	*/
 	g->nominal = !prev_had_non_nominal_width;
 
@@ -1058,14 +1059,16 @@ restart: ;
 	      { /* TODO: implement all modes */
 	      default:
 	      case NSLineBreakByCharWrapping:
-	      char_wrapping:
-		lf->last_glyph = i;
+		lf->lastGlyphIndex = i;
 		break;
 
 	      case NSLineBreakByWordWrapping:
-		lf->last_glyph = [self breakLineByWordWrappingBefore: cache_base + i] - cache_base;
-		if (lf->last_glyph <= first_glyph)
-		  goto char_wrapping;
+		lf->lastGlyphIndex = [self breakLineByWordWrappingBefore: cache_base + i] - cache_base;
+		if (lf->lastGlyphIndex <= firstGlyphIndex)
+		  {
+                    // same operation as for NSLineBreakByCharWrapping
+                    lf->lastGlyphIndex = i;
+                  }
 		break;
 
 	      case NSLineBreakByTruncatingHead:
@@ -1106,18 +1109,18 @@ restart: ;
 			       characterAtIndex: g->char_index] == 0xa)
 		      break;
 		  }
-		lf->last_glyph = i + 1;
+		lf->lastGlyphIndex = i + 1;
 		break;
 	      }
 
 	    /* We force at least one glyph into each line frag rect. This
 	    ensures that typesetting will never get stuck (ie. if the text
 	    container is too narrow to fit even a single glyph). */
-	    if (lf->last_glyph <= first_glyph)
-	      lf->last_glyph = i + 1;
+	    if (lf->lastGlyphIndex <= firstGlyphIndex)
+	      lf->lastGlyphIndex = i + 1;
 
 	    last_p = p = NSMakePoint(0, 0);
-	    i = lf->last_glyph;
+	    i = lf->lastGlyphIndex;
 	    g = cache + i;
 	    /* The -1 is always valid since there's at least one glyph in the
 	    line frag rect (see above). */
@@ -1132,7 +1135,7 @@ restart: ;
 		newParagraph = NO;
 		break;
 	      }
-	    first_glyph = i;
+	    firstGlyphIndex = i;
 	  }
 	else
 	  {
@@ -1156,7 +1159,7 @@ restart: ;
     /* Take care of the alignments. */
     if (lfi != line_frags_num)
       {
-	lf->last_glyph = i;
+	lf->lastGlyphIndex = i;
 	lf->last_used = p.x;
 
 	/* TODO: incorrect if there is more than one line frag */
@@ -1181,17 +1184,17 @@ restart: ;
     /* Layout is complete. Package it and give it to the layout manager. */
     [curLayoutManager setTextContainer: curTextContainer
 		      forGlyphRange: NSMakeRange(cache_base, i)];
-    curGlyph = i + cache_base;
+    curGlyphIndex = i + cache_base;
     {
       line_frag_t *lf;
       NSPoint p;
-      unsigned int i, j;
+      unsigned int lineFragCounter, lineFragCounter2;
       glyph_cache_t *g;
       NSRect used_rect;
 
       COMPUTE_BASELINE
 
-      for (lf = line_frags, i = 0, g = cache; lfi >= 0; lfi--, lf++)
+      for (lf = line_frags, lineFragCounter = 0, g = cache; lfi >= 0; lfi--, lf++)
 	{
 	  used_rect.origin.x = g->pos.x + lf->rect.origin.x;
 	  used_rect.size.width = lf->last_used - g->pos.x;
@@ -1200,47 +1203,47 @@ restart: ;
 	  used_rect.size.height = lf->rect.size.height;
 
 	  [curLayoutManager setLineFragmentRect: lf->rect
-			    forGlyphRange: NSMakeRange(cache_base + i, lf->last_glyph - i)
+			    forGlyphRange: NSMakeRange(cache_base + lineFragCounter, lf->lastGlyphIndex - lineFragCounter)
 			    usedRect: used_rect];
 	  p = g->pos;
 	  p.y += baseline;
-	  j = i;
-	  while (i < lf->last_glyph)
+	  lineFragCounter2 = lineFragCounter;
+	  while (lineFragCounter < lf->lastGlyphIndex)
 	    {
 	      if (g->outside_line_frag)
 		{
 		  [curLayoutManager setDrawsOutsideLineFragment: YES
-		    forGlyphAtIndex: cache_base + i];
+		    forGlyphAtIndex: cache_base + lineFragCounter];
 		}
 	      if (g->dont_show)
 		{
 		  [curLayoutManager setNotShownAttribute: YES
-					 forGlyphAtIndex: cache_base + i];
+					 forGlyphAtIndex: cache_base + lineFragCounter];
 		}
-	      if (!g->nominal && i != j)
+	      if (!g->nominal && lineFragCounter != lineFragCounter2)
 		{
 		  [curLayoutManager setLocation: p
-				    forStartOfGlyphRange: NSMakeRange(cache_base + j, i - j)];
+				    forStartOfGlyphRange: NSMakeRange(cache_base + lineFragCounter2, lineFragCounter - lineFragCounter2)];
 		  if (g[-1].g == GSAttachmentGlyph)
 		    {
 		      [curLayoutManager setAttachmentSize: g[-1].size
-			forGlyphRange: NSMakeRange(cache_base + j, i - j)];
+			forGlyphRange: NSMakeRange(cache_base + lineFragCounter2, lineFragCounter - lineFragCounter2)];
 		    }
 		  p = g->pos;
 		  p.y += baseline;
-		  j = i;
+		  lineFragCounter2 = lineFragCounter;
 		}
-	      i++;
+	      lineFragCounter++;
 	      g++;
 	    }
-	  if (i != j)
+	  if (lineFragCounter != lineFragCounter2)
 	    {
 	      [curLayoutManager setLocation: p
-				forStartOfGlyphRange: NSMakeRange(cache_base + j, i - j)];
+				forStartOfGlyphRange: NSMakeRange(cache_base + lineFragCounter2, lineFragCounter - lineFragCounter2)];
 	      if (g[-1].g == GSAttachmentGlyph)
 		{
 		  [curLayoutManager setAttachmentSize: g[-1].size
-		    forGlyphRange: NSMakeRange(cache_base + j, i - j)];
+		    forGlyphRange: NSMakeRange(cache_base + lineFragCounter2, lineFragCounter - lineFragCounter2)];
 		}
 	    }
 	}
@@ -1292,7 +1295,7 @@ NS_DURING
 /*	printf("*** layout some stuff |%@|\n", curTextStorage);
 	[curLayoutManager _glyphDumpRuns];*/
 
-  curGlyph = glyphIndex;
+  curGlyphIndex = glyphIndex;
 
   [self _cacheClear];
 
@@ -1307,7 +1310,7 @@ NS_DURING
 	  first glyph of a paragraph so it can apply eg. -firstLineHeadIndent and
 	  paragraph spacing properly.
 	  */
-	  if (!curGlyph)
+	  if (!curGlyphIndex)
 	    {
 	      newParagraph = YES;
 	    }
@@ -1315,7 +1318,7 @@ NS_DURING
 	    {
 	      unsigned int chi;
 	      unichar ch;
-	      chi = [curLayoutManager characterRangeForGlyphRange: NSMakeRange(curGlyph - 1, 1)
+	      chi = [curLayoutManager characterRangeForGlyphRange: NSMakeRange(curGlyphIndex - 1, 1)
 						 actualGlyphRange: NULL].location;
 	      ch = [[curTextStorage string] characterAtIndex: chi];
 	
@@ -1348,7 +1351,7 @@ NS_DURING
 	  break;
    }
 
-  *nextGlyphIndex = curGlyph;
+  *nextGlyphIndex = curGlyphIndex;
 NS_HANDLER
   NSLog(@"GSHorizontalTypesetter - %@", [localException reason]);
   [lock unlock];

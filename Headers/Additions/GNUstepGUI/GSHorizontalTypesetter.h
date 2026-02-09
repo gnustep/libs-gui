@@ -44,7 +44,7 @@ APPKIT_EXPORT_CLASS
   NSTextContainer *curTextContainer;
   NSTextStorage *curTextStorage;
 
-  unsigned int curGlyph;
+  unsigned int curGlyphIndex;
   NSPoint curPoint;
 
 
