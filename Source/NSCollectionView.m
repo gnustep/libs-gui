@@ -363,18 +363,13 @@ static NSString *_placeholderItem = nil;
 
 - (void) drawRect: (NSRect)dirtyRect
 {
-  // Use window background color for consistency
-  NSColor *bgColor = [NSColor windowBackgroundColor];
-
-  // Set parent view background color if it supports it
-  NSView *parentView = [self superview];
-  if (parentView && [parentView respondsToSelector: @selector(setBackgroundColor:)])
+  // TODO: Implement "use Alternating Colors"
+  if (_backgroundColors && [_backgroundColors count] > 0)
     {
-      [parentView performSelector: @selector(setBackgroundColor:) withObject: bgColor];
+      NSColor *bgColor = [_backgroundColors objectAtIndex: 0];
+      [bgColor set];
+      NSRectFill(dirtyRect);
     }
-
-  [bgColor set];
-  NSRectFill(dirtyRect);
 
   NSPoint origin = dirtyRect.origin;
   NSSize size = dirtyRect.size;
