@@ -1630,6 +1630,26 @@ static NSString *_placeholderItem = nil;
   return nib;
 }
 
+- (void) _instantiateWithItem: (id)item
+{
+  if ([item view] == nil)
+    {
+      NSNib *nib = [self _nibForClass: [item class]];
+
+      if (nib != nil)
+	{
+	  BOOL loaded = [nib instantiateWithOwner: item
+				  topLevelObjects: NULL];
+
+	  if (loaded == NO)
+	    {
+	      item = nil;
+	      NSDebugLog(@"Could not load model %@", nib);
+	    }
+	}
+    }
+}
+
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
@@ -1638,24 +1658,7 @@ static NSString *_placeholderItem = nil;
 
   if (item != nil)
     {
-      // If the item already has a view (created by diffable data source provider),
-      // skip nib loading and just track it.
-      if ([item view] == nil)
-	{
-	  NSNib *nib = [self _nibForClass: [item class]];
-
-	  if (nib != nil)
-	    {
-	      BOOL loaded = [nib instantiateWithOwner: item
-				      topLevelObjects: NULL];
-
-	      if (loaded == NO)
-		{
-		  item = nil;
-		  NSDebugLog(@"Could not load model %@", nib);
-		}
-	    }
-	}
+      [self _instantiateWithItem: item];
     }
   else
     {
