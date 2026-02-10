@@ -365,14 +365,14 @@ static NSString *_placeholderItem = nil;
 {
   // Use window background color for consistency
   NSColor *bgColor = [NSColor windowBackgroundColor];
-  
+
   // Set parent view background color if it supports it
   NSView *parentView = [self superview];
   if (parentView && [parentView respondsToSelector: @selector(setBackgroundColor:)])
     {
       [parentView performSelector: @selector(setBackgroundColor:) withObject: bgColor];
     }
-  
+
   [bgColor set];
   NSRectFill(dirtyRect);
 
@@ -1635,41 +1635,32 @@ static NSString *_placeholderItem = nil;
 {
   NSCollectionViewItem *item = [_dataSource collectionView: self
 					    itemForRepresentedObjectAtIndexPath: indexPath];
-  
+
   if (item != nil)
     {
       // If the item already has a view (created by diffable data source provider),
       // skip nib loading and just track it.
-      if ([item view] != nil)
+      if ([item view] == nil)
 	{
-	  NSDebugLog(@"Item already has a view (from provider), skipping nib load");
-	  [_itemsToIndexPaths setObject: indexPath forKey: item];
-	  [_indexPathsToItems setObject: item forKey: indexPath];
-	  return item;
-	}
+	  NSNib *nib = [self _nibForClass: [item class]];
 
-      NSNib *nib = [self _nibForClass: [item class]];
-
-      if (nib != nil)
-	{
-	  BOOL loaded = [nib instantiateWithOwner: item
-				  topLevelObjects: NULL];
-
-	  if (loaded == NO)
+	  if (nib != nil)
 	    {
-	      item = nil;
-	      NSDebugLog(@"Could not load model %@", nib);
+	      BOOL loaded = [nib instantiateWithOwner: item
+				      topLevelObjects: NULL];
+
+	      if (loaded == NO)
+		{
+		  item = nil;
+		  NSDebugLog(@"Could not load model %@", nib);
+		}
 	    }
-	}
-      else
-	{
-	  NSDebugLog(@"No nib loaded for %@", item);
 	}
     }
   else
     {
       NSView *view = [[NSView alloc] initWithFrame: NSZeroRect];
-      
+
       item = AUTORELEASE([[NSCollectionViewItem alloc] init]);
       [item setView: view];
       RELEASE(view);
@@ -1754,20 +1745,20 @@ static NSString *_placeholderItem = nil;
 - (void) setDataSource: (id<NSCollectionViewDataSource>)dataSource
 {
   _dataSource = dataSource;
-  
+
   // Validate that required methods are implemented
   if (_dataSource != nil)
     {
       if (![_dataSource respondsToSelector: @selector(collectionView:numberOfItemsInSection:)])
-        {
-          NSLog(@"NSCollectionView: DataSource %@ does not implement required method collectionView:numberOfItemsInSection:", _dataSource);
-        }
+	{
+	  NSLog(@"NSCollectionView: DataSource %@ does not implement required method collectionView:numberOfItemsInSection:", _dataSource);
+	}
       if (![_dataSource respondsToSelector: @selector(collectionView:itemForRepresentedObjectAtIndexPath:)])
-        {
-          NSLog(@"NSCollectionView: DataSource %@ does not implement required method collectionView:itemForRepresentedObjectAtIndexPath:", _dataSource);
-        }
+	{
+	  NSLog(@"NSCollectionView: DataSource %@ does not implement required method collectionView:itemForRepresentedObjectAtIndexPath:", _dataSource);
+	}
     }
-  
+
   [self reloadData];
 }
 
@@ -1804,13 +1795,13 @@ static NSString *_placeholderItem = nil;
   if (item != nil)
     {
       NSView *v = [item view];
-      
+
       if (v == nil)
-        {
-          NSDebugLog(@"NSCollectionView: Item %@ has no view - items must have a view to be displayed", item);
-          return;
-        }
-        
+	{
+	  NSDebugLog(@"NSCollectionView: Item %@ has no view - items must have a view to be displayed", item);
+	  return;
+	}
+
       NSRect f = [v frame];
       _GSCollectionViewItemTrackingView *tv =
 	[[_GSCollectionViewItemTrackingView alloc]
@@ -1930,15 +1921,15 @@ static NSString *_placeholderItem = nil;
   if (_allowReload)
     {
       NSInteger ns = [self numberOfSections];
-      NSDebugLog(@"NSCollectionView reloadData: numberOfSections=%ld, dataSource=%@, layout=%@", 
-            (long)ns, _dataSource, _collectionViewLayout);
-      
+      NSDebugLog(@"NSCollectionView reloadData: numberOfSections=%ld, dataSource=%@, layout=%@",
+	    (long)ns, _dataSource, _collectionViewLayout);
+
       if (ns == 0)
-        {
-          NSDebugLog(@"NSCollectionView: No sections to load - check dataSource implementation");
-          return;
-        }
-      
+	{
+	  NSDebugLog(@"NSCollectionView: No sections to load - check dataSource implementation");
+	  return;
+	}
+
       NSInteger cs = 0;
       NSSize s = _itemSize;
       CGFloat h = s.height;
