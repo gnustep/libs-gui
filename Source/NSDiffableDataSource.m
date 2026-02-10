@@ -529,7 +529,7 @@ GSDiffableDefaultSectionIdentifier()
 	    // convenience method issues with item/section on some platforms.
 	    NSIndexPath *path = [NSIndexPath indexPathWithIndex: sectionIndex];
 	    path = [path indexPathByAddingIndex: itemIndex];
-	    [_identifierToIndexPath setObject: RETAIN(path) forKey: [items objectAtIndex: itemIndex]];
+	    [_identifierToIndexPath setObject: path forKey: [items objectAtIndex: itemIndex]];
 	  }
 	sectionIndex++;
       }
