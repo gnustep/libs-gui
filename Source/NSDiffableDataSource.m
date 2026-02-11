@@ -40,8 +40,8 @@
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSColor.h"
 
-#import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
+#import "GSFastEnumeration.h"
 
 static id
 GSDiffableDefaultSectionIdentifier()
