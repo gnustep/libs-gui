@@ -85,21 +85,20 @@ GSDiffableDefaultSectionIdentifier()
   NSDiffableDataSourceSnapshot *copy = [[[self class] allocWithZone: zone] init];
   NSMutableArray *copiedSections = [_sections mutableCopy];
   NSMutableDictionary *copiedItems = [NSMutableDictionary dictionaryWithCapacity: [_itemsBySection count]];
+  NSEnumerator *sectionEnumerator = [copiedSections objectEnumerator];
+  id section = nil;
 
-  {
-    NSEnumerator *sectionEnumerator = [_sections objectEnumerator];
-    id section;
-    while ((section = [sectionEnumerator nextObject]) != nil)
-      {
-	NSArray *items = [_itemsBySection objectForKey: section];
-	if (items != nil)
-	  {
-	    NSMutableArray *sectionItems = [items mutableCopy];
-	    [copiedItems setObject: sectionItems forKey: section];
-	    RELEASE(sectionItems);
-	  }
-      }
-  }
+  while ((section = [sectionEnumerator nextObject]) != nil)
+    {
+      NSArray *items = [_itemsBySection objectForKey: section];
+      if (items != nil)
+	{
+	  NSMutableArray *sectionItems = [items mutableCopy];
+	  [copiedItems setObject: sectionItems forKey: section];
+	  RELEASE(sectionItems);
+	}
+    }
+
   ASSIGNCOPY(copy->_sections, copiedSections);
   ASSIGNCOPY(copy->_itemsBySection, copiedItems);
   ASSIGNCOPY(copy->_reloadedSections, _reloadedSections);
