@@ -1851,12 +1851,7 @@ static NSString *_placeholderItem = nil;
 
   for (ci = 0; ci < ni; ci++)
     {
-      // Build index path explicitly (section, then item) to avoid
-      // reliance on convenience methods that may return incorrect values.
-      NSIndexPath *path = [NSIndexPath indexPathWithIndex: cs];
-      path = RETAIN([path indexPathByAddingIndex: ci]);
-
-      NSDebugLog(@"path = %@", path);
+      NSIndexPath *path = [NSIndexPath indexPathForItem: ci inSection: cs];
       [self _loadItemAtIndexPath: path];
     }
 }
