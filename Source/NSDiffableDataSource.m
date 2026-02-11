@@ -43,19 +43,6 @@
 
 #import "GSGuiPrivate.h"
 
-@interface NSCollectionView (Private)
-- (NSCollectionViewItem *) _itemForIndexPath: (NSIndexPath *)p;
-@end
-
-@implementation NSCollectionView (Private)
-- (NSCollectionViewItem *) _itemForIndexPath: (NSIndexPath *)p
-{
-  NSCollectionViewItem *item = [_indexPathsToItems objectForKey: p];
-  NSDebugLog(@"[DiffableDataSource] _itemForIndexPath:%@ -> %@", p, item);
-  return item;
-}
-@end
-
 static id
 GSDiffableDefaultSectionIdentifier()
 {
@@ -672,7 +659,7 @@ GSDiffableDefaultSectionIdentifier()
     }
 
   id identifier = [self itemIdentifierForIndexPath: indexPath];
-  NSCollectionViewItem *result = [collectionView _itemForIndexPath: indexPath];
+  NSCollectionViewItem *result = [collectionView itemAtIndexPath: indexPath];
 
   NSDebugLog(@"[DiffableDataSource] identifier=%@, existing result=%@", identifier, result);
 
