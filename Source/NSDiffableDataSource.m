@@ -494,7 +494,7 @@ GSDiffableDefaultSectionIdentifier()
 	}
       sectionIndex++;
     }
-  END_FOR_IN(_sections);
+  END_FOR_IN(sections);
 }
 
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
