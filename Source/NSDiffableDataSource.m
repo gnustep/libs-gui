@@ -128,10 +128,8 @@ GSDiffableDefaultSectionIdentifier()
 - (NSArray *) itemIdentifiers
 {
   NSMutableArray *result = [NSMutableArray array];
-  NSEnumerator *sectionEnumerator = [_sections objectEnumerator];
-  id section = nil;
 
-  while ((section = [sectionEnumerator nextObject]) != nil)
+  FOR_IN(id, section, _sections)
     {
       NSArray *items = [_itemsBySection objectForKey: section];
       if (items != nil)
@@ -139,7 +137,8 @@ GSDiffableDefaultSectionIdentifier()
 	  [result addObjectsFromArray: items];
 	}
     }
-
+  END_FOR_IN(_sections);
+  
   return [result copy];
 }
 
@@ -168,15 +167,14 @@ GSDiffableDefaultSectionIdentifier()
 - (NSInteger) numberOfItems
 {
   NSInteger count = 0;
-  NSEnumerator *sectionEnumerator = [_sections objectEnumerator];
-  id section = nil;
 
-  while ((section = [sectionEnumerator nextObject]) != nil)
+  FOR_IN(id, section, _sections)
     {
       NSArray *items = [_itemsBySection objectForKey: section];
       count += [items count];
     }
-
+  END_FOR_IN(_sections);
+  
   return count;
 }
 
@@ -201,13 +199,11 @@ GSDiffableDefaultSectionIdentifier()
 
 - (void) appendSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
 {
-  NSEnumerator *sectionEnumerator = [sectionIdentifiers objectEnumerator];
-  id section = nil;
-
-  while ((section = [sectionEnumerator nextObject]) != nil)
+  FOR_IN(id, section, sectionIdentifiers)
     {
       [self _ensureSection: section];
     }
+  END_FOR_IN(sectionIdentifiers);
 }
 
 - (NSInteger) _indexForSection: (id)sectionIdentifier
@@ -226,10 +222,8 @@ GSDiffableDefaultSectionIdentifier()
     }
 
   NSUInteger insertionIndex = index;
-  NSEnumerator *sectionEnumerator = [sectionIdentifiers objectEnumerator];
-  id section = nil;
-
-  while ((section = [sectionEnumerator nextObject]) != nil)
+  
+  FOR_IN(id, section, sectionIdentifiers)
     {
       if ([_sections containsObject: section] == NO)
 	{
@@ -239,6 +233,7 @@ GSDiffableDefaultSectionIdentifier()
 	  insertionIndex++;
 	}
     }
+  END_FOR_IN(sectionIdentifiers);
 }
 
 - (void) insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
@@ -253,10 +248,7 @@ GSDiffableDefaultSectionIdentifier()
     }
 
   NSUInteger insertionIndex = index + 1;
-  NSEnumerator *sectionEnumerator = [sectionIdentifiers objectEnumerator];
-  id section = nil;
-
-  while ((section = [sectionEnumerator nextObject]) != nil)
+  FOR_IN(id, section, sectionIdentifiers)
     {
       if ([_sections containsObject: section] == NO)
 	{
@@ -266,19 +258,18 @@ GSDiffableDefaultSectionIdentifier()
 	  insertionIndex++;
 	}
     }
+  END_FOR_IN(sectionIdentifiers);
 }
 
 - (void) deleteSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
 {
-  NSEnumerator *sectionEnumerator = [sectionIdentifiers objectEnumerator];
-  id section = nil;
-
-  while ((section = [sectionEnumerator nextObject]) != nil)
+  FOR_IN(id, section, sectionIdentifiers)
     {
       [_sections removeObject: section];
       [_itemsBySection removeObjectForKey: section];
       [_reloadedSections removeObject: section];
     }
+  END_FOR_IN(sectionIdentifiers);
 }
 
 - (void) moveSectionWithIdentifier: (id)sectionIdentifier
@@ -417,10 +408,7 @@ GSDiffableDefaultSectionIdentifier()
 
 - (void) deleteItemsWithIdentifiers: (NSArray *)itemIdentifiers
 {
-  NSEnumerator *itemEnumerator = [itemIdentifiers objectEnumerator];
-  id itemIdentifier = nil;
-
-  while ((itemIdentifier = [itemEnumerator nextObject]) != nil)
+  FOR_IN(id, itemIdentifier, itemIdentifiers)
     {
       id section = nil;
       NSUInteger index = 0;
@@ -434,28 +422,25 @@ GSDiffableDefaultSectionIdentifier()
 	}
       [_reloadedItems removeObject: itemIdentifier];
     }
+  END_FOR_IN(itemIdentifiers);
 }
 
 - (void) reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
 {
-  NSEnumerator *sectionEnumerator = [sectionIdentifiers objectEnumerator];
-  id section = nil;
-
-  while ((section = [sectionEnumerator nextObject]) != nil)
+  FOR_IN(id, section, sectionIdentifiers)
     {
       [_reloadedSections addObject: section];
     }
+  END_FOR_IN(sectionIdentifiers);
 }
 
 - (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers
 {
-  NSEnumerator *itemEnumerator = [itemIdentifiers objectEnumerator];
-  id item = nil;
-
-  while ((item = [itemEnumerator nextObject]) != nil)
+  FOR_IN(id, item, itemIdentifiers)
     {
       [_reloadedItems addObject: item];
     }
+  END_FOR_IN(itemIdentifiers);
 }
 
 @end
@@ -495,12 +480,9 @@ GSDiffableDefaultSectionIdentifier()
 {
   [_identifierToIndexPath removeAllObjects];
 
-  NSUInteger sectionIndex = 0;
   NSArray *sections = [_snapshot sectionIdentifiers];
-  NSEnumerator *sectionEnumerator = [sections objectEnumerator];
-  id section = nil;
-
-  while ((section = [sectionEnumerator nextObject]) != nil)
+  NSUInteger sectionIndex = 0;
+  FOR_IN(id, section, sections)
     {
       NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
       NSUInteger itemIndex = 0;
@@ -512,6 +494,7 @@ GSDiffableDefaultSectionIdentifier()
 	}
       sectionIndex++;
     }
+  END_FOR_IN(_sections);
 }
 
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
@@ -721,12 +704,9 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 {
   [_identifierToIndexPath removeAllObjects];
 
-  NSUInteger sectionIndex = 0;
   NSArray *sections = [_snapshot sectionIdentifiers];
-  NSEnumerator *sectionEnumerator = [sections objectEnumerator];
-  id section = nil;
-
-  while ((section = [sectionEnumerator nextObject]) != nil)
+  NSUInteger sectionIndex = 0;
+  FOR_IN(id, section, sections)
     {
       NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
       NSUInteger itemIndex = 0;
@@ -738,6 +718,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 	}
       sectionIndex++;
     }
+  END_FOR_IN(sections);
 }
 
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
@@ -799,10 +780,8 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 {
   NSInteger runningTotal = 0;
   NSArray *sections = [_snapshot sectionIdentifiers];
-  NSEnumerator *sectionEnumerator = [sections objectEnumerator];
-  id section = nil;
 
-  while ((section = [sectionEnumerator nextObject]) != nil)
+  FOR_IN(id, section, sections)
     {
       NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
       NSInteger nextTotal = runningTotal + [items count];
@@ -813,7 +792,8 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 	}
       runningTotal = nextTotal;
     }
-
+  END_FOR_IN(sections);
+  
   return nil;
 }
 
