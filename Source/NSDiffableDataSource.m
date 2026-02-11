@@ -99,8 +99,11 @@ GSDiffableDefaultSectionIdentifier()
 	}
     }
 
-  ASSIGNCOPY(copy->_sections, copiedSections);
-  ASSIGNCOPY(copy->_itemsBySection, copiedItems);
+  // These are already copied above, simply assign...
+  ASSIGN(copy->_sections, copiedSections);
+  ASSIGN(copy->_itemsBySection, copiedItems);
+
+  // Since these are not copied earlier, use ASSIGNCOPY
   ASSIGNCOPY(copy->_reloadedSections, _reloadedSections);
   ASSIGNCOPY(copy->_reloadedItems, _reloadedItems);
 
