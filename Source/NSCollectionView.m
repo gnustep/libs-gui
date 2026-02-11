@@ -1638,8 +1638,7 @@ static NSString *_placeholderItem = nil;
 
 	  if (loaded == NO)
 	    {
-	      item = nil;
-	      NSDebugLog(@"Could not load model %@", nib);
+	      NSLog(@"Could not load model %@", nib);
 	    }
 	}
     }
