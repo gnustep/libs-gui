@@ -63,10 +63,10 @@ GSDiffableDefaultSectionIdentifier()
   self = [super init];
   if (self != nil)
     {
-      _sections = [NSMutableArray new];
-      _itemsBySection = [NSMutableDictionary new];
-      _reloadedSections = [NSMutableSet new];
-      _reloadedItems = [NSMutableSet new];
+      _sections = [[NSMutableArray alloc] init];
+      _itemsBySection = [[NSMutableDictionary alloc] init];
+      _reloadedSections = [[NSMutableSet alloc] init];
+      _reloadedItems = [[NSMutableSet alloc] init];
     }
   return self;
 }
@@ -454,10 +454,10 @@ GSDiffableDefaultSectionIdentifier()
   if (self != nil)
     {
       _collectionView = collectionView;
-      _snapshot = [NSDiffableDataSourceSnapshot new];
+      _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
       _itemProvider = RETAIN( itemProvider );
-      _identifierToIndexPath = [NSMutableDictionary new];
-      _creatingIndexPaths = [NSMutableSet new];
+      _identifierToIndexPath = [[NSMutableDictionary alloc] init];
+      _creatingIndexPaths = [[NSMutableSet alloc] init];
       [_collectionView setDataSource: self];
       if ([_collectionView respondsToSelector: @selector(setPrefetchDataSource:)])
 	{
@@ -504,7 +504,7 @@ GSDiffableDefaultSectionIdentifier()
 
   if (snapshot == nil)
     {
-      _snapshot = [NSDiffableDataSourceSnapshot new];
+      _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
     }
   else
     {
@@ -682,10 +682,10 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
   if (self != nil)
     {
       _tableView = tableView;
-      _snapshot = [NSDiffableDataSourceSnapshot new];
+      _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
       _cellProvider = RETAIN(cellProvider);
-      _identifierToIndexPath = [NSMutableDictionary new];
-      _creatingIndexPaths = [NSMutableSet new];
+      _identifierToIndexPath = [[NSMutableDictionary alloc] init];
+      _creatingIndexPaths = [[NSMutableSet alloc] init];
       [_tableView setDataSource: self];
     }
   return self;
@@ -728,7 +728,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 
   if (snapshot == nil)
     {
-      _snapshot = [NSDiffableDataSourceSnapshot new];
+      _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
     }
   else
     {
@@ -829,7 +829,7 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
     }
 
   // Fallback to a simple text field if no provider is supplied.
-  NSTextField *textField = [NSTextField new];
+  NSTextField *textField = [[NSTextField alloc] init];
   [textField setEditable: NO];
   [textField setBordered: NO];
   [textField setBackgroundColor: [NSColor clearColor]];
