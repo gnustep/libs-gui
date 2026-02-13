@@ -28,11 +28,34 @@
 
 @implementation NSCollectionViewGridLayout
 
+- (void) _initDefaults
+{
+  _maximumNumberOfRows = 0;
+  _maximumNumberOfColumns = 0;
+  _minimumItemSize = NSMakeSize(50.0, 50.0);
+  _maximumItemSize = NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX);
+  _margins = NSEdgeInsetsMake(0.0, 0.0, 0.0, 0.0);
+  _minimumInteritemSpacing = 0.0;
+}
+
+- (id) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      [self _initDefaults];
+    }
+  return self;
+}
+
 - (id) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
   if (self)
     {
+      // Initialize defaults
+      [self _initDefaults];
+
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSMaximumNumberOfRows"])
@@ -214,43 +237,77 @@
   CGFloat h = 0.0, w = 0.0, x = 0.0, y = 0.0;
   NSRect f = NSZeroRect;
   NSRect vf = [_collectionView frame];
-  NSInteger ns = [_collectionView numberOfSections];
   NSInteger ni = [_collectionView numberOfItemsInSection: s];
-  CGFloat ph = 0.0;
-  CGFloat pw = 0.0;
+  NSUInteger columns = 0;
+  NSUInteger row = 0;
+  NSUInteger col = 0;
   
   sz = [self minimumItemSize];
   si = [self margins];
   mls = [self minimumInteritemSpacing];
   mis = [self minimumInteritemSpacing];
 
-  // Calculations...
+  // Determine number of columns
+  if (_maximumNumberOfColumns > 0)
+    {
+      columns = _maximumNumberOfColumns;
+    }
+  else
+    {
+      // Calculate based on available width
+      CGFloat availableWidth = vf.size.width - si.left - si.right;
+      if (sz.width + mis > 0)
+        {
+          columns = floor((availableWidth + mis) / (sz.width + mis));
+          if (columns == 0) columns = 1;
+        }
+      else
+        {
+          columns = 1;
+        }
+    }
+
+  // Ensure we don't exceed max rows if set
+  if (_maximumNumberOfRows > 0)
+    {
+      NSUInteger maxItems = columns * _maximumNumberOfRows;
+      if (r >= maxItems)
+        {
+          // Item doesn't fit, hide it
+          [attrs setFrame: NSZeroRect];
+          [attrs setZIndex: 0];
+          [attrs setSize: NSZeroSize];
+          [attrs setHidden: YES];
+          [attrs setAlpha: 1.0];
+          return attrs;
+        }
+    }
+
+  // Calculate item size
   h = sz.height;
-  ph = vf.size.height / ns;
-  if (ph > sz.height)
-    {
-      NSSize mx = [self maximumItemSize];
-      if (ph > mx.height)
-        {
-          ph = mx.height;
-        }
-      h = ph;
-    }
-  
   w = sz.width;
-  pw = vf.size.width / ni;
-  if (pw > sz.width)
+
+  // Adjust size if needed to fit
+  if (_maximumNumberOfColumns == 0)
     {
-      NSSize mx = [self maximumItemSize];
-      if (pw > mx.width)
+      // If columns were calculated, adjust width to fit
+      CGFloat availableWidth = vf.size.width - si.left - si.right;
+      CGFloat totalSpacing = (columns - 1) * mis;
+      w = (availableWidth - totalSpacing) / columns;
+      if (w > [self maximumItemSize].width)
         {
-          pw = mx.width;
+          w = [self maximumItemSize].width;
         }
-      w = pw;
     }
-  
-  x = (r * w) + si.left + mis;
-  y = (s * h) + si.top + mls;
+
+  // Calculate row and column
+  row = r / columns;
+  col = r % columns;
+
+  // Calculate position
+  x = col * (w + mis) + si.left;
+  y = row * (h + mls) + si.top;
+
   f = NSMakeRect(x, y, w, h);
 
   // Build attrs object...
@@ -265,7 +322,55 @@
 
 - (NSSize) collectionViewContentSize
 {
-  return [_collectionView frame].size;
+  NSRect vf = [_collectionView frame];
+  NSEdgeInsets si = [self margins];
+  CGFloat mis = [self minimumInteritemSpacing];
+  CGFloat mls = [self minimumInteritemSpacing];
+  NSSize sz = [self minimumItemSize];
+  CGFloat w = sz.width;
+  CGFloat h = sz.height;
+  NSUInteger totalSections = [_collectionView numberOfSections];
+  NSUInteger maxRows = 0;
+  NSUInteger maxCols = 0;
+
+  // Find the maximum number of items in any section
+  for (NSUInteger s = 0; s < totalSections; s++)
+    {
+      NSUInteger ni = [_collectionView numberOfItemsInSection: s];
+      NSUInteger columns = 0;
+
+      if (_maximumNumberOfColumns > 0)
+        {
+          columns = _maximumNumberOfColumns;
+        }
+      else
+        {
+          CGFloat availableWidth = vf.size.width - si.left - si.right;
+          if (sz.width + mis > 0)
+            {
+              columns = floor((availableWidth + mis) / (sz.width + mis));
+              if (columns == 0) columns = 1;
+            }
+          else
+            {
+              columns = 1;
+            }
+        }
+
+      NSUInteger rows = (ni + columns - 1) / columns; // Ceiling division
+      if (rows > maxRows) maxRows = rows;
+      if (columns > maxCols) maxCols = columns;
+    }
+
+  // Calculate content size
+  CGFloat contentWidth = maxCols * (w + mis) - mis + si.left + si.right;
+  CGFloat contentHeight = maxRows * (h + mls) - mls + si.top + si.bottom;
+
+  // Ensure minimum size
+  if (contentWidth < vf.size.width) contentWidth = vf.size.width;
+  if (contentHeight < vf.size.height) contentHeight = vf.size.height;
+
+  return NSMakeSize(contentWidth, contentHeight);
 }
 
 @end
