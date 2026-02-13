@@ -229,7 +229,6 @@
 {
   NSCollectionViewLayoutAttributes *attrs = AUTORELEASE([[NSCollectionViewLayoutAttributes alloc] init]);
   NSSize sz = NSZeroSize;
-  NSInteger s = [indexPath section];
   NSInteger r = [indexPath item];
   NSEdgeInsets si;
   CGFloat mls = 0.0;
@@ -237,7 +236,6 @@
   CGFloat h = 0.0, w = 0.0, x = 0.0, y = 0.0;
   NSRect f = NSZeroRect;
   NSRect vf = [_collectionView frame];
-  NSInteger ni = [_collectionView numberOfItemsInSection: s];
   NSUInteger columns = 0;
   NSUInteger row = 0;
   NSUInteger col = 0;
@@ -332,9 +330,10 @@
   NSUInteger totalSections = [_collectionView numberOfSections];
   NSUInteger maxRows = 0;
   NSUInteger maxCols = 0;
+  NSInteger s = 0;
 
   // Find the maximum number of items in any section
-  for (NSUInteger s = 0; s < totalSections; s++)
+  for (s = 0; s < totalSections; s++)
     {
       NSUInteger ni = [_collectionView numberOfItemsInSection: s];
       NSUInteger columns = 0;
