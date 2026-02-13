@@ -138,7 +138,7 @@ GSDiffableDefaultSectionIdentifier()
 	}
     }
   END_FOR_IN(_sections);
-  
+
   return [result copy];
 }
 
@@ -174,7 +174,7 @@ GSDiffableDefaultSectionIdentifier()
       count += [items count];
     }
   END_FOR_IN(_sections);
-  
+
   return count;
 }
 
@@ -222,7 +222,7 @@ GSDiffableDefaultSectionIdentifier()
     }
 
   NSUInteger insertionIndex = index;
-  
+
   FOR_IN(id, section, sectionIdentifiers)
     {
       if ([_sections containsObject: section] == NO)
@@ -448,7 +448,7 @@ GSDiffableDefaultSectionIdentifier()
 @implementation NSCollectionViewDiffableDataSource
 
 - (id) initWithCollectionView: (NSCollectionView *)collectionView
-		  itemProvider: (GSCollectionViewItemProviderBlock)itemProvider
+		 itemProvider: (GSCollectionViewItemProviderBlock)itemProvider
 {
   self = [super init];
   if (self != nil)
@@ -579,7 +579,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 - (NSInteger) collectionView: (NSCollectionView *)collectionView
-       numberOfItemsInSection: (NSInteger)section
+      numberOfItemsInSection: (NSInteger)section
 {
   (void)collectionView;
   if (_snapshot == nil)
@@ -660,7 +660,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 - (void) collectionView: (NSCollectionView *)collectionView
-   prefetchItemsAtIndexPaths: (NSArray *)indexPaths
+prefetchItemsAtIndexPaths: (NSArray *)indexPaths
 {
   /* Prefetch is currently a no-op; snapshot drives item creation. */
 }
@@ -765,7 +765,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
     {
       return nil;
     }
-  
+
   id sectionIdentifier = [sections objectAtIndex: sectionIndex];
   NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: sectionIdentifier];
   if (itemIndex >= [items count])
@@ -793,7 +793,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
       runningTotal = nextTotal;
     }
   END_FOR_IN(sections);
-  
+
   return nil;
 }
 
@@ -821,7 +821,12 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
 
   if (_cellProvider != nil)
     {
-      NSView *view = (NSView *)CALL_NON_NULL_BLOCK(_cellProvider, tableView, tableColumn, rowIndex, identifier);
+      NSView *view =
+	(NSView *)CALL_NON_NULL_BLOCK(_cellProvider,
+				      tableView,
+				      tableColumn,
+				      rowIndex,
+				      identifier);
       if (view != nil)
 	{
 	  return view;
