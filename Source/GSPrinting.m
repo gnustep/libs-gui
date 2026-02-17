@@ -153,7 +153,7 @@ static NSBundle *printingBundle = nil;
 			    
           NSRunAlertPanel(@"GNUstep Printing Backend System", 
            @"Could not open any working printing bundle.  Printing will not work.", 
-           @"Ok", NULL, NULL);
+           @"OK", NULL, NULL);
 	     
           return nil;
 	  }
@@ -180,7 +180,7 @@ static NSBundle *printingBundle = nil;
                           @"Could not load any working printing bundle");
               NSRunAlertPanel(@"GNUstep Printing Backend System", 
                @"Could not open any working printing bundle.  Printing will not work.", 
-               @"Ok", NULL, NULL);
+               @"OK", NULL, NULL);
               return nil;
             }
           else
@@ -192,7 +192,7 @@ static NSBundle *printingBundle = nil;
                      defaultBundleName, [[bundle bundlePath] lastPathComponent]];
 			   
               NSRunAlertPanel(@"GNUstep Printing Backend System", 
-		                  msg, @"Ok", NULL, NULL);
+		                  msg, @"OK", NULL, NULL);
             }
         }
     }

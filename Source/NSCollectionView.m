@@ -1622,18 +1622,30 @@ static NSString *_placeholderItem = nil;
 {
   NSCollectionViewItem *item =
     [_dataSource collectionView: self itemForRepresentedObjectAtIndexPath: indexPath];
-  NSNib *nib = [self _nibForClass: [item class]];
-  BOOL loaded = [nib instantiateWithOwner: item
-			  topLevelObjects: NULL];
-
-  if (loaded == NO)
+  
+  if (item == nil)
     {
-      item = nil;
-      NSLog(@"Could not load model %@", nib);
+      return nil;
     }
-  else
+
+  // Only try to load NIB if item doesn't already have a view
+  if ([item view] == nil)
     {
-      // Add to maps...
+      NSNib *nib = [self _nibForClass: [item class]];
+      BOOL loaded = [nib instantiateWithOwner: item
+			      topLevelObjects: NULL];
+
+      if (loaded == NO)
+        {
+          // If NIB loading fails but item exists, continue anyway
+          // The item might be configured programmatically
+          NSLog(@"Could not load NIB %@ for item %@, continuing with programmatic item", nib, item);
+        }
+    }
+
+  // Add to maps only if we have a valid item
+  if (item != nil)
+    {
       [_itemsToIndexPaths setObject: indexPath
 			     forKey: item];
       [_indexPathsToItems setObject: item
@@ -1710,6 +1722,20 @@ static NSString *_placeholderItem = nil;
 - (void) setDataSource: (id<NSCollectionViewDataSource>)dataSource
 {
   _dataSource = dataSource;
+  
+  // Validate that required methods are implemented
+  if (_dataSource != nil)
+    {
+      if (![_dataSource respondsToSelector: @selector(collectionView:numberOfItemsInSection:)])
+        {
+          NSLog(@"NSCollectionView: DataSource %@ does not implement required method collectionView:numberOfItemsInSection:", _dataSource);
+        }
+      if (![_dataSource respondsToSelector: @selector(collectionView:itemForRepresentedObjectAtIndexPath:)])
+        {
+          NSLog(@"NSCollectionView: DataSource %@ does not implement required method collectionView:itemForRepresentedObjectAtIndexPath:", _dataSource);
+        }
+    }
+  
   [self reloadData];
 }
 
@@ -1741,9 +1767,18 @@ static NSString *_placeholderItem = nil;
   NSCollectionViewItem *item = [self makeItemWithIdentifier: nil
 					       forIndexPath: path];
 
+  NSLog(@"NSCollectionView _loadItemAtIndexPath:%@ item=%@ view=%@", path, item, [item view]);
+
   if (item != nil)
     {
       NSView *v = [item view];
+      
+      if (v == nil)
+        {
+          NSLog(@"NSCollectionView: Item %@ has no view - items must have a view to be displayed", item);
+          return;
+        }
+        
       NSRect f = [v frame];
       _GSCollectionViewItemTrackingView *tv =
 	[[_GSCollectionViewItemTrackingView alloc]
@@ -1778,10 +1813,11 @@ static NSString *_placeholderItem = nil;
 				 forKey: item];
 
 	  [self addSubview: v];
+	  NSLog(@"NSCollectionView: Added item view %@ at frame %@", v, NSStringFromRect(frame));
 	}
       else
 	{
-	  NSLog(@"NSCollectionViewLayout subclass is not set");
+	  NSLog(@"NSCollectionViewLayout subclass is not set - item will not be displayed");
 	}
     }
 }
@@ -1789,6 +1825,7 @@ static NSString *_placeholderItem = nil;
 - (void) _loadSectionAtIndex: (NSUInteger)cs
 {
   NSInteger ni = [self numberOfItemsInSection: cs];
+  NSLog(@"NSCollectionView _loadSectionAtIndex:%lu numberOfItems=%ld", (unsigned long)cs, (long)ni);
   NSInteger ci = 0;
 
   for (ci = 0; ci < ni; ci++)
@@ -1856,6 +1893,15 @@ static NSString *_placeholderItem = nil;
   if (_allowReload)
     {
       NSInteger ns = [self numberOfSections];
+      NSLog(@"NSCollectionView reloadData: numberOfSections=%ld, dataSource=%@, layout=%@", 
+            (long)ns, _dataSource, _collectionViewLayout);
+      
+      if (ns == 0)
+        {
+          NSLog(@"NSCollectionView: No sections to load - check dataSource implementation");
+          return;
+        }
+      
       NSInteger cs = 0;
       NSSize s = _itemSize;
       CGFloat h = s.height;
@@ -1929,11 +1975,15 @@ static NSString *_placeholderItem = nil;
 
 - (NSInteger) numberOfSections
 {
-  NSInteger n = 0;
+  NSInteger n = 1;  // Default to 1 section if not implemented
 
-  if ([_dataSource respondsToSelector: @selector(numberOfSectionsInCollectionView:)])
+  if (_dataSource != nil && [_dataSource respondsToSelector: @selector(numberOfSectionsInCollectionView:)])
     {
       n = [_dataSource numberOfSectionsInCollectionView: self];
+    }
+  else if (_dataSource == nil)
+    {
+      n = 0;  // No sections if no data source
     }
 
   return n;
@@ -1944,6 +1994,10 @@ static NSString *_placeholderItem = nil;
   // Since this is a required method by the delegate we can assume it's presence
   // if it is not there, tests on macOS indicate that an unrecognized selector
   // exception is thrown.
+  if (_dataSource == nil)
+    {
+      return 0;
+    }
   return [_dataSource collectionView: self numberOfItemsInSection: section];
 }
 

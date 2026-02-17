@@ -29,6 +29,9 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../Version
 include ../config.make
 
+# Interface version changes with each minor release
+libgnustep-gui_INTERFACE_VERSION=${GNUSTEP_GUI_MAJOR_VERSION}.${GNUSTEP_GUI_MINOR_VERSION}
+
 srcdir = .
 PACKAGE_NAME = gnustep-gui
 LIBRARY_VAR = GNUSTEP_GUI
@@ -375,7 +378,14 @@ GSCSEditInfo.m \
 GSCSEditVariableManager.m \
 GSCSTableau.m \
 GSColorSliderCell.m \
-GSFontAssetDownloader.m
+GSFontAssetDownloader.m \
+GSFontAssetInstaller.m
+
+ifeq ($(BUILD_MOVIE), yes)
+libgnustep-gui_OBJC_FILES += GSMovieView.m
+libgnustep-gui_OBJC_FILES += GSAudioPlayer.m
+libgnustep-gui_OBJC_FILES += GSAVUtils.m
+endif
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -695,7 +705,8 @@ GSXibElement.h \
 GSXibLoading.h \
 GSXibKeyedUnarchiver.h \
 GSHelpAttachment.h \
-GSFontAssetDownloader.h
+GSFontAssetDownloader.h \
+GSFontAssetInstaller.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 

@@ -38,8 +38,6 @@
 @class NSString;
 
 /**
- * <title>NSComboBoxCell</title>
- * <abstract>Cell class for combo box controls with dropdown list functionality</abstract>
  * NSComboBoxCell provides the core implementation for combo box functionality,
  * extending NSTextFieldCell to add dropdown list capabilities. It serves as the
  * cell component used by NSComboBox controls and can be used independently in
@@ -333,8 +331,6 @@ APPKIT_EXPORT_CLASS
 @end
 
 /**
- * <title>NSComboBoxCellDataSource Protocol</title>
- * <abstract>Data source protocol for NSComboBoxCell</abstract>
  * This protocol defines methods that a data source must implement
  * to provide data for a combo box cell when using external data management.
  */
