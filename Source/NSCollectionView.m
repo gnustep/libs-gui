@@ -700,7 +700,7 @@ static NSString *_placeholderItem = nil;
     {
       if (index % _numberOfColumns == 0)
 	{
-	  x = 0;
+	  x = _horizontalMargin;
 	  y += _verticalMargin + _itemSize.height;
 	}
 
