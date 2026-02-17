@@ -163,13 +163,13 @@
 #import <AppKit/NSClickGestureRecognizer.h>
 #import <AppKit/NSColorPickerTouchBarItem.h>
 #import <AppKit/NSCustomTouchBarItem.h>
-#import <AppKit/NSDiffableDataSource.h>
 #import <AppKit/NSDatePicker.h>
 #import <AppKit/NSDatePickerCell.h>
 #import <AppKit/NSDockTile.h>
 #import <AppKit/NSDocument.h>
 #import <AppKit/NSDocumentController.h>
 #import <AppKit/NSDictionaryController.h>
+#import <AppKit/NSDiffableDataSource.h>
 #import <AppKit/NSDrawer.h>
 #import <AppKit/NSFileWrapperExtensions.h>
 #import <AppKit/NSFontAssetRequest.h>
