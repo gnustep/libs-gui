@@ -624,13 +624,6 @@ Return values 0, 1, 2 are mostly the same as from
   before jumping back to do all the expensive checking).
   */
 
-  /*
-  This calculation should match the calculation in [GSFontInfo
-  -defaultLineHeightForFont], or text will look odd.
-  */
-#define COMPUTE_BASELINE  baseline = line_height - descender;
-
-
   /* TODO: doesn't have to be a simple horizontal container, but it's easier
   to handle that way. */
   if ([curTextContainer isSimpleRectangularTextContainer] &&
@@ -1003,7 +996,7 @@ restart: ;
 		continue;
 	      }
 
-            COMPUTE_BASELINE
+            baseline = line_height - descender;
 
 	    r = [cell cellFrameForTextContainer: curTextContainer
 		  proposedLineFragment: lf->rect
@@ -1209,7 +1202,7 @@ restart: ;
       glyph_cache_t *g;
       NSRect used_rect;
 
-      COMPUTE_BASELINE
+      baseline = line_height - descender;
 
       for (lf = line_frags, lineFragCounter = 0, g = cache; lfi >= 0; lfi--, lf++)
 	{
