@@ -57,8 +57,8 @@ documentation were drafted by an AI system).
 
 Disclosure may be included in:
 
--   The merge request or pull request description\
--   The commit message (for example: `AI-Assisted: yes`)
+-   The merge request or pull request description
+-   The commit message (for example: `AI-Assisted: yes` or `Produced using AI`)
 
 Disclosure is intended to assist reviewers in calibrating review depth,
 not to discourage responsible use of tooling.
@@ -79,8 +79,8 @@ AI-generated content must not be used to:
 
 Anyone submitting AI-assisted content must be prepared to:
 
--   Explain clearly what the change does and why it is correct\
--   Provide reproduction steps, tests, or benchmarks when relevant\
+-   Explain clearly what the change does and why it is correct
+-   Provide reproduction steps, tests, or benchmarks when relevant
 -   Revise or withdraw a submission if concerns arise regarding
     correctness, security, maintainability, or licensing
 
