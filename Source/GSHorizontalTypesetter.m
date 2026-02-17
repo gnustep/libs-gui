@@ -604,7 +604,6 @@ Return values 0, 1, 2 are mostly the same as from
 -(int) layoutLineNewParagraph: (BOOL)newParagraph
 {
   NSRect rect;
-  NSRect remain;
 
   /* Baseline and line height handling. */
   CGFloat line_height;     /* Current line height. */
@@ -691,6 +690,8 @@ restart: ;
 
   do
     {
+      NSRect remain;
+
       remain = [self _getProposedRectFor: newParagraph
                           withLineHeight: line_height];
 
