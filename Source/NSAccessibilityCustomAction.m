@@ -33,12 +33,8 @@
   self = [super init];
   if (self != nil)
     {
-      ASSIGNCOPY(_name, name);
-      if (_handler != handler)
-        {
-          if (_handler != NULL) { Block_release(_handler); }
-          _handler = handler ? Block_copy(handler) : NULL;
-        }
+      [self setName: name];
+      [self setHandler: handler];
     }
   return self;
 }
@@ -62,7 +58,7 @@
   RELEASE(_name);
   if (_handler != NULL)
     {
-      Block_release(_handler);
+      RELEASE(_handler);
       _handler = NULL;
     }
   [super dealloc];
@@ -85,11 +81,7 @@
 
 - (void) setHandler: (GSAccessibilityCustomActionHandler)handler
 {
-  if (_handler != handler)
-    {
-      if (_handler != NULL) { Block_release(_handler); }
-      _handler = handler ? Block_copy(handler) : NULL;
-    }
+  ASSIGN(_handler, handler);
 }
 
 - (id) target
@@ -137,10 +129,7 @@
   if (_target != nil && _selector != NULL && [_target respondsToSelector: _selector])
     {
       // Suppress potential leak warning for performSelector (intentional dynamic invocation)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
       [_target performSelector: _selector withObject: self];
-#pragma clang diagnostic pop
       return YES;
     }
   return NO;

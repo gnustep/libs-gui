@@ -102,13 +102,13 @@
 // Results...
 @implementation NSAccessibilityCustomRotorItemResult : NSObject
 
-- (instancetype)initWithTargetElement:(id<NSAccessibilityElement>)targetElement
+- (instancetype) initWithTargetElement: (id<NSAccessibilityElement>)targetElement
 {
   self = [super init];
   if (self != nil)
     {
       _targetElement = targetElement;
-      _targetRange = NSMakeRange(0, 0);
+      _targetRange = NSMakeRange(0, NSNotFound);
     }
   return self;
 }
@@ -121,7 +121,7 @@
     {
       _itemLoadingToken = token;
       ASSIGNCOPY(_customLabel, customLabel);
-      _targetRange = NSMakeRange(0, 0);
+      _targetRange = NSMakeRange(0, NSNotFound);
     }
   return self;
 }
