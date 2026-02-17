@@ -26,28 +26,78 @@ AI tools may be used as assistive drafting aids. Contributors remain
 fully responsible for the accuracy, safety, quality, and licensing
 compliance of anything they submit.
 
-## 4. Mandatory Thorough Review
+## 4. Mandatory Independent Verification and Enhanced Review
 
-Any AI-assisted contribution **must be reviewed thoroughly** before it
-is merged or otherwise accepted.
+AI-assisted contributions are subject to heightened scrutiny and must
+undergo rigorous, independent human validation prior to acceptance.
 
-Thorough review includes, at minimum:
+### 4.1 Independent Human Verification
 
--   **Correctness** -- The content behaves as intended and aligns with
-    GNUstep conventions and architectural requirements.
--   **Security & Safety** -- No unsafe patterns, hidden network calls,
-    credential leakage, injection risks, or insecure defaults.
--   **Maintainability** -- Code style, naming, structure, and comments
-    meet project standards and are understandable to maintainers.
--   **Testing** -- Appropriate tests are added or updated; existing
-    tests pass. Compilation alone is not sufficient validation.
--   **Documentation Accuracy** -- Claims and instructions are verified
-    against current GNUstep behavior and supported platforms.
--   **Licensing Awareness** -- The contributor ensures that no
-    copyrighted or license-incompatible material is introduced.
+The contributor must personally:
 
-Reviewers may apply additional scrutiny where changes are large,
-complex, security-sensitive, or difficult to reason about.
+-   Read and understand every line of AI-assisted code or documentation.
+-   Be able to explain the logic, control flow, and design decisions
+    without reliance on the AI system.
+-   Confirm that no opaque, unexplained, or unnecessary logic is
+    included.
+
+Submissions that the contributor cannot fully explain may be rejected
+without further review.
+
+### 4.2 Reproducible Validation
+
+AI-assisted changes must include demonstrable validation:
+
+-   All existing tests must pass.
+-   New or modified functionality must include tests where applicable.
+-   Behavior must be manually verified in supported environments.
+-   Claims of performance, portability, or correctness must be supported
+    by reproducible evidence.
+
+Compilation alone is not considered validation.
+
+### 4.3 Security Review Requirement
+
+Any AI-assisted contribution that affects:
+
+-   Memory management
+-   Concurrency
+-   Privilege boundaries
+-   Serialization or parsing
+-   Cryptographic or authentication logic
+-   Network behavior
+
+must receive explicit human review by a maintainer with relevant domain
+knowledge. Maintainers may require additional review before merge.
+
+### 4.4 Licensing and Provenance Safeguards
+
+Contributors must take reasonable steps to ensure that AI-assisted
+content does not:
+
+-   Contain verbatim copyrighted material
+-   Replicate incompatible licensed code
+-   Introduce unclear authorship or provenance
+
+If provenance cannot be reasonably established, the contribution will
+not be accepted.
+
+### 4.5 Size and Complexity Limits
+
+Large AI-generated diffs that are difficult to audit may be rejected.
+Maintainers may require:
+
+-   Splitting into smaller logical commits
+-   Manual simplification
+-   Rewriting portions that are unnecessarily complex
+
+Opacity is grounds for refusal.
+
+### 4.6 No Automation of Review
+
+AI tools must not be used to generate superficial justifications for
+correctness or to bypass meaningful human review. Review must be
+substantive, manual, and technically grounded.
 
 ## 5. Disclosure Requirement
 
