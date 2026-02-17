@@ -603,7 +603,8 @@ Return values 0, 1, 2 are mostly the same as from
 */
 -(int) layoutLineNewParagraph: (BOOL)newParagraph
 {
-  NSRect rect, remain;
+  NSRect rect;
+  NSRect remain;
 
   /* Baseline and line height handling. */
   CGFloat line_height;     /* Current line height. */
@@ -746,7 +747,8 @@ restart: ;
     
     NSFont *f = cache->font;
 
-    CGFloat f_ascender = [f ascender], f_descender = -[f descender];
+    CGFloat f_ascender = [f ascender];
+    CGFloat f_descender = -[f descender];
 
     NSGlyph last_glyph = NSNullGlyph;
     NSPoint last_p;
@@ -824,6 +826,7 @@ restart: ;
 	if (g->font != f)
 	  {
 	    CGFloat new_height;
+
 	    f = g->font;
 	    f_ascender = [f ascender];
 	    f_descender = -[f descender];
