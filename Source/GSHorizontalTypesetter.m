@@ -820,34 +820,78 @@ restart: ;
 
 	*/
 
-	/* If there's a font change, check if the baseline or line height
-	needs adjusting. We update the ascender and descender too, even
-	though there might not actually be any glyphs for this font.
-	(TODO?) */
+	/* If there's a font change, we update the ascender and descender
+           (line height adjusted later), even though there might not actually be
+           any glyphs for this font.
+           (TODO?) */
 	if (g->font != f)
 	  {
-	    CGFloat new_height;
-
 	    f = g->font;
 	    f_ascender = [f ascender];
 	    f_descender = -[f descender];
 	    last_glyph = NSNullGlyph;
-
-            /* does the glyph fit ?*/
-            didLastGlyphFit = !(p.x + g->size.width > lf->rect.size.width);
-            if (didLastGlyphFit)
-              {
-                new_height = [f defaultLineHeightForFont];
-
-                if (f_ascender > ascender)
-                  ascender = f_ascender;
-                if (f_descender > descender)
-                  descender = f_descender;
-
-                if (wantNewLineHeight(new_height, &line_height, max_line_height))
-                  goto restart;
-              }
 	  }
+
+
+	/* Set up glyph information. */
+
+	/*
+          TODO:
+          Currently, the attributes of the attachment character (eg. font)
+          affect the layout. Think hard about this.
+	*/
+	g->nominal = !prev_had_non_nominal_width;
+
+	if (g->attributes.explicit_kern &&
+	    g->attributes.kern != 0)
+	  {
+	    p.x += g->attributes.kern;
+	    g->nominal = NO;
+	  }
+
+	/* Baseline adjustments. */
+	{
+	  CGFloat y = 0;
+
+	  /* Attributes are up-side-down in our coordinate system. */
+	  if (g->attributes.superscript)
+	    {
+	      y -= g->attributes.superscript * [f xHeight];
+	    }
+	  if (g->attributes.baseline_offset)
+	    {
+	      /* And baseline_offset is up-side-down again. TODO? */
+	      y += g->attributes.baseline_offset;
+	    }
+
+	  if (y != p.y)
+	    {
+	      p.y = y;
+	      g->nominal = NO;
+	    }
+
+          /* does the glyph fit ? */
+          didLastGlyphFit = !((i > firstGlyphIndex) && (p.x + g->size.width > lf->rect.size.width));
+          if (didLastGlyphFit)
+            {
+              /* defaultLineHeightForFont is asceder+descender, match calculation here */
+
+              /* coming from potential font change */
+              if (f_ascender > ascender)
+                ascender = f_ascender;
+              if (f_descender > descender)
+                descender = f_descender;
+
+              /* coming from superscript/subscript */
+              if (y < 0 && f_ascender - y > ascender)
+                ascender = f_ascender - y;
+              if (y > 0 && f_descender + y > descender)
+                descender = f_descender + y;
+
+              if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
+                goto restart;
+            }
+	}
 
 	if (g->g == NSControlGlyph)
 	  {
@@ -924,59 +968,6 @@ restart: ;
 
 	    continue;
 	  }
-
-
-	/* Set up glyph information. */
-
-	/*
-          TODO:
-          Currently, the attributes of the attachment character (eg. font)
-          affect the layout. Think hard about this.
-	*/
-	g->nominal = !prev_had_non_nominal_width;
-
-	if (g->attributes.explicit_kern &&
-	    g->attributes.kern != 0)
-	  {
-	    p.x += g->attributes.kern;
-	    g->nominal = NO;
-	  }
-
-	/* Baseline adjustments. */
-	{
-	  CGFloat y = 0;
-
-	  /* Attributes are up-side-down in our coordinate system. */
-	  if (g->attributes.superscript)
-	    {
-	      y -= g->attributes.superscript * [f xHeight];
-	    }
-	  if (g->attributes.baseline_offset)
-	    {
-	      /* And baseline_offset is up-side-down again. TODO? */
-	      y += g->attributes.baseline_offset;
-	    }
-
-	  if (y != p.y)
-	    {
-	      p.y = y;
-	      g->nominal = NO;
-	    }
-
-          /* does the glyph fit ? */
-          didLastGlyphFit = !((i > firstGlyphIndex) && (p.x + g->size.width > lf->rect.size.width));
-          if (didLastGlyphFit)
-            {
-              /* The y==0 case is taken care of when the font is changed. */
-              if (y < 0 && f_ascender - y > ascender)
-                ascender = f_ascender - y;
-              if (y > 0 && f_descender + y > descender)
-                descender = f_descender + y;
-
-              if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
-                goto restart;
-            }
-	}
 
 	if (g->g == GSAttachmentGlyph)
 	  {
