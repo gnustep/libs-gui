@@ -35,11 +35,14 @@
 #import "AppKit/NSColorPanel.h"
 #import "AppKit/NSColorWell.h"
 #import "AppKit/NSColor.h"
+#import "AppKit/NSColorSpace.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSAccessibility.h"
+#import "AppKit/NSAccessibilityProtocols.h"
 #import "GNUstepGUI/GSTheme.h"
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSNotification.h>
@@ -498,6 +501,198 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 - (id) target
 {
   return _target;
+}
+
+@end
+
+// MARK: - NSColorWell (NSAccessibilityElement)
+
+@implementation NSColorWell (NSAccessibilityElement)
+
+// MARK: - NSAccessibilityElement Protocol Implementation
+
+- (NSString *) accessibilityRole
+{
+  return NSAccessibilityColorWellRole;
+}
+
+- (NSString *) accessibilitySubrole
+{
+  return nil;
+}
+
+- (NSString *) accessibilityLabel
+{
+  return @"Color Well";
+}
+
+- (NSString *) accessibilityTitle
+{
+  return @"Color Well";
+}
+
+- (id) accessibilityValue
+{
+  NSColor *color = [self color];
+  if (color)
+    {
+      // Use component methods directly for better compatibility
+      CGFloat red, green, blue, alpha;
+      
+      // Try to get RGB components using getRed:green:blue:alpha:
+      @try
+        {
+          [color getRed: &red green: &green blue: &blue alpha: &alpha];
+          return [NSString stringWithFormat: @"RGB(%.0f, %.0f, %.0f)", 
+                  red * 255.0, green * 255.0, blue * 255.0];
+        }
+      @catch (NSException *exception)
+        {
+          // Fallback to individual component methods if available
+          if ([color respondsToSelector: @selector(redComponent)] &&
+              [color respondsToSelector: @selector(greenComponent)] &&
+              [color respondsToSelector: @selector(blueComponent)])
+            {
+              red = [color redComponent];
+              green = [color greenComponent];
+              blue = [color blueComponent]; 
+              return [NSString stringWithFormat: @"RGB(%.0f, %.0f, %.0f)",
+                      red * 255.0, green * 255.0, blue * 255.0];
+            }
+          
+          // Final fallback to description
+          return [color description];
+        }
+    }
+  
+  return @"No color";
+}
+
+- (NSString *) accessibilityHelp
+{
+  NSString *toolTip = [self toolTip];
+  if (toolTip && [toolTip length] > 0)
+    {
+      return toolTip;
+    }
+  
+  return @"Double-click to open color panel";
+}
+
+- (BOOL) isAccessibilityEnabled
+{
+  return [self isEnabled];
+}
+
+- (NSArray *) accessibilityChildren
+{
+  return nil; // Color wells are leaf elements
+}
+
+- (NSArray *) accessibilitySelectedChildren
+{
+  return nil;
+}
+
+- (NSArray *) accessibilityVisibleChildren
+{
+  return nil;
+}
+
+- (id) accessibilityWindow
+{
+  return [self window];
+}
+
+- (id) accessibilityTopLevelUIElement
+{
+  NSWindow *window = [self window];
+  return window ? [window contentView] : nil;
+}
+
+- (NSPoint) accessibilityActivationPoint
+{
+  NSRect frame = [self frame];
+  if ([self window] != nil)
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  
+  if (NSEqualRects(frame, NSZeroRect))
+    {
+      return NSZeroPoint;
+    }
+  
+  return NSMakePoint(NSMidX(frame), NSMidY(frame));
+}
+
+- (NSString *) accessibilityURL
+{
+  return nil;
+}
+
+- (NSNumber *) accessibilityIndex
+{
+  id parent = [self superview];
+  if (parent && [parent respondsToSelector: @selector(subviews)])
+    {
+      NSArray *siblings = [parent subviews];
+      NSUInteger index = [siblings indexOfObject: self];
+      if (index != NSNotFound)
+        {
+          return [NSNumber numberWithUnsignedInteger: index];
+        }
+    }
+  return [NSNumber numberWithInteger: 0];
+}
+
+// MARK: - Additional Methods
+
+- (NSArray *) accessibilityCustomRotors
+{
+  return nil;
+}
+
+- (BOOL) accessibilityPerformEscape
+{
+  return NO;
+}
+
+- (NSArray *) accessibilityCustomActions
+{
+  // Return nil for now since NSAccessibilityCustomAction may not be available
+  // in all GNUstep versions. The color panel can still be opened via double-click.
+  return nil;
+}
+
+- (void) setAccessibilityElement: (BOOL) isElement
+{
+  // Color wells are always accessibility elements
+}
+
+- (void) setAccessibilityFrame: (NSRect) frame
+{
+  // Frame is determined by the actual view frame
+}
+
+- (void) setAccessibilityParent: (id) parent
+{
+  // Parent relationship is managed by the view hierarchy
+}
+
+- (void) setAccessibilityFocused: (BOOL) focused
+{
+  if (focused)
+    {
+      [[self window] makeFirstResponder: self];
+    }
+  else
+    {
+      if ([[self window] firstResponder] == self)
+        {
+          [[self window] makeFirstResponder: nil];
+        }
+    }
 }
 
 @end

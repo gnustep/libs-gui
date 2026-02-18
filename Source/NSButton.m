@@ -36,6 +36,8 @@
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSAccessibility.h"
+#import "AppKit/NSAccessibilityProtocols.h"
 
 #import "GSFastEnumeration.h"
 
@@ -46,6 +48,241 @@ static id buttonCellClass = nil;
 
 @interface NSButtonCell (_NSButton_Private_)
 - (BOOL) _isRadio;
+@end
+
+// MARK: - NSButton (NSAccessibilityButton)
+
+@implementation NSButton (NSAccessibilityButton)
+
+// MARK: - NSAccessibilityElement Protocol Implementation
+
+- (NSString *) accessibilityRole
+{
+  NSButtonCell *cell = [self cell];
+  if ([cell respondsToSelector: @selector(_isRadio)] && [cell _isRadio])
+    {
+      return NSAccessibilityRadioButtonRole;
+    }
+  
+  // Check state behavior to determine if it's a checkbox-like button
+  if ([self allowsMixedState] || ([self state] != NSControlStateValueMixed && [self state] != NSControlStateValueOn && [self state] != NSControlStateValueOff))
+    {
+      return NSAccessibilityCheckBoxRole;
+    }
+  
+  // Default to regular button
+  return NSAccessibilityButtonRole;
+}
+
+- (NSString *) accessibilitySubrole
+{
+  return nil; // Standard buttons typically don't have subroles
+}
+
+- (NSString *) accessibilityLabel
+{
+  NSString *title = [self title];
+  if (title && [title length] > 0)
+    {
+      return title;
+    }
+  
+  NSString *alternateTitle = [self alternateTitle];
+  if (alternateTitle && [alternateTitle length] > 0)
+    {
+      return alternateTitle;
+    }
+  
+  // Return nil if no title is available
+  return nil;
+}
+
+- (NSString *) accessibilityTitle
+{
+  return [self title];
+}
+
+- (id) accessibilityValue
+{
+  // For checkbox and radio buttons, return the state
+  NSString *role = [self accessibilityRole];
+  if ([role isEqualToString: NSAccessibilityCheckBoxRole] || [role isEqualToString: NSAccessibilityRadioButtonRole])
+    {
+      return [NSNumber numberWithInteger: [self state]];
+    }
+  
+  // For regular buttons, return the title
+  return [self title];
+}
+
+- (NSString *) accessibilityHelp
+{
+  NSString *toolTip = [self toolTip];
+  if (toolTip && [toolTip length] > 0)
+    {
+      return toolTip;
+    }
+  
+  return nil;
+}
+
+- (BOOL) isAccessibilityEnabled
+{
+  return [self isEnabled];
+}
+
+- (NSArray *) accessibilityChildren
+{
+  return nil; // Buttons are typically leaf elements
+}
+
+- (NSArray *) accessibilitySelectedChildren
+{
+  return nil; // Buttons don't have selectable children
+}
+
+- (NSArray *) accessibilityVisibleChildren
+{
+  return nil; // Buttons don't have visible children
+}
+
+- (id) accessibilityWindow
+{
+  return [self window];
+}
+
+- (id) accessibilityTopLevelUIElement
+{
+  NSWindow *window = [self window];
+  return window ? [window contentView] : nil;
+}
+
+- (NSPoint) accessibilityActivationPoint
+{
+  NSRect frame = [self frame];
+  if ([self window] != nil)
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  
+  if (NSEqualRects(frame, NSZeroRect))
+    {
+      return NSZeroPoint;
+    }
+  
+  return NSMakePoint(NSMidX(frame), NSMidY(frame));
+}
+
+- (NSString *) accessibilityURL
+{
+  return nil; // Buttons don't typically have URLs
+}
+
+- (NSNumber *) accessibilityIndex
+{
+  id parent = [self superview];
+  if (parent && [parent respondsToSelector: @selector(subviews)])
+    {
+      NSArray *siblings = [parent subviews];
+      NSUInteger index = [siblings indexOfObject: self];
+      if (index != NSNotFound)
+        {
+          return [NSNumber numberWithUnsignedInteger: index];
+        }
+    }
+  return [NSNumber numberWithInteger: 0];
+}
+
+// MARK: - NSAccessibilityButton Protocol Implementation
+
+- (BOOL) accessibilityPerformPress
+{
+  if ([self isEnabled])
+    {
+      [self performClick: self];
+      return YES;
+    }
+  return NO;
+}
+
+- (BOOL) isAccessibilitySelected
+{
+  NSString *role = [self accessibilityRole];
+  if ([role isEqualToString: NSAccessibilityCheckBoxRole] || [role isEqualToString: NSAccessibilityRadioButtonRole])
+    {
+      return [self state] == NSControlStateValueOn;
+    }
+  
+  // For regular buttons, selection doesn't apply
+  return NO;
+}
+
+- (void) setAccessibilitySelected: (BOOL) selected
+{
+  NSString *role = [self accessibilityRole];
+  if ([role isEqualToString: NSAccessibilityCheckBoxRole] || [role isEqualToString: NSAccessibilityRadioButtonRole])
+    {
+      [self setState: selected ? NSControlStateValueOn : NSControlStateValueOff];
+    }
+}
+
+- (NSString *) accessibilityPlaceholderValue
+{
+  return nil; // Buttons don't have placeholder values
+}
+
+- (void) setAccessibilityPlaceholderValue: (NSString *) placeholderValue
+{
+  // Buttons don't support placeholder values
+}
+
+// MARK: - Additional Methods
+
+- (NSArray *) accessibilityCustomRotors
+{
+  return nil;
+}
+
+- (BOOL) accessibilityPerformEscape
+{
+  return NO;
+}
+
+- (NSArray *) accessibilityCustomActions
+{
+  return nil;
+}
+
+- (void) setAccessibilityElement: (BOOL) isElement
+{
+  // Buttons are always accessibility elements
+}
+
+- (void) setAccessibilityFrame: (NSRect) frame
+{
+  // Frame is determined by the actual view frame
+}
+
+- (void) setAccessibilityParent: (id) parent
+{
+  // Parent relationship is managed by the view hierarchy
+}
+
+- (void) setAccessibilityFocused: (BOOL) focused
+{
+  if (focused)
+    {
+      [[self window] makeFirstResponder: self];
+    }
+  else
+    {
+      if ([[self window] firstResponder] == self)
+        {
+          [[self window] makeFirstResponder: nil];
+        }
+    }
+}
+
 @end
 
 /**

@@ -22,8 +22,11 @@
    Boston, MA 02110 USA.
 */
 
+#import "AppKit/NSEvent.h"
 #import "AppKit/NSSwitch.h"
 #import "AppKit/NSAccessibility.h"
+#import "AppKit/NSAccessibilityProtocols.h"
+#import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSTheme.h"
 
 @implementation NSSwitch
@@ -238,8 +241,8 @@
 
 - (NSString *)accessibilityIdentifier
 {
-  // Return a unique identifier if set, otherwise nil
-  return [super accessibilityIdentifier];
+  // Return nil as NSSwitch doesn't have a specific identifier by default
+  return nil;
 }
 
 - (id)accessibilityParent
@@ -255,14 +258,7 @@
 // NSAccessibilityButton protocol methods
 - (NSString *)accessibilityLabel
 {
-  // Try to get a label from associated label control or accessibility label
-  NSString *label = [super accessibilityLabel];
-  if (label != nil)
-    {
-      return label;
-    }
-  
-  // Fallback to a generic switch description
+  // Return a generic switch description as fallback
   return @"Switch";
 }
 
@@ -420,12 +416,6 @@
 
 - (NSString *)accessibilityHelp
 {
-  NSString *help = [super accessibilityHelp];
-  if (help != nil)
-    {
-      return help;
-    }
-  
   return @"Toggle switch control";
 }
 
@@ -449,6 +439,95 @@
     }
   
   return @"Switch";
+}
+
+// NSAccessibilityElement protocol methods required but not previously implemented
+- (NSString *)accessibilitySubrole
+{
+  return nil; // Switches don't typically have subroles
+}
+
+- (NSArray *)accessibilityChildren
+{
+  return nil; // Switches typically don't have child elements
+}
+
+- (NSArray *)accessibilitySelectedChildren
+{
+  return nil; // Not applicable to switches
+}
+
+- (NSArray *)accessibilityVisibleChildren
+{
+  return nil; // Not applicable to switches
+}
+
+- (id)accessibilityWindow
+{
+  return [self window];
+}
+
+- (id)accessibilityTopLevelUIElement
+{
+  return [[self window] windowController]; // Return the top level UI element
+}
+
+- (NSPoint)accessibilityActivationPoint
+{
+  NSRect bounds = [self bounds];
+  NSPoint center = NSMakePoint(NSMidX(bounds), NSMidY(bounds));
+  return [self convertPoint:center toView:nil]; // Convert to window coordinates
+}
+
+- (NSString *)accessibilityURL
+{
+  return nil; // Switches don't typically have URLs
+}
+
+- (NSNumber *)accessibilityIndex
+{
+  return nil; // Index not typically applicable to switches
+}
+
+- (NSArray *)accessibilityCustomRotors
+{
+  return nil; // No custom rotors for basic switches
+}
+
+- (BOOL)accessibilityPerformEscape
+{
+  return NO; // Switches don't handle escape actions
+}
+
+- (NSArray *)accessibilityCustomActions
+{
+  return nil; // No custom actions for basic switches
+}
+
+- (void)setAccessibilityElement:(BOOL)isElement
+{
+  // This is typically handled by the system, but we can store if needed
+  // For a switch, it should always be an accessibility element
+}
+
+- (void)setAccessibilityFrame:(NSRect)frame
+{
+  // Frame is typically calculated from the view's bounds
+  // This setter may be used by accessibility tools to override
+}
+
+- (void)setAccessibilityParent:(id)parent
+{
+  // Parent is typically managed by the view hierarchy
+  // This setter may be used by accessibility tools
+}
+
+- (void)setAccessibilityFocused:(BOOL)focused
+{
+  if (focused && [self acceptsFirstResponder])
+    {
+      [[self window] makeFirstResponder:self];
+    }
 }
 
 // Button-specific properties required by NSAccessibilityButton protocol
