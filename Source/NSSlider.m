@@ -586,8 +586,9 @@ static Class cellClass;
     {
       NSMutableArray *values = [NSMutableArray array];
       NSInteger tickCount = [self numberOfTickMarks];
+      NSInteger i = 0;
       
-      for (NSInteger i = 0; i < tickCount; i++)
+      for (i = 0; i < tickCount; i++)
         {
           double tickValue = [self tickMarkValueAtIndex: i];
           [values addObject: [NSNumber numberWithDouble: tickValue]];
