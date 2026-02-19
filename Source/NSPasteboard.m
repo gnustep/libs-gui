@@ -255,7 +255,7 @@
 	arguments and have a name formed of this value followed by
 	<code>:userData:error:</code>
 <example>
-// If NSMessage=encryptData
+// If NSMessage=encryptString
 - (void) encryptString: (NSPasteboard*)pboard
 	      userData: (NSString*)userData
 		 error: (NSString**)error;
