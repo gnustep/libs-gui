@@ -978,6 +978,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSString		*timeout;
   double		seconds;
   NSDate		*finishBy;
+  NSDate		*launchBy;
   NSString		*appPath;
   id			provider;
   NSString		*message;
@@ -1033,17 +1034,19 @@ static NSString         *disabledName = @".GNUstepDisabled";
           seconds = 30.0;
 	}
     }
-  finishBy = [NSDate dateWithTimeIntervalSinceNow: seconds];
   appPath = [service objectForKey: @"ServicePath"];
   userData = [service objectForKey: @"NSUserData"];
   message = [service objectForKey: @"NSMessage"];
   selName = [message stringByAppendingString: @":userData:error:"];
 
-  /*
-   * Locate the service provider ... this will be a proxy to the remote
+  /* Locate the service provider ... this will be a proxy to the remote
    * object, or a local object (if we provide the service ourself)
+   * The provider may need to be launched, so allow long enough for most
+   * processes to launch, even if this is much longer than the time that
+   * the service itsself is expected to take.
    */
-  provider = GSContactApplication(appPath, port, finishBy);
+  launchBy = [NSDate dateWithTimeIntervalSinceNow: 10.0];
+  provider = GSContactApplication(appPath, port, launchBy);
   if (provider == nil)
     {
       if (showAlerts)
@@ -1055,6 +1058,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	}
       return NO;
     }
+
+  finishBy = [NSDate dateWithTimeIntervalSinceNow: seconds];
 
   /*
    * If the service provider is a remote object, we can set timeouts on
@@ -1733,7 +1738,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 id
 GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
 {
-  id	app;
+  id		app;
 
   if (port == nil)
     {
@@ -1756,6 +1761,7 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
 	}
       NS_HANDLER
 	{
+	  NSLog(@"Exception connecting to port '%@': %@", port, localException);
 	  return nil;                /* Fatal error in DO    */
 	}
       NS_ENDHANDLER
@@ -1765,9 +1771,11 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
       if (appName == nil
 	|| [[NSWorkspace sharedWorkspace] launchApplication: appName] == NO)
 	{
+	  if (appName) NSLog(@"Failed to launch '%@'", appName);
           if (port == nil
 	    || [[NSWorkspace sharedWorkspace] launchApplication: port] == NO)
 	    {
+	      if (port) NSLog(@"Failed to launch '%@'", port);
 	      return nil;		/* Unable to launch.	*/
 	    }
 	}
@@ -1794,6 +1802,7 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
 	}
       NS_HANDLER
 	{
+	  NSLog(@"Exception connecting to port '%@': %@", port, localException);
 	  return nil;
 	}
       NS_ENDHANDLER
