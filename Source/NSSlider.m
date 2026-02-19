@@ -586,9 +586,8 @@ static Class cellClass;
     {
       NSMutableArray *values = [NSMutableArray array];
       NSInteger tickCount = [self numberOfTickMarks];
-      NSInteger i = 0;
       
-      for (i = 0; i < tickCount; i++)
+      for (NSInteger i = 0; i < tickCount; i++)
         {
           double tickValue = [self tickMarkValueAtIndex: i];
           [values addObject: [NSNumber numberWithDouble: tickValue]];
@@ -695,6 +694,35 @@ static Class cellClass;
           [[self window] makeFirstResponder: nil];
         }
     }
+}
+
+- (BOOL) isAccessibilityElement
+{
+  return ![self isHidden] && [self superview] != nil;
+}
+
+- (NSRect) accessibilityFrame
+{
+  NSRect frame = [self frame];
+  if ([self superview])
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  if ([self window])
+    {
+      frame.origin = [[self window] convertRectToScreen: frame].origin;
+    }
+  return frame;
+}
+
+- (id) accessibilityParent
+{
+  return [self superview];
+}
+
+- (BOOL) isAccessibilityFocused
+{
+  return [[self window] firstResponder] == self;
 }
 
 @end
