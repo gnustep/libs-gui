@@ -248,7 +248,7 @@ static Class segmentedControlCellClass;
       NSArray *children = [self accessibilityChildren];
       if (selected < [children count])
         {
-          return @[children[selected]];
+          return [NSArray arrayWithObject: [children objectAtIndex: selected]];
         }
     }
   
