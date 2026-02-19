@@ -95,6 +95,7 @@ extern "C" {
 - (void) setAccessibilityFrame: (NSRect) frame;
 - (void) setAccessibilityParent: (id) parent;
 - (void) setAccessibilityFocused: (BOOL) focused;
+- (void) setAccessibilityHelp: (NSString *) helpText;
 @end
 
 @protocol NSAccessibilityButton <NSAccessibilityElement>

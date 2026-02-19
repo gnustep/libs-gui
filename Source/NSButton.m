@@ -38,6 +38,7 @@
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSAccessibility.h"
 #import "AppKit/NSAccessibilityProtocols.h"
+#import "AppKit/NSAccessibilityConstants.h"
 
 #import "GSFastEnumeration.h"
 
@@ -59,18 +60,27 @@ static id buttonCellClass = nil;
 - (NSString *) accessibilityRole
 {
   NSButtonCell *cell = [self cell];
+  
+  // Check for radio button first
   if ([cell respondsToSelector: @selector(_isRadio)] && [cell _isRadio])
     {
       return NSAccessibilityRadioButtonRole;
     }
   
-  // Check state behavior to determine if it's a checkbox-like button
-  if ([self allowsMixedState] || ([self state] != NSControlStateValueMixed && [self state] != NSControlStateValueOn && [self state] != NSControlStateValueOff))
+  // Check button behavior to determine if it's stateful (checkbox-like)
+  // Buttons that maintain state (can be on/off) are typically checkboxes
+  if ([self allowsMixedState] || 
+      ([self state] != NSControlStateValueOff && [self respondsToSelector: @selector(setState:)]))
     {
-      return NSAccessibilityCheckBoxRole;
+      // Additional check: if button changes state when clicked, it's likely a checkbox/toggle
+      NSControlStateValue initialState = [self state];
+      if (initialState == NSControlStateValueOn || initialState == NSControlStateValueOff || initialState == NSControlStateValueMixed)
+        {
+          return NSAccessibilityCheckBoxRole;
+        }
     }
   
-  // Default to regular button
+  // Default to regular button for momentary buttons
   return NSAccessibilityButtonRole;
 }
 
@@ -117,13 +127,12 @@ static id buttonCellClass = nil;
 
 - (NSString *) accessibilityHelp
 {
-  NSString *toolTip = [self toolTip];
-  if (toolTip && [toolTip length] > 0)
-    {
-      return toolTip;
-    }
-  
-  return nil;
+  return [self toolTip];
+}
+
+- (void) setAccessibilityHelp: (NSString *) helpText
+{
+  [self setToolTip: helpText];
 }
 
 - (BOOL) isAccessibilityEnabled
@@ -213,16 +222,49 @@ static id buttonCellClass = nil;
       return [self state] == NSControlStateValueOn;
     }
   
-  // For regular buttons, selection doesn't apply
+  // Also handle toggle buttons that might return NSAccessibilityButtonRole but are stateful
+  if ([role isEqualToString: NSAccessibilityButtonRole])
+    {
+      // Check if this is a stateful button (can be on/off) by examining current state
+      NSControlStateValue currentState = [self state];
+      if (currentState == NSControlStateValueOn || currentState == NSControlStateValueOff || 
+          currentState == NSControlStateValueMixed || [self allowsMixedState])
+        {
+          // This is a stateful button (toggle button), return its selection state
+          return currentState == NSControlStateValueOn;
+        }
+    }
+  
+  // For non-stateful buttons, selection doesn't apply
   return NO;
 }
 
 - (void) setAccessibilitySelected: (BOOL) selected
 {
+  // Don't change state if the button is disabled
+  if (![self isEnabled])
+    {
+      return;
+    }
+  
   NSString *role = [self accessibilityRole];
+  
+  // Handle checkbox and radio buttons
   if ([role isEqualToString: NSAccessibilityCheckBoxRole] || [role isEqualToString: NSAccessibilityRadioButtonRole])
     {
       [self setState: selected ? NSControlStateValueOn : NSControlStateValueOff];
+    }
+  // Also handle toggle buttons that might return NSAccessibilityButtonRole but are stateful
+  else if ([role isEqualToString: NSAccessibilityButtonRole])
+    {
+      // Check if this is a stateful button (can be on/off) by examining current state
+      NSControlStateValue currentState = [self state];
+      if (currentState == NSControlStateValueOn || currentState == NSControlStateValueOff || 
+          currentState == NSControlStateValueMixed || [self allowsMixedState])
+        {
+          // This is a stateful button (toggle button), so we can change its selection state
+          [self setState: selected ? NSControlStateValueOn : NSControlStateValueOff];
+        }
     }
 }
 
@@ -281,6 +323,35 @@ static id buttonCellClass = nil;
           [[self window] makeFirstResponder: nil];
         }
     }
+}
+
+- (BOOL) isAccessibilityElement
+{
+  return ![self isHidden] && [self superview] != nil;
+}
+
+- (NSRect) accessibilityFrame
+{
+  NSRect frame = [self frame];
+  if ([self superview])
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  if ([self window])
+    {
+      frame.origin = [[self window] convertRectToScreen: frame].origin;
+    }
+  return frame;
+}
+
+- (id) accessibilityParent
+{
+  return [self superview];
+}
+
+- (BOOL) isAccessibilityFocused
+{
+  return [[self window] firstResponder] == self;
 }
 
 @end

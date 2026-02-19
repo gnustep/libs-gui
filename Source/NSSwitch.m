@@ -406,7 +406,7 @@
 // Additional accessibility support methods
 - (NSString *)accessibilityRole
 {
-  return @"AXCheckBox"; // iOS/macOS uses checkbox role for switches
+  return NSAccessibilityCheckBoxRole; // iOS/macOS uses checkbox role for switches
 }
 
 - (NSString *)accessibilityRoleDescription
@@ -416,7 +416,17 @@
 
 - (NSString *)accessibilityHelp
 {
+  NSString *toolTip = [self toolTip];
+  if (toolTip && [toolTip length] > 0)
+    {
+      return toolTip;
+    }
   return @"Toggle switch control";
+}
+
+- (void) setAccessibilityHelp: (NSString *) helpText
+{
+  [self setToolTip: helpText];
 }
 
 - (BOOL)isAccessibilityElement

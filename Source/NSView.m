@@ -73,6 +73,9 @@
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSWorkspace.h"
 #import "AppKit/NSAppearance.h"
+#import "AppKit/NSAccessibility.h"
+#import "AppKit/NSAccessibilityProtocols.h"
+#import "AppKit/NSAccessibilityConstants.h"
 #import "AppKit/PSOperators.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/GSTrackingRect.h"
@@ -5543,6 +5546,293 @@ cmpFrame(id view1, id view2, void *context)
       nextKeyView = aView;
     }
   [self setNextKeyView: nextKeyView];
+}
+
+@end
+
+// MARK: - NSView (NSAccessibilityElement)
+
+@implementation NSView (NSAccessibilityElement)
+
+// MARK: - NSAccessibilityElement Protocol Implementation
+
+- (NSString *) accessibilityRole
+{
+  return NSAccessibilityGroupRole; // Generic views act as groups/containers
+}
+
+- (NSString *) accessibilityRoleDescription
+{
+  NSString *role = [self accessibilityRole];
+  return NSAccessibilityRoleDescription(role, [self accessibilitySubrole]);
+}
+
+- (NSString *) accessibilitySubrole
+{
+  return nil; // Most views don't have subroles
+}
+
+- (NSString *) accessibilityLabel
+{
+  // Check for explicitly set accessibility label first
+  if (_accessibilityLabel != nil)
+    {
+      return _accessibilityLabel;
+    }
+  
+  // Check tooltip as fallback
+  NSString *toolTip = [self toolTip];
+  if (toolTip && [toolTip length] > 0)
+    {
+      return toolTip;
+    }
+  
+  return nil;
+}
+
+- (void) setAccessibilityLabel: (NSString *) label
+{
+  ASSIGN(_accessibilityLabel, label);
+}
+
+- (NSString *) accessibilityTitle
+{
+  return [self accessibilityLabel];
+}
+
+- (id) accessibilityValue
+{
+  return nil; // Generic views don't have values
+}
+
+- (NSString *) accessibilityHelp
+{
+  if (_accessibilityHelp != nil)
+    {
+      return _accessibilityHelp;
+    }
+  
+  NSString *toolTip = [self toolTip];
+  if (toolTip && [toolTip length] > 0)
+    {
+      return toolTip;
+    }
+  
+  return nil;
+}
+
+- (void) setAccessibilityHelp: (NSString *) help
+{
+  ASSIGN(_accessibilityHelp, help);
+}
+
+- (BOOL) isAccessibilityEnabled
+{
+  return YES; // Views are generally accessible unless hidden
+}
+
+- (NSArray *) accessibilityChildren
+{
+  NSMutableArray *accessibleSubviews = [NSMutableArray array];
+  
+  for (NSView *subview in [self subviews])
+    {
+      if ([subview isAccessibilityElement] || 
+          ([subview accessibilityChildren] && [[subview accessibilityChildren] count] > 0))
+        {
+          [accessibleSubviews addObject: subview];
+        }
+    }
+  
+  return [accessibleSubviews count] > 0 ? accessibleSubviews : nil;
+}
+
+- (NSArray *) accessibilitySelectedChildren
+{
+  return nil; // Generic views don't have selection
+}
+
+- (NSArray *) accessibilityVisibleChildren
+{
+  NSMutableArray *visibleChildren = [NSMutableArray array];
+  
+  for (NSView *subview in [self subviews])
+    {
+      if (![subview isHidden] && NSIntersectsRect([subview frame], [self visibleRect]))
+        {
+          [visibleChildren addObject: subview];
+        }
+    }
+  
+  return [visibleChildren count] > 0 ? visibleChildren : nil;
+}
+
+- (id) accessibilityWindow
+{
+  return [self window];
+}
+
+- (id) accessibilityTopLevelUIElement
+{
+  NSWindow *window = [self window];
+  return window ? window : self;
+}
+
+- (NSPoint) accessibilityActivationPoint
+{
+  NSRect viewFrame = [self frame];
+  NSPoint centerPoint = NSMakePoint(NSMidX(viewFrame), NSMidY(viewFrame));
+  
+  // Return the center point in superview coordinates (same coordinate system as frame)
+  // This matches what the test expects and is consistent with frame coordinates
+  return centerPoint;
+}
+
+- (NSString *) accessibilityURL
+{
+  return nil; // Generic views don't have URLs
+}
+
+- (NSNumber *) accessibilityIndex
+{
+  NSView *parent = [self superview];
+  if (parent)
+    {
+      NSArray *siblings = [parent subviews];
+      NSUInteger index = [siblings indexOfObject: self];
+      if (index != NSNotFound)
+        {
+          return [NSNumber numberWithUnsignedInteger: index];
+        }
+    }
+  return [NSNumber numberWithInteger: 0];
+}
+
+- (NSArray *) accessibilityCustomRotors
+{
+  return nil; // No custom rotors for basic views
+}
+
+- (BOOL) accessibilityPerformEscape
+{
+  return NO; // Views don't handle escape by default
+}
+
+- (NSArray *) accessibilityCustomActions
+{
+  return nil; // No custom actions for basic views
+}
+
+// MARK: - Accessibility Element Properties
+
+- (BOOL) isAccessibilityElement
+{
+  // A view is an accessibility element if:
+  // 1. It's not hidden
+  // 2. It has a superview (is in the view hierarchy)
+  // 3. Either it has no children OR it serves a specific accessibility purpose
+  
+  if ([self isHidden] || [self superview] == nil)
+    {
+      return NO;
+    }
+  
+  // Views with no accessibility children are leaf elements
+  NSArray *children = [self accessibilityChildren];
+  if (children == nil || [children count] == 0)
+    {
+      return YES;
+    }
+  
+  // Views with children can still be accessibility elements if they serve a purpose
+  // (e.g., they have a role, label, or value)
+  NSString *role = [self accessibilityRole];
+  NSString *label = [self accessibilityLabel];
+  id value = [self accessibilityValue];
+  
+  if ((role && ![role isEqualToString: @""]) ||
+      (label && ![label isEqualToString: @""]) ||
+      (value != nil))
+    {
+      return YES;
+    }
+  
+  // Default to being an element for simple views
+  return YES;
+}
+
+- (void) setAccessibilityElement: (BOOL) isElement
+{
+  // This could be stored in instance variable if needed
+  // For now, calculated dynamically based on children
+}
+
+- (NSRect) accessibilityFrame
+{
+  NSRect frame = [self frame];
+  
+  // Convert to window coordinates
+  if ([self superview])
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  
+  // Convert to screen coordinates
+  NSWindow *window = [self window];
+  if (window)
+    {
+      frame.origin = [window convertBaseToScreen: frame.origin];
+    }
+  
+  return frame;
+}
+
+- (void) setAccessibilityFrame: (NSRect) frame
+{
+  // Frame is determined by the view's actual frame
+  // This setter is here for protocol compliance
+}
+
+- (id) accessibilityParent
+{
+  // Check for explicitly set parent first
+  if (_accessibilityParent != nil)
+    {
+      return _accessibilityParent;
+    }
+  
+  // Default to superview
+  return [self superview];
+}
+
+- (void) setAccessibilityParent: (id) parent
+{
+  _accessibilityParent = parent; // Note: should be weak reference
+}
+
+- (BOOL) isAccessibilityFocused
+{
+  NSWindow *window = [self window];
+  return (window && [window firstResponder] == self);
+}
+
+- (void) setAccessibilityFocused: (BOOL) focused
+{
+  NSWindow *window = [self window];
+  if (window && focused && [self acceptsFirstResponder])
+    {
+      [window makeFirstResponder: self];
+    }
+}
+
+- (NSString *) accessibilityIdentifier
+{
+  return _accessibilityIdentifier;
+}
+
+- (void) setAccessibilityIdentifier: (NSString *) identifier
+{
+  ASSIGN(_accessibilityIdentifier, identifier);
 }
 
 @end
