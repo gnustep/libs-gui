@@ -211,8 +211,9 @@ static Class segmentedControlCellClass;
   // Each segment should be represented as a child element
   NSMutableArray *children = [NSMutableArray array];
   NSInteger segmentCount = [self segmentCount];
-  
-  for (NSInteger i = 0; i < segmentCount; i++)
+  NSInteger i = 0;
+
+  for (i = 0; i < segmentCount; i++)
     {
       // Create a pseudo-element for each segment
       NSString *segmentLabel = [self labelForSegment: i];
@@ -223,13 +224,16 @@ static Class segmentedControlCellClass;
       
       // In a full implementation, we would create actual accessibility element objects
       // For now, we'll return segment information as a dictionary
-      NSDictionary *segmentInfo = @{
-        @"label": segmentLabel,
-        @"index": @(i),
-        @"selected": @([self selectedSegment] == i),
-        @"enabled": @([self isEnabledForSegment: i])
-      };
-      
+      NSDictionary *segmentInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+						  segmentLabel,
+						@"label",
+						     [NSNumber numberWithInt: i],
+						@"index",
+						    [NSNumber numberWithBool: ([self selectedSegment] == i)],
+						@"selected",
+						    [NSNumber numberWithBool: ([self isEnabledForSegment: i])],
+						@"enabled",
+						nil];
       [children addObject: segmentInfo];
     }
   
