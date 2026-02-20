@@ -707,13 +707,14 @@ GSXibLoading.h \
 GSXibKeyedUnarchiver.h \
 GSHelpAttachment.h \
 GSFontAssetDownloader.h \
-GSFontAssetInstaller.h
+GSFontAssetInstaller.h \
+GSViewAccessibilityData.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 
 HEADERS_INSTALL = ${APPKIT_HEADERS} \
-                  ${GUI_HEADERS} \
-                  ${COCOA_HEADERS}
+		  ${GUI_HEADERS} \
+		  ${COCOA_HEADERS}
 
 # Resources
 RESOURCE_SET_NAME = libgui-resources
