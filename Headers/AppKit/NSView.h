@@ -41,8 +41,9 @@
 #import <AppKit/NSAccessibilityConstants.h>
 #import <AppKit/NSAccessibilityProtocols.h>
 #import <AppKit/NSUserInterfaceLayout.h>
-#import <AppKit/GSViewAccessibilityData.h>
 #import <AppKit/NSLayoutConstraint.h>
+
+@class GSViewAccessibilityData;
 
 @class NSArray;
 @class NSAttributedString;

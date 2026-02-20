@@ -23,7 +23,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#import <AppKit/GSViewAccessibilityData.h>
+#import "GNUstepGUI/GSViewAccessibilityData.h"
 #import <Foundation/NSString.h>
 #import <Foundation/NSArray.h>
 
