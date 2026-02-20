@@ -128,7 +128,6 @@
     }
   if (_target != nil && _selector != NULL && [_target respondsToSelector: _selector])
     {
-      // Suppress potential leak warning for performSelector (intentional dynamic invocation)
       [_target performSelector: _selector withObject: self];
       return YES;
     }
@@ -139,7 +138,7 @@
 {
   return [NSString stringWithFormat: @"<%@: %p name=%@ hasHandler=%@ target=%@ selector=%@>",
           NSStringFromClass([self class]), self, _name,
-          _handler?@"YES":@"NO", _target, NSStringFromSelector(_selector)];
+          _handler ? @"YES" : @"NO", _target, NSStringFromSelector(_selector)];
 }
 
 @end

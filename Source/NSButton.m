@@ -69,8 +69,7 @@ static id buttonCellClass = nil;
   
   // Check button behavior to determine if it's stateful (checkbox-like)
   // Buttons that maintain state (can be on/off) are typically checkboxes
-  if ([self allowsMixedState] || 
-      ([self state] != NSControlStateValueOff && [self respondsToSelector: @selector(setState:)]))
+  if ([self allowsMixedState] || [self state] != NSControlStateValueOff)
     {
       // Additional check: if button changes state when clicked, it's likely a checkbox/toggle
       NSControlStateValue initialState = [self state];
