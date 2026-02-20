@@ -29,6 +29,31 @@
 
 @implementation GSViewAccessibilityData
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      // Set default values to match NSView behavior
+      _accessibilityEnabled = YES;
+
+      // Explicituly set other properties to nil/NO to avoid uninitialized values
+      _accessibilityLabel = nil;
+      _accessibilityValue = nil;
+      _accessibilityHelp = nil;
+      _accessibilityRole = nil;
+      _accessibilityTitle = nil;
+      _accessibilityRoleDescription = nil;
+      _accessibilityIdentifier = nil;
+      _accessibilityUserInputLabels = nil;
+      _accessibilityChildren = nil;
+      _accessibilityCustomActions = nil;
+      _accessibilityParent = nil;
+      _accessibilityFocused = NO;
+    }
+  return self;
+}
+
 - (void) dealloc
 {
   RELEASE(_accessibilityLabel);

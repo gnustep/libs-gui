@@ -300,7 +300,6 @@ NSUserDefaultsController.m \
 NSUserInterfaceCompression.m \
 NSUserInterfaceItemSearching.m \
 NSView.m \
-GSViewAccessibilityData.m \
 NSViewController.m \
 NSVisualEffectView.m \
 NSWindow.m \
@@ -380,7 +379,8 @@ GSCSEditVariableManager.m \
 GSCSTableau.m \
 GSColorSliderCell.m \
 GSFontAssetDownloader.m \
-GSFontAssetInstaller.m
+GSFontAssetInstaller.m \
+GSViewAccessibilityData.m
 
 ifeq ($(BUILD_MOVIE), yes)
 libgnustep-gui_OBJC_FILES += GSMovieView.m
