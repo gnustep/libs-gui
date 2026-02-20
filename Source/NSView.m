@@ -76,6 +76,7 @@
 #import "AppKit/NSAccessibility.h"
 #import "AppKit/NSAccessibilityProtocols.h"
 #import "AppKit/NSAccessibilityConstants.h"
+#import "AppKit/GSViewAccessibilityData.h"
 #import "AppKit/PSOperators.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/GSTrackingRect.h"
@@ -772,11 +773,24 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   TEST_RELEASE(_cursor_rects);
   TEST_RELEASE(_tracking_rects);
   TEST_RELEASE(_shadow);
+  RELEASE(_accessibilityData);
   
   [self unregisterDraggedTypes];
   [self releaseGState];
 
   [super dealloc];
+}
+
+/*
+ * Private method to lazily create accessibility data object when needed
+ */
+- (GSViewAccessibilityData *) _accessibilityData
+{
+  if (_accessibilityData == nil)
+    {
+      _accessibilityData = [[GSViewAccessibilityData alloc] init];
+    }
+  return _accessibilityData;
 }
 
 /**
@@ -5575,9 +5589,10 @@ cmpFrame(id view1, id view2, void *context)
 - (NSString *) accessibilityLabel
 {
   // Check for explicitly set accessibility label first
-  if (_accessibilityLabel != nil)
+  NSString *explicitLabel = [[self _accessibilityData] accessibilityLabel];
+  if (explicitLabel != nil)
     {
-      return _accessibilityLabel;
+      return explicitLabel;
     }
   
   // Check tooltip as fallback
@@ -5592,7 +5607,7 @@ cmpFrame(id view1, id view2, void *context)
 
 - (void) setAccessibilityLabel: (NSString *) label
 {
-  ASSIGN(_accessibilityLabel, label);
+  [[self _accessibilityData] setAccessibilityLabel: label];
 }
 
 - (NSString *) accessibilityTitle
@@ -5607,9 +5622,10 @@ cmpFrame(id view1, id view2, void *context)
 
 - (NSString *) accessibilityHelp
 {
-  if (_accessibilityHelp != nil)
+  NSString *explicitHelp = [[self _accessibilityData] accessibilityHelp];
+  if (explicitHelp != nil)
     {
-      return _accessibilityHelp;
+      return explicitHelp;
     }
   
   NSString *toolTip = [self toolTip];
@@ -5623,7 +5639,7 @@ cmpFrame(id view1, id view2, void *context)
 
 - (void) setAccessibilityHelp: (NSString *) help
 {
-  ASSIGN(_accessibilityHelp, help);
+  [[self _accessibilityData] setAccessibilityHelp: help];
 }
 
 - (BOOL) isAccessibilityEnabled
@@ -5796,9 +5812,10 @@ cmpFrame(id view1, id view2, void *context)
 - (id) accessibilityParent
 {
   // Check for explicitly set parent first
-  if (_accessibilityParent != nil)
+  id explicitParent = [[self _accessibilityData] accessibilityParent];
+  if (explicitParent != nil)
     {
-      return _accessibilityParent;
+      return explicitParent;
     }
   
   // Default to superview
@@ -5807,7 +5824,7 @@ cmpFrame(id view1, id view2, void *context)
 
 - (void) setAccessibilityParent: (id) parent
 {
-  _accessibilityParent = parent; // Note: should be weak reference
+  [[self _accessibilityData] setAccessibilityParent: parent];
 }
 
 - (BOOL) isAccessibilityFocused
@@ -5827,12 +5844,12 @@ cmpFrame(id view1, id view2, void *context)
 
 - (NSString *) accessibilityIdentifier
 {
-  return _accessibilityIdentifier;
+  return [[self _accessibilityData] accessibilityIdentifier];
 }
 
 - (void) setAccessibilityIdentifier: (NSString *) identifier
 {
-  ASSIGN(_accessibilityIdentifier, identifier);
+  [[self _accessibilityData] setAccessibilityIdentifier: identifier];
 }
 
 @end

@@ -41,6 +41,7 @@
 #import <AppKit/NSAccessibilityConstants.h>
 #import <AppKit/NSAccessibilityProtocols.h>
 #import <AppKit/NSUserInterfaceLayout.h>
+#import <AppKit/GSViewAccessibilityData.h>
 #import <AppKit/NSLayoutConstraint.h>
 
 @class NSArray;
@@ -203,20 +204,8 @@ PACKAGE_SCOPE
   NSAppearance* _appearance;
   NSUserInterfaceItemIdentifier _identifier;
 
-  // Accessibility support
-  NSString *_accessibilityLabel;
-  NSString *_accessibilityValue;
-  NSString *_accessibilityHelp;
-  NSAccessibilityRole _accessibilityRole;
-  NSString *_accessibilityTitle;
-  NSString *_accessibilityRoleDescription;
-  NSString *_accessibilityIdentifier;
-  NSArray *_accessibilityUserInputLabels;
-  NSArray *_accessibilityChildren;
-  NSArray *_accessibilityCustomActions;
-  id _accessibilityParent;
-  BOOL _accessibilityFocused;
-  BOOL _accessibilityEnabled;
+  // Accessibility support - lazy-loaded object
+  GSViewAccessibilityData *_accessibilityData;
 
 }
 

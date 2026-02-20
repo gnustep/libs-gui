@@ -300,6 +300,7 @@ NSUserDefaultsController.m \
 NSUserInterfaceCompression.m \
 NSUserInterfaceItemSearching.m \
 NSView.m \
+GSViewAccessibilityData.m \
 NSViewController.m \
 NSVisualEffectView.m \
 NSWindow.m \
