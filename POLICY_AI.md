@@ -47,11 +47,18 @@ are special considerations for AI-generated contributions.
 
 #### 4.2 Contributor responsibilities
 
+All AI-assisted contributions MUST include tests
+
 The contributor must:
 
 -   Never open a PR before reviewing the code.
 -   If the code doesn't make sense to you or you can't explain it,
     it WILL be rejected. (AKA DON'T COMMIT MESSY CODE TO OUR REPO!)
+-   A description of what is being tested
+-   Why is the test good enough?
+-   What failures is this test guarding against?
+-   Ensure that Apple-specific coding conventions are NOT being
+    used as the project also uses GCC.
     
 ## 5. Disclosure Requirement
 
