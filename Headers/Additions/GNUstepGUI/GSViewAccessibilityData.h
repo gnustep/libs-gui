@@ -3,6 +3,7 @@
    <abstract>Encapsulates accessibility properties for NSView</abstract>
 
    Copyright (C) 2026 Free Software Foundation, Inc.
+   Author: Gregory Casamento <greg.casamento@gmail.com>
 
    This file is part of the GNUstep GUI Library.
 
