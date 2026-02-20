@@ -38,7 +38,7 @@
       // Set default values to match NSView behavior
       _accessibilityEnabled = YES;
 
-      // Explicituly set other properties to nil/NO to avoid uninitialized values
+      // Explicitly set other properties to nil/NO to avoid uninitialized values
       _accessibilityLabel = nil;
       _accessibilityValue = nil;
       _accessibilityHelp = nil;
@@ -79,7 +79,7 @@
 
 - (void) setAccessibilityLabel: (NSString *)label
 {
-  ASSIGN(_accessibilityLabel, label);
+  ASSIGNCOPY(_accessibilityLabel, label);
 }
 
 - (NSString *) accessibilityValue
@@ -89,7 +89,7 @@
 
 - (void) setAccessibilityValue: (NSString *)value
 {
-  ASSIGN(_accessibilityValue, value);
+  ASSIGNCOPY(_accessibilityValue, value);
 }
 
 - (NSString *) accessibilityHelp
@@ -99,7 +99,7 @@
 
 - (void) setAccessibilityHelp: (NSString *)help
 {
-  ASSIGN(_accessibilityHelp, help);
+  ASSIGNCOPY(_accessibilityHelp, help);
 }
 
 - (NSAccessibilityRole) accessibilityRole
@@ -109,7 +109,7 @@
 
 - (void) setAccessibilityRole: (NSAccessibilityRole)role
 {
-  ASSIGN(_accessibilityRole, role);
+  ASSIGNCOPY(_accessibilityRole, role);
 }
 
 - (NSString *) accessibilityTitle
@@ -119,7 +119,7 @@
 
 - (void) setAccessibilityTitle: (NSString *)title
 {
-  ASSIGN(_accessibilityTitle, title);
+  ASSIGNCOPY(_accessibilityTitle, title);
 }
 
 - (NSString *) accessibilityRoleDescription
@@ -129,7 +129,7 @@
 
 - (void) setAccessibilityRoleDescription: (NSString *)roleDescription
 {
-  ASSIGN(_accessibilityRoleDescription, roleDescription);
+  ASSIGNCOPY(_accessibilityRoleDescription, roleDescription);
 }
 
 - (NSString *) accessibilityIdentifier
@@ -139,7 +139,7 @@
 
 - (void) setAccessibilityIdentifier: (NSString *)identifier
 {
-  ASSIGN(_accessibilityIdentifier, identifier);
+  ASSIGNCOPY(_accessibilityIdentifier, identifier);
 }
 
 - (NSArray *) accessibilityUserInputLabels
