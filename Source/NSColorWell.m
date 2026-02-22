@@ -537,6 +537,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 
   if (color)
     {
+      // If the color is a named color, return its localized name
       if ([color respondsToSelector: @selector(localizedColorNameComponent)])
         {
           NSString *name = [color localizedColorNameComponent];
@@ -546,7 +547,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
             }
         }
 
-      // Final fallback to description
+      // Fallback to description
       return [color description];
     }
   
