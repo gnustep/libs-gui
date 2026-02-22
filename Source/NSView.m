@@ -773,7 +773,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   TEST_RELEASE(_cursor_rects);
   TEST_RELEASE(_tracking_rects);
   TEST_RELEASE(_shadow);
-  RELEASE(_accessibilityData);
+  TEST_RELEASE(_accessibilityData);
   
   [self unregisterDraggedTypes];
   [self releaseGState];
