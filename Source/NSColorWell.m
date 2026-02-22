@@ -540,13 +540,13 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
       CGFloat red, green, blue, alpha;
       
       // Try to get RGB components using getRed:green:blue:alpha:
-      @try
+      NS_DURING
         {
           [color getRed: &red green: &green blue: &blue alpha: &alpha];
           return [NSString stringWithFormat: @"RGB(%.0f, %.0f, %.0f)", 
                   red * 255.0, green * 255.0, blue * 255.0];
         }
-      @catch (NSException *exception)
+      NS_HANDLER
         {
           // Fallback to individual component methods if available
           if ([color respondsToSelector: @selector(redComponent)] &&
@@ -563,6 +563,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
           // Final fallback to description
           return [color description];
         }
+      NS_ENDHANDLER;
     }
   
   return @"No color";
