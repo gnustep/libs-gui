@@ -534,36 +534,20 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 - (id) accessibilityValue
 {
   NSColor *color = [self color];
+
   if (color)
     {
-      // Use component methods directly for better compatibility
-      CGFloat red, green, blue, alpha;
-      
-      // Try to get RGB components using getRed:green:blue:alpha:
-      NS_DURING
+      if ([color respondsToSelector: @selector(localizedColorNameComponent)])
         {
-          [color getRed: &red green: &green blue: &blue alpha: &alpha];
-          return [NSString stringWithFormat: @"RGB(%.0f, %.0f, %.0f)", 
-                  red * 255.0, green * 255.0, blue * 255.0];
-        }
-      NS_HANDLER
-        {
-          // Fallback to individual component methods if available
-          if ([color respondsToSelector: @selector(redComponent)] &&
-              [color respondsToSelector: @selector(greenComponent)] &&
-              [color respondsToSelector: @selector(blueComponent)])
+          NSString *name = [color localizedColorNameComponent];
+          if (name)
             {
-              red = [color redComponent];
-              green = [color greenComponent];
-              blue = [color blueComponent]; 
-              return [NSString stringWithFormat: @"RGB(%.0f, %.0f, %.0f)",
-                      red * 255.0, green * 255.0, blue * 255.0];
+              return name;
             }
-          
-          // Final fallback to description
-          return [color description];
         }
-      NS_ENDHANDLER;
+
+      // Final fallback to description
+      return [color description];
     }
   
   return @"No color";
