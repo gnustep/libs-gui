@@ -30,7 +30,6 @@
 #import <Foundation/NSIndexSet.h>
 #import <Foundation/NSSet.h>
 #import <GNUstepBase/GSBlocks.h>
-#import <objc/runtime.h>
 
 #import "AppKit/NSCollectionView.h"
 #import "AppKit/NSCollectionViewItem.h"
