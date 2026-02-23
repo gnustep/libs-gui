@@ -142,6 +142,7 @@ static inline void _loadNSSoundPlugIns (void)
 
 - (void)_stream
 {
+  ENTER_POOL
   NSUInteger bytesRead;
   BOOL success = NO;
   void *buffer;
@@ -163,7 +164,7 @@ static inline void _loadNSSoundPlugIns (void)
                   break;
                 }
               bytesRead = [_source readBytes: buffer
-                                     length: BUFFER_SIZE];
+                                      length: BUFFER_SIZE];
               [_readLock unlock];
               [_playbackLock lock];
               success = [_sink playBytes: buffer length: bytesRead];
@@ -174,14 +175,15 @@ static inline void _loadNSSoundPlugIns (void)
         } while (_shouldLoop == YES && _shouldStop == NO);
       
       [_sink close];
-      NSZoneFree (NSDefaultMallocZone(), buffer);
+      NSZoneFree(NSDefaultMallocZone(), buffer);
     }
   
-  RETAIN(self);
+  /* Retains self and target object for duration of perform
+   */
   [self performSelectorOnMainThread: @selector(_finished:)
                          withObject: [NSNumber numberWithBool: success]
                       waitUntilDone: YES];
-  RELEASE(self);
+  LEAVE_POOL
 }
 
 - (void)_finished: (NSNumber *)finishedPlaying
