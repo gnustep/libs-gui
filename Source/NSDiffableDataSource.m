@@ -2,7 +2,7 @@
 
    Diffable data source helpers for collection and table views.
 
-   Author: Gregory Casamento (greg.casamento@gmail.com)
+   Author: Gregory Casamento <greg.casamento@gmail.com>
    Copyright (C) 2026 Free Software Foundation, Inc.
 
    This file is part of the GNUstep GUI Library.
