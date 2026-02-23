@@ -214,14 +214,12 @@ GSDiffableDefaultSectionIdentifier()
 - (void) insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
 	    beforeSectionWithIdentifier: (id)sectionIdentifier
 {
-  NSUInteger index = [_sections indexOfObject: sectionIdentifier];
+  NSUInteger insertionIndex = [_sections indexOfObject: sectionIdentifier];
 
-  if (index == NSNotFound)
+  if (insertionIndex == NSNotFound)
     {
-      index = [_sections count];
+      insertionIndex = [_sections count];
     }
-
-  NSUInteger insertionIndex = index;
 
   FOR_IN(id, section, sectionIdentifiers)
     {
@@ -337,8 +335,9 @@ GSDiffableDefaultSectionIdentifier()
 		       index: (NSUInteger *)indexOut
 {
   NSUInteger sectionIndex = 0;
+  NSUInteger count = [_sections count];
 
-  for (sectionIndex = 0; sectionIndex < [_sections count]; sectionIndex++)
+  for (sectionIndex = 0; sectionIndex < count; sectionIndex++)
     {
       id section = [_sections objectAtIndex: sectionIndex];
       NSMutableArray *items = [_itemsBySection objectForKey: section];
@@ -486,8 +485,9 @@ GSDiffableDefaultSectionIdentifier()
     {
       NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
       NSUInteger itemIndex = 0;
+      NSUInteger count = [items count];
 
-      for (itemIndex = 0; itemIndex < [items count]; itemIndex++)
+      for (itemIndex = 0; itemIndex < count; itemIndex++)
 	{
 	  NSIndexPath *path = [NSIndexPath indexPathForItem: itemIndex inSection: sectionIndex];
 	  [_identifierToIndexPath setObject: path forKey: [items objectAtIndex: itemIndex]];
@@ -542,7 +542,7 @@ GSDiffableDefaultSectionIdentifier()
       return nil;
     }
 
-  if ([indexPath respondsToSelector: @selector(length)] && [indexPath length] >= 2)
+  if ([indexPath length] >= 2)
     {
       sectionIndex = [indexPath indexAtPosition: 0];
       itemIndex = [indexPath indexAtPosition: 1];
@@ -599,8 +599,7 @@ GSDiffableDefaultSectionIdentifier()
       return 0;
     }
 
-  NSInteger count = [[_snapshot itemIdentifiersInSectionWithIdentifier: sectionIdentifier] count];
-  return count;
+  return [[_snapshot itemIdentifiersInSectionWithIdentifier: sectionIdentifier] count];
 }
 
 - (NSCollectionViewItem *) collectionView: (NSCollectionView *)collectionView
@@ -627,23 +626,10 @@ GSDiffableDefaultSectionIdentifier()
 	  // Mark that we're creating an item for this index path
 	  [_creatingIndexPaths addObject: indexPath];
 
-	  // Build a provider-friendly index path using item/section semantics.
-	  NSUInteger sectionIndex = 0;
-	  NSUInteger itemIndex = 0;
-
-	  if ([indexPath respondsToSelector: @selector(length)] && [indexPath length] >= 2)
-	    {
-	      sectionIndex = [indexPath indexAtPosition: 0];
-	      itemIndex = [indexPath indexAtPosition: 1];
-	    }
-
-	  NSIndexPath *providerIndexPath = [NSIndexPath indexPathForItem: itemIndex
-							       inSection: sectionIndex];
-
 	  result = (NSCollectionViewItem *)
 	    CALL_NON_NULL_BLOCK(_itemProvider,
 				collectionView,
-				providerIndexPath,
+				indexPath,
 				identifier);
 
 	  if ([result respondsToSelector: @selector(setRepresentedObject:)])
@@ -755,7 +741,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
   NSUInteger sectionIndex = 0;
   NSUInteger itemIndex = 0;
 
-  if ([indexPath respondsToSelector: @selector(length)] && [indexPath length] >= 2)
+  if ([indexPath length] >= 2)
     {
       sectionIndex = [indexPath indexAtPosition: 0];
       itemIndex = [indexPath indexAtPosition: 1];

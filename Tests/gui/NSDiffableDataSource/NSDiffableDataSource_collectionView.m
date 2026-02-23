@@ -26,13 +26,13 @@
 @end
 
 @implementation TestCollectionViewItem
-- (id)initWithIdentifier:(NSString *)identifier
+- (id)initWithIdentifier: (NSString *)identifier
 {
   self = [super init];
   if (self) {
     // Create a simple view for testing
-    NSView *view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
-    [self setView:view];
+    NSView *view = [[NSView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
+    [self setView: view];
     [view release];
   }
   return self;
@@ -47,21 +47,21 @@ int main()
     
     // Test 1: Create collection view and data source
     NSRect frame = NSMakeRect(0, 0, 400, 300);
-    NSCollectionView *collectionView = [[NSCollectionView alloc] initWithFrame:frame];
+    NSCollectionView *collectionView = [[NSCollectionView alloc] initWithFrame: frame];
     PASS(collectionView != nil, "Collection view creation");
     
     // Set up a simple grid layout
     NSCollectionViewGridLayout *layout = [[NSCollectionViewGridLayout alloc] init];
-    [layout setMaximumNumberOfRows:3];
-    [layout setMaximumNumberOfColumns:3];
-    [collectionView setCollectionViewLayout:layout];
+    [layout setMaximumNumberOfRows: 3];
+    [layout setMaximumNumberOfColumns: 3];
+    [collectionView setCollectionViewLayout: layout];
     [layout release];
     
     // Create the diffable data source with NULL item provider for testing
     // Note: In a real implementation, you would provide a proper block
     NSCollectionViewDiffableDataSource *dataSource = [[NSCollectionViewDiffableDataSource alloc] 
-                                                       initWithCollectionView:collectionView 
-                                                       itemProvider:NULL];
+                                                       initWithCollectionView: collectionView 
+                                                       itemProvider: NULL];
     PASS(dataSource != nil, "Data source creation");
     
     // Test 2: Verify data source setup (simplified for NULL item provider)
@@ -72,28 +72,28 @@ int main()
     NSDiffableDataSourceSnapshot *snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
     
     // Add sections
-    [snapshot appendSectionsWithIdentifiers:[NSArray arrayWithObjects:@"Section1", @"Section2", nil]];
+    [snapshot appendSectionsWithIdentifiers: [NSArray arrayWithObjects: @"Section1", @"Section2", nil]];
     
     // Add items
-    [snapshot appendItemsWithIdentifiers:[NSArray arrayWithObjects:@"Item1", @"Item2", nil] intoSectionWithIdentifier:@"Section1"];
-    [snapshot appendItemsWithIdentifiers:[NSArray arrayWithObjects:@"Item3", @"Item4", @"Item5", nil] intoSectionWithIdentifier:@"Section2"];
+    [snapshot appendItemsWithIdentifiers: [NSArray arrayWithObjects: @"Item1", @"Item2", nil] intoSectionWithIdentifier: @"Section1"];
+    [snapshot appendItemsWithIdentifiers: [NSArray arrayWithObjects: @"Item3", @"Item4", @"Item5", nil] intoSectionWithIdentifier: @"Section2"];
     
     // Apply snapshot (may have limited functionality without item provider)
-    [dataSource applySnapshot:snapshot animatingDifferences:NO];
+    [dataSource applySnapshot: snapshot animatingDifferences: NO];
     
-    // Test 4: Verify data source methods work with basic counting
-    PASS([dataSource numberOfSectionsInCollectionView:collectionView] >= 0, "Number of sections is non-negative");
+    // Test 4:  Verify data source methods work with basic counting
+    PASS([dataSource numberOfSectionsInCollectionView: collectionView] >= 0, "Number of sections is non-negative");
     
-    // Test 5: Basic snapshot functionality
+    // Test 5:  Basic snapshot functionality
     NSDiffableDataSourceSnapshot *retrievedSnapshot = [dataSource snapshot];
     PASS(retrievedSnapshot != nil, "Can retrieve snapshot from data source");
     PASS([retrievedSnapshot numberOfSections] >= 0, "Retrieved snapshot has valid section count");
     
-    // Test 6: Basic snapshot updates
+    // Test 6:  Basic snapshot updates
     NSDiffableDataSourceSnapshot *updatedSnapshot = [dataSource snapshot];
     if (updatedSnapshot) {
-      [updatedSnapshot appendItemsWithIdentifiers:[NSArray arrayWithObjects:@"Item6", nil] intoSectionWithIdentifier:@"Section2"];
-      [dataSource applySnapshot:updatedSnapshot animatingDifferences:NO];
+      [updatedSnapshot appendItemsWithIdentifiers: [NSArray arrayWithObjects: @"Item6", nil] intoSectionWithIdentifier: @"Section2"];
+      [dataSource applySnapshot: updatedSnapshot animatingDifferences: NO];
       PASS(YES, "Snapshot update completed");
     } else {
       PASS(NO, "Could not retrieve snapshot for update");
