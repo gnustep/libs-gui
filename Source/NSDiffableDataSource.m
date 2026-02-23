@@ -800,11 +800,14 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
       if (sectionIndex != NSNotFound)
 	{
 	  NSInteger runningTotal = 0;
-	  for (NSUInteger i = 0; i < sectionIndex; i++)
+	  NSUInteger i = 0;
+
+	  for (i = 0; i < sectionIndex; i++)
 	    {
 	      id sec = [[_snapshot sectionIdentifiers] objectAtIndex: i];
 	      runningTotal += [[_snapshot itemIdentifiersInSectionWithIdentifier: sec] count];
 	    }
+
 	  NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
 	  [rowsToReload addIndexesInRange: NSMakeRange(runningTotal, [items count])];
 	}
