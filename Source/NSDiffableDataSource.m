@@ -65,8 +65,6 @@ GSDiffableDefaultSectionIdentifier()
     {
       _sections = [[NSMutableArray alloc] init];
       _itemsBySection = [[NSMutableDictionary alloc] init];
-      _reloadedSections = [[NSMutableSet alloc] init];
-      _reloadedItems = [[NSMutableSet alloc] init];
     }
   return self;
 }
@@ -75,8 +73,6 @@ GSDiffableDefaultSectionIdentifier()
 {
   DESTROY(_sections);
   DESTROY(_itemsBySection);
-  DESTROY(_reloadedSections);
-  DESTROY(_reloadedItems);
   [super dealloc];
 }
 
@@ -102,10 +98,6 @@ GSDiffableDefaultSectionIdentifier()
   // These are already copied above, simply assign...
   ASSIGN(copy->_sections, copiedSections);
   ASSIGN(copy->_itemsBySection, copiedItems);
-
-  // Since these are not copied earlier, use ASSIGNCOPY
-  ASSIGNCOPY(copy->_reloadedSections, _reloadedSections);
-  ASSIGNCOPY(copy->_reloadedItems, _reloadedItems);
 
   return copy;
 }
@@ -265,7 +257,6 @@ GSDiffableDefaultSectionIdentifier()
     {
       [_sections removeObject: section];
       [_itemsBySection removeObjectForKey: section];
-      [_reloadedSections removeObject: section];
     }
   END_FOR_IN(sectionIdentifiers);
 }
@@ -419,25 +410,6 @@ GSDiffableDefaultSectionIdentifier()
 	      [items removeObjectAtIndex: index];
 	    }
 	}
-      [_reloadedItems removeObject: itemIdentifier];
-    }
-  END_FOR_IN(itemIdentifiers);
-}
-
-- (void) reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
-{
-  FOR_IN(id, section, sectionIdentifiers)
-    {
-      [_reloadedSections addObject: section];
-    }
-  END_FOR_IN(sectionIdentifiers);
-}
-
-- (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers
-{
-  FOR_IN(id, item, itemIdentifiers)
-    {
-      [_reloadedItems addObject: item];
     }
   END_FOR_IN(itemIdentifiers);
 }
@@ -657,6 +629,37 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
   /* Prefetch cancellation is currently a no-op. */
 }
 
+- (void) reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
+{
+  NSMutableIndexSet *indexes = [NSMutableIndexSet indexSet];
+  NSArray *sections = [_snapshot sectionIdentifiers];
+  FOR_IN(id, section, sectionIdentifiers)
+    {
+      NSUInteger index = [sections indexOfObject: section];
+      if (index != NSNotFound)
+        {
+          [indexes addIndex: index];
+        }
+    }
+  END_FOR_IN(sectionIdentifiers);
+  [_collectionView reloadSections: indexes];
+}
+
+- (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers
+{
+  NSMutableArray *indexPaths = [NSMutableArray array];
+  FOR_IN(id, item, itemIdentifiers)
+    {
+      NSIndexPath *path = [self indexPathForItemIdentifier: item];
+      if (path != nil)
+        {
+          [indexPaths addObject: path];
+        }
+    }
+  END_FOR_IN(itemIdentifiers);
+  [_collectionView reloadItemsAtIndexPaths: [NSSet setWithArray: indexPaths]];
+}
+
 @end
 
 @implementation NSTableViewDiffableDataSource
@@ -786,6 +789,61 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 - (NSInteger) numberOfRowsInTableView: (NSTableView *)tableView
 {
   return [_snapshot numberOfItems];
+}
+
+- (void) reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
+{
+  NSMutableIndexSet *rowsToReload = [NSMutableIndexSet indexSet];
+  FOR_IN(id, section, sectionIdentifiers)
+    {
+      NSUInteger sectionIndex = [[_snapshot sectionIdentifiers] indexOfObject: section];
+      if (sectionIndex != NSNotFound)
+        {
+          NSInteger runningTotal = 0;
+          for (NSUInteger i = 0; i < sectionIndex; i++)
+            {
+              id sec = [[_snapshot sectionIdentifiers] objectAtIndex: i];
+              runningTotal += [[_snapshot itemIdentifiersInSectionWithIdentifier: sec] count];
+            }
+          NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
+          [rowsToReload addIndexesInRange: NSMakeRange(runningTotal, [items count])];
+        }
+    }
+  END_FOR_IN(sectionIdentifiers);
+  if ([rowsToReload count] > 0)
+    {
+      NSIndexSet *columns = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0, [_tableView numberOfColumns])];
+      [_tableView reloadDataForRowIndexes: rowsToReload columnIndexes: columns];
+    }
+}
+
+- (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers
+{
+  NSMutableIndexSet *rowsToReload = [NSMutableIndexSet indexSet];
+  FOR_IN(id, item, itemIdentifiers)
+    {
+      NSInteger runningTotal = 0;
+      NSArray *sections = [_snapshot sectionIdentifiers];
+      FOR_IN(id, section, sections)
+        {
+          NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
+          NSUInteger index = [items indexOfObject: item];
+          if (index != NSNotFound)
+            {
+              NSInteger row = runningTotal + index;
+              [rowsToReload addIndex: row];
+              break;
+            }
+          runningTotal += [items count];
+        }
+      END_FOR_IN(sections);
+    }
+  END_FOR_IN(itemIdentifiers);
+  if ([rowsToReload count] > 0)
+    {
+      NSIndexSet *columns = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0, [_tableView numberOfColumns])];
+      [_tableView reloadDataForRowIndexes: rowsToReload columnIndexes: columns];
+    }
 }
 
 - (id) tableView: (NSTableView *)tableView

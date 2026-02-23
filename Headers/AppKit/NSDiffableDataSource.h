@@ -190,19 +190,6 @@ APPKIT_EXPORT_CLASS
  */
 - (void) deleteItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 
-/**
- * Marks the specified sections for reloading.
- * When the snapshot is applied, these sections will be reloaded.
- * sectionIdentifiers: An array of unique identifiers for the sections to reload.
- */
-- (void) reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
-
-/**
- * Marks the specified items for reloading.
- * When the snapshot is applied, these items will be reloaded.
- * itemIdentifiers: An array of unique identifiers for the items to reload.
- */
-- (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 @end
 
 /**
@@ -307,6 +294,18 @@ APPKIT_EXPORT_CLASS
  * Returns: The unique identifier for the item at that location, or nil if not found.
  */
 - (id) itemIdentifierForIndexPath: (NSIndexPath *)indexPath;
+
+/**
+ * Reloads the specified sections in the collection view.
+ * sectionIdentifiers: An array of unique identifiers for the sections to reload.
+ */
+- (void) reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
+
+/**
+ * Reloads the specified items in the collection view.
+ * itemIdentifiers: An array of unique identifiers for the items to reload.
+ */
+- (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 @end
 
 /**
@@ -379,6 +378,18 @@ animatingDifferences: (BOOL)animatingDifferences;
  * Returns: The unique identifier for the item at that row, or nil if not found.
  */
 - (id) itemIdentifierForRow: (NSInteger)row;
+
+/**
+ * Reloads the specified sections in the table view.
+ * sectionIdentifiers: An array of unique identifiers for the sections to reload.
+ */
+- (void) reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
+
+/**
+ * Reloads the specified items in the table view.
+ * itemIdentifiers: An array of unique identifiers for the items to reload.
+ */
+- (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 @end
 
 #endif /* end of #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST) */
