@@ -204,7 +204,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 - (void) insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
-	    beforeSectionWithIdentifier: (id)sectionIdentifier
+	   beforeSectionWithIdentifier: (id)sectionIdentifier
 {
   NSUInteger insertionIndex = [_sections indexOfObject: sectionIdentifier];
 
@@ -227,7 +227,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 - (void) insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
-	     afterSectionWithIdentifier: (id)sectionIdentifier
+	    afterSectionWithIdentifier: (id)sectionIdentifier
 {
   NSUInteger index = [_sections indexOfObject: sectionIdentifier];
 
@@ -262,7 +262,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 - (void) moveSectionWithIdentifier: (id)sectionIdentifier
-      beforeSectionWithIdentifier: (id)otherSectionIdentifier
+       beforeSectionWithIdentifier: (id)otherSectionIdentifier
 {
   NSUInteger fromIndex = [_sections indexOfObject: sectionIdentifier];
   NSUInteger toIndex = [_sections indexOfObject: otherSectionIdentifier];
@@ -282,7 +282,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 - (void) moveSectionWithIdentifier: (id)sectionIdentifier
-       afterSectionWithIdentifier: (id)otherSectionIdentifier
+	afterSectionWithIdentifier: (id)otherSectionIdentifier
 {
   NSUInteger fromIndex = [_sections indexOfObject: sectionIdentifier];
   NSUInteger toIndex = [_sections indexOfObject: otherSectionIdentifier];
@@ -313,7 +313,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 - (void) appendItemsWithIdentifiers: (NSArray *)itemIdentifiers
-	   intoSectionWithIdentifier: (id)sectionIdentifier
+	  intoSectionWithIdentifier: (id)sectionIdentifier
 {
   [self _ensureSection: sectionIdentifier];
 
@@ -350,7 +350,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 - (void) insertItemsWithIdentifiers: (NSArray *)itemIdentifiers
-	  beforeItemWithIdentifier: (id)beforeIdentifier
+	   beforeItemWithIdentifier: (id)beforeIdentifier
 {
   if ([itemIdentifiers count] == 0)
     {
@@ -373,7 +373,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 - (void) insertItemsWithIdentifiers: (NSArray *)itemIdentifiers
-	   afterItemWithIdentifier: (id)afterIdentifier
+	    afterItemWithIdentifier: (id)afterIdentifier
 {
   if ([itemIdentifiers count] == 0)
     {
@@ -637,9 +637,9 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
     {
       NSUInteger index = [sections indexOfObject: section];
       if (index != NSNotFound)
-        {
-          [indexes addIndex: index];
-        }
+	{
+	  [indexes addIndex: index];
+	}
     }
   END_FOR_IN(sectionIdentifiers);
   [_collectionView reloadSections: indexes];
@@ -652,9 +652,9 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
     {
       NSIndexPath *path = [self indexPathForItemIdentifier: item];
       if (path != nil)
-        {
-          [indexPaths addObject: path];
-        }
+	{
+	  [indexPaths addObject: path];
+	}
     }
   END_FOR_IN(itemIdentifiers);
   [_collectionView reloadItemsAtIndexPaths: [NSSet setWithArray: indexPaths]];
@@ -798,16 +798,16 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
     {
       NSUInteger sectionIndex = [[_snapshot sectionIdentifiers] indexOfObject: section];
       if (sectionIndex != NSNotFound)
-        {
-          NSInteger runningTotal = 0;
-          for (NSUInteger i = 0; i < sectionIndex; i++)
-            {
-              id sec = [[_snapshot sectionIdentifiers] objectAtIndex: i];
-              runningTotal += [[_snapshot itemIdentifiersInSectionWithIdentifier: sec] count];
-            }
-          NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
-          [rowsToReload addIndexesInRange: NSMakeRange(runningTotal, [items count])];
-        }
+	{
+	  NSInteger runningTotal = 0;
+	  for (NSUInteger i = 0; i < sectionIndex; i++)
+	    {
+	      id sec = [[_snapshot sectionIdentifiers] objectAtIndex: i];
+	      runningTotal += [[_snapshot itemIdentifiersInSectionWithIdentifier: sec] count];
+	    }
+	  NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
+	  [rowsToReload addIndexesInRange: NSMakeRange(runningTotal, [items count])];
+	}
     }
   END_FOR_IN(sectionIdentifiers);
   if ([rowsToReload count] > 0)
@@ -825,17 +825,17 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
       NSInteger runningTotal = 0;
       NSArray *sections = [_snapshot sectionIdentifiers];
       FOR_IN(id, section, sections)
-        {
-          NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
-          NSUInteger index = [items indexOfObject: item];
-          if (index != NSNotFound)
-            {
-              NSInteger row = runningTotal + index;
-              [rowsToReload addIndex: row];
-              break;
-            }
-          runningTotal += [items count];
-        }
+	{
+	  NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
+	  NSUInteger index = [items indexOfObject: item];
+	  if (index != NSNotFound)
+	    {
+	      NSInteger row = runningTotal + index;
+	      [rowsToReload addIndex: row];
+	      break;
+	    }
+	  runningTotal += [items count];
+	}
       END_FOR_IN(sections);
     }
   END_FOR_IN(itemIdentifiers);
