@@ -114,6 +114,8 @@ NSDocumentController.m \
 NSDrawer.m \
 NSEPSImageRep.m \
 NSEvent.m \
+NSFilePromiseProvider.m \
+NSFilePromiseReceiver.m \
 NSFileWrapperExtensions.m \
 NSFont.m \
 NSFontAssetRequest.m \
@@ -473,6 +475,8 @@ NSDrawer.h \
 NSEPSImageRep.h \
 NSErrors.h \
 NSEvent.h \
+NSFilePromiseProvider.h \
+NSFilePromiseReceiver.h \
 NSFileWrapper.h \
 NSFileWrapperExtensions.h \
 NSFont.h \
