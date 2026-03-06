@@ -1906,6 +1906,14 @@ static NSString *_placeholderItem = nil;
 
   cf.size = ps;
   _frame = cf;
+
+  // Make certain that the view origin is reset properly...
+  id sv = [self superview];
+  if ([sv respondsToSelector: @selector(constrainScrollPoint:)])
+    {
+      NSPoint p = [sv constrainScrollPoint: NSZeroPoint];
+      [sv setBoundsOrigin: p]; // all views respond to this...
+    }
 }
 
 - (void) reloadData
