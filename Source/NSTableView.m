@@ -2133,10 +2133,6 @@ static void computeNewSelection
       _delegate = nil;
     }
 
-  [nc removeObserver: self
-		name: NSViewBoundsDidChangeNotification
-	      object: nil];
-
   [super dealloc];
 }
 
@@ -2150,8 +2146,8 @@ static void computeNewSelection
   /* Remove any existing resize observers for this table view before it
      moves to a new window or is detached. */
   [nc removeObserver: self
-		 name: NSWindowDidResizeNotification
-	       object: nil];
+		name: NSWindowDidResizeNotification
+	      object: nil];
 
   [super viewDidMoveToWindow];
 
@@ -2169,7 +2165,9 @@ static void computeNewSelection
 {
   if (_viewBased)
     {
-      [self reloadData];
+      // DON'T reload data on every window resize - this causes issues with scrolling
+      // [self reloadData];
+      [self setNeedsDisplay: YES];
     }
 }
 
@@ -4446,7 +4444,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
     }
 
   rect.origin.x = _columnOrigins[columnIndex];
-  rect.origin.y = _bounds.origin.y;
+  rect.origin.y = 0.0;
   rect.size.width = [[_tableColumns objectAtIndex: columnIndex] width];
 	rect.size.height = [self _rowsHeight];
   return rect;
@@ -4462,7 +4460,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
       return NSZeroRect;
     }
 
-  rect.origin.x = _bounds.origin.x;
+  rect.origin.x = 0.0;
 	rect.origin.y = [self _yOriginForRow: rowIndex];
   rect.size.width = _bounds.size.width;
 	rect.size.height = [self _rowHeightForRow: rowIndex];
@@ -4504,7 +4502,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   range.location = [self columnAtPoint: aRect.origin];
   range.length = [self columnAtPoint:
-			 NSMakePoint (NSMaxX (aRect), _bounds.origin.y)];
+			 NSMakePoint (NSMaxX (aRect), aRect.origin.y)];
   range.length -= range.location;
   range.length += 1;
   return range;
@@ -4517,7 +4515,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   range.location = [self rowAtPoint: aRect.origin];
   lastRowInRect = [self rowAtPoint:
-			 NSMakePoint (_bounds.origin.x, NSMaxY (aRect))];
+			 NSMakePoint (aRect.origin.x, NSMaxY (aRect))];
 
   if (lastRowInRect == -1)
     {
@@ -5002,7 +5000,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       NSInteger i;
       CGFloat width;
 
-      _columnOrigins[0] = _bounds.origin.x;
+      _columnOrigins[0] = 0.0;
       width = [[_tableColumns objectAtIndex: 0] width];
       table_width += width;
       for (i = 1; i < _numberOfColumns; i++)
@@ -5103,20 +5101,17 @@ This method is deprecated, use -columnIndexesInRect:. */
   id rowView = [self rowViewAtRow: rowIndex
 		  makeIfNecessary: YES];
 
-
-
   if (rowView != nil)
     {
       NSRect cellFrame = [self frameOfCellAtColumn: 0
 					     row: rowIndex];
       CGFloat x = 0.0;
       CGFloat y = cellFrame.origin.y;
-      CGFloat w = [self frame].size.width;
+      CGFloat w = _bounds.size.width;
 	CGFloat h = [self _rowHeightForRow: rowIndex];
 
       NSRect rvFrame = NSMakeRect(x, y, w, h);
-      NSAutoresizingMaskOptions options = NSViewWidthSizable
-	| NSViewMaxYMargin;
+      NSAutoresizingMaskOptions options = NSViewWidthSizable;
 
 
 
@@ -5473,10 +5468,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  [nc removeObserver: self
 			name: NSWindowDidResizeNotification
 		      object: [self window]];
-
-	  [nc removeObserver: self
-			name: NSViewBoundsDidChangeNotification
-		      object: nil];
 	}
       else if (!oldViewBased && _viewBased)
 	{
@@ -5485,11 +5476,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 		 selector: @selector(_windowDidResize:)
 		     name: NSWindowDidResizeNotification
 		   object: [self window]];
-
-	  [nc addObserver: self
-		 selector: @selector(_windowDidResize:)
-		     name: NSViewBoundsDidChangeNotification
-		   object: nil];
 	}
     }
 }
@@ -5961,10 +5947,6 @@ This method is deprecated, use -columnIndexesInRect:. */
       [nc removeObserver: self
 		    name: NSWindowDidResizeNotification
 		  object: [self window]];
-
-      [nc removeObserver: self
-		    name: NSViewBoundsDidChangeNotification
-		  object: nil];
     }
   else
     {
@@ -5973,11 +5955,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 	     selector: @selector(_windowDidResize:)
 		 name: NSWindowDidResizeNotification
 	       object: [self window]];
-
-      [nc addObserver: self
-	     selector: @selector(_windowDidResize:)
-		 name: NSViewBoundsDidChangeNotification
-	       object: nil];
     }
 
   return self;
@@ -6502,8 +6479,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 	{
 	  newRect = [self frameOfCellAtColumn: 0
 					  row: currentDropRow];
-	  newRect.origin.x = _bounds.origin.x;
-	  newRect.size.width = _bounds.size.width + 2;
+	  newRect.origin.x = [self visibleRect].origin.x;
+	  newRect.size.width = [self visibleRect].size.width;
 	  newRect.origin.x -= _intercellSpacing.height / 2;
 	  newRect.size.height += _intercellSpacing.height;
 
@@ -6555,7 +6532,7 @@ view to drag. */
 {
 	if ([self _usesVariableRowHeights] == NO)
 		{
-			return (NSInteger)(p.y - _bounds.origin.y) / (NSInteger)_rowHeight;
+			return (NSInteger)(p.y) / (NSInteger)_rowHeight;
 		}
 
 	if (_numberOfRows <= 0)
@@ -6563,7 +6540,7 @@ view to drag. */
 			return 0;
 		}
 
-	CGFloat y = p.y - _bounds.origin.y;
+	CGFloat y = p.y;
 	if (y <= 0.0)
 		{
 			return 0;
@@ -7110,15 +7087,15 @@ For a more detailed explanation, -setSortDescriptors:. */
 {
 	if (rowIndex <= 0)
 		{
-			return _bounds.origin.y;
+			return 0.0;
 		}
 
 	if ([self _usesVariableRowHeights] == NO)
 		{
-			return _bounds.origin.y + (_rowHeight * rowIndex);
+			return _rowHeight * rowIndex;
 		}
 
-	CGFloat y = _bounds.origin.y;
+	CGFloat y = 0.0;
 	NSInteger i;
 
 	for (i = 0; i < rowIndex && i < _numberOfRows; i++)
@@ -7148,7 +7125,6 @@ For a more detailed explanation, -setSortDescriptors:. */
 					return -1;
 				}
 
-			aPoint.y -= _bounds.origin.y;
 			NSInteger row = (NSInteger)(aPoint.y / _rowHeight);
 
 			if (row >= _numberOfRows)
@@ -7159,7 +7135,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 			return row;
 		}
 
-	CGFloat y = aPoint.y - _bounds.origin.y;
+	CGFloat y = aPoint.y;
 	if (y < 0.0)
 		{
 			return -1;
