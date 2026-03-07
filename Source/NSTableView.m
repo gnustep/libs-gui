@@ -169,7 +169,7 @@ typedef struct _tableViewFlags
 - (CGFloat) _yOriginForRow: (NSInteger)rowIndex;
 - (NSInteger) _rowAtPointUsingVariableHeights: (NSPoint)aPoint;
 - (CGFloat) _positionInRowAtPoint: (NSPoint)aPoint
-                               row: (NSInteger)rowIndex;
+			       row: (NSInteger)rowIndex;
 - (CGFloat*) _columnOrigins;
 - (NSView*)  _renderedViewForPath: (NSIndexPath*)path;
 - (void) _setRenderedView: (NSView*)view forPath: (NSIndexPath*)path;
@@ -2120,8 +2120,8 @@ static void computeNewSelection
     }
   // Remove window resize observer
   [nc removeObserver: self
-                name: NSWindowDidResizeNotification
-              object: nil];
+		name: NSWindowDidResizeNotification
+	      object: nil];
   TEST_RELEASE (_autosaveName);
   if (_numberOfColumns > 0)
     {
@@ -2132,6 +2132,11 @@ static void computeNewSelection
       [nc removeObserver: _delegate  name: nil  object: self];
       _delegate = nil;
     }
+
+  [nc removeObserver: self
+		name: NSViewBoundsDidChangeNotification
+	      object: nil];
+
   [super dealloc];
 }
 
@@ -2145,8 +2150,8 @@ static void computeNewSelection
   /* Remove any existing resize observers for this table view before it
      moves to a new window or is detached. */
   [nc removeObserver: self
-                 name: NSWindowDidResizeNotification
-               object: nil];
+		 name: NSWindowDidResizeNotification
+	       object: nil];
 
   [super viewDidMoveToWindow];
 
@@ -2154,9 +2159,9 @@ static void computeNewSelection
   if ([self window] != nil && _viewBased)
     {
       [nc addObserver: self
-          selector: @selector(_windowDidResize:)
-              name: NSWindowDidResizeNotification
-            object: [self window]];
+	     selector: @selector(_windowDidResize:)
+		 name: NSWindowDidResizeNotification
+	       object: [self window]];
     }
 }
 
@@ -2415,6 +2420,10 @@ static void computeNewSelection
       _dataSource_editable = YES;
     }
 
+  // Set refresh actions...
+  if ([self window] != nil)
+    {
+    }
 
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
@@ -2435,15 +2444,15 @@ static void computeNewSelection
       NSArray *subviews = [[self subviews] copy];
       NSEnumerator *enumerator = [subviews objectEnumerator];
       NSView *subview;
-      
+
       while ((subview = [enumerator nextObject]) != nil)
-        {
-          if ([subview isKindOfClass: [NSTableRowView class]])
-            {
-              [subview removeFromSuperview];
-            }
-        }
-      
+	{
+	  if ([subview isKindOfClass: [NSTableRowView class]])
+	    {
+	      [subview removeFromSuperview];
+	    }
+	}
+
       [_renderedViewPaths removeAllObjects];
       [_pathsToViews removeAllObjects];
       [_rowViews removeAllObjects];
@@ -5093,9 +5102,9 @@ This method is deprecated, use -columnIndexesInRect:. */
   // Create and position the row view for this row
   id rowView = [self rowViewAtRow: rowIndex
 		  makeIfNecessary: YES];
-  
 
-  
+
+
   if (rowView != nil)
     {
       NSRect cellFrame = [self frameOfCellAtColumn: 0
@@ -5118,7 +5127,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  [rowView setAutoresizingMask: options];
 
 	}
-      
+
       // Always update the frame to ensure correct positioning
       [rowView setFrame: rvFrame];
     }
@@ -5454,25 +5463,34 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   /* Test to see if it is view based */
   _viewBased = [_delegate respondsToSelector: vbsel];
-  
+
   // Handle window resize observer when view-based status changes
   if ([self window] != nil)
     {
       if (oldViewBased && !_viewBased)
-        {
-          // Changed from view-based to cell-based, remove observer
-          [nc removeObserver: self 
-              name: NSWindowDidResizeNotification 
-              object: [self window]];
-        }
+	{
+	  // Changed from view-based to cell-based, remove observer
+	  [nc removeObserver: self
+			name: NSWindowDidResizeNotification
+		      object: [self window]];
+
+	  [nc removeObserver: self
+			name: NSViewBoundsDidChangeNotification
+		      object: nil];
+	}
       else if (!oldViewBased && _viewBased)
-        {
-          // Changed from cell-based to view-based, add observer  
-          [nc addObserver: self
-              selector: @selector(_windowDidResize:)
-              name: NSWindowDidResizeNotification
-              object: [self window]];
-        }
+	{
+	  // Changed from cell-based to view-based, add observer
+	  [nc addObserver: self
+		 selector: @selector(_windowDidResize:)
+		     name: NSWindowDidResizeNotification
+		   object: [self window]];
+
+	  [nc addObserver: self
+		 selector: @selector(_windowDidResize:)
+		     name: NSViewBoundsDidChangeNotification
+		   object: nil];
+	}
     }
 }
 
@@ -5935,6 +5953,31 @@ This method is deprecated, use -columnIndexesInRect:. */
 					 sizeof(CGFloat) * _numberOfColumns);
 	}
       [self tile]; /* Initialize _columnOrigins */
+    }
+
+  if (!_viewBased)
+    {
+      // Changed from view-based to cell-based, remove observer
+      [nc removeObserver: self
+		    name: NSWindowDidResizeNotification
+		  object: [self window]];
+
+      [nc removeObserver: self
+		    name: NSViewBoundsDidChangeNotification
+		  object: nil];
+    }
+  else
+    {
+      // Changed from cell-based to view-based, add observer
+      [nc addObserver: self
+	     selector: @selector(_windowDidResize:)
+		 name: NSWindowDidResizeNotification
+	       object: [self window]];
+
+      [nc addObserver: self
+	     selector: @selector(_windowDidResize:)
+		 name: NSViewBoundsDidChangeNotification
+	       object: nil];
     }
 
   return self;
@@ -6752,7 +6795,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 {
   NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
   GSKeyValueBinding *theBinding;
-  
+
   theBinding = [GSKeyValueBinding getBinding: NSValueBinding
 				   forObject: tb];
 
@@ -6920,7 +6963,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 {
   [tb _applyBindingsToCell: cell
 		     atRow: index];
-  
+
   if (_del_responds)
     {
       [_delegate tableView: self
