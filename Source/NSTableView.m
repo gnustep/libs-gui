@@ -2146,8 +2146,8 @@ static void computeNewSelection
   /* Remove any existing resize observers for this table view before it
      moves to a new window or is detached. */
   [nc removeObserver: self
-		name: NSWindowDidResizeNotification
-	      object: nil];
+		 name: NSWindowDidResizeNotification
+	       object: nil];
 
   [super viewDidMoveToWindow];
 
@@ -3868,7 +3868,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		      [NSEvent stopPeriodicEvents];
 		      startedPeriodicEvents = NO;
 		    }
-		  mouseLocationView.x = _bounds.origin.x;
+		  mouseLocationView.x = 0.0;
 		  oldRow = currentRow;
 		  currentRow = [self rowAtPoint: mouseLocationView];
 
@@ -3942,7 +3942,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		      startedPeriodicEvents = NO;
 		    }
 
-		  mouseLocationView.x = _bounds.origin.x;
+		  mouseLocationView.x = 0.0;
 		  oldRow = currentRow;
 		  currentRow = [self rowAtPoint: mouseLocationView];
 		  if (oldRow != currentRow)
@@ -4279,7 +4279,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 	     if (modifySelection == NO)
 	       {
 		 noModPoint.x = visRect.origin.x;
-		 noModPoint.y = NSMinY(_bounds);
+		 noModPoint.y = NSMinY([self bounds]);
 	       }
 	     else
 	       {
@@ -4291,7 +4291,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 	     if (modifySelection == NO)
 	       {
 		 noModPoint.x = visRect.origin.x;
-		 noModPoint.y = NSMaxY(_bounds);
+		 noModPoint.y = NSMaxY([self bounds]);
 	       }
 	     else
 	       {
@@ -4462,7 +4462,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 
   rect.origin.x = 0.0;
 	rect.origin.y = [self _yOriginForRow: rowIndex];
-  rect.size.width = _bounds.size.width;
+  rect.size.width = [self bounds].size.width;
 	rect.size.height = [self _rowHeightForRow: rowIndex];
   return rect;
 }
@@ -4530,7 +4530,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (NSInteger) columnAtPoint: (NSPoint)aPoint
 {
-  if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
+  if ((NSMouseInRect (aPoint, [self bounds], YES)) == NO)
     {
       return -1;
     }
@@ -4622,7 +4622,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  return;
 	}
       excess_width = NSMaxX([self convertRect: [_super_view bounds]
-				     fromView: _super_view]) - NSMaxX(_bounds);
+				     fromView: _super_view]) - NSMaxX([self bounds]);
       last_column_width = [lastColumn width] + excess_width;
       // This will automatically retile the table
       [lastColumn setWidth: last_column_width];
@@ -5107,7 +5107,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 					     row: rowIndex];
       CGFloat x = 0.0;
       CGFloat y = cellFrame.origin.y;
-      CGFloat w = _bounds.size.width;
+      CGFloat w = [self bounds].size.width;
 	CGFloat h = [self _rowHeightForRow: rowIndex];
 
       NSRect rvFrame = NSMakeRect(x, y, w, h);
@@ -7108,7 +7108,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSInteger) _rowAtPointUsingVariableHeights: (NSPoint)aPoint
 {
-	if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
+	if ((NSMouseInRect (aPoint, [self bounds], YES)) == NO)
 		{
 			return -1;
 		}
