@@ -2447,11 +2447,6 @@ static void computeNewSelection
       _dataSource_editable = YES;
     }
 
-  // Set refresh actions...
-  if ([self window] != nil)
-    {
-    }
-
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
 
