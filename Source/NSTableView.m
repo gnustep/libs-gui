@@ -2122,6 +2122,10 @@ static void computeNewSelection
   [nc removeObserver: self
 		name: NSWindowDidResizeNotification
 	      object: nil];
+  // Remove clip view bounds observer
+  [nc removeObserver: self
+		name: NSViewBoundsDidChangeNotification
+	      object: nil];
   TEST_RELEASE (_autosaveName);
   if (_numberOfColumns > 0)
     {
@@ -2149,6 +2153,11 @@ static void computeNewSelection
 		 name: NSWindowDidResizeNotification
 	       object: nil];
 
+  /* Remove any existing clip view bounds observers */
+  [nc removeObserver: self
+		 name: NSViewBoundsDidChangeNotification
+	       object: nil];
+
   [super viewDidMoveToWindow];
 
   // Add observer for the new window if view-based
@@ -2158,6 +2167,20 @@ static void computeNewSelection
 	     selector: @selector(_windowDidResize:)
 		 name: NSWindowDidResizeNotification
 	       object: [self window]];
+
+      // Add observer for clip view bounds changes (scrolling)
+      NSScrollView *scrollView = [self enclosingScrollView];
+      if (scrollView != nil)
+	{
+	  NSClipView *clipView = [scrollView contentView];
+	  if (clipView != nil)
+	    {
+	      [nc addObserver: self
+		     selector: @selector(_clipViewBoundsDidChange:)
+			 name: NSViewBoundsDidChangeNotification
+		       object: clipView];
+	    }
+	}
     }
 }
 
@@ -2165,9 +2188,15 @@ static void computeNewSelection
 {
   if (_viewBased)
     {
-      // DON'T reload data on every window resize - this causes issues with scrolling
-      // [self reloadData];
-      [self setNeedsDisplay: YES];
+      [self reloadData];
+    }
+}
+
+- (void) _clipViewBoundsDidChange: (NSNotification *)notification
+{
+  if (_viewBased)
+    {
+      [self reloadData];
     }
 }
 
@@ -5464,18 +5493,35 @@ This method is deprecated, use -columnIndexesInRect:. */
     {
       if (oldViewBased && !_viewBased)
 	{
-	  // Changed from view-based to cell-based, remove observer
+	  // Changed from view-based to cell-based, remove observers
 	  [nc removeObserver: self
 			name: NSWindowDidResizeNotification
 		      object: [self window]];
+	  [nc removeObserver: self
+			name: NSViewBoundsDidChangeNotification
+		      object: nil];
 	}
       else if (!oldViewBased && _viewBased)
 	{
-	  // Changed from cell-based to view-based, add observer
+	  // Changed from cell-based to view-based, add observers
 	  [nc addObserver: self
 		 selector: @selector(_windowDidResize:)
 		     name: NSWindowDidResizeNotification
 		   object: [self window]];
+
+	  // Add observer for clip view bounds changes (scrolling)
+	  NSScrollView *scrollView = [self enclosingScrollView];
+	  if (scrollView != nil)
+	    {
+	      NSClipView *clipView = [scrollView contentView];
+	      if (clipView != nil)
+		{
+		  [nc addObserver: self
+			 selector: @selector(_clipViewBoundsDidChange:)
+			     name: NSViewBoundsDidChangeNotification
+			   object: clipView];
+		}
+	    }
 	}
     }
 }
@@ -5943,18 +5989,35 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   if (!_viewBased)
     {
-      // Changed from view-based to cell-based, remove observer
+      // Changed from view-based to cell-based, remove observers
       [nc removeObserver: self
 		    name: NSWindowDidResizeNotification
 		  object: [self window]];
+      [nc removeObserver: self
+		    name: NSViewBoundsDidChangeNotification
+		  object: nil];
     }
   else
     {
-      // Changed from cell-based to view-based, add observer
+      // Changed from cell-based to view-based, add observers
       [nc addObserver: self
 	     selector: @selector(_windowDidResize:)
 		 name: NSWindowDidResizeNotification
 	       object: [self window]];
+
+      // Add observer for clip view bounds changes (scrolling)
+      NSScrollView *scrollView = [self enclosingScrollView];
+      if (scrollView != nil)
+	{
+	  NSClipView *clipView = [scrollView contentView];
+	  if (clipView != nil)
+	    {
+	      [nc addObserver: self
+		     selector: @selector(_clipViewBoundsDidChange:)
+			 name: NSViewBoundsDidChangeNotification
+		       object: clipView];
+	    }
+	}
     }
 
   return self;
