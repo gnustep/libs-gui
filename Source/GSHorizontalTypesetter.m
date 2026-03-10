@@ -849,49 +849,49 @@ restart: ;
 	    g->nominal = NO;
 	  }
 
-	/* Baseline adjustments. */
-	{
-	  CGFloat y = 0;
 
-	  /* Attributes are up-side-down in our coordinate system. */
-	  if (g->attributes.superscript)
-	    {
-	      y -= g->attributes.superscript * [f xHeight];
-	    }
-	  if (g->attributes.baseline_offset)
-	    {
-	      /* And baseline_offset is up-side-down again. TODO? */
-	      y += g->attributes.baseline_offset;
-	    }
 
-	  if (y != p.y)
-	    {
-	      p.y = y;
-	      g->nominal = NO;
-	    }
+        /* does the glyph fit ? */
+        doesGlyphFitInLine = !((i > firstGlyphIndex) && (p.x + g->size.width > lf->rect.size.width));
+        if (doesGlyphFitInLine)
+          {
+            /* Baseline adjustments. */
+            CGFloat y = 0;
 
-          /* does the glyph fit ? */
-          doesGlyphFitInLine = !((i > firstGlyphIndex) && (p.x + g->size.width > lf->rect.size.width));
-          if (doesGlyphFitInLine)
-            {
-              /* defaultLineHeightForFont is asceder+descender, match calculation here */
+            /* Attributes are up-side-down in our coordinate system. */
+            if (g->attributes.superscript)
+              {
+                y -= g->attributes.superscript * [f xHeight];
+              }
+            if (g->attributes.baseline_offset)
+              {
+                /* And baseline_offset is up-side-down again. TODO? */
+                y += g->attributes.baseline_offset;
+              }
 
-              /* coming from potential font change */
-              if (f_ascender > ascender)
-                ascender = f_ascender;
-              if (f_descender > descender)
-                descender = f_descender;
+            if (y != p.y)
+              {
+                p.y = y;
+                g->nominal = NO;
+              }
+          
+            /* defaultLineHeightForFont is ascender+descender, match calculation here */
 
-              /* coming from superscript/subscript */
-              if (y < 0 && f_ascender - y > ascender)
-                ascender = f_ascender - y;
-              if (y > 0 && f_descender + y > descender)
-                descender = f_descender + y;
+            /* coming from potential font change taken in account above*/
+            if (f_ascender > ascender)
+              ascender = f_ascender;
+            if (f_descender > descender)
+              descender = f_descender;
 
-              if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
-                goto restart;
-            }
-	}
+            /* coming from superscript/subscript */
+            if (y < 0 && f_ascender - y > ascender)
+              ascender = f_ascender - y;
+            if (y > 0 && f_descender + y > descender)
+              descender = f_descender + y;
+
+            if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
+              goto restart;
+          }
 
 	if (g->g == NSControlGlyph)
 	  {
