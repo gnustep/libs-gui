@@ -292,7 +292,10 @@ including gi will have been cached.
         return gi + cache_base;
       ch = [str characterAtIndex: g->char_index];
       /* TODO: paragraph/line separator */
-      if (ch == 0x20 || ch == 0x0a || ch == 0x0d)
+      if (ch == 0x20 || // space
+          ch == 0x0a || // new line
+          ch == 0x0d || // carriage return
+          ch == 0x09)   // horiz. tab
         {
           g->dont_show = YES;
           if (gi > 0)
@@ -909,13 +912,13 @@ restart: ;
 
 	    prev_had_non_nominal_width = NO;
 
-	    if (ch == 0xa)
+	    if (ch == 0xa) // new line
 	      {
 		newParagraph = YES;
 		break;
 	      }
 
-	    if (ch == 0x9)
+	    if (ch == 0x9) // horiz. tab
 	      {
 		/*
 		Handle tabs. This is a very basic and stupid implementation.
@@ -925,9 +928,10 @@ restart: ;
 		NSTextTab *tab = nil;
 		CGFloat defaultInterval = [curParagraphStyle defaultTabInterval];
 		/* Set it to something reasonable if unset */
-		if (defaultInterval == 0.0) {
-                  defaultInterval = 100.0;
-		}
+		if (defaultInterval == 0.0)
+                  {
+                    defaultInterval = 100.0;
+                  }
 		unsigned tabIndex;
                 unsigned tabCount = [tabs count];
 		/* Find first tab beyond our current position. */
