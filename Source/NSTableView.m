@@ -2064,7 +2064,7 @@ static void computeNewSelection
   _selectedRow = -1;
   _highlightedTableColumn = nil;
   _draggingSourceOperationMaskForLocal = NSDragOperationCopy
-      | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
+    | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
   _draggingSourceOperationMaskForRemote = NSDragOperationNone;
   ASSIGN(_sortDescriptors, [NSArray array]);
   _viewBased = NO;
@@ -2115,8 +2115,8 @@ static void computeNewSelection
   if (_autosaveTableColumns == YES)
     {
       [nc removeObserver: self
-	  name: NSTableViewColumnDidResizeNotification
-	  object: self];
+		    name: NSTableViewColumnDidResizeNotification
+		  object: self];
     }
   // Remove window resize observer
   [nc removeObserver: self
@@ -2150,13 +2150,13 @@ static void computeNewSelection
   /* Remove any existing resize observers for this table view before it
      moves to a new window or is detached. */
   [nc removeObserver: self
-		 name: NSWindowDidResizeNotification
-	       object: nil];
+		name: NSWindowDidResizeNotification
+	      object: nil];
 
   /* Remove any existing clip view bounds observers */
   [nc removeObserver: self
-		 name: NSViewBoundsDidChangeNotification
-	       object: nil];
+		name: NSViewBoundsDidChangeNotification
+	      object: nil];
 
   [super viewDidMoveToWindow];
 
@@ -2345,13 +2345,13 @@ static void computeNewSelection
   if (columnIndex < newIndex)
     {
       [_tableColumns insertObject: [_tableColumns objectAtIndex: columnIndex]
-		     atIndex: newIndex + 1];
+			  atIndex: newIndex + 1];
       [_tableColumns removeObjectAtIndex: columnIndex];
     }
   else
     {
       [_tableColumns insertObject: [_tableColumns objectAtIndex: columnIndex]
-		     atIndex: newIndex];
+			  atIndex: newIndex];
       [_tableColumns removeObjectAtIndex: columnIndex + 1];
     }
   /* Tile */
@@ -2419,7 +2419,7 @@ static void computeNewSelection
   // If we have content binding the data source is used only
   // like a delegate
   theBinding = [GSKeyValueBinding getBinding: NSContentBinding
-				  forObject: self];
+				   forObject: self];
   if (theBinding == nil)
     {
       if (anObject && [anObject respondsToSelector: sel_a] == NO)
