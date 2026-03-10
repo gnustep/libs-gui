@@ -773,7 +773,7 @@ restart: ;
     from this loop */
     while (1)
       {
-        BOOL didLastGlyphFit = YES;
+        BOOL doesGlyphFitInLine = YES;
 
 //        printf("at %3i+%3i\n", cache_base, i);
 	/* Update the cache. */
@@ -871,8 +871,8 @@ restart: ;
 	    }
 
           /* does the glyph fit ? */
-          didLastGlyphFit = !((i > firstGlyphIndex) && (p.x + g->size.width > lf->rect.size.width));
-          if (didLastGlyphFit)
+          doesGlyphFitInLine = !((i > firstGlyphIndex) && (p.x + g->size.width > lf->rect.size.width));
+          if (doesGlyphFitInLine)
             {
               /* defaultLineHeightForFont is asceder+descender, match calculation here */
 
@@ -1011,8 +1011,8 @@ restart: ;
 	    (Makes sense from the cell's pov, though.) */
 
             /* does the attachment fit (and it is not the first element in line) ?*/
-            didLastGlyphFit = !((i > firstGlyphIndex) && (p.x + NSMaxX(r) > lf->rect.size.width));
-            if (didLastGlyphFit)
+            doesGlyphFitInLine = !((i > firstGlyphIndex) && (p.x + NSMaxX(r) > lf->rect.size.width));
+            if (doesGlyphFitInLine)
               {
                 if (-NSMinY(r) > descender)
                   descender = -NSMinY(r);
@@ -1057,7 +1057,7 @@ restart: ;
 	  }
 
 	/* Did the glyph fit in the line frag rect? */
-	if (!didLastGlyphFit)
+	if (!doesGlyphFitInLine)
 	  {
 	    /* It didn't. Try to break the line. */
 	    switch ([curParagraphStyle lineBreakMode])
