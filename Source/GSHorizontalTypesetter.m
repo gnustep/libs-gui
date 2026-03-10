@@ -292,7 +292,10 @@ including gi will have been cached.
         return gi + cache_base;
       ch = [str characterAtIndex: g->char_index];
       /* TODO: paragraph/line separator */
-      if (ch == 0x20 || ch == 0x0a || ch == 0x0d)
+      if (ch == 0x20 || // space
+          ch == 0x0a || // new line
+          ch == 0x0d || // carriage return
+          ch == 0x09)   // horiz. tab
         {
           g->dont_show = YES;
           if (gi > 0)
@@ -603,7 +606,7 @@ Return values 0, 1, 2 are mostly the same as from
 */
 -(int) layoutLineNewParagraph: (BOOL)newParagraph
 {
-  NSRect rect, remain;
+  NSRect rect;
 
   /* Baseline and line height handling. */
   CGFloat line_height;     /* Current line height. */
@@ -623,13 +626,6 @@ Return values 0, 1, 2 are mostly the same as from
   text container", we should try to extend the existing line frag in place
   before jumping back to do all the expensive checking).
   */
-
-  /*
-  This calculation should match the calculation in [GSFontInfo
-  -defaultLineHeightForFont], or text will look odd.
-  */
-#define COMPUTE_BASELINE  baseline = line_height - descender;
-
 
   /* TODO: doesn't have to be a simple horizontal container, but it's easier
   to handle that way. */
@@ -697,6 +693,8 @@ restart: ;
 
   do
     {
+      NSRect remain;
+
       remain = [self _getProposedRectFor: newParagraph
                           withLineHeight: line_height];
 
@@ -753,7 +751,8 @@ restart: ;
     
     NSFont *f = cache->font;
 
-    CGFloat f_ascender = [f ascender], f_descender = -[f descender];
+    CGFloat f_ascender = [f ascender];
+    CGFloat f_descender = -[f descender];
 
     NSGlyph last_glyph = NSNullGlyph;
     NSPoint last_p;
@@ -777,6 +776,8 @@ restart: ;
     from this loop */
     while (1)
       {
+        BOOL doesGlyphFitInLine = YES;
+
 //        printf("at %3i+%3i\n", cache_base, i);
 	/* Update the cache. */
 	if (i >= cache_length)
@@ -822,28 +823,78 @@ restart: ;
 
 	*/
 
-	/* If there's a font change, check if the baseline or line height
-	needs adjusting. We update the ascender and descender too, even
-	though there might not actually be any glyphs for this font.
-	(TODO?) */
+	/* If there's a font change, we update the ascender and descender
+           (line height adjusted later), even though there might not actually be
+           any glyphs for this font.
+           (TODO?) */
 	if (g->font != f)
 	  {
-	    CGFloat new_height;
 	    f = g->font;
 	    f_ascender = [f ascender];
 	    f_descender = -[f descender];
 	    last_glyph = NSNullGlyph;
-
-	    new_height = [f defaultLineHeightForFont];
-
-	    if (f_ascender > ascender)
-	      ascender = f_ascender;
-	    if (f_descender > descender)
-	      descender = f_descender;
-
-            if (wantNewLineHeight(new_height, &line_height, max_line_height))
-              goto restart;
 	  }
+
+
+	/* Set up glyph information. */
+
+	/*
+          TODO:
+          Currently, the attributes of the attachment character (eg. font)
+          affect the layout. Think hard about this.
+	*/
+	g->nominal = !prev_had_non_nominal_width;
+
+	if (g->attributes.explicit_kern &&
+	    g->attributes.kern != 0)
+	  {
+	    p.x += g->attributes.kern;
+	    g->nominal = NO;
+	  }
+
+
+
+        /* does the glyph fit ? */
+        doesGlyphFitInLine = !((i > firstGlyphIndex) && (p.x + g->size.width > lf->rect.size.width));
+        if (doesGlyphFitInLine)
+          {
+            /* Baseline adjustments. */
+            CGFloat y = 0;
+
+            /* Attributes are up-side-down in our coordinate system. */
+            if (g->attributes.superscript)
+              {
+                y -= g->attributes.superscript * [f xHeight];
+              }
+            if (g->attributes.baseline_offset)
+              {
+                /* And baseline_offset is up-side-down again. TODO? */
+                y += g->attributes.baseline_offset;
+              }
+
+            if (y != p.y)
+              {
+                p.y = y;
+                g->nominal = NO;
+              }
+          
+            /* defaultLineHeightForFont is ascender+descender, match calculation here */
+
+            /* coming from potential font change taken in account above*/
+            if (f_ascender > ascender)
+              ascender = f_ascender;
+            if (f_descender > descender)
+              descender = f_descender;
+
+            /* coming from superscript/subscript */
+            if (y < 0 && f_ascender - y > ascender)
+              ascender = f_ascender - y;
+            if (y > 0 && f_descender + y > descender)
+              descender = f_descender + y;
+
+            if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
+              goto restart;
+          }
 
 	if (g->g == NSControlGlyph)
 	  {
@@ -861,13 +912,13 @@ restart: ;
 
 	    prev_had_non_nominal_width = NO;
 
-	    if (ch == 0xa)
+	    if (ch == 0xa) // new line
 	      {
 		newParagraph = YES;
 		break;
 	      }
 
-	    if (ch == 0x9)
+	    if (ch == 0x9) // horiz. tab
 	      {
 		/*
 		Handle tabs. This is a very basic and stupid implementation.
@@ -877,9 +928,10 @@ restart: ;
 		NSTextTab *tab = nil;
 		CGFloat defaultInterval = [curParagraphStyle defaultTabInterval];
 		/* Set it to something reasonable if unset */
-		if (defaultInterval == 0.0) {
-                  defaultInterval = 100.0;
-		}
+		if (defaultInterval == 0.0)
+                  {
+                    defaultInterval = 100.0;
+                  }
 		unsigned tabIndex;
                 unsigned tabCount = [tabs count];
 		/* Find first tab beyond our current position. */
@@ -921,54 +973,6 @@ restart: ;
 	    continue;
 	  }
 
-
-	/* Set up glyph information. */
-
-	/*
-          TODO:
-          Currently, the attributes of the attachment character (eg. font)
-          affect the layout. Think hard about this.
-	*/
-	g->nominal = !prev_had_non_nominal_width;
-
-	if (g->attributes.explicit_kern &&
-	    g->attributes.kern != 0)
-	  {
-	    p.x += g->attributes.kern;
-	    g->nominal = NO;
-	  }
-
-	/* Baseline adjustments. */
-	{
-	  CGFloat y = 0;
-
-	  /* Attributes are up-side-down in our coordinate system. */
-	  if (g->attributes.superscript)
-	    {
-	      y -= g->attributes.superscript * [f xHeight];
-	    }
-	  if (g->attributes.baseline_offset)
-	    {
-	      /* And baseline_offset is up-side-down again. TODO? */
-	      y += g->attributes.baseline_offset;
-	    }
-
-	  if (y != p.y)
-	    {
-	      p.y = y;
-	      g->nominal = NO;
-	    }
-
-	  /* The y==0 case is taken care of when the font is changed. */
-	  if (y < 0 && f_ascender - y > ascender)
-	    ascender = f_ascender - y;
-	  if (y > 0 && f_descender + y > descender)
-	    descender = f_descender + y;
-
-          if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
-            goto restart;
-	}
-
 	if (g->g == GSAttachmentGlyph)
 	  {
 	    NSTextAttachment *attach;
@@ -991,7 +995,7 @@ restart: ;
 		continue;
 	      }
 
-            COMPUTE_BASELINE
+            baseline = line_height - descender;
 
 	    r = [cell cellFrameForTextContainer: curTextContainer
 		  proposedLineFragment: lf->rect
@@ -1010,23 +1014,28 @@ restart: ;
 	    compared to everything else here, and has it's origin in p.
 	    (Makes sense from the cell's pov, though.) */
 
-	    if (-NSMinY(r) > descender)
-	      descender = -NSMinY(r);
+            /* does the attachment fit (and it is not the first element in line) ?*/
+            doesGlyphFitInLine = !((i > firstGlyphIndex) && (p.x + NSMaxX(r) > lf->rect.size.width));
+            if (doesGlyphFitInLine)
+              {
+                if (-NSMinY(r) > descender)
+                  descender = -NSMinY(r);
 
-	    if (NSMaxY(r) > ascender)
-	      ascender = NSMaxY(r);
+                if (NSMaxY(r) > ascender)
+                  ascender = NSMaxY(r);
 
-	    /* Update ascender and descender. Adjust line height and
-	    baseline if necessary. */
+                /* Update ascender and descender. Adjust line height and
+                   baseline if necessary. */
 
-            if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
-              goto restart;
+                if (wantNewLineHeight(ascender + descender, &line_height, max_line_height))
+                  goto restart;
+              }
 
-	    g->size = r.size;
-	    g->pos.x = p.x + r.origin.x;
-	    g->pos.y = p.y - r.origin.y;
+            g->size = r.size;
+            g->pos.x = p.x + r.origin.x;
+            g->pos.y = p.y - r.origin.y;
 
-	    p.x = g->pos.x + g->size.width;
+            p.x = g->pos.x + g->size.width;
 
 	    /* An attachment is always in a point range of its own. */
 	    g->nominal = NO;
@@ -1052,7 +1061,7 @@ restart: ;
 	  }
 
 	/* Did the glyph fit in the line frag rect? */
-	if (p.x > lf->rect.size.width)
+	if (!doesGlyphFitInLine)
 	  {
 	    /* It didn't. Try to break the line. */
 	    switch ([curParagraphStyle lineBreakMode])
@@ -1192,7 +1201,7 @@ restart: ;
       glyph_cache_t *g;
       NSRect used_rect;
 
-      COMPUTE_BASELINE
+      baseline = line_height - descender;
 
       for (lf = line_frags, lineFragCounter = 0, g = cache; lfi >= 0; lfi--, lf++)
 	{
