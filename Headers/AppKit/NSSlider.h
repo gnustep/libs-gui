@@ -29,6 +29,7 @@
 #define _GNUstep_H_NSSlider
 
 #import <AppKit/NSControl.h>
+#import <AppKit/NSAccessibilityProtocols.h>
 #import <AppKit/NSSliderCell.h>
 
 @class NSString;
@@ -82,6 +83,10 @@ APPKIT_EXPORT_CLASS
 - (double) tickMarkValueAtIndex: (NSInteger)index;
 #endif
 
+@end
+
+// Accessibility support
+@interface NSSlider (NSAccessibilitySlider) <NSAccessibilityElement>
 @end
 
 #endif // _GNUstep_H_NSSlider
