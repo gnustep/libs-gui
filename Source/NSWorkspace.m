@@ -2,7 +2,7 @@
 
    <abstract>Workspace class</abstract>
 
-   Copyright (C) 1996-2016 Free Software Foundation, Inc.
+   Copyright (C) 1996-2026 Free Software Foundation, Inc.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -1318,9 +1318,48 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
       r = NO;
       devName = [fsName lastPathComponent];
-      // This is a very crude way of removing the partition number
-      if ([devName length] > 3)
-	devName = [devName substringToIndex: 3];
+      
+      /* Extract block device name by removing partition suffix
+       * Handle various device naming schemes:
+       *   sd*, hd* → just remove trailing digits (sda1 → sda)
+       *   nvme*n*p* → remove trailing p<digits> (nvme0n1p1 → nvme0n1)
+       *   mmcblk*p* → remove trailing p<digits> (mmcblk0p1 → mmcblk0)
+       *   loop*, ram*, sr* → use as-is
+       */
+      if ([devName hasPrefix:@"nvme"] || [devName hasPrefix:@"mmcblk"])
+        {
+          /* For nvme and mmcblk devices, partition names have a 'p' separator
+           * e.g., nvme0n1p1, mmcblk0p1 */
+          NSRange pRange = [devName rangeOfString:@"p" options:NSBackwardsSearch];
+          if (pRange.location != NSNotFound)
+            {
+              /* Check if everything after 'p' is digits */
+              NSString *suffix = [devName substringFromIndex:pRange.location + 1];
+              NSCharacterSet *nonDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+              if ([suffix rangeOfCharacterFromSet:nonDigits].location == NSNotFound && [suffix length] > 0)
+                {
+                  /* It's a partition, strip it */
+                  devName = [devName substringToIndex:pRange.location];
+                }
+            }
+        }
+      else if ([devName hasPrefix:@"sd"] || [devName hasPrefix:@"hd"] || 
+               [devName hasPrefix:@"vd"] || [devName hasPrefix:@"xvd"])
+        {
+          /* For sd/hd/vd devices, remove trailing digits (sda1 → sda) */
+          NSCharacterSet *digits = [NSCharacterSet decimalDigitCharacterSet];
+          NSInteger i = [devName length] - 1;
+          while (i >= 0 && [digits characterIsMember:[devName characterAtIndex:i]])
+            {
+              i--;
+            }
+          if (i < (NSInteger)[devName length] - 1)
+            {
+              /* Found trailing digits, strip them */
+              devName = [devName substringToIndex:i + 1];
+            }
+        }
+      /* For other devices (loop, ram, sr, etc.), use as-is */
 
       devInfoPath = [@"/sys/block" stringByAppendingPathComponent:devName];
       devInfoPath = [devInfoPath stringByAppendingPathComponent:@"removable"];
