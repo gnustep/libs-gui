@@ -590,9 +590,9 @@ static inline BOOL wantNewLineHeight(CGFloat h, CGFloat *lineHeight, CGFloat max
   return NO;
 }
 
-- (BOOL)_baseLayoutBlockNewParagraph: (BOOL *)newParagraph
-                        onLineHeight:(CGFloat *)line_height
-                         considering:(CGFloat)max_line_height
+- (BOOL)_baseLayoutBlockNewParagraph:(BOOL *)newParagraph
+                        onLineHeight:(CGFloat *)lineHeight
+                         considering:(CGFloat)maxLineHeight
                        usingAscender:(CGFloat *)ascender
                         andDescender:(CGFloat *)descender
 {
@@ -738,7 +738,7 @@ static inline BOOL wantNewLineHeight(CGFloat h, CGFloat *lineHeight, CGFloat max
           if (y > 0 && f_descender + y > *descender)
             *descender = f_descender + y;
 
-          if (wantNewLineHeight(*ascender + *descender, line_height, max_line_height))
+          if (wantNewLineHeight(*ascender + *descender, lineHeight, maxLineHeight))
             return YES;
         }
 
@@ -841,7 +841,7 @@ static inline BOOL wantNewLineHeight(CGFloat h, CGFloat *lineHeight, CGFloat max
               continue;
             }
 
-          baseline = *line_height - *descender;
+          baseline = *lineHeight - *descender;
 
           r = [cell cellFrameForTextContainer: curTextContainer
                          proposedLineFragment: lf->rect
@@ -866,7 +866,7 @@ static inline BOOL wantNewLineHeight(CGFloat h, CGFloat *lineHeight, CGFloat max
               /* Update ascender and descender. Adjust line height and
                  baseline if necessary. */
 
-              if (wantNewLineHeight(*ascender + *descender, line_height, max_line_height))
+              if (wantNewLineHeight(*ascender + *descender, lineHeight, maxLineHeight))
                 return YES;
             }
 
@@ -1029,7 +1029,7 @@ static inline BOOL wantNewLineHeight(CGFloat h, CGFloat *lineHeight, CGFloat max
     glyph_cache_t *g;
     NSRect used_rect;
 
-    baseline = *line_height - *descender;
+    baseline = *lineHeight - *descender;
 
     for (lf = line_frags, lineFragCounter = 0, g = cache; lfi >= 0; lfi--, lf++)
       {
