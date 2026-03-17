@@ -496,28 +496,28 @@ For bigger values the width gets ignored.
 
 
 - (NSRect)_getProposedRectFor: (BOOL)newParagraph
-               withLineHeight: (CGFloat) line_height 
+               withLineHeight: (CGFloat) lineHeight
 {
-  CGFloat hindent;
-  CGFloat tindent = [curParagraphStyle tailIndent];
+  CGFloat headIndent;
+  CGFloat tailIndent = [curParagraphStyle tailIndent];
 
   if (newParagraph)
-    hindent = [curParagraphStyle firstLineHeadIndent];
+    headIndent = [curParagraphStyle firstLineHeadIndent];
   else
-    hindent = [curParagraphStyle headIndent];
+    headIndent = [curParagraphStyle headIndent];
 
-  if (tindent <= 0.0)
+  if (tailIndent <= 0.0)
     { 
       NSSize size;
 
       size = [curTextContainer containerSize];
-      tindent = size.width + tindent;
+      tailIndent = size.width + tailIndent;
     }
 
-  return NSMakeRect(hindent,
+  return NSMakeRect(headIndent,
                     curPoint.y,
-                    tindent - hindent,
-                    line_height + [curParagraphStyle lineSpacing]);
+                    tailIndent - headIndent,
+                    lineHeight + [curParagraphStyle lineSpacing]);
 }
 
 - (void) _addExtraLineFragment
