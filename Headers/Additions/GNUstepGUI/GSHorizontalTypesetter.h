@@ -15,13 +15,13 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -40,42 +40,42 @@ APPKIT_EXPORT_CLASS
 {
   NSLock *lock;
 
-  GSLayoutManager *curLayoutManager;
-  NSTextContainer *curTextContainer;
-  NSTextStorage *curTextStorage;
+  GSLayoutManager *currentLayoutManager;
+  NSTextContainer *currentTextContainer;
+  NSTextStorage *currentTextStorage;
 
-  unsigned int curGlyphIndex;
-  NSPoint curPoint;
+  unsigned int currentGlyphIndex;
+  NSPoint currentPoint;
 
 
-  NSParagraphStyle *curParagraphStyle;
+  NSParagraphStyle *currentParagraphStyle;
   NSRange paragraphRange; /* characters */
 
-  NSDictionary *curAttributes;
+  NSDictionary *currentAttributes;
   NSRange attributeRange; /* characters */
   struct
     {
-      BOOL explicit_kern;
+      BOOL explicitKern;
       float kern;
-      float baseline_offset;
+      float baselineOffset;
       int superscript;
     } attributes;
 
-  NSFont *curFont;
+  NSFont *currentFont;
   NSRange fontRange; /* glyphs */
 
-  struct GSHorizontalTypesetter_glyph_cache_s *cache;
+  struct GSHorizontalTypesetterGlyphCacheEntry *glyphCache;
   /*
-    cache_base: index of first glyph in cache within the text container
-    cache_size: capacity of cache
-    cache_length: how much of the cache is filled
+    cacheBase: index of first glyph in cache within the text container
+    cacheSize: capacity of cache
+    cacheLength: how much of the cache is filled
    */
-  unsigned int cache_base, cache_size, cache_length;
-  BOOL at_end;
+  unsigned int cacheBase, cacheSize, cacheLength;
+  BOOL atEnd;
 
 
-  struct GSHorizontalTypesetter_line_frag_s *line_frags;
-  int line_frags_num, line_frags_size;
+  struct GSHorizontalTypesetterLineFragment *lineFragments;
+  int lineFragmentCount, lineFragmentCapacity;
 }
 
 +(GSHorizontalTypesetter *) sharedInstance;
@@ -83,4 +83,3 @@ APPKIT_EXPORT_CLASS
 @end
 
 #endif
-
