@@ -191,15 +191,15 @@ typedef struct GSHorizontalTypesetterGlyphCacheEntry GlyphCacheEntry;
 
   if (valid)
     {
-      unsigned int characterIdx;
+      unsigned int charIndex;
 
       atEnd = NO;
-      characterIdx = [currentLayoutManager characterIndexForGlyphAtIndex: glyph];
-      [self _cacheAttributesAtCharacterIndex: characterIdx];
+      charIndex = [currentLayoutManager characterIndexForGlyphAtIndex: glyph];
+      [self _cacheAttributesAtCharacterIndex: charIndex];
 
-      paragraphRange = NSMakeRange(characterIdx, [currentTextStorage length] - characterIdx);
+      paragraphRange = NSMakeRange(charIndex, [currentTextStorage length] - charIndex);
       currentParagraphStyle = [currentTextStorage attribute: NSParagraphStyleAttributeName
-                                                    atIndex: characterIdx
+                                                    atIndex: charIndex
                                       longestEffectiveRange: &paragraphRange
                                                     inRange: paragraphRange];
       if (currentParagraphStyle == nil)
