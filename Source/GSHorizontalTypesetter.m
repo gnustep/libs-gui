@@ -170,23 +170,23 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
     attributes.superscript = 0;
 }
 
--(void) _moveCacheToGlyph: (unsigned int)glyph
+-(void) _moveCacheToGlyph: (unsigned int)glyphIndex
 {
   BOOL valid;
 
-  if (cacheBase <= glyph && cacheBase + cacheLength > glyph)
+  if (cacheBase <= glyphIndex && cacheBase + cacheLength > glyphIndex)
     {
-      int delta = glyph - cacheBase;
+      int delta = glyphIndex - cacheBase;
       cacheLength -= delta;
       memmove(glyphCache, &glyphCache[delta], sizeof(GlyphCacheEntry) * cacheLength);
-      cacheBase = glyph;
+      cacheBase = glyphIndex;
       return;
     }
 
-  cacheBase = glyph;
+  cacheBase = glyphIndex;
   cacheLength = 0;
 
-  [currentLayoutManager glyphAtIndex: glyph
+  [currentLayoutManager glyphAtIndex: glyphIndex
                         isValidIndex: &valid];
 
   if (valid)
@@ -194,7 +194,7 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
       unsigned int charIndex;
 
       atEnd = NO;
-      charIndex = [currentLayoutManager characterIndexForGlyphAtIndex: glyph];
+      charIndex = [currentLayoutManager characterIndexForGlyphAtIndex: glyphIndex];
       [self _cacheAttributesAtCharacterIndex: charIndex];
 
       paragraphRange = NSMakeRange(charIndex, [currentTextStorage length] - charIndex);
@@ -207,7 +207,7 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
           currentParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
         }
 
-      currentFont = [currentLayoutManager effectiveFontForGlyphAtIndex: glyph
+      currentFont = [currentLayoutManager effectiveFontForGlyphAtIndex: glyphIndex
                                                                  range: &fontRange];
     }
   else
