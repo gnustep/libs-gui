@@ -987,7 +987,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
           lineFragment++;
           lineFragmentIndex++;
-          if (lineFragmentIndex == lineFragmentCapacity)
+          if (lineFragmentIndex == lineFragmentCount)
             {
               *newParagraph = NO;
               break;
@@ -1016,31 +1016,31 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
   /* Basic layout is done. */
 
   /* Take care of the alignments. */
-  if (lineFragmentIndex != lineFragmentCapacity)
+  if (lineFragmentIndex != lineFragmentCount)
     {
       lineFragment->lastGlyphIndex = index;
       lineFragment->lastUsed = position.x;
 
       /* TODO: incorrect if there is more than one line fragment */
       if ([currentParagraphStyle alignment] == NSRightTextAlignment)
-        [self rightAlignLine: lineFragments : lineFragmentCapacity];
+        [self rightAlignLine: lineFragments : lineFragmentCount];
       else if ([currentParagraphStyle alignment] == NSCenterTextAlignment)
-        [self centerAlignLine: lineFragments : lineFragmentCapacity];
+        [self centerAlignLine: lineFragments : lineFragmentCount];
     }
   else
     {
       if ([currentParagraphStyle lineBreakMode] == NSLineBreakByWordWrapping &&
           [currentParagraphStyle alignment] == NSJustifiedTextAlignment)
         {
-          [self fullJustifyLine: lineFragments : lineFragmentCapacity];
+          [self fullJustifyLine: lineFragments : lineFragmentCount];
         }
       else if ([currentParagraphStyle alignment] == NSRightTextAlignment)
         {
-          [self rightAlignLine: lineFragments : lineFragmentCapacity];
+          [self rightAlignLine: lineFragments : lineFragmentCount];
         }
       else if ([currentParagraphStyle alignment] == NSCenterTextAlignment)
         {
-          [self centerAlignLine: lineFragments : lineFragmentCapacity];
+          [self centerAlignLine: lineFragments : lineFragmentCount];
         }
 
       lineFragmentIndex--;
