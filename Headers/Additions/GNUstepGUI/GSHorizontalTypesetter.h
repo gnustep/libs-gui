@@ -64,7 +64,7 @@ APPKIT_EXPORT_CLASS
   NSFont *currentFont;
   NSRange fontRange; /* glyphs */
 
-  struct GSHorizontalTypesetterGlyphCacheEntry *glyphCache;
+  struct GSHorizontalTypesetterGlyphCacheStruct *glyphCache;
   /*
     cacheBase: index of first glyph in cache within the text container
     cacheSize: capacity of cache
@@ -74,7 +74,7 @@ APPKIT_EXPORT_CLASS
   BOOL atEnd;
 
 
-  struct GSHorizontalTypesetterLineFragment *lineFragments;
+  struct GSHorizontalTypesetterLineFragmentStruct *lineFragments;
   int lineFragmentCount, lineFragmentCapacity;
 }
 

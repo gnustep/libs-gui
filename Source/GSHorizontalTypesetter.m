@@ -99,7 +99,7 @@ cache fairly aggressively without having to worry about memory consumption.
 #define CACHE_STEP 192
 
 
-struct GSHorizontalTypesetterGlyphCacheEntry
+struct GSHorizontalTypesetterGlyphCacheStruct
 {
   /* These fields are filled in by the caching: */
   NSGlyph glyph;
@@ -120,7 +120,7 @@ struct GSHorizontalTypesetterGlyphCacheEntry
   NSSize size;    /* height is used only for attachments */
   BOOL dontShow, outsideLineFragment;
 };
-typedef struct GSHorizontalTypesetterGlyphCacheEntry GlyphCacheEntry;
+typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
 
 /* TODO: if we could know whether the layout manager had been modified since
    the last time or not, we wouldn't need to clear the cache every time */
@@ -334,13 +334,13 @@ typedef struct GSHorizontalTypesetterGlyphCacheEntry GlyphCacheEntry;
 }
 
 
-struct GSHorizontalTypesetterLineFragment
+struct GSHorizontalTypesetterLineFragmentStruct
 {
   NSRect rect;
   CGFloat lastUsed;
   unsigned int lastGlyphIndex; /* lastGlyphIndex+1, actually */
 };
-typedef struct GSHorizontalTypesetterLineFragment LineFragment;
+typedef struct GSHorizontalTypesetterLineFragmentStruct LineFragment;
 
 /*
 Apple uses this as the maximum width of an NSTextContainer.
