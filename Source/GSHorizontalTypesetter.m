@@ -899,7 +899,19 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
       else
         {
           /* TODO: this is a major bottleneck */
-
+          /*
+          if (lastGlyph)
+            {
+              BOOL n;
+              position = [font positionOfGlyph: glyphEntry->glyph
+                               precededByGlyph: lastGlyph
+                                     isNominal: &n];
+              if (!n)
+                glyphEntry->nominal = NO;
+              position.x += lastPosition.x;
+              position.y += lastPosition.y;
+            }
+          */
           lastPosition = glyphEntry->position = position;
           /* Only the width is used. */
           position.x += glyphEntry->size.width;
