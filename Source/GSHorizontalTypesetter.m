@@ -659,7 +659,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
               *newParagraph = NO;
               break;
             }
-          glyphEntry = glyphCache + *index;
+          glyphEntry = &glyphCache[*index];
         }
 
       /*
@@ -968,7 +968,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
                             (*index)--;
                             break;
                           }
-                        glyphEntry = glyphCache + *index;
+                        glyphEntry = &glyphCache[*index];
                       }
 
                     glyphEntry->dontShow = YES;
@@ -991,7 +991,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
           lastPosition = *position = NSMakePoint(0, 0);
           *index = lineFragment->lastGlyphIndex;
-          glyphEntry = glyphCache + *index;
+          glyphEntry = &glyphCache[*index];
           /* The -1 is always valid since there's at least one glyph in the
              line fragment rect (see above). */
           lineFragment->lastUsed = glyphEntry[-1].position.x + glyphEntry[-1].size.width;
