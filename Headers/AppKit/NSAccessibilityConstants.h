@@ -32,6 +32,16 @@
 #import <AppKit/AppKitDefines.h>
 #import <Foundation/Foundation.h>
 
+// MARK: - Type Definitions
+
+typedef NSString * NSAccessibilityRole;
+typedef NSString * NSAccessibilitySubrole;
+typedef NSString * NSAccessibilityAttribute;
+typedef NSString * NSAccessibilityAction;
+typedef NSString * NSAccessibilityNotification;
+
+// MARK: - Error Information
+
 APPKIT_EXPORT NSString *const NSAccessibilityErrorCodeExceptionInfo;
 
 APPKIT_EXPORT NSString *const NSAccessibilityRoleAttribute;

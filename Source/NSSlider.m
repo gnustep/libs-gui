@@ -32,6 +32,8 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSSlider.h"
 #import "AppKit/NSSliderCell.h"
+#import "AppKit/NSAccessibility.h"
+#import "AppKit/NSAccessibilityProtocols.h"
 
 /**
   <unit>
@@ -403,6 +405,325 @@ static Class cellClass;
 - (double) tickMarkValueAtIndex: (NSInteger)index
 {
   return [_cell tickMarkValueAtIndex: index];
+}
+
+@end
+// MARK: - NSSlider (NSAccessibilitySlider)
+
+@implementation NSSlider (NSAccessibilitySlider)
+
+// MARK: - NSAccessibilityElement Protocol Implementation
+
+- (NSString *) accessibilityRole
+{
+  return NSAccessibilitySliderRole;
+}
+
+- (NSString *) accessibilitySubrole
+{
+  return nil;
+}
+
+- (NSString *) accessibilityLabel
+{
+  return nil; // Sliders typically get their labels from associated labels
+}
+
+- (NSString *) accessibilityTitle
+{
+  return nil; // Sliders typically don't have titles
+}
+
+- (NSString *) accessibilityHelp
+{
+  NSString *toolTip = [self toolTip];
+  if (toolTip && [toolTip length] > 0)
+    {
+      return toolTip;
+    }
+  
+  return nil;
+}
+
+- (BOOL) isAccessibilityEnabled
+{
+  return [self isEnabled];
+}
+
+- (NSArray *) accessibilityChildren
+{
+  return nil; // Sliders are leaf elements
+}
+
+- (NSArray *) accessibilitySelectedChildren
+{
+  return nil;
+}
+
+- (NSArray *) accessibilityVisibleChildren
+{
+  return nil;
+}
+
+- (id) accessibilityWindow
+{
+  return [self window];
+}
+
+- (id) accessibilityTopLevelUIElement
+{
+  NSWindow *window = [self window];
+  return window ? [window contentView] : nil;
+}
+
+- (NSPoint) accessibilityActivationPoint
+{
+  NSRect frame = [self frame];
+  if ([self window] != nil)
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  
+  if (NSEqualRects(frame, NSZeroRect))
+    {
+      return NSZeroPoint;
+    }
+  
+  return NSMakePoint(NSMidX(frame), NSMidY(frame));
+}
+
+- (NSString *) accessibilityURL
+{
+  return nil;
+}
+
+- (NSNumber *) accessibilityIndex
+{
+  id parent = [self superview];
+  if (parent && [parent respondsToSelector: @selector(subviews)])
+    {
+      NSArray *siblings = [parent subviews];
+      NSUInteger index = [siblings indexOfObject: self];
+      if (index != NSNotFound)
+        {
+          return [NSNumber numberWithUnsignedInteger: index];
+        }
+    }
+  return [NSNumber numberWithInteger: 0];
+}
+
+// MARK: - NSAccessibilitySlider Protocol Implementation
+
+- (NSNumber *) accessibilityValue
+{
+  return [NSNumber numberWithDouble: [self doubleValue]];
+}
+
+- (void) setAccessibilityValue: (id) value
+{
+  if ([value respondsToSelector: @selector(doubleValue)])
+    {
+      double newValue = [value doubleValue];
+      double minValue = [self minValue];
+      double maxValue = [self maxValue];
+      
+      // Clamp the value to the slider's range
+      if (newValue < minValue)
+        {
+          newValue = minValue;
+        }
+      else if (newValue > maxValue)
+        {
+          newValue = maxValue;
+        }
+      
+      [self setDoubleValue: newValue];
+      
+      // Send action if continuous
+      if ([self isContinuous])
+        {
+          [self sendAction: [self action] to: [self target]];
+        }
+    }
+}
+
+- (NSNumber *) accessibilityMinValue
+{
+  return [NSNumber numberWithDouble: [self minValue]];
+}
+
+- (NSNumber *) accessibilityMaxValue
+{
+  return [NSNumber numberWithDouble: [self maxValue]];
+}
+
+- (NSString *) accessibilityValueDescription
+{
+  return [NSString stringWithFormat: @"%.2f", [self doubleValue]];
+}
+
+- (void) setAccessibilityValueDescription: (NSString *) valueDescription
+{
+  // Value description is computed automatically
+}
+
+- (NSString *) accessibilityOrientation
+{
+  NSRect frame = [self frame];
+  if (frame.size.width > frame.size.height)
+    {
+      return NSAccessibilityHorizontalOrientationValue;
+    }
+  else
+    {
+      return NSAccessibilityVerticalOrientationValue;
+    }
+}
+
+- (NSArray *) accessibilityAllowedValues
+{
+  if ([self allowsTickMarkValuesOnly] && [self numberOfTickMarks] > 0)
+    {
+      NSMutableArray *values = [NSMutableArray array];
+      NSInteger tickCount = [self numberOfTickMarks];
+      NSInteger i = 0;
+      
+      for (i = 0; i < tickCount; i++)
+        {
+          double tickValue = [self tickMarkValueAtIndex: i];
+          [values addObject: [NSNumber numberWithDouble: tickValue]];
+        }
+      
+      return values;
+    }
+  
+  return nil; // Continuous values allowed
+}
+
+- (BOOL) accessibilityPerformIncrement
+{
+  if ([self isEnabled])
+    {
+      double currentValue = [self doubleValue];
+      double maxValue = [self maxValue];
+      double increment = (maxValue - [self minValue]) / 100.0; // 1% of range
+      
+      if (currentValue < maxValue)
+        {
+          double newValue = MIN(currentValue + increment, maxValue);
+          [self setDoubleValue: newValue];
+          
+          if ([self isContinuous])
+            {
+              [self sendAction: [self action] to: [self target]];
+            }
+          
+          return YES;
+        }
+    }
+  
+  return NO;
+}
+
+- (BOOL) accessibilityPerformDecrement
+{
+  if ([self isEnabled])
+    {
+      double currentValue = [self doubleValue];
+      double minValue = [self minValue];
+      double decrement = ([self maxValue] - minValue) / 100.0; // 1% of range
+      
+      if (currentValue > minValue)
+        {
+          double newValue = MAX(currentValue - decrement, minValue);
+          [self setDoubleValue: newValue];
+          
+          if ([self isContinuous])
+            {
+              [self sendAction: [self action] to: [self target]];
+            }
+          
+          return YES;
+        }
+    }
+  
+  return NO;
+}
+
+// MARK: - Additional Methods
+
+- (NSArray *) accessibilityCustomRotors
+{
+  return nil;
+}
+
+- (BOOL) accessibilityPerformEscape
+{
+  return NO;
+}
+
+- (NSArray *) accessibilityCustomActions
+{
+  return nil;
+}
+
+- (void) setAccessibilityElement: (BOOL) isElement
+{
+  // Sliders are always accessibility elements
+}
+
+- (void) setAccessibilityFrame: (NSRect) frame
+{
+  // Frame is determined by the actual view frame
+}
+
+- (void) setAccessibilityParent: (id) parent
+{
+  // Parent relationship is managed by the view hierarchy
+}
+
+- (void) setAccessibilityFocused: (BOOL) focused
+{
+  if (focused)
+    {
+      [[self window] makeFirstResponder: self];
+    }
+  else
+    {
+      if ([[self window] firstResponder] == self)
+        {
+          [[self window] makeFirstResponder: nil];
+        }
+    }
+}
+
+- (BOOL) isAccessibilityElement
+{
+  return ![self isHidden] && [self superview] != nil;
+}
+
+- (NSRect) accessibilityFrame
+{
+  NSRect frame = [self frame];
+  if ([self superview])
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  if ([self window])
+    {
+      frame.origin = [[self window] convertRectToScreen: frame].origin;
+    }
+  return frame;
+}
+
+- (id) accessibilityParent
+{
+  return [self superview];
+}
+
+- (BOOL) isAccessibilityFocused
+{
+  return [[self window] firstResponder] == self;
 }
 
 @end
