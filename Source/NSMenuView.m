@@ -1834,7 +1834,6 @@ static float menuBarHeight = 0.0;
 	  type = [event type];
     if (type == NSLeftMouseUp || type == NSRightMouseUp || type == NSOtherMouseUp)
       {
-          shouldFinish = YES;
           break;  // Exit the loop to proceed to StopPeriodicEvents
       }
 	  if (type == NSAppKitDefined)
