@@ -169,7 +169,7 @@ typedef struct _tableViewFlags
 - (CGFloat) _yOriginForRow: (NSInteger)rowIndex;
 - (NSInteger) _rowAtPointUsingVariableHeights: (NSPoint)aPoint;
 - (CGFloat) _positionInRowAtPoint: (NSPoint)aPoint
-                               row: (NSInteger)rowIndex;
+			       row: (NSInteger)rowIndex;
 - (CGFloat*) _columnOrigins;
 - (NSView*)  _renderedViewForPath: (NSIndexPath*)path;
 - (void) _setRenderedView: (NSView*)view forPath: (NSIndexPath*)path;
@@ -2064,7 +2064,7 @@ static void computeNewSelection
   _selectedRow = -1;
   _highlightedTableColumn = nil;
   _draggingSourceOperationMaskForLocal = NSDragOperationCopy
-      | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
+    | NSDragOperationLink | NSDragOperationGeneric | NSDragOperationPrivate;
   _draggingSourceOperationMaskForRemote = NSDragOperationNone;
   ASSIGN(_sortDescriptors, [NSArray array]);
   _viewBased = NO;
@@ -2115,13 +2115,17 @@ static void computeNewSelection
   if (_autosaveTableColumns == YES)
     {
       [nc removeObserver: self
-	  name: NSTableViewColumnDidResizeNotification
-	  object: self];
+		    name: NSTableViewColumnDidResizeNotification
+		  object: self];
     }
   // Remove window resize observer
   [nc removeObserver: self
-                name: NSWindowDidResizeNotification
-              object: nil];
+		name: NSWindowDidResizeNotification
+	      object: nil];
+  // Remove clip view bounds observer
+  [nc removeObserver: self
+		name: NSViewBoundsDidChangeNotification
+	      object: nil];
   TEST_RELEASE (_autosaveName);
   if (_numberOfColumns > 0)
     {
@@ -2132,6 +2136,7 @@ static void computeNewSelection
       [nc removeObserver: _delegate  name: nil  object: self];
       _delegate = nil;
     }
+
   [super dealloc];
 }
 
@@ -2145,8 +2150,13 @@ static void computeNewSelection
   /* Remove any existing resize observers for this table view before it
      moves to a new window or is detached. */
   [nc removeObserver: self
-                 name: NSWindowDidResizeNotification
-               object: nil];
+		name: NSWindowDidResizeNotification
+	      object: nil];
+
+  /* Remove any existing clip view bounds observers */
+  [nc removeObserver: self
+		name: NSViewBoundsDidChangeNotification
+	      object: nil];
 
   [super viewDidMoveToWindow];
 
@@ -2154,13 +2164,35 @@ static void computeNewSelection
   if ([self window] != nil && _viewBased)
     {
       [nc addObserver: self
-          selector: @selector(_windowDidResize:)
-              name: NSWindowDidResizeNotification
-            object: [self window]];
+	     selector: @selector(_windowDidResize:)
+		 name: NSWindowDidResizeNotification
+	       object: [self window]];
+
+      // Add observer for clip view bounds changes (scrolling)
+      NSScrollView *scrollView = [self enclosingScrollView];
+      if (scrollView != nil)
+	{
+	  NSClipView *clipView = [scrollView contentView];
+	  if (clipView != nil)
+	    {
+	      [nc addObserver: self
+		     selector: @selector(_clipViewBoundsDidChange:)
+			 name: NSViewBoundsDidChangeNotification
+		       object: clipView];
+	    }
+	}
     }
 }
 
 - (void) _windowDidResize: (NSNotification *)notification
+{
+  if (_viewBased)
+    {
+      [self reloadData];
+    }
+}
+
+- (void) _clipViewBoundsDidChange: (NSNotification *)notification
 {
   if (_viewBased)
     {
@@ -2313,13 +2345,13 @@ static void computeNewSelection
   if (columnIndex < newIndex)
     {
       [_tableColumns insertObject: [_tableColumns objectAtIndex: columnIndex]
-		     atIndex: newIndex + 1];
+			  atIndex: newIndex + 1];
       [_tableColumns removeObjectAtIndex: columnIndex];
     }
   else
     {
       [_tableColumns insertObject: [_tableColumns objectAtIndex: columnIndex]
-		     atIndex: newIndex];
+			  atIndex: newIndex];
       [_tableColumns removeObjectAtIndex: columnIndex + 1];
     }
   /* Tile */
@@ -2387,7 +2419,7 @@ static void computeNewSelection
   // If we have content binding the data source is used only
   // like a delegate
   theBinding = [GSKeyValueBinding getBinding: NSContentBinding
-				  forObject: self];
+				   forObject: self];
   if (theBinding == nil)
     {
       if (anObject && [anObject respondsToSelector: sel_a] == NO)
@@ -2415,7 +2447,6 @@ static void computeNewSelection
       _dataSource_editable = YES;
     }
 
-
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
 
@@ -2435,15 +2466,15 @@ static void computeNewSelection
       NSArray *subviews = [[self subviews] copy];
       NSEnumerator *enumerator = [subviews objectEnumerator];
       NSView *subview;
-      
+
       while ((subview = [enumerator nextObject]) != nil)
-        {
-          if ([subview isKindOfClass: [NSTableRowView class]])
-            {
-              [subview removeFromSuperview];
-            }
-        }
-      
+	{
+	  if ([subview isKindOfClass: [NSTableRowView class]])
+	    {
+	      [subview removeFromSuperview];
+	    }
+	}
+
       [_renderedViewPaths removeAllObjects];
       [_pathsToViews removeAllObjects];
       [_rowViews removeAllObjects];
@@ -3861,7 +3892,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		      [NSEvent stopPeriodicEvents];
 		      startedPeriodicEvents = NO;
 		    }
-		  mouseLocationView.x = _bounds.origin.x;
+		  mouseLocationView.x = 0.0;
 		  oldRow = currentRow;
 		  currentRow = [self rowAtPoint: mouseLocationView];
 
@@ -3935,7 +3966,7 @@ if (currentRow >= 0 && currentRow < _numberOfRows) \
 		      startedPeriodicEvents = NO;
 		    }
 
-		  mouseLocationView.x = _bounds.origin.x;
+		  mouseLocationView.x = 0.0;
 		  oldRow = currentRow;
 		  currentRow = [self rowAtPoint: mouseLocationView];
 		  if (oldRow != currentRow)
@@ -4272,7 +4303,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 	     if (modifySelection == NO)
 	       {
 		 noModPoint.x = visRect.origin.x;
-		 noModPoint.y = NSMinY(_bounds);
+		 noModPoint.y = NSMinY([self bounds]);
 	       }
 	     else
 	       {
@@ -4284,7 +4315,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
 	     if (modifySelection == NO)
 	       {
 		 noModPoint.x = visRect.origin.x;
-		 noModPoint.y = NSMaxY(_bounds);
+		 noModPoint.y = NSMaxY([self bounds]);
 	       }
 	     else
 	       {
@@ -4437,7 +4468,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
     }
 
   rect.origin.x = _columnOrigins[columnIndex];
-  rect.origin.y = _bounds.origin.y;
+  rect.origin.y = 0.0;
   rect.size.width = [[_tableColumns objectAtIndex: columnIndex] width];
 	rect.size.height = [self _rowsHeight];
   return rect;
@@ -4453,9 +4484,9 @@ static BOOL selectContiguousRegion(NSTableView *self,
       return NSZeroRect;
     }
 
-  rect.origin.x = _bounds.origin.x;
+  rect.origin.x = 0.0;
 	rect.origin.y = [self _yOriginForRow: rowIndex];
-  rect.size.width = _bounds.size.width;
+  rect.size.width = [self bounds].size.width;
 	rect.size.height = [self _rowHeightForRow: rowIndex];
   return rect;
 }
@@ -4495,7 +4526,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   range.location = [self columnAtPoint: aRect.origin];
   range.length = [self columnAtPoint:
-			 NSMakePoint (NSMaxX (aRect), _bounds.origin.y)];
+			 NSMakePoint (NSMaxX (aRect), aRect.origin.y)];
   range.length -= range.location;
   range.length += 1;
   return range;
@@ -4508,7 +4539,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   range.location = [self rowAtPoint: aRect.origin];
   lastRowInRect = [self rowAtPoint:
-			 NSMakePoint (_bounds.origin.x, NSMaxY (aRect))];
+			 NSMakePoint (aRect.origin.x, NSMaxY (aRect))];
 
   if (lastRowInRect == -1)
     {
@@ -4523,7 +4554,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (NSInteger) columnAtPoint: (NSPoint)aPoint
 {
-  if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
+  if ((NSMouseInRect (aPoint, [self bounds], YES)) == NO)
     {
       return -1;
     }
@@ -4615,7 +4646,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  return;
 	}
       excess_width = NSMaxX([self convertRect: [_super_view bounds]
-				     fromView: _super_view]) - NSMaxX(_bounds);
+				     fromView: _super_view]) - NSMaxX([self bounds]);
       last_column_width = [lastColumn width] + excess_width;
       // This will automatically retile the table
       [lastColumn setWidth: last_column_width];
@@ -4993,7 +5024,7 @@ This method is deprecated, use -columnIndexesInRect:. */
       NSInteger i;
       CGFloat width;
 
-      _columnOrigins[0] = _bounds.origin.x;
+      _columnOrigins[0] = 0.0;
       width = [[_tableColumns objectAtIndex: 0] width];
       table_width += width;
       for (i = 1; i < _numberOfColumns; i++)
@@ -5093,21 +5124,18 @@ This method is deprecated, use -columnIndexesInRect:. */
   // Create and position the row view for this row
   id rowView = [self rowViewAtRow: rowIndex
 		  makeIfNecessary: YES];
-  
 
-  
   if (rowView != nil)
     {
       NSRect cellFrame = [self frameOfCellAtColumn: 0
 					     row: rowIndex];
       CGFloat x = 0.0;
       CGFloat y = cellFrame.origin.y;
-      CGFloat w = [self frame].size.width;
+      CGFloat w = [self bounds].size.width;
 	CGFloat h = [self _rowHeightForRow: rowIndex];
 
       NSRect rvFrame = NSMakeRect(x, y, w, h);
-      NSAutoresizingMaskOptions options = NSViewWidthSizable
-	| NSViewMaxYMargin;
+      NSAutoresizingMaskOptions options = NSViewWidthSizable;
 
 
 
@@ -5118,7 +5146,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  [rowView setAutoresizingMask: options];
 
 	}
-      
+
       // Always update the frame to ensure correct positioning
       [rowView setFrame: rvFrame];
     }
@@ -5454,25 +5482,42 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   /* Test to see if it is view based */
   _viewBased = [_delegate respondsToSelector: vbsel];
-  
+
   // Handle window resize observer when view-based status changes
   if ([self window] != nil)
     {
       if (oldViewBased && !_viewBased)
-        {
-          // Changed from view-based to cell-based, remove observer
-          [nc removeObserver: self 
-              name: NSWindowDidResizeNotification 
-              object: [self window]];
-        }
+	{
+	  // Changed from view-based to cell-based, remove observers
+	  [nc removeObserver: self
+			name: NSWindowDidResizeNotification
+		      object: [self window]];
+	  [nc removeObserver: self
+			name: NSViewBoundsDidChangeNotification
+		      object: nil];
+	}
       else if (!oldViewBased && _viewBased)
-        {
-          // Changed from cell-based to view-based, add observer  
-          [nc addObserver: self
-              selector: @selector(_windowDidResize:)
-              name: NSWindowDidResizeNotification
-              object: [self window]];
-        }
+	{
+	  // Changed from cell-based to view-based, add observers
+	  [nc addObserver: self
+		 selector: @selector(_windowDidResize:)
+		     name: NSWindowDidResizeNotification
+		   object: [self window]];
+
+	  // Add observer for clip view bounds changes (scrolling)
+	  NSScrollView *scrollView = [self enclosingScrollView];
+	  if (scrollView != nil)
+	    {
+	      NSClipView *clipView = [scrollView contentView];
+	      if (clipView != nil)
+		{
+		  [nc addObserver: self
+			 selector: @selector(_clipViewBoundsDidChange:)
+			     name: NSViewBoundsDidChangeNotification
+			   object: clipView];
+		}
+	    }
+	}
     }
 }
 
@@ -5935,6 +5980,39 @@ This method is deprecated, use -columnIndexesInRect:. */
 					 sizeof(CGFloat) * _numberOfColumns);
 	}
       [self tile]; /* Initialize _columnOrigins */
+    }
+
+  if (!_viewBased)
+    {
+      // Changed from view-based to cell-based, remove observers
+      [nc removeObserver: self
+		    name: NSWindowDidResizeNotification
+		  object: [self window]];
+      [nc removeObserver: self
+		    name: NSViewBoundsDidChangeNotification
+		  object: nil];
+    }
+  else
+    {
+      // Changed from cell-based to view-based, add observers
+      [nc addObserver: self
+	     selector: @selector(_windowDidResize:)
+		 name: NSWindowDidResizeNotification
+	       object: [self window]];
+
+      // Add observer for clip view bounds changes (scrolling)
+      NSScrollView *scrollView = [self enclosingScrollView];
+      if (scrollView != nil)
+	{
+	  NSClipView *clipView = [scrollView contentView];
+	  if (clipView != nil)
+	    {
+	      [nc addObserver: self
+		     selector: @selector(_clipViewBoundsDidChange:)
+			 name: NSViewBoundsDidChangeNotification
+		       object: clipView];
+	    }
+	}
     }
 
   return self;
@@ -6459,8 +6537,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 	{
 	  newRect = [self frameOfCellAtColumn: 0
 					  row: currentDropRow];
-	  newRect.origin.x = _bounds.origin.x;
-	  newRect.size.width = _bounds.size.width + 2;
+	  newRect.origin.x = [self visibleRect].origin.x;
+	  newRect.size.width = [self visibleRect].size.width;
 	  newRect.origin.x -= _intercellSpacing.height / 2;
 	  newRect.size.height += _intercellSpacing.height;
 
@@ -6512,7 +6590,7 @@ view to drag. */
 {
 	if ([self _usesVariableRowHeights] == NO)
 		{
-			return (NSInteger)(p.y - _bounds.origin.y) / (NSInteger)_rowHeight;
+			return (NSInteger)(p.y) / (NSInteger)_rowHeight;
 		}
 
 	if (_numberOfRows <= 0)
@@ -6520,7 +6598,7 @@ view to drag. */
 			return 0;
 		}
 
-	CGFloat y = p.y - _bounds.origin.y;
+	CGFloat y = p.y;
 	if (y <= 0.0)
 		{
 			return 0;
@@ -6752,7 +6830,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 {
   NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
   GSKeyValueBinding *theBinding;
-  
+
   theBinding = [GSKeyValueBinding getBinding: NSValueBinding
 				   forObject: tb];
 
@@ -6920,7 +6998,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 {
   [tb _applyBindingsToCell: cell
 		     atRow: index];
-  
+
   if (_del_responds)
     {
       [_delegate tableView: self
@@ -7067,15 +7145,15 @@ For a more detailed explanation, -setSortDescriptors:. */
 {
 	if (rowIndex <= 0)
 		{
-			return _bounds.origin.y;
+			return 0.0;
 		}
 
 	if ([self _usesVariableRowHeights] == NO)
 		{
-			return _bounds.origin.y + (_rowHeight * rowIndex);
+			return _rowHeight * rowIndex;
 		}
 
-	CGFloat y = _bounds.origin.y;
+	CGFloat y = 0.0;
 	NSInteger i;
 
 	for (i = 0; i < rowIndex && i < _numberOfRows; i++)
@@ -7088,7 +7166,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (NSInteger) _rowAtPointUsingVariableHeights: (NSPoint)aPoint
 {
-	if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
+	if ((NSMouseInRect (aPoint, [self bounds], YES)) == NO)
 		{
 			return -1;
 		}
@@ -7105,7 +7183,6 @@ For a more detailed explanation, -setSortDescriptors:. */
 					return -1;
 				}
 
-			aPoint.y -= _bounds.origin.y;
 			NSInteger row = (NSInteger)(aPoint.y / _rowHeight);
 
 			if (row >= _numberOfRows)
@@ -7116,7 +7193,7 @@ For a more detailed explanation, -setSortDescriptors:. */
 			return row;
 		}
 
-	CGFloat y = aPoint.y - _bounds.origin.y;
+	CGFloat y = aPoint.y;
 	if (y < 0.0)
 		{
 			return -1;
