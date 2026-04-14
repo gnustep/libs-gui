@@ -1246,13 +1246,13 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
   {
     LineFragment *lineFragment;
     NSPoint glyphPosition;
-    unsigned int lineFragCounter, lineFragCounter2;
+    unsigned int glyphCounter, savedGlyphCounter;
     GlyphCacheEntry *glyphEntry;
     NSRect usedRect;
 
     CGFloat baseline = lineHeight - descender;
 
-    for (lineFragment = lineFragments, lineFragCounter = 0, glyphEntry = glyphCache; lineFragmentIndex >= 0; lineFragmentIndex--, lineFragment++)
+    for (lineFragment = lineFragments, glyphCounter = 0, glyphEntry = glyphCache; lineFragmentIndex >= 0; lineFragmentIndex--, lineFragment++)
       {
         usedRect.origin.x = glyphEntry->position.x + lineFragment->rect.origin.x;
         usedRect.size.width = lineFragment->lastUsed - glyphEntry->position.x;
@@ -1261,47 +1261,47 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
         usedRect.size.height = lineFragment->rect.size.height;
 
         [currentLayoutManager setLineFragmentRect: lineFragment->rect
-                                    forGlyphRange: NSMakeRange(cacheBase + lineFragCounter, lineFragment->lastGlyphIndex - lineFragCounter)
+                                    forGlyphRange: NSMakeRange(cacheBase + glyphCounter, lineFragment->lastGlyphIndex - glyphCounter)
                                          usedRect: usedRect];
         glyphPosition = glyphEntry->position;
         glyphPosition.y += baseline;
-        lineFragCounter2 = lineFragCounter;
-        while (lineFragCounter < lineFragment->lastGlyphIndex)
+        savedGlyphCounter = glyphCounter;
+        while (glyphCounter < lineFragment->lastGlyphIndex)
           {
             if (glyphEntry->outsideLineFragment)
               {
                 [currentLayoutManager setDrawsOutsideLineFragment: YES
-                                                  forGlyphAtIndex: cacheBase + lineFragCounter];
+                                                  forGlyphAtIndex: cacheBase + glyphCounter];
               }
             if (glyphEntry->dontShow)
               {
                 [currentLayoutManager setNotShownAttribute: YES
-                                           forGlyphAtIndex: cacheBase + lineFragCounter];
+                                           forGlyphAtIndex: cacheBase + glyphCounter];
               }
-            if (!glyphEntry->nominal && lineFragCounter != lineFragCounter2)
+            if (!glyphEntry->nominal && glyphCounter != savedGlyphCounter)
               {
                 [currentLayoutManager setLocation: glyphPosition
-                             forStartOfGlyphRange: NSMakeRange(cacheBase + lineFragCounter2, lineFragCounter - lineFragCounter2)];
+                             forStartOfGlyphRange: NSMakeRange(cacheBase + savedGlyphCounter, glyphCounter - savedGlyphCounter)];
                 if (glyphEntry[-1].glyph == GSAttachmentGlyph)
                   {
                     [currentLayoutManager setAttachmentSize: glyphEntry[-1].size
-                                              forGlyphRange: NSMakeRange(cacheBase + lineFragCounter2, lineFragCounter - lineFragCounter2)];
+                                              forGlyphRange: NSMakeRange(cacheBase + savedGlyphCounter, glyphCounter - savedGlyphCounter)];
                   }
                 glyphPosition = glyphEntry->position;
                 glyphPosition.y += baseline;
-                lineFragCounter2 = lineFragCounter;
+                savedGlyphCounter = glyphCounter;
               }
-            lineFragCounter++;
+            glyphCounter++;
             glyphEntry++;
           }
-        if (lineFragCounter != lineFragCounter2)
+        if (glyphCounter != savedGlyphCounter)
           {
             [currentLayoutManager setLocation: glyphPosition
-                         forStartOfGlyphRange: NSMakeRange(cacheBase + lineFragCounter2, lineFragCounter - lineFragCounter2)];
+                         forStartOfGlyphRange: NSMakeRange(cacheBase + savedGlyphCounter, glyphCounter - savedGlyphCounter)];
             if (glyphEntry[-1].glyph == GSAttachmentGlyph)
               {
                 [currentLayoutManager setAttachmentSize: glyphEntry[-1].size
-                                          forGlyphRange: NSMakeRange(cacheBase + lineFragCounter2, lineFragCounter - lineFragCounter2)];
+                                          forGlyphRange: NSMakeRange(cacheBase + savedGlyphCounter, glyphCounter - savedGlyphCounter)];
               }
           }
       }
