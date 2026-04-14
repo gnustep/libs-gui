@@ -1252,7 +1252,9 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
     CGFloat baseline = lineHeight - descender;
 
-    for (lineFragment = lineFragments, glyphCounter = 0, glyphEntry = glyphCache; lineFragmentIndex >= 0; lineFragmentIndex--, lineFragment++)
+    glyphCounter = 0;
+    glyphEntry = glyphCache;
+    for (lineFragment = lineFragments; lineFragmentIndex >= 0; lineFragmentIndex--, lineFragment++)
       {
         usedRect.origin.x = glyphEntry->position.x + lineFragment->rect.origin.x;
         usedRect.size.width = lineFragment->lastUsed - glyphEntry->position.x;
