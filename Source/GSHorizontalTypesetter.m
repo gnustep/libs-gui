@@ -1202,18 +1202,23 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
   /* Basic layout is done. */
 
-  LineFragment *lineFragment = &lineFragments[lineFragmentIndex];
   /* Take care of the alignments. */
   if (lineFragmentIndex != lineFragmentCount)
     {
+      LineFragment *lineFragment = &lineFragments[lineFragmentIndex];
+
       lineFragment->lastGlyphIndex = lastGlyphIndex;
       lineFragment->lastUsed = position.x;
 
       /* TODO: incorrect if there is more than one line fragment */
       if ([currentParagraphStyle alignment] == NSRightTextAlignment)
-        [self rightAlignLine: lineFragments : lineFragmentCount];
+        {
+          [self rightAlignLine: lineFragments : lineFragmentCount];
+        }
       else if ([currentParagraphStyle alignment] == NSCenterTextAlignment)
-        [self centerAlignLine: lineFragments : lineFragmentCount];
+        {
+          [self centerAlignLine: lineFragments : lineFragmentCount];
+        }
     }
   else
     {
