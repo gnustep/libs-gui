@@ -1300,13 +1300,19 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   FILE		*fptr = setmntent(MOUNTED_PATH, "r");
   struct mntent	*me;
 
+  if (fptr == nil)
+    {
+      NSLog(@"Unable to open %s", MOUNTED_PATH);
+      return NO;
+    }
+
   while ((me = getmntent(fptr)) != 0)
-  {
-    if (strcmp(me->MNT_MEMB, [fullPath fileSystemRepresentation]) == 0)
-      {
-	fsName = [NSString stringWithCString:me->MNT_FSNAME];
-      }
-  }
+    {
+      if (strcmp(me->MNT_MEMB, [fullPath fileSystemRepresentation]) == 0)
+        {
+          fsName = [NSString stringWithCString:me->MNT_FSNAME];
+        }
+    }
   endmntent(fptr);
 #endif /* HAVE_GETMINTENT */
   if (fsName && [fsName hasPrefix:@"/dev"])
@@ -2274,6 +2280,12 @@ launchIdentifiers: (NSArray **)identifiers
   NSFileManager	*mgr = [NSFileManager defaultManager];
   FILE		*fptr = setmntent(MOUNTED_PATH, "r");
   struct mntent	*m;
+
+  if (fptr == nil)
+    {
+      NSLog(@"Unable to open %s", MOUNTED_PATH);
+      return nil;
+    }
 
   names = [NSMutableArray arrayWithCapacity: 8];
   while ((m = getmntent(fptr)) != 0)
