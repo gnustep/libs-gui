@@ -44,8 +44,11 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSTextFieldCell.h"
+#import "AppKit/NSSecureTextField.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSKeyValueBinding.h"
+#import "AppKit/NSAccessibility.h"
+#import "AppKit/NSAccessibilityProtocols.h"
 #import "GSBindingHelpers.h"
 
 static NSNotificationCenter *nc;
@@ -825,6 +828,293 @@ static Class textFieldCellClass;
       withKeyPath: keyPath
           options: options];
     }
+}
+
+@end
+
+// MARK: - NSTextField (NSAccessibilityStaticText)
+
+@implementation NSTextField (NSAccessibilityStaticText)
+
+// MARK: - NSAccessibilityElement Protocol Implementation
+
+- (NSString *) accessibilityRole
+{
+  if ([self isEditable])
+    {
+      return NSAccessibilityTextFieldRole;
+    }
+  else
+    {
+      return NSAccessibilityStaticTextRole;
+    }
+}
+
+- (NSString *) accessibilitySubrole
+{
+  // Check if this is a secure text field
+  if ([self isKindOfClass:[NSSecureTextField class]])
+    {
+      return NSAccessibilitySecureTextFieldSubrole;
+    }
+  return nil;
+}
+
+- (NSString *) accessibilityLabel
+{
+  NSString *placeholder = [self placeholderString];
+  if (placeholder && [placeholder length] > 0)
+    {
+      return placeholder;
+    }
+  
+  return nil;
+}
+
+- (NSString *) accessibilityTitle
+{
+  return [self stringValue];
+}
+
+- (id) accessibilityValue
+{
+  return [self stringValue];
+}
+
+- (NSString *) accessibilityHelp
+{
+  NSString *toolTip = [self toolTip];
+  if (toolTip && [toolTip length] > 0)
+    {
+      return toolTip;
+    }
+  
+  return nil;
+}
+
+- (BOOL) isAccessibilityEnabled
+{
+  return [self isEnabled];
+}
+
+- (NSArray *) accessibilityChildren
+{
+  return nil; // Text fields are typically leaf elements
+}
+
+- (NSArray *) accessibilitySelectedChildren
+{
+  return nil;
+}
+
+- (NSArray *) accessibilityVisibleChildren
+{
+  return nil;
+}
+
+- (id) accessibilityWindow
+{
+  return [self window];
+}
+
+- (id) accessibilityTopLevelUIElement
+{
+  NSWindow *window = [self window];
+  return window ? [window contentView] : nil;
+}
+
+- (NSPoint) accessibilityActivationPoint
+{
+  NSRect frame = [self frame];
+  if ([self window] != nil)
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  
+  if (NSEqualRects(frame, NSZeroRect))
+    {
+      return NSZeroPoint;
+    }
+  
+  return NSMakePoint(NSMidX(frame), NSMidY(frame));
+}
+
+- (NSString *) accessibilityURL
+{
+  return nil;
+}
+
+- (NSNumber *) accessibilityIndex
+{
+  id parent = [self superview];
+  if (parent && [parent respondsToSelector: @selector(subviews)])
+    {
+      NSArray *siblings = [parent subviews];
+      NSUInteger index = [siblings indexOfObject: self];
+      if (index != NSNotFound)
+        {
+          return [NSNumber numberWithUnsignedInteger: index];
+        }
+    }
+  return [NSNumber numberWithInteger: 0];
+}
+
+// MARK: - NSAccessibilityStaticText Protocol Implementation
+
+- (NSAttributedString *) accessibilityAttributedStringForRange: (NSRange) range
+{
+  NSString *text = [self stringValue];
+  if (text && range.location < [text length])
+    {
+      NSRange validRange = NSIntersectionRange(range, NSMakeRange(0, [text length]));
+      NSString *substring = [text substringWithRange: validRange];
+      return [[NSAttributedString alloc] initWithString: substring];
+    }
+  return nil;
+}
+
+- (NSRange) accessibilityRangeForPosition: (NSPoint) point
+{
+  // For simple text fields, return the full range
+  NSString *text = [self stringValue];
+  if (text)
+    {
+      return NSMakeRange(0, [text length]);
+    }
+  return NSMakeRange(NSNotFound, 0);
+}
+
+- (NSRange) accessibilityRangeForIndex: (NSInteger) index
+{
+  NSString *text = [self stringValue];
+  if (text && index >= 0 && index < [text length])
+    {
+      return NSMakeRange(index, 1);
+    }
+  return NSMakeRange(NSNotFound, 0);
+}
+
+- (NSRect) accessibilityFrameForRange: (NSRange) range
+{
+  // Return the entire frame for text fields
+  return [self frame];
+}
+
+- (NSString *) accessibilityStringForRange: (NSRange) range
+{
+  NSString *text = [self stringValue];
+  if (text && range.location < [text length])
+    {
+      NSRange validRange = NSIntersectionRange(range, NSMakeRange(0, [text length]));
+      return [text substringWithRange: validRange];
+    }
+  return @"";
+}
+
+- (id) accessibilityAttributeValue: (NSString *) attribute forParameter: (id) parameter
+{
+  if ([attribute isEqualToString: NSAccessibilityStringForRangeParameterizedAttribute])
+    {
+      if ([parameter isKindOfClass: [NSValue class]])
+        {
+          NSRange range = [parameter rangeValue];
+          return [self accessibilityStringForRange: range];
+        }
+    }
+  else if ([attribute isEqualToString: NSAccessibilityAttributedStringForRangeParameterizedAttribute])
+    {
+      if ([parameter isKindOfClass: [NSValue class]])
+        {
+          NSRange range = [parameter rangeValue];
+          return [self accessibilityAttributedStringForRange: range];
+        }
+    }
+  
+  return nil;
+}
+
+- (NSArray *) accessibilityParameterizedAttributeNames
+{
+  return [NSArray arrayWithObjects:
+    NSAccessibilityStringForRangeParameterizedAttribute,
+    NSAccessibilityAttributedStringForRangeParameterizedAttribute,
+    nil];
+}
+
+// MARK: - Additional Methods
+
+- (NSArray *) accessibilityCustomRotors
+{
+  return nil;
+}
+
+- (BOOL) accessibilityPerformEscape
+{
+  return NO;
+}
+
+- (NSArray *) accessibilityCustomActions
+{
+  return nil;
+}
+
+- (void) setAccessibilityElement: (BOOL) isElement
+{
+  // Text fields are always accessibility elements
+}
+
+- (void) setAccessibilityFrame: (NSRect) frame
+{
+  // Frame is determined by the actual view frame
+}
+
+- (void) setAccessibilityParent: (id) parent
+{
+  // Parent relationship is managed by the view hierarchy
+}
+
+- (void) setAccessibilityFocused: (BOOL) focused
+{
+  if (focused)
+    {
+      [[self window] makeFirstResponder: self];
+    }
+  else
+    {
+      if ([[self window] firstResponder] == self)
+        {
+          [[self window] makeFirstResponder: nil];
+        }
+    }
+}
+
+- (BOOL) isAccessibilityElement
+{
+  return ![self isHidden] && [self superview] != nil;
+}
+
+- (NSRect) accessibilityFrame
+{
+  NSRect frame = [self frame];
+  if ([self superview])
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  if ([self window])
+    {
+      frame.origin = [[self window] convertRectToScreen: frame].origin;
+    }
+  return frame;
+}
+
+- (id) accessibilityParent
+{
+  return [self superview];
+}
+
+- (BOOL) isAccessibilityFocused
+{
+  return [[self window] firstResponder] == self;
 }
 
 @end

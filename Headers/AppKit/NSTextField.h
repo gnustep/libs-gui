@@ -32,6 +32,7 @@
 #import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSControl.h>
+#import <AppKit/NSAccessibilityProtocols.h>
 // For NSTextFieldBezelStyle
 #import <AppKit/NSTextFieldCell.h>
 
@@ -130,6 +131,10 @@ APPKIT_EXPORT_CLASS
 - (NSTextFieldBezelStyle)bezelStyle;
 #endif 
 
+@end
+
+// Accessibility support
+@interface NSTextField (NSAccessibilityTextField) <NSAccessibilityElement>
 @end
 
 #endif // _GNUstep_H_NSTextField
