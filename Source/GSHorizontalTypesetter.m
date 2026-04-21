@@ -288,8 +288,11 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
 
   while (glyphIndex > 0)
     {
-      if (glyphEntry->glyph == NSControlGlyph)
-        return glyphIndex + cacheBase;
+      if ((glyphEntry->glyph == NSControlGlyph) ||
+          (glyphEntry->glyph == GSAttachmentGlyph))
+        {
+          return glyphIndex + cacheBase;
+        }
 
       character = [string characterAtIndex: glyphEntry->characterIndex];
       /* TODO: paragraph/line separator */
