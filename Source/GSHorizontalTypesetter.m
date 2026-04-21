@@ -35,6 +35,7 @@
 #import <Foundation/NSThread.h>
 #import <Foundation/NSValue.h>
 
+#import "AppKit/NSText.h"
 #import "AppKit/NSAttributedString.h"
 #import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSTextAttachment.h"
@@ -297,9 +298,9 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
       character = [string characterAtIndex: glyphEntry->characterIndex];
       /* TODO: paragraph/line separator */
       if (character == 0x20 || // space
-          character == 0x0a || // new line
-          character == 0x0d || // carriage return
-          character == 0x09)   // horiz. tab
+          character == NSNewlineCharacter ||
+          character == NSCarriageReturnCharacter ||
+          character == NSTabCharacter)
         {
           glyphEntry->dontShow = YES;
           if (glyphIndex > 0)
@@ -776,13 +777,13 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
           previousHadNonNominalWidth = NO;
 
-          if (character == 0xa) // new line
+          if (character == NSNewlineCharacter)
             {
               *newParagraph = YES;
               break;
             }
 
-          if (character == 0x9) // horiz. tab
+          if (character == NSTabCharacter)
             {
               /*
                 Handle tabs. This is a very basic and stupid implementation.
@@ -978,7 +979,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
                     glyphEntry->position = *position;
 
                     if (glyphEntry->glyph == NSControlGlyph
-                        && [[currentTextStorage string] characterAtIndex: glyphEntry->characterIndex] == 0xa)
+                        && [[currentTextStorage string] characterAtIndex: glyphEntry->characterIndex] == NSNewlineCharacter)
                       break;
                   }
 
