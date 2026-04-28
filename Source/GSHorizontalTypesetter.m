@@ -646,7 +646,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
      from this loop */
   while (1)
     {
-      BOOL doesGlyphFitInLine = YES;
+      BOOL doesGlyphFitInLineFragment = YES;
 
       //        printf("at %3i+%3i\n", cacheBase, *glyphIndex);
       /* Update the cache. */
@@ -718,8 +718,8 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
 
       /* does the glyph fit ? */
-      doesGlyphFitInLine = !((*glyphIndex > firstGlyphIndex) && (position->x + glyphEntry->size.width > lineFragment->rect.size.width));
-      if (doesGlyphFitInLine)
+      doesGlyphFitInLineFragment = !((*glyphIndex > firstGlyphIndex) && (position->x + glyphEntry->size.width > lineFragment->rect.size.width));
+      if (doesGlyphFitInLineFragment)
         {
           /* Baseline adjustments. */
           CGFloat yOffset = 0;
@@ -876,8 +876,8 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
              (Makes sense from the cell's pov, though.) */
 
           /* does the attachment fit (and it is not the first element in line) ?*/
-          doesGlyphFitInLine = !((*glyphIndex > firstGlyphIndex) && (position->x + NSMaxX(cellFrame) > lineFragment->rect.size.width));
-          if (doesGlyphFitInLine)
+          doesGlyphFitInLineFragment = !((*glyphIndex > firstGlyphIndex) && (position->x + NSMaxX(cellFrame) > lineFragment->rect.size.width));
+          if (doesGlyphFitInLineFragment)
             {
               if (-NSMinY(cellFrame) > *descender)
                 *descender = -NSMinY(cellFrame);
@@ -923,7 +923,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
         }
 
       /* Did the glyph fit in the line fragment rect? */
-      if (!doesGlyphFitInLine)
+      if (!doesGlyphFitInLineFragment)
         {
           /* It didn't. Try to break the line. */
           switch ([currentParagraphStyle lineBreakMode])
