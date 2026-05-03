@@ -6189,12 +6189,60 @@ do :
 if test "x$ac_cv_header_ao_ao_h" = xyes
 then :
   printf "%s\n" "#define HAVE_AO_AO_H 1" >>confdefs.h
- have_ao=yes
+ have_ao_header=yes
+else $as_nop
+  have_ao_header=no
+fi
+
+done
+if test "$have_ao_header" = yes; then
+  saved_LIBS="$LIBS"
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ao_play in -lao" >&5
+printf %s "checking for ao_play in -lao... " >&6; }
+if test ${ac_cv_lib_ao_ao_play+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lao  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+char ao_play ();
+int
+main (void)
+{
+return ao_play ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_ao_ao_play=yes
+else $as_nop
+  ac_cv_lib_ao_ao_play=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ao_ao_play" >&5
+printf "%s\n" "$ac_cv_lib_ao_ao_play" >&6; }
+if test "x$ac_cv_lib_ao_ao_play" = xyes
+then :
+  have_ao=yes
 else $as_nop
   have_ao=no
 fi
 
-done
+  LIBS="$saved_LIBS"
+else
+  have_ao=no
+fi
 # Only if we have both...
 if test "$have_sndfile" = yes -a "$have_ao" = yes -a "$enable_sound" = yes; then
    BUILD_SOUND="sound"

@@ -539,7 +539,14 @@ AC_ARG_ENABLE(sound,
 BUILD_SOUND=
 # Check for the headers...
 AC_CHECK_HEADERS(sndfile.h, have_sndfile=yes, have_sndfile=no)
-AC_CHECK_HEADERS(ao/ao.h, have_ao=yes, have_ao=no)
+AC_CHECK_HEADERS(ao/ao.h, have_ao_header=yes, have_ao_header=no)
+if test "$have_ao_header" = yes; then
+  saved_LIBS="$LIBS"
+  AC_CHECK_LIB(ao, ao_play, have_ao=yes, have_ao=no)
+  LIBS="$saved_LIBS"
+else
+  have_ao=no
+fi
 # Only if we have both...
 if test "$have_sndfile" = yes -a "$have_ao" = yes -a "$enable_sound" = yes; then
    BUILD_SOUND="sound"

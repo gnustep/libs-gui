@@ -1,3 +1,10 @@
+2026-05-03 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* configure
+	* configure.ac: Update to fix libao detection by finding
+	ao_play so we know we have both the header, and the correct
+	version of libao.
+
 2026-01-22 Gregory Casamento <greg.casamento@gmail.com>
 
 	* Source/NSDiffableDataSource.m: Fix recursive loop in
@@ -5,9 +12,11 @@
 	_itemForIndexPath method to use _indexPathsToItems instead of
 	_itemsToIndexPaths. Add recursion guards with _creatingIndexPaths
 	to prevent infinite loops during item creation.
-	* Source/NSDiffableDataSource.m: Implement diffable data source for both
+	* Source/NSDiffableDataSource.m: Implement diffable data source
+	for both
 	collection view and table view.
-	* Headers/AppKit/NSDiffableDataSource.h: Add _creatingIndexPaths instance
+	* Headers/AppKit/NSDiffableDataSource.h: Add _creatingIndexPaths
+	instance
 	variable to both NSCollectionViewDiffableDataSource and 
 	NSTableViewDiffableDataSource for recursion protection.
 	* Source/NSCollectionView.m: Fix makeItemWithIdentifier method.
