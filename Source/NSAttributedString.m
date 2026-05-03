@@ -53,6 +53,7 @@
 #import "AppKit/NSFont.h"
 #import "AppKit/NSFontDescriptor.h"
 #import "AppKit/NSFontManager.h"
+#import "AppKit/NSTextList.h"
 // For the colour name spaces
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSTextTable.h"
@@ -1095,20 +1096,43 @@ documentAttributes: (NSDictionary **)dict
 - (NSInteger) itemNumberInTextList: (NSTextList *)list
                            atIndex: (NSUInteger)location
 {
-  NSParagraphStyle *style = [self attribute: NSParagraphStyleAttributeName
-                                  atIndex: location
-                                  effectiveRange: NULL];
-  if (style != nil)
+  NSRange listRange = [self rangeOfTextList: list atIndex: location];
+  if (listRange.location == NSNotFound)
     {
-      NSArray *textLists = [style textLists];
-
-      if (textLists != nil)
-        {
-          return [textLists indexOfObject: list];
-        }
+      return 0;
     }
 
-  return NSNotFound;
+  NSRange subRange = NSMakeRange(listRange.location, location-listRange.location+1);
+  unichar buffer[subRange.length];
+  
+  [[self string] getCharacters: buffer range: subRange];
+  
+  NSCharacterSet *newlineCharacterSet = [NSCharacterSet newlineCharacterSet];
+  
+  NSUInteger itemNumber = 1;
+  NSUInteger index;
+  for (index=1; index<subRange.length; index++)
+    {
+      if ([newlineCharacterSet characterIsMember: buffer[index-1]])
+        {
+          NSParagraphStyle *style = [self attribute: NSParagraphStyleAttributeName
+            atIndex: subRange.location + index
+            effectiveRange: NULL];
+          
+          NSArray *textLists = [style textLists];
+          if ([list isEqual: [textLists lastObject]])
+            {
+              itemNumber++;
+            }
+          
+          if (buffer[index-1] == '\r' && buffer[index] == '\n')
+            {
+              index++;
+            }
+        }
+    }
+  
+  return itemNumber;
 }
 
 - (NSRange) rangeOfTextBlock: (NSTextBlock *)block
@@ -1183,7 +1207,7 @@ documentAttributes: (NSDictionary **)dict
           NSRange newEffRange;
           NSUInteger len = [self length];
 
-          while ((effRange.location > 0) && style && textLists)
+          while (effRange.location > 0)
             {
               style = [self attribute: NSParagraphStyleAttributeName
                             atIndex: effRange.location - 1
@@ -1196,11 +1220,13 @@ documentAttributes: (NSDictionary **)dict
                     {
                       effRange.location = newEffRange.location;
                       effRange.length += newEffRange.length;
+                      continue;
                     }
                 }
+              break;
             }
 
-          while (NSMaxRange(effRange) < len && style && textLists) 
+          while (NSMaxRange(effRange) < len) 
             {
               style = [self attribute: NSParagraphStyleAttributeName
                             atIndex: NSMaxRange(effRange)
@@ -1212,8 +1238,10 @@ documentAttributes: (NSDictionary **)dict
                   if ((textLists != nil) && [textLists containsObject: list])
                     {
                       effRange.length += newEffRange.length;
+                      continue;
                     }
                 }
+              break;
             }
 
           return effRange;
