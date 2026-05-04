@@ -54,6 +54,13 @@ ADDITIONAL_OBJCFLAGS = -Wall
 # Additional flags to pass to the C compiler
 ADDITIONAL_CFLAGS += $(MOVIE_BASE_CFLAGS) $(SOUND_CFLAGS)
 
+# Ensure movie linkage remains complete even with stale config.make values.
+ifeq ($(BUILD_MOVIE),yes)
+MOVIE_BASE_LIBS += $(shell pkg-config --libs libavcodec libavformat libavutil libswscale libswresample 2>/dev/null)
+MOVIE_BASE_LIBS += -lao
+MOVIE_BASE_CFLAGS += $(shell pkg-config --cflags libavcodec libavformat libavutil libswscale libswresample 2>/dev/null)
+endif
+
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers \
    -I./$(GNUSTEP_TARGET_DIR)

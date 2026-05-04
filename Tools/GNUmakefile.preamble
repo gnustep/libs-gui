@@ -28,6 +28,9 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers \
 # Additional LDFLAGS to pass to the linker
 # ADDITIONAL_LDFLAGS += 
 
+# Ensure tool links can resolve transitive dependencies from libgnustep-gui.
+ADDITIONAL_TOOL_LIBS += $(MOVIE_BASE_LIBS) $(SOUND_LIBS)
+
 # Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR) -L../Model/$(GNUSTEP_OBJ_DIR)
 
