@@ -32,8 +32,6 @@
 
 #import "GSAVUtils.h"
 
-#ifdef HAVE_AVCODEC
-
 NSDictionary *NSDictionaryFromAVPacket(AVPacket *packet)
 {
   NSData *data = [NSData dataWithBytes: packet->data length: packet->size];
@@ -66,5 +64,3 @@ AVPacket AVPacketFromNSDictionary(NSDictionary *dict)
 
   return *packet;
 }
-
-#endif /* HAVE_AVCODEC */

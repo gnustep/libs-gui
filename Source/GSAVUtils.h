@@ -34,12 +34,10 @@
 @class NSDictionary;
 
 /* FFmpeg headers */
-#ifdef HAVE_AVCODEC
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 
 NSDictionary *NSDictionaryFromAVPacket(AVPacket *packet);
 AVPacket AVPacketFromNSDictionary(NSDictionary *dict);
-#endif /* HAVE_AVCODEC */
 
 #endif // GSAVUtils...
