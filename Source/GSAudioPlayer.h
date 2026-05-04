@@ -38,17 +38,21 @@
 #import <Foundation/NSObject.h>
 #import "AppKit/NSMovieView.h"
 
+#ifdef HAVE_AVCODEC
 #include <ao/ao.h>
 #include <unistd.h>
 
 /* FFmpeg headers */
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
+#ifdef HAVE_LIBAVCODEC_CODEC_H
 #include <libavcodec/codec.h>
+#endif
 #include <libavutil/imgutils.h>
 #include <libavutil/time.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
+#endif /* HAVE_AVCODEC */
 
 @class NSMutableArray;
 @class NSThread;

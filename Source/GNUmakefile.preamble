@@ -62,7 +62,7 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers \
 # ADDITIONAL_LDFLAGS = 
 
 # Additional library directories the linker should search
-ADDITIONAL_LIB_DIRS += $(MOVIE_BASE_LIBS) $(SOUND_LIBS)
+ADDITIONAL_LIB_DIRS +=
 
 #
 # Sparc systems cannot load tiff files due to some problem compiling
@@ -84,4 +84,5 @@ ADDITIONAL_INSTALL_DIRS = $(GNUSTEP_HEADERS)/AppKit $(GNUSTEP_HEADERS)/Cocoa
 # all the libraries the target library depends upon.
 
 LIBRARIES_DEPEND_UPON = -l$(FOUNDATION_LIBRARY_NAME) $(ADDITIONAL_DEPENDS) \
+			  $(MOVIE_BASE_LIBS) $(SOUND_LIBS) \
 			  $(OBJC_LIBS)

@@ -6519,12 +6519,22 @@ else $as_nop
 fi
 
 done
+       for ac_header in libavcodec/codec.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "libavcodec/codec.h" "ac_cv_header_libavcodec_codec_h" "$ac_includes_default"
+if test "x$ac_cv_header_libavcodec_codec_h" = xyes
+then :
+  printf "%s\n" "#define HAVE_LIBAVCODEC_CODEC_H 1" >>confdefs.h
+
+fi
+
+done
 if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$enable_movie" = yes; then
 
 printf "%s\n" "#define HAVE_AVCODEC 1" >>confdefs.h
 
    BUILD_MOVIE="yes"
-   MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale`
+   MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale` -lao
    MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale`
 fi
 
