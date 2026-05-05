@@ -35,6 +35,25 @@
 
 #define BUFFER_SIZE 2048
 
+/*
+ * FFmpeg 5+ uses AVChannelLayout/ch_layout and swr_alloc_set_opts2,
+ * while FFmpeg 4 uses channel_layout/channels and swr_alloc_set_opts.
+ */
+#if LIBAVUTIL_VERSION_MAJOR < 57
+static int64_t
+gs_channel_layout_for_codec(const AVCodecContext *ctx)
+{
+  int64_t layout = ctx->channel_layout;
+
+  if (layout == 0)
+    {
+      layout = av_get_default_channel_layout(ctx->channels);
+    }
+
+  return layout;
+}
+#endif
+
 @implementation GSAudioPlayer
 - (instancetype) init
 {
@@ -188,16 +207,28 @@
       return;
     }
 
+#if LIBAVUTIL_VERSION_MAJOR >= 57
   swr_alloc_set_opts2(&_swrCtx,
-		      &(AVChannelLayout){ .order = AV_CHANNEL_ORDER_NATIVE,
-			  .nb_channels = out_channels,
-			  .u.mask = AV_CH_LAYOUT_STEREO },
-		      AV_SAMPLE_FMT_S16,
-		      _audioCodecCtx->sample_rate,
-		      &_audioCodecCtx->ch_layout,
-		      _audioCodecCtx->sample_fmt,
-		      _audioCodecCtx->sample_rate,
-		      0, NULL);
+          &(AVChannelLayout){ .order = AV_CHANNEL_ORDER_NATIVE,
+        .nb_channels = out_channels,
+        .u.mask = AV_CH_LAYOUT_STEREO },
+          AV_SAMPLE_FMT_S16,
+          _audioCodecCtx->sample_rate,
+          &_audioCodecCtx->ch_layout,
+          _audioCodecCtx->sample_fmt,
+          _audioCodecCtx->sample_rate,
+          0, NULL);
+#else
+  _swrCtx = swr_alloc_set_opts(_swrCtx,
+             AV_CH_LAYOUT_STEREO,
+             AV_SAMPLE_FMT_S16,
+             _audioCodecCtx->sample_rate,
+             gs_channel_layout_for_codec(_audioCodecCtx),
+             _audioCodecCtx->sample_fmt,
+             _audioCodecCtx->sample_rate,
+             0,
+             NULL);
+#endif
   int r = swr_init(_swrCtx);
   if (r == 0)
     {
@@ -349,12 +380,17 @@
 	  if (!_stretchedFrame)
 	    {
 	      _stretchedFrame = av_frame_alloc();
-	      if (_stretchedFrame != NULL)
-		{
-		  _stretchedFrame->format = AV_SAMPLE_FMT_S16;
-		  _stretchedFrame->ch_layout = _audioFrame->ch_layout;
-		  _stretchedFrame->sample_rate = stretchedSampleRate;
-		}
+        if (_stretchedFrame != NULL)
+    {
+      _stretchedFrame->format = AV_SAMPLE_FMT_S16;
+#if LIBAVUTIL_VERSION_MAJOR >= 57
+      _stretchedFrame->ch_layout = _audioFrame->ch_layout;
+#else
+      _stretchedFrame->channel_layout = _audioFrame->channel_layout;
+      _stretchedFrame->channels = _audioFrame->channels;
+#endif
+      _stretchedFrame->sample_rate = stretchedSampleRate;
+    }
 	    }
 
 	  _stretchedFrame->nb_samples = maxOutSamples;
@@ -708,14 +744,26 @@
   int stretchedSampleRate = (int)(_audioCodecCtx->sample_rate / _playbackRate);
 
   // Create resampler for time stretching
+#if LIBAVUTIL_VERSION_MAJOR >= 57
   swr_alloc_set_opts2(&_stretchSwrCtx,
-		      &_audioCodecCtx->ch_layout,
-		      AV_SAMPLE_FMT_S16,
-		      stretchedSampleRate,  // Output at different rate for time stretch
-		      &_audioCodecCtx->ch_layout,
-		      _audioCodecCtx->sample_fmt,
-		      _audioCodecCtx->sample_rate,
-		      0, NULL);
+          &_audioCodecCtx->ch_layout,
+          AV_SAMPLE_FMT_S16,
+          stretchedSampleRate,  // Output at different rate for time stretch
+          &_audioCodecCtx->ch_layout,
+          _audioCodecCtx->sample_fmt,
+          _audioCodecCtx->sample_rate,
+          0, NULL);
+#else
+  _stretchSwrCtx = swr_alloc_set_opts(_stretchSwrCtx,
+            gs_channel_layout_for_codec(_audioCodecCtx),
+            AV_SAMPLE_FMT_S16,
+            stretchedSampleRate,
+            gs_channel_layout_for_codec(_audioCodecCtx),
+            _audioCodecCtx->sample_fmt,
+            _audioCodecCtx->sample_rate,
+            0,
+            NULL);
+#endif
 
   int ret = swr_init(_stretchSwrCtx);
   if (ret < 0)
