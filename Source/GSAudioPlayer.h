@@ -44,7 +44,6 @@
 /* FFmpeg headers */
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include <libavcodec/codec.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/time.h>
 #include <libswscale/swscale.h>
