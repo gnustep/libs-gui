@@ -28,14 +28,20 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers \
 # Additional LDFLAGS to pass to the linker
 # ADDITIONAL_LDFLAGS += 
 
+# Ensure tool links can resolve transitive dependencies from libgnustep-gui.
+ADDITIONAL_TOOL_LIBS += $(MOVIE_BASE_LIBS) $(SOUND_LIBS)
+
 # Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR) -L../Model/$(GNUSTEP_OBJ_DIR)
 
+# Transitive dependencies from libgnustep-gui used by movie/audio code.
+GUI_TRANSITIVE_LIBS = $(MOVIE_BASE_LIBS) $(SOUND_LIBS)
+
 # Additional libraries when linking tools
-gpbs_TOOL_LIBS += -lgnustep-gui $(SYSTEM_LIBS)
-set_show_service_TOOL_LIBS += -lgnustep-gui $(SYSTEM_LIBS)
-gopen_TOOL_LIBS += -lgnustep-gui $(SYSTEM_LIBS)
-gcloseall_TOOL_LIBS += -lgnustep-gui $(SYSTEM_LIBS)
+gpbs_TOOL_LIBS += -lgnustep-gui $(GUI_TRANSITIVE_LIBS) $(SYSTEM_LIBS)
+set_show_service_TOOL_LIBS += -lgnustep-gui $(GUI_TRANSITIVE_LIBS) $(SYSTEM_LIBS)
+gopen_TOOL_LIBS += -lgnustep-gui $(GUI_TRANSITIVE_LIBS) $(SYSTEM_LIBS)
+gcloseall_TOOL_LIBS += -lgnustep-gui $(GUI_TRANSITIVE_LIBS) $(SYSTEM_LIBS)
 GSspell_TOOL_LIBS += $(ADDITIONAL_DEPENDS)
 
 # Additional libraries when linking applications

@@ -29,6 +29,10 @@
 #ifndef _GNUstep_H_GSAVUtils
 #define _GNUstep_H_GSAVUtils
 
+#import "config.h"
+
+@class NSDictionary;
+
 /* FFmpeg headers */
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
