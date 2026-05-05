@@ -666,6 +666,7 @@ have_cups
 BUILD_MOVIE
 MOVIE_BASE_CFLAGS
 MOVIE_BASE_LIBS
+MOVIE_OBJC_FILES
 RECOGNIZER_ENGINE_CLASS
 RECOGNIZER_BASE_CFLAGS
 RECOGNIZER_BASE_LIBS
@@ -6463,6 +6464,7 @@ else $as_nop
 fi
 
 BUILD_MOVIE=
+MOVIE_OBJC_FILES=
 
 # has avcodec
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for avcodec_find_decoder in -lavcodec" >&5
@@ -6524,9 +6526,11 @@ if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$en
 printf "%s\n" "#define HAVE_AVCODEC 1" >>confdefs.h
 
    BUILD_MOVIE="yes"
+  MOVIE_OBJC_FILES="GSMovieView.m GSAudioPlayer.m GSAVUtils.m"
    MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale`
    MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale`
 fi
+
 
 
 
