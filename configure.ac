@@ -610,14 +610,38 @@ BUILD_MOVIE=
 MOVIE_OBJC_FILES=
 
 # has avcodec
+orig_CPPFLAGS="${CPPFLAGS}"
+orig_LIBS="${LIBS}"
+
+MOVIE_BASE_LIBS=
+MOVIE_BASE_CFLAGS=
+if test -n "$PKG_CONFIG"; then
+  MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale 2>/dev/null`
+  MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale 2>/dev/null`
+fi
+
+CPPFLAGS="$MOVIE_BASE_CFLAGS ${CPPFLAGS}"
+LIBS="$MOVIE_BASE_LIBS ${LIBS}"
+
 AC_CHECK_LIB(avcodec, avcodec_find_decoder, have_avcodec=yes, have_avcodec=no)
 AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
+
+CPPFLAGS="${orig_CPPFLAGS}"
+LIBS="${orig_LIBS}"
 if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$enable_movie" = yes; then
    AC_DEFINE(HAVE_AVCODEC,1,[Define if you have avcodec for NSMovie])
    BUILD_MOVIE="yes"
   MOVIE_OBJC_FILES="GSMovieView.m GSAudioPlayer.m GSAVUtils.m"
-   MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale`
-   MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale`
+  if test -z "$MOVIE_BASE_LIBS"; then
+    if test -n "$PKG_CONFIG"; then
+      MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale`
+    else
+      MOVIE_BASE_LIBS="-lavcodec -lavformat -lavutil -lswscale"
+    fi
+  fi
+  if test -z "$MOVIE_BASE_CFLAGS" -a -n "$PKG_CONFIG"; then
+    MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale`
+  fi
 fi
 AC_SUBST(MOVIE_OBJC_FILES)
 AC_SUBST(MOVIE_BASE_LIBS)
