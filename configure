@@ -6473,8 +6473,8 @@ orig_LIBS="${LIBS}"
 MOVIE_BASE_LIBS=
 MOVIE_BASE_CFLAGS=
 if test -n "$PKG_CONFIG"; then
-  MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale 2>/dev/null`
-  MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale 2>/dev/null`
+  MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale ao 2>/dev/null`
+  MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale ao 2>/dev/null`
 fi
 
 CPPFLAGS="$MOVIE_BASE_CFLAGS ${CPPFLAGS}"
@@ -6546,13 +6546,13 @@ printf "%s\n" "#define HAVE_AVCODEC 1" >>confdefs.h
   MOVIE_OBJC_FILES="GSMovieView.m GSAudioPlayer.m GSAVUtils.m"
   if test -z "$MOVIE_BASE_LIBS"; then
     if test -n "$PKG_CONFIG"; then
-      MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale`
+      MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale ao`
     else
-      MOVIE_BASE_LIBS="-lavcodec -lavformat -lavutil -lswscale"
+      MOVIE_BASE_LIBS="-lavcodec -lavformat -lavutil -lswscale -lao"
     fi
   fi
   if test -z "$MOVIE_BASE_CFLAGS" -a -n "$PKG_CONFIG"; then
-    MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale`
+    MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale ao`
   fi
 fi
 
