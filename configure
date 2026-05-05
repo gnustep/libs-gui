@@ -640,6 +640,7 @@ have_cups
 BUILD_MOVIE
 MOVIE_BASE_CFLAGS
 MOVIE_BASE_LIBS
+MOVIE_OBJC_FILES
 RECOGNIZER_ENGINE_CLASS
 RECOGNIZER_BASE_CFLAGS
 RECOGNIZER_BASE_LIBS
@@ -6169,6 +6170,7 @@ else
 fi
 
 BUILD_MOVIE=
+MOVIE_OBJC_FILES=
 
 # has avcodec
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for avcodec_find_decoder in -lavcodec" >&5
@@ -6251,6 +6253,7 @@ $as_echo "#define HAVE_AVCODEC 1" >>confdefs.h
   MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale libswresample` -lao
   MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale libswresample`
 fi
+
 
 
 

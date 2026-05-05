@@ -607,8 +607,22 @@ AC_ARG_ENABLE(movie,
   [  --disable-movie          Disable NSMovie/NSMovieView functionality],,
   enable_movie=yes)
 BUILD_MOVIE=
+MOVIE_OBJC_FILES=
 
 # has avcodec
+orig_CPPFLAGS="${CPPFLAGS}"
+orig_LIBS="${LIBS}"
+
+MOVIE_BASE_LIBS=
+MOVIE_BASE_CFLAGS=
+if test -n "$PKG_CONFIG"; then
+  MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale ao 2>/dev/null`
+  MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale ao 2>/dev/null`
+fi
+
+CPPFLAGS="$MOVIE_BASE_CFLAGS ${CPPFLAGS}"
+LIBS="$MOVIE_BASE_LIBS ${LIBS}"
+
 AC_CHECK_LIB(avcodec, avcodec_find_decoder, have_avcodec=yes, have_avcodec=no)
 AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
 AC_CHECK_HEADERS(libavcodec/codec.h)
@@ -622,6 +636,7 @@ if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$ha
   MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale libswresample` -lao
   MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale libswresample`
 fi
+AC_SUBST(MOVIE_OBJC_FILES)
 AC_SUBST(MOVIE_BASE_LIBS)
 AC_SUBST(MOVIE_BASE_CFLAGS)
 AC_SUBST(BUILD_MOVIE)
