@@ -627,14 +627,24 @@ AC_CHECK_LIB(avcodec, avcodec_find_decoder, have_avcodec=yes, have_avcodec=no)
 AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
 AC_CHECK_HEADERS(libavcodec/codec.h)
 have_movie_pkgs=no
-if pkg-config --exists libavformat libavutil libswscale libswresample; then
-  have_movie_pkgs=yes
+if test -n "$PKG_CONFIG"; then
+  if $PKG_CONFIG --exists libavformat libavutil libswscale libswresample; then
+    have_movie_pkgs=yes
+  fi
 fi
+CPPFLAGS="${orig_CPPFLAGS}"
+LIBS="${orig_LIBS}"
 if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$have_movie_pkgs" = yes -a "$enable_movie" = yes; then
    AC_DEFINE(HAVE_AVCODEC,1,[Define if you have avcodec for NSMovie])
    BUILD_MOVIE="yes"
-  MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale libswresample` -lao
-  MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale libswresample`
+  MOVIE_OBJC_FILES="GSMovieView.m GSAudioPlayer.m GSAVUtils.m"
+  if test -n "$PKG_CONFIG"; then
+    MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale libswresample` -lao
+    MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale libswresample`
+  else
+    MOVIE_BASE_LIBS="-lavcodec -lavformat -lavutil -lswscale -lswresample -lao"
+    MOVIE_BASE_CFLAGS=
+  fi
 fi
 AC_SUBST(MOVIE_OBJC_FILES)
 AC_SUBST(MOVIE_BASE_LIBS)
