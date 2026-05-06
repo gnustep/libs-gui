@@ -659,7 +659,6 @@ have_cups
 BUILD_MOVIE
 MOVIE_BASE_CFLAGS
 MOVIE_BASE_LIBS
-MOVIE_OBJC_FILES
 RECOGNIZER_ENGINE_CLASS
 RECOGNIZER_BASE_CFLAGS
 RECOGNIZER_BASE_LIBS
@@ -6686,7 +6685,6 @@ esac
 fi
 
 BUILD_MOVIE=
-MOVIE_OBJC_FILES=
 
 # has avcodec
 orig_CPPFLAGS="${CPPFLAGS}"
@@ -6786,7 +6784,6 @@ if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$ha
 printf "%s\n" "#define HAVE_AVCODEC 1" >>confdefs.h
 
    BUILD_MOVIE="yes"
-  MOVIE_OBJC_FILES="GSMovieView.m GSAudioPlayer.m GSAVUtils.m"
   if test -n "$PKG_CONFIG"; then
     MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale libswresample` -lao
     MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale libswresample`
@@ -6795,7 +6792,6 @@ printf "%s\n" "#define HAVE_AVCODEC 1" >>confdefs.h
     MOVIE_BASE_CFLAGS=
   fi
 fi
-
 
 
 
