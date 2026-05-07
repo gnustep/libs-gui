@@ -44,7 +44,7 @@ fi
 #--------------------------------------------------------------------
 AC_CONFIG_AUX_DIR($GNUSTEP_MAKEFILES)
 
-AC_CONFIG_HEADER(Headers/Additions/GNUstepGUI/config.h)
+AC_CONFIG_HEADERS([Headers/Additions/GNUstepGUI/config.h])
 
 #--------------------------------------------------------------------
 # Determine the host, build, and target systems
@@ -484,13 +484,13 @@ AS_IF([test "x$enable_icu" = "xyes"], [
 
   if test $HAVE_ICU = 0; then
     HAVE_ICU=0;
-    AC_CHECKING([for libicu (icu-config disabled)])
+    AS_MESSAGE([checking for libicu (icu-config disabled)...])
     if test "$icu_libdir" != "no"; then
       ICU_LDFLAGS="-L$icu_libdir";
     fi
     saved_LDFLAGS="$LDFLAGS";
     LDFLAGS="$LDFLAGS $LIBS $ICU_LDFLAGS -licui18n -licuuc -licudata -lm"
-    AC_TRY_LINK([],[], HAVE_ICU=1, HAVE_ICU=0);
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[HAVE_ICU=1],[HAVE_ICU=0]);
     LDFLAGS="$saved_LDFLAGS";
     ICU_LIBS="-licui18n -licuuc -licudata -lm" 
   fi

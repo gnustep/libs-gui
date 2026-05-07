@@ -1,3 +1,8 @@
+2026-05-07 Fred Kiefer <FredKiefer@gmx.de>
+
+	* configure
+	* configure.ac: Autoupdate and autoconf.
+
 2026-05-03 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* configure
