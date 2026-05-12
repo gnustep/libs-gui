@@ -615,7 +615,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
                  returningGlyphIndex:(unsigned int*)glyphIndex
                    returningPosition:(NSPoint *)position
 {
-  *glyphIndex = 0;
+
   GlyphCacheEntry *glyphEntry;
 
   NSFont *font = glyphCache->font;
@@ -629,14 +629,15 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
   unsigned int firstGlyphIndex;
   LineFragment *lineFragment = lineFragments;
-  *lineFragmentIndex = 0;
+
 
   BOOL previousHadNonNominalWidth;
 
 
   lastPosition = *position = NSMakePoint(0, 0);
-
+  *lineFragmentIndex = 0;
   glyphEntry = glyphCache;
+  *glyphIndex = 0;
   firstGlyphIndex = 0;
   previousHadNonNominalWidth = NO;
   /*
