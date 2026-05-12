@@ -1034,6 +1034,66 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
   return NO;
 }
 
+- (int) _buildLineFragmentsForLine:(BOOL)newParagraph
+                      onLineHeight:(CGFloat *)lineHeight
+                       considering:(CGFloat *) maxLineHeight
+{
+  do
+    {
+      NSRect remain;
+      NSRect rect;
+
+      remain = [self _getProposedRectForNewParagraph: newParagraph
+                                      withLineHeight: *lineHeight];
+
+      /*
+        Build a list of all line fragment rects for this line.
+
+        TODO: it's very convenient to do this in advance, but it might be
+        inefficient, and in theory, we might end up with an insane number of line
+        rects (eg. a text container with "hole"-columns every 100 points and
+        width 1e8)
+      */
+      lineFragmentCount = 0;
+      rect = [currentTextContainer lineFragmentRectForProposedRect: remain
+                                                    sweepDirection: NSLineSweepRight
+                                                 movementDirection: NSLineMovesDown
+                                                     remainingRect: &remain];
+      while (!NSIsEmptyRect(rect))
+        {
+          lineFragmentCount++;
+          if (lineFragmentCount > lineFragmentCapacity)
+            {
+              lineFragmentCapacity += 2;
+              lineFragments = realloc(lineFragments, sizeof(LineFragment) * lineFragmentCapacity);
+            }
+          lineFragments[lineFragmentCount - 1].rect = rect;
+
+          rect = [currentTextContainer lineFragmentRectForProposedRect: remain
+                                                        sweepDirection: NSLineSweepRight
+                                                     movementDirection: NSLineDoesntMove
+                                                         remainingRect: &remain];
+        }
+      if (lineFragmentCount == 0)
+        {
+          if (currentPoint.y == 0.0 &&
+              *lineHeight > [currentTextContainer containerSize].height &&
+              [currentTextContainer containerSize].height > 0.0)
+            {
+              /* Try to make sure each container contains at least one line fragment
+                 rect by shrinking our line height. */
+              *lineHeight = [currentTextContainer containerSize].height;
+              *maxLineHeight = *lineHeight;
+              continue;
+            }
+          return 1;
+        }
+    }
+  while (lineFragmentCount == 0);
+
+  return 0;
+}
+
 /*
    Return values 0, 1, 2 are mostly the same as from
    -layoutGlyphsInLayoutManager:.... Additions:
@@ -1050,8 +1110,6 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 */
 -(int) layoutLineNewParagraph: (BOOL)newParagraph
 {
-  NSRect rect;
-
   /* Baseline and line height handling. */
   CGFloat lineHeight;      /* Current line height. */
   CGFloat maxLineHeight;   /* Maximum line height (usually from the paragraph style). */
@@ -1140,57 +1198,13 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
   NSPoint position = NSMakePoint(0.0, 0.0);
   do
     {
-      do
-        {
-          NSRect remain;
+      int ret;
 
-          remain = [self _getProposedRectForNewParagraph: newParagraph
-                                          withLineHeight: lineHeight];
-
-          /*
-            Build a list of all line fragment rects for this line.
-
-            TODO: it's very convenient to do this in advance, but it might be
-            inefficient, and in theory, we might end up with an insane number of line
-            rects (eg. a text container with "hole"-columns every 100 points and
-            width 1e8)
-          */
-          lineFragmentCount = 0;
-          rect = [currentTextContainer lineFragmentRectForProposedRect: remain
-                                                        sweepDirection: NSLineSweepRight
-                                                     movementDirection: NSLineMovesDown
-                                                         remainingRect: &remain];
-          while (!NSIsEmptyRect(rect))
-            {
-              lineFragmentCount++;
-              if (lineFragmentCount > lineFragmentCapacity)
-                {
-                  lineFragmentCapacity += 2;
-                  lineFragments = realloc(lineFragments, sizeof(LineFragment) * lineFragmentCapacity);
-                }
-              lineFragments[lineFragmentCount - 1].rect = rect;
-
-              rect = [currentTextContainer lineFragmentRectForProposedRect: remain
-                                                            sweepDirection: NSLineSweepRight
-                                                         movementDirection: NSLineDoesntMove
-                                                             remainingRect: &remain];
-            }
-          if (lineFragmentCount == 0)
-            {
-              if (currentPoint.y == 0.0 &&
-                  lineHeight > [currentTextContainer containerSize].height &&
-                  [currentTextContainer containerSize].height > 0.0)
-                {
-                  /* Try to make sure each container contains at least one line fragment
-                     rect by shrinking our line height. */
-                  lineHeight = [currentTextContainer containerSize].height;
-                  maxLineHeight = lineHeight;
-                  continue;
-                }
-              return 1;
-            }
-        }
-      while (lineFragmentCount == 0);
+      ret = [self _buildLineFragmentsForLine: newParagraph
+                              onLineHeight: &lineHeight
+                               considering: &maxLineHeight];
+      if (ret > 0)
+        return ret;
 
       recalculateLineHeight = [self _baseLayoutBlockNewParagraph: &newParagraph
                                                     onLineHeight: &lineHeight
