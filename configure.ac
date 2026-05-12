@@ -603,47 +603,42 @@ AC_SUBST(RECOGNIZER_ENGINE_CLASS)
 #--------------------------------------------------------------------
 # NSMovie / NSMovieView
 #--------------------------------------------------------------------
+BUILD_MOVIE=
 AC_ARG_ENABLE(movie, 
   [  --disable-movie          Disable NSMovie/NSMovieView functionality],,
   enable_movie=yes)
-BUILD_MOVIE=
 
-# has avcodec
-orig_CPPFLAGS="${CPPFLAGS}"
-orig_LIBS="${LIBS}"
+AS_IF([test "x$enable_movie" = "xyes"], [
+  PKG_CHECK_MODULES([MOVIE_BASE],
+		    [libavcodec libavformat libavutil libswscale ao libswresample],
+		    BUILD_MOVIE=1, BUILD_MOVIE=0)
 
-MOVIE_BASE_LIBS=
-MOVIE_BASE_CFLAGS=
-if test -n "$PKG_CONFIG"; then
-  MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale ao 2>/dev/null`
-  MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale ao 2>/dev/null`
-fi
+  if test $BUILD_MOVIE = 1; then
+    # has avcodec
+    orig_CPPFLAGS="${CPPFLAGS}"
+    orig_LIBS="${LIBS}"
 
-CPPFLAGS="$MOVIE_BASE_CFLAGS ${CPPFLAGS}"
-LIBS="$MOVIE_BASE_LIBS ${LIBS}"
-
-AC_CHECK_LIB(avcodec, avcodec_find_decoder, have_avcodec=yes, have_avcodec=no)
-AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
-AC_CHECK_HEADERS(libavcodec/codec.h)
-have_movie_pkgs=no
-if test -n "$PKG_CONFIG"; then
-  if $PKG_CONFIG --exists libavformat libavutil libswscale libswresample; then
-    have_movie_pkgs=yes
-  fi
-fi
-CPPFLAGS="${orig_CPPFLAGS}"
-LIBS="${orig_LIBS}"
-if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$have_movie_pkgs" = yes -a "$enable_movie" = yes; then
-   AC_DEFINE(HAVE_AVCODEC,1,[Define if you have avcodec for NSMovie])
-   BUILD_MOVIE="yes"
-  if test -n "$PKG_CONFIG"; then
-    MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale libswresample` -lao
-    MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale libswresample`
-  else
-    MOVIE_BASE_LIBS="-lavcodec -lavformat -lavutil -lswscale -lswresample -lao"
+    MOVIE_BASE_LIBS=
     MOVIE_BASE_CFLAGS=
+    if test -n "$PKG_CONFIG"; then
+      MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale ao libswresample`
+      MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale ao libswresample`
+    fi
+
+    CPPFLAGS="$MOVIE_BASE_CFLAGS ${CPPFLAGS}"
+    LIBS="$MOVIE_BASE_LIBS ${LIBS}"
+
+    AC_CHECK_LIB(avcodec, avcodec_find_decoder, have_avcodec=yes, have_avcodec=no)
+    AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
+    AC_CHECK_HEADERS(libavcodec/codec.h)
+    have_movie_pkgs=no
+    if test -n "$PKG_CONFIG"; then
+      if $PKG_CONFIG --exists libavformat libavutil libswscale libswresample; then
+        have_movie_pkgs=yes
+      fi
+    fi
   fi
-fi
+])
 AC_SUBST(MOVIE_BASE_LIBS)
 AC_SUBST(MOVIE_BASE_CFLAGS)
 AC_SUBST(BUILD_MOVIE)
