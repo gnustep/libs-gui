@@ -550,8 +550,8 @@ fi
 # Only if we have both...
 if test "$have_sndfile" = yes -a "$have_ao" = yes -a "$enable_sound" = yes; then
    BUILD_SOUND="sound"
-   SOUND_LIBS=`pkg-config --libs sndfile ao`
-   SOUND_CFLAGS=`pkg-config --cflags sndfile ao`
+   SOUND_LIBS=`$PKG_CONFIG --libs sndfile ao`
+   SOUND_CFLAGS=`$PKG_CONFIG --cflags sndfile ao`
 fi
 AC_SUBST(BUILD_SOUND)
 AC_SUBST(SOUND_LIBS)
@@ -591,8 +591,8 @@ AC_CHECK_LIB(pocketsphinx, ps_start_utt, have_speech_recognizer=yes, have_speech
 AC_CHECK_HEADERS(pocketsphinx/pocketsphinx_export.h, have_pocketsphinx=yes, have_pocketsphinx=no)
 if test "$have_pocketsphinx" = yes -a "$have_speech_recognizer" = yes -a "$enable_speech_recognizer" = yes; then
    BUILD_SPEECH_RECOGNIZER="speech_recognizer"
-   RECOGNIZER_BASE_LIBS=`pkg-config --libs pocketsphinx sphinxbase`
-   RECOGNIZER_BASE_CFLAGS=`pkg-config --cflags pocketsphinx sphinxbase`
+   RECOGNIZER_BASE_LIBS=`$PKG_CONFIG --libs pocketsphinx sphinxbase`
+   RECOGNIZER_BASE_CFLAGS=`$PKG_CONFIG --cflags pocketsphinx sphinxbase`
    RECOGNIZER_ENGINE_CLASS=PocketsphinxSpeechRecognitionEngine.m
 fi
 AC_SUBST(BUILD_SPEECH_RECOGNIZER)
