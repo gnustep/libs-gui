@@ -499,7 +499,6 @@ AS_IF([test "x$enable_icu" = "xyes"], [
   if test $HAVE_ICU = 1; then
     AC_MSG_RESULT(yes)
     AC_CHECK_HEADERS(unicode/uchar.h unicode/ustring.h)
-    GRAPHIC_LFLAGS="$ICU_LDFLAGS $ICU_LIBS $GRAPHIC_LFLAGS"
     HAVE_ICU=1
   else
     AC_MSG_RESULT(no)
@@ -700,9 +699,14 @@ AC_SUBST(BUILD_GSCUPS)
 #-------------------------------------------------------------------
 # Check for inotify.h
 #-------------------------------------------------------------------
-AC_CHECK_HEADER([sys/inotify.h], [
-  AC_DEFINE([HAVE_INOTIFY_H], [1], [Define if inotify is available])
+AC_CHECK_HEADERS([sys/inotify.h])
+AS_IF([test "x$ac_cv_header_sys_inotify_h" = xyes], [
+  INOTIFY_CFLAGS=`$PKG_CONFIG --cflags libinotify`
+  INOTIFY_LIBS=`$PKG_CONFIG --libs libinotify`
+  AC_MSG_NOTICE([-gui will be linked against libinotify])
 ])
+AC_SUBST(INOTIFY_CFLAGS)
+AC_SUBST(INOTIFY_LIBS)
 
 #--------------------------------------------------------------------
 # Check for -Wdeclaration-after-statement
@@ -743,8 +747,8 @@ AC_SUBST(GNUSTEP_GUI_MAJOR_VERSION)
 AC_SUBST(GNUSTEP_GUI_MINOR_VERSION)
 AC_SUBST(GNUSTEP_GUI_SUBMINOR_VERSION)
 
-CONFIG_SYSTEM_INCL="$CONFIG_SYSTEM_INCL $GRAPHIC_CFLAGS"
-CONFIG_SYSTEM_LIB_DIR="$CONFIG_SYSTEM_LIB_DIR $GRAPHIC_LFLAGS"
+CONFIG_SYSTEM_INCL="$CONFIG_SYSTEM_INCL $GRAPHIC_CFLAGS $INOTIFY_CFLAGS"
+CONFIG_SYSTEM_LIB_DIR="$CONFIG_SYSTEM_LIB_DIR $GRAPHIC_LFLAGS $ICU_LDFLAGS $ICU_LIBS $INOTIFY_LIBS"
 
 AC_SUBST(CONFIG_SYSTEM_LIB_DIR)
 AC_SUBST(CONFIG_SYSTEM_INCL)

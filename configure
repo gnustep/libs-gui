@@ -650,6 +650,8 @@ GNUSTEP_GUI_VERSION
 GUILIBS
 GUIFLAGS
 WARN_FLAGS
+INOTIFY_LIBS
+INOTIFY_CFLAGS
 BUILD_GSCUPS
 GSCUPS_DATADIR
 GSCUPS_LIBS
@@ -6194,7 +6196,6 @@ then :
 
 fi
 
-    GRAPHIC_LFLAGS="$ICU_LDFLAGS $ICU_LIBS $GRAPHIC_LFLAGS"
     HAVE_ICU=1
   else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
@@ -7037,12 +7038,20 @@ fi
 ac_fn_c_check_header_compile "$LINENO" "sys/inotify.h" "ac_cv_header_sys_inotify_h" "$ac_includes_default"
 if test "x$ac_cv_header_sys_inotify_h" = xyes
 then :
-
-
-printf "%s\n" "#define HAVE_INOTIFY_H 1" >>confdefs.h
-
+  printf "%s\n" "#define HAVE_SYS_INOTIFY_H 1" >>confdefs.h
 
 fi
+
+if test "x$ac_cv_header_sys_inotify_h" = xyes
+then :
+
+  INOTIFY_CFLAGS=`$PKG_CONFIG --cflags libinotify`
+  INOTIFY_LIBS=`$PKG_CONFIG --libs libinotify`
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: -gui will be linked against libinotify" >&5
+printf "%s\n" "$as_me: -gui will be linked against libinotify" >&6;}
+
+fi
+
 
 
 #--------------------------------------------------------------------
@@ -7108,8 +7117,8 @@ printf "%s\n" "$GNUSTEP_GUI_VERSION" >&6; }
 
 
 
-CONFIG_SYSTEM_INCL="$CONFIG_SYSTEM_INCL $GRAPHIC_CFLAGS"
-CONFIG_SYSTEM_LIB_DIR="$CONFIG_SYSTEM_LIB_DIR $GRAPHIC_LFLAGS"
+CONFIG_SYSTEM_INCL="$CONFIG_SYSTEM_INCL $GRAPHIC_CFLAGS $INOTIFY_CFLAGS"
+CONFIG_SYSTEM_LIB_DIR="$CONFIG_SYSTEM_LIB_DIR $GRAPHIC_LFLAGS $ICU_LDFLAGS $ICU_LIBS $INOTIFY_LIBS"
 
 
 

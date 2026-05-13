@@ -39,7 +39,7 @@
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSPasteboard.h"
 
-#ifdef HAVE_INOTIFY_H
+#ifdef HAVE_SYS_INOTIFY_H
 #import <sys/inotify.h>
 #endif
 
@@ -146,7 +146,7 @@
       _destinationLinks = [[NSMutableArray alloc] init];
       _watchDescriptors = [[NSMutableDictionary alloc] init];
       _nextLinkNumber = 1;
-#ifdef HAVE_INOTIFY_H
+#ifdef HAVE_SYS_INOTIFY_H
       _inotifyFD = inotify_init();
 #endif
       if (_inotifyFD < 0)
@@ -179,7 +179,7 @@
 //
 - (void)stopMonitoring
 {
-#ifdef HAVE_INOTIFY_H
+#ifdef HAVE_SYS_INOTIFY_H
   NSArray *allKeys = [_watchDescriptors allKeys];
   NSEnumerator *en = [allKeys objectEnumerator];
   NSNumber *key = nil;
@@ -212,7 +212,7 @@
 
 - (void)monitorLoop
 {
-#ifdef HAVE_INOTIFY_H
+#ifdef HAVE_SYS_INOTIFY_H
   char buffer[1024];
   while (![[NSThread currentThread] isCancelled])
     {
