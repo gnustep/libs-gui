@@ -614,9 +614,6 @@ AS_IF([test "x$enable_movie" = "xyes"], [
 
   if test $BUILD_MOVIE = 1; then
     # has avcodec
-    orig_CPPFLAGS="${CPPFLAGS}"
-    orig_LIBS="${LIBS}"
-
     MOVIE_BASE_LIBS=
     MOVIE_BASE_CFLAGS=
     if test -n "$PKG_CONFIG"; then
