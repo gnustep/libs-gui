@@ -613,7 +613,9 @@ AS_IF([test "x$enable_movie" = "xyes"], [
 		    BUILD_MOVIE=1, BUILD_MOVIE=0)
 
   if test $BUILD_MOVIE = 1; then
-    # has avcodec
+    orig_CPPFLAGS="${CPPFLAGS}"
+    orig_LIBS="${LIBS}"
+
     MOVIE_BASE_LIBS=
     MOVIE_BASE_CFLAGS=
     if test -n "$PKG_CONFIG"; then
@@ -631,6 +633,9 @@ AS_IF([test "x$enable_movie" = "xyes"], [
     if test -n "$PKG_CONFIG"; then
       if $PKG_CONFIG --exists libavformat libavutil libswscale libswresample; then
         have_movie_pkgs=yes
+      else
+        CPPFLAGS="${orig_CPPFLAGS}"
+        LIBS="${orig_LIBS}"
       fi
     fi
   fi
