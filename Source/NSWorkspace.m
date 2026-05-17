@@ -1300,7 +1300,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   FILE		*fptr = setmntent(MOUNTED_PATH, "r");
   struct mntent	*me;
 
-  if (fptr == nil)
+  if (fptr == NULL)
     {
       NSLog(@"Unable to open %s", MOUNTED_PATH);
       return NO;
@@ -2281,7 +2281,7 @@ launchIdentifiers: (NSArray **)identifiers
   FILE		*fptr = setmntent(MOUNTED_PATH, "r");
   struct mntent	*m;
 
-  if (fptr == nil)
+  if (fptr == NULL)
     {
       NSLog(@"Unable to open %s", MOUNTED_PATH);
       return nil;

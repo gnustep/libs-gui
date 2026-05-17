@@ -44,7 +44,7 @@ fi
 #--------------------------------------------------------------------
 AC_CONFIG_AUX_DIR($GNUSTEP_MAKEFILES)
 
-AC_CONFIG_HEADER(Headers/Additions/GNUstepGUI/config.h)
+AC_CONFIG_HEADERS([Headers/Additions/GNUstepGUI/config.h])
 
 #--------------------------------------------------------------------
 # Determine the host, build, and target systems
@@ -484,13 +484,13 @@ AS_IF([test "x$enable_icu" = "xyes"], [
 
   if test $HAVE_ICU = 0; then
     HAVE_ICU=0;
-    AC_CHECKING([for libicu (icu-config disabled)])
+    AS_MESSAGE([checking for libicu (icu-config disabled)...])
     if test "$icu_libdir" != "no"; then
       ICU_LDFLAGS="-L$icu_libdir";
     fi
     saved_LDFLAGS="$LDFLAGS";
     LDFLAGS="$LDFLAGS $LIBS $ICU_LDFLAGS -licui18n -licuuc -licudata -lm"
-    AC_TRY_LINK([],[], HAVE_ICU=1, HAVE_ICU=0);
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[HAVE_ICU=1],[HAVE_ICU=0]);
     LDFLAGS="$saved_LDFLAGS";
     ICU_LIBS="-licui18n -licuuc -licudata -lm" 
   fi
@@ -609,18 +609,40 @@ AC_ARG_ENABLE(movie,
 BUILD_MOVIE=
 
 # has avcodec
+orig_CPPFLAGS="${CPPFLAGS}"
+orig_LIBS="${LIBS}"
+
+MOVIE_BASE_LIBS=
+MOVIE_BASE_CFLAGS=
+if test -n "$PKG_CONFIG"; then
+  MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale ao 2>/dev/null`
+  MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale ao 2>/dev/null`
+fi
+
+CPPFLAGS="$MOVIE_BASE_CFLAGS ${CPPFLAGS}"
+LIBS="$MOVIE_BASE_LIBS ${LIBS}"
+
 AC_CHECK_LIB(avcodec, avcodec_find_decoder, have_avcodec=yes, have_avcodec=no)
 AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
 AC_CHECK_HEADERS(libavcodec/codec.h)
 have_movie_pkgs=no
-if pkg-config --exists libavformat libavutil libswscale libswresample; then
-  have_movie_pkgs=yes
+if test -n "$PKG_CONFIG"; then
+  if $PKG_CONFIG --exists libavformat libavutil libswscale libswresample; then
+    have_movie_pkgs=yes
+  fi
 fi
+CPPFLAGS="${orig_CPPFLAGS}"
+LIBS="${orig_LIBS}"
 if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$have_movie_pkgs" = yes -a "$enable_movie" = yes; then
    AC_DEFINE(HAVE_AVCODEC,1,[Define if you have avcodec for NSMovie])
    BUILD_MOVIE="yes"
-  MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale libswresample` -lao
-  MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale libswresample`
+  if test -n "$PKG_CONFIG"; then
+    MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale libswresample` -lao
+    MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale libswresample`
+  else
+    MOVIE_BASE_LIBS="-lavcodec -lavformat -lavutil -lswscale -lswresample -lao"
+    MOVIE_BASE_CFLAGS=
+  fi
 fi
 AC_SUBST(MOVIE_BASE_LIBS)
 AC_SUBST(MOVIE_BASE_CFLAGS)
