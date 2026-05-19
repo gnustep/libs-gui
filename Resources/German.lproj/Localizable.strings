@@ -363,7 +363,7 @@ add comments above this one
 /* File: ../Source/NSDocument.m:1216 */
 "Save To" = "Speichern in";
 /* File: ../Source/NSDocument.m:580 */
-"Untitled-%d" = "unbenannt-%d";
+"Untitled-%d" = "Unbenannt-%d";
 
 
 /*** Strings from ../Source/NSDocumentController.m ***/
@@ -536,6 +536,6 @@ add comments above this one
 
 /*** Strings from ../Source/NSWindow.m ***/
 /* File: ../Source/NSWindow.m:5637 */
-"Hide Toolbar" = "Toolbar ausblenden";
+"Hide Toolbar" = "Werkzeugleiste ausblenden";
 /* File: ../Source/NSWindow.m:5641 */
-"Show Toolbar" = "Toolbar anzeigen";
+"Show Toolbar" = "Werkzeugleiste anzeigen";
