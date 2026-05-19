@@ -613,7 +613,6 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
                         andDescender:(CGFloat *)descender
           returningLineFragmentIndex:(int *)lineFragmentIndex
                  returningGlyphIndex:(unsigned int*)glyphIndex
-                   returningPosition:(NSPoint *)position
 {
 
   GlyphCacheEntry *glyphEntry;
@@ -623,7 +622,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
   CGFloat baseline; /* Baseline position (0 is top of line-height, positive is down). */
   CGFloat fontAscender = [font ascender];
   CGFloat fontDescender = -[font descender];
-
+  NSPoint position;
   NSGlyph lastGlyph = NSNullGlyph;
   NSPoint lastPosition;
 
@@ -634,7 +633,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
   BOOL previousHadNonNominalWidth;
 
 
-  lastPosition = *position = NSMakePoint(0, 0);
+  lastPosition = position = NSMakePoint(0, 0);
   *lineFragmentIndex = 0;
   glyphEntry = glyphCache;
   *glyphIndex = 0;
@@ -713,13 +712,13 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
       if (glyphEntry->attributes.explicitKern &&
           glyphEntry->attributes.kern != 0)
         {
-          position->x += glyphEntry->attributes.kern;
+          position.x += glyphEntry->attributes.kern;
           glyphEntry->nominal = NO;
         }
 
 
       /* does the glyph fit ? */
-      doesGlyphFitInLineFragment = !((*glyphIndex > firstGlyphIndex) && (position->x + glyphEntry->size.width > lineFragment->rect.size.width));
+      doesGlyphFitInLineFragment = !((*glyphIndex > firstGlyphIndex) && (position.x + glyphEntry->size.width > lineFragment->rect.size.width));
       if (doesGlyphFitInLineFragment)
         {
           /* Baseline adjustments. */
@@ -736,9 +735,9 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
               yOffset += glyphEntry->attributes.baselineOffset;
             }
 
-          if (yOffset != position->y)
+          if (yOffset != position.y)
             {
-              position->y = yOffset;
+              position.y = yOffset;
               glyphEntry->nominal = NO;
             }
 
@@ -766,7 +765,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
           /* TODO: need to handle other control characters */
 
-          glyphEntry->position = *position;
+          glyphEntry->position = position;
           glyphEntry->size.width = 0;
           glyphEntry->dontShow = YES;
           glyphEntry->nominal = !previousHadNonNominalWidth;
@@ -814,7 +813,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
                      stop, and the next tab stop would move to the same
                      tab, thus having no effect.
                   */
-                  if ([tab location] > position->x + lineFragment->rect.origin.x)
+                  if ([tab location] > position.x + lineFragment->rect.origin.x)
                     {
                       break;
                     }
@@ -825,11 +824,11 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
                      Tabs after the last value in tabStops should use the
                      defaultTabInterval provided by NSParagraphStyle.
                   */
-                  position->x = (floor(position->x / defaultInterval) + 1.0) * defaultInterval;
+                  position.x = (floor(position.x / defaultInterval) + 1.0) * defaultInterval;
                 }
               else
                 {
-                  position->x = [tab location] - lineFragment->rect.origin.x;
+                  position.x = [tab location] - lineFragment->rect.origin.x;
                 }
               previousHadNonNominalWidth = YES;
               continue;
@@ -853,7 +852,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
           cell = (NSTextAttachmentCell*)[attachment attachmentCell];
           if (!cell)
             {
-              glyphEntry->position = *position;
+              glyphEntry->position = position;
               glyphEntry->size = NSMakeSize(0, 0);
               glyphEntry->dontShow = YES;
               glyphEntry->nominal = YES;
@@ -869,7 +868,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
           cellFrame = [cell cellFrameForTextContainer: currentTextContainer
                                  proposedLineFragment: lineFragment->rect
-                                        glyphPosition: NSMakePoint(position->x, lineFragment->rect.size.height - baseline)
+                                        glyphPosition: NSMakePoint(position.x, lineFragment->rect.size.height - baseline)
                                        characterIndex: glyphEntry->characterIndex];
 
           /* For some obscure reason, the rectangle we get is up-side-down
@@ -877,7 +876,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
              (Makes sense from the cell's pov, though.) */
 
           /* does the attachment fit (and it is not the first element in line) ?*/
-          doesGlyphFitInLineFragment = !((*glyphIndex > firstGlyphIndex) && (position->x + NSMaxX(cellFrame) > lineFragment->rect.size.width));
+          doesGlyphFitInLineFragment = !((*glyphIndex > firstGlyphIndex) && (position.x + NSMaxX(cellFrame) > lineFragment->rect.size.width));
           if (doesGlyphFitInLineFragment)
             {
               if (-NSMinY(cellFrame) > *descender)
@@ -894,10 +893,10 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
             }
 
           glyphEntry->size = cellFrame.size;
-          glyphEntry->position.x = position->x + cellFrame.origin.x;
-          glyphEntry->position.y = position->y - cellFrame.origin.y;
+          glyphEntry->position.x = position.x + cellFrame.origin.x;
+          glyphEntry->position.y = position.y - cellFrame.origin.y;
 
-          position->x = glyphEntry->position.x + glyphEntry->size.width;
+          position.x = glyphEntry->position.x + glyphEntry->size.width;
 
           /* An attachment is always in a point range of its own. */
           glyphEntry->nominal = NO;
@@ -909,18 +908,18 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
           if (lastGlyph)
             {
               BOOL n;
-              *position = [font positionOfGlyph: glyphEntry->glyph
-                               precededByGlyph: lastGlyph
-                                     isNominal: &n];
+              position = [font positionOfGlyph: glyphEntry->glyph
+                              precededByGlyph: lastGlyph
+                                    isNominal: &n];
               if (!n)
                 glyphEntry->nominal = NO;
-              position->x += lastPosition.x;
-              position->y += lastPosition.y;
+              position.x += lastPosition.x;
+              position.y += lastPosition.y;
             }
           */
-          lastPosition = glyphEntry->position = *position;
+          lastPosition = glyphEntry->position = position;
           /* Only the width is used. */
-          position->x += glyphEntry->size.width;
+          position.x += glyphEntry->size.width;
         }
 
       /* Did the glyph fit in the line fragment rect? */
@@ -977,7 +976,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
                       }
 
                     glyphEntry->dontShow = YES;
-                    glyphEntry->position = *position;
+                    glyphEntry->position = position;
 
                     if (glyphEntry->glyph == NSControlGlyph
                         && [[currentTextStorage string] characterAtIndex: glyphEntry->characterIndex] == NSNewlineCharacter)
@@ -994,7 +993,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
           if (lineFragment->lastGlyphIndex <= firstGlyphIndex)
             lineFragment->lastGlyphIndex = *glyphIndex + 1;
 
-          lastPosition = *position = NSMakePoint(0, 0);
+          lastPosition = position = NSMakePoint(0, 0);
           *glyphIndex = lineFragment->lastGlyphIndex;
           glyphEntry = &glyphCache[*glyphIndex];
           /* The -1 is always valid since there's at least one glyph in the
@@ -1032,12 +1031,20 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
         }
     }
 
+  if (*lineFragmentIndex != lineFragmentCount)
+    {
+      LineFragment *lineFragment = &lineFragments[*lineFragmentIndex];
+
+      lineFragment->lastGlyphIndex = *glyphIndex;
+      lineFragment->lastUsed = position.x;
+    }
+
   return NO;
 }
 
-- (int) _buildLineFragmentsForLine:(BOOL)newParagraph
-                      onLineHeight:(CGFloat *)lineHeight
-                       considering:(CGFloat *) maxLineHeight
+- (int) _buildLineFragmentsForLine: (BOOL)newParagraph
+                      onLineHeight: (CGFloat *)lineHeight
+                       considering: (CGFloat *)maxLineHeight
 {
   do
     {
@@ -1196,7 +1203,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
   BOOL recalculateLineHeight = NO;
   int lineFragmentIndex = 0;
   unsigned int lastGlyphIndex = 0;
-  NSPoint position = NSMakePoint(0.0, 0.0);
+
   do
     {
       int ret;
@@ -1213,8 +1220,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
                                                    usingAscender: &ascender
                                                     andDescender: &descender
                                       returningLineFragmentIndex: &lineFragmentIndex
-                                             returningGlyphIndex: &lastGlyphIndex
-                                               returningPosition: &position];
+                                             returningGlyphIndex: &lastGlyphIndex];
 
     }
   while (recalculateLineHeight);
@@ -1224,11 +1230,6 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
   /* Take care of the alignments. */
   if (lineFragmentIndex != lineFragmentCount)
     {
-      LineFragment *lineFragment = &lineFragments[lineFragmentIndex];
-
-      lineFragment->lastGlyphIndex = lastGlyphIndex;
-      lineFragment->lastUsed = position.x;
-
       /* TODO: incorrect if there is more than one line fragment */
       if ([currentParagraphStyle alignment] == NSRightTextAlignment)
         {
