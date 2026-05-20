@@ -462,7 +462,7 @@ add comments above this one
 "%@ has changed.  Save?" = "%@ \U00E8 cambiato. Salvare?";
 /* File: ../Source/NSDocument.m:839 */
 "Can't create backup file.  Save anyways?"
-  = "Impossibile creare un file di ripristino. Salvare comunque?";
+  = "Impossibile creare un file di backup. Salvare comunque?";
 /* File: ../Source/NSDocument.m:483 */
 "Close" = "Chiudi";
 /* File: ../Source/NSDocument.m:153 */
@@ -471,7 +471,7 @@ add comments above this one
 "Could not load file %@."
   = "Non \U00E8 stato possibile caricare il file %@.";
 /* File: ../Source/NSDocument.m:838 */
-"File Error" = "Errore nell'Archivio";
+"File Error" = "Errore nell'archivio";
 /* File: ../Source/NSDocument.m:129 */
 /* File: ../Source/NSDocument.m:152 */
 "Load failed" = "Caricamento non riuscito";
