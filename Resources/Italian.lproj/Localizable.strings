@@ -229,8 +229,7 @@ add comments above this one
 "Show Hidden Files" = "Mostra Archivi nascosti";
 
 /* File: ../Source/NSSavePanel.m:278 */
-/* Flag: untranslated */
-"Home" = "Home";
+"Home" = "Inizio";
 
 /* File: ../Source/NSSavePanel.m:1320 */
 /* Flag: untranslated */
