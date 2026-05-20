@@ -163,7 +163,7 @@ add comments above this one
 
 /* File: ../Source/NSDocument.m:751 */
 /* Comment: Error description */
-"File wrapper is no file." = "Il wrapper del file non è un archivio.";
+"File wrapper is no file." = "Il wrapper archivio non è un archivio.";
 
 /* File: ../Source/NSDocument.m:943 */
 /* Comment: Error description */
@@ -172,7 +172,7 @@ add comments above this one
 
 /* File: ../Source/NSDocument.m:1037 */
 /* Comment: Error description */
-"Could not write file wrapper." = "Impossibile scrivere il file wrapper.";
+"Could not write file wrapper." = "Impossibile scrivere il wrapper archivio.";
 
 /* File: ../Source/NSDocumentController.m:1852 */
 "Clear List" = "Pulisci Lista";
