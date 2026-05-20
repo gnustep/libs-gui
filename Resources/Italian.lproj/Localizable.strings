@@ -163,7 +163,7 @@ add comments above this one
 
 /* File: ../Source/NSDocument.m:751 */
 /* Comment: Error description */
-"File wrapper is no file." = "Il wrapper del file non è un file.";
+"File wrapper is no file." = "Il wrapper del file non è un archivio.";
 
 /* File: ../Source/NSDocument.m:943 */
 /* Comment: Error description */
@@ -238,7 +238,7 @@ add comments above this one
 
 /* File: ../Source/NSSavePanel.m:1328 */
 "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'."
-  = "Impossibile salvare il documento con l'estensiopne '.%@'.\nL'estensione richiesta è '.%@'.";
+  = "Impossibile salvare il documento con l'estensione '.%@'.\nL'estensione richiesta è '.%@'.";
 
 /* File: ../Source/NSSavePanel.m:1374 */
 "No" = "No";
@@ -461,14 +461,14 @@ add comments above this one
 "%@ has changed.  Save?" = "%@ \U00E8 cambiato. Salvare?";
 /* File: ../Source/NSDocument.m:839 */
 "Can't create backup file.  Save anyways?"
-  = "Impossibile creare un file di backup. Salvare comunque?";
+  = "Impossibile creare un archivio di backup. Salvare comunque?";
 /* File: ../Source/NSDocument.m:483 */
 "Close" = "Chiudi";
 /* File: ../Source/NSDocument.m:153 */
 "Could not load URL %@." = "Non \U00E8 stato possibile caricare lo URL %@.";
 /* File: ../Source/NSDocument.m:130 */
 "Could not load file %@."
-  = "Non \U00E8 stato possibile caricare il file %@.";
+  = "Non \U00E8 stato possibile caricare il archivio %@.";
 /* File: ../Source/NSDocument.m:838 */
 "File Error" = "Errore nell'archivio";
 /* File: ../Source/NSDocument.m:129 */
@@ -558,7 +558,7 @@ add comments above this one
   = "La cartella '%@' non esiste, la vuoi creare?";
 /* File: ../Source/NSSavePanel.m:1408 */
 "The file '%@' in '%@' exists. Replace it?"
-  = "Il file '%@' in '%@' esiste già. Sostituirlo?";
+  = "L'archivio '%@' in '%@' esiste già. Sostituirlo?";
 /* File: ../Source/NSSavePanel.m:1397 */
 "Il percorso '%@' non è una cartella."
   = "Il percorso non '%@' non è una cartella.";
