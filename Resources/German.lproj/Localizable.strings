@@ -129,7 +129,7 @@ add comments above this one
 /* File: ../Source/Functions.m:106 */
 /* Flag: untranslated */
 "Cannot load the main storyboard file '%@'"
-  = "Die storyboard-Hauptatei '%@' konnte nicht geladen werden.";
+  = "Die storyboard-Hauptdatei '%@' konnte nicht geladen werden.";
 
 
 /*** Strings from ../Source/NSDocument.m ***/
