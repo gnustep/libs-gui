@@ -116,7 +116,7 @@ add comments above this one
 
 /* File: ../Source/NSSavePanel.m:278 */
 /* Flag: untranslated */
-"Home" = "Home";
+"Home" = "Benutzerordner";
 
 /* File: ../Source/NSSavePanel.m:294 */
 /* Flag: untranslated */
