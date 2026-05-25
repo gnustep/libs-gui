@@ -399,6 +399,12 @@ typedef	struct {
       ASSIGN(theTheme, defaultTheme);
       names = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
 	NSIntMapValueCallBacks, 0);
+
+      [[NSDistributedNotificationCenter defaultCenter]
+	    addObserver: self
+	       selector: @selector(preferenceDidChange:)
+		   name: @"GSThemePreferenceDidChangeNotification"
+		 object: nil];
       /* Establish the theme specified by the user defaults (if any);
        */
       [self defaultsDidChange: nil];
@@ -506,6 +512,17 @@ typedef	struct {
   [panel update: self];
   [panel center];
   [panel orderFront: self];
+}
+
++ (void) preferenceDidChange: (NSNotification*)n
+{
+  NSUserDefaults	*defaults = [NSUserDefaults standardUserDefaults];
+
+  [defaults synchronize];
+  /*
+  NSLog(@"System preference changed; default theme is %@",
+    [defaults objectForKey: @"GSTheme"]);
+   */
 }
 
 + (void) setTheme: (GSTheme*)theme
