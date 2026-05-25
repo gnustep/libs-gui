@@ -508,18 +508,9 @@ static NSParagraphStyle	*defaultStyle = nil;
           [aCoder decodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
-          if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 3)
-            {
-              [aCoder decodeArrayOfObjCType: @encode(NSInteger)
-                  count: count
-                  at: types];
-	    }
-	  else
-            {
-              [aCoder decodeArrayOfObjCType: @encode(int)
-                  count: count
-                  at: types];
-	    }
+	  [aCoder decodeArrayOfObjCType: @encode(NSTextTabType)
+	      count: count
+	      at: types];
           for (i = 0; i < count; i++)
             {
               NSTextTab	*tab;
@@ -586,7 +577,7 @@ static NSParagraphStyle	*defaultStyle = nil;
           [aCoder encodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
-          [aCoder encodeArrayOfObjCType: @encode(NSInteger)
+          [aCoder encodeArrayOfObjCType: @encode(NSTextTabType)
                   count: count
                   at: types];
         }
