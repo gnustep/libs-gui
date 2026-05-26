@@ -1033,8 +1033,6 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
   if (*lineFragmentIndex != lineFragmentCount)
     {
-      LineFragment *lineFragment = &lineFragments[*lineFragmentIndex];
-
       lineFragment->lastGlyphIndex = *glyphIndex;
       lineFragment->lastUsed = position.x;
     }
