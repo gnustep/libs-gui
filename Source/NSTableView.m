@@ -2119,9 +2119,12 @@ static void computeNewSelection
 	  object: self];
     }
   // Remove window resize observer
-  [nc removeObserver: self
-                name: NSWindowDidResizeNotification
-              object: nil];
+  if (_viewBased)
+    {
+      [nc removeObserver: self
+		    name: NSWindowDidResizeNotification
+		  object: nil];
+    }
   TEST_RELEASE (_autosaveName);
   if (_numberOfColumns > 0)
     {
