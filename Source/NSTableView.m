@@ -171,6 +171,7 @@ typedef struct _tableViewFlags
 - (CGFloat) _positionInRowAtPoint: (NSPoint)aPoint
                                row: (NSInteger)rowIndex;
 - (CGFloat*) _columnOrigins;
+- (void) _initViewBasedSupport;
 - (NSView*)  _renderedViewForPath: (NSIndexPath*)path;
 - (void) _setRenderedView: (NSView*)view forPath: (NSIndexPath*)path;
 - (void) _layoutViewBasedRows;
@@ -2069,11 +2070,11 @@ static void computeNewSelection
   _draggingSourceOperationMaskForRemote = NSDragOperationNone;
   ASSIGN(_sortDescriptors, [NSArray array]);
   _viewBased = NO;
-  _renderedViewPaths = RETAIN([NSMapTable strongToWeakObjectsMapTable]);
-  _pathsToViews = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
-  _registeredNibs = [[NSMutableDictionary alloc] init];
-  _registeredViews = [[NSMutableDictionary alloc] init];
-  _rowViews = [[NSMutableDictionary alloc] init];
+  _renderedViewPaths = nil;
+  _pathsToViews = nil;
+  _registeredNibs = nil;
+  _registeredViews = nil;
+  _rowViews = nil;
   _dataSource_editable = YES;
 }
 
@@ -5450,7 +5451,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) setDelegate: (id)anObject
 {
   const SEL sel = @selector(tableView:willDisplayCell:forTableColumn:row:);
-  const SEL vbsel = @selector(tableView:viewForTableColumn:row:);
   BOOL oldViewBased = _viewBased;
 
   if (_delegate)
@@ -5471,8 +5471,13 @@ This method is deprecated, use -columnIndexesInRect:. */
   /* Cache */
   _del_responds = [_delegate respondsToSelector: sel];
 
-  /* Test to see if it is view based */
-  _viewBased = [_delegate respondsToSelector: vbsel];
+  /* Preserve the table's configured mode.  Legacy cell-based tables may have
+     delegates which respond to view-based selectors for other purposes; that
+     must not switch their drawing/reload paths to view-based mode. */
+  if (_viewBased)
+    {
+      [self _initViewBasedSupport];
+    }
   
   // Handle window resize observer when view-based status changes
   if ([self window] != nil)
@@ -7307,6 +7312,7 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       NSNumber *aRow = [NSNumber numberWithInteger: row];
 
+      [self _initViewBasedSupport];
       rv = [_rowViews objectForKey: aRow];
       if (rv == nil && flag == YES)
 	{
@@ -7435,6 +7441,8 @@ For a more detailed explanation, -setSortDescriptors:. */
 - (void) registerNib: (NSNib *)nib
        forIdentifier: (NSUserInterfaceItemIdentifier)identifier
 {
+  _viewBased = YES;
+  [self _initViewBasedSupport];
   [_registeredNibs setObject: nib
 		      forKey: identifier];
 }
@@ -7451,6 +7459,8 @@ For a more detailed explanation, -setSortDescriptors:. */
   NSEnumerator *en = [prototypeViews objectEnumerator];
   NSView *view = nil;
 
+  _viewBased = YES;
+  [self _initViewBasedSupport];
   while ((view = [en nextObject]) != nil)
     {
       NSUserInterfaceItemIdentifier identifier = [view identifier];
@@ -7466,8 +7476,38 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path
 {
+  if (view == nil)
+    {
+      return;
+    }
+
+  [self _initViewBasedSupport];
   [_renderedViewPaths setObject: view forKey: path];
   [_pathsToViews setObject: path forKey: view];
+}
+
+- (void) _initViewBasedSupport
+{
+  if (_renderedViewPaths == nil)
+    {
+      _renderedViewPaths = RETAIN([NSMapTable strongToWeakObjectsMapTable]);
+    }
+  if (_pathsToViews == nil)
+    {
+      _pathsToViews = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
+    }
+  if (_registeredNibs == nil)
+    {
+      _registeredNibs = [[NSMutableDictionary alloc] init];
+    }
+  if (_registeredViews == nil)
+    {
+      _registeredViews = [[NSMutableDictionary alloc] init];
+    }
+  if (_rowViews == nil)
+    {
+      _rowViews = [[NSMutableDictionary alloc] init];
+    }
 }
 
 @end /* implementation of NSTableView */
