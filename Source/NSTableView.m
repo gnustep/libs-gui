@@ -173,6 +173,7 @@ typedef struct _tableViewFlags
 - (CGFloat*) _columnOrigins;
 - (NSView*)  _renderedViewForPath: (NSIndexPath*)path;
 - (void) _setRenderedView: (NSView*)view forPath: (NSIndexPath*)path;
+- (void) _layoutViewBasedRows;
 @end
 
 @interface NSTableView (SelectionHelper)
@@ -2164,7 +2165,9 @@ static void computeNewSelection
 {
   if (_viewBased)
     {
-      [self reloadData];
+      [self tile];
+      [self _layoutViewBasedRows];
+      [self setNeedsDisplay: YES];
     }
 }
 
@@ -4642,6 +4645,10 @@ This method is deprecated, use -columnIndexesInRect:. */
       // TODO width?
     }
   [super setFrame: tmpRect];
+  if (_viewBased)
+    {
+      [self _layoutViewBasedRows];
+    }
 }
 
 - (void) setFrameSize: (NSSize)frameSize
@@ -4664,6 +4671,10 @@ This method is deprecated, use -columnIndexesInRect:. */
       // TODO width?
     }
   [super setFrameSize: tmpSize];
+  if (_viewBased)
+    {
+      [self _layoutViewBasedRows];
+    }
 }
 
 - (void) viewWillMoveToSuperview:(NSView *)newSuper
@@ -5022,6 +5033,11 @@ This method is deprecated, use -columnIndexesInRect:. */
       [_headerView setNeedsDisplay: YES];
       [_cornerView setNeedsDisplay: YES];
     }
+
+  if (_viewBased)
+    {
+      [self _layoutViewBasedRows];
+    }
 }
 
 /*
@@ -5136,10 +5152,13 @@ This method is deprecated, use -columnIndexesInRect:. */
 	{
 	  // Add the view to the row...
 	  [rowView addSubview: view];
+	}
 
-	  // Place the view...
-	  NSRect newRect = [view frame];
-	  newRect.origin.y = 0.0;
+      if (view != nil)
+	{
+	  NSRect newRect = [self frameOfCellAtColumn: columnIndex
+						row: rowIndex];
+	  newRect.origin.y -= NSMinY ([rowView frame]);
 	  [view setFrame: newRect];
 	}
     }
@@ -7311,6 +7330,59 @@ For a more detailed explanation, -setSortDescriptors:. */
   return rv;
 }
 
+- (void) _layoutViewBasedRows
+{
+  NSEnumerator *enumerator;
+  NSNumber *rowNumber;
+
+  if (_viewBased == NO)
+    {
+      return;
+    }
+
+  enumerator = [_rowViews keyEnumerator];
+  while ((rowNumber = [enumerator nextObject]) != nil)
+    {
+      NSInteger row = [rowNumber integerValue];
+      NSTableRowView *rowView;
+      NSRect rowFrame;
+      NSInteger column;
+
+      if (row < 0 || row >= _numberOfRows)
+	{
+	  continue;
+	}
+
+      rowView = [_rowViews objectForKey: rowNumber];
+      if (rowView == nil)
+	{
+	  continue;
+	}
+
+      rowFrame = NSMakeRect (0.0,
+			     [self _yOriginForRow: row],
+			     [self frame].size.width,
+			     [self _rowHeightForRow: row]);
+      [rowView setFrame: rowFrame];
+
+      for (column = 0; column < _numberOfColumns; column++)
+	{
+	  NSIndexPath *path = [NSIndexPath indexPathForItem: column
+						 inSection: row];
+	  NSView *view = [self _renderedViewForPath: path];
+
+	  if (view != nil)
+	    {
+	      NSRect viewFrame = [self frameOfCellAtColumn: column
+						       row: row];
+
+	      viewFrame.origin.y -= NSMinY (rowFrame);
+	      [view setFrame: viewFrame];
+	    }
+	}
+    }
+}
+
 - (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag
 {
   NSTableColumn *tb = [_tableColumns objectAtIndex: column];
@@ -7351,6 +7423,10 @@ For a more detailed explanation, -setSortDescriptors:. */
       [self _setRenderedView: view forPath: path];
     }
 
+  if ([[view superview] isKindOfClass: [NSTableRowView class]])
+    {
+      drawingRect.origin.y -= NSMinY ([[view superview] frame]);
+    }
   [view setFrame: drawingRect];
 
   return view;
