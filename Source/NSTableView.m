@@ -2101,6 +2101,25 @@ static void computeNewSelection
 {
   [self abortEditing];
 
+  if (_autosaveTableColumns == YES)
+    {
+      [nc removeObserver: self
+                    name: NSTableViewColumnDidResizeNotification
+                  object: self];
+    }
+  // Remove window resize observer
+  if (_viewBased)
+    {
+      [nc removeObserver: self
+		    name: NSWindowDidResizeNotification
+		  object: nil];
+    }
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+      _delegate = nil;
+    }
+
   RELEASE (_gridColor);
   RELEASE (_backgroundColor);
   RELEASE (_tableColumns);
@@ -2114,29 +2133,13 @@ static void computeNewSelection
   RELEASE (_rowViews);
   TEST_RELEASE (_headerView);
   TEST_RELEASE (_cornerView);
-  if (_autosaveTableColumns == YES)
-    {
-      [nc removeObserver: self
-	  name: NSTableViewColumnDidResizeNotification
-	  object: self];
-    }
-  // Remove window resize observer
-  if (_viewBased)
-    {
-      [nc removeObserver: self
-		    name: NSWindowDidResizeNotification
-		  object: nil];
-    }
+
   TEST_RELEASE (_autosaveName);
   if (_numberOfColumns > 0)
     {
       NSZoneFree (NSDefaultMallocZone (), _columnOrigins);
     }
-  if (_delegate != nil)
-    {
-      [nc removeObserver: _delegate  name: nil  object: self];
-      _delegate = nil;
-    }
+
   [super dealloc];
 }
 
@@ -2147,11 +2150,12 @@ static void computeNewSelection
 
 - (void) viewDidMoveToWindow
 {
-  /* Remove any existing resize observers for this table view before it
-     moves to a new window or is detached. */
-  [nc removeObserver: self
-                 name: NSWindowDidResizeNotification
-               object: nil];
+  if ([self window] != nil && _viewBased)
+    {
+      [nc removeObserver: self
+                    name: NSWindowDidResizeNotification
+                  object: [self window]];
+    }
 
   [super viewDidMoveToWindow];
 
