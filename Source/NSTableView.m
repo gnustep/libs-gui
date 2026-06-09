@@ -2148,7 +2148,7 @@ static void computeNewSelection
   return YES;
 }
 
-- (void) viewDidMoveToWindow
+- (void) viewWillMoveToWindow:(NSWindow *) newWindow
 {
   if ([self window] != nil && _viewBased)
     {
@@ -2157,6 +2157,11 @@ static void computeNewSelection
                   object: [self window]];
     }
 
+  [super viewWillMoveToWindow: newWindow];
+}
+
+- (void) viewDidMoveToWindow
+{
   [super viewDidMoveToWindow];
 
   // Add observer for the new window if view-based
