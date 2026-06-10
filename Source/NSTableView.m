@@ -171,8 +171,10 @@ typedef struct _tableViewFlags
 - (CGFloat) _positionInRowAtPoint: (NSPoint)aPoint
                                row: (NSInteger)rowIndex;
 - (CGFloat*) _columnOrigins;
+- (void) _initViewBasedSupport;
 - (NSView*)  _renderedViewForPath: (NSIndexPath*)path;
 - (void) _setRenderedView: (NSView*)view forPath: (NSIndexPath*)path;
+- (void) _layoutViewBasedRows;
 @end
 
 @interface NSTableView (SelectionHelper)
@@ -2068,11 +2070,11 @@ static void computeNewSelection
   _draggingSourceOperationMaskForRemote = NSDragOperationNone;
   ASSIGN(_sortDescriptors, [NSArray array]);
   _viewBased = NO;
-  _renderedViewPaths = RETAIN([NSMapTable strongToWeakObjectsMapTable]);
-  _pathsToViews = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
-  _registeredNibs = [[NSMutableDictionary alloc] init];
-  _registeredViews = [[NSMutableDictionary alloc] init];
-  _rowViews = [[NSMutableDictionary alloc] init];
+  _renderedViewPaths = nil;
+  _pathsToViews = nil;
+  _registeredNibs = nil;
+  _registeredViews = nil;
+  _rowViews = nil;
   _dataSource_editable = YES;
 }
 
@@ -2167,7 +2169,9 @@ static void computeNewSelection
 {
   if (_viewBased)
     {
-      [self reloadData];
+      [self tile];
+      [self _layoutViewBasedRows];
+      [self setNeedsDisplay: YES];
     }
 }
 
@@ -4645,6 +4649,10 @@ This method is deprecated, use -columnIndexesInRect:. */
       // TODO width?
     }
   [super setFrame: tmpRect];
+  if (_viewBased)
+    {
+      [self _layoutViewBasedRows];
+    }
 }
 
 - (void) setFrameSize: (NSSize)frameSize
@@ -4667,6 +4675,10 @@ This method is deprecated, use -columnIndexesInRect:. */
       // TODO width?
     }
   [super setFrameSize: tmpSize];
+  if (_viewBased)
+    {
+      [self _layoutViewBasedRows];
+    }
 }
 
 - (void) viewWillMoveToSuperview:(NSView *)newSuper
@@ -5025,6 +5037,11 @@ This method is deprecated, use -columnIndexesInRect:. */
       [_headerView setNeedsDisplay: YES];
       [_cornerView setNeedsDisplay: YES];
     }
+
+  if (_viewBased)
+    {
+      [self _layoutViewBasedRows];
+    }
 }
 
 /*
@@ -5139,10 +5156,13 @@ This method is deprecated, use -columnIndexesInRect:. */
 	{
 	  // Add the view to the row...
 	  [rowView addSubview: view];
+	}
 
-	  // Place the view...
-	  NSRect newRect = [view frame];
-	  newRect.origin.y = 0.0;
+      if (view != nil)
+	{
+	  NSRect newRect = [self frameOfCellAtColumn: columnIndex
+						row: rowIndex];
+	  newRect.origin.y -= NSMinY ([rowView frame]);
 	  [view setFrame: newRect];
 	}
     }
@@ -5434,7 +5454,6 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) setDelegate: (id)anObject
 {
   const SEL sel = @selector(tableView:willDisplayCell:forTableColumn:row:);
-  const SEL vbsel = @selector(tableView:viewForTableColumn:row:);
   BOOL oldViewBased = _viewBased;
 
   if (_delegate)
@@ -5455,8 +5474,13 @@ This method is deprecated, use -columnIndexesInRect:. */
   /* Cache */
   _del_responds = [_delegate respondsToSelector: sel];
 
-  /* Test to see if it is view based */
-  _viewBased = [_delegate respondsToSelector: vbsel];
+  /* Preserve the table's configured mode.  Legacy cell-based tables may have
+     delegates which respond to view-based selectors for other purposes; that
+     must not switch their drawing/reload paths to view-based mode. */
+  if (_viewBased)
+    {
+      [self _initViewBasedSupport];
+    }
   
   // Handle window resize observer when view-based status changes
   if ([self window] != nil)
@@ -7291,6 +7315,7 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       NSNumber *aRow = [NSNumber numberWithInteger: row];
 
+      [self _initViewBasedSupport];
       rv = [_rowViews objectForKey: aRow];
       if (rv == nil && flag == YES)
 	{
@@ -7312,6 +7337,59 @@ For a more detailed explanation, -setSortDescriptors:. */
     }
 
   return rv;
+}
+
+- (void) _layoutViewBasedRows
+{
+  NSEnumerator *enumerator;
+  NSNumber *rowNumber;
+
+  if (_viewBased == NO)
+    {
+      return;
+    }
+
+  enumerator = [_rowViews keyEnumerator];
+  while ((rowNumber = [enumerator nextObject]) != nil)
+    {
+      NSInteger row = [rowNumber integerValue];
+      NSTableRowView *rowView;
+      NSRect rowFrame;
+      NSInteger column;
+
+      if (row < 0 || row >= _numberOfRows)
+	{
+	  continue;
+	}
+
+      rowView = [_rowViews objectForKey: rowNumber];
+      if (rowView == nil)
+	{
+	  continue;
+	}
+
+      rowFrame = NSMakeRect (0.0,
+			     [self _yOriginForRow: row],
+			     [self frame].size.width,
+			     [self _rowHeightForRow: row]);
+      [rowView setFrame: rowFrame];
+
+      for (column = 0; column < _numberOfColumns; column++)
+	{
+	  NSIndexPath *path = [NSIndexPath indexPathForItem: column
+						 inSection: row];
+	  NSView *view = [self _renderedViewForPath: path];
+
+	  if (view != nil)
+	    {
+	      NSRect viewFrame = [self frameOfCellAtColumn: column
+						       row: row];
+
+	      viewFrame.origin.y -= NSMinY (rowFrame);
+	      [view setFrame: viewFrame];
+	    }
+	}
+    }
 }
 
 - (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag
@@ -7354,6 +7432,10 @@ For a more detailed explanation, -setSortDescriptors:. */
       [self _setRenderedView: view forPath: path];
     }
 
+  if ([[view superview] isKindOfClass: [NSTableRowView class]])
+    {
+      drawingRect.origin.y -= NSMinY ([[view superview] frame]);
+    }
   [view setFrame: drawingRect];
 
   return view;
@@ -7362,6 +7444,8 @@ For a more detailed explanation, -setSortDescriptors:. */
 - (void) registerNib: (NSNib *)nib
        forIdentifier: (NSUserInterfaceItemIdentifier)identifier
 {
+  _viewBased = YES;
+  [self _initViewBasedSupport];
   [_registeredNibs setObject: nib
 		      forKey: identifier];
 }
@@ -7378,6 +7462,8 @@ For a more detailed explanation, -setSortDescriptors:. */
   NSEnumerator *en = [prototypeViews objectEnumerator];
   NSView *view = nil;
 
+  _viewBased = YES;
+  [self _initViewBasedSupport];
   while ((view = [en nextObject]) != nil)
     {
       NSUserInterfaceItemIdentifier identifier = [view identifier];
@@ -7393,8 +7479,38 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path
 {
+  if (view == nil)
+    {
+      return;
+    }
+
+  [self _initViewBasedSupport];
   [_renderedViewPaths setObject: view forKey: path];
   [_pathsToViews setObject: path forKey: view];
+}
+
+- (void) _initViewBasedSupport
+{
+  if (_renderedViewPaths == nil)
+    {
+      _renderedViewPaths = RETAIN([NSMapTable strongToWeakObjectsMapTable]);
+    }
+  if (_pathsToViews == nil)
+    {
+      _pathsToViews = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
+    }
+  if (_registeredNibs == nil)
+    {
+      _registeredNibs = [[NSMutableDictionary alloc] init];
+    }
+  if (_registeredViews == nil)
+    {
+      _registeredViews = [[NSMutableDictionary alloc] init];
+    }
+  if (_rowViews == nil)
+    {
+      _rowViews = [[NSMutableDictionary alloc] init];
+    }
 }
 
 @end /* implementation of NSTableView */
