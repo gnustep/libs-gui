@@ -233,7 +233,14 @@ static BOOL menuBarVisible = YES;
 		     backing: NSBackingStoreBuffered
 		     defer: YES];
   [win setBackgroundColor: [NSColor clearColor]];
-  [win setLevel: NSSubmenuWindowLevel];
+  if ([self isTornOff])
+    {
+      [win setLevel: NSTornOffMenuWindowLevel];
+    }
+  else
+    {
+      [win setLevel: NSSubmenuWindowLevel];
+    }
   [win setWorksWhenModal: NO];
   [win setBecomesKeyOnlyIfNeeded: YES];
   [win _setmenu: self];
@@ -2051,7 +2058,14 @@ static BOOL menuBarVisible = YES;
     }
   else 
     {
-      [[self window] setLevel: NSSubmenuWindowLevel];
+      if ([self isTornOff])
+        {
+          [[self window] setLevel: NSTornOffMenuWindowLevel];
+        }
+      else
+        {
+          [[self window] setLevel: NSSubmenuWindowLevel];
+        }
     }
 }
 
