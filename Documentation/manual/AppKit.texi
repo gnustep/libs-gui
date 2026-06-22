@@ -46,7 +46,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @end copying
 
 @ifnottex
-@node Top, Introduction, (dir), (dir)
+@node Top, Introduction, ,
 @top Using the GNUstep AppKit
 
 @ifnothtml

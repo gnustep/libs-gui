@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 1.0.3//EN" "http://www.gnustep.org/gsdoc-1_0_3.xml">
-<gsdoc base="OpenStepCompliance" up="Base">
+<gsdoc base="OpenStepCompliance" up="../../Base/Reference/Base">
   <head>
     <title>OpenStep Compliance</title>
     <author name="Adam Fedor"></author>
