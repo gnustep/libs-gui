@@ -783,6 +783,41 @@ APPKIT_EXPORT_CLASS
  */
 - (NSString*) license;
 
+/**
+ * Returns YES if Theme is able to display in Light NSAppearance
+ * For a theme supporting both Light and Dark modes, it should return both
+ * supportsLightAppearance and supportsDarkAppearance
+ * Light is the "default" of the GNUstep theme like Cocoa Aqua.
+ */
+- (BOOL) supportsLightAppearance;
+
+/**
+ * Returns YES if Theme is able to display in Dark NSAppearance
+ * For a theme supporting both Light and Dark modes, it should return both
+ * supportsLightAppearance and supportsDarkAppearance
+ * Light is the default Aqua and GNUstep "classic", but a GNUstep can be dark only.
+ */
+- (BOOL) supportsDarkAppearance;
+
+/**
+ * Returns YES if displaying in Light NSAppearance (or non-Dark)
+ * Should match if theme is equivalent to Cocoa names like
+ * NSAppearanceNameAqua or NSAppearanceNameAccessibilityHighContrastAqua
+ *
+ * Being only Light and Dark supported, must be opposite of inDarkAppearance
+ */
+- (BOOL) inLightAppearance;
+
+/**
+ * Returns YES if displaying in dark NSAppearance
+ * Should match if theme is equivalent to Cocoa names like
+ * NSAppearanceNameDarkAqua or NSAppearanceNameAccessibilityHighContrastDarkAqua
+ *
+ * Being only Light and Dark supported, must be opposite of inLightAppearance
+ */
+- (BOOL) inDarkAppearance;
+
+
 @end
 
 /**
