@@ -21,12 +21,13 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
 #import <AppKit/NSAccessibility.h>
+#import <AppKit/NSAccessibilityProtocols.h>
 
 NSString *const NSAccessibilityErrorCodeExceptionInfo
   = @"NSAccessibilityErrorCodeExceptionInfo";
@@ -703,44 +704,159 @@ void NSAccessibilityPostNotificationWithUserInfo(
   NSString *notification,
   NSDictionary *userInfo)
 {
-  // FIXME 
+  // TODO: Integrate with a real accessibility notification bridge.
+  // For now, post an NSNotification so interested parties can observe.
+  if (element == nil || notification == nil)
+    {
+      return;
+    }
+  NSMutableDictionary *info = nil;
+  if (userInfo != nil)
+    {
+      info = [userInfo mutableCopy];
+    }
+  else
+    {
+      info = [[NSMutableDictionary alloc] initWithCapacity: 1];
+    }
+  [info setObject: element forKey: @"NSAccessibilityElement"]; // informal key
+  [[NSNotificationCenter defaultCenter] postNotificationName: notification
+                                                      object: element
+                                                    userInfo: info];
+  RELEASE(info);
 }
 
 id NSAccessibilityUnignoredAncestor(id element)
 {
-  return nil;
+  // Without ignore logic, return as-is.
+  return element;
 }
 
 id NSAccessibilityUnignoredDescendant(id element)
 {
-  return nil;
+  return element;
 }
 
 NSArray *NSAccessibilityUnignoredChildren(
   NSArray *originalChildren)
 {
-  return nil;
+  return originalChildren; // No filtering implemented yet.
 }
 
 NSArray *NSAccessibilityUnignoredChildrenForOnlyChild(
   id originalChild)
 {
-  return nil;
+  if (originalChild == nil)
+    return nil;
+  return [NSArray arrayWithObject: originalChild];
 }
 
 NSString *NSAccessibilityRoleDescription(
   NSString *role,
   NSString *subrole)
 {
-  return nil;
+  // Basic mapping of well-known roles to human-readable descriptions.
+  static NSDictionary *roleDescriptions = nil;
+  if (roleDescriptions == nil)
+    {
+      roleDescriptions = [[NSDictionary alloc] initWithObjectsAndKeys:
+        @"Button", NSAccessibilityButtonRole,
+        @"Radio Button", NSAccessibilityRadioButtonRole,
+        @"Checkbox", NSAccessibilityCheckBoxRole,
+        @"Slider", NSAccessibilitySliderRole,
+        @"Tab Group", NSAccessibilityTabGroupRole,
+        @"Text Field", NSAccessibilityTextFieldRole,
+        @"Static Text", NSAccessibilityStaticTextRole,
+        @"Application", NSAccessibilityApplicationRole,
+        @"Window", NSAccessibilityWindowRole,
+        @"Menu Bar", NSAccessibilityMenuBarRole,
+        @"Menu", NSAccessibilityMenuRole,
+        @"Menu Item", NSAccessibilityMenuItemRole,
+        @"Table", NSAccessibilityTableRole,
+        @"Image", NSAccessibilityImageRole,
+        @"Group", NSAccessibilityGroupRole,
+        @"List", NSAccessibilityListRole,
+        @"Scroll Area", NSAccessibilityScrollAreaRole,
+        @"Outline", NSAccessibilityOutlineRole,
+        @"Progress Indicator", NSAccessibilityProgressIndicatorRole,
+        @"Popover", NSAccessibilityPopoverRole,
+        nil];
+    }
+
+  NSString *base = [roleDescriptions objectForKey: role];
+  if (base == nil)
+    {
+      // Fallback to stripped role string (remove prefix if present)
+      if ([role hasPrefix: @"NSAccessibility"]) {
+        base = [role substringFromIndex: [@"NSAccessibility" length]];
+        if ([base hasSuffix: @"Role"]) {
+          base = [base substringToIndex: [base length]-[ @"Role" length]];
+        }
+      } else {
+        base = role;
+      }
+    }
+  if (subrole != nil && [subrole length] > 0 && ![subrole isEqualToString: NSAccessibilityUnknownSubrole])
+    {
+      NSString *sr = subrole;
+      if ([sr hasPrefix: @"NSAccessibility"]) {
+        sr = [sr substringFromIndex: [@"NSAccessibility" length]];
+        if ([sr hasSuffix: @"Subrole"]) {
+          sr = [sr substringToIndex: [sr length]-[ @"Subrole" length]];
+        }
+      }
+      return [NSString stringWithFormat: @"%@ (%@)", base, sr];
+    }
+  return base;
 }
 
 NSString *NSAccessibilityRoleDescriptionForUIElement(id element)
 {
-  return nil;
+  // Attempt Key-Value coding queries to fetch role/subrole from object.
+  NSString *role = nil;
+  NSString *subrole = nil;
+
+  NS_DURING
+    {
+      if ([element respondsToSelector: @selector(accessibilityRole)])
+	{
+	  role = [element accessibilityRole];
+	}
+      if ([element respondsToSelector: @selector(accessibilitySubrole)])
+	{
+	  subrole = [element accessibilitySubrole];
+	}
+    }
+  NS_HANDLER
+    {
+      if (role == nil)
+	return nil;
+    }
+  NS_ENDHANDLER;
+
+  return NSAccessibilityRoleDescription(role, subrole);
 }
 
 NSString *NSAccessibilityActionDescription(NSString *action)
 {
-  return nil;
+  static NSDictionary *actionDescriptions = nil;
+  if (actionDescriptions == nil)
+    {
+      actionDescriptions = [[NSDictionary alloc] initWithObjectsAndKeys:
+        @"Press", NSAccessibilityPressAction,
+        @"Increment", NSAccessibilityIncrementAction,
+        @"Decrement", NSAccessibilityDecrementAction,
+        @"Confirm", NSAccessibilityConfirmAction,
+        @"Pick", NSAccessibilityPickAction,
+        @"Cancel", NSAccessibilityCancelAction,
+        @"Raise", NSAccessibilityRaiseAction,
+        @"Show Menu", NSAccessibilityShowMenuAction,
+        @"Delete", NSAccessibilityDeleteAction,
+        @"Show Alternate UI", NSAccessibilityShowAlternateUIAction,
+        @"Show Default UI", NSAccessibilityShowDefaultUIAction,
+        nil];
+    }
+  return [actionDescriptions objectForKey: action];
 }
+
+// ---- Remaining functions earlier in file updated below ----

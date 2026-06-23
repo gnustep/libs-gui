@@ -38,8 +38,12 @@
 #import <AppKit/NSGraphicsContext.h>
 #import <AppKit/NSResponder.h>
 #import <AppKit/NSUserInterfaceItemIdentification.h>
+#import <AppKit/NSAccessibilityConstants.h>
+#import <AppKit/NSAccessibilityProtocols.h>
 #import <AppKit/NSUserInterfaceLayout.h>
 #import <AppKit/NSLayoutConstraint.h>
+
+@class GSViewAccessibilityData;
 
 @class NSArray;
 @class NSAttributedString;
@@ -200,6 +204,9 @@ PACKAGE_SCOPE
   NSShadow *_shadow;
   NSAppearance* _appearance;
   NSUserInterfaceItemIdentifier _identifier;
+
+  // Accessibility support - lazy-loaded object
+  GSViewAccessibilityData *_accessibilityData;
 
 }
 
@@ -794,5 +801,9 @@ APPKIT_EXPORT NSString *NSViewFrameDidChangeNotification;
 APPKIT_EXPORT NSString *NSViewBoundsDidChangeNotification;
 APPKIT_EXPORT NSString *NSViewFocusDidChangeNotification;
 APPKIT_EXPORT NSString *NSViewGlobalFrameDidChangeNotification;
+
+// Accessibility support
+@interface NSView (NSAccessibilityElement) <NSAccessibilityElement>
+@end
 
 #endif // _GNUstep_H_NSView

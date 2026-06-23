@@ -34,6 +34,8 @@
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSAccessibility.h"
+#import "AppKit/NSAccessibilityProtocols.h"
 
 /*
  * Class variables
@@ -436,6 +438,221 @@ static Class imageCellClass;
 	}
     }
   return self;
+}
+
+@end
+
+// MARK: - NSImageView (NSAccessibilityImage)
+
+@implementation NSImageView (NSAccessibilityImage)
+
+// MARK: - NSAccessibilityElement Protocol Implementation
+
+- (NSString *) accessibilityRole
+{
+  return NSAccessibilityImageRole;
+}
+
+- (NSString *) accessibilitySubrole
+{
+  return nil;
+}
+
+- (NSString *) accessibilityLabel
+{
+  // First try to get from the image name/description
+  NSImage *image = [self image];
+  if (image)
+    {
+      NSString *name = [image name];
+      if (name && [name length] > 0)
+        {
+          return name;
+        }
+    }
+  
+  return nil;
+}
+
+- (NSString *) accessibilityTitle
+{
+  NSImage *image = [self image];
+  if (image)
+    {
+      return [image name];
+    }
+  
+  return nil;
+}
+
+- (NSString *) accessibilityValue
+{
+  // For image views, the value could be the image description
+  return [self accessibilityDescription];
+}
+
+- (NSString *) accessibilityHelp
+{
+  NSString *toolTip = [self toolTip];
+  if (toolTip && [toolTip length] > 0)
+    {
+      return toolTip;
+    }
+  
+  return nil;
+}
+
+- (NSString *) accessibilityRoleDescription
+{
+  return @"image";
+}
+
+- (BOOL) isAccessibilityEnabled
+{
+  return [self isEnabled];
+}
+
+- (NSArray *) accessibilityChildren
+{
+  return nil; // Image views are leaf elements
+}
+
+- (NSArray *) accessibilitySelectedChildren
+{
+  return nil;
+}
+
+- (NSArray *) accessibilityVisibleChildren
+{
+  return nil;
+}
+
+- (id) accessibilityWindow
+{
+  return [self window];
+}
+
+- (id) accessibilityTopLevelUIElement
+{
+  NSWindow *window = [self window];
+  return window ? [window contentView] : nil;
+}
+
+- (NSPoint) accessibilityActivationPoint
+{
+  NSRect frame = [self frame];
+  if ([self window] != nil)
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  
+  if (NSEqualRects(frame, NSZeroRect))
+    {
+      return NSZeroPoint;
+    }
+  
+  return NSMakePoint(NSMidX(frame), NSMidY(frame));
+}
+
+- (NSNumber *) accessibilityIndex
+{
+  id parent = [self superview];
+  if (parent && [parent respondsToSelector: @selector(subviews)])
+    {
+      NSArray *siblings = [parent subviews];
+      NSUInteger index = [siblings indexOfObject: self];
+      if (index != NSNotFound)
+        {
+          return [NSNumber numberWithUnsignedInteger: index];
+        }
+    }
+  return [NSNumber numberWithInteger: 0];
+}
+
+// MARK: - NSAccessibilityImage Protocol Implementation
+
+- (NSString *) accessibilityURL
+{
+  // Could potentially return URL if image was loaded from URL
+  return nil;
+}
+
+- (NSString *) accessibilityDescription
+{
+  // Return a description of the image content
+  NSImage *image = [self image];
+  if (image)
+    {
+      NSString *name = [image name];
+      if (name && [name length] > 0)
+        {
+          return [NSString stringWithFormat: @"Image: %@", name];
+        }
+      
+      NSSize size = [image size];
+      return [NSString stringWithFormat: @"Image %.0f x %.0f pixels", size.width, size.height];
+    }
+  
+  return @"Empty image view";
+}
+
+- (NSString *) accessibilityFilename
+{
+  // Return the filename if available
+  NSImage *image = [self image];
+  if (image)
+    {
+      return [image name]; // This might contain the filename
+    }
+  
+  return nil;
+}
+
+// MARK: - Additional Methods
+
+- (NSArray *) accessibilityCustomRotors
+{
+  return nil;
+}
+
+- (BOOL) accessibilityPerformEscape
+{
+  return NO;
+}
+
+- (NSArray *) accessibilityCustomActions
+{
+  return nil;
+}
+
+- (void) setAccessibilityElement: (BOOL) isElement
+{
+  // Image views are always accessibility elements when they have content
+}
+
+- (void) setAccessibilityFrame: (NSRect) frame
+{
+  // Frame is determined by the actual view frame
+}
+
+- (void) setAccessibilityParent: (id) parent
+{
+  // Parent relationship is managed by the view hierarchy
+}
+
+- (void) setAccessibilityFocused: (BOOL) focused
+{
+  if (focused)
+    {
+      [[self window] makeFirstResponder: self];
+    }
+  else
+    {
+      if ([[self window] firstResponder] == self)
+        {
+          [[self window] makeFirstResponder: nil];
+        }
+    }
 }
 
 @end
