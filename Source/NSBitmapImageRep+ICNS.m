@@ -254,6 +254,16 @@ static int icns_import_family_data(int size, icns_byte_t *bytes,
     }
 
   el_size = NSSwapBigIntToHost(element->elementSize);
+  /* el_size comes straight from the file.  Reject a value that is smaller
+     than the header (el_size - ICNS_HEADER_SIZE would underflow below) or
+     larger than the data actually available from this element, otherwise
+     the memcpy below reads past the end of the input and/or writes past
+     the allocation. */
+  if (el_size < ICNS_HEADER_SIZE
+      || el_size > (unsigned long)(bytes + size - (icns_byte_t *)element))
+    {
+      return 1;
+    }
   family = malloc(el_size);
   if (!family)
     {
@@ -378,7 +388,7 @@ static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
               if (bv & 0x80)
                 {
                   // Compressed run
-                  icns_byte_t val = *b++;
+                  icns_byte_t val = (b < end) ? *b++ : 0;
 
                   runLen = bv - 125;
                   for (j = 0; (j < runLen) && (index < imageDataSize); j++)
@@ -391,9 +401,11 @@ static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
                 {
                   // Uncompressed run
                   int j;
-                  
+
                   runLen = bv + 1;
-                  for (j = 0; (j < runLen) && (index < imageDataSize); j++)
+                  for (j = 0;
+                       (j < runLen) && (index < imageDataSize) && (b < end);
+                       j++)
                     {
                       iconImage->imageData[index] = *b++;
                       index += samplesPerPixel;
@@ -428,7 +440,9 @@ static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
             return 1;
         }
 
-      for (j = 0; j < iconImage->imageHeight * iconImage->imageWidth; j++)
+      for (j = 0;
+           (j < iconImage->imageHeight * iconImage->imageWidth) && (b < end);
+           j++)
         {
           iconImage->imageData[samplesPerPixel * j + 3] = *b++;
         }
