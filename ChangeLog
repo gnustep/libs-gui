@@ -1,3 +1,13 @@
+2026-06-26 DTW-Thalion <todd.white@thalion.global>
+
+	* Source/NSBitmapImageRep+ICNS.m
+	(icns_get_image32_with_mask_from_family): Bound the 8-bit mask copy
+	and the RLE icon decode to the end of the element data.  The mask
+	loop copied imageHeight*imageWidth bytes, and the RLE run loops read
+	run bytes, without checking against the element end, so a truncated
+	icon or mask element caused a read past the heap allocation.
+	* Tests/gui/NSBitmapImageRep/icnsMaskBounds.m: New regression test.
+
 2026-05-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* configure
