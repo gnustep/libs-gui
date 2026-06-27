@@ -388,7 +388,7 @@ static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
               if (bv & 0x80)
                 {
                   // Compressed run
-                  icns_byte_t val = *b++;
+                  icns_byte_t val = (b < end) ? *b++ : 0;
 
                   runLen = bv - 125;
                   for (j = 0; (j < runLen) && (index < imageDataSize); j++)
@@ -401,9 +401,11 @@ static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
                 {
                   // Uncompressed run
                   int j;
-                  
+
                   runLen = bv + 1;
-                  for (j = 0; (j < runLen) && (index < imageDataSize); j++)
+                  for (j = 0;
+                       (j < runLen) && (index < imageDataSize) && (b < end);
+                       j++)
                     {
                       iconImage->imageData[index] = *b++;
                       index += samplesPerPixel;
@@ -438,7 +440,9 @@ static int icns_get_image32_with_mask_from_family(icns_family_t *iconFamily,
             return 1;
         }
 
-      for (j = 0; j < iconImage->imageHeight * iconImage->imageWidth; j++)
+      for (j = 0;
+           (j < iconImage->imageHeight * iconImage->imageWidth) && (b < end);
+           j++)
         {
           iconImage->imageData[samplesPerPixel * j + 3] = *b++;
         }
