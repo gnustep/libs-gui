@@ -1,5 +1,26 @@
 2026-06-27 DTW-Thalion <todd.white@thalion.global>
 
+	* Source/NSBitmapImageRep+PNG.m (-_initBitmapFromPNG:): Compute the
+	decoded-image buffer size (bytes_per_row * height) in size_t and reject
+	a header whose size arithmetic overflows, check the allocation for
+	NULL, and allocate the row-pointer array on the heap rather than as a
+	stack VLA sized by the untrusted image height.  A large image (libpng
+	permits dimensions up to 1000000) overflowed the int product,
+	undersizing the buffer, and png_read_image() then wrote the decoded
+	rows past it.
+	* Source/NSBitmapImageRep+JPEG.m (-_initBitmapFromJPEG:): Compute the
+	image buffer size (output_height * rowSize) in size_t and reject a
+	header whose 32-bit product overflows before allocating; a wrapped
+	size allocated successfully but far too small, and the per-scanline
+	copy then wrote past it.
+	* Tests/gui/NSBitmapImageRep/pngAllocationOverflow.m: New regression
+	test.
+	* Tests/gui/NSBitmapImageRep/jpegAllocationOverflow.m: New regression
+	guard (positive control; the overflow itself is proven with an
+	AddressSanitizer replica in the pull request).
+
+2026-06-27 DTW-Thalion <todd.white@thalion.global>
+
 	* Tests/gui/NSBitmapImageRep/icnsImportOverflow.m: Use a real 32x32
 	il32 icon (generated with libicns) as the positive control so it
 	decodes with both the system libicns library and the built-in GNUstep
