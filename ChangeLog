@@ -1,5 +1,10 @@
 2026-06-26 DTW-Thalion <todd.white@thalion.global>
 
+	* Source/NSBitmapImageRep+ICNS.m (-_initBitmapFromICNS:)
+	(+_imageRepsWithICNSData:): Stop the element walk when an element has
+	a size of zero.  Such an element never advanced the walk offset, so an
+	ICNS file that contained one made the reader loop forever.
+	* Tests/gui/NSBitmapImageRep/icnsZeroElement.m: New regression test.
 	* Source/NSBitmapImageRep+ICNS.m
 	(icns_get_image32_with_mask_from_family): Bound the 8-bit mask copy
 	and the RLE icon decode to the end of the element data.  The mask
