@@ -571,8 +571,13 @@ typedef struct pixel_t
       icns_element_t   element;
       
       memcpy(&element, (data + dataOffset), 8);
-      
-      // Temporarily limit to 48 until we can find a way to 
+
+      /* A zero element size never advances dataOffset, so stop rather
+         than loop forever on malformed data. */
+      if (element.elementSize == 0)
+        break;
+
+      // Temporarily limit to 48 until we can find a way to
       // utilize the other representations in the icns file.
       if (icns_types_equal(element.elementType, ICNS_48x48_32BIT_DATA) 
           || (icns_types_equal(typeStr, ICNS_NULL_TYPE) 
@@ -637,6 +642,12 @@ typedef struct pixel_t
       icns_image_t iconImage;
       
       memcpy(&element, (data + dataOffset), 8);
+
+      /* A zero element size never advances dataOffset, so stop rather
+         than loop forever on malformed data. */
+      if (element.elementSize == 0)
+        break;
+
       memcpy(&typeStr, &(element.elementType), 4);
 
       // extract the image...
