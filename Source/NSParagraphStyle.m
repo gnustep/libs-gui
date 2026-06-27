@@ -506,10 +506,27 @@ static NSParagraphStyle	*defaultStyle = nil;
       _tabStops = [[NSMutableArray alloc] initWithCapacity: count];
       if (count > 0)
         {
-          float locations[count];
-          NSTextTabType types[count];
+          float *locations;
+          NSTextTabType *types;
           NSUInteger i;
-          
+
+          /* count is read from the (untrusted) archive; allocate the scratch
+             arrays on the heap rather than as stack VLAs, which a large count
+             would overflow. */
+          locations = NSZoneMalloc(NSDefaultMallocZone(),
+                                   count * sizeof(float));
+          types = NSZoneMalloc(NSDefaultMallocZone(),
+                               count * sizeof(NSTextTabType));
+          if (locations == NULL || types == NULL)
+            {
+              if (locations != NULL)
+                NSZoneFree(NSDefaultMallocZone(), locations);
+              if (types != NULL)
+                NSZoneFree(NSDefaultMallocZone(), types);
+              [NSException raise: NSMallocException
+                          format: @"Unable to allocate tab stops"];
+            }
+
           [aCoder decodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
@@ -519,12 +536,14 @@ static NSParagraphStyle	*defaultStyle = nil;
           for (i = 0; i < count; i++)
             {
               NSTextTab	*tab;
-              
-              tab = [[NSTextTab alloc] initWithType: types[i] 
+
+              tab = [[NSTextTab alloc] initWithType: types[i]
                                        location: locations[i]];
               [_tabStops addObject: tab];
               RELEASE(tab);
             }
+          NSZoneFree(NSDefaultMallocZone(), locations);
+          NSZoneFree(NSDefaultMallocZone(), types);
         }
       
       if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 2)
