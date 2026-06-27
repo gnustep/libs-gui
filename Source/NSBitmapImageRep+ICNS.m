@@ -254,6 +254,16 @@ static int icns_import_family_data(int size, icns_byte_t *bytes,
     }
 
   el_size = NSSwapBigIntToHost(element->elementSize);
+  /* el_size comes straight from the file.  Reject a value that is smaller
+     than the header (el_size - ICNS_HEADER_SIZE would underflow below) or
+     larger than the data actually available from this element, otherwise
+     the memcpy below reads past the end of the input and/or writes past
+     the allocation. */
+  if (el_size < ICNS_HEADER_SIZE
+      || el_size > (unsigned long)(bytes + size - (icns_byte_t *)element))
+    {
+      return 1;
+    }
   family = malloc(el_size);
   if (!family)
     {

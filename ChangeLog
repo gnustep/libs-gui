@@ -1,3 +1,15 @@
+2026-06-26 DTW-Thalion <todd.white@thalion.global>
+
+	* Source/NSBitmapImageRep+ICNS.m (icns_import_family_data): Bounds
+	check the icns family resource size read from the file before using
+	it for malloc() and memcpy().  A value below ICNS_HEADER_SIZE made
+	el_size - ICNS_HEADER_SIZE underflow to a huge length, and a value
+	larger than the supplied data made the memcpy read past the end of
+	the input; either overran the heap when opening a crafted .icns
+	file.
+	* Tests/gui/NSBitmapImageRep/icnsImportOverflow.m: New regression
+	test for the above.
+
 2026-05-07 Fred Kiefer <FredKiefer@gmx.de>
 
 	* configure
