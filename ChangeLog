@@ -1,5 +1,16 @@
 2026-06-27 DTW-Thalion <todd.white@thalion.global>
 
+	* Source/NSBitmapImageRep+GIF.m (-_initBitmapFromGIF:): Reject a GIF
+	whose image references no colour map (neither a per-image nor a global
+	colour table) instead of dereferencing NULL, and clamp a pixel value
+	that indexes beyond the colour map (which may have fewer than 256
+	entries) before reading colorMap->Colors[], which otherwise read past
+	the colour-map allocation.
+	* Tests/gui/NSBitmapImageRep/gifColorMapBounds.m: New regression test
+	(compiled only when a GIF library is available).
+
+2026-06-27 DTW-Thalion <todd.white@thalion.global>
+
 	* Tests/gui/NSBitmapImageRep/icnsImportOverflow.m: Use a real 32x32
 	il32 icon (generated with libicns) as the positive control so it
 	decodes with both the system libicns library and the built-in GNUstep
