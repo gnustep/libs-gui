@@ -215,10 +215,23 @@ static const unsigned char truncatedMaskICNS[] = {
  *
  * truncatedMaskICNS: a 32x32 il32 icon filled with a solid colour
  * (R=90, G=140, B=200) followed by an l8mk mask element with no data.
+ *
+ * This over-read is in the built-in GNUstep ICNS reader, which is used only
+ * when libs-gui is built without the system libicns library.  A truncated
+ * mask is rejected outright by libicns, so the test below is compiled only
+ * when that library is absent.  libs-gui enables libicns exactly when its
+ * <icns.h> header is available at build time, so we use the same condition
+ * here (config.h, which defines HAVE_LIBICNS, is not installed for tests).
  */
+#if defined(__has_include)
+#  if __has_include(<icns.h>)
+#    define GS_TEST_SYSTEM_ICNS 1
+#  endif
+#endif
 int main()
 {
   NSAutoreleasePool *arp = [NSAutoreleasePool new];
+#if !defined(GS_TEST_SYSTEM_ICNS)
   NSData            *data;
   NSBitmapImageRep  *rep;
   const unsigned char *px;
@@ -234,6 +247,7 @@ int main()
     "the icon colour data is decoded correctly");
 
   [rep release];
+#endif
   [arp release];
   return 0;
 }
