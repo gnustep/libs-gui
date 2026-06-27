@@ -1,5 +1,13 @@
 2026-06-26 DTW-Thalion <todd.white@thalion.global>
 
+	* Source/NSBitmapImageRep+ICNS.m (icns_import_family_data): Bounds
+	check the icns family resource size read from the file before using
+	it for malloc() and memcpy().  A value below ICNS_HEADER_SIZE made
+	el_size - ICNS_HEADER_SIZE underflow to a huge length, and a value
+	larger than the supplied data made the memcpy read past the end of
+	the input; either overran the heap when opening a crafted .icns
+	file.
+	* Tests/gui/NSBitmapImageRep/icnsImportOverflow.m: New regression
 	* Source/NSBitmapImageRep.m (-_initFromTIFFImage:number:): Reject a
 	PHOTOMETRIC_PALETTE TIFF whose bitsPerSample is not 8.  NSTiffRead
 	expands a palette image to 24-bit RGB, writing three bytes per
