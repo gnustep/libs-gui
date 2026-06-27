@@ -8,6 +8,16 @@
 	the input; either overran the heap when opening a crafted .icns
 	file.
 	* Tests/gui/NSBitmapImageRep/icnsImportOverflow.m: New regression
+	* Source/NSBitmapImageRep.m (-_initFromTIFFImage:number:): Reject a
+	PHOTOMETRIC_PALETTE TIFF whose bitsPerSample is not 8.  NSTiffRead
+	expands a palette image to 24-bit RGB, writing three bytes per
+	pixel, while the bitmap was allocated using the file's smaller
+	bitsPerSample; a crafted 4-bit (or 1/2-bit) palette image therefore
+	overran the image buffer.
+	(-_initBitmapFromTIFF:): Honour the return value of
+	-_initFromTIFFImage:number: so a failed decode returns nil rather
+	than a deallocated instance.
+	* Tests/gui/NSBitmapImageRep/tiffPaletteOverflow.m: New regression
 	test for the above.
 
 2026-05-07 Fred Kiefer <FredKiefer@gmx.de>
