@@ -1,3 +1,18 @@
+2026-06-27 DTW-Thalion <todd.white@thalion.global>
+
+	* Tests/gui/NSBitmapImageRep/icnsImportOverflow.m: Use a real 32x32
+	il32 icon (generated with libicns) as the positive control so it
+	decodes with both the system libicns library and the built-in GNUstep
+	ICNS reader; the previous hand-built icon was rejected by libicns and
+	failed the test on a libicns build.
+	* Tests/gui/NSBitmapImageRep/icnsMaskBounds.m: Compile the
+	truncated-mask test only when the system libicns library is absent.  The
+	over-read it guards is in the built-in ICNS reader; libicns is unaffected
+	and rejects the truncated icon outright.  Detected with
+	__has_include(<icns.h>) (the condition libs-gui itself uses to enable
+	libicns), as config.h, which defines HAVE_LIBICNS, is not installed for
+	tests.
+
 2026-06-26 DTW-Thalion <todd.white@thalion.global>
 
 	* Source/NSBitmapImageRep+ICNS.m (-_initBitmapFromICNS:)
