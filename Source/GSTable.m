@@ -26,6 +26,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <limits.h>
 #import "GNUstepGUI/GSTable.h"
 
 @interface GSTable (Private)
@@ -826,6 +827,19 @@
       _numberOfRows = [aDecoder decodeIntForKey: @"GSNumberOfRows"];
       _numberOfColumns = [aDecoder decodeIntForKey: @"GSNumberOfColumns"];
 
+      /* The row/column counts come from the (untrusted) archive; reject
+         negative counts and a row*column product that overflows int before
+         using them to size the allocations below (a negative count made the
+         allocation size wrap and the unconditional origin writes dereferenced
+         the resulting NULL). */
+      if (_numberOfRows < 0 || _numberOfColumns < 0
+          || (long long)_numberOfRows * (long long)_numberOfColumns > INT_MAX)
+        {
+          [NSException raise: NSInvalidArgumentException
+            format: @"GSTable: invalid number of rows/columns (%d x %d)"
+                    @" decoded from archive", _numberOfRows, _numberOfColumns];
+        }
+
       // create the jails...
       _jails = NSZoneMalloc (NSDefaultMallocZone (), 
 			     sizeof (NSView *) 
@@ -879,7 +893,8 @@
       // Calculate column origins
       _columnXOrigin = NSZoneMalloc (NSDefaultMallocZone (), 
 				     sizeof (float) * _numberOfColumns);
-      _columnXOrigin[0] = _minXBorder;
+      if (_numberOfColumns > 0)
+        _columnXOrigin[0] = _minXBorder;
       for (i = 1; i < _numberOfColumns; i++)
 	_columnXOrigin[i] = _columnXOrigin[i - 1] + _columnDimension[i - 1];
       
@@ -907,7 +922,8 @@
       // Calculate row origins
       _rowYOrigin = NSZoneMalloc (NSDefaultMallocZone (), 
 				  sizeof (float) * _numberOfRows);
-      _rowYOrigin[0] = _minYBorder;
+      if (_numberOfRows > 0)
+        _rowYOrigin[0] = _minYBorder;
       for (i = 1; i < _numberOfRows; i++)
 	_rowYOrigin[i] = _rowYOrigin[i - 1] + _rowDimension[i - 1];
     }
@@ -915,6 +931,19 @@
     {
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
+
+      /* The row/column counts come from the (untrusted) archive; reject
+         negative counts and a row*column product that overflows int before
+         using them to size the allocations below (a negative count made the
+         allocation size wrap and the unconditional origin writes dereferenced
+         the resulting NULL). */
+      if (_numberOfRows < 0 || _numberOfColumns < 0
+          || (long long)_numberOfRows * (long long)_numberOfColumns > INT_MAX)
+        {
+          [NSException raise: NSInvalidArgumentException
+            format: @"GSTable: invalid number of rows/columns (%d x %d)"
+                    @" decoded from archive", _numberOfRows, _numberOfColumns];
+        }
       
       // 
       _jails = NSZoneMalloc (NSDefaultMallocZone (), 
@@ -964,7 +993,8 @@
       // Calculate column origins
       _columnXOrigin = NSZoneMalloc (NSDefaultMallocZone (), 
 				     sizeof (float) * _numberOfColumns);
-      _columnXOrigin[0] = _minXBorder;
+      if (_numberOfColumns > 0)
+        _columnXOrigin[0] = _minXBorder;
       for (i = 1; i < _numberOfColumns; i++)
 	_columnXOrigin[i] = _columnXOrigin[i - 1] + _columnDimension[i - 1];
       
@@ -989,7 +1019,8 @@
       // Calculate row origins
       _rowYOrigin = NSZoneMalloc (NSDefaultMallocZone (), 
 				  sizeof (float) * _numberOfRows);
-      _rowYOrigin[0] = _minYBorder;
+      if (_numberOfRows > 0)
+        _rowYOrigin[0] = _minYBorder;
       for (i = 1; i < _numberOfRows; i++)
 	_rowYOrigin[i] = _rowYOrigin[i - 1] + _rowDimension[i - 1];
     }
