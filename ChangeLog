@@ -7,6 +7,39 @@
 	unconditional origin writes; a negative count made the allocation size
 	wrap to NULL and the origin write then dereferenced it.
 	* Tests/gui/GSTable/gsTableCoderCounts.m: New regression test.
+	* Source/NSParagraphStyle.m (-[NSParagraphStyle initWithCoder:]):
+	Heap-allocate the tab-stop scratch arrays in the non-keyed decoding
+	path instead of using stack VLAs sized by the tab-stop count read from
+	the archive; a large count overflowed the stack before any element was
+	read.
+	* Tests/gui/NSParagraphStyle/paragraphStyleCoderTabStops.m: New
+	regression test.
+	* Source/NSBitmapImageRep+GIF.m (-_initBitmapFromGIF:): Reject a GIF
+	whose image references no colour map (neither a per-image nor a global
+	colour table) instead of dereferencing NULL, and clamp a pixel value
+	that indexes beyond the colour map (which may have fewer than 256
+	entries) before reading colorMap->Colors[], which otherwise read past
+	the colour-map allocation.
+	* Tests/gui/NSBitmapImageRep/gifColorMapBounds.m: New regression test
+	(compiled only when a GIF library is available).
+	* Source/NSBitmapImageRep+PNG.m (-_initBitmapFromPNG:): Compute the
+	decoded-image buffer size (bytes_per_row * height) in size_t and reject
+	a header whose size arithmetic overflows, check the allocation for
+	NULL, and allocate the row-pointer array on the heap rather than as a
+	stack VLA sized by the untrusted image height.  A large image (libpng
+	permits dimensions up to 1000000) overflowed the int product,
+	undersizing the buffer, and png_read_image() then wrote the decoded
+	rows past it.
+	* Source/NSBitmapImageRep+JPEG.m (-_initBitmapFromJPEG:): Compute the
+	image buffer size (output_height * rowSize) in size_t and reject a
+	header whose 32-bit product overflows before allocating; a wrapped
+	size allocated successfully but far too small, and the per-scanline
+	copy then wrote past it.
+	* Tests/gui/NSBitmapImageRep/pngAllocationOverflow.m: New regression
+	test.
+	* Tests/gui/NSBitmapImageRep/jpegAllocationOverflow.m: New regression
+	guard (positive control; the overflow itself is proven with an
+	AddressSanitizer replica in the pull request).
 
 2026-06-27 DTW-Thalion <todd.white@thalion.global>
 
