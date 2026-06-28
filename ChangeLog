@@ -1,5 +1,12 @@
 2026-06-27 DTW-Thalion <todd.white@thalion.global>
 
+	* Source/GSTable.m (-[GSTable initWithCoder:]): Validate the row and
+	column counts decoded from the archive (reject negative values and a
+	row*column product that overflows int) before using them to size the
+	allocations, in both the keyed and non-keyed paths, and guard the
+	unconditional origin writes; a negative count made the allocation size
+	wrap to NULL and the origin write then dereferenced it.
+	* Tests/gui/GSTable/gsTableCoderCounts.m: New regression test.
 	* Source/NSParagraphStyle.m (-[NSParagraphStyle initWithCoder:]):
 	Heap-allocate the tab-stop scratch arrays in the non-keyed decoding
 	path instead of using stack VLAs sized by the tab-stop count read from
