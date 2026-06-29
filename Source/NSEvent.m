@@ -26,8 +26,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -187,16 +187,21 @@ static Class eventClass;
   e->event_data.mouse.event_num = eventNum;
   e->event_data.mouse.click = clickNum;
   e->event_data.mouse.pressure = pressureValue;
+  e->event_data.mouse.button = 0;
+  e->event_data.mouse.deltaX = 0.0;
+  e->event_data.mouse.deltaY = 0.0;
+  e->event_data.mouse.deltaZ = 0.0;
+  e->event_data.mouse.magnification = 0.0;
 
   return e;
 }
 
-+ (NSEvent*) mouseEventWithType: (NSEventType)type        
++ (NSEvent*) mouseEventWithType: (NSEventType)type
                        location: (NSPoint)location
                   modifierFlags: (NSUInteger)flags
                       timestamp: (NSTimeInterval)time
                    windowNumber: (NSInteger)windowNum
-                        context: (NSGraphicsContext*)context        
+                        context: (NSGraphicsContext*)context
                     eventNumber: (NSInteger)eventNum
                      clickCount: (NSInteger)clickNum
                        pressure: (float)pressureValue
@@ -204,6 +209,7 @@ static Class eventClass;
                          deltaX: (CGFloat)deltaX
                          deltaY: (CGFloat)deltaY
                          deltaZ: (CGFloat)deltaZ
+                  magnification: (CGFloat)magnificationValue
 {
   NSEvent *e;
 
@@ -229,6 +235,7 @@ static Class eventClass;
   e->event_data.mouse.deltaX = deltaX;
   e->event_data.mouse.deltaY = deltaY;
   e->event_data.mouse.deltaZ = deltaZ;
+  e->event_data.mouse.magnification = magnificationValue;
 
   return e;
 }
@@ -339,7 +346,7 @@ static Class eventClass;
   {
     NSTimeInterval timeInterval;
     NSEvent        *periodicEvent;
-    
+
     timeInterval = [dateClass timeIntervalSinceReferenceDate];
     periodicEvent = [self otherEventWithType: NSPeriodic
                           location: NSZeroPoint
@@ -350,7 +357,7 @@ static Class eventClass;
                           subtype: 0
                           data1: 0
                           data2: 0];
-    
+
     [NSApp postEvent: periodicEvent atStart: NO];
   }
 
@@ -518,7 +525,7 @@ static Class eventClass;
    Returns the movement of the mouse on the X axis.
    </p>
    <p>
-   This method is only valid for NSMouseMoved, NS*MouseDragged and 
+   This method is only valid for NSMouseMoved, NS*MouseDragged and
    NSScrollWheel events, otherwise it will return 0.
    </p>
  */
@@ -536,7 +543,7 @@ static Class eventClass;
    Returns the movement of the mouse on the Y axis.
    </p>
    <p>
-   This method is only valid for NSMouseMoved, NS*MouseDragged and 
+   This method is only valid for NSMouseMoved, NS*MouseDragged and
    NSScrollWheel events, otherwise it will return 0.
    </p>
  */
@@ -554,7 +561,7 @@ static Class eventClass;
    Returns the movement of the mouse on the Z axis.
    </p>
    <p>
-   This method is only valid for NSMouseMoved, NS*MouseDragged and 
+   This method is only valid for NSMouseMoved, NS*MouseDragged and
    NSScrollWheel events, otherwise it will return 0.
    </p>
    <p>
@@ -568,6 +575,15 @@ static Class eventClass;
       return 0.0;
     }
   return event_data.mouse.deltaZ;
+}
+
+- (CGFloat) magnification
+{
+  if (!(NSEventMaskFromType(event_type) & GSMouseMovedEventMask))
+    {
+      return 0.0;
+    }
+  return event_data.mouse.magnification;
 }
 
 - (NSString*) description
@@ -670,14 +686,15 @@ static const char *eventTypes[] = {
           @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %lu,"
           @" time = %f, window = %ld, dpsContext = %p,"
           @" event number = %ld, click = %ld, pressure = %f"
-          @" button = %ld, deltaX = %f, deltaY = %f, deltaZ = %f",
+          @" button = %ld, deltaX = %f, deltaY = %f, deltaZ = %f, magnification = %f",
           eventTypes[event_type], location_point.x, location_point.y,
           (unsigned long) modifier_flags, event_time, (long) window_num, event_context,
           (long ) event_data.mouse.event_num, (long) event_data.mouse.click,
           event_data.mouse.pressure, (long) event_data.mouse.button,
           event_data.mouse.deltaX,
           event_data.mouse.deltaY,
-          event_data.mouse.deltaZ];
+          event_data.mouse.deltaZ,
+          event_data.mouse.magnification];
         break;
 
       // FIXME: Tablet events
@@ -710,7 +727,7 @@ static const char *eventTypes[] = {
       [aCoder encodeValueOfObjCType: @encode(NSUInteger) at: &modifier_flags];
       [aCoder encodeValueOfObjCType: @encode(NSTimeInterval) at: &event_time];
       [aCoder encodeValueOfObjCType: @encode(NSInteger) at: &window_num];
-      
+
       switch (event_type)
         {
         case NSLeftMouseDown:
@@ -724,10 +741,11 @@ static const char *eventTypes[] = {
         case NSLeftMouseDragged:
         case NSOtherMouseDragged:
         case NSRightMouseDragged:
-          [aCoder encodeValuesOfObjCTypes: "iififff", &event_data.mouse.event_num,
+          [aCoder encodeValuesOfObjCTypes: "iififfff", &event_data.mouse.event_num,
                   &event_data.mouse.click, &event_data.mouse.pressure,
                   &event_data.mouse.button, &event_data.mouse.deltaX,
-                  &event_data.mouse.deltaY, &event_data.mouse.deltaZ];
+                  &event_data.mouse.deltaY, &event_data.mouse.deltaZ,
+                  &event_data.mouse.magnification];
           break;
 
         case NSMouseEntered:
@@ -737,7 +755,7 @@ static const char *eventTypes[] = {
           [aCoder encodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
                   &event_data.tracking.tracking_num];
           break;
-          
+
         case NSKeyDown:
         case NSKeyUp:
         case NSFlagsChanged:
@@ -747,7 +765,7 @@ static const char *eventTypes[] = {
           [aCoder encodeObject: event_data.key.unmodified_keys];
           [aCoder encodeValueOfObjCType: "S" at: &event_data.key.key_code];
           break;
-          
+
         case NSPeriodic:
         case NSAppKitDefined:
         case NSSystemDefined:
@@ -755,7 +773,7 @@ static const char *eventTypes[] = {
           [aCoder encodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
                   &event_data.misc.data1, &event_data.misc.data2];
           break;
-          
+
         case NSTabletPoint:
         case NSTabletProximity:
           // FIXME: Tablet events
@@ -774,7 +792,7 @@ static const char *eventTypes[] = {
 - (NSInteger) eventNumber
 {
   /* Make sure it is one of the right event types */
-  if (!(NSEventMaskFromType(event_type) & GSMouseEventMask) && 
+  if (!(NSEventMaskFromType(event_type) & GSMouseEventMask) &&
       !(NSEventMaskFromType(event_type) & GSEnterExitEventMask))
     [NSException raise: NSInternalInconsistencyException
                 format: @"eventNumber requested for non-tracking event"];
@@ -794,13 +812,13 @@ static const char *eventTypes[] = {
   else
     {
       int version = [aDecoder versionForClassName: @"NSEvent"];
-      
+
       [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &event_type];
       location_point = [aDecoder decodePoint];
       [aDecoder decodeValueOfObjCType: @encode(NSUInteger) at: &modifier_flags];
       [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval) at: &event_time];
       [aDecoder decodeValueOfObjCType: @encode(NSInteger) at: &window_num];
-      
+
       if (version == 1)
         {
           // For the unlikely case that old events have been stored, convert them.
@@ -828,7 +846,7 @@ static const char *eventTypes[] = {
             case 19: event_type = NSCursorUpdate; break;
             case 20: event_type = NSScrollWheel; break;
             default: break;
-            }  
+            }
     }
 
       // Previously flag change events where encoded wrongly
@@ -838,7 +856,7 @@ static const char *eventTypes[] = {
                     &event_data.misc.data1, &event_data.misc.data2];
           return self;
         }
-      
+
       // Decode the event date based upon the event type
       switch (event_type)
         {
@@ -853,13 +871,13 @@ static const char *eventTypes[] = {
         case NSLeftMouseDragged:
         case NSOtherMouseDragged:
         case NSRightMouseDragged:
-          [aDecoder decodeValuesOfObjCTypes: "iififff",
+          [aDecoder decodeValuesOfObjCTypes: "iififfff",
                     &event_data.mouse.event_num, &event_data.mouse.click,
                     &event_data.mouse.pressure, &event_data.mouse.button,
                     &event_data.mouse.deltaX, &event_data.mouse.deltaY,
-                    &event_data.mouse.deltaZ];
+                    &event_data.mouse.deltaZ, &event_data.mouse.magnification];
           break;
-          
+
         case NSMouseEntered:
         case NSMouseExited:
         case NSCursorUpdate:
@@ -867,7 +885,7 @@ static const char *eventTypes[] = {
           [aDecoder decodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
                     &event_data.tracking.tracking_num];
           break;
-          
+
         case NSKeyDown:
         case NSKeyUp:
         case NSFlagsChanged:
@@ -877,7 +895,7 @@ static const char *eventTypes[] = {
           event_data.key.unmodified_keys = [aDecoder decodeObject];
           [aDecoder decodeValueOfObjCType: "S" at: &event_data.key.key_code];
           break;
-          
+
         case NSPeriodic:
         case NSAppKitDefined:
         case NSSystemDefined:
@@ -968,7 +986,7 @@ static const char *eventTypes[] = {
  */
 - (short) subtype
 {
-  if (!(NSEventMaskFromType(event_type) & GSOtherEventMask) && 
+  if (!(NSEventMaskFromType(event_type) & GSOtherEventMask) &&
       !(NSEventMaskFromType(event_type) & GSMouseEventMask))
     {
       [NSException raise: NSInternalInconsistencyException
