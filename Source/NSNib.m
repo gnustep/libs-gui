@@ -79,6 +79,14 @@
       NSString *newFileName = [GSModelLoaderFactory supportedModelFileAtPath: fileName];
       ASSIGN(_loader, [GSModelLoaderFactory modelLoaderForFileType: [newFileName pathExtension]]);
       ASSIGN(_nibData, [_loader dataForFile: newFileName]);
+      if (_nibData != nil)
+        {
+          GSModelLoader *dataLoader = [GSModelLoaderFactory modelLoaderForData: _nibData];
+          if (dataLoader != nil)
+            {
+              ASSIGN(_loader, dataLoader);
+            }
+        }
       NSDebugLog(@"Loaded data from %@...", newFileName);
     }
   NS_HANDLER
@@ -113,6 +121,14 @@
                                                       [[nibFileURL path] pathExtension]]);
               // load the nib data into memory...
               ASSIGN(_nibData, [NSData dataWithContentsOfURL: nibFileURL]);
+              if (_nibData != nil)
+                {
+                  GSModelLoader *dataLoader = [GSModelLoaderFactory modelLoaderForData: _nibData];
+                  if (dataLoader != nil)
+                    {
+                      ASSIGN(_loader, dataLoader);
+                    }
+                }
             }
           NS_HANDLER
             {
