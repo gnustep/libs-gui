@@ -1,6 +1,7 @@
 /*
    GSNibArchiveKeyedUnarchiver.m
 
+   Author: Gregory Casamento <greg.casamento@gmail.com>
    Copyright (C) 2026 Free Software Foundation, Inc.
 
    This file is part of the GNUstep GUI Library.
@@ -9,6 +10,17 @@
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; see the file COPYING.LIB.
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  
 */
 
 #import "config.h"
@@ -56,10 +68,10 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 
       value |= ((NSInteger)(b & 0x7f)) << shift;
       if ((b & 0x80) != 0)
-        {
-          *result = value;
-          return YES;
-        }
+	{
+	  *result = value;
+	  return YES;
+	}
       shift += 7;
     }
 
@@ -285,14 +297,14 @@ enum
       GSNibArchiveObject *object;
 
       if (!GSReadVarInt(_bytes, _length, &offset, &classNameIndex)
-        || !GSReadVarInt(_bytes, _length, &offset, &valuesIndex)
-        || !GSReadVarInt(_bytes, _length, &offset, &count)
-        || classNameIndex < 0 || valuesIndex < 0 || count < 0
-        || (NSUInteger)classNameIndex >= classNameCount
-        || (NSUInteger)valuesIndex + (NSUInteger)count > valueCount)
-        {
-          return NO;
-        }
+	|| !GSReadVarInt(_bytes, _length, &offset, &valuesIndex)
+	|| !GSReadVarInt(_bytes, _length, &offset, &count)
+	|| classNameIndex < 0 || valuesIndex < 0 || count < 0
+	|| (NSUInteger)classNameIndex >= classNameCount
+	|| (NSUInteger)valuesIndex + (NSUInteger)count > valueCount)
+	{
+	  return NO;
+	}
 
       object = [[GSNibArchiveObject alloc] init];
       object->classNameIndex = classNameIndex;
@@ -312,17 +324,17 @@ enum
       NSString *key;
 
       if (!GSReadVarInt(_bytes, _length, &offset, &stringLength)
-        || stringLength < 0 || offset + (NSUInteger)stringLength > _length)
-        {
-          return NO;
-        }
+	|| stringLength < 0 || offset + (NSUInteger)stringLength > _length)
+	{
+	  return NO;
+	}
       key = [[NSString alloc] initWithBytes: _bytes + offset
-                                     length: stringLength
-                                   encoding: NSUTF8StringEncoding];
+				     length: stringLength
+				   encoding: NSUTF8StringEncoding];
       if (key == nil)
-        {
-          return NO;
-        }
+	{
+	  return NO;
+	}
       [_keys addObject: key];
       RELEASE(key);
       offset += stringLength;
@@ -338,96 +350,96 @@ enum
       GSNibArchiveValue *value;
 
       if (!GSReadVarInt(_bytes, _length, &offset, &keyIndex)
-        || keyIndex < 0 || (NSUInteger)keyIndex >= keyCount
-        || offset >= _length)
-        {
-          return NO;
-        }
+	|| keyIndex < 0 || (NSUInteger)keyIndex >= keyCount
+	|| offset >= _length)
+	{
+	  return NO;
+	}
 
       value = [[GSNibArchiveValue alloc] init];
       value->keyIndex = keyIndex;
       value->type = _bytes[offset++];
 
       switch (value->type)
-        {
-          case GSNibArchiveTypeInt8:
-            if (offset + 1 > _length) return NO;
-            value->object = RETAIN([NSNumber numberWithChar: (int8_t)_bytes[offset]]);
-            offset += 1;
-            break;
-          case GSNibArchiveTypeInt16:
-            if (offset + 2 > _length) return NO;
-            value->object = RETAIN([NSNumber numberWithShort:
-              (int16_t)(_bytes[offset] | (_bytes[offset + 1] << 8))]);
-            offset += 2;
-            break;
-          case GSNibArchiveTypeInt32:
-            if (offset + 4 > _length) return NO;
-            value->object = RETAIN([NSNumber numberWithInt:
-              (int32_t)GSReadLE32(_bytes + offset)]);
-            offset += 4;
-            break;
-          case GSNibArchiveTypeInt64:
-            if (offset + 8 > _length) return NO;
-            value->object = RETAIN([NSNumber numberWithLongLong:
-              (int64_t)GSReadLE64(_bytes + offset)]);
-            offset += 8;
-            break;
-          case GSNibArchiveTypeBoolFalse:
-            value->object = RETAIN([NSNumber numberWithBool: NO]);
-            break;
-          case GSNibArchiveTypeBoolTrue:
-            value->object = RETAIN([NSNumber numberWithBool: YES]);
-            break;
-          case GSNibArchiveTypeFloat:
-            {
-              uint32_t bits;
-              float f;
-              if (offset + 4 > _length) return NO;
-              bits = GSReadLE32(_bytes + offset);
-              memcpy(&f, &bits, sizeof(f));
-              value->object = RETAIN([NSNumber numberWithFloat: f]);
-              offset += 4;
-            }
-            break;
-          case GSNibArchiveTypeDouble:
-            {
-              uint64_t bits;
-              double d;
-              if (offset + 8 > _length) return NO;
-              bits = GSReadLE64(_bytes + offset);
-              memcpy(&d, &bits, sizeof(d));
-              value->object = RETAIN([NSNumber numberWithDouble: d]);
-              offset += 8;
-            }
-            break;
-          case GSNibArchiveTypeData:
-            {
-              NSInteger dataLength;
-              if (!GSReadVarInt(_bytes, _length, &offset, &dataLength)
-                || dataLength < 0 || offset + (NSUInteger)dataLength > _length)
-                {
-                  return NO;
-                }
-              value->object = [[NSData alloc] initWithBytes: _bytes + offset
-                                                     length: dataLength];
-              offset += dataLength;
-            }
-            break;
-          case GSNibArchiveTypeNil:
-            break;
-          case GSNibArchiveTypeObjectRef:
-            if (offset + 4 > _length) return NO;
-            value->reference = GSReadLE32(_bytes + offset);
-            if (value->reference >= objectCount)
-              {
-                return NO;
-              }
-            offset += 4;
-            break;
-          default:
-            return NO;
-        }
+	{
+	  case GSNibArchiveTypeInt8:
+	    if (offset + 1 > _length) return NO;
+	    value->object = RETAIN([NSNumber numberWithChar: (int8_t)_bytes[offset]]);
+	    offset += 1;
+	    break;
+	  case GSNibArchiveTypeInt16:
+	    if (offset + 2 > _length) return NO;
+	    value->object = RETAIN([NSNumber numberWithShort:
+	      (int16_t)(_bytes[offset] | (_bytes[offset + 1] << 8))]);
+	    offset += 2;
+	    break;
+	  case GSNibArchiveTypeInt32:
+	    if (offset + 4 > _length) return NO;
+	    value->object = RETAIN([NSNumber numberWithInt:
+	      (int32_t)GSReadLE32(_bytes + offset)]);
+	    offset += 4;
+	    break;
+	  case GSNibArchiveTypeInt64:
+	    if (offset + 8 > _length) return NO;
+	    value->object = RETAIN([NSNumber numberWithLongLong:
+	      (int64_t)GSReadLE64(_bytes + offset)]);
+	    offset += 8;
+	    break;
+	  case GSNibArchiveTypeBoolFalse:
+	    value->object = RETAIN([NSNumber numberWithBool: NO]);
+	    break;
+	  case GSNibArchiveTypeBoolTrue:
+	    value->object = RETAIN([NSNumber numberWithBool: YES]);
+	    break;
+	  case GSNibArchiveTypeFloat:
+	    {
+	      uint32_t bits;
+	      float f;
+	      if (offset + 4 > _length) return NO;
+	      bits = GSReadLE32(_bytes + offset);
+	      memcpy(&f, &bits, sizeof(f));
+	      value->object = RETAIN([NSNumber numberWithFloat: f]);
+	      offset += 4;
+	    }
+	    break;
+	  case GSNibArchiveTypeDouble:
+	    {
+	      uint64_t bits;
+	      double d;
+	      if (offset + 8 > _length) return NO;
+	      bits = GSReadLE64(_bytes + offset);
+	      memcpy(&d, &bits, sizeof(d));
+	      value->object = RETAIN([NSNumber numberWithDouble: d]);
+	      offset += 8;
+	    }
+	    break;
+	  case GSNibArchiveTypeData:
+	    {
+	      NSInteger dataLength;
+	      if (!GSReadVarInt(_bytes, _length, &offset, &dataLength)
+		|| dataLength < 0 || offset + (NSUInteger)dataLength > _length)
+		{
+		  return NO;
+		}
+	      value->object = [[NSData alloc] initWithBytes: _bytes + offset
+						     length: dataLength];
+	      offset += dataLength;
+	    }
+	    break;
+	  case GSNibArchiveTypeNil:
+	    break;
+	  case GSNibArchiveTypeObjectRef:
+	    if (offset + 4 > _length) return NO;
+	    value->reference = GSReadLE32(_bytes + offset);
+	    if (value->reference >= objectCount)
+	      {
+		return NO;
+	      }
+	    offset += 4;
+	    break;
+	  default:
+	    return NO;
+	}
 
       [_values addObject: value];
       RELEASE(value);
@@ -445,45 +457,45 @@ enum
       GSNibArchiveClassName *className;
 
       if (!GSReadVarInt(_bytes, _length, &offset, &stringLength)
-        || !GSReadVarInt(_bytes, _length, &offset, &fallbackCount)
-        || stringLength <= 0 || fallbackCount < 0)
-        {
-          return NO;
-        }
+	|| !GSReadVarInt(_bytes, _length, &offset, &fallbackCount)
+	|| stringLength <= 0 || fallbackCount < 0)
+	{
+	  return NO;
+	}
 
       fallbacks = [NSMutableArray arrayWithCapacity: fallbackCount];
       while (fallbackCount-- > 0)
-        {
-          int32_t fallbackIndex;
+	{
+	  int32_t fallbackIndex;
 
-          if (offset + 4 > _length)
-            {
-              return NO;
-            }
-          fallbackIndex = (int32_t)GSReadLE32(_bytes + offset);
-          if (fallbackIndex < 0 || (NSUInteger)fallbackIndex >= classNameCount)
-            {
-              return NO;
-            }
-          [fallbacks addObject: [NSNumber numberWithInt: fallbackIndex]];
-          offset += 4;
-        }
+	  if (offset + 4 > _length)
+	    {
+	      return NO;
+	    }
+	  fallbackIndex = (int32_t)GSReadLE32(_bytes + offset);
+	  if (fallbackIndex < 0 || (NSUInteger)fallbackIndex >= classNameCount)
+	    {
+	      return NO;
+	    }
+	  [fallbacks addObject: [NSNumber numberWithInt: fallbackIndex]];
+	  offset += 4;
+	}
 
       if (offset + (NSUInteger)stringLength > _length
-        || _bytes[offset + (NSUInteger)stringLength - 1] != '\0')
-        {
-          return NO;
-        }
+	|| _bytes[offset + (NSUInteger)stringLength - 1] != '\0')
+	{
+	  return NO;
+	}
 
       className = [[GSNibArchiveClassName alloc] init];
       className->name = [[NSString alloc] initWithBytes: _bytes + offset
-                                                 length: stringLength - 1
-                                               encoding: NSUTF8StringEncoding];
+						 length: stringLength - 1
+					       encoding: NSUTF8StringEncoding];
       if (className->name == nil)
-        {
-          RELEASE(className);
-          return NO;
-        }
+	{
+	  RELEASE(className);
+	  return NO;
+	}
       className->fallbackClassIndexes = RETAIN(fallbacks);
       [_classNames addObject: className];
       RELEASE(className);
@@ -521,9 +533,9 @@ enum
     {
       GSNibArchiveValue *value = [_values objectAtIndex: i];
       if ([[self _keyForValue: value] isEqual: key])
-        {
-          return value;
-        }
+	{
+	  return value;
+	}
     }
 
   return nil;
@@ -568,17 +580,17 @@ enum
       NSNumber *fallbackIndex;
 
       while ((fallbackIndex = [enumerator nextObject]) != nil && class == Nil)
-        {
-          GSNibArchiveClassName *fallback =
-            [_classNames objectAtIndex: [fallbackIndex unsignedIntegerValue]];
-          class = [self _classForArchiveClassName: fallback];
-        }
+	{
+	  GSNibArchiveClassName *fallback =
+	    [_classNames objectAtIndex: [fallbackIndex unsignedIntegerValue]];
+	  class = [self _classForArchiveClassName: fallback];
+	}
     }
   if (class == Nil && _na_delegate != nil)
     {
       class = [_na_delegate unarchiver: self
        cannotDecodeObjectOfClassName: archiveClass->name
-                      originalClasses: nil];
+		      originalClasses: nil];
     }
 
   return class;
@@ -604,9 +616,9 @@ enum
   if (class == Nil)
     {
       [NSException raise: NSInvalidUnarchiveOperationException
-                  format: @"[%@ -%@]: no class for name '%@'",
-        NSStringFromClass([self class]), NSStringFromSelector(_cmd),
-        archiveClass->name];
+		  format: @"[%@ -%@]: no class for name '%@'",
+	NSStringFromClass([self class]), NSStringFromSelector(_cmd),
+	archiveClass->name];
     }
 
   object = [class allocWithZone: _objectZone];
@@ -622,9 +634,11 @@ enum
   if (result != object)
     {
       [_na_delegate unarchiver: self
-          willReplaceObject: object
-                 withObject: result];
+	     willReplaceObject: object
+		    withObject: result];
+
       [_decodedObjects setObject: result forKey: key];
+
       RELEASE(object);
       object = RETAIN(result);
     }
@@ -633,9 +647,11 @@ enum
   if (result != object)
     {
       [_na_delegate unarchiver: self
-          willReplaceObject: object
-                 withObject: result];
+	     willReplaceObject: object
+		    withObject: result];
+
       [_decodedObjects setObject: result forKey: key];
+
       RELEASE(object);
       object = RETAIN(result);
     }
@@ -644,14 +660,16 @@ enum
     {
       result = [_na_delegate unarchiver: self didDecodeObject: object];
       if (result != object)
-        {
-          [_na_delegate unarchiver: self
-              willReplaceObject: object
-                     withObject: result];
-          [_decodedObjects setObject: result forKey: key];
-          RELEASE(object);
-          object = RETAIN(result);
-        }
+	{
+	  [_na_delegate unarchiver: self
+		 willReplaceObject: object
+			withObject: result];
+
+	  [_decodedObjects setObject: result forKey: key];
+
+	  RELEASE(object);
+	  object = RETAIN(result);
+	}
     }
 
   RELEASE(object);
@@ -668,7 +686,7 @@ enum
     }
 
   [NSException raise: NSInvalidUnarchiveOperationException
-              format: @"[%@ -%@]: value for key(%@) is '%@'",
+	      format: @"[%@ -%@]: value for key(%@) is '%@'",
     NSStringFromClass([self class]), NSStringFromSelector(_cmd),
     [self _keyForValue: value], object];
   return nil;
@@ -760,16 +778,16 @@ enum
 }
 
 - (const uint8_t *) decodeBytesForKey: (NSString *)key
-                       returnedLength: (NSUInteger *)length
+		       returnedLength: (NSUInteger *)length
 {
   GSNibArchiveValue *value = [self _valueForKey: key];
 
   if (value != nil && value->type == GSNibArchiveTypeData)
     {
       if (length != NULL)
-        {
-          *length = [value->object length];
-        }
+	{
+	  *length = [value->object length];
+	}
       return [value->object bytes];
     }
 
@@ -797,56 +815,56 @@ enum
     {
       case _C_ID:
       case _C_CLASS:
-        *(id *)address = RETAIN(object);
-        return;
+	*(id *)address = RETAIN(object);
+	return;
       case _C_SEL:
-        *(SEL *)address = NSSelectorFromString(object);
-        return;
+	*(SEL *)address = NSSelectorFromString(object);
+	return;
       case _C_CHR:
-        *(char *)address = [object charValue];
-        return;
+	*(char *)address = [object charValue];
+	return;
       case _C_UCHR:
-        *(unsigned char *)address = [object unsignedCharValue];
-        return;
+	*(unsigned char *)address = [object unsignedCharValue];
+	return;
       case _C_SHT:
-        *(short *)address = [object shortValue];
-        return;
+	*(short *)address = [object shortValue];
+	return;
       case _C_USHT:
-        *(unsigned short *)address = [object unsignedShortValue];
-        return;
+	*(unsigned short *)address = [object unsignedShortValue];
+	return;
       case _C_INT:
-        *(int *)address = [object intValue];
-        return;
+	*(int *)address = [object intValue];
+	return;
       case _C_UINT:
-        *(unsigned int *)address = [object unsignedIntValue];
-        return;
+	*(unsigned int *)address = [object unsignedIntValue];
+	return;
       case _C_LNG:
-        *(long *)address = [object longValue];
-        return;
+	*(long *)address = [object longValue];
+	return;
       case _C_ULNG:
-        *(unsigned long *)address = [object unsignedLongValue];
-        return;
+	*(unsigned long *)address = [object unsignedLongValue];
+	return;
       case _C_LNG_LNG:
-        *(long long *)address = [object longLongValue];
-        return;
+	*(long long *)address = [object longLongValue];
+	return;
       case _C_ULNG_LNG:
-        *(unsigned long long *)address = [object unsignedLongLongValue];
-        return;
+	*(unsigned long long *)address = [object unsignedLongLongValue];
+	return;
       case _C_FLT:
-        *(float *)address = [object floatValue];
-        return;
+	*(float *)address = [object floatValue];
+	return;
       case _C_DBL:
-        *(double *)address = [object doubleValue];
-        return;
+	*(double *)address = [object doubleValue];
+	return;
 #if defined(_C_BOOL) && (!defined(__GNUC__) || __GNUC__ > 2)
       case _C_BOOL:
-        *(_Bool *)address = (_Bool)[object boolValue];
-        return;
+	*(_Bool *)address = (_Bool)[object boolValue];
+	return;
 #endif
       default:
-        [NSException raise: NSInvalidArgumentException
-                    format: @"-[%@ %@]: unsupported type encoding ('%c')",
-          NSStringFromClass([self class]), NSStringFromSelector(_cmd), *type];
+	[NSException raise: NSInvalidArgumentException
+		    format: @"-[%@ %@]: unsupported type encoding ('%c')",
+	  NSStringFromClass([self class]), NSStringFromSelector(_cmd), *type];
     }
 }
 
