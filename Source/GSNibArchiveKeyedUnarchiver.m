@@ -145,6 +145,10 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 - (GSNibArchiveValue *) _valueForKey: (NSString *)key;
 - (id) _objectForValue: (GSNibArchiveValue *)value;
 - (NSNumber *) _numberForValue: (GSNibArchiveValue *)value;
+- (void) _recordCustomClasses;
+- (GSNibArchiveClassName *) _fallbackArchiveClassNameForClassName:
+  (GSNibArchiveClassName *)archiveClass;
+- (NSString *) _substituteClassForClassName: (NSString *)className;
 @end
 
 @implementation GSNibArchiveKeyedUnarchiver
@@ -176,6 +180,7 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
   _classNames = [[NSMutableArray alloc] init];
   _decodedObjects = [[NSMutableDictionary alloc] init];
   _classNameMap = [[NSMutableDictionary alloc] init];
+  _customClasses = [[NSMutableDictionary alloc] init];
   _objectStack = [[NSMutableArray alloc] init];
   _cursorStack = [[NSMutableArray alloc] init];
 
@@ -184,6 +189,7 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
       DESTROY(self);
       return nil;
     }
+  [self _recordCustomClasses];
 
   return self;
 }
@@ -197,6 +203,7 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
   DESTROY(_classNames);
   DESTROY(_decodedObjects);
   DESTROY(_classNameMap);
+  DESTROY(_customClasses);
   DESTROY(_objectStack);
   DESTROY(_cursorStack);
   [super dealloc];
@@ -251,6 +258,33 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
   else
     {
       [_classNameMap setObject: aClass forKey: className];
+    }
+}
+
+- (NSDictionary *) customClasses
+{
+  return _customClasses;
+}
+
+- (void) _recordCustomClasses
+{
+  NSEnumerator *enumerator = [_classNames objectEnumerator];
+  GSNibArchiveClassName *archiveClass;
+
+  while ((archiveClass = [enumerator nextObject]) != nil)
+    {
+      GSNibArchiveClassName *fallbackClass;
+
+      fallbackClass = [self _fallbackArchiveClassNameForClassName:
+	archiveClass];
+      if (fallbackClass != nil)
+	{
+	  NSDictionary *dict;
+
+	  dict = [NSDictionary dictionaryWithObject: fallbackClass->name
+					     forKey: @"parentClassName"];
+	  [_customClasses setObject: dict forKey: archiveClass->name];
+	}
     }
 }
 
@@ -561,17 +595,62 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
   return [_values objectAtIndex: object->valuesIndex + cursor];
 }
 
+- (GSNibArchiveClassName *) _fallbackArchiveClassNameForClassName:
+  (GSNibArchiveClassName *)archiveClass
+{
+  NSEnumerator *enumerator;
+  NSNumber *fallbackIndex;
+
+  enumerator = [archiveClass->fallbackClassIndexes objectEnumerator];
+  while ((fallbackIndex = [enumerator nextObject]) != nil)
+    {
+      GSNibArchiveClassName *fallback;
+
+      fallback = [_classNames objectAtIndex:
+	[fallbackIndex unsignedIntegerValue]];
+      if (NSClassFromString(fallback->name) != Nil
+	|| [[self class] classForClassName: fallback->name] != Nil
+	|| [self classForClassName: fallback->name] != Nil)
+	{
+	  return fallback;
+	}
+    }
+
+  return nil;
+}
+
+- (NSString *) _substituteClassForClassName: (NSString *)className
+{
+  NSString *result = className;
+  NSDictionary *dict = [_customClasses objectForKey: className];
+
+  if (dict != nil)
+    {
+      result = [dict objectForKey: @"parentClassName"];
+    }
+
+  return result;
+}
+
 - (Class) _classForArchiveClassName: (GSNibArchiveClassName *)archiveClass
 {
-  Class class = [self classForClassName: archiveClass->name];
+  NSString *className = archiveClass->name;
+  Class class;
+
+  if ([NSClassSwapper isInInterfaceBuilder] == YES)
+    {
+      className = [self _substituteClassForClassName: className];
+    }
+
+  class = [self classForClassName: className];
 
   if (class == Nil)
     {
-      class = [[self class] classForClassName: archiveClass->name];
+      class = [[self class] classForClassName: className];
     }
   if (class == Nil)
     {
-      class = NSClassFromString(archiveClass->name);
+      class = NSClassFromString(className);
     }
   if (class == Nil)
     {
@@ -588,7 +667,7 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
   if (class == Nil && _na_delegate != nil)
     {
       class = [_na_delegate unarchiver: self
-       cannotDecodeObjectOfClassName: archiveClass->name
+       cannotDecodeObjectOfClassName: className
 		      originalClasses: nil];
     }
 

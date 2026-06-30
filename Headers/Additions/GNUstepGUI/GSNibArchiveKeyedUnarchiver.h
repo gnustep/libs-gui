@@ -30,6 +30,7 @@
 #import <Foundation/NSKeyedArchiver.h>
 
 @class NSData;
+@class NSDictionary;
 
 APPKIT_EXPORT_CLASS
 @interface GSNibArchiveKeyedUnarchiver : NSKeyedUnarchiver
@@ -43,6 +44,7 @@ APPKIT_EXPORT_CLASS
   NSMutableArray *_classNames;
   NSMutableDictionary *_decodedObjects;
   NSMutableDictionary *_classNameMap;
+  NSMutableDictionary *_customClasses;
   NSMutableArray *_objectStack;
   NSMutableArray *_cursorStack;
   id _na_delegate;
@@ -53,6 +55,7 @@ APPKIT_EXPORT_CLASS
 - (id) initForReadingWithData: (NSData *)data;
 - (id) _decodeArrayOfObjectsForKey: (NSString *)key;
 - (id) _decodePropertyListForKey: (NSString *)key;
+- (NSDictionary *) customClasses;
 @end
 
 #endif
