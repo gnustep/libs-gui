@@ -38,6 +38,20 @@
 #define NIBARCHIVE_MAGIC "NIBArchive"
 #define NIBARCHIVE_MAGIC_LENGTH 10
 
+enum
+{
+  GSNibArchiveTypeInt8 = 0,
+  GSNibArchiveTypeInt16 = 1,
+  GSNibArchiveTypeInt32 = 2,
+  GSNibArchiveTypeInt64 = 3,
+  GSNibArchiveTypeBoolFalse = 4,
+  GSNibArchiveTypeBoolTrue = 5,
+  GSNibArchiveTypeFloat = 6,
+  GSNibArchiveTypeDouble = 7,
+  GSNibArchiveTypeData = 8,
+  GSNibArchiveTypeNil = 9,
+  GSNibArchiveTypeObjectRef = 10
+};
 
 static uint32_t
 GSReadLE32(const uint8_t *bytes)
@@ -77,21 +91,6 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 
   return NO;
 }
-
-enum
-{
-  GSNibArchiveTypeInt8 = 0,
-  GSNibArchiveTypeInt16 = 1,
-  GSNibArchiveTypeInt32 = 2,
-  GSNibArchiveTypeInt64 = 3,
-  GSNibArchiveTypeBoolFalse = 4,
-  GSNibArchiveTypeBoolTrue = 5,
-  GSNibArchiveTypeFloat = 6,
-  GSNibArchiveTypeDouble = 7,
-  GSNibArchiveTypeData = 8,
-  GSNibArchiveTypeNil = 9,
-  GSNibArchiveTypeObjectRef = 10
-};
 
 @interface GSNibArchiveObject : NSObject
 {
