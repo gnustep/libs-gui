@@ -159,7 +159,7 @@ enum
   ASSIGN(_data, data);
   _bytes = [_data bytes];
   _length = [_data length];
-  _objects = [[NSMutableArray alloc] init];
+  _m_objects = [[NSMutableArray alloc] init];
   _keys = [[NSMutableArray alloc] init];
   _values = [[NSMutableArray alloc] init];
   _classNames = [[NSMutableArray alloc] init];
@@ -180,7 +180,7 @@ enum
 - (void) dealloc
 {
   DESTROY(_data);
-  DESTROY(_objects);
+  DESTROY(_m_objects);
   DESTROY(_keys);
   DESTROY(_values);
   DESTROY(_classNames);
@@ -298,7 +298,7 @@ enum
       object->classNameIndex = classNameIndex;
       object->valuesIndex = valuesIndex;
       object->valueCount = count;
-      [_objects addObject: object];
+      [_m_objects addObject: object];
       RELEASE(object);
     }
   if (offset != offsetKeys)
@@ -598,7 +598,7 @@ enum
       return object;
     }
 
-  archiveObject = [_objects objectAtIndex: index];
+  archiveObject = [_m_objects objectAtIndex: index];
   archiveClass = [_classNames objectAtIndex: archiveObject->classNameIndex];
   class = [self _classForArchiveClassName: archiveClass];
   if (class == Nil)
@@ -702,7 +702,7 @@ enum
   if ([self _currentObject] == nil
     && ([key isEqual: @"IB.objectdata"] || [key isEqual: @"root"]))
     {
-      return [_objects count] > 0;
+      return [_m_objects count] > 0;
     }
 
   return [self _valueForKey: key] != nil;
@@ -713,7 +713,7 @@ enum
   if ([self _currentObject] == nil
     && ([key isEqual: @"IB.objectdata"] || [key isEqual: @"root"]))
     {
-      return [_objects count] > 0 ? [self _decodeObjectAtIndex: 0] : nil;
+      return [_m_objects count] > 0 ? [self _decodeObjectAtIndex: 0] : nil;
     }
 
   return [self _objectForValue: [self _valueForKey: key]];

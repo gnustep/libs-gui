@@ -25,7 +25,7 @@ APPKIT_EXPORT_CLASS
   NSData *_data;
   const uint8_t *_bytes;
   NSUInteger _length;
-  NSMutableArray *_objects;
+  NSMutableArray *_m_objects;
   NSMutableArray *_keys;
   NSMutableArray *_values;
   NSMutableArray *_classNames;
