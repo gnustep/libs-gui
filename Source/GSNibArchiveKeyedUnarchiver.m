@@ -24,11 +24,12 @@
 */
 
 #import "config.h"
+#import <string.h>
+#import <AppKit/NSGraphics.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
-#import <Foundation/NSMapTable.h>
 #import <Foundation/NSObjCRuntime.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
@@ -73,23 +74,35 @@ static BOOL
 GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
   NSInteger *result)
 {
-  NSInteger value = 0;
+  NSUInteger value = 0;
+  NSUInteger max = ((NSUInteger)~0) >> 1;
   unsigned shift = 0;
 
-  while (*offset < length && shift < (sizeof(NSInteger) * 8))
+  while (*offset < length && shift < (sizeof(NSUInteger) * 8))
     {
       uint8_t b = bytes[(*offset)++];
+      NSUInteger bits = (NSUInteger)(b & 0x7f);
 
-      value |= ((NSInteger)(b & 0x7f)) << shift;
+      if (bits > (max >> shift))
+	{
+	  return NO;
+	}
+      value |= bits << shift;
       if ((b & 0x80) != 0)
 	{
-	  *result = value;
+	  *result = (NSInteger)value;
 	  return YES;
 	}
       shift += 7;
     }
 
   return NO;
+}
+
+static BOOL
+GSCanReadBytes(NSUInteger offset, NSUInteger count, NSUInteger length)
+{
+  return offset <= length && count <= length - offset;
 }
 
 @interface GSNibArchiveObject : NSObject
@@ -145,10 +158,16 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 - (GSNibArchiveValue *) _valueForKey: (NSString *)key;
 - (id) _objectForValue: (GSNibArchiveValue *)value;
 - (NSNumber *) _numberForValue: (GSNibArchiveValue *)value;
+- (double) _doubleForValue: (GSNibArchiveValue *)value;
+- (NSPoint) _pointForValue: (GSNibArchiveValue *)value;
+- (NSSize) _sizeForValue: (GSNibArchiveValue *)value;
+- (NSRect) _rectForValue: (GSNibArchiveValue *)value;
 - (void) _recordCustomClasses;
 - (GSNibArchiveClassName *) _fallbackArchiveClassNameForClassName:
   (GSNibArchiveClassName *)archiveClass;
 - (NSString *) _substituteClassForClassName: (NSString *)className;
+- (id) _decodeArrayOfObjectsForKey: (NSString *)key;
+- (id) _decodePropertyListForKey: (NSString *)key;
 @end
 
 @implementation GSNibArchiveKeyedUnarchiver
@@ -334,7 +353,8 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 	|| !GSReadVarInt(_bytes, _length, &offset, &count)
 	|| classNameIndex < 0 || valuesIndex < 0 || count < 0
 	|| (NSUInteger)classNameIndex >= classNameCount
-	|| (NSUInteger)valuesIndex + (NSUInteger)count > valueCount)
+	|| (NSUInteger)valuesIndex > valueCount
+	|| (NSUInteger)count > valueCount - (NSUInteger)valuesIndex)
 	{
 	  return NO;
 	}
@@ -357,7 +377,8 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
       NSString *key;
 
       if (!GSReadVarInt(_bytes, _length, &offset, &stringLength)
-	|| stringLength < 0 || offset + (NSUInteger)stringLength > _length)
+	|| stringLength < 0
+	|| !GSCanReadBytes(offset, (NSUInteger)stringLength, _length))
 	{
 	  return NO;
 	}
@@ -381,6 +402,7 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
     {
       NSInteger keyIndex;
       GSNibArchiveValue *value;
+      BOOL valid = YES;
 
       if (!GSReadVarInt(_bytes, _length, &offset, &keyIndex)
 	|| keyIndex < 0 || (NSUInteger)keyIndex >= keyCount
@@ -396,24 +418,40 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
       switch (value->type)
 	{
 	  case GSNibArchiveTypeInt8:
-	    if (offset + 1 > _length) return NO;
+	    if (!GSCanReadBytes(offset, 1, _length))
+	      {
+		valid = NO;
+		break;
+	      }
 	    value->object = RETAIN([NSNumber numberWithChar: (int8_t)_bytes[offset]]);
 	    offset += 1;
 	    break;
 	  case GSNibArchiveTypeInt16:
-	    if (offset + 2 > _length) return NO;
+	    if (!GSCanReadBytes(offset, 2, _length))
+	      {
+		valid = NO;
+		break;
+	      }
 	    value->object = RETAIN([NSNumber numberWithShort:
 	      (int16_t)(_bytes[offset] | (_bytes[offset + 1] << 8))]);
 	    offset += 2;
 	    break;
 	  case GSNibArchiveTypeInt32:
-	    if (offset + 4 > _length) return NO;
+	    if (!GSCanReadBytes(offset, 4, _length))
+	      {
+		valid = NO;
+		break;
+	      }
 	    value->object = RETAIN([NSNumber numberWithInt:
 	      (int32_t)GSReadLE32(_bytes + offset)]);
 	    offset += 4;
 	    break;
 	  case GSNibArchiveTypeInt64:
-	    if (offset + 8 > _length) return NO;
+	    if (!GSCanReadBytes(offset, 8, _length))
+	      {
+		valid = NO;
+		break;
+	      }
 	    value->object = RETAIN([NSNumber numberWithLongLong:
 	      (int64_t)GSReadLE64(_bytes + offset)]);
 	    offset += 8;
@@ -428,7 +466,11 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 	    {
 	      uint32_t bits;
 	      float f;
-	      if (offset + 4 > _length) return NO;
+	      if (!GSCanReadBytes(offset, 4, _length))
+		{
+		  valid = NO;
+		  break;
+		}
 	      bits = GSReadLE32(_bytes + offset);
 	      memcpy(&f, &bits, sizeof(f));
 	      value->object = RETAIN([NSNumber numberWithFloat: f]);
@@ -439,7 +481,11 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 	    {
 	      uint64_t bits;
 	      double d;
-	      if (offset + 8 > _length) return NO;
+	      if (!GSCanReadBytes(offset, 8, _length))
+		{
+		  valid = NO;
+		  break;
+		}
 	      bits = GSReadLE64(_bytes + offset);
 	      memcpy(&d, &bits, sizeof(d));
 	      value->object = RETAIN([NSNumber numberWithDouble: d]);
@@ -450,9 +496,11 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 	    {
 	      NSInteger dataLength;
 	      if (!GSReadVarInt(_bytes, _length, &offset, &dataLength)
-		|| dataLength < 0 || offset + (NSUInteger)dataLength > _length)
+		|| dataLength < 0
+		|| !GSCanReadBytes(offset, (NSUInteger)dataLength, _length))
 		{
-		  return NO;
+		  valid = NO;
+		  break;
 		}
 	      value->object = [[NSData alloc] initWithBytes: _bytes + offset
 						     length: dataLength];
@@ -462,18 +510,29 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 	  case GSNibArchiveTypeNil:
 	    break;
 	  case GSNibArchiveTypeObjectRef:
-	    if (offset + 4 > _length) return NO;
+	    if (!GSCanReadBytes(offset, 4, _length))
+	      {
+		valid = NO;
+		break;
+	      }
 	    value->reference = GSReadLE32(_bytes + offset);
 	    if (value->reference >= objectCount)
 	      {
-		return NO;
+		valid = NO;
+		break;
 	      }
 	    offset += 4;
 	    break;
 	  default:
-	    return NO;
+	    valid = NO;
+	    break;
 	}
 
+      if (valid == NO)
+	{
+	  RELEASE(value);
+	  return NO;
+	}
       [_values addObject: value];
       RELEASE(value);
     }
@@ -501,7 +560,7 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 	{
 	  int32_t fallbackIndex;
 
-	  if (offset + 4 > _length)
+	  if (!GSCanReadBytes(offset, 4, _length))
 	    {
 	      return NO;
 	    }
@@ -514,7 +573,7 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 	  offset += 4;
 	}
 
-      if (offset + (NSUInteger)stringLength > _length
+      if (!GSCanReadBytes(offset, (NSUInteger)stringLength, _length)
 	|| _bytes[offset + (NSUInteger)stringLength - 1] != '\0')
 	{
 	  return NO;
@@ -770,6 +829,11 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
   return nil;
 }
 
+- (double) _doubleForValue: (GSNibArchiveValue *)value
+{
+  return [[self _numberForValue: value] doubleValue];
+}
+
 - (id) _objectForValue: (GSNibArchiveValue *)value
 {
   if (value == nil)
@@ -791,6 +855,75 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
     }
 
   return value->object;
+}
+
+- (NSPoint) _pointForValue: (GSNibArchiveValue *)value
+{
+  id object = [self _objectForValue: value];
+  NSPoint point = NSZeroPoint;
+
+  if (object == nil)
+    {
+      return point;
+    }
+  if ([object isKindOfClass: [NSValue class]]
+    && strcmp([object objCType], @encode(NSPoint)) == 0)
+    {
+      [object getValue: &point];
+      return point;
+    }
+
+  [NSException raise: NSInvalidUnarchiveOperationException
+	      format: @"[%@ -%@]: value for key(%@) is '%@'",
+    NSStringFromClass([self class]), NSStringFromSelector(_cmd),
+    [self _keyForValue: value], object];
+  return point;
+}
+
+- (NSSize) _sizeForValue: (GSNibArchiveValue *)value
+{
+  id object = [self _objectForValue: value];
+  NSSize size = NSZeroSize;
+
+  if (object == nil)
+    {
+      return size;
+    }
+  if ([object isKindOfClass: [NSValue class]]
+    && strcmp([object objCType], @encode(NSSize)) == 0)
+    {
+      [object getValue: &size];
+      return size;
+    }
+
+  [NSException raise: NSInvalidUnarchiveOperationException
+	      format: @"[%@ -%@]: value for key(%@) is '%@'",
+    NSStringFromClass([self class]), NSStringFromSelector(_cmd),
+    [self _keyForValue: value], object];
+  return size;
+}
+
+- (NSRect) _rectForValue: (GSNibArchiveValue *)value
+{
+  id object = [self _objectForValue: value];
+  NSRect rect = NSZeroRect;
+
+  if (object == nil)
+    {
+      return rect;
+    }
+  if ([object isKindOfClass: [NSValue class]]
+    && strcmp([object objCType], @encode(NSRect)) == 0)
+    {
+      [object getValue: &rect];
+      return rect;
+    }
+
+  [NSException raise: NSInvalidUnarchiveOperationException
+	      format: @"[%@ -%@]: value for key(%@) is '%@'",
+    NSStringFromClass([self class]), NSStringFromSelector(_cmd),
+    [self _keyForValue: value], object];
+  return rect;
 }
 
 - (BOOL) containsValueForKey: (NSString *)key
@@ -855,6 +988,21 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
   return [[self _numberForValue: [self _valueForKey: key]] longLongValue];
 }
 
+- (NSPoint) decodePointForKey: (NSString *)key
+{
+  return [self _pointForValue: [self _valueForKey: key]];
+}
+
+- (NSSize) decodeSizeForKey: (NSString *)key
+{
+  return [self _sizeForValue: [self _valueForKey: key]];
+}
+
+- (NSRect) decodeRectForKey: (NSString *)key
+{
+  return [self _rectForValue: [self _valueForKey: key]];
+}
+
 - (const uint8_t *) decodeBytesForKey: (NSString *)key
 		       returnedLength: (NSUInteger *)length
 {
@@ -888,6 +1036,60 @@ GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
 
   value = [self _nextSequentialValue];
   object = [self _objectForValue: value];
+
+  if (strcmp(type, @encode(NSPoint)) == 0)
+    {
+      NSPoint point;
+
+      if ([object isKindOfClass: [NSValue class]]
+	&& strcmp([object objCType], @encode(NSPoint)) == 0)
+	{
+	  [object getValue: &point];
+	}
+      else
+	{
+	  point.x = [self _doubleForValue: value];
+	  point.y = [self _doubleForValue: [self _nextSequentialValue]];
+	}
+      *(NSPoint *)address = point;
+      return;
+    }
+  if (strcmp(type, @encode(NSSize)) == 0)
+    {
+      NSSize size;
+
+      if ([object isKindOfClass: [NSValue class]]
+	&& strcmp([object objCType], @encode(NSSize)) == 0)
+	{
+	  [object getValue: &size];
+	}
+      else
+	{
+	  size.width = [self _doubleForValue: value];
+	  size.height = [self _doubleForValue: [self _nextSequentialValue]];
+	}
+      *(NSSize *)address = size;
+      return;
+    }
+  if (strcmp(type, @encode(NSRect)) == 0)
+    {
+      NSRect rect;
+
+      if ([object isKindOfClass: [NSValue class]]
+	&& strcmp([object objCType], @encode(NSRect)) == 0)
+	{
+	  [object getValue: &rect];
+	}
+      else
+	{
+	  rect.origin.x = [self _doubleForValue: value];
+	  rect.origin.y = [self _doubleForValue: [self _nextSequentialValue]];
+	  rect.size.width = [self _doubleForValue: [self _nextSequentialValue]];
+	  rect.size.height = [self _doubleForValue: [self _nextSequentialValue]];
+	}
+      *(NSRect *)address = rect;
+      return;
+    }
 
   switch (*type)
     {

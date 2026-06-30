@@ -27,10 +27,7 @@
 #define _GNUstep_H_GSNibArchiveKeyedUnarchiver
 
 #import <AppKit/AppKitDefines.h>
-#import <Foundation/NSKeyedArchiver.h>
-
-@class NSData;
-@class NSDictionary;
+#import <Foundation/Foundation.h>
 
 APPKIT_EXPORT_CLASS
 @interface GSNibArchiveKeyedUnarchiver : NSKeyedUnarchiver
@@ -53,8 +50,6 @@ APPKIT_EXPORT_CLASS
 
 + (BOOL) canReadData: (NSData *)data;
 - (id) initForReadingWithData: (NSData *)data;
-- (id) _decodeArrayOfObjectsForKey: (NSString *)key;
-- (id) _decodePropertyListForKey: (NSString *)key;
 - (NSDictionary *) customClasses;
 @end
 
