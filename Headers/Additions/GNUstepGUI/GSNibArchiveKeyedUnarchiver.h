@@ -21,6 +21,22 @@
 
 APPKIT_EXPORT_CLASS
 @interface GSNibArchiveKeyedUnarchiver : NSKeyedUnarchiver
+{
+  NSData *_data;
+  const uint8_t *_bytes;
+  NSUInteger _length;
+  NSMutableArray *_objects;
+  NSMutableArray *_keys;
+  NSMutableArray *_values;
+  NSMutableArray *_classNames;
+  NSMutableDictionary *_decodedObjects;
+  NSMutableDictionary *_classNameMap;
+  NSMutableArray *_objectStack;
+  NSMutableArray *_cursorStack;
+  id _delegate;
+  NSZone *_objectZone;
+}
+
 + (BOOL) canReadData: (NSData *)data;
 - (id) initForReadingWithData: (NSData *)data;
 - (id) _decodeArrayOfObjectsForKey: (NSString *)key;

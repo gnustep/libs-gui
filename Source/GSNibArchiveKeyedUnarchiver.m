@@ -26,6 +26,46 @@
 #define NIBARCHIVE_MAGIC "NIBArchive"
 #define NIBARCHIVE_MAGIC_LENGTH 10
 
+
+static uint32_t
+GSReadLE32(const uint8_t *bytes)
+{
+  return ((uint32_t)bytes[0])
+    | (((uint32_t)bytes[1]) << 8)
+    | (((uint32_t)bytes[2]) << 16)
+    | (((uint32_t)bytes[3]) << 24);
+}
+
+static uint64_t
+GSReadLE64(const uint8_t *bytes)
+{
+  return ((uint64_t)GSReadLE32(bytes))
+    | (((uint64_t)GSReadLE32(bytes + 4)) << 32);
+}
+
+static BOOL
+GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
+  NSInteger *result)
+{
+  NSInteger value = 0;
+  unsigned shift = 0;
+
+  while (*offset < length && shift < (sizeof(NSInteger) * 8))
+    {
+      uint8_t b = bytes[(*offset)++];
+
+      value |= ((NSInteger)(b & 0x7f)) << shift;
+      if ((b & 0x80) != 0)
+        {
+          *result = value;
+          return YES;
+        }
+      shift += 7;
+    }
+
+  return NO;
+}
+
 enum
 {
   GSNibArchiveTypeInt8 = 0,
@@ -88,7 +128,7 @@ enum
 }
 @end
 
-@interface GSNibArchiveKeyedUnarchiver ()
+@interface GSNibArchiveKeyedUnarchiver (Private)
 - (BOOL) _parseData: (NSData *)data;
 - (id) _decodeObjectAtIndex: (NSUInteger)index;
 - (GSNibArchiveValue *) _valueForKey: (NSString *)key;
@@ -97,61 +137,6 @@ enum
 @end
 
 @implementation GSNibArchiveKeyedUnarchiver
-{
-  NSData *_data;
-  const uint8_t *_bytes;
-  NSUInteger _length;
-  NSMutableArray *_objects;
-  NSMutableArray *_keys;
-  NSMutableArray *_values;
-  NSMutableArray *_classNames;
-  NSMutableDictionary *_decodedObjects;
-  NSMutableDictionary *_classNameMap;
-  NSMutableArray *_objectStack;
-  NSMutableArray *_cursorStack;
-  id _delegate;
-  NSZone *_objectZone;
-}
-
-static uint32_t
-GSReadLE32(const uint8_t *bytes)
-{
-  return ((uint32_t)bytes[0])
-    | (((uint32_t)bytes[1]) << 8)
-    | (((uint32_t)bytes[2]) << 16)
-    | (((uint32_t)bytes[3]) << 24);
-}
-
-static uint64_t
-GSReadLE64(const uint8_t *bytes)
-{
-  return ((uint64_t)GSReadLE32(bytes))
-    | (((uint64_t)GSReadLE32(bytes + 4)) << 32);
-}
-
-static BOOL
-GSReadVarInt(const uint8_t *bytes, NSUInteger length, NSUInteger *offset,
-  NSInteger *result)
-{
-  NSInteger value = 0;
-  unsigned shift = 0;
-
-  while (*offset < length && shift < (sizeof(NSInteger) * 8))
-    {
-      uint8_t b = bytes[(*offset)++];
-
-      value |= ((NSInteger)(b & 0x7f)) << shift;
-      if ((b & 0x80) != 0)
-        {
-          *result = value;
-          return YES;
-        }
-      shift += 7;
-    }
-
-  return NO;
-}
-
 + (BOOL) canReadData: (NSData *)data
 {
   if ([data length] < NIBARCHIVE_MAGIC_LENGTH)
