@@ -33,7 +33,7 @@ APPKIT_EXPORT_CLASS
   NSMutableDictionary *_classNameMap;
   NSMutableArray *_objectStack;
   NSMutableArray *_cursorStack;
-  id _delegate;
+  id _na_delegate;
   NSZone *_objectZone;
 }
 

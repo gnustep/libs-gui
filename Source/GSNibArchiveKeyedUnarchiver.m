@@ -198,18 +198,18 @@ enum
 
 - (id) delegate
 {
-  return _delegate;
+  return _na_delegate;
 }
 
 - (void) setDelegate: (id)delegate
 {
-  _delegate = delegate;
+  _na_delegate = delegate;
 }
 
 - (void) finishDecoding
 {
-  [_delegate unarchiverWillFinish: self];
-  [_delegate unarchiverDidFinish: self];
+  [_na_delegate unarchiverWillFinish: self];
+  [_na_delegate unarchiverDidFinish: self];
 }
 
 - (void) setObjectZone: (NSZone *)zone
@@ -574,9 +574,9 @@ enum
           class = [self _classForArchiveClassName: fallback];
         }
     }
-  if (class == Nil && _delegate != nil)
+  if (class == Nil && _na_delegate != nil)
     {
-      class = [_delegate unarchiver: self
+      class = [_na_delegate unarchiver: self
        cannotDecodeObjectOfClassName: archiveClass->name
                       originalClasses: nil];
     }
@@ -621,7 +621,7 @@ enum
 
   if (result != object)
     {
-      [_delegate unarchiver: self
+      [_na_delegate unarchiver: self
           willReplaceObject: object
                  withObject: result];
       [_decodedObjects setObject: result forKey: key];
@@ -632,7 +632,7 @@ enum
   result = [object awakeAfterUsingCoder: self];
   if (result != object)
     {
-      [_delegate unarchiver: self
+      [_na_delegate unarchiver: self
           willReplaceObject: object
                  withObject: result];
       [_decodedObjects setObject: result forKey: key];
@@ -640,12 +640,12 @@ enum
       object = RETAIN(result);
     }
 
-  if (_delegate != nil)
+  if (_na_delegate != nil)
     {
-      result = [_delegate unarchiver: self didDecodeObject: object];
+      result = [_na_delegate unarchiver: self didDecodeObject: object];
       if (result != object)
         {
-          [_delegate unarchiver: self
+          [_na_delegate unarchiver: self
               willReplaceObject: object
                      withObject: result];
           [_decodedObjects setObject: result forKey: key];
