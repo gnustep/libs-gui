@@ -293,6 +293,7 @@ PSOperators.h
 
 AUTOGSDOC_HEADERS_GUIADD = \
 GSDisplayServer.h \
+GSNibArchiveKeyedUnarchiver.h \
 GSTheme.h \
 GSTable.h \
 GSHbox.h \
@@ -391,4 +392,3 @@ after-clean::
 	if [ -e obj-save-link ]; then \
 	  mv obj-save-link obj; \
 	fi
-
