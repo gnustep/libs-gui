@@ -158,6 +158,8 @@ GSCanReadBytes(NSUInteger offset, NSUInteger count, NSUInteger length)
 - (BOOL) _parseData: (NSData *)data;
 - (id) _decodeObjectAtIndex: (NSUInteger)index;
 - (GSNibArchiveValue *) _valueForKey: (NSString *)key;
+- (GSNibArchiveValue *) _valueForKey: (NSString *)key
+			    inObject: (GSNibArchiveObject *)object;
 - (id) _objectForValue: (GSNibArchiveValue *)value;
 - (NSNumber *) _numberForValue: (GSNibArchiveValue *)value;
 - (double) _doubleForValue: (GSNibArchiveValue *)value;
@@ -611,7 +613,12 @@ GSCanReadBytes(NSUInteger offset, NSUInteger count, NSUInteger length)
 
 - (GSNibArchiveValue *) _valueForKey: (NSString *)key
 {
-  GSNibArchiveObject *object = [self _currentObject];
+  return [self _valueForKey: key inObject: [self _currentObject]];
+}
+
+- (GSNibArchiveValue *) _valueForKey: (NSString *)key
+			    inObject: (GSNibArchiveObject *)object
+{
   NSUInteger start;
   NSUInteger end;
   NSUInteger i;
@@ -765,7 +772,14 @@ GSCanReadBytes(NSUInteger offset, NSUInteger count, NSUInteger length)
   [_objectStack addObject: archiveObject];
   [_cursorStack addObject: [NSNumber numberWithUnsignedInteger: 0]];
 
-  result = [object initWithCoder: self];
+  if ([object respondsToSelector: @selector(initWithCoder:)] == YES)
+    {
+      result = [object initWithCoder: self];
+    }
+  else
+    {
+      result = [object init];
+    }
 
   [_cursorStack removeLastObject];
   [_objectStack removeLastObject];
@@ -933,7 +947,12 @@ GSCanReadBytes(NSUInteger offset, NSUInteger count, NSUInteger length)
   if ([self _currentObject] == nil
     && ([key isEqual: @"IB.objectdata"] || [key isEqual: @"root"]))
     {
-      return [_m_objects count] > 0;
+      if ([_m_objects count] == 0)
+	{
+	  return NO;
+	}
+      return [self _valueForKey: key
+		       inObject: [_m_objects objectAtIndex: 0]] != nil;
     }
 
   return [self _valueForKey: key] != nil;
@@ -944,7 +963,12 @@ GSCanReadBytes(NSUInteger offset, NSUInteger count, NSUInteger length)
   if ([self _currentObject] == nil
     && ([key isEqual: @"IB.objectdata"] || [key isEqual: @"root"]))
     {
-      return [_m_objects count] > 0 ? [self _decodeObjectAtIndex: 0] : nil;
+      if ([_m_objects count] == 0)
+	{
+	  return nil;
+	}
+      return [self _objectForValue:
+	[self _valueForKey: key inObject: [_m_objects objectAtIndex: 0]]];
     }
 
   return [self _objectForValue: [self _valueForKey: key]];
