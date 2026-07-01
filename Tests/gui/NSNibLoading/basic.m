@@ -68,6 +68,13 @@ int main()
       
       PASS(success == YES, ".nib file was loaded properly"
 	" using loadNibNamed:owner:topLevelObjects:");
+
+      success = [bundle loadNibNamed: @"Test-nibarchive"
+                               owner: [NSApplication sharedApplication]
+                     topLevelObjects: testObjects];
+      
+      PASS(success == YES, ".nib NIBArchive file was loaded properly"
+	" using loadNibNamed:owner:topLevelObjects:");
     }
   NS_HANDLER
     {

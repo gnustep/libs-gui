@@ -31,10 +31,12 @@
 
 APPKIT_EXPORT_CLASS
 /**
- * NSKeyedUnarchiver subclass for GNUstep nib archive data.
+ * NSKeyedUnarchiver subclass for NIBArchive data.  This is distinct
+ * from XML based NIB files or XIB files.  NIBArchive appeared in macOS as of
+ * macOS 10.13 (High Sierra).
  *
- * This unarchiver reads the compact keyed archive format used by GNUstep nib
- * archives and presents it through the standard keyed-coding unarchiver
+ * This unarchiver reads the compact keyed archive format used by macOS
+ * NIBArchive files and presents it through the standard keyed-coding unarchiver
  * interface.  It is used by the nib archive loader to instantiate objects,
  * resolve archived class names, and keep track of custom classes that can be
  * represented by fallback classes while editing a model.
@@ -58,14 +60,14 @@ APPKIT_EXPORT_CLASS
 }
 
 /**
- * Returns YES when data begins with the GNUstep nib archive signature and can
+ * Returns YES when data begins with the NIBArchive signature and can
  * be passed to initForReadingWithData: for decoding.  Returns NO for nil,
  * truncated, or differently formatted data.
  */
 + (BOOL) canReadData: (NSData *)data;
 
 /**
- * Initializes the receiver to decode the GNUstep nib archive contained in
+ * Initializes the receiver to decode the NIBArchive contained in
  * data.  Returns nil when data is nil, does not have the expected archive
  * signature, or cannot be parsed as a valid archive.
  */

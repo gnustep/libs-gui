@@ -25,6 +25,7 @@
 
 #import "config.h"
 #import <string.h>
+
 #import <AppKit/NSGraphics.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
@@ -33,6 +34,7 @@
 #import <Foundation/NSObjCRuntime.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
+
 #import "GNUstepGUI/GSNibArchiveKeyedUnarchiver.h"
 #import "GNUstepGUI/GSNibLoading.h"
 
@@ -726,8 +728,8 @@ GSCanReadBytes(NSUInteger offset, NSUInteger count, NSUInteger length)
   if (class == Nil && _na_delegate != nil)
     {
       class = [_na_delegate unarchiver: self
-       cannotDecodeObjectOfClassName: className
-		      originalClasses: nil];
+			    cannotDecodeObjectOfClassName: className
+		       originalClasses: nil];
     }
 
   return class;
