@@ -387,8 +387,8 @@ APPKIT_EXPORT_CLASS
    <item> It use periodic events to update the highlight state and 
 	   attach / detach submenus.
    </item>
-   <item> The flag justAttachedNewSubmenu is set to YES when a new 
-          submenu is attached. The effect is that the 
+   <item> The flag justAttachedNewSubmenu is set to YES when a new
+          submenu is attached. The effect is that the
           highlighting / attaching / detaching is supressed
           for this menu.  This is done so the user is given
           a change to move the mouse pointer into the newly
@@ -396,7 +396,14 @@ APPKIT_EXPORT_CLASS
           be removed as the mouse pointer move over another
           item.
 
-          The logic for resetting the flag is rather adhoc.
+          By default the flag is reset with a simple time /
+          horizontal-velocity heuristic.  Setting the user default
+          GSMenuSubmenuAimTracking to YES selects instead
+          Tognazzini's "aim triangle": the submenu stays open while
+          the pointer keeps aiming into it (moving diagonally toward
+          it), and a deliberate move off that path switches at once.
+          Aim tracking applies to vertical menus only; horizontal menu
+          bars keep the instant switch that suits them.
    </item>
 
    <item> the flag subMenusNeedRemoving means that we

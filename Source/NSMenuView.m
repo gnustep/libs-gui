@@ -99,9 +99,54 @@ static NSMapTable *viewInfo = 0;
 
 @interface NSMenuView (Private)
 - (BOOL) _rootIsHorizontal: (BOOL*)isAppMenu;
++ (BOOL) _mouseAt: (NSPoint)aPoint aimsAtSubmenuFrame: (NSRect)submenuFrame
+         fromApex: (NSPoint)apex slack: (CGFloat)slack;
 @end
 
+/* Signed area of the parallelogram spanned by ab and ac; its sign tells us
+   which side of the directed line a->b the point c lies on.  Used only by
+   +_mouseAt:aimsAtSubmenuFrame:fromApex:slack: below. */
+static inline CGFloat
+GSMenuCross(NSPoint a, NSPoint b, NSPoint c)
+{
+  return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+}
+
 @implementation NSMenuView (Private)
+/* Tognazzini's "aim triangle": while a submenu is open we let the user steer
+   toward it along a diagonal without the submenu closing.  The triangle has its
+   apex where the pointer entered the parent item and its base on the submenu
+   edge facing the parent; as long as the pointer stays inside, it is still
+   plausibly heading for the submenu.  We test containment with three edge
+   cross-products: a point is inside when it lies on the same side of all three
+   directed edges.  The all-same-sign check is orientation independent, so it is
+   immune to GNUstep's flipped screen coordinates and to the triangle winding. */
++ (BOOL) _mouseAt: (NSPoint)aPoint aimsAtSubmenuFrame: (NSRect)submenuFrame
+         fromApex: (NSPoint)apex slack: (CGFloat)slack
+{
+  CGFloat nearX;
+  NSPoint upper, lower;
+  CGFloat d1, d2, d3;
+  BOOL hasNeg, hasPos;
+
+  /* Base sits on the submenu's vertical edge nearest the parent.  We pick the
+     side from the apex, not the moving pointer, so the wedge does not flip
+     mid-gesture; this also copes with submenus that opened to the left because
+     shiftOnScreen nudged them away from a screen edge. */
+  nearX = (apex.x < NSMidX(submenuFrame)) ? NSMinX(submenuFrame)
+                                          : NSMaxX(submenuFrame);
+  /* Slack fattens the wedge tip so the corners are not razor thin. */
+  upper = NSMakePoint(nearX, NSMaxY(submenuFrame) + slack);
+  lower = NSMakePoint(nearX, NSMinY(submenuFrame) - slack);
+
+  d1 = GSMenuCross(aPoint, apex, upper);
+  d2 = GSMenuCross(aPoint, upper, lower);
+  d3 = GSMenuCross(aPoint, lower, apex);
+  hasNeg = (d1 < 0.0) || (d2 < 0.0) || (d3 < 0.0);
+  hasPos = (d1 > 0.0) || (d2 > 0.0) || (d3 > 0.0);
+  return !(hasNeg && hasPos);
+}
+
 - (BOOL) _rootIsHorizontal: (BOOL*)isAppMenu
 {
   NSMenu *m = _attachedMenu;
@@ -1501,6 +1546,15 @@ static float menuBarHeight = 0.0;
 #define MOVE_THRESHOLD_DELTA 2.0
 #define DELAY_MULTIPLIER     10
 
+/* Aim-triangle tracking (opt-in via GSMenuSubmenuAimTracking).  Periodic events
+   fire every 0.01s, so AIM_PARK_TICKS ~= 0.3s of the pointer sitting still over
+   a sibling item before we give up protecting the just-opened submenu.  Any
+   movement past AIM_MOVE_EPSILON pixels since the last checkpoint counts as the
+   user still steering and rearms the timer, so even a slow, deliberate arc keeps
+   the submenu open. */
+#define AIM_PARK_TICKS   30
+#define AIM_MOVE_EPSILON 3.0
+
 - (BOOL) _executeItemAtIndex: (int)indexOfActionToExecute
 	       removeSubmenu: (BOOL)subMenusNeedRemoving
 {
@@ -1551,6 +1605,22 @@ static float menuBarHeight = 0.0;
   int firstIndex = -1;
   NSInterfaceStyle style =
     NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", self);
+  /* Aim-triangle state.  wedgeApex is the pointer position (screen coords) when
+     the current submenu opened; aimRef is the last checkpoint (window base
+     coords) for the park timer.  We read the defaults once per invocation - the
+     method recurses per menu level, but NSUserDefaults caches, and a live
+     `defaults write` simply takes effect on the next menu interaction.  The
+     wedge is confined to vertical menus: for a horizontal bar, switching between
+     top-level items is a sideways move that should stay instant. */
+  NSUserDefaults *menuDefaults = [NSUserDefaults standardUserDefaults];
+  BOOL useAimTriangle = [menuDefaults boolForKey: @"GSMenuSubmenuAimTracking"]
+    && ![self isHorizontal];
+  /* Slack widens the wedge base past the submenu corners so the tip is not
+     razor thin; 8px keeps the corners reachable without letting the wedge
+     swallow neighbouring items. */
+  CGFloat aimSlack = 8.0;
+  NSPoint wedgeApex = NSZeroPoint;
+  NSPoint aimRef = NSZeroPoint;
   NSEvent *original;
   NSEventType type;
 
@@ -1687,8 +1757,48 @@ static float menuBarHeight = 0.0;
            */
           if (justAttachedNewSubmenu && index != -1
             && index != _highlightedItemIndex)
-            { 
-              if (location.x - lastLocation.x > MOVE_THRESHOLD_DELTA)
+            {
+              if (useAimTriangle)
+                {
+                  /* Keep the just-opened submenu protected for as long as the
+                     pointer is still aiming into it (inside the wedge).  Leaving
+                     the wedge - e.g. a deliberate vertical move to a sibling -
+                     drops protection at once so the sibling takes over.  This
+                     replaces the old velocity/time guess with the direction the
+                     user is actually pointing. */
+                  NSWindow *submenuWindow = [[_attachedMenu attachedMenu] window];
+                  NSPoint pointerInScreen = [_window convertBaseToScreen: location];
+
+                  if (submenuWindow == nil
+                    || ![NSMenuView _mouseAt: pointerInScreen
+                             aimsAtSubmenuFrame: [submenuWindow frame]
+                                       fromApex: wedgeApex
+                                          slack: aimSlack])
+                    {
+                      justAttachedNewSubmenu = NO;
+                    }
+                  else
+                    {
+                      /* Still inside the wedge.  Guard against the pointer just
+                         parking over a sibling for good: if it has not moved
+                         since the last checkpoint for AIM_PARK_TICKS, give up;
+                         real movement (even a slow arc) resets the checkpoint. */
+                      CGFloat dx = location.x - aimRef.x;
+                      CGFloat dy = location.y - aimRef.y;
+
+                      if (dx * dx + dy * dy
+                        > AIM_MOVE_EPSILON * AIM_MOVE_EPSILON)
+                        {
+                          aimRef = location;
+                          delayCount = 0;
+                        }
+                      else if (++delayCount >= AIM_PARK_TICKS)
+                        {
+                          justAttachedNewSubmenu = NO;
+                        }
+                    }
+                }
+              else if (location.x - lastLocation.x > MOVE_THRESHOLD_DELTA)
                 {
                   delayCount ++;
                   if (delayCount >= DELAY_MULTIPLIER)
@@ -1818,6 +1928,12 @@ static float menuBarHeight = 0.0;
                   [self attachSubmenuForItemAtIndex: index];
                   justAttachedNewSubmenu = YES;
                   delayCount = 0;
+                  /* Anchor the wedge apex where the pointer entered this item,
+                     i.e. where the submenu just opened.  Screen coords match the
+                     submenu window frame we test against; aimRef stays in base
+                     coords alongside the raw pointer location. */
+                  wedgeApex = [_window convertBaseToScreen: location];
+                  aimRef = location;
                 }
             }
 
