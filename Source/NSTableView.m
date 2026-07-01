@@ -2205,6 +2205,10 @@ static void computeNewSelection
 - (void) addTableColumn: (NSTableColumn *)aColumn
 {
   [aColumn setTableView: self];
+  if ([[aColumn _prototypeCellViews] count] > 0)
+    {
+      [self _registerPrototypeViews: [aColumn _prototypeCellViews]];
+    }
   [_tableColumns addObject: aColumn];
   _numberOfColumns++;
   if (_numberOfColumns > 1)
