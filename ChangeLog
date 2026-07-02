@@ -1,3 +1,24 @@
+2026-07-01 Michael Hupp <mrtonik@mailbox.org>
+
+	* Source/NSMenuView.m (GSMenuCross)
+	(+[NSMenuView _mouseAt:aimsAtSubmenuFrame:fromApex:slack:]): New
+	point-in-triangle helper implementing Tognazzini's submenu "aim
+	triangle".
+	(-[NSMenuView _trackWithEvent:startingMenuView:]): Add an opt-in
+	directional replacement for the ad-hoc time/velocity heuristic that
+	decides when a just-opened submenu stops being protected. When the
+	GSMenuSubmenuAimTracking default is YES, keep the submenu open while the
+	pointer keeps aiming into it and switch the moment it leaves the wedge,
+	with a short park timeout (AIM_PARK_TICKS / AIM_MOVE_EPSILON) so a
+	pointer that stops over a sibling still switches. The previous behaviour
+	is preserved unchanged when the default is unset, and aim tracking is
+	confined to vertical menus so horizontal bars keep their instant switch.
+	* Headers/AppKit/NSMenuView.h: Document the new tracking mode and the
+	GSMenuSubmenuAimTracking default.
+	* Documentation/GuiUser/DefaultsSummary.gsdoc: Describe the new
+	default.
+	* Tests/gui/NSMenuView/aim_triangle.m: New regression test.
+
 2026-06-27 DTW-Thalion <todd.white@thalion.global>
 
 	* Source/GSTable.m (-[GSTable initWithCoder:]): Validate the row and
