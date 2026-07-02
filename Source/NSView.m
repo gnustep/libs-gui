@@ -1286,8 +1286,16 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         {
           if (_boundsMatrix == nil)
             {
-              CGFloat sx = _bounds.size.width  / _frame.size.width;
-              CGFloat sy = _bounds.size.height / _frame.size.height;
+              /* Preserve the bounds/frame scale across the resize.  Guard
+               * against a zero current frame dimension (e.g. a rotated view
+               * previously collapsed to zero width or height) so the scale
+               * does not become infinite/NaN; fall back to 1:1 as the
+               * unrotated branch below does.
+               */
+              CGFloat sx = (_frame.size.width == 0.0)
+                ? 1.0 : _bounds.size.width  / _frame.size.width;
+              CGFloat sy = (_frame.size.height == 0.0)
+                ? 1.0 : _bounds.size.height / _frame.size.height;
               
               newFrame.size = newSize;
 	      [self _setFrameAndClearAutoresizingError: newFrame];
