@@ -344,6 +344,8 @@ static BOOL _isInInterfaceBuilder = NO;
 {
   if ([coder allowsKeyedCoding])
     {
+      _flags.isVisible = YES;
+
       if ([coder containsValueForKey: @"NSViewClass"])
 	{
 	  ASSIGN(_viewClass, [coder decodeObjectForKey: @"NSViewClass"]);
@@ -380,6 +382,22 @@ static BOOL _isInInterfaceBuilder = NO;
 	{
 	  unsigned long flags = [coder decodeIntForKey: @"NSWTFlags"];
 	  memcpy((void *)&_flags,(void *)&flags,sizeof(struct _GSWindowTemplateFlags));
+	}
+      else if ([coder containsValueForKey: @"NSWindowVisible"])
+	{
+	  _flags.isVisible = [coder decodeBoolForKey: @"NSWindowVisible"];
+	}
+      else if ([coder containsValueForKey: @"NSWindowIsVisible"])
+	{
+	  _flags.isVisible = [coder decodeBoolForKey: @"NSWindowIsVisible"];
+	}
+      else if ([coder containsValueForKey: @"NSVisible"])
+	{
+	  _flags.isVisible = [coder decodeBoolForKey: @"NSVisible"];
+	}
+      else if ([coder containsValueForKey: @"visibleAtLaunch"])
+	{
+	  _flags.isVisible = [coder decodeBoolForKey: @"visibleAtLaunch"];
 	}
 
       if ([coder containsValueForKey: @"NSWindowContentMinSize"])
@@ -574,6 +592,11 @@ static BOOL _isInInterfaceBuilder = NO;
 - (BOOL) isDeferred
 {
   return _flags.isDeferred;
+}
+
+- (BOOL) isVisible
+{
+  return _flags.isVisible;
 }
 
 /**
@@ -1776,6 +1799,16 @@ static BOOL _isInInterfaceBuilder = NO;
       // get visible windows
       ASSIGN(_visibleWindows, (NSMutableArray *)
 	[coder decodeObjectForKey: @"NSVisibleWindows"]);
+      if (_visibleWindows == nil)
+	{
+	  ASSIGN(_visibleWindows, (NSMutableArray *)
+	    [coder decodeObjectForKey: @"NSWindowVisibleWindows"]);
+	}
+      if (_visibleWindows == nil)
+	{
+	  ASSIGN(_visibleWindows, (NSMutableArray *)
+	    [coder decodeObjectForKey: @"visibleWindows"]);
+	}
 
       // instantiate the maps..
       _classes = NSCreateMapTable(NSObjectMapKeyCallBacks,
@@ -1936,6 +1969,7 @@ static BOOL _isInInterfaceBuilder = NO;
   NSArray *objs;
   id obj = nil;
   id menu = nil;
+  NSMutableArray *visibleObjects = nil;
 
   // set the new root object.
   [_root setRealObject: owner];
@@ -1950,10 +1984,23 @@ static BOOL _isInInterfaceBuilder = NO;
   en = [objs objectEnumerator];
   while ((obj = [en nextObject]) != nil)
     {
+      BOOL visibleTemplate = NO;
       id v = NSMapGet(_objects, obj);
       NSInteger oid = [(id)NSMapGet(_oids, obj) intValue];
 
+      if ([obj respondsToSelector: @selector(isVisible)])
+	{
+	  visibleTemplate = [obj isVisible];
+	}
       obj = [self instantiateObject: obj];
+      if (visibleTemplate == YES && [obj isKindOfClass: [NSWindow class]])
+	{
+	  if (visibleObjects == nil)
+	    {
+	      visibleObjects = [NSMutableArray array];
+	    }
+	  [visibleObjects addObject: obj];
+	}
       // Object is top level if it isn't the owner but points to it.
       /* Don't record proxy objects in the top level array. The only
 	 reliable way to identify proxy objects seems to look at their
@@ -2031,10 +2078,21 @@ static BOOL _isInInterfaceBuilder = NO;
     }
 
   // bring visible windows to front...
-  en = [_visibleWindows objectEnumerator];
+  if ([_visibleWindows count] > 0)
+    {
+      en = [_visibleWindows objectEnumerator];
+    }
+  else
+    {
+      en = [visibleObjects objectEnumerator];
+    }
   while ((obj = [en nextObject]) != nil)
     {
-      id w = [obj realObject];
+      id w = obj;
+      if ([obj respondsToSelector: @selector(realObject)])
+	{
+	  w = [obj realObject];
+	}
       [w orderFront: self];
     }
 

@@ -173,6 +173,7 @@ APPKIT_EXPORT_CLASS
 - (NSRect)windowRect;
 - (void) setScreenRect: (NSRect)rect;
 - (NSRect) screenRect;
+- (BOOL) isVisible;
 - (void) setView: (id)view;
 - (id) view;
 - (Class) baseWindowClass;

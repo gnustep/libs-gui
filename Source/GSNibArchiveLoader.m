@@ -54,6 +54,8 @@
       unarchiver = [[GSNibArchiveKeyedUnarchiver alloc]
         initForReadingWithData: data];
       [unarchiver setObjectZone: zone];
+      [unarchiver setClass: [NSWindowTemplate class]
+	      forClassName: @"NSWindow"];
       object = [unarchiver decodeObjectForKey: @"IB.objectdata"];
       if ([object isKindOfClass: [NSIBObjectData class]])
         {
