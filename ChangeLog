@@ -1,3 +1,12 @@
+2026-07-03 Todd White <todd.white@thalion.global>
+
+	* Tests/gui/NSBezierPath/appendingAndContainment.m:
+	Add tests for NSBezierPath areas not covered by the existing tests: the
+	append helpers (appendBezierPathWithRect:, appendBezierPathWithPoints:count:,
+	appendBezierPath:), elementAtIndex:associatedPoints: for a curve,
+	containsPoint:, transformUsingAffineTransform:, the relative moves and
+	current-point state, isEmpty and the line attributes.
+
 2026-06-27 DTW-Thalion <todd.white@thalion.global>
 
 	* Source/GSTable.m (-[GSTable initWithCoder:]): Validate the row and
