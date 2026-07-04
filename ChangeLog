@@ -1,3 +1,11 @@
+2026-07-03 Todd White <todd.white@thalion.global>
+
+	* Tests/gui/NSTextTab/basic.m:
+	* Tests/gui/NSTextTab/TestInfo:
+	Add tests for NSTextTab: the type/alignment mappings in both directions
+	(including the decimal tab from a right alignment with column
+	terminators), the accessors, compare:, isEqual:/hash and copying.
+
 2026-06-27 DTW-Thalion <todd.white@thalion.global>
 
 	* Source/GSTable.m (-[GSTable initWithCoder:]): Validate the row and
