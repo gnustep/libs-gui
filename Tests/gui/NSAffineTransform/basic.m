@@ -1,6 +1,11 @@
 /* Coverage for the AppKit/GNUstep additions to NSAffineTransform:
  * rotationAngle, isRotated, boundingRectFor:result:, the delta transform,
  * concatenateWithMatrix:, setMatrix:/getMatrix: and the frame helpers.
+ *
+ * These are only exercised under the modern Objective-C runtime: the
+ * traditional GNU runtime cannot handle the additions that take a C array
+ * (setMatrix:/getMatrix:/concatenateWithMatrix: use const float[6]) and aborts
+ * when one is sent, so they are skipped there.
  */
 #include "Testing.h"
 #include <math.h>
@@ -8,12 +13,11 @@
 #include <Foundation/NSGeometry.h>
 #include <AppKit/NSAffineTransform.h>
 
-#define EQ(a, b) (fabs((double)(a) - (double)(b)) < 0.001)
-
 int main(int argc, char **argv)
 {
   CREATE_AUTORELEASE_POOL(arp);
 
+#if __OBJC2__
   START_SET("rotationAngle and isRotated")
     NSAffineTransform	*t = [NSAffineTransform transform];
 
@@ -128,6 +132,11 @@ int main(int argc, char **argv)
     PASS(EQ(p.x, 8.0) && EQ(p.y, 6.0),
       "takeMatrixFromTransform: copies another transform");
   END_SET("makeIdentityMatrix and takeMatrixFromTransform")
+#else
+  START_SET("NSAffineTransform GNUstep additions")
+    SKIP("the additions need the modern Objective-C runtime")
+  END_SET("NSAffineTransform GNUstep additions")
+#endif
 
   DESTROY(arp);
   return 0;
