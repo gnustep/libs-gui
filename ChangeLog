@@ -1,5 +1,14 @@
 2026-07-03 Todd White <todd.white@thalion.global>
 
+	* Source/NSGradient.m (-[NSGradient interpolatedColorAtLocation:]):
+	Measure the blend fraction from the lower stop rather than the upper
+	one.  As written the interpolated colour was mirrored within each
+	segment -- correct only at the stops and the exact midpoint -- so a
+	location nearer one stop returned the colour of the other.
+	* Tests/gui/NSGradient/basic.m:
+	* Tests/gui/NSGradient/TestInfo:
+	New tests for construction, the colour stops and the location
+	interpolation.
 	* Tests/gui/NSColor/basic.m:
 	* Tests/gui/NSColor/TestInfo:
 	Add tests for NSColor: the RGB, HSB, CMYK and white component
