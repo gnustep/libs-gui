@@ -1,5 +1,10 @@
 2026-07-03 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSShadow/basic.m:
+	* Tests/gui/NSShadow/TestInfo:
+	Add tests for NSShadow: the defaults, the offset, blur-radius and
+	colour accessors, copying (including independence from the original)
+	and the keyed and non-keyed archiving round trips.
 	* Tests/gui/NSAffineTransform/basic.m:
 	* Tests/gui/NSAffineTransform/TestInfo:
 	Add tests for the AppKit/GNUstep additions to NSAffineTransform:
