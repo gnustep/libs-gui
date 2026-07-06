@@ -291,6 +291,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                            @"image", @"NSSegmentItemImage",
                                            @"editable", @"NSIsEditable",
                                            @"objectValues", @"NSPopUpListData",
+                                           @"prototypeCellViews", @"NSPrototypeCellViews",
                                            @"maxNumberOfRows", @"NSMaxNumberOfGridRows",
                                            @"maxNumberOfColumns", @"NSMaxNumberOfGridColumns",
                                            @"sortKey", @"NSKey",
