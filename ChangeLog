@@ -1,5 +1,10 @@
 2026-07-03 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTextTab/basic.m:
+	* Tests/gui/NSTextTab/TestInfo:
+	Add tests for NSTextTab: the type/alignment mappings in both directions
+	(including the decimal tab from a right alignment with column
+	terminators), the accessors, compare:, isEqual:/hash and copying.
 	* Source/NSTextList.m (-[NSTextList markerForItemNumber:]): Start the
 	alphabetic markers at the first letter.  Item numbers are 1-based (the
 	starting item number defaults to 1, and {decimal} maps item 1 to "1"),
