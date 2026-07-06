@@ -5,6 +5,13 @@
 	Add tests for NSShadow: the defaults, the offset, blur-radius and
 	colour accessors, copying (including independence from the original)
 	and the keyed and non-keyed archiving round trips.
+	* Tests/gui/NSAffineTransform/basic.m:
+	* Tests/gui/NSAffineTransform/TestInfo:
+	Add tests for the AppKit/GNUstep additions to NSAffineTransform:
+	rotationAngle, isRotated, setFrameRotation:, setMatrix:/getMatrix:,
+	deltaPointInMatrixSpace:, concatenateWithMatrix:, boundingRectFor:result:
+	(including a rotated rect), makeIdentityMatrix and
+	takeMatrixFromTransform:.
 
 2026-06-27 DTW-Thalion <todd.white@thalion.global>
 
