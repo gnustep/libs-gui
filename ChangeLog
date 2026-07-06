@@ -5,6 +5,48 @@
 	Add tests for NSTextTab: the type/alignment mappings in both directions
 	(including the decimal tab from a right alignment with column
 	terminators), the accessors, compare:, isEqual:/hash and copying.
+	* Source/NSTextList.m (-[NSTextList markerForItemNumber:]): Start the
+	alphabetic markers at the first letter.  Item numbers are 1-based (the
+	starting item number defaults to 1, and {decimal} maps item 1 to "1"),
+	but {lower-alpha}, {lower-latin}, {upper-alpha} and {upper-latin} added
+	the whole item to 'a'/'A', so the first item was "b"/"B" instead of
+	"a"/"A".
+	* Tests/gui/NSTextList/basic.m:
+	* Tests/gui/NSTextList/TestInfo:
+	New tests for the accessors and markerForItemNumber:.
+	* Tests/gui/NSBezierPath/appendingAndContainment.m:
+	Add tests for NSBezierPath areas not covered by the existing tests: the
+	append helpers (appendBezierPathWithRect:, appendBezierPathWithPoints:count:,
+	appendBezierPath:), elementAtIndex:associatedPoints: for a curve,
+	containsPoint:, transformUsingAffineTransform:, the relative moves and
+	current-point state, isEmpty and the line attributes.
+	* Source/NSGradient.m (-[NSGradient interpolatedColorAtLocation:]):
+	Measure the blend fraction from the lower stop rather than the upper
+	one.  As written the interpolated colour was mirrored within each
+	segment -- correct only at the stops and the exact midpoint -- so a
+	location nearer one stop returned the colour of the other.
+	* Tests/gui/NSGradient/basic.m:
+	* Tests/gui/NSGradient/TestInfo:
+	New tests for construction, the colour stops and the location
+	interpolation.
+	* Tests/gui/NSColor/basic.m:
+	* Tests/gui/NSColor/TestInfo:
+	Add tests for NSColor: the RGB, HSB, CMYK and white component
+	accessors and device-colour clamping, the RGB/HSB and CMYK/RGB
+	conversions with an RGB/HSB round trip, colorWithAlphaComponent:,
+	blendedColorWithFraction:ofColor: and colorUsingColorSpaceName:.
+	* Tests/gui/NSShadow/basic.m:
+	* Tests/gui/NSShadow/TestInfo:
+	Add tests for NSShadow: the defaults, the offset, blur-radius and
+	colour accessors, copying (including independence from the original)
+	and the keyed and non-keyed archiving round trips.
+	* Tests/gui/NSAffineTransform/basic.m:
+	* Tests/gui/NSAffineTransform/TestInfo:
+	Add tests for the AppKit/GNUstep additions to NSAffineTransform:
+	rotationAngle, isRotated, setFrameRotation:, setMatrix:/getMatrix:,
+	deltaPointInMatrixSpace:, concatenateWithMatrix:, boundingRectFor:result:
+	(including a rotated rect), makeIdentityMatrix and
+	takeMatrixFromTransform:.
 
 2026-06-27 DTW-Thalion <todd.white@thalion.global>
 

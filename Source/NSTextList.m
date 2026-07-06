@@ -119,18 +119,18 @@
      options: 0 
      range: NSMakeRange(0, [s length])];
   [s replaceOccurrencesOfString: @"{lower-alpha}" 
-     withString: [NSString stringWithFormat: @"%c", item + 'a']
+     withString: [NSString stringWithFormat: @"%c", item - 1 + 'a']
      options: 0 
      range: NSMakeRange(0, [s length])];
   [s replaceOccurrencesOfString: @"{lower-latin}" 
-     withString: [NSString stringWithFormat: @"%c", item + 'a']
+     withString: [NSString stringWithFormat: @"%c", item - 1 + 'a']
      options: 0
      range: NSMakeRange(0, [s length])];
   [s replaceOccurrencesOfString: @"{upper-alpha}"
-     withString: [NSString stringWithFormat: @"%c", item + 'A']
+     withString: [NSString stringWithFormat: @"%c", item - 1 + 'A']
      options: 0 range: NSMakeRange(0, [s length])];
   [s replaceOccurrencesOfString: @"{upper-latin}"
-     withString: [NSString stringWithFormat: @"%c", item + 'A']
+     withString: [NSString stringWithFormat: @"%c", item - 1 + 'A']
      options: 0
      range: NSMakeRange(0, [s length])];
 
