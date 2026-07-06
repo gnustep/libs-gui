@@ -1,5 +1,11 @@
 2026-07-03 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSColor/basic.m:
+	* Tests/gui/NSColor/TestInfo:
+	Add tests for NSColor: the RGB, HSB, CMYK and white component
+	accessors and device-colour clamping, the RGB/HSB and CMYK/RGB
+	conversions with an RGB/HSB round trip, colorWithAlphaComponent:,
+	blendedColorWithFraction:ofColor: and colorUsingColorSpaceName:.
 	* Tests/gui/NSShadow/basic.m:
 	* Tests/gui/NSShadow/TestInfo:
 	Add tests for NSShadow: the defaults, the offset, blur-radius and
