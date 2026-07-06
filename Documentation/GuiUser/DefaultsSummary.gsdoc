@@ -314,6 +314,19 @@
 	  vertical menu layout.
           </p>
 	  </desc>
+	  <term>GSMenuSubmenuAimTracking</term>
+	  <desc>
+          <p>
+          A boolean controlling how an open submenu decides when to give up
+          being kept open as the pointer moves over its parent menu. When NO
+          (the default) a simple time and horizontal-velocity heuristic is
+          used. When YES, Tognazzini's "aim triangle" is used instead: the
+          submenu stays open while the pointer keeps aiming into it (moving
+          diagonally toward it) and switches immediately on a deliberate move
+          off that path. This applies to vertical menus only; horizontal menu
+          bars keep their instant switch.
+          </p>
+	  </desc>
 	  <term>NSCommandKeys</term>
 	  <desc>
           <p>
