@@ -6,6 +6,19 @@
 	title font and title writing-direction accessors, the manual and
 	automatic behaviour of titleWidth and titleWidth:, the mnemonic title,
 	the attributed title and the string/attributed placeholder pair.
+	* Tests/gui/NSStepperCell/valueLogic.m:
+	* Tests/gui/NSStepperCell/TestInfo:
+	Add tests for NSStepperCell: the defaults, the increment, autorepeat
+	and valueWraps accessors, the value clamping in setMaxValue:,
+	setMinValue: and setObjectValue: (including the fallback to the minimum
+	for a non-numeric or nil object and when the minimum exceeds the
+	maximum), and the keyed and non-keyed archiving round trips.
+	* Tests/gui/NSPrintInfo/dictionary.m:
+	Add tests for NSPrintInfo: the defaults from initWithDictionary:, the
+	paper name/size relationship, the way setPaperSize: and setOrientation:
+	keep the size and orientation consistent, the margin, pagination,
+	centering and jobDisposition accessors, the initWithDictionary: overlay
+	and copy independence.
 	* Source/NSButtonCell.m (-[NSButtonCell stringValue]): Return the
 	string form of the state ("1", "0" or "-1").  An off cell gave "" and a
 	mixed cell "1"; both now match the state as OS X does.
