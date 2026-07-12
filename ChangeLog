@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSSliderCell.m (-[NSSliderCell closestTickMarkValueToValue:]):
+	Break exact halves towards the lower tick, matching OS X (2.5 snapped
+	to 3 rather than 2 with integer ticks).
+	* Tests/gui/NSSliderCell/tickRounding.m:
+	New test for the tie rounding.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
