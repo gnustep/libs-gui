@@ -1,5 +1,12 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTableHeaderCell/headerCell.m:
+	* Tests/gui/NSTableHeaderCell/TestInfo:
+	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
+	string value, the highlight handling and the sort-indicator rectangle.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSFormCell/title.m:
 	* Tests/gui/NSFormCell/TestInfo:
 	Add tests for NSFormCell: the defaults, the title, title alignment,
