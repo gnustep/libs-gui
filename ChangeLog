@@ -1,5 +1,14 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSPopUpButtonCell/menu.m:
+	* Tests/gui/NSPopUpButtonCell/TestInfo:
+	Add tests for the NSPopUpButtonCell menu model: the defaults, adding,
+	inserting and removing titled items, the automatic first-item
+	selection, duplicate-title handling, the item and index queries,
+	selection, and the pull-down/autoenable/edge/arrow-position accessors.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
