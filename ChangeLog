@@ -1,5 +1,11 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSPrintInfo/dictionary.m:
+	Add tests for NSPrintInfo: the defaults from initWithDictionary:, the
+	paper name/size relationship, the way setPaperSize: and setOrientation:
+	keep the size and orientation consistent, the margin, pagination,
+	centering and jobDisposition accessors, the initWithDictionary: overlay
+	and copy independence.
 	* Source/NSButtonCell.m (-[NSButtonCell stringValue]): Return the
 	string form of the state ("1", "0" or "-1").  An off cell gave "" and a
 	mixed cell "1"; both now match the state as OS X does.
