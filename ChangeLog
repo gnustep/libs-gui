@@ -1,5 +1,14 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSTextFieldCell.m (-[NSTextFieldCell initTextCell:]): Use the
+	control text colour for the default text colour, as OS X does, rather
+	than the generic text colour.
+	* Tests/gui/NSTextFieldCell/defaultTextColor.m:
+	* Tests/gui/NSTextFieldCell/TestInfo:
+	New test for the default text colour.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
