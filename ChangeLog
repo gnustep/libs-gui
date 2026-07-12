@@ -1,5 +1,14 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSSegmentedCell/model.m:
+	* Tests/gui/NSSegmentedCell/TestInfo:
+	Add tests for the NSSegmentedCell model: the defaults, the segment
+	count, the per-segment label, width, enabled, tag and tool tip
+	accessors, the single-selection tracking, selection by tag, and the
+	segment style.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
