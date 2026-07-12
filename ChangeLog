@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSMatrix/grid.m:
+	Add tests for the NSMatrix cell grid: the dimensions, adding, inserting
+	and removing rows and columns, the prototype and cell class, the cell
+	size and mode, getRow:column:ofCell:, cellWithTag: and
+	putCell:atRow:column:.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
