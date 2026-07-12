@@ -18,6 +18,11 @@
 	mixed cell "1"; both now match the state as OS X does.
 	* Tests/gui/NSButtonCell/stringValue.m:
 	New test for the string value in each state.
+	* Source/NSTextList.m (-[NSTextList markerForItemNumber:]): Use the
+	small black and white square characters for the {square} and {box}
+	markers, matching AppKit, instead of the full-size squares.
+	* Tests/gui/NSTextList/basic.m: Check the {circle}, {square}, {box},
+	{hyphen} and {diamond} glyph markers.
 
 2026-07-03 Todd White <todd.white@thalion.global>
 
