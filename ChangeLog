@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTextAttachment/basic.m:
+	* Tests/gui/NSTextAttachment/TestInfo:
+	Add tests for NSTextAttachment: the default attachment cell, the file
+	wrapper round-trip and the attachment cell round-trip with its back
+	reference.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTextFieldCell/attributes.m:
 	* Tests/gui/NSTextFieldCell/TestInfo:
 	Add tests for NSTextFieldCell: the drawsBackground, bezel style,
