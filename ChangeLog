@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSStepper/control.m:
+	* Tests/gui/NSStepper/TestInfo:
+	Add tests for the NSStepper control: the cell class, the value defaults,
+	the forwarding of the min/max, increment, autorepeat and value-wrapping
+	setters to the cell, and the value clamping.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
