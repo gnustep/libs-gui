@@ -1,5 +1,14 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTextFieldCell/attributes.m:
+	* Tests/gui/NSTextFieldCell/TestInfo:
+	Add tests for NSTextFieldCell: the drawsBackground, bezel style,
+	background colour and placeholder defaults, the colour and bezel-style
+	accessors, the string/attributed placeholder pair and the stored string
+	value.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
