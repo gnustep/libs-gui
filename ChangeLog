@@ -1,5 +1,15 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSSecureTextField.m (-[NSSecureTextFieldCell initTextCell:]):
+	Default echosBullets to YES so a freshly created cell echoes bullets,
+	matching NSSecureTextField and Apple. The flag was left at NO because
+	no initialiser set it.
+	* Tests/gui/NSSecureTextField/echosBulletsDefault.m:
+	* Tests/gui/NSSecureTextField/TestInfo:
+	New test for the default.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
