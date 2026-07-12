@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSComboBoxCell/list.m:
+	* Tests/gui/NSComboBoxCell/TestInfo:
+	Add tests for the NSComboBoxCell internal item list: the defaults,
+	adding, inserting and removing items, the item and object-value
+	queries, selection by index and object value, and completedString:.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
