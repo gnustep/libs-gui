@@ -1,5 +1,12 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSStepperCell/valueLogic.m:
+	* Tests/gui/NSStepperCell/TestInfo:
+	Add tests for NSStepperCell: the defaults, the increment, autorepeat
+	and valueWraps accessors, the value clamping in setMaxValue:,
+	setMinValue: and setObjectValue: (including the fallback to the minimum
+	for a non-numeric or nil object and when the minimum exceeds the
+	maximum), and the keyed and non-keyed archiving round trips.
 	* Tests/gui/NSPrintInfo/dictionary.m:
 	Add tests for NSPrintInfo: the defaults from initWithDictionary:, the
 	paper name/size relationship, the way setPaperSize: and setOrientation:
