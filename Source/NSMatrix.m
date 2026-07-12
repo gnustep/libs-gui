@@ -1267,6 +1267,10 @@ static SEL getSel;
 
   if (aCell)
     {
+      if (_mode == NSListModeMatrix)
+	{
+	  [self deselectAllCells];
+	}
       [self _selectCell: aCell atRow: row column: column];
       [self selectTextAtRow: row column: column];
     }

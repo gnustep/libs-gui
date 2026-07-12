@@ -1,5 +1,15 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSMatrix.m (-[NSMatrix selectCellAtRow:column:]): Deselect the
+	existing selection in list mode before selecting the cell, so the method
+	selects a single cell as OS X does.  Mouse dragging, which uses other
+	methods, still extends the selection.
+	* Tests/gui/NSMatrix/listSingleSelect.m:
+	* Tests/gui/NSMatrix/TestInfo:
+	New test for the single selection.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
