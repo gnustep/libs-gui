@@ -1,5 +1,14 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSMatrix.m (-[NSMatrix cellClass]): Return Nil when the matrix
+	uses a cell prototype, as OS X does, rather than the prototype cell's
+	class.
+	* Tests/gui/NSMatrix/cellClassPrototype.m:
+	* Tests/gui/NSMatrix/TestInfo:
+	New test for the cell class / prototype relationship.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the

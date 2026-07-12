@@ -3009,6 +3009,11 @@ static SEL getSel;
  */
 - (Class) cellClass
 {
+  /* A matrix that uses a cell prototype has no cell class, as on OS X.  */
+  if (_cellPrototype != nil)
+    {
+      return Nil;
+    }
   return _cellClass;
 }
 
