@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTableColumn/model.m:
+	* Tests/gui/NSTableColumn/TestInfo:
+	Add tests for the NSTableColumn model: the identifier, the defaults, the
+	width clamping, the resizing mask, the title, the default header and
+	data cells, and the editable/hidden accessors.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
