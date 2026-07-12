@@ -1,5 +1,14 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSComboBoxCell.m (-[NSComboBoxCell completedString:]): Return
+	nil when no item completes the substring, as OS X does, rather than
+	echoing the substring back.
+	* Tests/gui/NSComboBoxCell/completedStringNoMatch.m:
+	* Tests/gui/NSComboBoxCell/TestInfo:
+	New test for the no-match case.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
