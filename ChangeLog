@@ -1,3 +1,13 @@
+2026-07-12 Todd White <todd.white@thalion.global>
+
+	* Tests/gui/NSStepperCell/valueLogic.m:
+	* Tests/gui/NSStepperCell/TestInfo:
+	Add tests for NSStepperCell: the defaults, the increment, autorepeat
+	and valueWraps accessors, the value clamping in setMaxValue:,
+	setMinValue: and setObjectValue: (including the fallback to the minimum
+	for a non-numeric or nil object and when the minimum exceeds the
+	maximum), and the keyed and non-keyed archiving round trips.
+
 2026-07-03 Todd White <todd.white@thalion.global>
 
 	* Tests/gui/NSTextTab/basic.m:
