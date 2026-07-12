@@ -641,6 +641,18 @@ static float	buttonsOffset = 1.0; // buttonsWidth = sw - 2*buttonsOffset
 
 - (void) setFloatValue: (float)aFloat knobProportion: (CGFloat)ratio
 {
+  /* Clamp into [0,1] before the _doubleValue = -1 redisplay marker below:
+     an aFloat of -1 would otherwise match that marker and -setDoubleValue:
+     would skip it as an unchanged value.  */
+  if (aFloat < 0.0)
+    {
+      aFloat = 0.0;
+    }
+  else if (aFloat > 1.0)
+    {
+      aFloat = 1.0;
+    }
+
   if (_hitPart == NSScrollerNoPart)
     {
       [self setKnobProportion: ratio];

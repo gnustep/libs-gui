@@ -1,5 +1,15 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSScroller.m (-[NSScroller setFloatValue:knobProportion:]):
+	Clamp the value into [0,1] before the redisplay marker is set, so a
+	value of -1 (which matched the marker and was skipped by setDoubleValue:)
+	clamps to 0 as OS X does.
+	* Tests/gui/NSScroller/clampFloatValue.m:
+	* Tests/gui/NSScroller/TestInfo:
+	New test for the value clamping.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
