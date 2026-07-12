@@ -460,12 +460,33 @@ static NSImage *_pbc_image[5];
  */
 - (void) removeItemAtIndex: (NSInteger)index
 {
-  if (index == [self indexOfSelectedItem])
+  BOOL removingSelected = (index == [self indexOfSelectedItem]);
+  id <NSMenuItem> keepSelected = removingSelected ? nil : _selectedItem;
+
+  if (removingSelected)
     {
       [self selectItem: nil];
     }
 
   [_menu removeItemAtIndex: index];
+
+  if (removingSelected)
+    {
+      /* When the selected item is removed, select the first remaining item
+         rather than leaving the popup with no selection, as OS X does.  */
+      if ([_menu numberOfItems] > 0)
+        {
+          [self selectItemAtIndex: 0];
+        }
+    }
+  else if (keepSelected != nil)
+    {
+      /* Removing an item posts a notification that re-syncs the selection
+         from the menu view's highlighted index, which does not track the
+         removed item; re-select the item that was selected so the selection
+         stays on it, as OS X does.  */
+      [self selectItem: keepSelected];
+    }
 }
 
 /**
