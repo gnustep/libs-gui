@@ -1,5 +1,14 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSSecureTextField/echo.m:
+	* Tests/gui/NSSecureTextField/TestInfo:
+	Add tests for NSSecureTextField and NSSecureTextFieldCell: the
+	hard-wired cell class, the echosBullets flag and its delegation from
+	the field to the cell, the fixed-pitch font substitution, the stored
+	string value and the NSCoding round trip.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
