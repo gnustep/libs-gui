@@ -162,25 +162,29 @@
 
 - (CGFloat) widthForLayer: (NSTextBlockLayer)layer edge: (NSRectEdge)edge
 {
-  if (layer >= sizeof(_width) / sizeof(_width[0]))
+  NSInteger l = layer - NSTextBlockPadding;
+
+  if (l < 0 || l >= (NSInteger)(sizeof(_width) / sizeof(_width[0])))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid layer %d", layer];
   if (edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid edge %lu", (unsigned long) edge];
-  return _width[layer][edge];
+  return _width[l][edge];
 }
 
 - (NSTextBlockValueType) widthValueTypeForLayer: (NSTextBlockLayer)layer
                                            edge: (NSRectEdge)edge
 {
-  if (layer >= sizeof(_width) / sizeof(_width[0]))
+  NSInteger l = layer - NSTextBlockPadding;
+
+  if (l < 0 || l >= (NSInteger)(sizeof(_width) / sizeof(_width[0])))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid layer %d", layer];
   if (edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid edge %lu", (unsigned long) edge];
-  return _widthType[layer][edge];
+  return _widthType[l][edge];
 }
 
 - (void) setWidth: (CGFloat)val
@@ -188,39 +192,45 @@
          forLayer: (NSTextBlockLayer)layer
              edge: (NSRectEdge)edge
 {
-  if (layer >= sizeof(_width) / sizeof(_width[0]))
+  NSInteger l = layer - NSTextBlockPadding;
+
+  if (l < 0 || l >= (NSInteger)(sizeof(_width) / sizeof(_width[0])))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid layer %d", layer];
   if (edge >= sizeof(_width[0]) / sizeof(_width[0][0]))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid edge %lu", (unsigned long) edge];
-  _width[layer][edge] = val;
-  _widthType[layer][edge] = type;
+  _width[l][edge] = val;
+  _widthType[l][edge] = type;
 }
 
 - (void) setWidth: (CGFloat)val
-             type: (NSTextBlockValueType)type 
+             type: (NSTextBlockValueType)type
          forLayer: (NSTextBlockLayer)layer
 {
-  if (layer >= sizeof(_width) / sizeof(_width[0]))
+  NSInteger l = layer - NSTextBlockPadding;
+
+  if (l < 0 || l >= (NSInteger)(sizeof(_width) / sizeof(_width[0])))
     [NSException raise: NSInvalidArgumentException
 		 format: @"invalid layer %d", layer];
-  _width[layer][NSMinXEdge] = val;
-  _widthType[layer][NSMinXEdge] = type;
-  _width[layer][NSMinYEdge] = val;
-  _widthType[layer][NSMinYEdge] = type;
-  _width[layer][NSMaxXEdge] = val;
-  _widthType[layer][NSMaxXEdge] = type;
-  _width[layer][NSMaxYEdge] = val;
-  _widthType[layer][NSMaxYEdge] = type;
+  _width[l][NSMinXEdge] = val;
+  _widthType[l][NSMinXEdge] = type;
+  _width[l][NSMinYEdge] = val;
+  _widthType[l][NSMinYEdge] = type;
+  _width[l][NSMaxXEdge] = val;
+  _widthType[l][NSMaxXEdge] = type;
+  _width[l][NSMaxYEdge] = val;
+  _widthType[l][NSMaxYEdge] = type;
 }
 
 - (CGFloat) _scaledWidthValue: (NSTextBlockLayer) layer : (NSRectEdge) edge : (NSSize) size
 {
-  if (_widthType[layer][edge] == NSTextBlockAbsoluteValueType)
+  NSInteger l = layer - NSTextBlockPadding;
+
+  if (_widthType[l][edge] == NSTextBlockAbsoluteValueType)
     {
       // absolute
-      return _width[layer][edge];
+      return _width[l][edge];
     }
   else
     {
@@ -229,13 +239,13 @@
         {
         case NSMinXEdge:
         case NSMaxXEdge:
-          return _widthType[layer][edge]*size.width;
+          return _widthType[l][edge]*size.width;
         case NSMinYEdge:
         case NSMaxYEdge:
-          return _widthType[layer][edge]*size.height;
+          return _widthType[l][edge]*size.height;
         }
     }
-  return 0.0;	
+  return 0.0;
 }
 
 - (NSRect) boundsRectForContentRect: (NSRect)cont
