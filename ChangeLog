@@ -1,5 +1,16 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSTableColumn.m (-[NSTableColumn setResizable:], -[NSTableColumn
+	setResizingMask:]): Keep the resizable flag and the resizing mask
+	consistent, as OS X does.  setResizable: now sets the mask to the
+	auto/user resizing combination or to no resizing, and setResizingMask:
+	updates the resizable flag from whether the mask allows any resizing.
+	* Tests/gui/NSTableColumn/resizableMask.m:
+	* Tests/gui/NSTableColumn/TestInfo:
+	New test for the resizable/mask relationship.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the

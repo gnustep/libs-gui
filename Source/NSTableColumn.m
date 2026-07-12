@@ -296,15 +296,15 @@
 - (void) setResizable: (BOOL)flag
 {
   _is_resizable = flag;
-  // TODO: To match Cocoa behavior, should be replaced by
-  //if (flag)
-  //  {
-  //    [self setResizingMask: NSTableColumnAutoresizingMask | NSTableColumnUserResizingMask)];
-  //  }
-  //else
-  //  {
-  //    [self setResizingMask: NSTableColumnNoResizing];
-  //  }
+  if (flag)
+    {
+      _resizing_mask = NSTableColumnAutoresizingMask
+	| NSTableColumnUserResizingMask;
+    }
+  else
+    {
+      _resizing_mask = NSTableColumnNoResizing;
+    }
 }
 
 /**
@@ -313,16 +313,15 @@
 - (BOOL) isResizable
 {
   return _is_resizable;
-  // TODO: To match Cocoa behavior, should be replaced by
-  //return (BOOL)[self autoresizingMask];
 }
 
 /**
-Return the resizing mask that describes whether the column is resizable and how 
+Return the resizing mask that describes whether the column is resizable and how
 it resizes. */
 - (void) setResizingMask: (NSUInteger)resizingMask
 {
   _resizing_mask = resizingMask;
+  _is_resizable = (resizingMask != NSTableColumnNoResizing);
 }
 
 /**
