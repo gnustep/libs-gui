@@ -1,3 +1,11 @@
+2026-07-12 Todd White <todd.white@thalion.global>
+
+	* Source/NSButtonCell.m (-[NSButtonCell stringValue]): Return the
+	string form of the state ("1", "0" or "-1").  An off cell gave "" and a
+	mixed cell "1"; both now match the state as OS X does.
+	* Tests/gui/NSButtonCell/stringValue.m:
+	New test for the string value in each state.
+
 2026-07-03 Todd White <todd.white@thalion.global>
 
 	* Tests/gui/NSTextTab/basic.m:
