@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSScroller/value.m:
+	* Tests/gui/NSScroller/TestInfo:
+	Add tests for the NSScroller value model: the orientation-dependent
+	arrow position, the default hit part and control size, setting the value
+	and knob proportion, the clamping into [0,1], and the accessors.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
