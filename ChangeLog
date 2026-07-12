@@ -1,3 +1,12 @@
+2026-07-12 Todd White <todd.white@thalion.global>
+
+	* Tests/gui/NSFormCell/title.m:
+	* Tests/gui/NSFormCell/TestInfo:
+	Add tests for NSFormCell: the defaults, the title, title alignment,
+	title font and title writing-direction accessors, the manual and
+	automatic behaviour of titleWidth and titleWidth:, the mnemonic title,
+	the attributed title and the string/attributed placeholder pair.
+
 2026-07-03 Todd White <todd.white@thalion.global>
 
 	* Tests/gui/NSTextTab/basic.m:
