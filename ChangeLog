@@ -1,5 +1,14 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTextView/typingAttributes.m:
+	* Tests/gui/NSTextView/TestInfo:
+	Add tests for the NSTextView typing attributes and related state: the
+	defaults, the string, the way setFont: and setTextColor: update the
+	typing attributes, setTypingAttributes:, and the editable/selectable
+	coupling.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the
