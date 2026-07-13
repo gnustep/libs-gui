@@ -21,6 +21,9 @@ main(int argc, char **argv)
       && NSTextBlockMaximumWidth == 2 && NSTextBlockHeight == 4
       && NSTextBlockMinimumHeight == 5 && NSTextBlockMaximumHeight == 6,
       "the NSTextBlockDimension values match AppKit");
+    PASS(NSTextBlockPadding == -1 && NSTextBlockBorder == 0
+      && NSTextBlockMargin == 1,
+      "the NSTextBlockLayer values match AppKit");
   END_SET("dimension constant values")
 
   START_SET("NSTextBlock defaults")

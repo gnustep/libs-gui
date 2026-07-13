@@ -7,6 +7,14 @@
 
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Headers/AppKit/NSTextTable.h: Give the NSTextBlockLayer constants
+	their AppKit values (NSTextBlockPadding is -1, not 0).
+	* Source/NSTextBlock.m: Index the width arrays by the layer offset from
+	NSTextBlockPadding so the padding layer maps to the first slot.
+	* Tests/gui/NSTextTable/basic.m: Check the layer constant values.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Headers/AppKit/NSTextTable.h: Give the NSTextBlockDimension constants
 	their AppKit values; the height dimensions were one short because
 	AppKit leaves the value 3 unused.
