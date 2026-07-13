@@ -1,5 +1,10 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSSliderCell.m (-[NSSliderCell closestTickMarkValueToValue:]):
+	Break exact halves towards the lower tick, matching OS X (2.5 snapped
+	to 3 rather than 2 with integer ticks).
+	* Tests/gui/NSSliderCell/tickRounding.m:
+	New test for the tie rounding.
 	* Source/NSSecureTextField.m (-[NSSecureTextFieldCell initTextCell:]):
 	Default echosBullets to YES so a freshly created cell echoes bullets,
 	matching NSSecureTextField and Apple. The flag was left at NO because
