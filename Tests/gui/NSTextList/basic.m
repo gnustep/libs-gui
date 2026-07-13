@@ -69,12 +69,27 @@ int main(int argc, char **argv)
 
   START_SET("glyph markers are independent of the item number")
     NSString	*disc = marker(@"{disc}", 1);
+    NSString	*circle = marker(@"{circle}", 1);
+    NSString	*square = marker(@"{square}", 1);
+    NSString	*box = marker(@"{box}", 1);
+    NSString	*hyphen = marker(@"{hyphen}", 1);
     NSString	*check = marker(@"{check}", 7);
+    NSString	*diamond = marker(@"{diamond}", 1);
 
     PASS(1 == [disc length] && 0x2022 == [disc characterAtIndex: 0],
       "{disc} is the bullet character");
+    PASS(1 == [circle length] && 0x25E6 == [circle characterAtIndex: 0],
+      "{circle} is the white bullet character");
+    PASS(1 == [square length] && 0x25AA == [square characterAtIndex: 0],
+      "{square} is the small black square character");
+    PASS(1 == [box length] && 0x25AB == [box characterAtIndex: 0],
+      "{box} is the small white square character");
+    PASS(1 == [hyphen length] && 0x2043 == [hyphen characterAtIndex: 0],
+      "{hyphen} is the hyphen bullet character");
     PASS(1 == [check length] && 0x2713 == [check characterAtIndex: 0],
       "{check} is the check character");
+    PASS(1 == [diamond length] && 0x25C6 == [diamond characterAtIndex: 0],
+      "{diamond} is the black diamond character");
   END_SET("glyph markers are independent of the item number")
 
   START_SET("copy")

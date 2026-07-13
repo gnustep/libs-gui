@@ -6,6 +6,118 @@
 	defaults, the string, the way setFont: and setTextColor: update the
 	typing attributes, setTypingAttributes:, and the editable/selectable
 	coupling.
+	* Tests/gui/NSSegmentedCell/model.m:
+	* Tests/gui/NSSegmentedCell/TestInfo:
+	Add tests for the NSSegmentedCell model: the defaults, the segment
+	count, the per-segment label, width, enabled, tag and tool tip
+	accessors, the single-selection tracking, selection by tag, and the
+	segment style.
+	* Source/NSScroller.m (-[NSScroller setFloatValue:knobProportion:]):
+	Clamp the value into [0,1] before the redisplay marker is set, so a
+	value of -1 (which matched the marker and was skipped by setDoubleValue:)
+	clamps to 0 as OS X does.
+	* Tests/gui/NSScroller/clampFloatValue.m:
+	* Tests/gui/NSScroller/TestInfo:
+	New test for the value clamping.
+	* Tests/gui/NSScroller/value.m:
+	* Tests/gui/NSScroller/TestInfo:
+	Add tests for the NSScroller value model: the orientation-dependent
+	arrow position, the default hit part and control size, setting the value
+	and knob proportion, the clamping into [0,1], and the accessors.
+	* Source/NSMatrix.m (-[NSMatrix cellClass]): Return Nil when the matrix
+	uses a cell prototype, as OS X does, rather than the prototype cell's
+	class.
+	* Tests/gui/NSMatrix/cellClassPrototype.m:
+	* Tests/gui/NSMatrix/TestInfo:
+	New test for the cell class / prototype relationship.
+	* Tests/gui/NSMatrix/grid.m:
+	Add tests for the NSMatrix cell grid: the dimensions, adding, inserting
+	and removing rows and columns, the prototype and cell class, the cell
+	size and mode, getRow:column:ofCell:, cellWithTag: and
+	putCell:atRow:column:.
+	* Source/NSTableColumn.m (-[NSTableColumn setResizable:], -[NSTableColumn
+	setResizingMask:]): Keep the resizable flag and the resizing mask
+	consistent, as OS X does.  setResizable: now sets the mask to the
+	auto/user resizing combination or to no resizing, and setResizingMask:
+	updates the resizable flag from whether the mask allows any resizing.
+	* Tests/gui/NSTableColumn/resizableMask.m:
+	* Tests/gui/NSTableColumn/TestInfo:
+	New test for the resizable/mask relationship.
+	* Tests/gui/NSTableColumn/model.m:
+	* Tests/gui/NSTableColumn/TestInfo:
+	Add tests for the NSTableColumn model: the identifier, the defaults, the
+	width clamping, the resizing mask, the title, the default header and
+	data cells, and the editable/hidden accessors.
+	* Source/NSPopUpButtonCell.m (-[NSPopUpButtonCell removeItemAtIndex:]):
+	Keep the correct selection when removing an item, as OS X does.  When
+	the selected item is removed, select the first remaining item rather
+	than leaving the popup with no selection.  When another item is
+	removed, re-select the item that was selected: removing an item posts a
+	notification that re-syncs the selection from the menu view's
+	highlighted index, which does not track the removed item, so the
+	selection would otherwise move to a different item.
+	* Tests/gui/NSPopUpButtonCell/removeSelected.m:
+	* Tests/gui/NSPopUpButtonCell/TestInfo:
+	New test for the selection after removing an item.
+	* Tests/gui/NSPopUpButtonCell/menu.m:
+	* Tests/gui/NSPopUpButtonCell/TestInfo:
+	Add tests for the NSPopUpButtonCell menu model: the defaults, adding,
+	inserting and removing titled items, the automatic first-item
+	selection, duplicate-title handling, the item and index queries,
+	selection, and the pull-down/autoenable/edge/arrow-position accessors.
+	* Tests/gui/NSStepper/control.m:
+	* Tests/gui/NSStepper/TestInfo:
+	Add tests for the NSStepper control: the cell class, the value defaults,
+	the forwarding of the min/max, increment, autorepeat and value-wrapping
+	setters to the cell, and the value clamping.
+	* Source/NSComboBoxCell.m (-[NSComboBoxCell completedString:]): Return
+	nil when no item completes the substring, as OS X does, rather than
+	echoing the substring back.
+	* Tests/gui/NSComboBoxCell/completedStringNoMatch.m:
+	* Tests/gui/NSComboBoxCell/TestInfo:
+	New test for the no-match case.
+	* Tests/gui/NSComboBoxCell/list.m:
+	* Tests/gui/NSComboBoxCell/TestInfo:
+	Add tests for the NSComboBoxCell internal item list: the defaults,
+	adding, inserting and removing items, the item and object-value
+	queries, selection by index and object value, and completedString:.
+	* Source/NSTextFieldCell.m (-[NSTextFieldCell initTextCell:]): Use the
+	control text colour for the default text colour, as OS X does, rather
+	than the generic text colour.
+	* Tests/gui/NSTextFieldCell/defaultTextColor.m:
+	* Tests/gui/NSTextFieldCell/TestInfo:
+	New test for the default text colour.
+	* Source/NSMatrix.m (-[NSMatrix selectCellAtRow:column:]): Deselect the
+	existing selection in list mode before selecting the cell, so the method
+	selects a single cell as OS X does.  Mouse dragging, which uses other
+	methods, still extends the selection.
+	* Tests/gui/NSMatrix/listSingleSelect.m:
+	* Tests/gui/NSMatrix/TestInfo:
+	New test for the single selection.
+	* Source/NSSliderCell.m (-[NSSliderCell closestTickMarkValueToValue:]):
+	Break exact halves towards the lower tick, matching OS X (2.5 snapped
+	to 3 rather than 2 with integer ticks).
+	* Tests/gui/NSSliderCell/tickRounding.m:
+	New test for the tie rounding.
+	* Source/NSSecureTextField.m (-[NSSecureTextFieldCell initTextCell:]):
+	Default echosBullets to YES so a freshly created cell echoes bullets,
+	matching NSSecureTextField and Apple. The flag was left at NO because
+	no initialiser set it.
+	* Tests/gui/NSSecureTextField/echosBulletsDefault.m:
+	* Tests/gui/NSSecureTextField/TestInfo:
+	New test for the default.
+	* Tests/gui/NSSecureTextField/echo.m:
+	* Tests/gui/NSSecureTextField/TestInfo:
+	Add tests for NSSecureTextField and NSSecureTextFieldCell: the
+	hard-wired cell class, the echosBullets flag and its delegation from
+	the field to the cell, the fixed-pitch font substitution, the stored
+	string value and the NSCoding round trip.
+	* Tests/gui/NSTextFieldCell/attributes.m:
+	* Tests/gui/NSTextFieldCell/TestInfo:
+	Add tests for NSTextFieldCell: the drawsBackground, bezel style,
+	background colour and placeholder defaults, the colour and bezel-style
+	accessors, the string/attributed placeholder pair and the stored string
+	value.
 
 2026-07-12 Todd White <todd.white@thalion.global>
 
@@ -40,6 +152,11 @@
 	mixed cell "1"; both now match the state as OS X does.
 	* Tests/gui/NSButtonCell/stringValue.m:
 	New test for the string value in each state.
+	* Source/NSTextList.m (-[NSTextList markerForItemNumber:]): Use the
+	small black and white square characters for the {square} and {box}
+	markers, matching AppKit, instead of the full-size squares.
+	* Tests/gui/NSTextList/basic.m: Check the {circle}, {square}, {box},
+	{hyphen} and {diamond} glyph markers.
 
 2026-07-03 Todd White <todd.white@thalion.global>
 

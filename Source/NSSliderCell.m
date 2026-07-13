@@ -860,7 +860,9 @@ double _doubleValueForMousePoint (NSPoint point, NSRect knobRect,
 
   d = _maxValue - _minValue;
   f = ((aValue - _minValue)  * (effectiveTicks - 1)) / d;
-  f = ((GSRoundTowardsInfinity(f) * d) / (effectiveTicks - 1)) + _minValue;
+  /* Snap to the nearest tick, breaking ties towards the lower tick to
+     match OS X. */
+  f = ((-GSRoundTowardsInfinity(-f) * d) / (effectiveTicks - 1)) + _minValue;
 
   /* never return the maximum value, tested on Apple */
   if (_type == NSCircularSlider && (f >= _maxValue))
