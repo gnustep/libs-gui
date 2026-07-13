@@ -1,5 +1,10 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTableColumn/model.m:
+	* Tests/gui/NSTableColumn/TestInfo:
+	Add tests for the NSTableColumn model: the identifier, the defaults, the
+	width clamping, the resizing mask, the title, the default header and
+	data cells, and the editable/hidden accessors.
 	* Source/NSPopUpButtonCell.m (-[NSPopUpButtonCell removeItemAtIndex:]):
 	Keep the correct selection when removing an item, as OS X does.  When
 	the selected item is removed, select the first remaining item rather
