@@ -1,5 +1,12 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSHelpManager/basic.m:
+	* Tests/gui/NSHelpManager/TestInfo:
+	Add tests for NSHelpManager: the shared instance, the context help
+	set/get/remove round-trip and the context help mode flag.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTextFieldCell/attributes.m:
 	* Tests/gui/NSTextFieldCell/TestInfo:
 	Add tests for NSTextFieldCell: the drawsBackground, bezel style,
