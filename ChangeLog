@@ -1,5 +1,14 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Headers/AppKit/NSTrackingArea.h: Give the NSTrackingAreaOptions
+	constants their AppKit values; the active and later options were off
+	by the unused 0x08 bit.
+	* Source/NSTrackingArea.m (-[NSTrackingArea initWithRect:options:owner:
+	userInfo:]): Retain the userInfo argument rather than the nil ivar, so
+	-userInfo returns the dictionary that was passed in.
+	* Tests/gui/NSTrackingArea/basic.m:
+	* Tests/gui/NSTrackingArea/TestInfo:
+	New test for the option values, the accessors and copy.
 	* Tests/gui/NSTextView/typingAttributes.m:
 	* Tests/gui/NSTextView/TestInfo:
 	Add tests for the NSTextView typing attributes and related state: the
