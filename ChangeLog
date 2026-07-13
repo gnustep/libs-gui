@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSColorSpace/basic.m:
+	* Tests/gui/NSColorSpace/TestInfo:
+	Add tests for NSColorSpace: the model enum values, and the colour
+	space model, component count, name and singleton identity of the
+	standard colour spaces.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTextFieldCell/attributes.m:
 	* Tests/gui/NSTextFieldCell/TestInfo:
 	Add tests for NSTextFieldCell: the drawsBackground, bezel style,
