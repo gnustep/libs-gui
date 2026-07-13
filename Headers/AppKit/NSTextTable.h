@@ -47,19 +47,19 @@ typedef enum _NSTextBlockValueType
 
 typedef enum _NSTextBlockDimension
 {
-	NSTextBlockWidth,
-	NSTextBlockMinimumWidth,	
-	NSTextBlockMaximumWidth,
-	NSTextBlockHeight,
-	NSTextBlockMinimumHeight,	
-	NSTextBlockMaximumHeight
+	NSTextBlockWidth = 0,
+	NSTextBlockMinimumWidth = 1,
+	NSTextBlockMaximumWidth = 2,
+	NSTextBlockHeight = 4,
+	NSTextBlockMinimumHeight = 5,
+	NSTextBlockMaximumHeight = 6
 } NSTextBlockDimension;
 
 typedef enum _NSTextBlockLayer
 {
-	NSTextBlockPadding,	
-	NSTextBlockBorder,
-	NSTextBlockMargin
+	NSTextBlockPadding = -1,
+	NSTextBlockBorder = 0,
+	NSTextBlockMargin = 1
 } NSTextBlockLayer;
 
 typedef enum _NSTextBlockVerticalAlignment
@@ -79,8 +79,8 @@ APPKIT_EXPORT_CLASS
   // The following ivars come in pairs
   CGFloat _value[NSTextBlockMaximumHeight + 1];
   NSTextBlockValueType _valueType[NSTextBlockMaximumHeight + 1];
-  CGFloat _width[NSTextBlockMargin + 1][NSMaxYEdge + 1];
-  NSTextBlockValueType _widthType[NSTextBlockMargin + 1][NSMaxYEdge + 1];
+  CGFloat _width[NSTextBlockMargin - NSTextBlockPadding + 1][NSMaxYEdge + 1];
+  NSTextBlockValueType _widthType[NSTextBlockMargin - NSTextBlockPadding + 1][NSMaxYEdge + 1];
 }
 
 - (NSColor *) backgroundColor;
