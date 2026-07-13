@@ -8,6 +8,7 @@
  */
 #include "Testing.h"
 #include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSData.h>
 #include <Foundation/NSString.h>
 #include <AppKit/NSColorSpace.h>
 
@@ -55,6 +56,23 @@ main(int argc, char **argv)
       && [cmyk numberOfColorComponents] == 4,
       "the device CMYK space is a CMYK model with four components");
   END_SET("device colour spaces")
+
+  START_SET("generic RGB has an ICC profile")
+    NSData	*icc = [[NSColorSpace genericRGBColorSpace] ICCProfileData];
+
+    PASS(icc != nil, "the generic RGB space reports ICC profile data");
+    if (icc != nil && [icc length] >= 40)
+      {
+        const unsigned char *b = [icc bytes];
+
+        PASS(b[36] == 'a' && b[37] == 'c' && b[38] == 's' && b[39] == 'p',
+          "the profile carries the acsp signature");
+      }
+    else
+      {
+        PASS(0, "the profile is long enough to hold a header");
+      }
+  END_SET("generic RGB has an ICC profile")
 
   START_SET("standard spaces are shared")
     PASS([NSColorSpace genericRGBColorSpace]
