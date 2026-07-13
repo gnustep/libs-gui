@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTextContainer/basic.m:
+	* Tests/gui/NSTextContainer/TestInfo:
+	Add tests for NSTextContainer: the defaults, the container size and
+	line fragment padding, the width and height tracking flags,
+	isSimpleRectangularTextContainer and containsPoint:.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Headers/AppKit/NSTrackingArea.h: Give the NSTrackingAreaOptions
 	constants their AppKit values; the active and later options were off
 	by the unused 0x08 bit.
