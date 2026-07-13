@@ -1267,6 +1267,10 @@ static SEL getSel;
 
   if (aCell)
     {
+      if (_mode == NSListModeMatrix)
+	{
+	  [self deselectAllCells];
+	}
       [self _selectCell: aCell atRow: row column: column];
       [self selectTextAtRow: row column: column];
     }
@@ -3009,6 +3013,11 @@ static SEL getSel;
  */
 - (Class) cellClass
 {
+  /* A matrix that uses a cell prototype has no cell class, as on OS X.  */
+  if (_cellPrototype != nil)
+    {
+      return Nil;
+    }
   return _cellClass;
 }
 
