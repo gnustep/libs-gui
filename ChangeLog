@@ -1,3 +1,10 @@
+2026-07-13 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSTheme.m:
+	* Source/NSImage.m:
+	Fix overly eager caching which prevented image updates in a theme from
+	working reliably.
+
 2026-07-12 Todd White <todd.white@thalion.global>
 
 	* Headers/AppKit/NSTextTable.h: Give the NSTextBlockDimension constants
