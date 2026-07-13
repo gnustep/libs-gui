@@ -1,5 +1,16 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSPopUpButtonCell.m (-[NSPopUpButtonCell removeItemAtIndex:]):
+	Keep the correct selection when removing an item, as OS X does.  When
+	the selected item is removed, select the first remaining item rather
+	than leaving the popup with no selection.  When another item is
+	removed, re-select the item that was selected: removing an item posts a
+	notification that re-syncs the selection from the menu view's
+	highlighted index, which does not track the removed item, so the
+	selection would otherwise move to a different item.
+	* Tests/gui/NSPopUpButtonCell/removeSelected.m:
+	* Tests/gui/NSPopUpButtonCell/TestInfo:
+	New test for the selection after removing an item.
 	* Tests/gui/NSPopUpButtonCell/menu.m:
 	* Tests/gui/NSPopUpButtonCell/TestInfo:
 	Add tests for the NSPopUpButtonCell menu model: the defaults, adding,
