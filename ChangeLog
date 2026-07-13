@@ -1,5 +1,11 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSTextFieldCell.m (-[NSTextFieldCell initTextCell:]): Use the
+	control text colour for the default text colour, as OS X does, rather
+	than the generic text colour.
+	* Tests/gui/NSTextFieldCell/defaultTextColor.m:
+	* Tests/gui/NSTextFieldCell/TestInfo:
+	New test for the default text colour.
 	* Source/NSMatrix.m (-[NSMatrix selectCellAtRow:column:]): Deselect the
 	existing selection in list mode before selecting the cell, so the method
 	selects a single cell as OS X does.  Mouse dragging, which uses other
