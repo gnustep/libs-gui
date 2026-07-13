@@ -135,6 +135,16 @@
     }
 }
 
+- (id) initTextCell: (NSString *)aString
+{
+  self = [super initTextCell: aString];
+  if (self != nil)
+    {
+      _echosBullets = YES;
+    }
+  return self;
+}
+
 - (BOOL) echosBullets
 {
   return _echosBullets;
