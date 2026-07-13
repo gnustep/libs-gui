@@ -1,5 +1,11 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSSegmentedCell/model.m:
+	* Tests/gui/NSSegmentedCell/TestInfo:
+	Add tests for the NSSegmentedCell model: the defaults, the segment
+	count, the per-segment label, width, enabled, tag and tool tip
+	accessors, the single-selection tracking, selection by tag, and the
+	segment style.
 	* Source/NSScroller.m (-[NSScroller setFloatValue:knobProportion:]):
 	Clamp the value into [0,1] before the redisplay marker is set, so a
 	value of -1 (which matched the marker and was skipped by setDoubleValue:)
