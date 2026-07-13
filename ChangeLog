@@ -1,5 +1,12 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSMatrix.m (-[NSMatrix selectCellAtRow:column:]): Deselect the
+	existing selection in list mode before selecting the cell, so the method
+	selects a single cell as OS X does.  Mouse dragging, which uses other
+	methods, still extends the selection.
+	* Tests/gui/NSMatrix/listSingleSelect.m:
+	* Tests/gui/NSMatrix/TestInfo:
+	New test for the single selection.
 	* Source/NSSliderCell.m (-[NSSliderCell closestTickMarkValueToValue:]):
 	Break exact halves towards the lower tick, matching OS X (2.5 snapped
 	to 3 rather than 2 with integer ticks).
