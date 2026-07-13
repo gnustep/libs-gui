@@ -1,5 +1,10 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSComboBoxCell/list.m:
+	* Tests/gui/NSComboBoxCell/TestInfo:
+	Add tests for the NSComboBoxCell internal item list: the defaults,
+	adding, inserting and removing items, the item and object-value
+	queries, selection by index and object value, and completedString:.
 	* Source/NSTextFieldCell.m (-[NSTextFieldCell initTextCell:]): Use the
 	control text colour for the default text colour, as OS X does, rather
 	than the generic text colour.
