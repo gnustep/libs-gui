@@ -1,5 +1,10 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSMatrix/grid.m:
+	Add tests for the NSMatrix cell grid: the dimensions, adding, inserting
+	and removing rows and columns, the prototype and cell class, the cell
+	size and mode, getRow:column:ofCell:, cellWithTag: and
+	putCell:atRow:column:.
 	* Source/NSTableColumn.m (-[NSTableColumn setResizable:], -[NSTableColumn
 	setResizingMask:]): Keep the resizable flag and the resizing mask
 	consistent, as OS X does.  setResizable: now sets the mask to the
