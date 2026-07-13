@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSFontDescriptor/basic.m:
+	* Tests/gui/NSFontDescriptor/TestInfo:
+	Add tests for NSFontDescriptor: the attribute round-trip, the point
+	size, postscript name and matrix extractors, and the descriptor
+	derivation methods.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTextContainer/basic.m:
 	* Tests/gui/NSTextContainer/TestInfo:
 	Add tests for NSTextContainer: the defaults, the container size and
