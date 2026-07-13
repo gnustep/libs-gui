@@ -1292,8 +1292,8 @@ static GSComboWindow *gsWindow = nil;
 	    return str;
         }
     }
-  
-  return substring;
+
+  return nil;
 }
 
 /** 
