@@ -47,12 +47,12 @@ typedef enum _NSTextBlockValueType
 
 typedef enum _NSTextBlockDimension
 {
-	NSTextBlockWidth,
-	NSTextBlockMinimumWidth,	
-	NSTextBlockMaximumWidth,
-	NSTextBlockHeight,
-	NSTextBlockMinimumHeight,	
-	NSTextBlockMaximumHeight
+	NSTextBlockWidth = 0,
+	NSTextBlockMinimumWidth = 1,
+	NSTextBlockMaximumWidth = 2,
+	NSTextBlockHeight = 4,
+	NSTextBlockMinimumHeight = 5,
+	NSTextBlockMaximumHeight = 6
 } NSTextBlockDimension;
 
 typedef enum _NSTextBlockLayer

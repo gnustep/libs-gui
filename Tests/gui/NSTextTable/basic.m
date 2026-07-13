@@ -16,6 +16,13 @@ main(int argc, char **argv)
 {
   CREATE_AUTORELEASE_POOL(arp);
 
+  START_SET("dimension constant values")
+    PASS(NSTextBlockWidth == 0 && NSTextBlockMinimumWidth == 1
+      && NSTextBlockMaximumWidth == 2 && NSTextBlockHeight == 4
+      && NSTextBlockMinimumHeight == 5 && NSTextBlockMaximumHeight == 6,
+      "the NSTextBlockDimension values match AppKit");
+  END_SET("dimension constant values")
+
   START_SET("NSTextBlock defaults")
     NSTextBlock	*b = AUTORELEASE([[NSTextBlock alloc] init]);
 
