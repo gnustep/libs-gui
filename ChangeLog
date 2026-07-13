@@ -1,5 +1,14 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTextTable/basic.m:
+	* Tests/gui/NSTextTable/TestInfo:
+	Add tests for NSTextBlock, NSTextTable and NSTextTableBlock: the
+	defaults, the dimension, width, colour and vertical alignment
+	accessors, the table defaults and flags, and the table block position
+	accessors.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSFontDescriptor/basic.m:
 	* Tests/gui/NSFontDescriptor/TestInfo:
 	Add tests for NSFontDescriptor: the attribute round-trip, the point
