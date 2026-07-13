@@ -1,5 +1,11 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSMatrix.m (-[NSMatrix cellClass]): Return Nil when the matrix
+	uses a cell prototype, as OS X does, rather than the prototype cell's
+	class.
+	* Tests/gui/NSMatrix/cellClassPrototype.m:
+	* Tests/gui/NSMatrix/TestInfo:
+	New test for the cell class / prototype relationship.
 	* Tests/gui/NSMatrix/grid.m:
 	Add tests for the NSMatrix cell grid: the dimensions, adding, inserting
 	and removing rows and columns, the prototype and cell class, the cell
