@@ -1,5 +1,10 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSStepper/control.m:
+	* Tests/gui/NSStepper/TestInfo:
+	Add tests for the NSStepper control: the cell class, the value defaults,
+	the forwarding of the min/max, increment, autorepeat and value-wrapping
+	setters to the cell, and the value clamping.
 	* Source/NSComboBoxCell.m (-[NSComboBoxCell completedString:]): Return
 	nil when no item completes the substring, as OS X does, rather than
 	echoing the substring back.
