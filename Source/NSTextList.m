@@ -64,13 +64,13 @@
 - (NSString *) markerForItemNumber: (int)item
 {
   NSMutableString *s = [_markerFormat mutableCopy];
-  unichar box = 0x25A1;
+  unichar box = 0x25AB;
   unichar check = 0x2713;
   unichar circle = 0x25E6;
   unichar diamond = 0x25C6;
   unichar disc = 0x2022;
   unichar hyphen = 0x2043;
-  unichar square = 0x25A0;
+  unichar square = 0x25AA;
 
   // FIXME: Needs optimisation and roman numbers
   // FIXME: Take _startingItemNumber into account.

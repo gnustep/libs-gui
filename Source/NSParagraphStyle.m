@@ -52,7 +52,7 @@
             _alignment = NSCenterTextAlignment;
             break;
           case NSDecimalTabStopType:
-            _alignment = NSRightTextAlignment;
+            _alignment = NSNaturalTextAlignment;
             break;
         }
     }
@@ -72,14 +72,7 @@
 	type = NSLeftTabStopType; 
 	break;
       case NSRightTextAlignment:
-	if ([options objectForKey: NSTabColumnTerminatorsAttributeName] != nil)
-	  {
-	    type = NSDecimalTabStopType;
-	  }
-	else
-	  {
-	    type = NSRightTabStopType;
-	  }
+	type = NSRightTabStopType;
 	break;
       case NSCenterTextAlignment:
 	type = NSCenterTabStopType;
