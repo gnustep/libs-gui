@@ -1,5 +1,13 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTreeNode/basic.m:
+	* Tests/gui/NSTreeNode/TestInfo:
+	Add tests for NSTreeNode: the represented object, the leaf state, the
+	parent and child relationships, the descendant index paths and
+	descendantNodeAtIndexPath:.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTextFieldCell/attributes.m:
 	* Tests/gui/NSTextFieldCell/TestInfo:
 	Add tests for NSTextFieldCell: the drawsBackground, bezel style,
