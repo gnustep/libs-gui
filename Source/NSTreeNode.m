@@ -161,18 +161,11 @@
 
       index = [[_parentNode childNodes] indexOfObject: self];
       path = [_parentNode indexPath];
-      if (path != nil)
-        {
-          return [path indexPathByAddingIndex: index];
-        }
-      else
-        {
-          return [NSIndexPath indexPathWithIndex: index];
-        }
+      return [path indexPathByAddingIndex: index];
     }
   else
     {
-      return nil;
+      return AUTORELEASE([[NSIndexPath alloc] init]);
     }
 }
 

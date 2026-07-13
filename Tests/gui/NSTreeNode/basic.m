@@ -49,6 +49,8 @@ main(int argc, char **argv)
     [[root mutableChildNodes] addObject: c1];
     [[c1 mutableChildNodes] addObject: gc];
 
+    PASS([root indexPath] != nil && [[root indexPath] length] == 0,
+      "the root index path is an empty index path");
     PASS([[c1 indexPath] length] == 1
       && [[c1 indexPath] indexAtPosition: 0] == 1,
       "a child index path is the child position");
