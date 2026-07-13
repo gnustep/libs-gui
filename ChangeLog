@@ -1,5 +1,11 @@
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSPopUpButtonCell/menu.m:
+	* Tests/gui/NSPopUpButtonCell/TestInfo:
+	Add tests for the NSPopUpButtonCell menu model: the defaults, adding,
+	inserting and removing titled items, the automatic first-item
+	selection, duplicate-title handling, the item and index queries,
+	selection, and the pull-down/autoenable/edge/arrow-position accessors.
 	* Tests/gui/NSStepper/control.m:
 	* Tests/gui/NSStepper/TestInfo:
 	Add tests for the NSStepper control: the cell class, the value defaults,
