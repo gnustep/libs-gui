@@ -45,6 +45,14 @@
 
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSObjectController/basic.m:
+	* Tests/gui/NSObjectController/TestInfo:
+	Add tests for NSObjectController: the defaults, newObject, the content
+	and selected objects round-trip, add: and remove:, and how the
+	editable flag gates canAdd and canRemove.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTreeNode/basic.m:
 	* Tests/gui/NSTreeNode/TestInfo:
 	Add tests for NSTreeNode: the represented object, the leaf state, the
