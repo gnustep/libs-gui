@@ -222,6 +222,14 @@
 
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSParagraphStyle.m (-[NSMutableParagraphStyle setTabStops:]):
+	Keep the tab stops in the order given rather than sorting them, as OS X
+	does.  addTabStop: still inserts a single stop in sorted position.
+	* Tests/gui/NSParagraphStyle/tabStopOrder.m:
+	New test for the preserved order.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTableHeaderCell/headerCell.m:
 	* Tests/gui/NSTableHeaderCell/TestInfo:
 	Add tests for NSTableHeaderCell: the defaults from initTextCell:, the

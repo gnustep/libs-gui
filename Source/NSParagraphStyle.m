@@ -802,7 +802,6 @@ static NSParagraphStyle	*defaultStyle = nil;
     {
       [_tabStops removeAllObjects];
       [_tabStops addObjectsFromArray: array];
-      [_tabStops sortUsingSelector: @selector(compare:)];
     }
 }
 
