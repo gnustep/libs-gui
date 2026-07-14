@@ -39,6 +39,12 @@
 
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Source/NSTreeNode.m (-[NSTreeNode indexPath]): Return an empty index
+	path for a root node rather than nil, matching AppKit.
+	* Tests/gui/NSTreeNode/basic.m: Check the root index path.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSTreeNode/basic.m:
 	* Tests/gui/NSTreeNode/TestInfo:
 	Add tests for NSTreeNode: the represented object, the leaf state, the
