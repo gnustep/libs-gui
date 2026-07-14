@@ -39,6 +39,14 @@
 
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Tests/gui/NSTreeNode/basic.m:
+	* Tests/gui/NSTreeNode/TestInfo:
+	Add tests for NSTreeNode: the represented object, the leaf state, the
+	parent and child relationships, the descendant index paths and
+	descendantNodeAtIndexPath:.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSFontDescriptor/basic.m:
 	* Tests/gui/NSFontDescriptor/TestInfo:
 	Add tests for NSFontDescriptor: the attribute round-trip, the point
