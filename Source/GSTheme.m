@@ -516,13 +516,13 @@ typedef	struct {
 
 + (void) preferenceDidChange: (NSNotification*)n
 {
-  NSUserDefaults	*defaults = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults	*defaults;
 
+  NSLog(@"System preference changing");
+  defaults = [NSUserDefaults standardUserDefaults];
   [defaults synchronize];
-  /*
   NSLog(@"System preference changed; default theme is %@",
     [defaults objectForKey: @"GSTheme"]);
-   */
 }
 
 + (void) setTheme: (GSTheme*)theme
@@ -582,6 +582,7 @@ typedef	struct {
   /*
    * Reload NSImage's cache of image by name
    */
+  [[self bundle] cleanPathCache];
   [NSImage _reloadCachedImages];
 
   /*
