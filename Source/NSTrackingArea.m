@@ -42,7 +42,7 @@
     {
 	BOOL flag = (BOOL)(options & NSTrackingAssumeInside);
 
-	_userInfo = RETAIN(_userInfo);
+	_userInfo = RETAIN(userInfo);
 	_options = options;
 	_trackingRect = [[GSTrackingRect alloc] initWithRect:rect
 							 tag:0
