@@ -79,15 +79,16 @@ static Class pathCellClass;
                                       assumeInside: YES];
 }
 
-- (instancetype) init
+- (instancetype) initWithFrame: (NSRect)frameRect
 {
-  self = [super init];
+  self = [super initWithFrame: frameRect];
   if (self != nil)
     {
       [self setPathStyle: NSPathStyleStandard];
       [self setURL: nil];
       [self setDelegate: nil];
       [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
+      _editable = YES;
     }
   return self;
 }
@@ -270,6 +271,16 @@ static Class pathCellClass;
 {
   [_cell setPlaceholderString: string];
   [self setNeedsDisplay];
+}
+
+- (BOOL) isEditable
+{
+  return _editable;
+}
+
+- (void) setEditable: (BOOL)flag
+{
+  _editable = flag;
 }
 
 - (NSColor *) backgroundColor
