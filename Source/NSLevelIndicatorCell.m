@@ -39,7 +39,7 @@
 
 - (id) init
 {
-  return [self initWithLevelIndicatorStyle: NSRatingLevelIndicatorStyle];
+  return [self initWithLevelIndicatorStyle: NSDiscreteCapacityLevelIndicatorStyle];
 }
 
 - (id) initWithLevelIndicatorStyle: (NSLevelIndicatorStyle)style
