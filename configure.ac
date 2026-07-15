@@ -41,8 +41,15 @@ fi
 
 #--------------------------------------------------------------------
 # Use config.guess, config.sub and install-sh provided by gnustep-make
+# Evaluation order of the configure script means we can not depend on
+# GNUSTEP_MAKEFILES being set for simple variable substitution, so we
+# execute a bit of shell code to dynamically get the directory.
 #--------------------------------------------------------------------
-AC_CONFIG_AUX_DIR($GNUSTEP_MAKEFILES)
+AC_CONFIG_AUX_DIR([`if test -z "$GNUSTEP_MAKEFILES"; then
+  gnustep-config --variable=GNUSTEP_MAKEFILES 2>&5
+else
+  echo $GNUSTEP_MAKEFILES
+fi`])
 
 AC_CONFIG_HEADERS([Headers/Additions/GNUstepGUI/config.h])
 
