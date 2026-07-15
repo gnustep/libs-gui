@@ -412,6 +412,16 @@ static NSMutableArray *activeConstraints = nil;
   return _constant;
 }
 
+- (NSString *) identifier
+{
+  return _identifier;
+}
+
+- (void) setIdentifier: (NSString *)identifier
+{
+  ASSIGN(_identifier, identifier);
+}
+
 - (NSLayoutAnchor *) firstAnchor
 {
   return _firstAnchor;
@@ -574,6 +584,7 @@ static NSMutableArray *activeConstraints = nil;
 - (void) dealloc
 {
   [NSLayoutConstraint _removeConstraint: self];
+  RELEASE(_identifier);
   [super dealloc];
 }
 
