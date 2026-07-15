@@ -1309,7 +1309,14 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (NSString *) paletteLabel
 {
-  return _paletteLabel;
+  if (nil != _paletteLabel)
+    {
+      return _paletteLabel;
+    }
+  else
+    {
+      return @"";
+    }
 }
 
 - (void) setAction: (SEL)action
