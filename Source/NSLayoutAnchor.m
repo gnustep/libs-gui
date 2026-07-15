@@ -72,7 +72,7 @@
                                          toItem: [anchor item]
                                       attribute: NSLayoutAttributeLeft
                                      multiplier: 1.0
-                                       constant: 0.0];
+                                       constant: c];
 }
 
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c
