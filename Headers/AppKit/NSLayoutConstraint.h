@@ -158,6 +158,7 @@ APPKIT_EXPORT_CLASS
 - (CGFloat) multiplier;
 
 - (CGFloat) constant;
+- (void) setConstant: (CGFloat)constant;
 
 - (NSLayoutAnchor *) firstAnchor;
 
