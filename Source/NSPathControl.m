@@ -79,15 +79,16 @@ static Class pathCellClass;
                                       assumeInside: YES];
 }
 
-- (instancetype) init
+- (instancetype) initWithFrame: (NSRect)frameRect
 {
-  self = [super init];
+  self = [super initWithFrame: frameRect];
   if (self != nil)
     {
       [self setPathStyle: NSPathStyleStandard];
       [self setURL: nil];
       [self setDelegate: nil];
       [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
+      _pathItems = [[NSArray alloc] init];
     }
   return self;
 }
@@ -95,6 +96,7 @@ static Class pathCellClass;
 - (void) dealloc
 {
   [[self superview] removeTrackingRect: _trackingTag];
+  RELEASE(_pathItems);
   [super dealloc];
 }
 
