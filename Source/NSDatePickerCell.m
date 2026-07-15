@@ -30,6 +30,7 @@
 */
 
 #import <Foundation/NSString.h>
+#import <Foundation/NSDate.h>
 #import <Foundation/NSDateFormatter.h>
 #import "AppKit/NSDatePickerCell.h"
 #import "AppKit/NSColor.h"
@@ -44,6 +45,7 @@
 
       [self setFormatter: formatter];
       RELEASE(formatter);
+      [self setDateValue: [NSDate dateWithTimeIntervalSinceReferenceDate: 0.0]];
     }
 
   return self;
