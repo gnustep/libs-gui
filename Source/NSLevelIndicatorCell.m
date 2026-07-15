@@ -79,7 +79,12 @@
 
 - (NSLevelIndicatorStyle) style
 {
-  return _style; 
+  return _style;
+}
+
+- (NSLevelIndicatorStyle) levelIndicatorStyle
+{
+  return _style;
 }
 
 
