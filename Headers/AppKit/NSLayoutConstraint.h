@@ -122,6 +122,7 @@ APPKIT_EXPORT_CLASS
   CGFloat _multiplier;
   CGFloat _constant;
   NSLayoutPriority _priority;
+  BOOL _shouldBeArchived;
 }
 
 + (NSArray *)constraintsWithVisualFormat: (NSString *)fmt 
@@ -158,6 +159,9 @@ APPKIT_EXPORT_CLASS
 - (CGFloat) multiplier;
 
 - (CGFloat) constant;
+
+- (BOOL) shouldBeArchived;
+- (void) setShouldBeArchived: (BOOL)flag;
 
 - (NSLayoutAnchor *) firstAnchor;
 

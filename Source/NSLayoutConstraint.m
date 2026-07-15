@@ -412,6 +412,16 @@ static NSMutableArray *activeConstraints = nil;
   return _constant;
 }
 
+- (BOOL) shouldBeArchived
+{
+  return _shouldBeArchived;
+}
+
+- (void) setShouldBeArchived: (BOOL)flag
+{
+  _shouldBeArchived = flag;
+}
+
 - (NSLayoutAnchor *) firstAnchor
 {
   return _firstAnchor;
