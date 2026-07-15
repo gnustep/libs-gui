@@ -44,6 +44,8 @@
 
       [self setFormatter: formatter];
       RELEASE(formatter);
+      [self setTextColor: [NSColor controlTextColor]];
+      [self setBackgroundColor: [NSColor controlBackgroundColor]];
     }
 
   return self;
