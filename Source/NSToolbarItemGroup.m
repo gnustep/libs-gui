@@ -40,6 +40,10 @@
 
 - (NSArray *) subitems
 {
+  if (_subitems == nil)
+    {
+      return [NSArray array];
+    }
   return _subitems;
 }
 
