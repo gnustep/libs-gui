@@ -412,6 +412,11 @@ static NSMutableArray *activeConstraints = nil;
   return _constant;
 }
 
+- (void) setConstant: (CGFloat)constant
+{
+  _constant = constant;
+}
+
 - (BOOL) shouldBeArchived
 {
   return _shouldBeArchived;
@@ -420,6 +425,8 @@ static NSMutableArray *activeConstraints = nil;
 - (void) setShouldBeArchived: (BOOL)flag
 {
   _shouldBeArchived = flag;
+}
+  
 - (NSString *) identifier
 {
   return _identifier;
@@ -428,11 +435,6 @@ static NSMutableArray *activeConstraints = nil;
 - (void) setIdentifier: (NSString *)identifier
 {
   ASSIGN(_identifier, identifier);
-}
-
-- (void) setConstant: (CGFloat)constant
-{
-  _constant = constant;
 }
 
 - (NSLayoutAnchor *) firstAnchor
