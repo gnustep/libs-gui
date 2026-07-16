@@ -122,6 +122,7 @@ APPKIT_EXPORT_CLASS
   CGFloat _multiplier;
   CGFloat _constant;
   NSLayoutPriority _priority;
+  BOOL _shouldBeArchived;
   NSString *_identifier;
 }
 
@@ -163,6 +164,9 @@ APPKIT_EXPORT_CLASS
 
 - (NSString *) identifier;
 - (void) setIdentifier: (NSString *)identifier;
+
+- (BOOL) shouldBeArchived;
+- (void) setShouldBeArchived: (BOOL)flag;
 
 - (NSLayoutAnchor *) firstAnchor;
 
