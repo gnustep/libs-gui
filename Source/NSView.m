@@ -63,6 +63,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSLayoutConstraint.h"
+#import "AppKit/NSLayoutGuide.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSPrintInfo.h"
@@ -769,7 +770,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   TEST_RELEASE(_cursor_rects);
   TEST_RELEASE(_tracking_rects);
   TEST_RELEASE(_shadow);
-  
+  TEST_RELEASE(_layoutGuides);
+
   [self unregisterDraggedTypes];
   [self releaseGState];
 
@@ -5475,6 +5477,49 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
     }
 
   return [engine constraintsForView: self];
+}
+
+@end
+
+@implementation NSView (NSLayoutGuideSupport)
+
+- (void) addLayoutGuide: (NSLayoutGuide *)guide
+{
+  if (guide == nil)
+    {
+      return;
+    }
+
+  if (_layoutGuides == nil)
+    {
+      _layoutGuides = [[NSMutableArray alloc] init];
+    }
+
+  if (![_layoutGuides containsObject: guide])
+    {
+      [_layoutGuides addObject: guide];
+      [guide setOwningView: self];
+    }
+}
+
+- (void) removeLayoutGuide: (NSLayoutGuide *)guide
+{
+  if (guide == nil || ![_layoutGuides containsObject: guide])
+    {
+      return;
+    }
+
+  [guide setOwningView: nil];
+  [_layoutGuides removeObject: guide];
+}
+
+- (NSArray *) layoutGuides
+{
+  if (_layoutGuides == nil)
+    {
+      return [NSArray array];
+    }
+  return [NSArray arrayWithArray: _layoutGuides];
 }
 
 @end
