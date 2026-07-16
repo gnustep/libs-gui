@@ -72,6 +72,7 @@ APPKIT_EXPORT_CLASS
 
 
 - (NSLevelIndicatorStyle)style;
+- (NSLevelIndicatorStyle)levelIndicatorStyle;
 - (void)setLevelIndicatorStyle:(NSLevelIndicatorStyle)style;
 - (NSInteger)numberOfMajorTickMarks;
 - (void)setNumberOfMajorTickMarks:(NSInteger)count;
