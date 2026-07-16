@@ -181,6 +181,10 @@
 
 - (NSArray *) recentSearches
 {
+  if (_recent_searches == nil)
+    {
+      return [NSArray array];
+    }
   return _recent_searches;
 }
 
