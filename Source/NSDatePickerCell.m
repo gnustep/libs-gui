@@ -46,6 +46,8 @@
       [self setFormatter: formatter];
       RELEASE(formatter);
       [self setDateValue: [NSDate dateWithTimeIntervalSinceReferenceDate: 0.0]];
+      _datePickerElements = NSYearMonthDayDatePickerElementFlag
+        | NSHourMinuteSecondDatePickerElementFlag;
     }
 
   return self;
@@ -106,9 +108,26 @@
   return (NSDate *)[self objectValue];
 }
 
+- (NSDate *) _clampedDate: (NSDate *)date
+{
+  if (date == nil)
+    {
+      return date;
+    }
+  if (_minDate != nil && [date compare: _minDate] == NSOrderedAscending)
+    {
+      return _minDate;
+    }
+  if (_maxDate != nil && [date compare: _maxDate] == NSOrderedDescending)
+    {
+      return _maxDate;
+    }
+  return date;
+}
+
 - (void) setDateValue: (NSDate *)date
 {
-  [self setObjectValue: date];
+  [self setObjectValue: [self _clampedDate: date]];
 }
 
 - (id) delegate
@@ -149,6 +168,7 @@
 - (void) setMaxDate: (NSDate *)date
 {
   ASSIGN(_maxDate, date);
+  [self setObjectValue: [self _clampedDate: [self dateValue]]];
 }
 
 - (NSDate *) minDate
@@ -159,6 +179,7 @@
 - (void) setMinDate: (NSDate *)date
 {
   ASSIGN(_minDate, date);
+  [self setObjectValue: [self _clampedDate: [self dateValue]]];
 }
 
 - (NSColor *) textColor
