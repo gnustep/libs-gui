@@ -48,6 +48,7 @@
 - (void) dealloc
 {
   RELEASE(_arrangedObjects);
+  RELEASE(_selectedViewController);
   [super dealloc];
 }
 
@@ -123,15 +124,60 @@
   return _selectedIndex;
 }
 
+/* The arranged objects are the application's own, whatever they are; it is the
+   delegate that says which view controller shows one. */
+- (NSViewController *) _viewControllerForObject: (id)object
+{
+  NSPageControllerObjectIdentifier identifier;
+  NSViewController *controller;
+
+  if (![_delegate respondsToSelector:
+    @selector(pageController:identifierForObject:)]
+    || ![_delegate respondsToSelector:
+    @selector(pageController:viewControllerForIdentifier:)])
+    {
+      return nil;
+    }
+
+  identifier = [_delegate pageController: self identifierForObject: object];
+  controller = [_delegate pageController: self
+             viewControllerForIdentifier: identifier];
+  if (controller != nil
+    && [_delegate respondsToSelector:
+    @selector(pageController:prepareViewController:withObject:)])
+    {
+      [_delegate pageController: self
+          prepareViewController: controller
+                     withObject: object];
+    }
+
+  return controller;
+}
+
 - (void) setSelectedIndex: (NSInteger)index
 {
+  id object;
+
+  if (index == _selectedIndex)
+    {
+      return;
+    }
+  if (index < 0 || (NSUInteger)index >= [_arrangedObjects count])
+    {
+      [NSException raise: NSInternalInconsistencyException
+                  format: @"selected index %ld out of range 0 to %lu",
+        (long)index, (unsigned long)[_arrangedObjects count]];
+    }
+
   if ([_delegate respondsToSelector: @selector(pageControllerWillStartLiveTransition:)])
     {
       [_delegate pageControllerWillStartLiveTransition: self];
     }
+
+  object = [_arrangedObjects objectAtIndex: index];
   [self willChangeValueForKey: @"selectedIndex"];
   _selectedIndex = index;
-  _selectedViewController = [_arrangedObjects objectAtIndex: _selectedIndex];
+  ASSIGN(_selectedViewController, [self _viewControllerForObject: object]);
   [self didChangeValueForKey: @"selectedIndex"];
 
   // Complete...
@@ -146,13 +192,13 @@
   // Notify delegate that transition is finished.
   if ([_delegate respondsToSelector: @selector(pageController:didTransitionToObject:)])
     {
-      [_delegate pageController: self didTransitionToObject: _selectedViewController];
+      [_delegate pageController: self didTransitionToObject: object];
     }
 
   // Resize based on frame...
   if ([_delegate respondsToSelector: @selector(pageController:frameForObject:)])
     {
-      NSRect rect = [_delegate pageController: self frameForObject: _selectedViewController];
+      NSRect rect = [_delegate pageController: self frameForObject: object];
       [[_selectedViewController view] setFrame: rect];
     }
 }
@@ -171,7 +217,10 @@
 
 - (void) completeTransition
 {
-  [self setView: [_selectedViewController view]];
+  if (_selectedViewController != nil)
+    {
+      [self setView: [_selectedViewController view]];
+    }
 }
 
 - (IBAction) navigateBack: (id)sender
