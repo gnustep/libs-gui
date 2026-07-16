@@ -82,7 +82,8 @@
 #import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
 #import "GSAutoLayoutEngine.h"
-#import "NSAutoresizingMaskLayoutConstraint.h" 
+#import "GSAutoLayoutAnchorPrivate.h"
+#import "NSAutoresizingMaskLayoutConstraint.h"
 #import "NSViewPrivate.h"
 #import "NSWindowPrivate.h"
 
@@ -5475,6 +5476,94 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
     }
 
   return [engine constraintsForView: self];
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedLayoutAnchors)
+
+- (NSLayoutXAxisAnchor *) leadingAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLeading]);
+}
+
+- (NSLayoutXAxisAnchor *) trailingAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeTrailing]);
+}
+
+- (NSLayoutXAxisAnchor *) leftAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLeft]);
+}
+
+- (NSLayoutXAxisAnchor *) rightAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeRight]);
+}
+
+- (NSLayoutXAxisAnchor *) centerXAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeCenterX]);
+}
+
+- (NSLayoutYAxisAnchor *) topAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeTop]);
+}
+
+- (NSLayoutYAxisAnchor *) bottomAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeBottom]);
+}
+
+- (NSLayoutYAxisAnchor *) centerYAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeCenterY]);
+}
+
+- (NSLayoutYAxisAnchor *) firstBaselineAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeFirstBaseline]);
+}
+
+- (NSLayoutYAxisAnchor *) lastBaselineAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLastBaseline]);
+}
+
+- (NSLayoutDimension *) widthAnchor
+{
+  return AUTORELEASE([[NSLayoutDimension alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeWidth]);
+}
+
+- (NSLayoutDimension *) heightAnchor
+{
+  return AUTORELEASE([[NSLayoutDimension alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeHeight]);
 }
 
 @end
