@@ -167,21 +167,21 @@ APPKIT_EXPORT_CLASS
 @interface NSTextTableBlock : NSTextBlock
 {
   NSTextTable *_table;
-  int _row;
-  int _rowSpan;
-  int _col;
-  int _colSpan;
+  NSInteger _row;
+  NSInteger _rowSpan;
+  NSInteger _col;
+  NSInteger _colSpan;
 }
 
 - (id) initWithTable: (NSTextTable *)table
-         startingRow: (int)row
-             rowSpan: (int)rspan
-      startingColumn: (int)col
-          columnSpan: (int)cspan;
-- (int) columnSpan;
-- (int) rowSpan;
-- (int) startingColumn;
-- (int) startingRow;
+         startingRow: (NSInteger)row
+             rowSpan: (NSInteger)rspan
+      startingColumn: (NSInteger)col
+          columnSpan: (NSInteger)cspan;
+- (NSInteger) columnSpan;
+- (NSInteger) rowSpan;
+- (NSInteger) startingColumn;
+- (NSInteger) startingRow;
 - (NSTextTable *) table;
 
 @end
