@@ -45,6 +45,7 @@
 
       [self setFormatter: formatter];
       RELEASE(formatter);
+      [self setDateValue: [NSDate dateWithTimeIntervalSinceReferenceDate: 0.0]];
       _datePickerElements = NSYearMonthDayDatePickerElementFlag
         | NSHourMinuteSecondDatePickerElementFlag;
     }
