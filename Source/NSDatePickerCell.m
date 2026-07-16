@@ -45,6 +45,8 @@
 
       [self setFormatter: formatter];
       RELEASE(formatter);
+      _datePickerElements = NSYearMonthDayDatePickerElementFlag
+        | NSHourMinuteSecondDatePickerElementFlag;
     }
 
   return self;
