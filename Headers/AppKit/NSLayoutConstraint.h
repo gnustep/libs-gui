@@ -122,6 +122,7 @@ APPKIT_EXPORT_CLASS
   CGFloat _multiplier;
   CGFloat _constant;
   NSLayoutPriority _priority;
+  NSString *_identifier;
 }
 
 + (NSArray *)constraintsWithVisualFormat: (NSString *)fmt 
@@ -159,6 +160,9 @@ APPKIT_EXPORT_CLASS
 
 - (CGFloat) constant;
 - (void) setConstant: (CGFloat)constant;
+
+- (NSString *) identifier;
+- (void) setIdentifier: (NSString *)identifier;
 
 - (NSLayoutAnchor *) firstAnchor;
 
