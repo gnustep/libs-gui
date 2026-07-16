@@ -169,6 +169,10 @@ static Class pathComponentCellClass;
 
 - (NSArray *) pathComponentCells
 {
+  if (_pathComponentCells == nil)
+    {
+      return [NSArray array];
+    }
   return _pathComponentCells;
 }
 
