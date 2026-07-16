@@ -35,7 +35,7 @@
   self = [super initWithItemIdentifier: identifier];
   if (self != nil)
     {
-      [self setImage: [NSImage imageNamed: @"NSMenuToolbarItem"]];
+      [self setShowsIndicator: YES];
       [self setTarget: self];
       [self setAction: @selector(_showMenu:)];
     }
