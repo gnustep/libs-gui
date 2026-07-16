@@ -166,7 +166,12 @@
                    format: @"tick mark index invalid"];
     }
 
-  return _minValue + index * (_maxValue - _minValue) / _numberOfTickMarks;
+  if (_numberOfTickMarks == 1)
+    {
+      return (_minValue + _maxValue) / 2.0;
+    }
+
+  return _minValue + index * (_maxValue - _minValue) / (_numberOfTickMarks - 1);
 }
 
 - (NSRect) rectOfTickMarkAtIndex: (NSInteger)index
