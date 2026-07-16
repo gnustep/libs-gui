@@ -428,6 +428,8 @@ static NSMutableArray *activeConstraints = nil;
 - (void) setIdentifier: (NSString *)identifier
 {
   ASSIGN(_identifier, identifier);
+}
+
 - (void) setConstant: (CGFloat)constant
 {
   _constant = constant;
