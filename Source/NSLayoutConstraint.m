@@ -412,6 +412,11 @@ static NSMutableArray *activeConstraints = nil;
   return _constant;
 }
 
+- (void) setConstant: (CGFloat)constant
+{
+  _constant = constant;
+}
+
 - (NSLayoutAnchor *) firstAnchor
 {
   return _firstAnchor;
