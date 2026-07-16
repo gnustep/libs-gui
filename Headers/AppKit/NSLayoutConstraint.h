@@ -159,6 +159,7 @@ APPKIT_EXPORT_CLASS
 - (CGFloat) multiplier;
 
 - (CGFloat) constant;
+- (void) setConstant: (CGFloat)constant;
 
 - (NSString *) identifier;
 - (void) setIdentifier: (NSString *)identifier;

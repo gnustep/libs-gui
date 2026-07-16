@@ -46,7 +46,7 @@
 
 - (void) setImage: (NSImage *)image
 {
-  ASSIGNCOPY(_image, image);
+  ASSIGN(_image, image);
 }
 
 - (NSURL *) URL
