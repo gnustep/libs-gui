@@ -200,6 +200,7 @@ PACKAGE_SCOPE
   NSShadow *_shadow;
   NSAppearance* _appearance;
   NSUserInterfaceItemIdentifier _identifier;
+  NSMutableArray *_layoutGuides;
 
 }
 
