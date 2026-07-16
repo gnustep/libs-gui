@@ -121,7 +121,14 @@
 
 - (NSString *) label
 {
-  return _label;
+  if (nil != _label)
+    {
+      return _label;
+    }
+  else
+    {
+      return @"";
+    }
 }
 
 - (NSSize) sizeOfLabel: (BOOL)shouldTruncateLabel
