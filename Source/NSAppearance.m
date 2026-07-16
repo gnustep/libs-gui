@@ -32,7 +32,8 @@ NSAppearance *__currentAppearance = nil;
 // Creating an appearance...
 + (instancetype) appearanceNamed: (NSString *)name
 {
-  return [[NSAppearance alloc] initWithAppearanceNamed: name bundle: nil];
+  return AUTORELEASE([[NSAppearance alloc] initWithAppearanceNamed: name
+                                                            bundle: nil]);
 }
 
 - (instancetype) initWithAppearanceNamed: (NSString *)name bundle: (NSBundle *)bundle
