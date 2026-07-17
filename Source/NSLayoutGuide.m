@@ -48,7 +48,7 @@
 
 - (void) setIdentifier: (NSUserInterfaceItemIdentifier)identifier
 {
-  _identifier = identifier;
+  ASSIGNCOPY(_identifier, identifier);
 }
 
 - (NSLayoutXAxisAnchor *) leadingAnchor
@@ -119,6 +119,12 @@
       _frame = NSZeroRect;
     }
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_identifier);
+  [super dealloc];
 }
 
 - (instancetype) initWithCoder: (NSCoder *)coder
