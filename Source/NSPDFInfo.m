@@ -29,6 +29,19 @@
 
 @implementation NSPDFInfo
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _attributes = [[NSMutableDictionary alloc] init];
+      _tagNames = [[NSArray alloc] init];
+      _fileExtensionHidden = YES;
+      _paperSize = [[NSPrintInfo sharedPrintInfo] paperSize];
+    }
+  return self;
+}
+
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   return nil;
