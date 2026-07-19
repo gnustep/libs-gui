@@ -97,7 +97,6 @@ int main()
          "placeholderAttributedString returns the attributed placeholder");
     pass([cell placeholderString] == nil,
          "placeholderString is nil for an attributed placeholder");
-    RELEASE(attr);
   }
 
   END_SET("NSFormCell title")
