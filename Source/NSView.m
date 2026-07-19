@@ -1811,7 +1811,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   NSAffineTransform *matrix1, *matrix2;
 
-  if (aView == self || _window == nil || (aView != nil && [aView window] == nil))
+  if (aView == self)
     {
       return aRect;
     }
@@ -1843,7 +1843,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   NSAffineTransform *matrix1, *matrix2;
 
-  if (aView == self || _window == nil || (aView != nil && [aView window] == nil))
+  if (aView == self)
     {
       return aRect;
     }
