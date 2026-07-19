@@ -57,8 +57,15 @@ NSAppearance *__currentAppearance = nil;
 {
   if ([coder allowsKeyedCoding])
     {
+      /* The name carries the vibrancy with it, so the designated initialiser
+         works the rest out. */
+      return [self initWithAppearanceNamed:
+        [coder decodeObjectForKey: @"NSAppearanceName"]
+                                    bundle: nil];
     }
-  else
+
+  self = [super init];
+  if (self != nil)
     {
       ASSIGN(_name, [coder decodeObject]);
       [coder decodeValueOfObjCType: @encode(BOOL) at: &_allowsVibrancy];
@@ -68,8 +75,9 @@ NSAppearance *__currentAppearance = nil;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-    if ([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
+      [coder encodeObject: _name forKey: @"NSAppearanceName"];
     }
   else
     {
