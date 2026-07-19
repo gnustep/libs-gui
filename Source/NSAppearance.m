@@ -90,9 +90,41 @@ NSAppearance *__currentAppearance = nil;
   return _name;
 }
 
+/* The appearance a vibrant appearance is a variant of.  Anything else stands
+   for itself, so it only ever matches its own name. */
+- (NSAppearanceName) _baseAppearanceName
+{
+  if ([_name isEqualToString: NSAppearanceNameVibrantLight]
+    || [_name isEqualToString:
+         NSAppearanceNameAccessibilityHighContrastVibrantLight])
+    {
+      return NSAppearanceNameAqua;
+    }
+  if ([_name isEqualToString: NSAppearanceNameVibrantDark]
+    || [_name isEqualToString:
+         NSAppearanceNameAccessibilityHighContrastVibrantDark])
+    {
+      return NSAppearanceNameDarkAqua;
+    }
+  return _name;
+}
+
 // Determining the most appropriate appearance
 - (NSAppearanceName) bestMatchFromAppearancesWithNames: (NSArray *)appearances
 {
+  NSAppearanceName base;
+
+  if ([appearances containsObject: _name])
+    {
+      return _name;
+    }
+
+  base = [self _baseAppearanceName];
+  if (base != nil && [appearances containsObject: base])
+    {
+      return base;
+    }
+
   return nil;
 }
 
