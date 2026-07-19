@@ -132,6 +132,33 @@ int main(int argc, const char **argv)
       "a fractional resize delta rounds the resulting subview frame");
   }
 
+  {
+    NSView *sup = makeSuperview();
+    NSView *sub = addSubview(sup, NSMakeRect(10, 10, 30, 30),
+      NSViewWidthSizable | NSViewMinXMargin);
+    [sup setFrameSize: NSMakeSize(200, 150)];
+    PASS(NSEqualRects([sub frame], NSMakeRect(35, 10, 105, 30)),
+      "NSViewWidthSizable | NSViewMinXMargin shares the width delta between the left margin and the width");
+  }
+
+  {
+    NSView *sup = makeSuperview();
+    NSView *sub = addSubview(sup, NSMakeRect(10, 10, 30, 30),
+      NSViewWidthSizable | NSViewMaxXMargin);
+    [sup setFrameSize: NSMakeSize(200, 150)];
+    PASS(NSEqualRects([sub frame], NSMakeRect(10, 10, 63, 30)),
+      "NSViewWidthSizable | NSViewMaxXMargin shares the width delta between the width and the right margin");
+  }
+
+  {
+    NSView *sup = makeSuperview();
+    NSView *sub = addSubview(sup, NSMakeRect(10, 10, 0, 0),
+      NSViewWidthSizable | NSViewHeightSizable);
+    [sup setFrameSize: NSMakeSize(200, 150)];
+    PASS(NSEqualRects([sub frame], NSMakeRect(10, 10, 100, 50)),
+      "a zero-size subview with both dimensions sizable still absorbs the full delta");
+  }
+
   END_SET("NSView autoresize")
 
   DESTROY(arp);

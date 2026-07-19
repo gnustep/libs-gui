@@ -88,6 +88,27 @@ int main(int argc, const char **argv)
       "convertPoint:toView: through a 45 degree rotated subview");
   }
 
+  /* setFrameRotation: does not normalize into [0, 360); it keeps the
+     equivalent angle in (-180, 180], the same range atan2 returns */
+  {
+    NSView *v = AUTORELEASE([[NSView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)]);
+    [v setFrameRotation: 90.0];
+    PASS(fabs([v frameRotation] - 90.0) <= ROT_EPS,
+      "setFrameRotation: 90 reads back as 90");
+  }
+  {
+    NSView *v = AUTORELEASE([[NSView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)]);
+    [v setFrameRotation: 180.0];
+    PASS(fabs([v frameRotation] - 180.0) <= ROT_EPS,
+      "setFrameRotation: 180 reads back as 180");
+  }
+  {
+    NSView *v = AUTORELEASE([[NSView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)]);
+    [v setFrameRotation: 405.0];
+    PASS(fabs([v frameRotation] - 45.0) <= ROT_EPS,
+      "setFrameRotation: 405 wraps to its 45 degree equivalent");
+  }
+
   END_SET("NSView rotation")
 
   /* non-axis-aligned rotation and its effect on a converted rect: needs a
