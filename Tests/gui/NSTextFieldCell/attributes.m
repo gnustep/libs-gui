@@ -66,7 +66,6 @@ main(int argc, char **argv)
          "placeholderAttributedString returns the attributed placeholder");
     pass([cell placeholderString] == nil,
          "placeholderString is nil for an attributed placeholder");
-    RELEASE(attr);
   }
 
   /* The real string value is stored. */
