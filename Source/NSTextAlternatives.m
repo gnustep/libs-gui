@@ -39,8 +39,8 @@ NSString *NSTextAlternativesSelectedAlternativeStringNotification =
 {
   if ((self = [super init]))
     {
-      _primaryString = RETAIN(primaryString);
-      _alternativeStrings = RETAIN(alternativeStrings);
+      _primaryString = [primaryString copy];
+      _alternativeStrings = [alternativeStrings copy];
     }
 
   return self;
@@ -48,12 +48,12 @@ NSString *NSTextAlternativesSelectedAlternativeStringNotification =
 
 - (NSString *)primaryString
 {
-  return [_primaryString copy];
+  return _primaryString;
 }
 
 - (NSArray *)alternativeStrings
 {
-  return [_alternativeStrings copy];
+  return _alternativeStrings;
 }
 
 - (void)noteSelectedAlternativeString:(NSString *)alternativeString
