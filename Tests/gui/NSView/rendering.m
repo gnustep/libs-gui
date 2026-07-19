@@ -29,23 +29,36 @@ int main(int argc, const char **argv)
       SKIP("It looks like GNUstep backend is not yet installed")
   NS_ENDHANDLER
 
-  NSWindow *w = AUTORELEASE([[NSWindow alloc]
-    initWithContentRect: NSMakeRect(0, 0, 16, 16)
-              styleMask: NSWindowStyleMaskBorderless
-                backing: NSBackingStoreBuffered
-                  defer: NO]);
-  Swatch *v = AUTORELEASE([[Swatch alloc] initWithFrame: NSMakeRect(0, 0, 16, 16)]);
-  [w setContentView: v];
+  NSBitmapImageRep *rep = nil;
 
-  [v lockFocus];
-  [v drawRect: [v bounds]];
-  NSBitmapImageRep *rep = AUTORELEASE([[NSBitmapImageRep alloc]
-    initWithFocusedViewRect: NSMakeRect(0, 0, 16, 16)]);
-  [v unlockFocus];
+  NS_DURING
+    {
+      NSWindow *w = AUTORELEASE([[NSWindow alloc]
+        initWithContentRect: NSMakeRect(0, 0, 16, 16)
+                  styleMask: NSWindowStyleMaskBorderless
+                    backing: NSBackingStoreBuffered
+                      defer: NO]);
+      Swatch *v = AUTORELEASE([[Swatch alloc] initWithFrame: NSMakeRect(0, 0, 16, 16)]);
+      [w setContentView: v];
+
+      [v lockFocus];
+      [v drawRect: [v bounds]];
+      rep = AUTORELEASE([[NSBitmapImageRep alloc]
+        initWithFocusedViewRect: NSMakeRect(0, 0, 16, 16)]);
+      [v unlockFocus];
+    }
+  NS_HANDLER
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException]
+      || [[localException name] isEqualToString: @"NSWindowServerCommunicationException"])
+      SKIP("No display available to render into")
+  NS_ENDHANDLER
 
   PASS(rep != nil && [rep pixelsWide] == 16 && [rep pixelsHigh] == 16,
     "offscreen render produced a 16x16 bitmap");
 
+  /* NSBitmapImageRep pixel coordinates originate at the top-left, unlike
+     the view's bottom-left, so a replicator reading a non-uniform render
+     must flip y to land on the same point as the view-space rect above. */
   NSColor *c = [[rep colorAtX: 8 y: 8]
     colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
   PASS(c != nil && [c redComponent] > 0.9
