@@ -69,13 +69,13 @@
   return self;
 }
 
-- (oneway void) release
+- (void) dealloc
 {
   RELEASE(_contentView);
   RELEASE(_badgeLabel);
   RELEASE(_appIconImage);
   RELEASE(_dockTileImage);
-  [super release];
+  [super dealloc];
 }
 
 - (NSView *) contentView
