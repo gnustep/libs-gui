@@ -53,6 +53,41 @@ autoresizeCase(Class superClass, NSRect subFrame,
   return sub;
 }
 
+/*
+ * Same resize as the first minYMargin case, but the superview sits inside a
+ * 2x-scaled parent in a window, so a window / device pixel is 0.5 apart in the
+ * superview's coordinate space. AppKit floors the resized frame on the device
+ * pixel grid, not on the superview's integer grid: the raw origin.y 16.6667
+ * and far edge 50.0 become window rows 33 and 100, i.e. {10, 16.5}+{20, 33.5}
+ * back in the superview's space. Needs a window, so it is guarded like the
+ * backend cases above.
+ */
+static NSView *
+scaledAutoresizeCase(void)
+{
+  NSWindow *win = AUTORELEASE([[NSWindow alloc]
+    initWithContentRect: NSMakeRect(0, 0, 400, 400)
+              styleMask: NSWindowStyleMaskBorderless
+                backing: NSBackingStoreBuffered
+                  defer: NO]);
+  NSView *scaler = AUTORELEASE([[NSView alloc]
+    initWithFrame: NSMakeRect(0, 0, 200, 200)]);
+  NSView *sup = AUTORELEASE([[NSView alloc]
+    initWithFrame: NSMakeRect(0, 0, 100, 100)]);
+  NSView *sub = AUTORELEASE([[NSView alloc]
+    initWithFrame: NSMakeRect(10, 10, 20, 20)]);
+
+  [[win contentView] addSubview: scaler];
+  [scaler scaleUnitSquareToSize: NSMakeSize(2.0, 2.0)];
+  [scaler addSubview: sup];
+  [sup setAutoresizesSubviews: YES];
+  [sub setAutoresizingMask: NSViewHeightSizable | NSViewMinYMargin];
+  [sup addSubview: sub];
+  [sup setFrameSize: NSMakeSize(100, 120)];
+
+  return sub;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -161,20 +196,34 @@ main(int argc, char **argv)
    * Flipped superview control: identical to the first minYMargin tie case
    * above, but the superview is flipped. AppKit's answer is unchanged
    * ({10,22},{30,68}), i.e. AppKit does not swap minYMargin/maxYMargin
-   * roles when the superview is flipped. GNUstep's pre-existing
-   * flip-conditional margin swap (resizeWithOldSuperviewSize:, before the
-   * edge-flooring this fix touches) does swap them, so this still diverges
-   * after this fix; that is a separate, unrelated bug, not the
-   * centerScanRect:/floor rounding issue this fix addresses. Marked
-   * hopeful pending a follow-up fix to the margin swap.
+   * roles when the superview is flipped. Checked against AppKit.
    */
-  testHopeful = YES;
   sub = autoresizeCase([FlippedView class], NSMakeRect(10, 10, 30, 30),
 			NSViewHeightSizable | NSViewMinYMargin,
 			NSMakeSize(100, 150));
   PASS(rects_almost_equal([sub frame], NSMakeRect(10, 22, 30, 68)),
        "heightSizable|minYMargin floors both edges with a flipped superview");
-  testHopeful = NO;
+
+  /*
+   * Scaled superview: the rounding is on the window / device pixel grid, not
+   * on the superview's own integer grid. With a 2x-scaled parent the raw
+   * origin.y 16.6667 and far edge 50.0 floor to window rows 33 and 100, i.e.
+   * {10, 16.5}+{20, 33.5} back in the superview's space (a plain floor of the
+   * superview-space edges would give {10, 16}+{20, 34}). Needs a window.
+   */
+  NS_DURING
+    {
+      sub = scaledAutoresizeCase();
+      PASS(rects_almost_equal([sub frame], NSMakeRect(10, 16.5, 20, 33.5)),
+           "heightSizable|minYMargin floors on the device pixel grid under a scaled superview");
+    }
+  NS_HANDLER
+    {
+      if ([[localException name] isEqualToString: NSInternalInconsistencyException]
+        || [[localException name] isEqualToString: @"NSWindowServerCommunicationException"])
+        SKIP("No display available for the scaled-window case")
+    }
+  NS_ENDHANDLER
 
   END_SET("NSView autoresizeRounding")
 

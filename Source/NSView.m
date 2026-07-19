@@ -2083,15 +2083,13 @@ static void autoresize(CGFloat oldContainerSize,
 	     (_autoresizingMask & NSViewMaxXMargin));
 
   {
-    const BOOL flipped = (_super_view && [_super_view isFlipped]);
-
     autoresize(oldSize.height,
 	       superViewFrameSize.height,
 	       &newFrame.origin.y,
 	       &newFrame.size.height,
-	       flipped ? (_autoresizingMask & NSViewMaxYMargin) : (_autoresizingMask & NSViewMinYMargin),
+	       (_autoresizingMask & NSViewMinYMargin),
 	       (_autoresizingMask & NSViewHeightSizable),
-	       flipped ? (_autoresizingMask & NSViewMinYMargin) : (_autoresizingMask & NSViewMaxYMargin));
+	       (_autoresizingMask & NSViewMaxYMargin));
   }
 
   newFrameRounded = newFrame;
@@ -2101,15 +2099,19 @@ static void autoresize(CGFloat oldContainerSize,
    */
   if (![self isRotatedFromBase] && [self superview] != nil)
     {
-      CGFloat minX = floor(newFrameRounded.origin.x);
-      CGFloat maxX = floor(newFrameRounded.origin.x + newFrameRounded.size.width);
-      CGFloat minY = floor(newFrameRounded.origin.y);
-      CGFloat maxY = floor(newFrameRounded.origin.y + newFrameRounded.size.height);
+      NSView *sup = [self superview];
+      NSRect win = [sup convertRect: newFrameRounded toView: nil];
+      /* The device grid is integer coordinates in the window base system, so
+         each edge floors there. Snap first: the resize proportion and the
+         coordinate transform leave an exact edge a fraction of a ULP below an
+         integer, which a plain floor would drop a whole pixel. */
+      CGFloat minX = floor(NSMinX(win) + 1e-6);
+      CGFloat minY = floor(NSMinY(win) + 1e-6);
+      CGFloat maxX = floor(NSMaxX(win) + 1e-6);
+      CGFloat maxY = floor(NSMaxY(win) + 1e-6);
 
-      newFrameRounded.origin.x = minX;
-      newFrameRounded.size.width = maxX - minX;
-      newFrameRounded.origin.y = minY;
-      newFrameRounded.size.height = maxY - minY;
+      win = NSMakeRect(minX, minY, maxX - minX, maxY - minY);
+      newFrameRounded = [sup convertRect: win fromView: nil];
     }
 
   [self setFrame: newFrameRounded];
