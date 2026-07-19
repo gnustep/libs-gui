@@ -27,9 +27,11 @@
 */ 
 
 #include "config.h"
+#import <Foundation/NSArray.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSDate.h>
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSDataLinkManager.h"
 #import "AppKit/NSPasteboard.h"
@@ -120,8 +122,12 @@
 - (id)initWithContentsOfFile:(NSString *)filename
 {
   NSData *data = [[NSData alloc] initWithContentsOfFile: filename];
-  id object = [NSUnarchiver unarchiveObjectWithData: data];
+  id object = nil;
 
+  if (data != nil)
+    {
+      object = [NSUnarchiver unarchiveObjectWithData: data];
+    }
   RELEASE(data);
   RELEASE(self);
   return RETAIN(object);
@@ -130,8 +136,12 @@
 - (id)initWithPasteboard:(NSPasteboard *)pasteboard
 {
   NSData *data = [pasteboard dataForType: NSDataLinkPboardType];
-  id object = [NSUnarchiver unarchiveObjectWithData: data];
+  id object = nil;
 
+  if (data != nil)
+    {
+      object = [NSUnarchiver unarchiveObjectWithData: data];
+    }
   RELEASE(self);
   return RETAIN(object);
 }
@@ -182,6 +192,8 @@
 - (void)writeToPasteboard:(NSPasteboard *)pasteboard
 {
   NSData *data = [NSArchiver archivedDataWithRootObject: self];
+  [pasteboard declareTypes: [NSArray arrayWithObject: NSDataLinkPboardType]
+		     owner: nil];
   [pasteboard setData: data forType: NSDataLinkPboardType];
 }
 
@@ -213,7 +225,14 @@
 
 - (BOOL)openSource
 {
-  return NO;
+  id delegate = [_sourceManager delegate];
+
+  if ([delegate respondsToSelector: @selector(showSelection:)] == YES)
+    {
+      return [delegate showSelection: _sourceSelection];
+    }
+
+  return (_sourceFilename != nil);
 }
 
 - (NSString *)sourceApplicationName
@@ -276,7 +295,10 @@
       [dstDelegate dataLinkManager: _destinationManager didBreakLink: self];
     }
 
-  return (_flags.broken = YES);
+  _disposition = NSLinkBroken;
+  _flags.broken = YES;
+
+  return YES;
 }
 
 - (void)noteSourceEdited
@@ -296,7 +318,51 @@
 
 - (BOOL)updateDestination
 {
-  return NO;
+  id srcDelegate = [_sourceManager delegate];
+  id dstDelegate = [_destinationManager delegate];
+  NSPasteboard *pasteboard;
+  BOOL result = NO;
+
+  if (_flags.broken == YES || _updateMode == NSUpdateNever)
+    {
+      return NO;
+    }
+
+  if ([dstDelegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)] == YES
+      && [dstDelegate dataLinkManager: _destinationManager isUpdateNeededForLink: self] == NO)
+    {
+      _flags.isDirty = NO;
+      return YES;
+    }
+
+  if (_sourceFilename != nil
+      && [dstDelegate respondsToSelector: @selector(importFile:at:)] == YES)
+    {
+      result = [dstDelegate importFile: _sourceFilename at: _destinationSelection];
+    }
+  else if ([srcDelegate respondsToSelector: @selector(copyToPasteboard:at:cheapCopyAllowed:)] == YES
+	   && [dstDelegate respondsToSelector: @selector(pasteFromPasteboard:at:)] == YES)
+    {
+      pasteboard = [NSPasteboard pasteboardWithUniqueName];
+      result = [srcDelegate copyToPasteboard: pasteboard
+					  at: _sourceSelection
+			    cheapCopyAllowed: NO];
+      if (result == YES)
+	{
+	  result = [dstDelegate pasteFromPasteboard: pasteboard
+						 at: _destinationSelection];
+	}
+      [pasteboard releaseGlobally];
+    }
+
+  if (result == YES)
+    {
+      ASSIGN(_lastUpdateTime, [NSDate date]);
+      _flags.isDirty = NO;
+      _flags.willUpdate = NO;
+    }
+
+  return result;
 }
 
 - (NSDataLinkUpdateMode)updateMode
@@ -436,6 +502,11 @@
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
+  if ((self = [self init]) == nil)
+    {
+      return nil;
+    }
+
   if ([aCoder allowsKeyedCoding])
     {
       id obj;
@@ -490,23 +561,31 @@
 	  [aCoder decodeValueOfObjCType: @encode(int) at: &_linkNumber];
 	  [aCoder decodeValueOfObjCType: @encode(int) at: &_disposition];
 	  [aCoder decodeValueOfObjCType: @encode(int) at: &_updateMode];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_lastUpdateTime];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  ASSIGN(_lastUpdateTime, obj);
 	  
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_sourceApplicationName];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_sourceFilename];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_sourceSelection];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  ASSIGN(_sourceApplicationName, obj);
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  ASSIGN(_sourceFilename, obj);
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  ASSIGN(_sourceSelection, obj);
 	  // Skip the encoded nil manager
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
 	  _sourceManager = nil;
 	  
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_destinationApplicationName];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_destinationFilename];
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_destinationSelection];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  ASSIGN(_destinationApplicationName, obj);
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  ASSIGN(_destinationFilename, obj);
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  ASSIGN(_destinationSelection, obj);
 	  // Skip the encoded nil manager
 	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
 	  _destinationManager = nil;
 	  
-	  [aCoder decodeValueOfObjCType: @encode(id)  at: &_types];
+	  [aCoder decodeValueOfObjCType: @encode(id)  at: &obj];
+	  ASSIGN(_types, obj);
 	  
 	  // flags...
 	  [aCoder decodeValueOfObjCType: @encode(BOOL)  at: &flag];
