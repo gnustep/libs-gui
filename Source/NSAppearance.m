@@ -41,7 +41,13 @@ NSAppearance *__currentAppearance = nil;
   if (self)
     {
       ASSIGNCOPY(_name, name);
-      _allowsVibrancy = NO;
+      _allowsVibrancy
+        = [name isEqualToString: NSAppearanceNameVibrantLight]
+        || [name isEqualToString: NSAppearanceNameVibrantDark]
+        || [name isEqualToString:
+             NSAppearanceNameAccessibilityHighContrastVibrantLight]
+        || [name isEqualToString:
+             NSAppearanceNameAccessibilityHighContrastVibrantDark];
     }
   return self;
 }
