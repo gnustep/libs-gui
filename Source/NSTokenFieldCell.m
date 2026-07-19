@@ -43,6 +43,18 @@
     }
 }
 
+- (id) initTextCell: (NSString*)aString
+{
+  self = [super initTextCell: aString];
+  if (self != nil)
+    {
+      ASSIGN(tokenizingCharacterSet,
+        [[self class] defaultTokenizingCharacterSet]);
+      completionDelay = [[self class] defaultCompletionDelay];
+    }
+  return self;
+}
+
 - (void) dealloc
 {
   RELEASE(tokenizingCharacterSet);
