@@ -47,8 +47,8 @@ NSString *NSTextAlternativesSelectedAlternativeStringNotification =
 
   if ((self = [super init]))
     {
-      _primaryString = [primaryString copy];
-      _alternativeStrings = [alternativeStrings copy];
+      ASSIGNCOPY(_primaryString, primaryString);
+      ASSIGNCOPY(_alternativeStrings, alternativeStrings);
     }
 
   return self;
