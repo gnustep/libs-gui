@@ -1706,8 +1706,8 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   y_org = aRect.origin.y;
   aRect.origin.x = GSRoundTowardsInfinity(aRect.origin.x);
   aRect.origin.y = [self isFlipped] ? GSRoundTowardsNegativeInfinity(aRect.origin.y) : GSRoundTowardsInfinity(aRect.origin.y);
-  aRect.size.width = GSRoundTowardsInfinity(aRect.size.width + (x_org - aRect.origin.x) / 2.0);
-  aRect.size.height = GSRoundTowardsInfinity(aRect.size.height + (y_org - aRect.origin.y) / 2.0);
+  aRect.size.width = GSRoundTowardsInfinity(aRect.size.width);
+  aRect.size.height = GSRoundTowardsInfinity(aRect.size.height);
 
   matrix = [self _matrixFromWindow];
   aRect.origin = [matrix transformPoint: aRect.origin];
