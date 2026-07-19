@@ -169,7 +169,10 @@ jobs:
       - name: Install packages
         run: |
           sudo apt-get -q -y update
-          sudo apt-get -q -y install $APT_PACKAGES $APT_PACKAGES_clang
+          # libs-back builds an x11 server layer even for the cairo graphics
+          # backend, so the X development libraries are required to build it
+          sudo apt-get -q -y install $APT_PACKAGES $APT_PACKAGES_clang \
+            libxt-dev libxmu-dev libxft-dev libxrandr-dev libxfixes-dev libxcursor-dev
 
           # gnustep-2.0 runtime requires ld.gold or lld
           sudo update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 10
@@ -194,13 +197,13 @@ jobs:
           . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
           git clone -q -b ${LIBS_BACK_BRANCH:-master} https://github.com/gnustep/libs-back.git
           cd libs-back
-          ./configure
+          ./configure --enable-graphics=cairo
           make && make install
 
       - name: Run tests
         run: |
           . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
-          make check
+          env -u DISPLAY -u WAYLAND_DISPLAY make check
 
       - name: Upload logs
         uses: actions/upload-artifact@v4
