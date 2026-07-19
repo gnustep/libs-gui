@@ -1,0 +1,10 @@
+ICC colour profiles used by NSColorSpace for the standard colour spaces.
+
+sRGB2014.icc is the sRGB v2 reference profile published by the International
+Color Consortium at https://registry.color.org/rgb-registry/srgbprofiles and
+is redistributed here unmodified.  The ICC makes its profiles available under
+the following terms:
+
+  This profile is made available by the International Color Consortium, and
+  may be copied, distributed, embedded, made, used, and sold without
+  restriction.

@@ -33,6 +33,8 @@ RESOURCE_SET_NAME = gui-resources
 gui-resources_INSTALL_DIR = $(GNUSTEP_LIBRARY)/Libraries/gnustep-gui/Versions/$(GNUSTEP_GUI_MAJOR_VERSION).$(GNUSTEP_GUI_MINOR_VERSION)/Resources
 gui-resources_LANGUAGES = English Italian Lojban Esperanto German French Spanish Korean Japanese Polish
 gui-resources_LOCALIZED_RESOURCE_FILES = Localizable.strings
+gui-resources_RESOURCE_DIRS = ColorSpaces
+gui-resources_RESOURCE_FILES = ColorSpaces/sRGB2014.icc
 
 include $(GNUSTEP_MAKEFILES)/resource-set.make
 
