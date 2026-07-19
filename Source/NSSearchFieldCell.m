@@ -715,7 +715,12 @@
     {
       list = [[NSUserDefaults standardUserDefaults]
 	         stringArrayForKey: name];
-      [self setRecentSearches: list];
+      /* Nothing saved under that name says nothing about the searches the
+         cell already has. */
+      if (list != nil)
+	{
+	  [self setRecentSearches: list];
+	}
     }
 }
 
