@@ -136,6 +136,12 @@ NSAppearance *__currentAppearance = nil;
 
 + (NSAppearance *) currentAppearance
 {
+  if (__currentAppearance == nil)
+    {
+      __currentAppearance = [[NSAppearance alloc]
+        initWithAppearanceNamed: NSAppearanceNameAqua
+                         bundle: nil];
+    }
   return __currentAppearance;
 }
 
