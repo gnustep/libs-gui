@@ -1618,7 +1618,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 // NSCopying protocol
 - (id) copyWithZone: (NSZone *)zone 
 {
-  NSToolbarItem *new = [[NSToolbarItem allocWithZone: zone] 
+  NSToolbarItem *new = [[[self class] allocWithZone: zone]
     initWithItemIdentifier: _itemIdentifier];
   NSString *toolTip;
   NSImage *image;
