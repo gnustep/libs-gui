@@ -2075,7 +2075,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint
 {
-  NSRect cRect;
+  CGFloat delta;
 
   if (NSEqualPoints(topLeftPoint, NSZeroPoint) == YES)
     {
@@ -2084,9 +2084,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 
   [self setFrameTopLeftPoint: topLeftPoint];
-  cRect = [self contentRectForFrameRect: _frame];
-  topLeftPoint.x = NSMinX(cRect);
-  topLeftPoint.y = NSMaxY(cRect);
+
+  /* The next window in a cascade is offset down and to the right by the
+     height of a standard title bar. */
+  delta = [NSWindow frameRectForContentRect: NSMakeRect(0, 0, 100, 100)
+                                  styleMask: NSTitledWindowMask].size.height - 100.0;
+  topLeftPoint.x += delta;
+  topLeftPoint.y -= delta;
 
   /* make sure the new point is inside the screen */
   if ([self screen])
