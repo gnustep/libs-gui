@@ -76,15 +76,15 @@ extern "C" {
 - (void) setSelectionHighlightStyle: (NSTableViewSelectionHighlightStyle) selectionHighlightStyle;
 
 - (NSTableViewDraggingDestinationFeedbackStyle) draggingDestinationFeedbackStyle;
-- (void) setTableViewDraggingDestinationFeedbackStyle: (NSTableViewDraggingDestinationFeedbackStyle) draggingDestinationFeedbackStyle;
+- (void) setDraggingDestinationFeedbackStyle: (NSTableViewDraggingDestinationFeedbackStyle) draggingDestinationFeedbackStyle;
 
 - (CGFloat) indentationForDropOperation;
 - (void) setIndentationForDropOperation: (CGFloat)indentationForDropOperation;
 
-- (BOOL) targetForDropOperation;
+- (BOOL) isTargetForDropOperation;
 - (void) setTargetForDropOperation: (BOOL)flag;
 
-- (BOOL) groupRowStyle;
+- (BOOL) isGroupRowStyle;
 - (void) setGroupRowStyle: (BOOL)flag;
 
 - (NSInteger) numberOfColumns;
