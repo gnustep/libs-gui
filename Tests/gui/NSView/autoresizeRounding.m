@@ -74,7 +74,7 @@ main(int argc, char **argv)
 
   /*
    * All values below are AppKit values (checked against AppKit), from the
-   * autoresize rounding-rule oracle battery: sup (0,0,100,100), sub as
+   * autoresize rounding-rule reference cases: sup (0,0,100,100), sub as
    * given, resized via a single setFrameSize:. AppKit floors the min edge
    * and the max edge of the resized subview frame independently per axis,
    * then derives size as the difference; it does not round to nearest.
