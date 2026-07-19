@@ -39,7 +39,7 @@
 {
   if (self == [NSTokenFieldCell class])
     {
-      [self setVersion: 1];
+      [self setVersion: 2];
     }
 }
 
@@ -70,21 +70,50 @@
 
   if ([aCoder allowsKeyedCoding])
     {
+      [aCoder encodeInt: tokenStyle forKey: @"NSTokenStyle"];
+      [aCoder encodeDouble: completionDelay forKey: @"NSCompletionDelay"];
+      [aCoder encodeObject: tokenizingCharacterSet
+                    forKey: @"NSTokenizingCharacterSet"];
     }
   else
     {
+      [aCoder encodeValueOfObjCType: @encode(NSTokenStyle) at: &tokenStyle];
+      [aCoder encodeValueOfObjCType: @encode(NSTimeInterval)
+                                 at: &completionDelay];
+      [aCoder encodeObject: tokenizingCharacterSet];
     }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
- 
+  if (self == nil)
+    {
+      return nil;
+    }
+
   if ([aDecoder allowsKeyedCoding])
     {
+      if ([aDecoder containsValueForKey: @"NSTokenStyle"])
+        {
+          tokenStyle = [aDecoder decodeIntForKey: @"NSTokenStyle"];
+        }
+      if ([aDecoder containsValueForKey: @"NSCompletionDelay"])
+        {
+          completionDelay = [aDecoder decodeDoubleForKey: @"NSCompletionDelay"];
+        }
+      if ([aDecoder containsValueForKey: @"NSTokenizingCharacterSet"])
+        {
+          ASSIGN(tokenizingCharacterSet,
+            [aDecoder decodeObjectForKey: @"NSTokenizingCharacterSet"]);
+        }
     }
-  else
+  else if ([aDecoder versionForClassName: @"NSTokenFieldCell"] >= 2)
     {
+      [aDecoder decodeValueOfObjCType: @encode(NSTokenStyle) at: &tokenStyle];
+      [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval)
+                                   at: &completionDelay];
+      ASSIGN(tokenizingCharacterSet, [aDecoder decodeObject]);
     }
 
   return self;
