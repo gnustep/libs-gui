@@ -2469,13 +2469,12 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (NSSize) aspectRatio
 {
-  // FIXME: This method is missing
-  return NSMakeSize(1, 1);
+  return _aspectRatio;
 }
 
 - (void) setAspectRatio: (NSSize)ratio
 {
-  // FIXME: This method is missing
+  _aspectRatio = ratio;
 }
 
 - (NSSize) contentMaxSize
