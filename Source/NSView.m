@@ -2101,7 +2101,15 @@ static void autoresize(CGFloat oldContainerSize,
    */
   if (![self isRotatedFromBase] && [self superview] != nil)
     {
-      newFrameRounded = [[self superview] centerScanRect: newFrameRounded];
+      CGFloat minX = floor(newFrameRounded.origin.x);
+      CGFloat maxX = floor(newFrameRounded.origin.x + newFrameRounded.size.width);
+      CGFloat minY = floor(newFrameRounded.origin.y);
+      CGFloat maxY = floor(newFrameRounded.origin.y + newFrameRounded.size.height);
+
+      newFrameRounded.origin.x = minX;
+      newFrameRounded.size.width = maxX - minX;
+      newFrameRounded.origin.y = minY;
+      newFrameRounded.size.height = maxY - minY;
     }
 
   [self setFrame: newFrameRounded];
