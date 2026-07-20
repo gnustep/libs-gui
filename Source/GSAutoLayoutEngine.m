@@ -224,8 +224,6 @@ typedef NSInteger GSLayoutViewAttribute;
 - (CGFloat) valueForView: (NSView *)view
                attribute: (GSLayoutViewAttribute)attribute;
 
-- (int) getConstantMultiplierForLayoutAttribute: (NSLayoutAttribute)attribute;
-
 @end
 
 @implementation GSAutoLayoutEngine
@@ -409,8 +407,7 @@ typedef NSInteger GSLayoutViewAttribute;
       op = GSCSConstraintOperationGreaterThanOrEqual;
       break;
     }
-  double constant =
-    [self getConstantMultiplierForLayoutAttribute: [constraint secondAttribute]] * [constraint constant];
+  double constant = [constraint constant];
 
   GSCSLinearExpression *rightExpression = [[GSCSLinearExpression alloc]
     initWithVariable: secondItemConstraintVariable
@@ -425,27 +422,6 @@ typedef NSInteger GSLayoutViewAttribute;
   RELEASE(strength);
 
   return newConstraint;
-}
-
-- (int) getConstantMultiplierForLayoutAttribute: (NSLayoutAttribute)attribute
-{
-  switch (attribute)
-    {
-    case NSLayoutAttributeTop:
-      return -1;
-    case NSLayoutAttributeBottom:
-      return 1;
-    case NSLayoutAttributeLeading:
-      return 1;
-    case NSLayoutAttributeTrailing:
-      return -1;
-    case NSLayoutAttributeLeft:
-      return 1;
-    case NSLayoutAttributeRight:
-      return -1;
-    default:
-      return 1;
-    }
 }
 
 - (GSCSVariable *) variableForView: (NSView *)view
