@@ -22,12 +22,24 @@
 
 #import <Foundation/Foundation.h>
 #import "GSCSConstraint.h"
+#import "GSCSEditVariableManager.h"
 #import "GSCSSolution.h"
+#import "GSCSTableau.h"
 
 #ifndef _GS_CASSOWARY_SOLVER_H
 #define _GS_CASSOWARY_SOLVER_H
 
 @interface GSCassowarySolver : NSObject
+{
+  GSCSTableau *_tableau;
+  GSCSEditVariableManager *_editVariableManager;
+  NSMapTable *_markerVariables;
+  NSMapTable *_errorVariables;
+  NSMutableSet *_externalVariables;
+  NSInteger _artificialCounter;
+  NSInteger _slackCounter;
+  NSInteger _dummyCounter;
+}
 
 - (void) addConstraint: (GSCSConstraint*)constraint;
 
