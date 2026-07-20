@@ -1269,6 +1269,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
+      [self _autoLayoutContentViewResized];
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification
@@ -1363,6 +1364,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
+      [self _autoLayoutContentViewResized];
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification
@@ -5424,6 +5426,26 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 - (void) _layoutEngineDidChangeAlignmentRect
 {
   [[self superview] setNeedsLayout: YES];
+}
+
+// When a window content view that drives Auto Layout is resized, refresh the
+// content view size in the engine and lay the constrained subtree out again.
+- (void) _autoLayoutContentViewResized
+{
+  NSWindow *window = [self window];
+  if (window == nil || [window contentView] != self)
+    {
+      return;
+    }
+  GSAutoLayoutEngine *engine = [window _layoutEngine];
+  if (engine == nil)
+    {
+      return;
+    }
+  if ([engine updateContentViewSize])
+    {
+      [self _layoutViewAndSubViews];
+    }
 }
 
 - (GSAutoLayoutEngine*) _getOrCreateLayoutEngine
