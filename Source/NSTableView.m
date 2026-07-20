@@ -2045,7 +2045,8 @@ static void computeNewSelection
 - (void) _initDefaults
 {
   _isValidating     = NO;
-  _drawsGrid        = YES;
+  _gridStyleMask    = NSTableViewSolidVerticalGridLineMask | NSTableViewSolidHorizontalGridLineMask;
+  _allowsTypeSelect = YES;
   _rowHeight        = 16.0;
   _intercellSpacing = NSMakeSize (5.0, 2.0);
   ASSIGN(_selectedColumns, [NSMutableIndexSet indexSet]);
@@ -3296,12 +3297,22 @@ byExtendingSelection: (BOOL)flag
 
 - (void) setDrawsGrid: (BOOL)flag
 {
-  _drawsGrid = flag;
+  _gridStyleMask = flag ? (NSTableViewSolidVerticalGridLineMask | NSTableViewSolidHorizontalGridLineMask) : NSTableViewGridNone;
 }
 
 - (BOOL) drawsGrid
 {
-  return _drawsGrid;
+  return (_gridStyleMask != NSTableViewGridNone);
+}
+
+- (void) setAllowsTypeSelect: (BOOL)flag
+{
+  _allowsTypeSelect = flag;
+}
+
+- (BOOL) allowsTypeSelect
+{
+  return _allowsTypeSelect;
 }
 
 - (void) setGridColor: (NSColor *)aColor
@@ -3316,13 +3327,12 @@ byExtendingSelection: (BOOL)flag
 
 - (void) setGridStyleMask: (NSTableViewGridLineStyle)gridType
 {
-  // FIXME
+  _gridStyleMask = gridType;
 }
 
 - (NSTableViewGridLineStyle) gridStyleMask
 {
-  // FIXME
-  return 0;
+  return _gridStyleMask;
 }
 
 /*
@@ -4587,7 +4597,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   frameRect.size.width -= _intercellSpacing.width;
 
   // We add some space to separate the cell from the grid
-  if (_drawsGrid)
+  if (_gridStyleMask != NSTableViewGridNone)
     {
       frameRect.size.width -= 4;
       frameRect.origin.x += 2;
@@ -5726,7 +5736,10 @@ This method is deprecated, use -columnIndexesInRect:. */
       number = _numberOfColumns;
       [aCoder encodeValueOfObjCType: @encode(int) at: &number];
 
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+      {
+        BOOL drawsGrid = [self drawsGrid];
+        [aCoder encodeValueOfObjCType: @encode(BOOL) at: &drawsGrid];
+      }
       rowHeight = _rowHeight;
       [aCoder encodeValueOfObjCType: @encode(float) at: &rowHeight];
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
@@ -5933,7 +5946,11 @@ This method is deprecated, use -columnIndexesInRect:. */
       _numberOfRows = number;
       [aDecoder decodeValueOfObjCType: @encode(int) at: &number];
       _numberOfColumns = number;
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+      {
+        BOOL drawsGrid;
+        [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &drawsGrid];
+        [self setDrawsGrid: drawsGrid];
+      }
       [aDecoder decodeValueOfObjCType: @encode(float) at: &rowHeight];
       _rowHeight = rowHeight;
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
@@ -6508,7 +6525,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  newRect.origin.x += 3;
 	  newRect.size.width -= 3;
 
-	  if (_drawsGrid)
+	  if (_gridStyleMask != NSTableViewGridNone)
 		{
 			//newRect.origin.y += 1;
 			//newRect.origin.x += 1;

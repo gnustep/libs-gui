@@ -1235,7 +1235,7 @@ static NSImage *unexpandable  = nil;
   newRect.origin.x += 3;
   newRect.size.width -= 3;
 
-  if (_drawsGrid)
+  if (_gridStyleMask != NSTableViewGridNone)
     {
       //newRect.origin.y += 1;
       //newRect.origin.x += 1;

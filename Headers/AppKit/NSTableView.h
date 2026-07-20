@@ -120,7 +120,8 @@ APPKIT_EXPORT_CLASS
    */
   id                 _dataSource;
   NSMutableArray    *_tableColumns;
-  BOOL               _drawsGrid;
+  NSTableViewGridLineStyle _gridStyleMask;
+  BOOL               _allowsTypeSelect;
   NSColor           *_gridColor;
   NSColor           *_backgroundColor;
   NSTableViewSelectionHighlightStyle _selectionHighlightStyle;
@@ -285,6 +286,8 @@ APPKIT_EXPORT_CLASS
 /* Grid Drawing attributes */
 - (void) setDrawsGrid: (BOOL)flag;
 - (BOOL) drawsGrid;
+- (void) setAllowsTypeSelect: (BOOL)flag;
+- (BOOL) allowsTypeSelect;
 - (void) setGridColor: (NSColor *)aColor;
 - (NSColor *) gridColor;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
