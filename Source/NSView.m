@@ -88,6 +88,10 @@
 #import "NSViewPrivate.h"
 #import "NSWindowPrivate.h"
 
+@interface NSLayoutConstraint (GSPrivate)
++ (void) _installPendingConstraintsForView: (NSView *)view;
+@end
+
 /*
  * We need a fast array that can store objects without retain/release ...
  */
@@ -384,6 +388,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (vc != nil)
     {
       [vc _viewDidMoveToWindow];
+    }
+  if ([self window] != nil)
+    {
+      [NSLayoutConstraint _installPendingConstraintsForView: self];
     }
   if (_rFlags.has_subviews)
     {
