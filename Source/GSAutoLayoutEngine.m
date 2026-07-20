@@ -1279,8 +1279,81 @@ typedef NSInteger GSLayoutViewAttribute;
     }
 }
 
+- (NSLayoutConstraint *) _pinConstraintForView: (NSView *)view
+                                      attribute: (NSLayoutAttribute)attribute
+                                       constant: (CGFloat)constant
+{
+  return [NSLayoutConstraint constraintWithItem: view
+                                      attribute: attribute
+                                      relatedBy: NSLayoutRelationEqual
+                                         toItem: nil
+                                      attribute: NSLayoutAttributeNotAnAttribute
+                                     multiplier: 1.0
+                                       constant: constant];
+}
+
+// Pin a view (normally a window content view) to its own bounds so that
+// constraints expressed against it resolve to absolute positions. The width
+// and height constraints are kept so they can track the view's size.
+- (void) pinContentView: (NSView *)contentView
+{
+  if (contentView == nil)
+    {
+      return;
+    }
+  ASSIGN(_contentView, contentView);
+
+  NSRect bounds = [contentView bounds];
+  NSLayoutConstraint *left = [self _pinConstraintForView: contentView
+                                               attribute: NSLayoutAttributeLeft
+                                                constant: NSMinX(bounds)];
+  NSLayoutConstraint *bottom = [self _pinConstraintForView: contentView
+                                                 attribute: NSLayoutAttributeBottom
+                                                  constant: NSMinY(bounds)];
+  ASSIGN(_contentWidthConstraint,
+         [self _pinConstraintForView: contentView
+                           attribute: NSLayoutAttributeWidth
+                            constant: NSWidth(bounds)]);
+  ASSIGN(_contentHeightConstraint,
+         [self _pinConstraintForView: contentView
+                           attribute: NSLayoutAttributeHeight
+                            constant: NSHeight(bounds)]);
+
+  [self addConstraint: left];
+  [self addConstraint: bottom];
+  [self addConstraint: _contentWidthConstraint];
+  [self addConstraint: _contentHeightConstraint];
+}
+
+- (BOOL) updateContentViewSize
+{
+  if (_contentView == nil)
+    {
+      return NO;
+    }
+
+  BOOL changed = NO;
+  NSRect bounds = [_contentView bounds];
+  if ([_contentWidthConstraint constant] != NSWidth(bounds))
+    {
+      [_contentWidthConstraint setConstant: NSWidth(bounds)];
+      [self updateConstraint: _contentWidthConstraint];
+      changed = YES;
+    }
+  if ([_contentHeightConstraint constant] != NSHeight(bounds))
+    {
+      [_contentHeightConstraint setConstant: NSHeight(bounds)];
+      [self updateConstraint: _contentHeightConstraint];
+      changed = YES;
+    }
+  return changed;
+}
+
 - (void) dealloc
 {
+    RELEASE(_contentView);
+    RELEASE(_contentWidthConstraint);
+    RELEASE(_contentHeightConstraint);
     RELEASE(_trackedViews);
     RELEASE(_viewAlignmentRectByViewIndex);
     RELEASE(_viewIndexByViewHash);
