@@ -21,6 +21,7 @@
 */
 
 #import "GSCassowarySolver.h"
+#import "GSCSEditInfo.h"
 #import "GSCSFloatComparator.h"
 #import "GSCSLinearExpression.h"
 #import "GSCSStrength.h"
@@ -53,6 +54,17 @@
 - (GSCSVariable *) exitVariableForMarker: (GSCSVariable *)marker;
 
 - (void) optimize: (GSCSVariable *)objective;
+
+- (GSCSEditInfo *) editInfoForVariable: (GSCSVariable *)variable;
+
+- (GSCSEditInfo *) addEditVariable: (GSCSVariable *)variable
+                          strength: (GSCSStrength *)strength;
+
+- (void) deltaEditConstant: (CGFloat)delta
+              plusVariable: (GSCSVariable *)plusVariable
+             minusVariable: (GSCSVariable *)minusVariable;
+
+- (void) dualOptimize;
 
 - (void) setExternalVariables;
 
@@ -210,7 +222,25 @@
 
 - (void) suggestEditVariable: (GSCSVariable *)variable equals: (CGFloat)value
 {
-  // FIXME Suggest edit variable
+  GSCSEditInfo *editInfo = [self editInfoForVariable: variable];
+  if (editInfo == nil)
+    {
+      editInfo = [self addEditVariable: variable
+                              strength: [GSCSStrength strengthStrong]];
+    }
+
+  CGFloat delta = value - [editInfo previousConstant];
+  [editInfo setPreviousConstant: value];
+
+  // The edit constraint expression is (targetValue - variable), so the sign of
+  // the change is the reverse of the classic (variable - targetValue) form.
+  [self deltaEditConstant: -delta
+             plusVariable: [editInfo plusVariable]
+            minusVariable: [editInfo minusVariable]];
+
+  [self dualOptimize];
+  [self setExternalVariables];
+  [[_tableau infeasibleRows] removeAllObjects];
 }
 
 // Build the augmented expression for a new constraint. Basic variables are
@@ -599,6 +629,147 @@
           [[NSException
              exceptionWithName: NSInternalInconsistencyException
                         reason: @"Objective function is unbounded"
+                      userInfo: nil] raise];
+          return;
+        }
+
+      [_tableau pivotWithEntryVariable: entryVariable
+                          exitVariable: exitVariable];
+      objectiveRow = [_tableau rowExpressionForVariable: objective];
+    }
+}
+
+- (GSCSEditInfo *) editInfoForVariable: (GSCSVariable *)variable
+{
+  NSArray *editInfos = [_editVariableManager editInfosForVariable: variable];
+  if ([editInfos count] > 0)
+    {
+      return [editInfos lastObject];
+    }
+  return nil;
+}
+
+// Register a variable for editing by adding a non-required equality constraint
+// pinning it to its current value. The constraint's error variables are used to
+// nudge the value in -suggestEditVariable:equals:.
+- (GSCSEditInfo *) addEditVariable: (GSCSVariable *)variable
+                          strength: (GSCSStrength *)strength
+{
+  GSCSConstraint *editConstraint = AUTORELEASE([[GSCSConstraint alloc]
+    initEditConstraintWithVariable: variable strength: strength]);
+  [self addConstraint: editConstraint];
+
+  GSCSVariable *plusVariable = [_markerVariables objectForKey: editConstraint];
+  NSArray *errors = [_errorVariables objectForKey: editConstraint];
+  GSCSVariable *minusVariable = nil;
+  FOR_IN(GSCSVariable *, errorVariable, errors)
+    if (errorVariable != plusVariable)
+      {
+        minusVariable = errorVariable;
+      }
+  END_FOR_IN(errors);
+
+  GSCSEditInfo *editInfo = AUTORELEASE([[GSCSEditInfo alloc]
+     initWithVariable: variable
+           constraint: editConstraint
+         plusVariable: plusVariable
+        minusVariable: minusVariable
+     previousConstant: [variable value]]);
+  [_editVariableManager addEditInfo: editInfo];
+  return editInfo;
+}
+
+// Apply a change to an edit constraint's constant by adjusting the constants of
+// the rows that reference its error variables, recording any rows that become
+// infeasible for the dual optimisation pass.
+- (void) deltaEditConstant: (CGFloat)delta
+              plusVariable: (GSCSVariable *)plusVariable
+             minusVariable: (GSCSVariable *)minusVariable
+{
+  GSCSLinearExpression *plusRow =
+    [_tableau rowExpressionForVariable: plusVariable];
+  if (plusRow != nil)
+    {
+      [plusRow setConstant: [plusRow constant] + delta];
+      if ([plusRow constant] < 0.0)
+        {
+          [[_tableau infeasibleRows] addObject: plusVariable];
+        }
+      return;
+    }
+
+  GSCSLinearExpression *minusRow =
+    [_tableau rowExpressionForVariable: minusVariable];
+  if (minusRow != nil)
+    {
+      [minusRow setConstant: [minusRow constant] - delta];
+      if ([minusRow constant] < 0.0)
+        {
+          [[_tableau infeasibleRows] addObject: minusVariable];
+        }
+      return;
+    }
+
+  NSSet *column = [_tableau columnForVariable: plusVariable];
+  FOR_IN(GSCSVariable *, basicVariable, column)
+    GSCSLinearExpression *row =
+      [_tableau rowExpressionForVariable: basicVariable];
+    CGFloat coefficient = [row coefficientForTerm: plusVariable];
+    [row setConstant: [row constant] + coefficient * delta];
+    if ([basicVariable isRestricted] && [row constant] < 0.0)
+      {
+        [[_tableau infeasibleRows] addObject: basicVariable];
+      }
+  END_FOR_IN(column);
+}
+
+// Restore feasibility after an edit by pivoting each infeasible row out of the
+// basis, choosing the entry variable that least degrades the objective.
+- (void) dualOptimize
+{
+  GSCSVariable *objective = [_tableau objective];
+  GSCSLinearExpression *objectiveRow =
+    [_tableau rowExpressionForVariable: objective];
+  NSMutableArray *infeasibleRows = [_tableau infeasibleRows];
+
+  while ([infeasibleRows count] > 0)
+    {
+      GSCSVariable *exitVariable = [infeasibleRows objectAtIndex: 0];
+      [infeasibleRows removeObjectAtIndex: 0];
+
+      if (![_tableau isBasicVariable: exitVariable])
+        {
+          continue;
+        }
+      GSCSLinearExpression *expression =
+        [_tableau rowExpressionForVariable: exitVariable];
+      if ([expression constant] >= 0.0)
+        {
+          continue;
+        }
+
+      GSCSVariable *entryVariable = nil;
+      CGFloat minRatio = DBL_MAX;
+      NSArray *termVariables = [expression termVariables];
+      FOR_IN(GSCSVariable *, variable, termVariables)
+        CGFloat coefficient = [expression coefficientForTerm: variable];
+        if (coefficient > 0.0 && [variable isPivotable])
+          {
+            CGFloat ratio =
+              [objectiveRow coefficientForTerm: variable] / coefficient;
+            if (ratio < minRatio)
+              {
+                minRatio = ratio;
+                entryVariable = variable;
+              }
+          }
+      END_FOR_IN(termVariables);
+
+      if (entryVariable == nil)
+        {
+          [[NSException
+             exceptionWithName: NSInternalInconsistencyException
+                        reason: @"Unable to restore feasibility after an edit"
                       userInfo: nil] raise];
           return;
         }
