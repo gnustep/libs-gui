@@ -57,6 +57,10 @@
 
 - (GSCSEditInfo *) editInfoForVariable: (GSCSVariable *)variable;
 
+- (void) registerEditInfoForConstraint: (GSCSConstraint *)constraint
+                                marker: (GSCSVariable *)marker
+                                errors: (NSArray *)errors;
+
 - (GSCSEditInfo *) addEditVariable: (GSCSVariable *)variable
                           strength: (GSCSStrength *)strength;
 
@@ -108,6 +112,12 @@
   if (errors != nil)
     {
       [_errorVariables setObject: errors forKey: constraint];
+    }
+  if ([constraint isEditConstraint] && marker != nil)
+    {
+      [self registerEditInfoForConstraint: constraint
+                                   marker: marker
+                                   errors: errors];
     }
 
   [self optimize: [_tableau objective]];
@@ -649,34 +659,47 @@
   return nil;
 }
 
-// Register a variable for editing by adding a non-required equality constraint
-// pinning it to its current value. The constraint's error variables are used to
-// nudge the value in -suggestEditVariable:equals:.
-- (GSCSEditInfo *) addEditVariable: (GSCSVariable *)variable
-                          strength: (GSCSStrength *)strength
+// Record the edit information for an edit constraint as it is added, so that a
+// later -suggestEditVariable:equals: adjusts this constraint rather than adding
+// a second, conflicting one.
+- (void) registerEditInfoForConstraint: (GSCSConstraint *)constraint
+                                marker: (GSCSVariable *)marker
+                                errors: (NSArray *)errors
 {
-  GSCSConstraint *editConstraint = AUTORELEASE([[GSCSConstraint alloc]
-    initEditConstraintWithVariable: variable strength: strength]);
-  [self addConstraint: editConstraint];
+  GSCSVariable *editVariable = [constraint variable];
+  if (editVariable == nil
+      || [_editVariableManager editInfoForConstraint: constraint] != nil)
+    {
+      return;
+    }
 
-  GSCSVariable *plusVariable = [_markerVariables objectForKey: editConstraint];
-  NSArray *errors = [_errorVariables objectForKey: editConstraint];
   GSCSVariable *minusVariable = nil;
   FOR_IN(GSCSVariable *, errorVariable, errors)
-    if (errorVariable != plusVariable)
+    if (errorVariable != marker)
       {
         minusVariable = errorVariable;
       }
   END_FOR_IN(errors);
 
   GSCSEditInfo *editInfo = AUTORELEASE([[GSCSEditInfo alloc]
-     initWithVariable: variable
-           constraint: editConstraint
-         plusVariable: plusVariable
+     initWithVariable: editVariable
+           constraint: constraint
+         plusVariable: marker
         minusVariable: minusVariable
-     previousConstant: [variable value]]);
+     previousConstant: [editVariable value]]);
   [_editVariableManager addEditInfo: editInfo];
-  return editInfo;
+}
+
+// Register a variable for editing by adding a non-required equality constraint
+// pinning it to its current value. -addConstraint: records the edit info; the
+// error variables are used to nudge the value in -suggestEditVariable:equals:.
+- (GSCSEditInfo *) addEditVariable: (GSCSVariable *)variable
+                          strength: (GSCSStrength *)strength
+{
+  GSCSConstraint *editConstraint = AUTORELEASE([[GSCSConstraint alloc]
+    initEditConstraintWithVariable: variable strength: strength]);
+  [self addConstraint: editConstraint];
+  return [self editInfoForVariable: variable];
 }
 
 // Apply a change to an edit constraint's constant by adjusting the constants of
