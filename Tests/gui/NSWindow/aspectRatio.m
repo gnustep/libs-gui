@@ -25,9 +25,18 @@ main(int argc, const char **argv)
                     backing: NSBackingStoreBuffered
                       defer: NO]);
 
+      [w setResizeIncrements: NSMakeSize(16, 16)];
       [w setAspectRatio: NSMakeSize(4, 3)];
       PASS(NSEqualSizes([w aspectRatio], NSMakeSize(4, 3)),
         "setAspectRatio: round-trips");
+      PASS(NSEqualSizes([w resizeIncrements], NSZeroSize),
+        "setAspectRatio: clears the resize increments");
+
+      [w setResizeIncrements: NSMakeSize(8, 8)];
+      PASS(NSEqualSizes([w resizeIncrements], NSMakeSize(8, 8)),
+        "setResizeIncrements: round-trips");
+      PASS(NSEqualSizes([w aspectRatio], NSZeroSize),
+        "setResizeIncrements: clears the aspect ratio");
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]
