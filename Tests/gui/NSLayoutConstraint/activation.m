@@ -7,18 +7,6 @@
 #import <AppKit/NSLayoutConstraint.h>
 #import <AppKit/NSLayoutAnchor.h>
 
-static NSLayoutConstraint *
-pin(NSView *view, NSLayoutAttribute attribute, CGFloat constant)
-{
-  return [NSLayoutConstraint constraintWithItem: view
-                                      attribute: attribute
-                                      relatedBy: NSLayoutRelationEqual
-                                         toItem: nil
-                                      attribute: NSLayoutAttributeNotAnAttribute
-                                     multiplier: 1.0
-                                       constant: constant];
-}
-
 int
 main(int argc, const char **argv)
 {
@@ -46,11 +34,8 @@ main(int argc, const char **argv)
       [sub setTranslatesAutoresizingMaskIntoConstraints: NO];
       [content addSubview: sub];
 
-      /* Pin the content view origin so the subview position is fully
-         determined. */
-      [pin(content, NSLayoutAttributeLeft, 0.0) setActive: YES];
-      [pin(content, NSLayoutAttributeBottom, 0.0) setActive: YES];
-
+      /* The content view is pinned to its own bounds automatically, so the
+         subview position and size below are fully determined. */
       NSLayoutConstraint *width =
         [[sub widthAnchor] constraintEqualToConstant: 120.0];
       NSLayoutConstraint *height =
