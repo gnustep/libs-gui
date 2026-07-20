@@ -54,6 +54,7 @@ APPKIT_EXPORT_CLASS
 
 // Instance methods
 - (BOOL) autoResizesOutlineColumn;
+- (BOOL) autoresizesOutlineColumn;
 - (BOOL) autosaveExpandedItems;
 - (void) collapseItem: (id)item;
 - (void) collapseItem: (id)item collapseChildren: (BOOL)collapseChildren;
