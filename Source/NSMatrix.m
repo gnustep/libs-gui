@@ -62,6 +62,7 @@
 #import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSNotification.h>
+#import <Foundation/NSMapTable.h>
 #import <Foundation/NSFormatter.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSString.h>
@@ -373,6 +374,7 @@ static SEL getSel;
   [_cellPrototype release];
   [_backgroundColor release];
   [_cellBackgroundColor release];
+  [_reserved1 release];
 
   if (_delegate != nil)
     {
@@ -2684,13 +2686,28 @@ static SEL getSel;
 
 - (NSString*) toolTipForCell: (NSCell*)cell
 {
-  // FIXME
-  return @"";
+  return [(NSMapTable *)_reserved1 objectForKey: cell];
 }
 
 - (void) setToolTip: (NSString*)toolTipString forCell: (NSCell*)cell
 {
-  // FIXME
+  if (_reserved1 == nil)
+    {
+      _reserved1 = [[NSMapTable alloc]
+        initWithKeyOptions: NSPointerFunctionsWeakMemory
+                              | NSPointerFunctionsObjectPointerPersonality
+              valueOptions: NSPointerFunctionsStrongMemory
+                              | NSPointerFunctionsObjectPersonality
+                  capacity: 4];
+    }
+  if (toolTipString == nil)
+    {
+      [(NSMapTable *)_reserved1 removeObjectForKey: cell];
+    }
+  else
+    {
+      [(NSMapTable *)_reserved1 setObject: toolTipString forKey: cell];
+    }
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
