@@ -2087,8 +2087,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
   /* The next window in a cascade is offset down and to the right by the
      height of a standard title bar. */
-  delta = [NSWindow frameRectForContentRect: NSMakeRect(0, 0, 100, 100)
-                                  styleMask: NSTitledWindowMask].size.height - 100.0;
+  delta = [[GSTheme theme] titlebarHeight];
   topLeftPoint.x += delta;
   topLeftPoint.y -= delta;
 
