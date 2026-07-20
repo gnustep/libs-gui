@@ -648,6 +648,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _needsUpdateConstraints = YES;
   _translatesAutoresizingMaskIntoConstraints = YES;
 
+  _huggingPriorities.horizontal = NSLayoutPriorityDefaultLow;
+  _huggingPriorities.vertical = NSLayoutPriorityDefaultLow;
+  _compressionPriorities.horizontal = NSLayoutPriorityDefaultHigh;
+  _compressionPriorities.vertical = NSLayoutPriorityDefaultHigh;
+
   return self;
 }
 

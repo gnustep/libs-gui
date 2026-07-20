@@ -679,6 +679,18 @@ static NSNotificationCenter *nc;
   [self setFrameSize: [_cell cellSize]];
 }
 
+/** <p>Returns the natural size of the control's cell, used by the constraint
+    based layout system as the control's intrinsic content size.</p>
+ */
+- (NSSize) intrinsicContentSize
+{
+  if (_cell == nil)
+    {
+      return [super intrinsicContentSize];
+    }
+  return [_cell cellSize];
+}
+
 /** <p>Returns whether the NSControl's cell is opaque</p>
  */
 - (BOOL) isOpaque
