@@ -68,7 +68,8 @@ APPKIT_EXPORT_CLASS
   struct ___vcFlags
     {
       unsigned int nib_is_loaded:1;
-      unsigned int RESERVED:31;
+      unsigned int view_did_load:1;
+      unsigned int RESERVED:30;
     } _vcFlags;
   id                   _reserved;
 }
@@ -84,6 +85,7 @@ APPKIT_EXPORT_CLASS
 
 - (void)setView:(NSView *)aView;
 - (NSView *)view;
+- (BOOL)isViewLoaded;
 - (void)loadView;
 
 - (NSString *)nibName;

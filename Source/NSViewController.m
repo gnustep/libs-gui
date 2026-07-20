@@ -152,7 +152,21 @@
     {
       [self loadView];
     }
+
+  /* Send -viewDidLoad once the view exists, whether it was loaded from a nib,
+     created in a -loadView override, or set directly. */
+  if (view != nil && !_vcFlags.view_did_load)
+    {
+      _vcFlags.view_did_load = YES;
+      [self viewDidLoad];
+    }
+
   return view;
+}
+
+- (BOOL)isViewLoaded
+{
+  return view != nil;
 }
 
 - (void)setView:(NSView *)aView
@@ -181,6 +195,7 @@
     {
       _vcFlags.nib_is_loaded = YES;
       // FIXME: Need to resolve possible retain cycles here
+      _vcFlags.view_did_load = YES;
       [self viewDidLoad];
       [self viewDidAppear: NO];
     }
