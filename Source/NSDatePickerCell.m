@@ -48,6 +48,7 @@
       [self setTextColor: [NSColor controlTextColor]];
       [self setBackgroundColor: [NSColor controlBackgroundColor]];
       [self setDateValue: [NSDate dateWithTimeIntervalSinceReferenceDate: 0.0]];
+      [self setBezeled: YES];
       _datePickerElements = NSYearMonthDayDatePickerElementFlag
         | NSHourMinuteSecondDatePickerElementFlag;
     }
