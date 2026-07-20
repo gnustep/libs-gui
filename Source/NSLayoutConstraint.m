@@ -742,11 +742,40 @@ static NSMapTable *installedContainers = nil;
   [[self contentView] _layoutViewAndSubViews];
 }
 
+static NSLayoutConstraint *
+GSContentViewPin(NSView *view, NSLayoutAttribute attribute, CGFloat constant)
+{
+  return [NSLayoutConstraint constraintWithItem: view
+                                      attribute: attribute
+                                      relatedBy: NSLayoutRelationEqual
+                                         toItem: nil
+                                      attribute: NSLayoutAttributeNotAnAttribute
+                                     multiplier: 1.0
+                                       constant: constant];
+}
+
 - (void) _bootstrapAutoLayout
 {
   GSAutoLayoutEngine *layoutEngine = [[GSAutoLayoutEngine alloc] init];
   [self _setLayoutEngine: layoutEngine];
   RELEASE(layoutEngine);
+
+  // Pin the content view to its own bounds so subview constraints resolve to
+  // absolute positions in the content view's coordinate system. Without this
+  // the content view's origin and size are left undetermined by the solver.
+  NSView *contentView = [self contentView];
+  if (contentView != nil)
+    {
+      NSRect bounds = [contentView bounds];
+      [layoutEngine addConstraint:
+        GSContentViewPin(contentView, NSLayoutAttributeLeft, NSMinX(bounds))];
+      [layoutEngine addConstraint:
+        GSContentViewPin(contentView, NSLayoutAttributeBottom, NSMinY(bounds))];
+      [layoutEngine addConstraint:
+        GSContentViewPin(contentView, NSLayoutAttributeWidth, NSWidth(bounds))];
+      [layoutEngine addConstraint:
+        GSContentViewPin(contentView, NSLayoutAttributeHeight, NSHeight(bounds))];
+    }
 }
 
-@end 
+@end
