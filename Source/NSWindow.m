@@ -2465,6 +2465,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 - (void) setResizeIncrements: (NSSize)aSize
 {
   _increments = aSize;
+  _aspectRatio = NSZeroSize;
   if (_windowNum > 0)
     {
       [GSServerForWindow(self) setresizeincrements: aSize : _windowNum];
@@ -2473,13 +2474,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (NSSize) aspectRatio
 {
-  // FIXME: This method is missing
-  return NSMakeSize(1, 1);
+  return _aspectRatio;
 }
 
 - (void) setAspectRatio: (NSSize)ratio
 {
-  // FIXME: This method is missing
+  _aspectRatio = ratio;
+  _increments = NSZeroSize;
 }
 
 - (NSSize) contentMaxSize
