@@ -272,6 +272,18 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
 }
 
 
+/* East Asian scripts (CJK ideographs, kana and hangul) do not separate words
+   with spaces, so each such character is treated as its own word when wrapping.
+   The ranges cover the ideographic, kana and hangul Unicode blocks. */
+static inline BOOL
+GSIsEastAsianWrapCharacter(unichar c)
+{
+  return (c >= 0x2E80 && c <= 0x9FFF)   /* CJK radicals through CJK Unified Ideographs */
+      || (c >= 0xAC00 && c <= 0xD7AF)   /* Hangul Syllables */
+      || (c >= 0xF900 && c <= 0xFAFF)   /* CJK Compatibility Ideographs */
+      || (c >= 0xFF65 && c <= 0xFF9F);  /* Halfwidth Katakana */
+}
+
 /*
    Should return the first glyph on the next line, which must be <=glyphIndex and
    >=cacheBase (TODO: not enough. actually, it probably is now. the wrapping
@@ -314,9 +326,8 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
           glyphEntry->size.width = 0;
           return glyphIndex + 1 + cacheBase;
         }
-      /* Each CJK glyph should be treated as a word when wrapping word.
-         The range should work for most cases */
-      else if ((character > 0x2ff0) && (character < 0x9fff))
+      /* Each East Asian glyph is treated as a word when wrapping words. */
+      else if (GSIsEastAsianWrapCharacter(character))
          {
            glyphEntry->dontShow = NO;
            if (glyphIndex > 0)
