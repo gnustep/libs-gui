@@ -275,10 +275,10 @@ static SEL getSel;
     }
 
   _intercell = NSMakeSize(1, 1);
-  [self setAutosizesCells: YES];
+  [self setAutosizesCells: NO];
   [self setFrame: frameRect];
 
-  _tabKeyTraversesCells = YES;
+  _tabKeyTraversesCells = NO;
   [self setBackgroundColor: [NSColor controlColor]];
   [self setDrawsBackground: NO];
   [self setCellBackgroundColor: [NSColor controlColor]];
