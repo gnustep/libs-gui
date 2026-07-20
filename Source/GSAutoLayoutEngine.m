@@ -1145,8 +1145,20 @@ typedef NSInteger GSLayoutViewAttribute;
 - (BOOL) solverCanSolveAlignmentRectForView: (NSView *)view
                                    solution: (GSCSSolution *)solution
 {
-  // FIXME
-  return NO;
+  GSCSVariable *minX = [self getExistingVariableForView: view
+                                          withAttribute: GSLayoutAttributeMinX];
+  GSCSVariable *minY = [self getExistingVariableForView: view
+                                          withAttribute: GSLayoutAttributeMinY];
+  GSCSVariable *width = [self getExistingVariableForView: view
+                                           withAttribute: GSLayoutAttributeWidth];
+  GSCSVariable *height = [self getExistingVariableForView: view
+                                            withAttribute: GSLayoutAttributeHeight];
+
+  return minX != nil && minY != nil && width != nil && height != nil
+    && [solution resultForVariable: minX] != nil
+    && [solution resultForVariable: minY] != nil
+    && [solution resultForVariable: width] != nil
+    && [solution resultForVariable: height] != nil;
 }
 
 - (void) recordAlignmentRect: (NSRect)alignmentRect
@@ -1172,8 +1184,21 @@ typedef NSInteger GSLayoutViewAttribute;
 - (NSRect) solverAlignmentRectForView: (NSView *)view
                              solution: (GSCSSolution *)solution
 {
-  // FIXME Get view solution from solver
-  return NSZeroRect;
+  GSCSVariable *minX = [self getExistingVariableForView: view
+                                          withAttribute: GSLayoutAttributeMinX];
+  GSCSVariable *minY = [self getExistingVariableForView: view
+                                          withAttribute: GSLayoutAttributeMinY];
+  GSCSVariable *width = [self getExistingVariableForView: view
+                                           withAttribute: GSLayoutAttributeWidth];
+  GSCSVariable *height = [self getExistingVariableForView: view
+                                            withAttribute: GSLayoutAttributeHeight];
+
+  CGFloat x = [[solution resultForVariable: minX] doubleValue];
+  CGFloat y = [[solution resultForVariable: minY] doubleValue];
+  CGFloat w = [[solution resultForVariable: width] doubleValue];
+  CGFloat h = [[solution resultForVariable: height] doubleValue];
+
+  return NSMakeRect(x, y, w, h);
 }
 
 - (void) notifyViewsOfAlignmentRectChange: (NSArray *)viewsWithChanges
@@ -1185,8 +1210,12 @@ typedef NSInteger GSLayoutViewAttribute;
 
 - (NSRect) alignmentRectForView: (NSView *)view
 {
-  // FIXME Get alignment rect for view from solver
-  return NSZeroRect;
+  GSCSSolution *solution = [_solver solve];
+  if (![self solverCanSolveAlignmentRectForView: view solution: solution])
+    {
+      return NSZeroRect;
+    }
+  return [self solverAlignmentRectForView: view solution: solution];
 }
 
 - (void) addSupportingSolverConstraint: (GSCSConstraint *)supportingConstraint
