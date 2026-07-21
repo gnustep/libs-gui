@@ -1204,6 +1204,13 @@ APPKIT_EXPORT_CLASS
 - (CGFloat) menuItemHeight;
 - (CGFloat) menuSeparatorHeight;
 
+/**
+ * Corner radius used when filling the background of a highlighted menu item.
+ * The default is zero, which fills the whole item rectangle; a larger value
+ * rounds the corners of the highlight.
+ */
+- (CGFloat) menuItemBackgroundRadius;
+
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
                     withBounds: (NSRect)bounds
