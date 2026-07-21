@@ -77,17 +77,13 @@ int main(int argc, char **argv)
        && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"],
        "browser is reloaded after -setDelegate:");
   
-  /* Not really a -setDelegate: issue, but the other methods involved are
-     documented as doing the wrong thing.  */
   [p setDelegate: nil];
   m = [p lastColumnMatrix];
-  testHopeful = YES;
   pass([m numberOfRows] == 2
        && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"]
        && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @"B"],
        "browser contains all files after resetting delegate");
-  testHopeful = NO;
-  
+
   [p setDelegate: [Delegate self]];
   m = [p lastColumnMatrix];
   pass([m numberOfRows] == 1
