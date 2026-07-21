@@ -35,6 +35,8 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSWindow.h"
+#import "AppKit/NSAccessibility.h"
+#import "AppKit/NSAccessibilityProtocols.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSNibLoading.h"
 
@@ -537,6 +539,253 @@
       [self setStyle: NSProgressIndicatorBarStyle];
     }
    return self;
+}
+
+@end
+
+// MARK: - NSProgressIndicator (NSAccessibilityProgressIndicator)
+
+@implementation NSProgressIndicator (NSAccessibilityProgressIndicator)
+
+// MARK: - NSAccessibilityElement Protocol Implementation
+
+- (NSString *) accessibilityRole
+{
+  return NSAccessibilityProgressIndicatorRole;
+}
+
+- (NSString *) accessibilitySubrole
+{
+  return nil;
+}
+
+- (NSString *) accessibilityLabel
+{
+  return nil; // Progress indicators typically get their labels from associated labels
+}
+
+- (NSString *) accessibilityTitle
+{
+  return nil; // Progress indicators typically don't have titles
+}
+
+- (NSString *) accessibilityHelp
+{
+  NSString *toolTip = [self toolTip];
+  if (toolTip && [toolTip length] > 0)
+    {
+      return toolTip;
+    }
+  
+  return nil;
+}
+
+- (BOOL) isAccessibilityEnabled
+{
+  return YES; // Progress indicators are always considered enabled
+}
+
+- (NSArray *) accessibilityChildren
+{
+  return nil; // Progress indicators are leaf elements
+}
+
+- (NSArray *) accessibilitySelectedChildren
+{
+  return nil;
+}
+
+- (NSArray *) accessibilityVisibleChildren
+{
+  return nil;
+}
+
+- (id) accessibilityWindow
+{
+  return [self window];
+}
+
+- (id) accessibilityTopLevelUIElement
+{
+  NSWindow *window = [self window];
+  return window ? [window contentView] : nil;
+}
+
+- (NSPoint) accessibilityActivationPoint
+{
+  NSRect frame = [self frame];
+  if ([self window] != nil)
+    {
+      frame = [[self superview] convertRect: frame toView: nil];
+    }
+  
+  if (NSEqualRects(frame, NSZeroRect))
+    {
+      return NSZeroPoint;
+    }
+  
+  return NSMakePoint(NSMidX(frame), NSMidY(frame));
+}
+
+- (NSString *) accessibilityURL
+{
+  return nil;
+}
+
+- (NSNumber *) accessibilityIndex
+{
+  id parent = [self superview];
+  if (parent && [parent respondsToSelector: @selector(subviews)])
+    {
+      NSArray *siblings = [parent subviews];
+      NSUInteger index = [siblings indexOfObject: self];
+      if (index != NSNotFound)
+        {
+          return [NSNumber numberWithUnsignedInteger: index];
+        }
+    }
+  return [NSNumber numberWithInteger: 0];
+}
+
+// MARK: - NSAccessibilityProgressIndicator Protocol Implementation
+
+- (NSNumber *) accessibilityValue
+{
+  if ([self isIndeterminate])
+    {
+      return nil; // Indeterminate progress has no specific value
+    }
+  
+  return [NSNumber numberWithDouble: [self doubleValue]];
+}
+
+- (void) setAccessibilityValue: (id) value
+{
+  // Progress indicators are typically read-only
+  // But we can support setting for programmatic control
+  if ([value respondsToSelector: @selector(doubleValue)] && ![self isIndeterminate])
+    {
+      double newValue = [value doubleValue];
+      double minValue = [self minValue];
+      double maxValue = [self maxValue];
+      
+      // Clamp the value to the progress indicator's range
+      if (newValue < minValue)
+        {
+          newValue = minValue;
+        }
+      else if (newValue > maxValue)
+        {
+          newValue = maxValue;
+        }
+      
+      [self setDoubleValue: newValue];
+    }
+}
+
+- (NSNumber *) accessibilityMinValue
+{
+  return [NSNumber numberWithDouble: [self minValue]];
+}
+
+- (NSNumber *) accessibilityMaxValue
+{
+  return [NSNumber numberWithDouble: [self maxValue]];
+}
+
+- (NSString *) accessibilityValueDescription
+{
+  if ([self isIndeterminate])
+    {
+      return @"In progress";
+    }
+  
+  double value = [self doubleValue];
+  double minValue = [self minValue];
+  double maxValue = [self maxValue];
+  
+  // Calculate percentage
+  double percentage = 0.0;
+  if (maxValue > minValue)
+    {
+      percentage = ((value - minValue) / (maxValue - minValue)) * 100.0;
+    }
+  
+  return [NSString stringWithFormat: @"%.1f%% complete", percentage];
+}
+
+- (void) setAccessibilityValueDescription: (NSString *) valueDescription
+{
+  // Value description is computed automatically
+}
+
+- (NSString *) accessibilityOrientation
+{
+  if ([self respondsToSelector: @selector(isVertical)] && [self isVertical])
+    {
+      return NSAccessibilityVerticalOrientationValue;
+    }
+  else
+    {
+      return NSAccessibilityHorizontalOrientationValue;
+    }
+}
+
+- (BOOL) isAccessibilityIndeterminate
+{
+  return [self isIndeterminate];
+}
+
+- (void) setAccessibilityIndeterminate: (BOOL) indeterminate
+{
+  [self setIndeterminate: indeterminate];
+}
+
+// MARK: - Additional Methods
+
+- (NSArray *) accessibilityCustomRotors
+{
+  return nil;
+}
+
+- (BOOL) accessibilityPerformEscape
+{
+  return NO;
+}
+
+- (NSArray *) accessibilityCustomActions
+{
+  return nil;
+}
+
+- (void) setAccessibilityElement: (BOOL) isElement
+{
+  // Progress indicators are always accessibility elements
+}
+
+- (void) setAccessibilityFrame: (NSRect) frame
+{
+  // Frame is determined by the actual view frame
+}
+
+- (void) setAccessibilityParent: (id) parent
+{
+  // Parent relationship is managed by the view hierarchy
+}
+
+- (void) setAccessibilityFocused: (BOOL) focused
+{
+  if (focused)
+    {
+      [[self window] makeFirstResponder: self];
+    }
+  else
+    {
+      if ([[self window] firstResponder] == self)
+        {
+          [[self window] makeFirstResponder: nil];
+        }
+    }
 }
 
 @end

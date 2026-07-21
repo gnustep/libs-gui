@@ -34,6 +34,7 @@
 
 #import <AppKit/NSControl.h>
 #import <AppKit/NSButtonCell.h>
+#import <AppKit/NSAccessibilityProtocols.h>
 
 @class NSAttributedString;
 @class NSString;
@@ -136,6 +137,10 @@ APPKIT_EXPORT_CLASS
 - (NSSound *)sound;
 #endif
 
+@end
+
+// Accessibility support  
+@interface NSButton (NSAccessibilityButton) <NSAccessibilityElement>
 @end
 
 #endif // _GNUstep_H_NSButton

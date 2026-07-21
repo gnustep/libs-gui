@@ -1,21 +1,21 @@
 /* Interface of class NSAccessibilityCustomRotor
    Copyright (C) 2020 Free Software Foundation, Inc.
-   
+
    By: Gregory John Casamento
    Date: Mon 15 Jun 2020 03:18:59 AM EDT
 
    This file is part of the GNUstep Library.
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Lesser General Public License for more details.
-   
+
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
@@ -46,14 +46,14 @@ extern "C" {
 @class NSAccessibilityCustomRotorSearchParameters;
 @class NSString;
 @class NSAccessibilityElement;
-  
+
 enum
   {
    NSAccessibilityCustomRotorSearchDirectionPrevious,
    NSAccessibilityCustomRotorSearchDirectionNext,
 };
 typedef NSInteger NSAccessibilityCustomRotorSearchDirection;
-  
+
 enum
   {
    NSAccessibilityCustomRotorTypeCustom = 0,
@@ -77,13 +77,19 @@ enum
    NSAccessibilityCustomRotorTypeTextField,
    NSAccessibilityCustomRotorTypeUnderlinedText,
    NSAccessibilityCustomRotorTypeVisitedLink,
-}; 
+};
 typedef NSInteger NSAccessibilityCustomRotorType;
 
 // Rotor...
 APPKIT_EXPORT_CLASS
 @interface NSAccessibilityCustomRotor : NSObject
-  
+{
+  NSString *_label;
+  id<NSAccessibilityCustomRotorItemSearchDelegate> _itemSearchDelegate;
+  id<NSAccessibilityElementLoading> _itemLoadingDelegate;
+  NSAccessibilityCustomRotorType _type;
+}
+
 - (instancetype) initWithLabel: (NSString *)label
                    itemSearchDelegate: (id<NSAccessibilityCustomRotorItemSearchDelegate>)delegate;
 
@@ -101,12 +107,18 @@ APPKIT_EXPORT_CLASS
 
 - (id<NSAccessibilityElementLoading>) itemLoadingDelegate;
 - (void) setItemLoadingDelegate: (id<NSAccessibilityElementLoading>) delegate;
-  
+
 @end
 
 // Results...
 APPKIT_EXPORT_CLASS
 @interface NSAccessibilityCustomRotorItemResult : NSObject
+{
+  id<NSAccessibilityElement> _targetElement;
+  id<NSAccessibilityLoadingToken> _itemLoadingToken;
+  NSString *_customLabel;
+  NSRange _targetRange;
+}
 
 - (instancetype)initWithTargetElement:(id<NSAccessibilityElement>)targetElement;
 
@@ -114,7 +126,7 @@ APPKIT_EXPORT_CLASS
                              customLabel: (NSString *)customLabel;
 
 - (id<NSAccessibilityElement>) targetElement;
-  
+
 - (id<NSAccessibilityLoadingToken>) itemLoadingToken;
 
 - (NSRange) targetRange;

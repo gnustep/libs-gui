@@ -22,7 +22,11 @@
    Boston, MA 02110 USA.
 */
 
+#import "AppKit/NSEvent.h"
 #import "AppKit/NSSwitch.h"
+#import "AppKit/NSAccessibility.h"
+#import "AppKit/NSAccessibilityProtocols.h"
+#import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSTheme.h"
 
 @implementation NSSwitch
@@ -178,50 +182,397 @@
     }
 }
 
-// Accessibility
+- (void)keyDown:(NSEvent *)event
+{
+  if (![self isEnabled])
+    {
+      [super keyDown: event];
+      return;
+    }
+  
+  NSString *chars = [event charactersIgnoringModifiers];
+  if ([chars length] > 0)
+    {
+      unichar character = [chars characterAtIndex: 0];
+      
+      // Handle space bar to toggle the switch (accessibility standard)
+      if (character == ' ' || character == '\r' || character == '\n')
+        {
+          if (_state == NSControlStateValueOn)
+            {
+              [self setState: NSControlStateValueOff];
+            }
+          else
+            {
+              [self setState: NSControlStateValueOn];
+            }
+          
+          if (_action)
+            {
+              [self sendAction: _action to: _target];
+            }
+          return;
+        }
+    }
+  
+  [super keyDown: event];
+}
+
+- (BOOL)acceptsFirstResponder
+{
+  return [self isEnabled];
+}
+
+- (BOOL)canBecomeKeyView
+{
+  return [self isEnabled] && ![self isHidden];
+}
+
+// Accessibility - NSAccessibilityElement protocol methods
 - (NSRect)accessibilityFrame
 {
-  return [self frame];
+  if ([self window] != nil)
+    {
+      NSRect frame = [self frame];
+      return [[self superview] convertRect: frame toView: nil];
+    }
+  return NSZeroRect;
 }
 
 - (NSString *)accessibilityIdentifier
 {
+  // Return nil as NSSwitch doesn't have a specific identifier by default
   return nil;
 }
 
 - (id)accessibilityParent
 {
-  return nil;
+  return [self superview];
 }
 
 - (BOOL)isAccessibilityFocused
 {
-  return NO;
+  return [[self window] firstResponder] == self;
 }
 
+// NSAccessibilityButton protocol methods
 - (NSString *)accessibilityLabel
 {
-  return nil;
+  // Return a generic switch description as fallback
+  return @"Switch";
 }
 
 - (BOOL)accessibilityPerformPress
 {
-  return NO;
+  if (![self isEnabled])
+    {
+      return NO;
+    }
+  
+  // Toggle the switch state
+  if (_state == NSControlStateValueOn)
+    {
+      [self setState: NSControlStateValueOff];
+    }
+  else
+    {
+      [self setState: NSControlStateValueOn];
+    }
+  
+  // Send the action
+  if (_action != NULL)
+    {
+      [self sendAction: _action to: _target];
+    }
+  
+  return YES;
 }
 
-- (BOOL) accessibilityPerformDecrement
+// NSAccessibilitySwitch protocol methods
+- (BOOL)accessibilityPerformDecrement
 {
-  return NO;
+  if (![self isEnabled])
+    {
+      return NO;
+    }
+  
+  // For a switch, decrement means turn off
+  if (_state == NSControlStateValueOn)
+    {
+      [self setState: NSControlStateValueOff];
+      if (_action != NULL)
+        {
+          [self sendAction: _action to: _target];
+        }
+      return YES;
+    }
+  
+  return NO; // Already off
 }
 
-- (BOOL) accessibilityPerformIncrement
+- (BOOL)accessibilityPerformIncrement
 {
-  return NO;
+  if (![self isEnabled])
+    {
+      return NO;
+    }
+  
+  // For a switch, increment means turn on
+  if (_state == NSControlStateValueOff)
+    {
+      [self setState: NSControlStateValueOn];
+      if (_action != NULL)
+        {
+          [self sendAction: _action to: _target];
+        }
+      return YES;
+    }
+  
+  return NO; // Already on
 }
 
-- (NSString *) accessibilityValue
+- (NSString *)accessibilityValue
 {
-  return nil;
+  // Return a localized string representing the current state
+  switch (_state)
+    {
+      case NSControlStateValueOn:
+        return @"On";
+      case NSControlStateValueOff:
+        return @"Off";
+      case NSControlStateValueMixed:
+        return @"Mixed";
+      default:
+        return @"Unknown";
+    }
+}
+
+// Additional NSAccessibilitySwitch protocol methods
+- (id)accessibilityMinValue
+{
+  return [NSNumber numberWithInt: 0]; // Off state
+}
+
+- (id)accessibilityMaxValue
+{
+  return [NSNumber numberWithInt: 1]; // On state
+}
+
+- (NSArray *)accessibilityAllowedValues
+{
+  NSNumber *off = [NSNumber numberWithInt: 0];
+  NSNumber *on = [NSNumber numberWithInt: 1];
+  return [NSArray arrayWithObjects: off, on, nil]; // Off and On
+}
+
+- (NSString *)accessibilityValueDescription
+{
+  return [self accessibilityValue];
+}
+
+- (void)setAccessibilityValue:(id)value
+{
+  if (![self isEnabled])
+    {
+      return;
+    }
+  
+  if ([value isKindOfClass: [NSNumber class]])
+    {
+      NSNumber *numValue = (NSNumber *)value;
+      if ([numValue boolValue])
+        {
+          [self setState: NSControlStateValueOn];
+        }
+      else
+        {
+          [self setState: NSControlStateValueOff];
+        }
+    }
+  else if ([value isKindOfClass: [NSString class]])
+    {
+      NSString *strValue = [(NSString *)value lowercaseString];
+      if ([strValue isEqualToString: @"on"] || [strValue isEqualToString: @"1"] || [strValue isEqualToString: @"yes"])
+        {
+          [self setState: NSControlStateValueOn];
+        }
+      else
+        {
+          [self setState: NSControlStateValueOff];
+        }
+    }
+}
+
+// Additional accessibility support methods
+- (NSString *)accessibilityRole
+{
+  return NSAccessibilityCheckBoxRole; // iOS/macOS uses checkbox role for switches
+}
+
+- (NSString *)accessibilityRoleDescription
+{
+  return @"switch";
+}
+
+- (NSString *)accessibilityHelp
+{
+  NSString *toolTip = [self toolTip];
+  if (toolTip && [toolTip length] > 0)
+    {
+      return toolTip;
+    }
+  return @"Toggle switch control";
+}
+
+- (void) setAccessibilityHelp: (NSString *) helpText
+{
+  [self setToolTip: helpText];
+}
+
+- (BOOL)isAccessibilityElement
+{
+  return YES;
+}
+
+- (BOOL)isAccessibilityEnabled
+{
+  return [self isEnabled];
+}
+
+- (NSString *)accessibilityTitle
+{
+  // Try to get title from accessibility label first, then fall back to generic
+  NSString *title = [self accessibilityLabel];
+  if (title != nil && [title length] > 0)
+    {
+      return title;
+    }
+  
+  return @"Switch";
+}
+
+// NSAccessibilityElement protocol methods required but not previously implemented
+- (NSString *)accessibilitySubrole
+{
+  return nil; // Switches don't typically have subroles
+}
+
+- (NSArray *)accessibilityChildren
+{
+  return nil; // Switches typically don't have child elements
+}
+
+- (NSArray *)accessibilitySelectedChildren
+{
+  return nil; // Not applicable to switches
+}
+
+- (NSArray *)accessibilityVisibleChildren
+{
+  return nil; // Not applicable to switches
+}
+
+- (id)accessibilityWindow
+{
+  return [self window];
+}
+
+- (id)accessibilityTopLevelUIElement
+{
+  return [[self window] windowController]; // Return the top level UI element
+}
+
+- (NSPoint)accessibilityActivationPoint
+{
+  NSRect bounds = [self bounds];
+  NSPoint center = NSMakePoint(NSMidX(bounds), NSMidY(bounds));
+  return [self convertPoint:center toView:nil]; // Convert to window coordinates
+}
+
+- (NSString *)accessibilityURL
+{
+  return nil; // Switches don't typically have URLs
+}
+
+- (NSNumber *)accessibilityIndex
+{
+  return nil; // Index not typically applicable to switches
+}
+
+- (NSArray *)accessibilityCustomRotors
+{
+  return nil; // No custom rotors for basic switches
+}
+
+- (BOOL)accessibilityPerformEscape
+{
+  return NO; // Switches don't handle escape actions
+}
+
+- (NSArray *)accessibilityCustomActions
+{
+  return nil; // No custom actions for basic switches
+}
+
+- (void)setAccessibilityElement:(BOOL)isElement
+{
+  // This is typically handled by the system, but we can store if needed
+  // For a switch, it should always be an accessibility element
+}
+
+- (void)setAccessibilityFrame:(NSRect)frame
+{
+  // Frame is typically calculated from the view's bounds
+  // This setter may be used by accessibility tools to override
+}
+
+- (void)setAccessibilityParent:(id)parent
+{
+  // Parent is typically managed by the view hierarchy
+  // This setter may be used by accessibility tools
+}
+
+- (void)setAccessibilityFocused:(BOOL)focused
+{
+  if (focused && [self acceptsFirstResponder])
+    {
+      [[self window] makeFirstResponder:self];
+    }
+}
+
+// Button-specific properties required by NSAccessibilityButton protocol
+- (BOOL)isAccessibilitySelected
+{
+  return _state == NSControlStateValueOn;
+}
+
+- (void)setAccessibilitySelected:(BOOL)selected
+{
+  if (![self isEnabled])
+    {
+      return;
+    }
+  
+  NSControlStateValue newState = selected ? NSControlStateValueOn : NSControlStateValueOff;
+  if (newState != _state)
+    {
+      [self setState: newState];
+      if (_action != NULL)
+        {
+          [self sendAction: _action to: _target];
+        }
+    }
+}
+
+- (NSString *)accessibilityPlaceholderValue
+{
+  return nil; // Switches typically don't have placeholder values
+}
+
+- (void)setAccessibilityPlaceholderValue:(NSString *)placeholderValue
+{
+  // Switches typically don't support placeholder values
+  // This method is required by protocol but can be empty for switches
 }
 
 // NSCoding
