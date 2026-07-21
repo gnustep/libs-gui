@@ -25,8 +25,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the
-   Free Software Foundation, 51 Franklin Street, Fifth Floor,
+   If not, see <http://www.gnu.org/licenses/> or write to the 
+   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
 */
 
@@ -38,21 +38,17 @@
 #import <Foundation/NSObject.h>
 #import "AppKit/NSMovieView.h"
 
-#ifdef HAVE_AVCODEC
 #include <ao/ao.h>
 #include <unistd.h>
 
 /* FFmpeg headers */
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#ifdef HAVE_LIBAVCODEC_CODEC_H
 #include <libavcodec/codec.h>
-#endif
 #include <libavutil/imgutils.h>
 #include <libavutil/time.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
-#endif /* HAVE_AVCODEC */
 
 @class NSMutableArray;
 @class NSThread;
@@ -66,76 +62,51 @@
   ao_device *_aoDev;
   ao_sample_format _aoFmt;
   int64_t _audioClock;
+  int64_t _audioStartTime;
+  int64_t _audioBaseTime;
+  int64_t _totalSamplesPlayed;
   AVRational _timeBase;
   float _volume; /* 0.0 to 1.0 */
-  float _playbackRate; /* 0.5 to 2.0, 1.0 = normal speed */
   unsigned int _loopMode:3;
 
-  // Audio filtering for time stretching (alternative implementation)
-  SwrContext *_stretchSwrCtx;  // Secondary resampler for time stretching
-  AVFrame *_stretchedFrame;    // Frame for stretched audio
-
-  // Reusable audio buffer for conversion
-  uint8_t *_audioBuffer;
-  int _audioBufferSize;
-  int _audioStreamIndex;
-  AVFormatContext *_formatCtx;
-  AVStream *_stream;
-
   NSMutableArray *_audioPackets;
+  NSUInteger _audioPacketCursor;
   NSThread *_audioThread;
 
-  struct GSAudioPlayerFlags {
-    unsigned int playing: 1;
-    unsigned int started: 1;
-    unsigned int muted: 1;
-    unsigned int needsRestart: 1;
-    unsigned int reachedEOF: 1;
-    unsigned int reserved: 27;
-  } _flags;
-
-  int64_t _lastPosition;
+  BOOL _running;
+  BOOL _started;
+  BOOL _muted;
 }
 
-// Initialize...
 - (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
 		      streamIndex: (int)audioStreamIndex;
-- (void) reset;
 
-// Decode stream...
-- (int) decodePacket: (AVPacket *)packet;
+- (int) decodePacket: (AVPacket *)packet; // Returns number of samples decoded
 - (void) submitPacket: (AVPacket *)packet;
-- (void) setPlaying: (BOOL)f;
-- (BOOL) isPlaying;
-- (void) start;
-- (void) stop;
+- (void) startAudio;
+- (void) stopAudio;
 
-// Set volume...
 - (float) volume;
 - (void) setVolume: (float)volume;
-- (void) setMuted: (BOOL)muted;
-- (BOOL) isMuted;
 
-// Show loop status...
 - (NSQTMovieLoopMode) loopMode;
 - (void) setLoopMode: (NSQTMovieLoopMode)mode;
 
-// Seeking methods...
+- (void) setMuted: (BOOL)muted;
+- (BOOL) isMuted;
+- (void) setPlaying: (BOOL)f;
+- (BOOL) isPlaying;
+
+// Seeking methods
 - (BOOL) seekToTime: (int64_t)timestamp;
 
-// Audio clock access for synchronization...
+// Audio clock access for synchronization
 - (int64_t) currentAudioClock;
 - (BOOL) isAudioStarted;
 - (int64_t) currentPlaybackTime; // Returns current playback time in microseconds
 
-// Time stretching support (sample rate based)...
-- (float) playbackRate;
-- (void) setPlaybackRate: (float)rate; // 0.5 to 2.0, 1.0 = normal speed
-- (BOOL) initializeTimeStretching;
-- (void) cleanupTimeStretching;
-
-- (void) setNeedsRestart: (BOOL)f;
-- (void) handleEndOfFile;
+// Debug methods
+- (NSUInteger) audioPacketBufferCount;
 
 @end
 
