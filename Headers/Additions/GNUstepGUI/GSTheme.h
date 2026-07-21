@@ -828,6 +828,13 @@ APPKIT_EXPORT_CLASS
 				  style: (int)style 
 				  state: (GSThemeControlState)state;
 
+/**
+ * Amount by which a pushed-in button's contents are displaced to give it a
+ * pressed look.  The default is one pixel to the bottom right; return
+ * NSZeroSize to keep the contents fixed while the button is pressed.
+ */
+- (NSSize) buttonPushInOffsetForCell: (NSCell*)cell;
+
 /** 
  * Draws the indicator (normally a dotted rectangle) to show that
  * the view currently has keyboard focus.
