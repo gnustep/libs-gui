@@ -56,6 +56,7 @@
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSCursor.h"
+#import "AppKit/NSViewController.h"
 #import "AppKit/NSDocumentController.h"
 #import "AppKit/NSDocument.h"
 #import "AppKit/NSClipView.h"
@@ -109,6 +110,14 @@ NSView *viewIsPrinting = nil;
 
 const CGFloat NSViewNoInstrinsicMetric = -1;
 const CGFloat NSViewNoIntrinsicMetric = -1;
+
+/* Private NSViewController hooks used to drive a controller's appearance
+   transitions when its view moves between windows. */
+@interface NSViewController (GSViewAppearance)
++ (NSViewController *) _viewControllerForView: (NSView *)aView;
+- (void) _viewWillMoveToWindow: (NSWindow *)newWindow;
+- (void) _viewDidMoveToWindow;
+@end
 
 /**
   <p>NSView is an abstract class which provides facilities for drawing
@@ -369,7 +378,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) _viewDidMoveToWindow
 {
+  NSViewController *vc = [NSViewController _viewControllerForView: self];
+
   [self viewDidMoveToWindow];
+  if (vc != nil)
+    {
+      [vc _viewDidMoveToWindow];
+    }
   if (_rFlags.has_subviews)
     {
       NSUInteger count = [_sub_views count];
@@ -407,7 +422,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       return;
     }
 
-  // This call also reset _allocate_gstate, so we have 
+  {
+    NSViewController *vc = [NSViewController _viewControllerForView: self];
+
+    if (vc != nil)
+      {
+	[vc _viewWillMoveToWindow: newWindow];
+      }
+  }
+
+  // This call also reset _allocate_gstate, so we have
   // to store this value and set it again.
   // This way we keep the logic in one place.
   old_allocate_gstate = _allocate_gstate;

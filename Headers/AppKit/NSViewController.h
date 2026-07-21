@@ -69,7 +69,8 @@ APPKIT_EXPORT_CLASS
     {
       unsigned int nib_is_loaded:1;
       unsigned int view_did_load:1;
-      unsigned int RESERVED:30;
+      unsigned int view_is_visible:1;
+      unsigned int RESERVED:29;
     } _vcFlags;
   id                   _reserved;
 }

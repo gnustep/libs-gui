@@ -25,6 +25,8 @@
  Boston, MA 02110-1301, USA.
  */
 
+#import <objc/runtime.h>
+
 #import <Foundation/NSArray.h>
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSKeyedArchiver.h>
@@ -41,6 +43,18 @@
 #import "AppKit/NSWindowController.h"
 
 @implementation NSViewController
+
+/* Weak association from a view back to its controller, so the view can drive
+   the controller's appearance transitions as it moves between windows.  A
+   responder-chain link cannot be used for this because -[NSView addSubview:]
+   resets a view's next responder to its superview. */
+static void *viewControllerAssociationKey = &viewControllerAssociationKey;
+
++ (NSViewController *) _viewControllerForView: (NSView *)aView
+{
+  return (NSViewController *)objc_getAssociatedObject(aView,
+    viewControllerAssociationKey);
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil
 	       bundle:(NSBundle *)nibBundleOrNil
@@ -173,7 +187,55 @@
 {
   if (view != aView)
     {
+      if (view != nil)
+	{
+	  objc_setAssociatedObject(view, viewControllerAssociationKey,
+	    nil, OBJC_ASSOCIATION_ASSIGN);
+	}
       ASSIGN(view, aView);
+      if (aView != nil)
+	{
+	  objc_setAssociatedObject(aView, viewControllerAssociationKey,
+	    self, OBJC_ASSOCIATION_ASSIGN);
+	}
+    }
+}
+
+/* Sent by -[NSView _viewWillMoveToWindow:] on the controller's own view, while
+   the view still reports its current window.  Predict the appearance change so
+   the -viewWillAppear:/-viewWillDisappear: notifications precede the move. */
+- (void) _viewWillMoveToWindow: (NSWindow *)newWindow
+{
+  if (newWindow != nil && !_vcFlags.view_is_visible)
+    {
+      [self viewWillAppear: NO];
+    }
+  else if (newWindow == nil && _vcFlags.view_is_visible)
+    {
+      [self viewWillDisappear: NO];
+    }
+}
+
+/* Sent by -[NSView _viewDidMoveToWindow] once the move has happened.  This is
+   where the visible state actually flips, so it drives the -viewDidAppear: and
+   -viewDidDisappear: notifications and guards against sending them twice. */
+- (void) _viewDidMoveToWindow
+{
+  if ([view window] != nil)
+    {
+      if (!_vcFlags.view_is_visible)
+	{
+	  _vcFlags.view_is_visible = YES;
+	  [self viewDidAppear: NO];
+	}
+    }
+  else
+    {
+      if (_vcFlags.view_is_visible)
+	{
+	  _vcFlags.view_is_visible = NO;
+	  [self viewDidDisappear: NO];
+	}
     }
 }
 
@@ -187,7 +249,6 @@
     }
 
   [self viewWillLoad];
-  [self viewWillAppear: NO];
   nib = [[NSNib alloc] initWithNibNamed: [self nibName]
 				 bundle: [self nibBundle]];
   if ((nib != nil) && [nib instantiateNibWithOwner: self
@@ -197,7 +258,6 @@
       // FIXME: Need to resolve possible retain cycles here
       _vcFlags.view_did_load = YES;
       [self viewDidLoad];
-      [self viewDidAppear: NO];
     }
   else
     {
