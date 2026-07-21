@@ -496,30 +496,30 @@ static NSParagraphStyle	*defaultStyle = nil;
        *	Tab stops don't conform to NSCoding - so we do it the long way.
        */
       [aCoder decodeValueOfObjCType: @encode(NSUInteger) at: &count];
+      /* count is read from the (untrusted) archive; could be bad!
+       */
+      if (count > 10000)
+	{
+	  RELEASE(self);
+	  [NSException raise: NSInternalInconsistencyException
+	    format: @"archive contains unreasonable number (%"PRIdPTR
+	    @") of tab stops", count];
+	}
       _tabStops = [[NSMutableArray alloc] initWithCapacity: count];
       if (count > 0)
         {
-          float *locations;
+          float		*locations;
           NSTextTabType *types;
           NSUInteger i;
 
-          /* count is read from the (untrusted) archive; allocate the scratch
-             arrays on the heap rather than as stack VLAs, which a large count
-             would overflow. */
+	  /* NB. NSZoneMalloc() raises an exception if we are out of memory
+	   * so we could leak the object being initialised here. Maybe the
+	   * stack would be better.
+	   */
           locations = NSZoneMalloc(NSDefaultMallocZone(),
                                    count * sizeof(float));
           types = NSZoneMalloc(NSDefaultMallocZone(),
                                count * sizeof(NSTextTabType));
-          if (locations == NULL || types == NULL)
-            {
-              if (locations != NULL)
-                NSZoneFree(NSDefaultMallocZone(), locations);
-              if (types != NULL)
-                NSZoneFree(NSDefaultMallocZone(), types);
-              [NSException raise: NSMallocException
-                          format: @"Unable to allocate tab stops"];
-            }
-
           [aCoder decodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
