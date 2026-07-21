@@ -1327,7 +1327,12 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
   currentPoint = NSMakePoint(0, NSMaxY(lineFragments->rect));
 
   if (newParagraph)
-    return 3;
+    {
+      /* This line ended a paragraph; add its trailing spacing before the
+         next paragraph begins. */
+      currentPoint.y += [currentParagraphStyle paragraphSpacing];
+      return 3;
+    }
   else
     return 0;
 }
