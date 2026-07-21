@@ -27,6 +27,7 @@
 */ 
 
 #include "config.h"
+#import <Foundation/NSDate.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSData.h>
@@ -297,7 +298,48 @@
 
 - (BOOL)updateDestination
 {
-  return NO;
+  id destinationDelegate = [_destinationManager delegate];
+  BOOL updated = NO;
+
+  // Only a link installed in a destination document can be updated.
+  if (_destinationManager == nil)
+    {
+      return NO;
+    }
+
+  // If the source document is available in the same process, copy its current
+  // data through a pasteboard and let the destination paste it.
+  if (_sourceManager != nil
+    && [[_sourceManager delegate] respondsToSelector:
+	  @selector(copyToPasteboard:at:cheapCopyAllowed:)]
+    && [destinationDelegate respondsToSelector:
+	  @selector(pasteFromPasteboard:at:)])
+    {
+      NSPasteboard *pb = [NSPasteboard pasteboardWithUniqueName];
+
+      if ([[_sourceManager delegate] copyToPasteboard: pb
+					           at: _sourceSelection
+				         cheapCopyAllowed: YES])
+	{
+	  updated = [destinationDelegate pasteFromPasteboard: pb
+						          at: _destinationSelection];
+	}
+    }
+  // Otherwise re-import the source file directly.
+  else if (_sourceFilename != nil
+    && [destinationDelegate respondsToSelector: @selector(importFile:at:)])
+    {
+      updated = [destinationDelegate importFile: _sourceFilename
+					     at: _destinationSelection];
+    }
+
+  if (updated)
+    {
+      ASSIGN(_lastUpdateTime, [NSDate date]);
+      _flags.isDirty = NO;
+    }
+
+  return updated;
 }
 
 - (NSDataLinkUpdateMode)updateMode
