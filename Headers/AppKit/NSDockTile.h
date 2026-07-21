@@ -23,9 +23,6 @@
 */
 
 /**
- * <title>NSDockTile</title>
- * <abstract>Application dock tile customization and badge management</abstract>
- *
  * NSDockTile provides an interface for customizing the appearance of an
  * application's icon in the dock or taskbar. The class allows applications
  * to overlay custom views, display badge labels with notification counts,

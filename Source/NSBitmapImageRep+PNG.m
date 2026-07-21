@@ -101,6 +101,7 @@ static void reader_func(png_structp png_struct, png_bytep data,
   int width,height;
   unsigned char *buf = NULL;
   int bytes_per_row;
+  size_t imageSize = 0;
   int type,channels,depth;
 
   BOOL alpha;
@@ -215,18 +216,47 @@ static void reader_func(png_structp png_struct, png_bytep data,
 	return nil;
     }
 
-  buf = NSZoneMalloc([self zone], bytes_per_row * height);
-
   {
-    png_bytep row_pointers[height];
+    /* width, height and bytes_per_row are taken from the untrusted PNG
+       header.  The buffer size was computed in int, so a large image wrapped
+       to a small or negative value, undersizing the allocation; guard the
+       arithmetic and the allocation before using them.  row_pointers is also
+       allocated on the heap rather than as a stack VLA sized by the header. */
+    png_bytep *row_pointers;
     int i;
+
+    imageSize = (size_t)bytes_per_row * (size_t)height;
+    if (width <= 0 || height <= 0 || bytes_per_row <= 0
+        || imageSize / (size_t)height != (size_t)bytes_per_row)
+      {
+        png_destroy_read_struct(&png_struct, &png_info, &png_end_info);
+        RELEASE(self);
+        return nil;
+      }
+
+    buf = NSZoneMalloc([self zone], imageSize);
+    row_pointers = NSZoneMalloc([self zone], sizeof(png_bytep) * (size_t)height);
+    if (buf == NULL || row_pointers == NULL)
+      {
+        if (row_pointers != NULL)
+          NSZoneFree([self zone], row_pointers);
+        if (buf != NULL)
+          {
+            NSZoneFree([self zone], buf);
+            buf = NULL;
+          }
+        png_destroy_read_struct(&png_struct, &png_info, &png_end_info);
+        RELEASE(self);
+        return nil;
+      }
 
     for (i = 0; i < height; i++)
       {
-        row_pointers[i] = buf + i * bytes_per_row;
+        row_pointers[i] = buf + (size_t)i * (size_t)bytes_per_row;
       }
 
     png_read_image(png_struct, row_pointers);
+    NSZoneFree([self zone], row_pointers);
   }
 
   if (depth == 16)
@@ -252,7 +282,7 @@ static void reader_func(png_structp png_struct, png_bytep data,
   
   _imageData = [[NSData alloc]
     initWithBytesNoCopy: buf
-		 length: bytes_per_row * height];
+		 length: imageSize];
 
   if (png_get_valid(png_struct, png_info, PNG_INFO_gAMA))
   {

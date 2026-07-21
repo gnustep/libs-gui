@@ -113,6 +113,7 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding])
     {
       if (_binding != nil)

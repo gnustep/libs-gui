@@ -62,7 +62,7 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers \
 # ADDITIONAL_LDFLAGS = 
 
 # Additional library directories the linker should search
-ADDITIONAL_LIB_DIRS += $(MOVIE_BASE_LIBS) $(SOUND_LIBS)
+ADDITIONAL_LIB_DIRS +=
 
 #
 # Sparc systems cannot load tiff files due to some problem compiling
@@ -82,6 +82,11 @@ ADDITIONAL_INSTALL_DIRS = $(GNUSTEP_HEADERS)/AppKit $(GNUSTEP_HEADERS)/Cocoa
 # What are the libraries this library depends upon. This is needed for some
 # systems where building a shared library requires to pass to the linker
 # all the libraries the target library depends upon.
+# GNUstep make expects the target-prefixed form for library targets.
 
-LIBRARIES_DEPEND_UPON = -l$(FOUNDATION_LIBRARY_NAME) $(ADDITIONAL_DEPENDS) \
-			  $(OBJC_LIBS)
+libgnustep-gui_LIBRARIES_DEPEND_UPON = -l$(FOUNDATION_LIBRARY_NAME) $(ADDITIONAL_DEPENDS) \
+					  $(MOVIE_BASE_LIBS) $(SOUND_LIBS) \
+					  $(OBJC_LIBS)
+
+# Keep the generic variable in sync for compatibility with older make setups.
+LIBRARIES_DEPEND_UPON = $(libgnustep-gui_LIBRARIES_DEPEND_UPON)

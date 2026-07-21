@@ -26,9 +26,6 @@
 */
 
 /**
- * <title>NSBezierPath</title>
- * <abstract>Vector graphics path construction and drawing</abstract>
- *
  * NSBezierPath provides a comprehensive interface for creating, manipulating,
  * and rendering vector graphics paths using cubic Bézier curves. The class
  * supports path construction through moveTo/lineTo/curveTo operations, common

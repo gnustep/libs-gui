@@ -80,8 +80,6 @@ enum {
 @end
 
 /**
- * <title>NSColorPanel</title>
- * <abstract>System color selection panel interface</abstract>
  * NSColorPanel provides a comprehensive color selection interface that allows
  * users to choose colors using various color picking methods and modes. The
  * panel is typically used as a shared system-wide color picker that can be

@@ -415,6 +415,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
   struct jpeg_decompress_struct  cinfo;
   struct gs_jpeg_error_mgr  jerrMgr;
   JDIMENSION sclcount, samplesPerRow, i, j, rowSize;
+  size_t imgbufferSize = 0;
   JSAMPARRAY sclbuffer = NULL;
   unsigned char *imgbuffer = NULL;
   BOOL isProgressive;
@@ -483,7 +484,20 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
                                       cinfo.rec_outbuf_height);
   /* sclbuffer is freed when cinfo is destroyed */
 
-  imgbuffer = NSZoneMalloc([self zone], cinfo.output_height * rowSize);
+  /* output_height and rowSize derive from the untrusted JPEG header; their
+     product was computed in 32-bit (JDIMENSION) and could wrap, undersizing
+     the buffer (a wrapped size still allocates successfully).  Compute it in
+     size_t and reject an overflow before allocating. */
+  imgbufferSize = (size_t)cinfo.output_height * (size_t)rowSize;
+  if (rowSize != 0
+      && imgbufferSize / (size_t)rowSize != (size_t)cinfo.output_height)
+    {
+      imgbuffer = NULL;
+    }
+  else
+    {
+      imgbuffer = NSZoneMalloc([self zone], imgbufferSize);
+    }
   if (!imgbuffer)
     {
       NSLog(@"NSBitmapImageRep+JPEG: failed to allocated image buffer");
@@ -568,7 +582,7 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 
   _imageData = [[NSData alloc]
     initWithBytesNoCopy: imgbuffer
-		 length: (rowSize * cinfo.output_height)];
+		 length: imgbufferSize];
 
   return self;
 }

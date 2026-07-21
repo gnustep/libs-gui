@@ -347,6 +347,17 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
 
   /* convert the image to rgb */
   sPP = hasAlpha? 4 : 3;
+
+  /* The image must reference a colour map (a per-image one or the global
+     one).  A GIF with neither leaves colorMap NULL, which was dereferenced
+     unconditionally in the conversion loop below. */
+  colorMap = (file->Image.ColorMap ? file->Image.ColorMap : file->SColorMap);
+  if (colorMap == NULL)
+    {
+      GIF_CREATE_ERROR(@"gif image has no colour map");
+      /* Not reached. */
+    }
+
   rgbBufferSize = file->SHeight * (file->SWidth * sizeof(unsigned char) * sPP);
   rgbBuffer = NSZoneMalloc([self zone],  rgbBufferSize);
   if (rgbBuffer == NULL)
@@ -355,7 +366,6 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
       /* Not reached. */
     }
 
-  colorMap = (file->Image.ColorMap ? file->Image.ColorMap : file->SColorMap);
   rgbBufferPos = 0;
 
   for (i = 0; i < file->SHeight; i++)
@@ -364,6 +374,10 @@ static int gs_gif_output(GifFileType *file, const GifByteType *buffer, int len)
       for (j = 0; j < file->SWidth; j++)
 	{
           colorIndex = *(imgBufferPos + j*pixelSize);
+	  /* A pixel may index outside the colour map, which can have fewer
+	     than 256 entries; clamp to avoid reading past Colors[]. */
+	  if (colorIndex >= colorMap->ColorCount)
+	    colorIndex = 0;
 	  color = &colorMap->Colors[colorIndex];
 	  rgbBuffer[rgbBufferPos++] = color->Red;
 	  rgbBuffer[rgbBufferPos++] = color->Green;

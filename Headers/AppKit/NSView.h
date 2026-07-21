@@ -741,6 +741,25 @@ PACKAGE_SCOPE
 - (void) addConstraints: (NSArray*)constraints;
 
 @end
+
+@interface NSView (NSConstraintBasedLayoutAnchors)
+
+- (NSLayoutXAxisAnchor *) leadingAnchor;
+- (NSLayoutXAxisAnchor *) trailingAnchor;
+- (NSLayoutXAxisAnchor *) leftAnchor;
+- (NSLayoutXAxisAnchor *) rightAnchor;
+- (NSLayoutXAxisAnchor *) centerXAnchor;
+
+- (NSLayoutYAxisAnchor *) topAnchor;
+- (NSLayoutYAxisAnchor *) bottomAnchor;
+- (NSLayoutYAxisAnchor *) centerYAnchor;
+- (NSLayoutYAxisAnchor *) firstBaselineAnchor;
+- (NSLayoutYAxisAnchor *) lastBaselineAnchor;
+
+- (NSLayoutDimension *) widthAnchor;
+- (NSLayoutDimension *) heightAnchor;
+
+@end
 #endif
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)

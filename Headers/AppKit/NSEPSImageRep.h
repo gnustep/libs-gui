@@ -28,9 +28,6 @@
 */
 
 /**
- * <title>NSEPSImageRep</title>
- * <abstract>Image representation for Encapsulated PostScript (EPS) files</abstract>
- *
  * NSEPSImageRep provides specialized image representation functionality for
  * Encapsulated PostScript (EPS) documents. This class extends NSImageRep to
  * handle the display and manipulation of vector-based EPS content, supporting

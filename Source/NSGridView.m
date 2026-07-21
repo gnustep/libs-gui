@@ -236,6 +236,10 @@
       _rows = [[NSMutableArray alloc] init];
       _columns = [[NSMutableArray alloc] init];
       _cells = [[NSMutableArray alloc] init];
+      _xPlacement = NSGridCellPlacementLeading;
+      _yPlacement = NSGridCellPlacementTop;
+      _columnSpacing = 6.0;
+      _rowSpacing = 6.0;
     }
 
   return self;

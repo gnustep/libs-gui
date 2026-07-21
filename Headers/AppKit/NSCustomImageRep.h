@@ -34,9 +34,6 @@
 #import <AppKit/NSImageRep.h>
 
 /**
- * <title>NSCustomImageRep</title>
- * <abstract>Custom image representation using delegate drawing</abstract>
- *
  * NSCustomImageRep provides a flexible way to create custom image representations
  * by delegating the actual drawing to another object. Instead of storing bitmap
  * data or vector graphics internally, this image representation calls a specified

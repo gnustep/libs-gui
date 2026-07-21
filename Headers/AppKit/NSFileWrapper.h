@@ -31,9 +31,6 @@
 #define _GNUstep_H_NSFileWrapper_GUI
 
 /**
- * <title>NSFileWrapper (AppKit)</title>
- * <abstract>AppKit access to Foundation's file wrapper functionality</abstract>
- *
  * This header provides AppKit applications with access to NSFileWrapper,
  * which is primarily defined in Foundation. NSFileWrapper objects hold
  * a file's contents in dynamic memory and provide a convenient way to

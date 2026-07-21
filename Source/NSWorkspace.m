@@ -2,7 +2,7 @@
 
    <abstract>Workspace class</abstract>
 
-   Copyright (C) 1996-2016 Free Software Foundation, Inc.
+   Copyright (C) 1996-2026 Free Software Foundation, Inc.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -105,15 +105,9 @@
 #import "AppKit/NSPanel.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSScreen.h"
-#import "GNUstepGUI/GSServicesManager.h"
 #import "GNUstepGUI/GSDisplayServer.h"
+#import "GNUstepGUI/GSServicesManager.h"
 #import "GSGuiPrivate.h"
-
-/* Informal protocol for method to ask an app to open a URL.
- */
-@interface NSObject (OpenURL)
-- (BOOL) application: (NSApplication*)a openURL: (NSURL*)u;
-@end
 
 /* Private method to check that a process exists.
  */
@@ -482,6 +476,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 		  arguments: (NSArray*)args;
 - (id) _connectApplication: (NSString*)appName;
 - (id) _workspaceApplication;
+- (NSString*) _stripPartitionSuffixFromDeviceName: (NSString*)devName;
 
 @end
 
@@ -554,7 +549,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
  * method passing it the file name.
  * </p>
  * <p>This command line argument mechanism provides a way for non-gnustep
- * applications to be used to open files simply by provideing a wrapper
+ * applications to be used to open files simply by providing a wrapper
  * for them containing the appropriate Info-gnustep.plist.<br />
  * For instance - you could set up xv.app to contain a shellscript 'xv'
  * that would start the real xv binary passing it a file to open if the
@@ -575,9 +570,32 @@ static id GSLaunched(NSNotification *notification, BOOL active)
  *       NSIcon = "xbm.tiff";
  *       NSUnixExtensions = (xbm);
  *     }
- *);
+ *   );
  * }
  * </example>
+ * <p>A similar mechanism exists for opening URLs.  In this case URL schema
+ * information is provided in the CFBundleURLTypes entry of Info-gnustep.plist
+ * and when launching an application to open one or more URLs the application
+ * receives a '-GSOpenURL' argument telling it which URL to open.<br />
+ * For a GNUstep application, the application will recognize this and invoke
+ * the -application:openURL: method passing it the URL argument.<br />
+ * The Info-gnustep.plist file could look like this:
+ * </p>
+ * <example>
+ * 
+ * {
+ *   NSExecutable = "firefox";
+ *   NSIcon = "firefox.png";
+ *   CFBundleURLTypes = (
+ *     {
+ *       CFBundleTypeRole = Viewer;
+ *       CFBundleURLSchemes = (
+ *         http,
+ *         https
+ *       );
+ *     }
+ *   );
+ * }
  */
 @implementation	NSWorkspace
 
@@ -852,18 +870,21 @@ static NSDictionary		*urlPreferences = nil;
  */
 - (BOOL) _openUnknown: (NSString*)fullPath
 {
-  NSString *tool = [[NSUserDefaults standardUserDefaults] objectForKey: @"GSUnknownFileTool"];
-  NSString *launchPath;
+  NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+  NSString 		*tool = [defs objectForKey: @"GSUnknownFileTool"];
+  NSString 		*launchPath;
 
   if ((tool == nil) || (launchPath = [NSTask launchPathForTool: tool]) == nil)
     {
 #ifdef __MINGW32__
       // Maybe we should rather use "Explorer.exe /e, " as the tool name
-      unichar *buffer = (unichar *)calloc(1, ([fullPath length] + 1) * sizeof(unichar));
+      unichar *buffer;
+
+      buffer = (unichar *)calloc(1, ([fullPath length] + 1) * sizeof(unichar));
       [fullPath getCharacters: buffer range: NSMakeRange(0, [fullPath length])];
       buffer[[fullPath length]] = 0;
-      BOOL success = ((int)ShellExecuteW(GetDesktopWindow(), L"open", buffer, NULL, 
-                                    NULL, SW_SHOWNORMAL) > 32);
+      BOOL success = ((int)ShellExecuteW(GetDesktopWindow(), L"open",
+	buffer, NULL, NULL, SW_SHOWNORMAL) > 32);
       free(buffer);
       return success;
 #else
@@ -874,8 +895,9 @@ static NSDictionary		*urlPreferences = nil;
 
   if (launchPath)
     {
-      NSTask * task = [NSTask launchedTaskWithLaunchPath: launchPath
-                                               arguments: [NSArray arrayWithObject: fullPath]];
+      NSArray	*args = [NSArray arrayWithObject: fullPath];
+      NSTask 	*task = [NSTask launchedTaskWithLaunchPath: launchPath
+					         arguments: args];
       if (task != nil)
         {
           [task waitUntilExit];
@@ -1068,7 +1090,7 @@ static NSDictionary		*urlPreferences = nil;
 
 	  /* Now try to get the application to open the URL.
 	   */
-	  app = GSContactApplication(appName, nil, nil);
+	  app = [self _connectApplication: appName];
 	  if (app != nil)
 	    {
 	      NS_DURING
@@ -1077,30 +1099,57 @@ static NSDictionary		*urlPreferences = nil;
 		}
 	      NS_HANDLER
 		{
-		  NSWarnLog(@"Failed to contact '%@' to open file", appName);
+		  NSWarnLog(@"Failed to get '%@' to open file", appName);
 		  return NO;
 		}
 	      NS_ENDHANDLER
 	      [NSApp deactivate];
 	      return YES;
 	    }
+	  else
+	    {
+	      NSArray *args;
+
+	      args = [NSArray arrayWithObjects:
+		@"-GSOpenURL", [url absoluteString], nil];
+	      if ([self _launchApplication: appName arguments: args])
+		{
+		  [NSApp deactivate];
+		  return YES;
+		}
+	      NSWarnLog(@"Failed to launch '%@' to open file", appName);
+	      return NO;
+	    }
 	}
       /* No application found to open the URL.
-       * Try any OpenURL service available.
+       * Try any Open URL service available.
        */
       pb = [NSPasteboard pasteboardWithUniqueName];
-      [pb declareTypes: [NSArray arrayWithObject: NSURLPboardType]
-                         owner: nil];
-     [url writeToPasteboard: pb];
-     if (NSPerformService(@"OpenURL", pb))
-       {
-         return YES;
-       }
-     else
-       {
-         return [self _openUnknown: [url absoluteString]];
-       }
+      [pb declareTypes:
+	[NSArray arrayWithObjects: NSURLPboardType, NSStringPboardType, nil]
+		 owner: nil];
+      [url writeToPasteboard: pb];
+      if ([[GSServicesManager manager] performService: @"Open URL"
+				       withPasteboard: pb
+					 alertOnError: NO])
+        {
+          [NSApp deactivate];
+          return YES;
+        }
+      else
+        {
+	  NSRunAlertPanel(nil,
+	    @"Unable to use Application or Service to open URL",
+	    @"Continue", nil, nil);
+
+          if ([self _openUnknown: [url absoluteString]])
+	    {
+	      [NSApp deactivate];
+	      return YES;
+	    }
+        }
     }
+  return NO;
 }
 
 /*
@@ -1252,13 +1301,19 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   FILE		*fptr = setmntent(MOUNTED_PATH, "r");
   struct mntent	*me;
 
+  if (fptr == NULL)
+    {
+      NSLog(@"Unable to open %s", MOUNTED_PATH);
+      return NO;
+    }
+
   while ((me = getmntent(fptr)) != 0)
-  {
-    if (strcmp(me->MNT_MEMB, [fullPath fileSystemRepresentation]) == 0)
-      {
-	fsName = [NSString stringWithCString:me->MNT_FSNAME];
-      }
-  }
+    {
+      if (strcmp(me->MNT_MEMB, [fullPath fileSystemRepresentation]) == 0)
+        {
+          fsName = [NSString stringWithCString:me->MNT_FSNAME];
+        }
+    }
   endmntent(fptr);
 #endif /* HAVE_GETMINTENT */
   if (fsName && [fsName hasPrefix:@"/dev"])
@@ -1270,11 +1325,13 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
       r = NO;
       devName = [fsName lastPathComponent];
-      // This is a very crude way of removing the partition number
-      if ([devName length] > 3)
-	devName = [devName substringToIndex: 3];
+      
+      /* Extract block device name by removing partition suffix */
+      devName = [self _stripPartitionSuffixFromDeviceName: devName];
+      /* For other devices (loop, ram, sr, etc.), use as-is */
 
       devInfoPath = [@"/sys/block" stringByAppendingPathComponent:devName];
+
       devInfoPath = [devInfoPath stringByAppendingPathComponent:@"removable"];
 
       removableString = [[NSString alloc] initWithContentsOfFile:devInfoPath];
@@ -2226,6 +2283,12 @@ launchIdentifiers: (NSArray **)identifiers
   NSFileManager	*mgr = [NSFileManager defaultManager];
   FILE		*fptr = setmntent(MOUNTED_PATH, "r");
   struct mntent	*m;
+
+  if (fptr == NULL)
+    {
+      NSLog(@"Unable to open %s", MOUNTED_PATH);
+      return nil;
+    }
 
   names = [NSMutableArray arrayWithCapacity: 8];
   while ((m = getmntent(fptr)) != 0)
@@ -3636,6 +3699,50 @@ launchIdentifiers: (NSArray **)identifiers
     }
 
   return app;
+}
+
+- (NSString*) _stripPartitionSuffixFromDeviceName: (NSString*)devName
+{
+  /* Handle various device naming schemes:
+   *   sd*, hd*, vd*, xvd* → remove trailing digits (sda1 → sda)
+   *   nvme*n*p* → remove trailing p<digits> (nvme0n1p1 → nvme0n1)
+   *   mmcblk*p* → remove trailing p<digits> (mmcblk0p1 → mmcblk0)
+   *   loop*, ram*, sr* → use as-is
+   */
+  if ([devName hasPrefix:@"nvme"] || [devName hasPrefix:@"mmcblk"])
+    {
+      /* For nvme and mmcblk devices, partition names have a 'p' separator
+       * e.g., nvme0n1p1, mmcblk0p1 */
+      NSRange pRange = [devName rangeOfString:@"p" options:NSBackwardsSearch];
+      if (pRange.location != NSNotFound)
+        {
+          /* Check if everything after 'p' is digits */
+          NSString *suffix = [devName substringFromIndex:pRange.location + 1];
+          NSCharacterSet *nonDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+          if ([suffix rangeOfCharacterFromSet:nonDigits].location == NSNotFound && [suffix length] > 0)
+            {
+              /* It's a partition, strip it */
+              devName = [devName substringToIndex:pRange.location];
+            }
+        }
+    }
+  else if ([devName hasPrefix:@"sd"] || [devName hasPrefix:@"hd"] || 
+           [devName hasPrefix:@"vd"] || [devName hasPrefix:@"xvd"])
+    {
+      /* For sd/hd/vd/xvd devices, remove trailing digits (sda1 → sda) */
+      NSCharacterSet *digits = [NSCharacterSet decimalDigitCharacterSet];
+      NSInteger i = [devName length] - 1;
+      while (i >= 0 && [digits characterIsMember:[devName characterAtIndex:i]])
+        {
+          i--;
+        }
+      if (i < (NSInteger)[devName length] - 1)
+        {
+          /* Found trailing digits, strip them */
+          devName = [devName substringToIndex:i + 1];
+        }
+    }
+  return devName;
 }
 
 @end

@@ -41,8 +41,6 @@
 @class NSGraphicsContext;
 
 /**
- * <title>NSEventType</title>
- * <abstract>Enumeration of event types recognized within GNUstep GUI</abstract>
  * Each event type has a corresponding mask that can be used when filtering for
  * multiple types. For example, the NSLeftMouseDown type has NSLeftMouseDownMask
  * for its mask. The special mask NSAnyEventMask matches any event.
@@ -181,33 +179,55 @@ enum _NSEventType {
 typedef NSUInteger NSEventType;
 
 /**
- * <title>NSEventMask</title>
- * <abstract>Event mask constants for filtering event types</abstract>
  * Event masks are used to specify which types of events should be processed
  * or filtered. Each event type has a corresponding mask value that can be
  * combined using bitwise OR operations to create composite masks.
  *
  * Individual event masks correspond directly to event types:
- * - NSLeftMouseDownMask, NSLeftMouseUpMask: Primary mouse button events
- * - NSRightMouseDownMask, NSRightMouseUpMask: Secondary mouse button events
- * - NSOtherMouseDownMask, NSOtherMouseUpMask: Additional mouse button events
- * - NSMouseMovedMask: Mouse movement without buttons pressed
- * - NSLeftMouseDraggedMask, NSRightMouseDraggedMask, NSOtherMouseDraggedMask: Dragging events
- * - NSMouseEnteredMask, NSMouseExitedMask: Mouse tracking area events
- * - NSKeyDownMask, NSKeyUpMask: Keyboard press and release events
- * - NSFlagsChangedMask: Modifier key state changes
- * - NSScrollWheelMask: Mouse wheel and trackpad scrolling
- * - NSCursorUpdateMask: Cursor appearance updates
- * - NSPeriodicMask: Timer-based periodic events
+ * <list>
+ * <item>
+ *  NSLeftMouseDownMask, NSLeftMouseUpMask: Primary mouse button events
+ * </item><item>
+ *  NSRightMouseDownMask, NSRightMouseUpMask: Secondary mouse button events
+ * </item><item>
+ *  NSOtherMouseDownMask, NSOtherMouseUpMask: Additional mouse button events
+ * </item><item>
+ *  NSMouseMovedMask: Mouse movement without buttons pressed
+ * </item><item>
+ *  NSLeftMouseDraggedMask, NSRightMouseDraggedMask, NSOtherMouseDraggedMask: Dragging events
+ * </item><item>
+ *  NSMouseEnteredMask, NSMouseExitedMask: Mouse tracking area events
+ * </item><item>
+ *  NSKeyDownMask, NSKeyUpMask: Keyboard press and release events
+ * </item><item>
+ *  NSFlagsChangedMask: Modifier key state changes
+ * </item><item>
+ *  NSScrollWheelMask: Mouse wheel and trackpad scrolling
+ * </item><item>
+ *  NSCursorUpdateMask: Cursor appearance updates
+ * </item><item>
+ *  NSPeriodicMask: Timer-based periodic events
+ * </item>
+ * </list>
  *
  * Special masks:
- * - NSAnyEventMask: Matches all event types
- * - GSKeyEventMask: Combines all keyboard-related events
- * - GSMouseEventMask: Combines all mouse-related events
- * - GSMouseMovedEventMask: Combines all mouse movement events
- * - GSEnterExitEventMask: Combines mouse enter/exit and cursor update events
- * - GSOtherEventMask: Combines system and application-defined events
- * - GSTrackingLoopMask: Events typically needed during mouse tracking loops
+ * <list>
+ * <item>
+ *  NSAnyEventMask: Matches all event types
+ * </item><item>
+ *  GSKeyEventMask: Combines all keyboard-related events
+ * </item><item>
+ *  GSMouseEventMask: Combines all mouse-related events
+ * </item><item>
+ *  GSMouseMovedEventMask: Combines all mouse movement events
+ * </item><item>
+ *  GSEnterExitEventMask: Combines mouse enter/exit and cursor update events
+ * </item><item>
+ *  GSOtherEventMask: Combines system and application-defined events
+ * </item><item>
+ *  GSTrackingLoopMask: Events typically needed during mouse tracking loops
+ * </item>
+ * </list>
  */
 enum {
   NSLeftMouseDownMask = (1 << NSLeftMouseDown),
@@ -374,8 +394,6 @@ typedef NSUInteger NSEventSwipeTrackingOptions;
 #endif
 
 /**
- * <title>NSEvent</title>
- * <abstract>Represents user input and system events in the application</abstract>
  * NSEvent encapsulates information about user interactions (mouse clicks, key presses,
  * mouse movement) and system notifications (application lifecycle, window changes).
  * It serves as the primary mechanism for delivering input events to applications

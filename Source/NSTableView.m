@@ -70,6 +70,7 @@
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSCustomImageRep.h"
+#import "AppKit/NSDiffableDataSource.h"
 
 #import "GNUstepGUI/GSTheme.h"
 #import "GSBindingHelpers.h"
@@ -162,9 +163,18 @@ typedef struct _tableViewFlags
 - (BOOL) _isCellEditableColumn: (NSInteger)columnIndex
 			   row: (NSInteger)rowIndex;
 - (NSInteger) _numRows;
+- (BOOL) _usesVariableRowHeights;
+- (CGFloat) _rowHeightForRow: (NSInteger)rowIndex;
+- (CGFloat) _rowsHeight;
+- (CGFloat) _yOriginForRow: (NSInteger)rowIndex;
+- (NSInteger) _rowAtPointUsingVariableHeights: (NSPoint)aPoint;
+- (CGFloat) _positionInRowAtPoint: (NSPoint)aPoint
+                               row: (NSInteger)rowIndex;
 - (CGFloat*) _columnOrigins;
+- (void) _initViewBasedSupport;
 - (NSView*)  _renderedViewForPath: (NSIndexPath*)path;
 - (void) _setRenderedView: (NSView*)view forPath: (NSIndexPath*)path;
+- (void) _layoutViewBasedRows;
 @end
 
 @interface NSTableView (SelectionHelper)
@@ -2042,7 +2052,7 @@ static void computeNewSelection
   ASSIGN(_selectedRows, [NSMutableIndexSet indexSet]);
   _allowsEmptySelection = YES;
   _allowsMultipleSelection = NO;
-  _allowsColumnSelection = YES;
+  _allowsColumnSelection = NO;
   _allowsColumnResizing = YES;
   _allowsColumnReordering = YES;
   _autoresizesAllColumnsToFit = NO;
@@ -2060,11 +2070,11 @@ static void computeNewSelection
   _draggingSourceOperationMaskForRemote = NSDragOperationNone;
   ASSIGN(_sortDescriptors, [NSArray array]);
   _viewBased = NO;
-  _renderedViewPaths = RETAIN([NSMapTable strongToWeakObjectsMapTable]);
-  _pathsToViews = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
-  _registeredNibs = [[NSMutableDictionary alloc] init];
-  _registeredViews = [[NSMutableDictionary alloc] init];
-  _rowViews = [[NSMutableDictionary alloc] init];
+  _renderedViewPaths = nil;
+  _pathsToViews = nil;
+  _registeredNibs = nil;
+  _registeredViews = nil;
+  _rowViews = nil;
   _dataSource_editable = YES;
 }
 
@@ -2091,6 +2101,25 @@ static void computeNewSelection
 {
   [self abortEditing];
 
+  if (_autosaveTableColumns == YES)
+    {
+      [nc removeObserver: self
+                    name: NSTableViewColumnDidResizeNotification
+                  object: self];
+    }
+  // Remove window resize observer
+  if (_viewBased)
+    {
+      [nc removeObserver: self
+		    name: NSWindowDidResizeNotification
+		  object: nil];
+    }
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+      _delegate = nil;
+    }
+
   RELEASE (_gridColor);
   RELEASE (_backgroundColor);
   RELEASE (_tableColumns);
@@ -2104,28 +2133,55 @@ static void computeNewSelection
   RELEASE (_rowViews);
   TEST_RELEASE (_headerView);
   TEST_RELEASE (_cornerView);
-  if (_autosaveTableColumns == YES)
-    {
-      [nc removeObserver: self
-	  name: NSTableViewColumnDidResizeNotification
-	  object: self];
-    }
+
   TEST_RELEASE (_autosaveName);
   if (_numberOfColumns > 0)
     {
       NSZoneFree (NSDefaultMallocZone (), _columnOrigins);
     }
-  if (_delegate != nil)
-    {
-      [nc removeObserver: _delegate  name: nil  object: self];
-      _delegate = nil;
-    }
+
   [super dealloc];
 }
 
 - (BOOL) isFlipped
 {
   return YES;
+}
+
+- (void) viewWillMoveToWindow:(NSWindow *) newWindow
+{
+  if ([self window] != nil && _viewBased)
+    {
+      [nc removeObserver: self
+                    name: NSWindowDidResizeNotification
+                  object: [self window]];
+    }
+
+  [super viewWillMoveToWindow: newWindow];
+}
+
+- (void) viewDidMoveToWindow
+{
+  [super viewDidMoveToWindow];
+
+  // Add observer for the new window if view-based
+  if ([self window] != nil && _viewBased)
+    {
+      [nc addObserver: self
+          selector: @selector(_windowDidResize:)
+              name: NSWindowDidResizeNotification
+            object: [self window]];
+    }
+}
+
+- (void) _windowDidResize: (NSNotification *)notification
+{
+  if (_viewBased)
+    {
+      [self tile];
+      [self _layoutViewBasedRows];
+      [self setNeedsDisplay: YES];
+    }
 }
 
 /*
@@ -2149,6 +2205,10 @@ static void computeNewSelection
 - (void) addTableColumn: (NSTableColumn *)aColumn
 {
   [aColumn setTableView: self];
+  if ([[aColumn _prototypeCellViews] count] > 0)
+    {
+      [self _registerPrototypeViews: [aColumn _prototypeCellViews]];
+    }
   [_tableColumns addObject: aColumn];
   _numberOfColumns++;
   if (_numberOfColumns > 1)
@@ -2391,9 +2451,23 @@ static void computeNewSelection
 {
   if (_viewBased)
     {
+      // Remove all existing row views from the table view
+      NSArray *subviews = [[self subviews] copy];
+      NSEnumerator *enumerator = [subviews objectEnumerator];
+      NSView *subview;
+      
+      while ((subview = [enumerator nextObject]) != nil)
+        {
+          if ([subview isKindOfClass: [NSTableRowView class]])
+            {
+              [subview removeFromSuperview];
+            }
+        }
+      
       [_renderedViewPaths removeAllObjects];
       [_pathsToViews removeAllObjects];
       [_rowViews removeAllObjects];
+      RELEASE(subviews);
     }
 
   [self noteNumberOfRowsChanged];
@@ -4385,7 +4459,7 @@ static BOOL selectContiguousRegion(NSTableView *self,
   rect.origin.x = _columnOrigins[columnIndex];
   rect.origin.y = _bounds.origin.y;
   rect.size.width = [[_tableColumns objectAtIndex: columnIndex] width];
-  rect.size.height = _numberOfRows * _rowHeight;
+	rect.size.height = [self _rowsHeight];
   return rect;
 }
 
@@ -4400,9 +4474,9 @@ static BOOL selectContiguousRegion(NSTableView *self,
     }
 
   rect.origin.x = _bounds.origin.x;
-  rect.origin.y = _bounds.origin.y + (_rowHeight * rowIndex);
+	rect.origin.y = [self _yOriginForRow: rowIndex];
   rect.size.width = _bounds.size.width;
-  rect.size.height = _rowHeight;
+	rect.size.height = [self _rowHeightForRow: rowIndex];
   return rect;
 }
 
@@ -4487,28 +4561,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (NSInteger) rowAtPoint: (NSPoint)aPoint
 {
-  /* NB: Y coordinate system is flipped in NSTableView */
-  if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
-    {
-      return -1;
-    }
-  else if (_rowHeight == 0.0)
-    {
-      return -1;
-    }
-  else
-    {
-      NSInteger return_value;
-
-      aPoint.y -= _bounds.origin.y;
-      return_value = (NSInteger) (aPoint.y / _rowHeight);
-      /* This could happen if point lies on the grid line or below the last row */
-      if (return_value >= _numberOfRows)
-	{
-	  return_value = -1;
-	}
-      return return_value;
-    }
+	/* NB: Y coordinate system is flipped in NSTableView */
+	return [self _rowAtPointUsingVariableHeights: aPoint];
 }
 
 - (NSRect) frameOfCellAtColumn: (NSInteger)columnIndex
@@ -4522,9 +4576,10 @@ This method is deprecated, use -columnIndexesInRect:. */
       || (rowIndex > (_numberOfRows - 1)))
     return NSZeroRect;
 
-  frameRect.origin.y  = _bounds.origin.y + (rowIndex * _rowHeight);
+	frameRect.origin.y  = [self _yOriginForRow: rowIndex];
   frameRect.origin.y += _intercellSpacing.height / 2;
-  frameRect.size.height = _rowHeight - _intercellSpacing.height;
+	frameRect.size.height = [self _rowHeightForRow: rowIndex]
+		- _intercellSpacing.height;
 
   frameRect.origin.x = _columnOrigins[columnIndex];
   frameRect.origin.x  += _intercellSpacing.width / 2;
@@ -4593,7 +4648,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
-      CGFloat rowsHeight = ((_numberOfRows * _rowHeight) + 1);
+			CGFloat rowsHeight = ([self _rowsHeight] + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
 
       if (rowsHeight < docRect.size.height)
@@ -4607,6 +4662,10 @@ This method is deprecated, use -columnIndexesInRect:. */
       // TODO width?
     }
   [super setFrame: tmpRect];
+  if (_viewBased)
+    {
+      [self _layoutViewBasedRows];
+    }
 }
 
 - (void) setFrameSize: (NSSize)frameSize
@@ -4615,7 +4674,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 
   if ([_super_view respondsToSelector: @selector(documentVisibleRect)])
     {
-      CGFloat rowsHeight = ((_numberOfRows * _rowHeight) + 1);
+			CGFloat rowsHeight = ([self _rowsHeight] + 1);
       NSRect docRect = [(NSClipView *)_super_view documentVisibleRect];
 
       if (rowsHeight < docRect.size.height)
@@ -4629,6 +4688,10 @@ This method is deprecated, use -columnIndexesInRect:. */
       // TODO width?
     }
   [super setFrameSize: tmpSize];
+  if (_viewBased)
+    {
+      [self _layoutViewBasedRows];
+    }
 }
 
 - (void) viewWillMoveToSuperview:(NSView *)newSuper
@@ -4924,7 +4987,7 @@ This method is deprecated, use -columnIndexesInRect:. */
     }
 
   newFrame = _frame;
-  newFrame.size.height = (_numberOfRows * _rowHeight) + 1;
+	newFrame.size.height = [self _rowsHeight] + 1;
   if (NO == NSEqualRects(newFrame, NSUnionRect(newFrame, _frame)))
     {
       [_super_view setNeedsDisplayInRect: _frame];
@@ -4969,7 +5032,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	}
     }
   /* + 1 for the last grid line */
-  table_height = (_numberOfRows * _rowHeight) + 1;
+	table_height = [self _rowsHeight] + 1;
   [self setFrameSize: NSMakeSize (table_width, table_height)];
   [self setNeedsDisplay: YES];
 
@@ -4986,6 +5049,11 @@ This method is deprecated, use -columnIndexesInRect:. */
 				 [_headerView frame].size.height)];
       [_headerView setNeedsDisplay: YES];
       [_cornerView setNeedsDisplay: YES];
+    }
+
+  if (_viewBased)
+    {
+      [self _layoutViewBasedRows];
     }
 }
 
@@ -5055,45 +5123,59 @@ This method is deprecated, use -columnIndexesInRect:. */
 		     endingColumn: &endingColumn
 		       inClipRect: clipRect];
 
-  /* Draw the row between startingColumn and endingColumn */
+  // Create and position the row view for this row
+  id rowView = [self rowViewAtRow: rowIndex
+		  makeIfNecessary: YES];
+  
+
+  
+  if (rowView != nil)
+    {
+      NSRect cellFrame = [self frameOfCellAtColumn: 0
+					     row: rowIndex];
+      CGFloat x = 0.0;
+      CGFloat y = cellFrame.origin.y;
+      CGFloat w = [self frame].size.width;
+	CGFloat h = [self _rowHeightForRow: rowIndex];
+
+      NSRect rvFrame = NSMakeRect(x, y, w, h);
+      NSAutoresizingMaskOptions options = NSViewWidthSizable
+	| NSViewMaxYMargin;
+
+
+
+      // Add as subview if not already added
+      if ([[self subviews] containsObject: rowView] == NO)
+	{
+	  [self addSubview: rowView];
+	  [rowView setAutoresizingMask: options];
+
+	}
+      
+      // Always update the frame to ensure correct positioning
+      [rowView setFrame: rvFrame];
+    }
+
+  /* Create and add the cell views for each column in the row */
   for (columnIndex = startingColumn; columnIndex <= endingColumn; columnIndex++)
     {
-      id rowView = [self rowViewAtRow: rowIndex
-		      makeIfNecessary: YES];
       NSView *view = [self viewAtColumn: columnIndex
 				    row: rowIndex
 			makeIfNecessary: YES];
 
-      // If the view is already part of the table, don't re-add it...
-      if (rowView != nil
-	  && [[self subviews] containsObject: rowView] == NO)
-	{
-	  NSRect cellFrame = [self frameOfCellAtColumn: 0
-						   row: rowIndex];
-	  CGFloat x = 0.0;
-	  CGFloat y = cellFrame.origin.y;
-	  CGFloat w = [self frame].size.width;
-	  CGFloat h = [self rowHeight];
-
-	  NSRect rvFrame = NSMakeRect(x, y, w, h);
-	  NSAutoresizingMaskOptions options = NSViewWidthSizable
-	    | NSViewMinYMargin;
-
-	  [self addSubview: rowView];
-	  [rowView setAutoresizingMask: options];
-	  [rowView setFrame: rvFrame];
-	}
-
       // Create the view if needed...
-      if (view != nil &&
+      if (view != nil && rowView != nil &&
 	  [[rowView subviews] containsObject: view] == NO)
 	{
 	  // Add the view to the row...
 	  [rowView addSubview: view];
+	}
 
-	  // Place the view...
-	  NSRect newRect = [view frame];
-	  newRect.origin.y = 0.0;
+      if (view != nil)
+	{
+	  NSRect newRect = [self frameOfCellAtColumn: columnIndex
+						row: rowIndex];
+	  newRect.origin.y -= NSMinY ([rowView frame]);
 	  [view setFrame: newRect];
 	}
     }
@@ -5385,7 +5467,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 - (void) setDelegate: (id)anObject
 {
   const SEL sel = @selector(tableView:willDisplayCell:forTableColumn:row:);
-  const SEL vbsel = @selector(tableView:viewForTableColumn:row:);
+  BOOL oldViewBased = _viewBased;
 
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
@@ -5405,8 +5487,33 @@ This method is deprecated, use -columnIndexesInRect:. */
   /* Cache */
   _del_responds = [_delegate respondsToSelector: sel];
 
-  /* Test to see if it is view based */
-  _viewBased = [_delegate respondsToSelector: vbsel];
+  /* Preserve the table's configured mode.  Legacy cell-based tables may have
+     delegates which respond to view-based selectors for other purposes; that
+     must not switch their drawing/reload paths to view-based mode. */
+  if (_viewBased)
+    {
+      [self _initViewBasedSupport];
+    }
+  
+  // Handle window resize observer when view-based status changes
+  if ([self window] != nil)
+    {
+      if (oldViewBased && !_viewBased)
+        {
+          // Changed from view-based to cell-based, remove observer
+          [nc removeObserver: self 
+              name: NSWindowDidResizeNotification 
+              object: [self window]];
+        }
+      else if (!oldViewBased && _viewBased)
+        {
+          // Changed from cell-based to view-based, add observer  
+          [nc addObserver: self
+              selector: @selector(_windowDidResize:)
+              name: NSWindowDidResizeNotification
+              object: [self window]];
+        }
+    }
 }
 
 - (id) delegate
@@ -6367,21 +6474,21 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  if (currentDropRow == 0)
 		{
 		  newRect = NSMakeRect([self visibleRect].origin.x,
-					currentDropRow * _rowHeight,
+					[self _yOriginForRow: currentDropRow],
 					[self visibleRect].size.width,
 					3);
 		}
 	  else if (currentDropRow == _numberOfRows)
 		{
 		  newRect = NSMakeRect([self visibleRect].origin.x,
-					currentDropRow * _rowHeight - 2,
+					[self _yOriginForRow: currentDropRow] - 2,
 					[self visibleRect].size.width,
 					3);
 		}
 	  else
 	    {
 	  newRect = NSMakeRect([self visibleRect].origin.x,
-				    currentDropRow * _rowHeight - 1,
+				    [self _yOriginForRow: currentDropRow] - 1,
 				    [self visibleRect].size.width,
 				    3);
 	    }
@@ -6443,7 +6550,36 @@ view to drag. */
 
 - (NSInteger) _computedRowAtPoint: (NSPoint)p
 {
-  return (NSInteger)(p.y - _bounds.origin.y) / (NSInteger)_rowHeight;
+	if ([self _usesVariableRowHeights] == NO)
+		{
+			return (NSInteger)(p.y - _bounds.origin.y) / (NSInteger)_rowHeight;
+		}
+
+	if (_numberOfRows <= 0)
+		{
+			return 0;
+		}
+
+	CGFloat y = p.y - _bounds.origin.y;
+	if (y <= 0.0)
+		{
+			return 0;
+		}
+
+	CGFloat currentY = 0.0;
+	NSInteger rowIndex;
+
+	for (rowIndex = 0; rowIndex < _numberOfRows; rowIndex++)
+		{
+			CGFloat height = [self _rowHeightForRow: rowIndex];
+			if (y < currentY + height)
+				{
+					return rowIndex;
+				}
+			currentY += height;
+		}
+
+	return _numberOfRows;
 }
 
 - (void) _setDropOperationAndRow: (NSInteger)row
@@ -6451,8 +6587,9 @@ view to drag. */
 			 atPoint: (NSPoint)p
 {
   NSParameterAssert(row > -1);
-  BOOL isPositionInsideMiddleQuartersOfRow =
-    (positionInRow > _rowHeight / 4 && positionInRow <= (3 * _rowHeight) / 4);
+	CGFloat rowHeight = [self _rowHeightForRow: row];
+	BOOL isPositionInsideMiddleQuartersOfRow =
+		(positionInRow > rowHeight / 4 && positionInRow <= (3 * rowHeight) / 4);
   BOOL isDropOn = (row > _numberOfRows || isPositionInsideMiddleQuartersOfRow);
 
   [self setDropRow: (isDropOn ? [self _computedRowAtPoint: p] : row)
@@ -6475,9 +6612,34 @@ view to drag. */
 - (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>) sender
 {
   NSPoint p = [self convertPoint: [sender draggingLocation] fromView: nil];
-  NSInteger positionInRow = (NSInteger)(p.y - _bounds.origin.y) % (NSInteger)_rowHeight;
-  NSInteger quarterPosition = (NSInteger)([self _computedRowAtPoint: p] * 4.);
-  NSInteger row = [self _dropRowFromQuarterPosition: quarterPosition];
+	NSInteger computedRow = [self _computedRowAtPoint: p];
+	NSInteger rowForPosition = computedRow;
+	if (rowForPosition >= _numberOfRows)
+		{
+			rowForPosition = _numberOfRows - 1;
+		}
+	if (rowForPosition < 0)
+		{
+			rowForPosition = 0;
+		}
+	NSInteger positionInRow = (NSInteger)[self _positionInRowAtPoint: p
+																															row: rowForPosition];
+	CGFloat rowHeight = [self _rowHeightForRow: rowForPosition];
+	NSInteger quarterInRow = 0;
+	if (rowHeight > 0.0)
+		{
+			quarterInRow = (NSInteger)(positionInRow / (rowHeight / 4.0));
+			if (quarterInRow < 0)
+				{
+					quarterInRow = 0;
+				}
+			else if (quarterInRow > 3)
+				{
+					quarterInRow = 3;
+				}
+		}
+	NSInteger quarterPosition = (computedRow * 4) + quarterInRow;
+	NSInteger row = [self _dropRowFromQuarterPosition: quarterPosition];
   NSDragOperation dragOperation = [sender draggingSourceOperationMask];
   BOOL isSameDropTargetThanBefore = (lastQuarterPosition == quarterPosition
     && currentDragOperation == dragOperation);
@@ -6908,6 +7070,121 @@ For a more detailed explanation, -setSortDescriptors:. */
     }
 }
 
+- (BOOL) _usesVariableRowHeights
+{
+	return NO;
+}
+
+- (CGFloat) _rowHeightForRow: (NSInteger)rowIndex
+{
+	return _rowHeight;
+}
+
+- (CGFloat) _rowsHeight
+{
+	if ([self _usesVariableRowHeights] == NO)
+		{
+			return _numberOfRows * _rowHeight;
+		}
+
+	if (_numberOfRows <= 0)
+		{
+			return 0.0;
+		}
+
+	CGFloat totalHeight = 0.0;
+	NSInteger i;
+
+	for (i = 0; i < _numberOfRows; i++)
+		{
+			totalHeight += [self _rowHeightForRow: i];
+		}
+
+	return totalHeight;
+}
+
+- (CGFloat) _yOriginForRow: (NSInteger)rowIndex
+{
+	if (rowIndex <= 0)
+		{
+			return _bounds.origin.y;
+		}
+
+	if ([self _usesVariableRowHeights] == NO)
+		{
+			return _bounds.origin.y + (_rowHeight * rowIndex);
+		}
+
+	CGFloat y = _bounds.origin.y;
+	NSInteger i;
+
+	for (i = 0; i < rowIndex && i < _numberOfRows; i++)
+		{
+			y += [self _rowHeightForRow: i];
+		}
+
+	return y;
+}
+
+- (NSInteger) _rowAtPointUsingVariableHeights: (NSPoint)aPoint
+{
+	if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
+		{
+			return -1;
+		}
+
+	if (_numberOfRows <= 0)
+		{
+			return -1;
+		}
+
+	if ([self _usesVariableRowHeights] == NO)
+		{
+			if (_rowHeight == 0.0)
+				{
+					return -1;
+				}
+
+			aPoint.y -= _bounds.origin.y;
+			NSInteger row = (NSInteger)(aPoint.y / _rowHeight);
+
+			if (row >= _numberOfRows)
+				{
+					return -1;
+				}
+
+			return row;
+		}
+
+	CGFloat y = aPoint.y - _bounds.origin.y;
+	if (y < 0.0)
+		{
+			return -1;
+		}
+
+	CGFloat currentY = 0.0;
+	NSInteger rowIndex;
+
+	for (rowIndex = 0; rowIndex < _numberOfRows; rowIndex++)
+		{
+			CGFloat height = [self _rowHeightForRow: rowIndex];
+			if (y < currentY + height)
+				{
+					return rowIndex;
+				}
+			currentY += height;
+		}
+
+	return -1;
+}
+
+- (CGFloat) _positionInRowAtPoint: (NSPoint)aPoint
+															 row: (NSInteger)rowIndex
+{
+	CGFloat rowOrigin = [self _yOriginForRow: rowIndex];
+	return aPoint.y - rowOrigin;
+}
+
 - (BOOL) _isDraggingSource
 {
   return [_dataSource respondsToSelector:
@@ -7051,27 +7328,81 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       NSNumber *aRow = [NSNumber numberWithInteger: row];
 
+      [self _initViewBasedSupport];
       rv = [_rowViews objectForKey: aRow];
-      if (rv == nil)
+      if (rv == nil && flag == YES)
 	{
-	  if (flag == YES)
+	  if ([_delegate respondsToSelector: @selector(tableView:rowViewForRow:)])
 	    {
-	      if ([_delegate respondsToSelector: @selector(tableView:rowViewForRow:)])
-		{
-		  rv = [_delegate tableView: self rowViewForRow: row];
-		}
-	      if (rv == nil)
-		{
-		  rv = AUTORELEASE([[NSTableRowView alloc] init]);
-		}
+	      rv = [_delegate tableView: self rowViewForRow: row];
+	    }
+	  if (rv == nil)
+	    {
+	      rv = AUTORELEASE([[NSTableRowView alloc] init]);
 	    }
 
-	  [_rowViews setObject: rv
-			forKey: aRow];
+	  if (rv != nil)
+	    {
+	      [_rowViews setObject: rv
+			    forKey: aRow];
+	    }
 	}
     }
 
   return rv;
+}
+
+- (void) _layoutViewBasedRows
+{
+  NSEnumerator *enumerator;
+  NSNumber *rowNumber;
+
+  if (_viewBased == NO)
+    {
+      return;
+    }
+
+  enumerator = [_rowViews keyEnumerator];
+  while ((rowNumber = [enumerator nextObject]) != nil)
+    {
+      NSInteger row = [rowNumber integerValue];
+      NSTableRowView *rowView;
+      NSRect rowFrame;
+      NSInteger column;
+
+      if (row < 0 || row >= _numberOfRows)
+	{
+	  continue;
+	}
+
+      rowView = [_rowViews objectForKey: rowNumber];
+      if (rowView == nil)
+	{
+	  continue;
+	}
+
+      rowFrame = NSMakeRect (0.0,
+			     [self _yOriginForRow: row],
+			     [self frame].size.width,
+			     [self _rowHeightForRow: row]);
+      [rowView setFrame: rowFrame];
+
+      for (column = 0; column < _numberOfColumns; column++)
+	{
+	  NSIndexPath *path = [NSIndexPath indexPathForItem: column
+						 inSection: row];
+	  NSView *view = [self _renderedViewForPath: path];
+
+	  if (view != nil)
+	    {
+	      NSRect viewFrame = [self frameOfCellAtColumn: column
+						       row: row];
+
+	      viewFrame.origin.y -= NSMinY (rowFrame);
+	      [view setFrame: viewFrame];
+	    }
+	}
+    }
 }
 
 - (NSView *) viewAtColumn: (NSInteger)column row: (NSInteger)row makeIfNecessary: (BOOL)flag
@@ -7094,6 +7425,18 @@ For a more detailed explanation, -setSortDescriptors:. */
 		   viewForTableColumn: tb
 				  row: row];
 	}
+      else if ([_dataSource respondsToSelector: @selector(tableView:viewForTableColumn:row:)] &&
+	       [_dataSource isKindOfClass: [NSTableViewDiffableDataSource class]])
+	{
+	  /*
+	   * Doing this here because observed behavior on macOS indicates that the
+	   * diffable data source implements this delegate method to provide
+	   * the view for the table to use in the cell referenced by this method.
+	   */
+	  view = [_dataSource tableView: self
+		     viewForTableColumn: tb
+				    row: row];
+	}
       else
 	{
 	  view = [self _prototypeCellViewFromTableColumn: tb];
@@ -7102,6 +7445,10 @@ For a more detailed explanation, -setSortDescriptors:. */
       [self _setRenderedView: view forPath: path];
     }
 
+  if ([[view superview] isKindOfClass: [NSTableRowView class]])
+    {
+      drawingRect.origin.y -= NSMinY ([[view superview] frame]);
+    }
   [view setFrame: drawingRect];
 
   return view;
@@ -7110,6 +7457,8 @@ For a more detailed explanation, -setSortDescriptors:. */
 - (void) registerNib: (NSNib *)nib
        forIdentifier: (NSUserInterfaceItemIdentifier)identifier
 {
+  _viewBased = YES;
+  [self _initViewBasedSupport];
   [_registeredNibs setObject: nib
 		      forKey: identifier];
 }
@@ -7126,6 +7475,8 @@ For a more detailed explanation, -setSortDescriptors:. */
   NSEnumerator *en = [prototypeViews objectEnumerator];
   NSView *view = nil;
 
+  _viewBased = YES;
+  [self _initViewBasedSupport];
   while ((view = [en nextObject]) != nil)
     {
       NSUserInterfaceItemIdentifier identifier = [view identifier];
@@ -7141,8 +7492,38 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (void) _setRenderedView: (NSView *)view forPath: (NSIndexPath *)path
 {
+  if (view == nil)
+    {
+      return;
+    }
+
+  [self _initViewBasedSupport];
   [_renderedViewPaths setObject: view forKey: path];
   [_pathsToViews setObject: path forKey: view];
+}
+
+- (void) _initViewBasedSupport
+{
+  if (_renderedViewPaths == nil)
+    {
+      _renderedViewPaths = RETAIN([NSMapTable strongToWeakObjectsMapTable]);
+    }
+  if (_pathsToViews == nil)
+    {
+      _pathsToViews = RETAIN([NSMapTable weakToStrongObjectsMapTable]);
+    }
+  if (_registeredNibs == nil)
+    {
+      _registeredNibs = [[NSMutableDictionary alloc] init];
+    }
+  if (_registeredViews == nil)
+    {
+      _registeredViews = [[NSMutableDictionary alloc] init];
+    }
+  if (_rowViews == nil)
+    {
+      _rowViews = [[NSMutableDictionary alloc] init];
+    }
 }
 
 @end /* implementation of NSTableView */

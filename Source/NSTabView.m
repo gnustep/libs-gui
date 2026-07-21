@@ -78,7 +78,8 @@
       ASSIGN(_items, [NSMutableArray array]);
       ASSIGN(_font, [NSFont systemFontOfSize: 0]);
       _selected = nil;
-      //_truncated_label = NO;
+      _draws_background = YES;
+      _truncated_label = YES;
     }
 
   return self;

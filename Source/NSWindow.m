@@ -710,7 +710,7 @@ static NSNotificationCenter *nc = nil;
 {
   if (self == [NSWindow class])
     {
-      [self setVersion: 3];
+      [self setVersion: 4];
       ccSel = @selector(_checkCursorRectangles:forEvent:);
       ctSel = @selector(_checkTrackingRectangles:forEvent:);
       ccImp = [self instanceMethodForSelector: ccSel];
@@ -2075,7 +2075,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint
 {
-  NSRect cRect;
+  CGFloat delta;
 
   if (NSEqualPoints(topLeftPoint, NSZeroPoint) == YES)
     {
@@ -2084,9 +2084,12 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 
   [self setFrameTopLeftPoint: topLeftPoint];
-  cRect = [self contentRectForFrameRect: _frame];
-  topLeftPoint.x = NSMinX(cRect);
-  topLeftPoint.y = NSMaxY(cRect);
+
+  /* The next window in a cascade is offset down and to the right by the
+     height of a standard title bar. */
+  delta = [[GSTheme theme] titlebarHeight];
+  topLeftPoint.x += delta;
+  topLeftPoint.y -= delta;
 
   /* make sure the new point is inside the screen */
   if ([self screen])
@@ -2461,6 +2464,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 - (void) setResizeIncrements: (NSSize)aSize
 {
   _increments = aSize;
+  _aspectRatio = NSZeroSize;
   if (_windowNum > 0)
     {
       [GSServerForWindow(self) setresizeincrements: aSize : _windowNum];
@@ -2469,13 +2473,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (NSSize) aspectRatio
 {
-  // FIXME: This method is missing
-  return NSMakeSize(1, 1);
+  return _aspectRatio;
 }
 
 - (void) setAspectRatio: (NSSize)ratio
 {
-  // FIXME: This method is missing
+  _aspectRatio = ratio;
+  _increments = NSZeroSize;
 }
 
 - (NSSize) contentMaxSize
@@ -5777,6 +5781,8 @@ current key view.<br />
 
   [aCoder encodeObject: _miniaturizedImage];
   [aCoder encodeConditionalObject: _initialFirstResponder];
+
+  [aCoder encodeObject: _toolbar];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -5882,6 +5888,12 @@ current key view.<br />
 
       [aDecoder decodeValueOfObjCType: @encode(id)
                                    at: &_initialFirstResponder];
+
+      // Decode the toolbar...
+      if (version > 3)
+	{
+	  [self setToolbar: [aDecoder decodeObject]];
+	}
 
       [self setFrameTopLeftPoint: p];
     }

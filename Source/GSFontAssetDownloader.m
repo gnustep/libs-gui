@@ -255,7 +255,7 @@ static Class _defaultDownloaderClass = nil;
   // Clean up temporary download file
   if (downloadedPath != nil)
     {
-      [[NSFileManager defaultManager] removeItemAtPath: downloadedPath error: nil];
+      [[NSFileManager defaultManager] removeItemAtPath: downloadedPath error: NULL];
     }
 
   // Hide progress panel

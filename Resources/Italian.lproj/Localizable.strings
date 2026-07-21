@@ -34,7 +34,7 @@ add comments above this one
 /* File: ../Source/NSSavePanel.m:319 */
 /* File: ../Source/NSSavePanel.m:1336 */
 /* File: ../Source/NSSavePanel.m:1409 */
-"Cancel" = "Cancella";
+"Cancel" = "Annulla";
 
 /* File: ../Source/GSNibLoading.m:185 */
 /* Comment: Info */
@@ -95,10 +95,8 @@ add comments above this one
 "Manual" = "Manuale";
 
 /* File: ../Source/NSSavePanel.m:1321 */
-/* Flag: untranslated */
 /* File: ../Source/NSSavePanel.m:1329 */
-/* Flag: untranslated */
-"Use .%@" = "Use .%@";
+"Use .%@" = "Usa .%@";
 
 /* File: ../Source/NSDocument.m:1145 */
 /* File: ../Source/NSPrintPanel.m:350 */
@@ -123,11 +121,9 @@ add comments above this one
 
 /* File: ../Source/NSDocument.m:925 */
 /* Comment: Error description */
-/* Flag: untranslated */
 /* File: ../Source/NSDocument.m:965 */
 /* Comment: Error description */
-/* Flag: untranslated */
-"Could not write backup file." = "Could not write backup file.";
+"Could not write backup file." = "Impossibile scrivere il file di backup.";
 
 
 /*** Unmatched/untranslated keys ***/
@@ -155,8 +151,7 @@ add comments above this one
 
 /* File: ../Source/NSAttributedString.m:1035 */
 /* Comment: Error description */
-/* Flag: untranslated */
-"No type specified for data." = "No type specified for data.";
+"No type specified for data." = "Nessun tipo specificato per i dati.";
 
 /* File: ../Source/NSColorPanel.m:294 */
 "Opacity" = "Opacit\U00E0";
@@ -168,47 +163,36 @@ add comments above this one
 
 /* File: ../Source/NSDocument.m:751 */
 /* Comment: Error description */
-/* Flag: untranslated */
-"File wrapper is no file." = "File wrapper is no file.";
+"File wrapper is no file." = "Il wrapper archivio non è un archivio.";
 
 /* File: ../Source/NSDocument.m:943 */
 /* Comment: Error description */
-/* Flag: untranslated */
 "Not a writable type or no URL given."
-  = "Not a writable type or no URL given.";
+  = "Tipo non scrivibile o URL non specificato.";
 
 /* File: ../Source/NSDocument.m:1037 */
 /* Comment: Error description */
-/* Flag: untranslated */
-"Could not write file wrapper." = "Could not write file wrapper.";
+"Could not write file wrapper." = "Impossibile scrivere il wrapper archivio.";
 
 /* File: ../Source/NSDocumentController.m:1852 */
-/* Flag: untranslated */
 "Clear List" = "Pulisci Lista";
 
 /* File: ../Source/NSFontPanel.m:241 */
-/* Flag: untranslated */
-"Multiple fonts selected" = "Pi\U00F9 caratteri selezionati";
-
-/* File: ../Source/NSFontPanel.m:553 */
-/* Flag: untranslated */
-"Font Panel" = "Font Panel";
+"Font Panel" = "Pannello Caratteri";
 
 /* File: ../Source/NSFontPanel.m:578 */
-/* Flag: untranslated */
-"Font preview" = "Font preview";
+"Font preview" = "Anteprima Carattere";
 
 /* File: ../Source/NSFontPanel.m:719 */
-/* Flag: untranslated */
-"Set" = "Set";
+"Set" = "Imposta";
 
 /* File: ../Source/NSFontPanel.m:810 */
 /* Flag: untranslated */
-"NoFamily" = "NoFamily";
+"NoFamily" = "SenzaFamiglia";
 
 /* File: ../Source/NSFontPanel.m:818 */
 /* Flag: untranslated */
-"NoFace" = "NoFace";
+"NoFace" = "SenzaStile";
 
 /* File: ../Source/NSFontPanel.m:1142 */
 /* Flag: untranslated */
@@ -218,64 +202,54 @@ add comments above this one
 "Open" = "Apri";
 
 /* File: ../Source/NSPageLayout.m:961 */
-/* Flag: untranslated */
-"Orientation" = "Orientation";
+"Orientation" = "Orientatamento";
 
 /* File: ../Source/NSPageLayout.m:962 */
-/* Flag: untranslated */
-"Scale" = "Scale";
+"Scale" = "Scala";
 
 /* File: ../Source/NSPrintPanel.m:179 */
-/* Flag: untranslated */
-"6 up" = "6 up";
+"6 up" = "6 pagine";
 
 /* File: ../Source/NSPrintPanel.m:179 */
-/* Flag: untranslated */
-"4 up" = "4 up";
+"4 up" = "4 pagine";
 
 /* File: ../Source/NSPrintPanel.m:179 */
-/* Flag: untranslated */
-"2 up" = "2 up";
+"2 up" = "2 pagine";
 
 /* File: ../Source/NSPrintPanel.m:179 */
-/* Flag: untranslated */
-"1 up" = "1 up";
+"1 up" = "1 pagina";
 
 /* File: ../Source/NSPrintPanel.m:180 */
-/* Flag: untranslated */
-"8 up" = "8 up";
+"8 up" = "8 pagine";
 
 /* File: ../Source/NSPrintPanel.m:407 */
 "Sorry" = "Spiacente";
 
 /* File: ../Source/NSSavePanel.m:243 */
-/* Flag: untranslated */
 "Show Hidden Files" = "Mostra Archivi nascosti";
 
 /* File: ../Source/NSSavePanel.m:278 */
-/* Flag: untranslated */
-"Home" = "Home";
+"Home" = "Inizio";
 
 /* File: ../Source/NSSavePanel.m:1320 */
 /* Flag: untranslated */
 "You have used the extension '.%@'.\nThe standard extension is '.%@'.'"
-  = "You have used the extension '.%@'.\nThe standard extension is '.%@'.'";
+  = "Hai usato l'estensione '.%@'.\nL'estensione standard è '.%@'.'";
 
 /* File: ../Source/NSSavePanel.m:1328 */
-/* Flag: untranslated */
 "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'."
-  = "You cannot save this document with extension '.%@'.\nThe required extension is '.%@'.";
+  = "Impossibile salvare il documento con l'estensione '.%@'.\nL'estensione richiesta è '.%@'.";
 
 /* File: ../Source/NSSavePanel.m:1374 */
 "No" = "No";
 
 /* File: ../Source/NSWindow.m:5637 */
 /* Flag: untranslated */
-"Hide Toolbar" = "Hide Toolbar";
+"Hide Toolbar" = "Nascondi barra strumenti";
 
 /* File: ../Source/NSWindow.m:5641 */
 /* Flag: untranslated */
-"Show Toolbar" = "Show Toolbar";
+"Show Toolbar" = "Mostra barra strumenti";
 
 /* File: ../Source/Functions.m:106 */
 /* Flag: untranslated */
@@ -299,8 +273,7 @@ add comments above this one
 "Clear recent searches" = "Pulire ricerche recenti";
 
 /* File: ../Source/NSSearchFieldCell.m:578 */
-/* Flag: untranslated */
-"No recent searches" = "No recent searches";
+"No recent searches" = "Nessuna ricerca recente";
 
 
 /*** Strings from ../Source/NSSavePanel.m ***/
@@ -366,7 +339,7 @@ add comments above this one
 
 /*** Strings from ../Source/GSTextFinder.m ***/
 /* File: ../Source/GSTextFinder.m:408 */
-"%d replaced" = "%d rimpiazzati";
+"%d replaced" = "%d sostituiti";
 /* File: ../Source/GSTextFinder.m:332 */
 /* File: ../Source/GSTextFinder.m:381 */
 "Not found" = "Non trovato";
@@ -407,7 +380,7 @@ add comments above this one
 
 /*** Strings from ../Source/NSApplication.m ***/
 /* File: ../Source/NSApplication.m:138 */
-"Abort" = "Interrompi";
+"Abort" = "Abortisci";
 /* File: ../Source/NSApplication.m:323 */
 "Backend at path %@ doesn't contain the GSBackend class"
   = "Il backend a %@ non contiene la classe GSBackend";
@@ -483,21 +456,21 @@ add comments above this one
 /*** Strings from ../Source/NSDocument.m ***/
 /* File: ../Source/NSDocument.m:1695 */
 "%@ has been edited.  Are you sure you want to undo changes?"
-  = "%@ \U00E8 stato modificato.  Sei sicuro che vuoi annullare i cambiamenti?";
+  = "%@ \U00E8 stato modificato.  Sei sicuro di voler annullare le modifiche?";
 /* File: ../Source/NSDocument.m:484 */
 "%@ has changed.  Save?" = "%@ \U00E8 cambiato. Salvare?";
 /* File: ../Source/NSDocument.m:839 */
 "Can't create backup file.  Save anyways?"
-  = "Non si pu\U00F2 create un file di backup. Lo devo salvare lo stesso?";
+  = "Impossibile creare un archivio di backup. Salvare comunque?";
 /* File: ../Source/NSDocument.m:483 */
 "Close" = "Chiudi";
 /* File: ../Source/NSDocument.m:153 */
 "Could not load URL %@." = "Non \U00E8 stato possibile caricare lo URL %@.";
 /* File: ../Source/NSDocument.m:130 */
 "Could not load file %@."
-  = "Non \U00E8 stato possibile caricare il file %@.";
+  = "Non \U00E8 stato possibile caricare il archivio %@.";
 /* File: ../Source/NSDocument.m:838 */
-"File Error" = "Errore con un file";
+"File Error" = "Errore nell'archivio";
 /* File: ../Source/NSDocument.m:129 */
 /* File: ../Source/NSDocument.m:152 */
 "Load failed" = "Caricamento non riuscito";
@@ -579,15 +552,15 @@ add comments above this one
 "Replace" = "Sostituisci";
 /* File: ../Source/NSSavePanel.m:1386 */
 "The directory '%@' could not be created."
-  = "La directory '%@' non puo' essere creata.";
+  = "La cartella '%@' non puo' essere creata.";
 /* File: ../Source/NSSavePanel.m:1373 */
 "The directory '%@' does not exist, do you want to create it?"
-  = "La directory '%@' non esiste, la vuoi creare?";
+  = "La cartella '%@' non esiste, la vuoi creare?";
 /* File: ../Source/NSSavePanel.m:1408 */
 "The file '%@' in '%@' exists. Replace it?"
-  = "Il file '%@' in '%@' esiste già. Sostituirlo?";
+  = "L'archivio '%@' in '%@' esiste già. Sostituirlo?";
 /* File: ../Source/NSSavePanel.m:1397 */
-"The path '%@' is not a directory."
+"Il percorso '%@' non è una cartella."
   = "Il percorso non '%@' non è una cartella.";
 /* File: ../Source/NSSavePanel.m:310 */
 "Unmount" = "Smonta";

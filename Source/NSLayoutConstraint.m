@@ -412,6 +412,31 @@ static NSMutableArray *activeConstraints = nil;
   return _constant;
 }
 
+- (void) setConstant: (CGFloat)constant
+{
+  _constant = constant;
+}
+
+- (BOOL) shouldBeArchived
+{
+  return _shouldBeArchived;
+}
+
+- (void) setShouldBeArchived: (BOOL)flag
+{
+  _shouldBeArchived = flag;
+}
+  
+- (NSString *) identifier
+{
+  return _identifier;
+}
+
+- (void) setIdentifier: (NSString *)identifier
+{
+  ASSIGN(_identifier, identifier);
+}
+
 - (NSLayoutAnchor *) firstAnchor
 {
   return _firstAnchor;
@@ -574,6 +599,7 @@ static NSMutableArray *activeConstraints = nil;
 - (void) dealloc
 {
   [NSLayoutConstraint _removeConstraint: self];
+  RELEASE(_identifier);
   [super dealloc];
 }
 

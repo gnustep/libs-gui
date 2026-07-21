@@ -52,7 +52,7 @@
             _alignment = NSCenterTextAlignment;
             break;
           case NSDecimalTabStopType:
-            _alignment = NSRightTextAlignment;
+            _alignment = NSNaturalTextAlignment;
             break;
         }
     }
@@ -72,14 +72,7 @@
 	type = NSLeftTabStopType; 
 	break;
       case NSRightTextAlignment:
-	if ([options objectForKey: NSTabColumnTerminatorsAttributeName] != nil)
-	  {
-	    type = NSDecimalTabStopType;
-	  }
-	else
-	  {
-	    type = NSRightTabStopType;
-	  }
+	type = NSRightTabStopType;
 	break;
       case NSCenterTextAlignment:
 	type = NSCenterTabStopType;
@@ -303,6 +296,8 @@ static NSParagraphStyle	*defaultStyle = nil;
           [_tabStops addObject: tab];
           RELEASE(tab);
         }
+      
+      ASSIGN(_textLists, [NSArray array]);
     }
   return self;
 }
@@ -494,6 +489,9 @@ static NSParagraphStyle	*defaultStyle = nil;
       [aCoder decodeValueOfObjCType: @encode(float) at: &_paragraphSpacing];
       [aCoder decodeValueOfObjCType: @encode(float) at: &_tailIndent];
       
+      // Text lists were not included for non-keyed encoding, use a default
+      ASSIGN(_textLists, [NSArray array]);
+      
       /*
        *	Tab stops don't conform to NSCoding - so we do it the long way.
        */
@@ -501,34 +499,44 @@ static NSParagraphStyle	*defaultStyle = nil;
       _tabStops = [[NSMutableArray alloc] initWithCapacity: count];
       if (count > 0)
         {
-          float locations[count];
-          NSTextTabType types[count];
+          float *locations;
+          NSTextTabType *types;
           NSUInteger i;
-          
+
+          /* count is read from the (untrusted) archive; allocate the scratch
+             arrays on the heap rather than as stack VLAs, which a large count
+             would overflow. */
+          locations = NSZoneMalloc(NSDefaultMallocZone(),
+                                   count * sizeof(float));
+          types = NSZoneMalloc(NSDefaultMallocZone(),
+                               count * sizeof(NSTextTabType));
+          if (locations == NULL || types == NULL)
+            {
+              if (locations != NULL)
+                NSZoneFree(NSDefaultMallocZone(), locations);
+              if (types != NULL)
+                NSZoneFree(NSDefaultMallocZone(), types);
+              [NSException raise: NSMallocException
+                          format: @"Unable to allocate tab stops"];
+            }
+
           [aCoder decodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
-          if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 3)
-            {
-              [aCoder decodeArrayOfObjCType: @encode(NSInteger)
-                  count: count
-                  at: types];
-	    }
-	  else
-            {
-              [aCoder decodeArrayOfObjCType: @encode(int)
-                  count: count
-                  at: types];
-	    }
+	  [aCoder decodeArrayOfObjCType: @encode(NSTextTabType)
+	      count: count
+	      at: types];
           for (i = 0; i < count; i++)
             {
               NSTextTab	*tab;
-              
-              tab = [[NSTextTab alloc] initWithType: types[i] 
+
+              tab = [[NSTextTab alloc] initWithType: types[i]
                                        location: locations[i]];
               [_tabStops addObject: tab];
               RELEASE(tab);
             }
+          NSZoneFree(NSDefaultMallocZone(), locations);
+          NSZoneFree(NSDefaultMallocZone(), types);
         }
       
       if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 2)
@@ -586,7 +594,7 @@ static NSParagraphStyle	*defaultStyle = nil;
           [aCoder encodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
-          [aCoder encodeArrayOfObjCType: @encode(NSInteger)
+          [aCoder encodeArrayOfObjCType: @encode(NSTextTabType)
                   count: count
                   at: types];
         }
@@ -621,7 +629,12 @@ static NSParagraphStyle	*defaultStyle = nil;
   C(_headerLevel);
 #undef C
 
-  return [_tabStops isEqualToArray: other->_tabStops];
+#define C(x) if (![x isEqualToArray: other->x]) return NO;
+  C(_tabStops);
+  C(_textLists);
+#undef C
+
+  return YES;
 }
 
 - (NSUInteger) hash
@@ -789,7 +802,6 @@ static NSParagraphStyle	*defaultStyle = nil;
     {
       [_tabStops removeAllObjects];
       [_tabStops addObjectsFromArray: array];
-      [_tabStops sortUsingSelector: @selector(compare:)];
     }
 }
 

@@ -255,7 +255,7 @@
 	arguments and have a name formed of this value followed by
 	<code>:userData:error:</code>
 <example>
-// If NSMessage=encryptData
+// If NSMessage=encryptString
 - (void) encryptString: (NSPasteboard*)pboard
 	      userData: (NSString*)userData
 		 error: (NSString**)error;
@@ -2285,7 +2285,13 @@ description, [cmd stringByDeletingLastPathComponent]);
  */
 + (NSURL *) URLFromPasteboard: (NSPasteboard *)pasteBoard
 {
-  return [self URLWithString: [pasteBoard stringForType: NSURLPboardType]];
+  NSURL	*u = [self URLWithString: [pasteBoard stringForType: NSURLPboardType]];
+
+  if (nil == u)
+    {
+      u = [self URLWithString: [pasteBoard stringForType: NSStringPboardType]];
+    }
+  return u;
 }
 
 /**
@@ -2293,8 +2299,10 @@ description, [cmd stringByDeletingLastPathComponent]);
  */
 - (void) writeToPasteboard: (NSPasteboard *)pasteBoard
 {
-  [pasteBoard setString: [self absoluteString]
-		forType: NSURLPboardType];
+  NSString	*abs = [self absoluteString];
+
+  [pasteBoard setString: abs forType: NSURLPboardType];
+  [pasteBoard setString: abs forType: NSStringPboardType];
 }
 
 @end

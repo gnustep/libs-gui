@@ -1135,14 +1135,32 @@ static BOOL _isAutolaunchChecked = NO;
     {
       [_listener application: self openFiles: files];
     } 
-  else if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil
-    || (filePath = [defs stringForKey: @"NSOpen"]) != nil)
+  else if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil)
     {
       [_listener application: self openFile: filePath];
+    }
+  else if ((filePath = [defs stringForKey: @"GSOpenURL"]) != nil)
+    {
+      NSURL	*u = [NSURL URLWithString: filePath];
+
+      [_listener application: self openURL: u];
     }
   else if ((filePath = [defs stringForKey: @"GSTempPath"]) != nil)
     {
       [_listener application: self openTempFile: filePath];
+    }
+  else if ((filePath = [defs stringForKey: @"NSOpen"]) != nil)
+    {
+      NSURL	*u = [NSURL URLWithString: filePath];
+
+      if ([[u scheme] length] > 0)
+	{
+	  [_listener application: self openURL: u];
+	}
+      else
+	{
+          [_listener application: self openFile: filePath];
+	}
     }
   else if ((filePath = [defs stringForKey: @"NSPrint"]) != nil)
     {
@@ -2467,6 +2485,7 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (!_dock_tile)
     {
       _dock_tile = [[NSDockTile alloc] init];
+      [_dock_tile setOwner: self];
       [_dock_tile setContentView: [_app_icon_window contentView]];
     }
   return _dock_tile;

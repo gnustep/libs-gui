@@ -41,10 +41,17 @@ fi
 
 #--------------------------------------------------------------------
 # Use config.guess, config.sub and install-sh provided by gnustep-make
+# Evaluation order of the configure script means we can not depend on
+# GNUSTEP_MAKEFILES being set for simple variable substitution, so we
+# execute a bit of shell code to dynamically get the directory.
 #--------------------------------------------------------------------
-AC_CONFIG_AUX_DIR($GNUSTEP_MAKEFILES)
+AC_CONFIG_AUX_DIR([`if test -z "$GNUSTEP_MAKEFILES"; then
+  gnustep-config --variable=GNUSTEP_MAKEFILES 2>&5
+else
+  echo $GNUSTEP_MAKEFILES
+fi`])
 
-AC_CONFIG_HEADER(Headers/Additions/GNUstepGUI/config.h)
+AC_CONFIG_HEADERS([Headers/Additions/GNUstepGUI/config.h])
 
 #--------------------------------------------------------------------
 # Determine the host, build, and target systems
@@ -484,13 +491,13 @@ AS_IF([test "x$enable_icu" = "xyes"], [
 
   if test $HAVE_ICU = 0; then
     HAVE_ICU=0;
-    AC_CHECKING([for libicu (icu-config disabled)])
+    AS_MESSAGE([checking for libicu (icu-config disabled)...])
     if test "$icu_libdir" != "no"; then
       ICU_LDFLAGS="-L$icu_libdir";
     fi
     saved_LDFLAGS="$LDFLAGS";
     LDFLAGS="$LDFLAGS $LIBS $ICU_LDFLAGS -licui18n -licuuc -licudata -lm"
-    AC_TRY_LINK([],[], HAVE_ICU=1, HAVE_ICU=0);
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[HAVE_ICU=1],[HAVE_ICU=0]);
     LDFLAGS="$saved_LDFLAGS";
     ICU_LIBS="-licui18n -licuuc -licudata -lm" 
   fi
@@ -499,7 +506,6 @@ AS_IF([test "x$enable_icu" = "xyes"], [
   if test $HAVE_ICU = 1; then
     AC_MSG_RESULT(yes)
     AC_CHECK_HEADERS(unicode/uchar.h unicode/ustring.h)
-    GRAPHIC_LFLAGS="$ICU_LDFLAGS $ICU_LIBS $GRAPHIC_LFLAGS"
     HAVE_ICU=1
   else
     AC_MSG_RESULT(no)
@@ -539,12 +545,19 @@ AC_ARG_ENABLE(sound,
 BUILD_SOUND=
 # Check for the headers...
 AC_CHECK_HEADERS(sndfile.h, have_sndfile=yes, have_sndfile=no)
-AC_CHECK_HEADERS(ao/ao.h, have_ao=yes, have_ao=no)
+AC_CHECK_HEADERS(ao/ao.h, have_ao_header=yes, have_ao_header=no)
+if test "$have_ao_header" = yes; then
+  saved_LIBS="$LIBS"
+  AC_CHECK_LIB(ao, ao_play, have_ao=yes, have_ao=no)
+  LIBS="$saved_LIBS"
+else
+  have_ao=no
+fi
 # Only if we have both...
 if test "$have_sndfile" = yes -a "$have_ao" = yes -a "$enable_sound" = yes; then
    BUILD_SOUND="sound"
-   SOUND_LIBS=`pkg-config --libs sndfile ao`
-   SOUND_CFLAGS=`pkg-config --cflags sndfile ao`
+   SOUND_LIBS=`$PKG_CONFIG --libs sndfile ao`
+   SOUND_CFLAGS=`$PKG_CONFIG --cflags sndfile ao`
 fi
 AC_SUBST(BUILD_SOUND)
 AC_SUBST(SOUND_LIBS)
@@ -584,8 +597,8 @@ AC_CHECK_LIB(pocketsphinx, ps_start_utt, have_speech_recognizer=yes, have_speech
 AC_CHECK_HEADERS(pocketsphinx/pocketsphinx_export.h, have_pocketsphinx=yes, have_pocketsphinx=no)
 if test "$have_pocketsphinx" = yes -a "$have_speech_recognizer" = yes -a "$enable_speech_recognizer" = yes; then
    BUILD_SPEECH_RECOGNIZER="speech_recognizer"
-   RECOGNIZER_BASE_LIBS=`pkg-config --libs pocketsphinx sphinxbase`
-   RECOGNIZER_BASE_CFLAGS=`pkg-config --cflags pocketsphinx sphinxbase`
+   RECOGNIZER_BASE_LIBS=`$PKG_CONFIG --libs pocketsphinx sphinxbase`
+   RECOGNIZER_BASE_CFLAGS=`$PKG_CONFIG --cflags pocketsphinx sphinxbase`
    RECOGNIZER_ENGINE_CLASS=PocketsphinxSpeechRecognitionEngine.m
 fi
 AC_SUBST(BUILD_SPEECH_RECOGNIZER)
@@ -596,20 +609,44 @@ AC_SUBST(RECOGNIZER_ENGINE_CLASS)
 #--------------------------------------------------------------------
 # NSMovie / NSMovieView
 #--------------------------------------------------------------------
+BUILD_MOVIE=
 AC_ARG_ENABLE(movie, 
   [  --disable-movie          Disable NSMovie/NSMovieView functionality],,
   enable_movie=yes)
-BUILD_MOVIE=
 
-# has avcodec
-AC_CHECK_LIB(avcodec, avcodec_find_decoder, have_avcodec=yes, have_avcodec=no)
-AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
-if test "$have_avcodec" = yes -a "$have_codec" = yes -a "$have_ao" = yes -a "$enable_movie" = yes; then
-   AC_DEFINE(HAVE_AVCODEC,1,[Define if you have avcodec for NSMovie])
-   BUILD_MOVIE="yes"
-   MOVIE_BASE_LIBS=`pkg-config --libs libavcodec libavformat libavutil libswscale`
-   MOVIE_BASE_CFLAGS=`pkg-config --cflags libavcodec libavformat libavutil libswscale`
-fi
+AS_IF([test "x$enable_movie" = "xyes"], [
+  PKG_CHECK_MODULES([MOVIE_BASE],
+		    [libavcodec libavformat libavutil libswscale ao libswresample],
+		    BUILD_MOVIE=1, BUILD_MOVIE=0)
+
+  if test $BUILD_MOVIE = 1; then
+    orig_CPPFLAGS="${CPPFLAGS}"
+    orig_LIBS="${LIBS}"
+
+    MOVIE_BASE_LIBS=
+    MOVIE_BASE_CFLAGS=
+    if test -n "$PKG_CONFIG"; then
+      MOVIE_BASE_LIBS=`$PKG_CONFIG --libs libavcodec libavformat libavutil libswscale ao libswresample`
+      MOVIE_BASE_CFLAGS=`$PKG_CONFIG --cflags libavcodec libavformat libavutil libswscale ao libswresample`
+    fi
+
+    CPPFLAGS="$MOVIE_BASE_CFLAGS ${CPPFLAGS}"
+    LIBS="$MOVIE_BASE_LIBS ${LIBS}"
+
+    AC_CHECK_LIB(avcodec, avcodec_find_decoder, have_avcodec=yes, have_avcodec=no)
+    AC_CHECK_HEADERS(libavcodec/avcodec.h, have_codec=yes, have_codec=no)
+    AC_CHECK_HEADERS(libavcodec/codec.h)
+    have_movie_pkgs=no
+    if test -n "$PKG_CONFIG"; then
+      if $PKG_CONFIG --exists libavformat libavutil libswscale libswresample; then
+        have_movie_pkgs=yes
+      else
+        CPPFLAGS="${orig_CPPFLAGS}"
+        LIBS="${orig_LIBS}"
+      fi
+    fi
+  fi
+])
 AC_SUBST(MOVIE_BASE_LIBS)
 AC_SUBST(MOVIE_BASE_CFLAGS)
 AC_SUBST(BUILD_MOVIE)
@@ -668,6 +705,18 @@ AC_SUBST(GSCUPS_LIBS)
 AC_SUBST(GSCUPS_DATADIR)
 AC_SUBST(BUILD_GSCUPS)
 
+#-------------------------------------------------------------------
+# Check for inotify.h
+#-------------------------------------------------------------------
+AC_CHECK_HEADERS([sys/inotify.h])
+AS_IF([test "x$ac_cv_header_sys_inotify_h" = xyes], [
+  INOTIFY_CFLAGS=`$PKG_CONFIG --cflags libinotify`
+  INOTIFY_LIBS=`$PKG_CONFIG --libs libinotify`
+  AC_MSG_NOTICE([-gui will be linked against libinotify])
+])
+AC_SUBST(INOTIFY_CFLAGS)
+AC_SUBST(INOTIFY_LIBS)
+
 #--------------------------------------------------------------------
 # Check for -Wdeclaration-after-statement
 #--------------------------------------------------------------------
@@ -707,8 +756,8 @@ AC_SUBST(GNUSTEP_GUI_MAJOR_VERSION)
 AC_SUBST(GNUSTEP_GUI_MINOR_VERSION)
 AC_SUBST(GNUSTEP_GUI_SUBMINOR_VERSION)
 
-CONFIG_SYSTEM_INCL="$CONFIG_SYSTEM_INCL $GRAPHIC_CFLAGS"
-CONFIG_SYSTEM_LIB_DIR="$CONFIG_SYSTEM_LIB_DIR $GRAPHIC_LFLAGS"
+CONFIG_SYSTEM_INCL="$CONFIG_SYSTEM_INCL $GRAPHIC_CFLAGS $INOTIFY_CFLAGS"
+CONFIG_SYSTEM_LIB_DIR="$CONFIG_SYSTEM_LIB_DIR $GRAPHIC_LFLAGS $ICU_LDFLAGS $ICU_LIBS $INOTIFY_LIBS"
 
 AC_SUBST(CONFIG_SYSTEM_LIB_DIR)
 AC_SUBST(CONFIG_SYSTEM_INCL)

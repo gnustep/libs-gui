@@ -40,8 +40,6 @@
 @class NSButtonCell;
 
 /**
- * <title>NSColorPicker</title>
- * <abstract>Abstract superclass for custom color picker implementations</abstract>
  * NSColorPicker serves as the abstract base class for implementing custom color
  * selection interfaces within NSColorPanel. It provides the foundational
  * framework for creating specialized color pickers that integrate seamlessly

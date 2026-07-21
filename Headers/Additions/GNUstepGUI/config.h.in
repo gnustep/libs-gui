@@ -9,7 +9,7 @@
 /* Define to 1 if you have the <aspell.h> header file. */
 #undef HAVE_ASPELL_H
 
-/* Define to 1 if you have the `atan2f' function. */
+/* Define to 1 if you have the 'atan2f' function. */
 #undef HAVE_ATAN2F
 
 /* Define to 1 if you have the <cups/cups.h> header file. */
@@ -18,16 +18,16 @@
 /* Define to 1 if you have the <flite/flite.h> header file. */
 #undef HAVE_FLITE_FLITE_H
 
-/* Define to 1 if you have the `floorf' function. */
+/* Define to 1 if you have the 'floorf' function. */
 #undef HAVE_FLOORF
 
-/* Define to 1 if you have the `getmntent' function. */
+/* Define to 1 if you have the 'getmntent' function. */
 #undef HAVE_GETMNTENT
 
-/* Define to 1 if you have the `getmntinfo' function. */
+/* Define to 1 if you have the 'getmntinfo' function. */
 #undef HAVE_GETMNTINFO
 
-/* Define to 1 if you have the `GifQuantizeBuffer' function. */
+/* Define to 1 if you have the 'GifQuantizeBuffer' function. */
 #undef HAVE_GIFQUANTIZEBUFFER
 
 /* Have ImageMagick */
@@ -39,35 +39,38 @@
 /* Define to 1 if you have the <jpeglib.h> header file. */
 #undef HAVE_JPEGLIB_H
 
-/* Define to 1 if you have the `aspell' library (-laspell). */
+/* Define to 1 if you have the 'aspell' library (-laspell). */
 #undef HAVE_LIBASPELL
 
-/* Define to 1 if you have the `gif' library (-lgif). */
+/* Define to 1 if you have the <libavcodec/avcodec.h> header file. */
+#undef HAVE_LIBAVCODEC_AVCODEC_H
+
+/* Define to 1 if you have the <libavcodec/codec.h> header file. */
+#undef HAVE_LIBAVCODEC_CODEC_H
+
+/* Define to 1 if you have the 'gif' library (-lgif). */
 #undef HAVE_LIBGIF
 
-/* Define to 1 if you have the `icns' library (-licns). */
+/* Define to 1 if you have the 'icns' library (-licns). */
 #undef HAVE_LIBICNS
 
-/* Define to 1 if you have the `jpeg' library (-ljpeg). */
+/* Define to 1 if you have the 'jpeg' library (-ljpeg). */
 #undef HAVE_LIBJPEG
 
-/* Define to 1 if you have the `m' library (-lm). */
+/* Define to 1 if you have the 'm' library (-lm). */
 #undef HAVE_LIBM
 
-/* Define to 1 if you have the `png' library (-lpng). */
+/* Define to 1 if you have the 'png' library (-lpng). */
 #undef HAVE_LIBPNG
 
-/* Define to 1 if you have the `tiff' library (-ltiff). */
+/* Define to 1 if you have the 'tiff' library (-ltiff). */
 #undef HAVE_LIBTIFF
 
-/* Define to 1 if you have the `ungif' library (-lungif). */
+/* Define to 1 if you have the 'ungif' library (-lungif). */
 #undef HAVE_LIBUNGIF
 
-/* Define to 1 if you have the `z' library (-lz). */
+/* Define to 1 if you have the 'z' library (-lz). */
 #undef HAVE_LIBZ
-
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
 
 /* Define to 1 if you have the <mntent.h> header file. */
 #undef HAVE_MNTENT_H
@@ -79,26 +82,29 @@
    file. */
 #undef HAVE_POCKETSPHINX_POCKETSPHINX_EXPORT_H
 
-/* Define to 1 if you have the `QuantizeBuffer' function. */
+/* Define to 1 if you have the 'QuantizeBuffer' function. */
 #undef HAVE_QUANTIZEBUFFER
 
-/* Define to 1 if you have the `rint' function. */
+/* Define to 1 if you have the 'rint' function. */
 #undef HAVE_RINT
 
-/* Define to 1 if you have the `rintf' function. */
+/* Define to 1 if you have the 'rintf' function. */
 #undef HAVE_RINTF
 
 /* Define to 1 if you have the <sndfile.h> header file. */
 #undef HAVE_SNDFILE_H
 
-/* Define to 1 if you have the `statfs' function. */
+/* Define to 1 if you have the 'statfs' function. */
 #undef HAVE_STATFS
 
-/* Define to 1 if you have the `statvfs' function. */
+/* Define to 1 if you have the 'statvfs' function. */
 #undef HAVE_STATVFS
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -109,17 +115,20 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* Define to 1 if `f_flags' is a member of `struct statfs'. */
+/* Define to 1 if 'f_flags' is a member of 'struct statfs'. */
 #undef HAVE_STRUCT_STATFS_F_FLAGS
 
-/* Define to 1 if `f_owner' is a member of `struct statfs'. */
+/* Define to 1 if 'f_owner' is a member of 'struct statfs'. */
 #undef HAVE_STRUCT_STATFS_F_OWNER
 
-/* Define to 1 if `f_flag' is a member of `struct statvfs'. */
+/* Define to 1 if 'f_flag' is a member of 'struct statvfs'. */
 #undef HAVE_STRUCT_STATVFS_F_FLAG
 
-/* Define to 1 if `f_owner' is a member of `struct statvfs'. */
+/* Define to 1 if 'f_owner' is a member of 'struct statvfs'. */
 #undef HAVE_STRUCT_STATVFS_F_OWNER
+
+/* Define to 1 if you have the <sys/inotify.h> header file. */
+#undef HAVE_SYS_INOTIFY_H
 
 /* Define to 1 if you have the <sys/mntent.h> header file. */
 #undef HAVE_SYS_MNTENT_H
@@ -136,20 +145,62 @@
 /* Define to 1 if you have the <sys/vfs.h> header file. */
 #undef HAVE_SYS_VFS_H
 
+/* Define to 1 if you have the <unicode/ubrk.h> header file. */
+#undef HAVE_UNICODE_UBRK_H
+
+/* Define to 1 if you have the <unicode/ucal.h> header file. */
+#undef HAVE_UNICODE_UCAL_H
+
 /* Define to 1 if you have the <unicode/uchar.h> header file. */
 #undef HAVE_UNICODE_UCHAR_H
 
+/* Define to 1 if you have the <unicode/ucnv.h> header file. */
+#undef HAVE_UNICODE_UCNV_H
+
+/* Define to 1 if you have the <unicode/ucol.h> header file. */
+#undef HAVE_UNICODE_UCOL_H
+
+/* Define to 1 if you have the <unicode/ucurr.h> header file. */
+#undef HAVE_UNICODE_UCURR_H
+
+/* Define to 1 if you have the <unicode/udatpg.h> header file. */
+#undef HAVE_UNICODE_UDATPG_H
+
+/* Define to 1 if you have the <unicode/udat.h> header file. */
+#undef HAVE_UNICODE_UDAT_H
+
+/* Define to 1 if you have the <unicode/ulocdata.h> header file. */
+#undef HAVE_UNICODE_ULOCDATA_H
+
+/* Define to 1 if you have the <unicode/uloc.h> header file. */
+#undef HAVE_UNICODE_ULOC_H
+
+/* Define to 1 if you have the <unicode/unorm2.h> header file. */
+#undef HAVE_UNICODE_UNORM2_H
+
+/* Define to 1 if you have the <unicode/unum.h> header file. */
+#undef HAVE_UNICODE_UNUM_H
+
+/* Define to 1 if you have the <unicode/uregex.h> header file. */
+#undef HAVE_UNICODE_UREGEX_H
+
+/* Define to 1 if you have the <unicode/usearch.h> header file. */
+#undef HAVE_UNICODE_USEARCH_H
+
 /* Define to 1 if you have the <unicode/ustring.h> header file. */
 #undef HAVE_UNICODE_USTRING_H
+
+/* Define to 1 if you have the <unicode/utext.h> header file. */
+#undef HAVE_UNICODE_UTEXT_H
+
+/* Define to 1 if you have the <unicode/utypes.h> header file. */
+#undef HAVE_UNICODE_UTYPES_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
 /* MagickCore >= 7 */
 #undef MAGICKCORE_7_OR_NEWER
-
-/* avcodec */
-#undef HAVE_AVCODEC
 
 /* mntent structure member name */
 #undef MNT_FSNAME
@@ -175,7 +226,9 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 

@@ -43,7 +43,7 @@ int main(int argc, char **argv)
   if (nil != inFile)
     {
       NSData *file = [NSData dataWithContentsOfFile: inFile];
-      words = [NSString stringWithCString: [file bytes]];
+      words = [[NSString stringWithCString: [file bytes]] mutableCopy];
     }
   else
     {

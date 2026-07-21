@@ -241,7 +241,7 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
         {
           NSColor *c1 = [_colors objectAtIndex: i - 1];
           NSColor *c2 = [_colors objectAtIndex: i];
-          float fraction = (_locations[i] - location) / (_locations[i] - _locations[i - 1]);
+          float fraction = (location - _locations[i - 1]) / (_locations[i] - _locations[i - 1]);
           
           // FIXME: Works only for RGB colours and does not respect the colour space
           return [c1 blendedColorWithFraction: fraction
@@ -361,8 +361,8 @@ relativeCenterPosition: (NSPoint)relativeCenterPoint
   CGFloat endRadius;
   CGFloat distance;
 
-  NSAssert(relativeCenterPoint.x >= 0.0 && relativeCenterPoint.x <= 1.0, @"NSGradient invalid relative center point");
-  NSAssert(relativeCenterPoint.y >= 0.0 && relativeCenterPoint.y <= 1.0, @"NSGradient invalid relative center point");
+  NSAssert(relativeCenterPoint.x >= -1.0 && relativeCenterPoint.x <= 1.0, @"NSGradient invalid relative center point");
+  NSAssert(relativeCenterPoint.y >= -1.0 && relativeCenterPoint.y <= 1.0, @"NSGradient invalid relative center point");
   startCenter = NSMakePoint(NSMidX(rect), NSMidY(rect));
   endCenter = NSMakePoint(startCenter.x + rect.size.width * relativeCenterPoint.x, 
                           startCenter.y + rect.size.height * relativeCenterPoint.y);

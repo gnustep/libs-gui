@@ -26,8 +26,6 @@
 */
 
 /**
- * <title>NSController</title>
- * <abstract>Abstract base class for controllers in the Model-View-Controller architecture</abstract>
  * NSController is an abstract base class that provides the foundational infrastructure
  * for controller objects in Cocoa's Model-View-Controller (MVC) architecture.
  * It serves as the superclass for concrete controller classes like NSObjectController,

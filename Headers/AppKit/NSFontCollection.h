@@ -86,9 +86,6 @@ APPKIT_EXPORT NSFontCollectionMatchingOptionKey const NSFontCollectionDisallowAu
 typedef NSString* NSFontCollectionName;
 
 /**
- * <title>NSFontCollection</title>
- * <abstract>Manages collections of font descriptors for organized font access</abstract>
- *
  * NSFontCollection provides a way to organize and manage groups of fonts through
  * collections of font descriptors. It allows applications to create, store, and
  * retrieve sets of fonts based on various criteria such as family, style, or
@@ -281,9 +278,6 @@ APPKIT_EXPORT_CLASS
 @end
 
 /**
- * <title>NSMutableFontCollection</title>
- * <abstract>A mutable version of NSFontCollection for dynamic font collection management</abstract>
- *
  * NSMutableFontCollection extends NSFontCollection to provide methods for
  * dynamically modifying font collections after creation. This allows applications
  * to build and adjust font collections programmatically based on changing

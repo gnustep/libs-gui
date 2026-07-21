@@ -54,6 +54,7 @@ APPKIT_EXPORT_CLASS
 
 // Instance methods
 - (BOOL) autoResizesOutlineColumn;
+- (BOOL) autoresizesOutlineColumn;
 - (BOOL) autosaveExpandedItems;
 - (void) collapseItem: (id)item;
 - (void) collapseItem: (id)item collapseChildren: (BOOL)collapseChildren;
@@ -275,6 +276,12 @@ shouldSelectTableColumn: (NSTableColumn *)tableColumn;
 - (NSCell *) outlineView: (NSOutlineView *)outlineView 
   dataCellForTableColumn: (NSTableColumn *)aTableColumn
 		    item: (id)item;
+
+- (CGFloat) outlineView: (NSOutlineView *)outlineView
+  heightOfRowByItem: (id)item;
+
+- (CGFloat) outlineView: (NSOutlineView *)outlineView
+  sizeToFitWidthOfColumn: (NSInteger)column;
 #endif
 
 /**

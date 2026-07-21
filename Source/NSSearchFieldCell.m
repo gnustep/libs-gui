@@ -181,6 +181,10 @@
 
 - (NSArray *) recentSearches
 {
+  if (_recent_searches == nil)
+    {
+      return [NSArray array];
+    }
   return _recent_searches;
 }
 
@@ -711,7 +715,12 @@
     {
       list = [[NSUserDefaults standardUserDefaults]
 	         stringArrayForKey: name];
-      [self setRecentSearches: list];
+      /* Nothing saved under that name says nothing about the searches the
+         cell already has. */
+      if (list != nil)
+	{
+	  [self setRecentSearches: list];
+	}
     }
 }
 

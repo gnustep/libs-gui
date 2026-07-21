@@ -1988,7 +1988,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
       return nil;
     }
 
-  [self _initFromTIFFImage: image number: -1];
+  self = [self _initFromTIFFImage: image number: -1];
   NSTiffClose(image);
   return self;
 }
@@ -2017,8 +2017,22 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
     case PHOTOMETRIC_MINISBLACK: space = NSDeviceWhiteColorSpace; break;
     case PHOTOMETRIC_MINISWHITE: space = NSDeviceBlackColorSpace; break;
     case PHOTOMETRIC_RGB: space = NSDeviceRGBColorSpace; break;
-    case PHOTOMETRIC_PALETTE: 
-      space = NSDeviceRGBColorSpace; 
+    case PHOTOMETRIC_PALETTE:
+      /* NSTiffRead expands the palette to a 24-bit RGB image (three
+         samples per pixel), reading one byte per pixel as the palette
+         index and writing three bytes.  Only 8-bit indices are handled;
+         a smaller bitsPerSample sizes the bitmap for fewer than three
+         bytes per pixel while NSTiffRead still writes three, overflowing
+         the buffer.  Reject such files rather than overflow. */
+      if (info->bitsPerSample != 8)
+        {
+          NSLog(@"Unsupported palette sample depth %d in TIFF directory %d",
+                (int)info->bitsPerSample, imageNumber);
+          free(info);
+          RELEASE(self);
+          return nil;
+        }
+      space = NSDeviceRGBColorSpace;
       info->samplesPerPixel = 3;
       break;
     default:

@@ -82,7 +82,8 @@
 #import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
 #import "GSAutoLayoutEngine.h"
-#import "NSAutoresizingMaskLayoutConstraint.h" 
+#import "GSAutoLayoutAnchorPrivate.h"
+#import "NSAutoresizingMaskLayoutConstraint.h"
 #import "NSViewPrivate.h"
 #import "NSWindowPrivate.h"
 
@@ -110,9 +111,6 @@ const CGFloat NSViewNoInstrinsicMetric = -1;
 const CGFloat NSViewNoIntrinsicMetric = -1;
 
 /**
-  <unit>
-  <heading>NSView</heading>
-
   <p>NSView is an abstract class which provides facilities for drawing
   in a window and receiving events.  It is the superclass of many of
   the visual elements of the GUI.</p>
@@ -125,8 +123,6 @@ const CGFloat NSViewNoIntrinsicMetric = -1;
   <p>Subclasses can override -drawRect: in order to
   implement their appearance.  Other methods of NSView and NSResponder
   can also be overridden to handle user generated events.</p>
-
-  </unit>
 */
   
 @implementation NSView
@@ -1291,8 +1287,16 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         {
           if (_boundsMatrix == nil)
             {
-              CGFloat sx = _bounds.size.width  / _frame.size.width;
-              CGFloat sy = _bounds.size.height / _frame.size.height;
+              /* Preserve the bounds/frame scale across the resize.  Guard
+               * against a zero current frame dimension (e.g. a rotated view
+               * previously collapsed to zero width or height) so the scale
+               * does not become infinite/NaN; fall back to 1:1 as the
+               * unrotated branch below does.
+               */
+              CGFloat sx = (_frame.size.width == 0.0)
+                ? 1.0 : _bounds.size.width  / _frame.size.width;
+              CGFloat sy = (_frame.size.height == 0.0)
+                ? 1.0 : _bounds.size.height / _frame.size.height;
               
               newFrame.size = newSize;
 	      [self _setFrameAndClearAutoresizingError: newFrame];
@@ -1702,8 +1706,8 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   y_org = aRect.origin.y;
   aRect.origin.x = GSRoundTowardsInfinity(aRect.origin.x);
   aRect.origin.y = [self isFlipped] ? GSRoundTowardsNegativeInfinity(aRect.origin.y) : GSRoundTowardsInfinity(aRect.origin.y);
-  aRect.size.width = GSRoundTowardsInfinity(aRect.size.width + (x_org - aRect.origin.x) / 2.0);
-  aRect.size.height = GSRoundTowardsInfinity(aRect.size.height + (y_org - aRect.origin.y) / 2.0);
+  aRect.size.width = GSRoundTowardsInfinity(aRect.size.width);
+  aRect.size.height = GSRoundTowardsInfinity(aRect.size.height);
 
   matrix = [self _matrixFromWindow];
   aRect.origin = [matrix transformPoint: aRect.origin];
@@ -1807,7 +1811,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   NSAffineTransform *matrix1, *matrix2;
 
-  if (aView == self || _window == nil || (aView != nil && [aView window] == nil))
+  if (aView == self)
     {
       return aRect;
     }
@@ -1839,7 +1843,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   NSAffineTransform *matrix1, *matrix2;
 
-  if (aView == self || _window == nil || (aView != nil && [aView window] == nil))
+  if (aView == self)
     {
       return aRect;
     }
@@ -2079,15 +2083,13 @@ static void autoresize(CGFloat oldContainerSize,
 	     (_autoresizingMask & NSViewMaxXMargin));
 
   {
-    const BOOL flipped = (_super_view && [_super_view isFlipped]);
-
     autoresize(oldSize.height,
 	       superViewFrameSize.height,
 	       &newFrame.origin.y,
 	       &newFrame.size.height,
-	       flipped ? (_autoresizingMask & NSViewMaxYMargin) : (_autoresizingMask & NSViewMinYMargin),
+	       (_autoresizingMask & NSViewMinYMargin),
 	       (_autoresizingMask & NSViewHeightSizable),
-	       flipped ? (_autoresizingMask & NSViewMinYMargin) : (_autoresizingMask & NSViewMaxYMargin));
+	       (_autoresizingMask & NSViewMaxYMargin));
   }
 
   newFrameRounded = newFrame;
@@ -2097,7 +2099,19 @@ static void autoresize(CGFloat oldContainerSize,
    */
   if (![self isRotatedFromBase] && [self superview] != nil)
     {
-      newFrameRounded = [[self superview] centerScanRect: newFrameRounded];
+      NSView *sup = [self superview];
+      NSRect win = [sup convertRect: newFrameRounded toView: nil];
+      /* The device grid is integer coordinates in the window base system, so
+         each edge floors there. Snap first: the resize proportion and the
+         coordinate transform leave an exact edge a fraction of a ULP below an
+         integer, which a plain floor would drop a whole pixel. */
+      CGFloat minX = floor(NSMinX(win) + 1e-6);
+      CGFloat minY = floor(NSMinY(win) + 1e-6);
+      CGFloat maxX = floor(NSMaxX(win) + 1e-6);
+      CGFloat maxY = floor(NSMaxY(win) + 1e-6);
+
+      win = NSMakeRect(minX, minY, maxX - minX, maxY - minY);
+      newFrameRounded = [sup convertRect: win fromView: nil];
     }
 
   [self setFrame: newFrameRounded];
@@ -4972,12 +4986,13 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 }
 
 /**
- * <p>NSResponder's method, overriden by NSView.</p>
+ * <p>NSResponder's method, overriden by NSView.
+ * </p>
  * <p>If no menu has been set through the use of setMenu:, or 
  *    if a nil value has been set through setMenu:, then the 
  *    value returned by defaultMenu is used. Otherwise this
  *    method returns the menu set through NSResponder.
- * <p>
+ * </p>
  * <p> see [NSResponder -menu], [NSResponder -setMenu:],
  *     [NSView +defaultMenu] and [NSView -menuForEvent:].
  * </p>
@@ -5471,6 +5486,94 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
     }
 
   return [engine constraintsForView: self];
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedLayoutAnchors)
+
+- (NSLayoutXAxisAnchor *) leadingAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLeading]);
+}
+
+- (NSLayoutXAxisAnchor *) trailingAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeTrailing]);
+}
+
+- (NSLayoutXAxisAnchor *) leftAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLeft]);
+}
+
+- (NSLayoutXAxisAnchor *) rightAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeRight]);
+}
+
+- (NSLayoutXAxisAnchor *) centerXAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeCenterX]);
+}
+
+- (NSLayoutYAxisAnchor *) topAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeTop]);
+}
+
+- (NSLayoutYAxisAnchor *) bottomAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeBottom]);
+}
+
+- (NSLayoutYAxisAnchor *) centerYAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeCenterY]);
+}
+
+- (NSLayoutYAxisAnchor *) firstBaselineAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeFirstBaseline]);
+}
+
+- (NSLayoutYAxisAnchor *) lastBaselineAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLastBaseline]);
+}
+
+- (NSLayoutDimension *) widthAnchor
+{
+  return AUTORELEASE([[NSLayoutDimension alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeWidth]);
+}
+
+- (NSLayoutDimension *) heightAnchor
+{
+  return AUTORELEASE([[NSLayoutDimension alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeHeight]);
 }
 
 @end

@@ -39,8 +39,6 @@
 @class NSColor;
 
 /**
- * <title>NSCursor</title>
- * <abstract>Encapsulates mouse cursor appearance and behavior</abstract>
  * NSCursor represents the visual appearance and behavior of the mouse cursor.
  * It combines an image with a hot spot that defines the precise location within
  * the image that corresponds to the cursor's position. NSCursor manages a stack
@@ -449,8 +447,6 @@ backgroundColorHint:(NSColor *)bg
 @end
 
 /**
- * <title>GSCursorTypes</title>
- * <abstract>Enumeration of cursor type constants</abstract>
  * This enumeration defines constants for the various predefined cursor types
  * available in the system. These values are used internally to identify
  * different cursor types and map them to their corresponding system cursors.

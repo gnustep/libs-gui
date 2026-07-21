@@ -243,6 +243,7 @@ APPKIT_EXPORT_CLASS
   NSSize        _minimumSize;
   NSSize        _maximumSize;
   NSSize        _increments;
+  NSSize        _aspectRatio;
   NSString	*_autosaveName;
   GSWindowDecorationView *_wv;
   id            _contentView;

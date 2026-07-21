@@ -1,0 +1,15 @@
+Test: NSDiffableDataSource
+
+Version: 1.0
+
+Description:
+Tests for NSDiffableDataSource and NSDiffableDataSourceSnapshot functionality.
+This includes basic snapshot operations (create, append, insert, delete, move)
+as well as integration with NSCollectionView.
+
+Tests:
+  NSDiffableDataSource_snapshot - Tests snapshot functionality
+  NSDiffableDataSource_collectionView - Tests integration with NSCollectionView
+
+Author: GitHub Copilot
+Date: January 2026

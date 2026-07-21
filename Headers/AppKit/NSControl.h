@@ -45,8 +45,6 @@
 @class NSTextView;
 
 /**
- * <title>NSControl</title>
- * <abstract>Abstract base class for user interface controls</abstract>
  * NSControl is an abstract class that defines the common interface and
  * behavior for user interface controls. It provides the basic functionality
  * for controls that use NSCell objects to display content and handle user
@@ -532,8 +530,6 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
 // Methods Implemented by the Delegate
 //
 /**
- * <title>NSControlTextEditingDelegate Protocol</title>
- * <abstract>Delegate protocol for NSControl text editing</abstract>
  * This protocol defines methods that delegates can implement to
  * control and respond to text editing operations in NSControl objects.
  * It provides fine-grained control over validation, formatting,
@@ -625,8 +621,6 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
 @end
 
 /**
- * <title>NSControlDelegate Category</title>
- * <abstract>Notification methods for NSControl text editing</abstract>
  * This category provides methods that objects can implement to receive
  * notifications about text editing events in NSControl objects.
  */

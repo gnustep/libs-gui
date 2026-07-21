@@ -51,21 +51,6 @@
   [super dealloc];
 }
 
-- (BOOL) isEqual: (id)anObject
-{
-  if (anObject == self)
-    {
-      return YES;
-    }
-  if (anObject == nil || [anObject isKindOfClass: [NSTextList class]] == NO)
-    {
-      return NO;
-    }
-
-  return ([anObject listOptions] == _listOptions) 
-    && [_markerFormat isEqualToString: [anObject markerFormat]];
-}
-
 - (unsigned int) listOptions
 {
   return _listOptions;
@@ -79,13 +64,13 @@
 - (NSString *) markerForItemNumber: (int)item
 {
   NSMutableString *s = [_markerFormat mutableCopy];
-  unichar box = 0x25A1;
+  unichar box = 0x25AB;
   unichar check = 0x2713;
   unichar circle = 0x25E6;
   unichar diamond = 0x25C6;
   unichar disc = 0x2022;
   unichar hyphen = 0x2043;
-  unichar square = 0x25A0;
+  unichar square = 0x25AA;
 
   // FIXME: Needs optimisation and roman numbers
   // FIXME: Take _startingItemNumber into account.
@@ -134,18 +119,18 @@
      options: 0 
      range: NSMakeRange(0, [s length])];
   [s replaceOccurrencesOfString: @"{lower-alpha}" 
-     withString: [NSString stringWithFormat: @"%c", item + 'a']
+     withString: [NSString stringWithFormat: @"%c", item - 1 + 'a']
      options: 0 
      range: NSMakeRange(0, [s length])];
   [s replaceOccurrencesOfString: @"{lower-latin}" 
-     withString: [NSString stringWithFormat: @"%c", item + 'a']
+     withString: [NSString stringWithFormat: @"%c", item - 1 + 'a']
      options: 0
      range: NSMakeRange(0, [s length])];
   [s replaceOccurrencesOfString: @"{upper-alpha}"
-     withString: [NSString stringWithFormat: @"%c", item + 'A']
+     withString: [NSString stringWithFormat: @"%c", item - 1 + 'A']
      options: 0 range: NSMakeRange(0, [s length])];
   [s replaceOccurrencesOfString: @"{upper-latin}"
-     withString: [NSString stringWithFormat: @"%c", item + 'A']
+     withString: [NSString stringWithFormat: @"%c", item - 1 + 'A']
      options: 0
      range: NSMakeRange(0, [s length])];
 

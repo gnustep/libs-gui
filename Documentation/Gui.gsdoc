@@ -13,7 +13,7 @@
           API of the OpenStep Application Kit (tm), or "AppKit", including
           later additions.  This documentation package describes the core of
           the Base library; for documentation on additional classes, see the
-          <uref url="../Additions/index.html">GuiAdditions</uref>
+          <uref url="../../GuiAdditions/Reference/GuiAdditions.html">GuiAdditions</uref>
           documentation package.
       </p>
       <p>
@@ -38,7 +38,7 @@
         <heading>Information and Setup</heading>
       <p>
 	Nicola Pero has begun work on writing an
-	<uref url="../ProgrammingManual/manual_toc.html">introduction</uref>
+	<uref url="../ProgrammingManual/AppKit/index.html">introduction</uref>
 	to the basic concepts and use of the GNUstep GUI library.
      </p>
       <p>

@@ -1230,6 +1230,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
           // Set the backview to an GSToolbarButton, will get reset to a 
           // GSToolbarBackView when setView: gets called.
 	  [self setView: nil];
+          _tag = -1;
+          [self setEnabled: YES];
         }        
     }
   
@@ -1309,7 +1311,14 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (NSString *) paletteLabel
 {
-  return _paletteLabel;
+  if (nil != _paletteLabel)
+    {
+      return _paletteLabel;
+    }
+  else
+    {
+      return @"";
+    }
 }
 
 - (void) setAction: (SEL)action
@@ -1609,7 +1618,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 // NSCopying protocol
 - (id) copyWithZone: (NSZone *)zone 
 {
-  NSToolbarItem *new = [[NSToolbarItem allocWithZone: zone] 
+  NSToolbarItem *new = [[[self class] allocWithZone: zone]
     initWithItemIdentifier: _itemIdentifier];
   NSString *toolTip;
   NSImage *image;

@@ -36,8 +36,6 @@
 @class NSColor;
 
 /**
- * <title>NSColorWell</title>
- * <abstract>Interactive color selection control for single color values</abstract>
  * NSColorWell provides a simple, compact interface for displaying and selecting
  * colors within applications. It appears as a rectangular well that displays
  * the current color and allows users to click to open the system color panel

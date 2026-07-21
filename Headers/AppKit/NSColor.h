@@ -77,8 +77,6 @@ typedef NSInteger NSColorSystemEffect;
 #endif
 
 /**
- * <title>NSColor</title>
- * <abstract>Comprehensive color representation and manipulation</abstract>
  * NSColor provides a powerful and flexible system for representing and
  * manipulating colors across different color spaces and devices. As an abstract
  * superclass of a class cluster, NSColor supports multiple color models including

@@ -2224,9 +2224,8 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 }
 
 /**
- * For all NSImage instances cached in nameDict, recompute the
- * path using +_pathForImageNamed: and if it has changed,
- * reload the image contents using the new path.
+ * For all NSImage instances cached in nameDict, recompute the path using
+ * +_pathForImageNamed: and reload the image contents using the new path.
  */
 + (void) _reloadCachedImages
 {
@@ -2241,7 +2240,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
       //NSLog(@"Loaded image %@ from %@", name, path);
 
-      if (path != nil && ![path isEqual: image->_fileName])
+      if (path != nil)
 	{
 	  /* Reset the existing image to use the contents of
 	   * the specified file.

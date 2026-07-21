@@ -25,6 +25,8 @@
 
 MAKEFILE_NAME = DocMakefile
 
+include ../Version
+
 include $(GNUSTEP_MAKEFILES)/common.make
 
 ADD_THESE_QUESTION_MARK = \
@@ -298,8 +300,14 @@ GSVbox.h
 
 DOCUMENT_NAME = Gui GuiAdditions
 
-Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
-GuiAdditions_DOC_INSTALL_DIR = Developer/Gui/Reference
+# Using xxx_AGSDOC_LOCAL_DIR puts our output in the documentation directory.
+#
+Gui_AGSDOC_INSTALL_BUNDLE = Reference
+Gui_AGSDOC_LOCAL_DIR = ../Documentation/Gui
+Gui_DOC_INSTALL_DIR = Developer/Gui
+GuiAdditions_AGSDOC_INSTALL_BUNDLE = Reference
+GuiAdditions_AGSDOC_LOCAL_DIR = ../Documentation/GuiAdditions
+GuiAdditions_DOC_INSTALL_DIR = Developer/GuiAdditions
 
 Gui_AGSDOC_FILES = ../Documentation/Gui.gsdoc \
 	$(AUTOGSDOC_HEADERS_GUI)
@@ -307,15 +315,9 @@ Gui_AGSDOC_FILES = ../Documentation/Gui.gsdoc \
 GuiAdditions_AGSDOC_FILES = $(AUTOGSDOC_HEADERS_GUIADD) \
 	../Documentation/GuiAdditions.gsdoc
 
-#
-# Hack ... using the -DocumentationDirectory flag overrides the value
-# used by the make package, and puts our output in the documentation
-# directory.
-#
 Gui_AGSDOC_FLAGS = \
 	-MakeFrames NO \
 	-IndexFile Gui \
-	-DocumentationDirectory ../Documentation/Gui \
 	-HeaderDirectory ../Headers/AppKit \
 	-Declared AppKit \
 	-Standards YES \
@@ -336,8 +338,7 @@ Gui_AGSDOC_FLAGS = \
 	}' -Up Gui
 
 GuiAdditions_AGSDOC_FLAGS = \
-	-MakeFrames YES \
-	-DocumentationDirectory ../Documentation/GuiAdditions \
+	-MakeFrames NO \
 	-HeaderDirectory ../Headers/Additions/GNUstepGUI \
 	-Declared GNUstepGUI \
 	-Standards YES \

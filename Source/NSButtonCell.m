@@ -853,7 +853,7 @@
 
 - (NSString *) stringValue
 {
-  return _cell.state ? @"1" : @"";
+  return [NSString stringWithFormat: @"%ld", (long)_cell.state];
 }
 
 - (void) setAttributedStringValue: (NSAttributedString *)attrString

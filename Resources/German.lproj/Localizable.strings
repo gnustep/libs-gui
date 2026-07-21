@@ -116,20 +116,20 @@ add comments above this one
 
 /* File: ../Source/NSSavePanel.m:278 */
 /* Flag: untranslated */
-"Home" = "Home";
+"Home" = "Benutzerordner";
 
 /* File: ../Source/NSSavePanel.m:294 */
 /* Flag: untranslated */
-"Mount" = "Mount";
+"Mount" = "Aktivieren";
 
 /* File: ../Source/NSSavePanel.m:310 */
 /* Flag: untranslated */
-"Unmount" = "Unmount";
+"Unmount" = "Deaktivieren";
 
 /* File: ../Source/Functions.m:106 */
 /* Flag: untranslated */
 "Cannot load the main storyboard file '%@'"
-  = "Cannot load the main storyboard file '%@'";
+  = "Die storyboard-Hauptdatei '%@' konnte nicht geladen werden.";
 
 
 /*** Strings from ../Source/NSDocument.m ***/
@@ -165,7 +165,7 @@ add comments above this one
 /*** Strings from ../Source/Functions.m ***/
 /* File: ../Source/Functions.m:94 */
 "Cannot load the main model file '%@'"
-  = "Kann Haupt-Model-Datei \U00BB%@\U00AB nicht laden";
+  = "Die Haupt-Modell-Datei \U00BB%@\U00AB konnte nicht geladen laden";
 
 
 /*** Strings from ../Source/GSCharacterPanel.m ***/
@@ -363,7 +363,7 @@ add comments above this one
 /* File: ../Source/NSDocument.m:1216 */
 "Save To" = "Speichern in";
 /* File: ../Source/NSDocument.m:580 */
-"Untitled-%d" = "unbenannt-%d";
+"Untitled-%d" = "Unbenannt-%d";
 
 
 /*** Strings from ../Source/NSDocumentController.m ***/
@@ -536,6 +536,6 @@ add comments above this one
 
 /*** Strings from ../Source/NSWindow.m ***/
 /* File: ../Source/NSWindow.m:5637 */
-"Hide Toolbar" = "Toolbar ausblenden";
+"Hide Toolbar" = "Werkzeugleiste ausblenden";
 /* File: ../Source/NSWindow.m:5641 */
-"Show Toolbar" = "Toolbar anzeigen";
+"Show Toolbar" = "Werkzeugleiste anzeigen";
