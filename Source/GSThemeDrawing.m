@@ -1437,6 +1437,11 @@
   return height;
 }
 
+- (NSEdgeInsets) menuItemAreaInsets
+{
+  return NSEdgeInsetsMake(0.0, 0.0, 0.0, 0.0);
+}
+
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
                     withBounds: (NSRect)bounds
