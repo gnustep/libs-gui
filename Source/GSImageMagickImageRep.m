@@ -51,7 +51,21 @@
 #include <magick/MagickCore.h>
 #endif
 
-@implementation GSImageMagickImageRep 
+/* Whether we should try to decode a given format.  We only handle formats
+   ImageMagick can read directly from an in-memory blob: a format without a
+   decoder (such as HTML) produces nothing, and a document or vector format
+   without blob support (such as PDF or PostScript) is decoded through an
+   external delegate that can block on malformed input, neither of which
+   belongs in an image representation. */
+static BOOL
+GSImageMagickCanDecode(const MagickInfo *info)
+{
+  return (info != (const MagickInfo *)NULL
+    && info->decoder != (DecodeImageHandler *)NULL
+    && info->blob_support != MagickFalse);
+}
+
+@implementation GSImageMagickImageRep
 
 + (void) initialize
 {
@@ -136,7 +150,7 @@
   Image *images;
   Image *image;
   char signature[SIGNATURE_LENGTH];
-  
+
   // Set the background color to transparent
   // (otherwise SVG's are rendered against a white background by default)
 #if (MagickLibVersion >= 0x700)
@@ -195,16 +209,21 @@
 {
   char buf[32];
   ExceptionInfo *exception;
-  const MagicInfo *info;
+  const MagicInfo *magic;
+  const MagickInfo *magick = (const MagickInfo *)NULL;
 
   memset(buf, 0, 32);
   [data getBytes: buf length: 32];
 
   exception = AcquireExceptionInfo();
-  info = GetMagicInfo((const unsigned char *)buf, 32, exception);
+  magic = GetMagicInfo((const unsigned char *)buf, 32, exception);
+  if (magic != (const MagicInfo *)NULL)
+    {
+      magick = GetMagickInfo(GetMagicName(magic), exception);
+    }
   DestroyExceptionInfo(exception);
 
-  return (info != NULL);
+  return GSImageMagickCanDecode(magick);
 }
 
 + (NSArray *) imageUnfilteredFileTypes
@@ -221,7 +240,10 @@
 
       for (i=0; i<size; i++)
 	{
-	  [array addObject: [[NSString stringWithUTF8String: list[i]->name] lowercaseString]];
+	  if (GSImageMagickCanDecode(list[i]))
+	    {
+	      [array addObject: [[NSString stringWithUTF8String: list[i]->name] lowercaseString]];
+	    }
 	}
       RelinquishMagickMemory(list);
       DestroyExceptionInfo(exception);
