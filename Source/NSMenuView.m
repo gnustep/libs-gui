@@ -831,7 +831,7 @@ static float menuBarHeight = 0.0;
               NSMenuItemCell *msr;
 
               msr = [r menuItemCellForItemAtIndex:
-                [m indexOfItemWithTitle: [_attachedMenu title]]];
+                [m indexOfItemWithSubmenu: _attachedMenu]];
               neededImageAndTitleWidth
                 = [msr titleWidth] + GSCellTextImageXDist;
             }
