@@ -434,6 +434,7 @@ setPath(NSBrowser *browser, NSString *path)
   [self setAllowedFileTypes: nil];
   [self setAllowsOtherFileTypes: NO];
   [self setTreatsFilePackagesAsDirectories: NO];
+  [self setCanCreateDirectories: YES];
   [self setDelegate: nil];
   [self setAccessoryView: nil];
 }
