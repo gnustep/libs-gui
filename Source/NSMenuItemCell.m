@@ -129,20 +129,9 @@ static NSString *commandKeyString = @"#";
   return _cell.is_highlighted;
 }
 
-- (NSColor *)textColor
-{
-  if (_cell.is_highlighted && [self isEnabled])
-    {
-      return [NSColor selectedMenuItemTextColor];
-    }
-
-  return [super textColor];
-}
-
-- (NSColor *) backgroundColor
+- (GSThemeControlState) _themeControlState
 {
   unsigned	mask;
-  NSColor	*color;
   GSThemeControlState state = GSThemeNormalState;
 
   if (_cell.is_highlighted)
@@ -157,7 +146,6 @@ static NSString *commandKeyString = @"#";
   else
     mask = NSNoCellMask;
 
-  // Determine the background color
   if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
       state = GSThemeHighlightedState;
@@ -167,6 +155,32 @@ static NSString *commandKeyString = @"#";
     {
       state = GSThemeSelectedState;
     }
+
+  return state;
+}
+
+- (NSColor *)textColor
+{
+  if (_cell.is_highlighted && [self isEnabled])
+    {
+      NSColor *color = [[GSTheme theme] colorNamed: @"NSMenuItemText"
+                                             state: [self _themeControlState]];
+
+      if (color != nil)
+        {
+          return color;
+        }
+
+      return [NSColor selectedMenuItemTextColor];
+    }
+
+  return [super textColor];
+}
+
+- (NSColor *) backgroundColor
+{
+  NSColor	*color;
+  GSThemeControlState state = [self _themeControlState];
 
   // TODO: Make the color lookup simpler.
   color = [[GSTheme theme] colorNamed: @"NSMenuItem" state: state];
