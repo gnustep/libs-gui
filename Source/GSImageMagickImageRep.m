@@ -146,11 +146,16 @@
 #endif
 
   memset(signature, 0, SIGNATURE_LENGTH);
-  [data getBytes: signature range: NSMakeRange([data length] - 18, 18)];
-  if (strncmp(signature, "TRUEVISION-XFILE.", 17) == 0)
+  if ([data length] >= SIGNATURE_LENGTH)
     {
-      NSWarnLog(@"Targa file detected!, giving a magick hint...");
-      strcpy(imageinfo->magick, "TGA");
+      [data getBytes: signature
+               range: NSMakeRange([data length] - SIGNATURE_LENGTH,
+                                  SIGNATURE_LENGTH)];
+      if (strncmp(signature, "TRUEVISION-XFILE.", 17) == 0)
+        {
+          NSWarnLog(@"Targa file detected!, giving a magick hint...");
+          strcpy(imageinfo->magick, "TGA");
+        }
     }
 
   images = BlobToImage(imageinfo, [data bytes], [data length], exception);
