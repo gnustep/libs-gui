@@ -1078,8 +1078,23 @@ APPKIT_EXPORT_CLASS
  * should not.  Instead themes should provide default colors in the
  * GSThemeDomain (in their Info.plist).</p>
  */
-- (NSColor *) menuBorderColorForEdge: (NSRectEdge)edge 
+- (NSColor *) menuBorderColorForEdge: (NSRectEdge)edge
                         isHorizontal: (BOOL)horizontal;
+
+/**
+ * <p>Returns the corner radius used to draw a menu view background.</p>
+ *
+ * <p>The default is zero, which fills the whole menu rectangle and draws its
+ * per-edge borders.  A larger value fills and strokes the background through a
+ * rounded rectangle, leaving the corners to the menu window (which is
+ * borderless with a clear background), so a compositing backend shows rounded
+ * menu corners.</p>
+ *
+ * <p>The returned value is used by
+ * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
+ */
+- (CGFloat) menuBorderRadius;
+
 - (void) drawBackgroundForMenuView: (NSMenuView*)menuView
                          withFrame: (NSRect)bounds
                          dirtyRect: (NSRect)dirtyRect
