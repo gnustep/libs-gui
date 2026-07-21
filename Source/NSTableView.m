@@ -2052,7 +2052,7 @@ static void computeNewSelection
   ASSIGN(_selectedRows, [NSMutableIndexSet indexSet]);
   _allowsEmptySelection = YES;
   _allowsMultipleSelection = NO;
-  _allowsColumnSelection = YES;
+  _allowsColumnSelection = NO;
   _allowsColumnResizing = YES;
   _allowsColumnReordering = YES;
   _autoresizesAllColumnsToFit = NO;
