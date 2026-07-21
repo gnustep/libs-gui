@@ -262,7 +262,7 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
     {
       _is_bordered = YES;
       _is_active = NO;
-      _the_color = RETAIN([NSColor blackColor]);
+      _the_color = RETAIN([NSColor whiteColor]);
 
       [self registerForDraggedTypes:
 	[NSArray arrayWithObjects: NSColorPboardType, nil]];
