@@ -36,17 +36,17 @@ main(int argc, char **argv)
       sw = AUTORELEASE([[NSSwitch alloc]
         initWithFrame: NSMakeRect(0, 0, 40, 24)]);
 
-      pass([sw state] == NSControlStateValueOff, "a switch is off by default");
+      PASS([sw state] == NSControlStateValueOff, "a switch is off by default");
 
       [sw setState: NSControlStateValueOn];
-      pass([sw state] == NSControlStateValueOn, "setState: on round trips");
-      pass([sw doubleValue] == 1.0, "an on switch has a double value of one");
-      pass([sw intValue] == 1, "an on switch has an integer value of one");
+      PASS([sw state] == NSControlStateValueOn, "setState: on round trips");
+      PASS([sw doubleValue] == 1.0, "an on switch has a double value of one");
+      PASS([sw intValue] == 1, "an on switch has an integer value of one");
 
       [sw setState: NSControlStateValueOff];
-      pass([sw state] == NSControlStateValueOff, "setState: off round trips");
-      pass([sw doubleValue] == 0.0, "an off switch has a double value of zero");
-      pass([sw intValue] == 0, "an off switch has an integer value of zero");
+      PASS([sw state] == NSControlStateValueOff, "setState: off round trips");
+      PASS([sw doubleValue] == 0.0, "an off switch has a double value of zero");
+      PASS([sw intValue] == 0, "an off switch has an integer value of zero");
     }
   NS_HANDLER
     {
