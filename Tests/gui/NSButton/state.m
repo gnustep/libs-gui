@@ -40,41 +40,41 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 100, 24)]);
 
       /* Defaults. */
-      pass([b state] == NSOffState, "a button is off by default");
-      pass([[b title] isEqualToString: @"Button"],
+      PASS([b state] == NSOffState, "a button is off by default");
+      PASS([[b title] isEqualToString: @"Button"],
            "the default title is Button");
-      pass([b isBordered] == YES, "a button is bordered by default");
-      pass([b isTransparent] == NO, "a button is not transparent by default");
-      pass([b allowsMixedState] == NO, "mixed state is off by default");
-      pass([b imagePosition] == NSNoImage, "there is no image by default");
-      pass([[b keyEquivalent] isEqualToString: @""],
+      PASS([b isBordered] == YES, "a button is bordered by default");
+      PASS([b isTransparent] == NO, "a button is not transparent by default");
+      PASS([b allowsMixedState] == NO, "mixed state is off by default");
+      PASS([b imagePosition] == NSNoImage, "there is no image by default");
+      PASS([[b keyEquivalent] isEqualToString: @""],
            "there is no key equivalent by default");
 
       /* Round-trips. */
       [b setState: NSOnState];
-      pass([b state] == NSOnState, "setState: round trips");
+      PASS([b state] == NSOnState, "setState: round trips");
       [b setTitle: @"OK"];
-      pass([[b title] isEqualToString: @"OK"], "setTitle: round trips");
+      PASS([[b title] isEqualToString: @"OK"], "setTitle: round trips");
       [b setBordered: NO];
-      pass([b isBordered] == NO, "setBordered: round trips");
+      PASS([b isBordered] == NO, "setBordered: round trips");
       [b setTransparent: YES];
-      pass([b isTransparent] == YES, "setTransparent: round trips");
+      PASS([b isTransparent] == YES, "setTransparent: round trips");
       [b setImagePosition: NSImageLeft];
-      pass([b imagePosition] == NSImageLeft, "setImagePosition: round trips");
+      PASS([b imagePosition] == NSImageLeft, "setImagePosition: round trips");
       [b setKeyEquivalent: @"x"];
-      pass([[b keyEquivalent] isEqualToString: @"x"],
+      PASS([[b keyEquivalent] isEqualToString: @"x"],
            "setKeyEquivalent: round trips");
       [b setAllowsMixedState: YES];
-      pass([b allowsMixedState] == YES, "setAllowsMixedState: round trips");
+      PASS([b allowsMixedState] == YES, "setAllowsMixedState: round trips");
 
       /* setNextState cycles off and on. */
       NSButton *b2 = AUTORELEASE([[NSButton alloc]
         initWithFrame: NSMakeRect(0, 0, 100, 24)]);
       [b2 setState: NSOffState];
       [b2 setNextState];
-      pass([b2 state] == NSOnState, "setNextState turns an off button on");
+      PASS([b2 state] == NSOnState, "setNextState turns an off button on");
       [b2 setNextState];
-      pass([b2 state] == NSOffState, "setNextState turns an on button off");
+      PASS([b2 state] == NSOffState, "setNextState turns an on button off");
     }
   NS_HANDLER
     {
