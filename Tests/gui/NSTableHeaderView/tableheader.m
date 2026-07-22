@@ -51,20 +51,20 @@ main(int argc, char **argv)
 
       NSTableHeaderView *h = [tv headerView];
 
-      pass(h != nil, "a table view has a header view");
-      pass([h tableView] == tv, "the header is wired to its table view");
-      pass([h draggedColumn] == -1, "no column is being dragged");
-      pass([h resizedColumn] == -1, "no column is being resized");
+      PASS(h != nil, "a table view has a header view");
+      PASS([h tableView] == tv, "the header is wired to its table view");
+      PASS([h draggedColumn] == -1, "no column is being dragged");
+      PASS([h resizedColumn] == -1, "no column is being resized");
 
       NSRect r0 = [h headerRectOfColumn: 0];
       NSRect r1 = [h headerRectOfColumn: 1];
-      pass(r0.size.width > 0.0 && r1.size.width > 0.0,
+      PASS(r0.size.width > 0.0 && r1.size.width > 0.0,
            "the header rectangles have positive widths");
-      pass(r1.origin.x > r0.origin.x,
+      PASS(r1.origin.x > r0.origin.x,
            "the second column's header is to the right of the first");
-      pass([h columnAtPoint: NSMakePoint(NSMidX(r0), NSMidY(r0))] == 0,
+      PASS([h columnAtPoint: NSMakePoint(NSMidX(r0), NSMidY(r0))] == 0,
            "a point in the first header maps to column zero");
-      pass([h columnAtPoint: NSMakePoint(NSMidX(r1), NSMidY(r1))] == 1,
+      PASS([h columnAtPoint: NSMakePoint(NSMidX(r1), NSMidY(r1))] == 1,
            "a point in the second header maps to column one");
     }
   NS_HANDLER
