@@ -27,7 +27,7 @@ int main()
   cell = AUTORELEASE([[NSPathComponentCell alloc] init]);
   img = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(16, 16)]);
   [cell setImage: img];
-  pass([cell image] == img, "setImage: keeps the same image object");
+  PASS([cell image] == img, "setImage: keeps the same image object");
 
   END_SET("NSPathComponentCell imageRetain")
 

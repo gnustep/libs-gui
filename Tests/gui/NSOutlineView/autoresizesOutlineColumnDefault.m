@@ -25,11 +25,11 @@ int main()
     {
       ov = AUTORELEASE([[NSOutlineView alloc]
         initWithFrame: NSMakeRect(0, 0, 200, 200)]);
-      pass([ov autoresizesOutlineColumn] == YES,
+      PASS([ov autoresizesOutlineColumn] == YES,
            "a new outline view autoresizes its outline column");
 
       [ov setAutoresizesOutlineColumn: NO];
-      pass([ov autoresizesOutlineColumn] == NO,
+      PASS([ov autoresizesOutlineColumn] == NO,
            "autoresizesOutlineColumn round-trips");
     }
   NS_HANDLER

@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 		printf("expected frameRotation ~0, got %g\n", [view frameRotation]);
 	}
 
-	pass(passed, "NSView -frameRotation keeps the sign of a negative rotation");
+	PASS(passed, "NSView -frameRotation keeps the sign of a negative rotation");
 
 	END_SET("NSView GNUstep frameRotationSign")
 

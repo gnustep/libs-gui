@@ -30,12 +30,12 @@ int main()
       sv = AUTORELEASE([[NSStackView alloc]
         initWithFrame: NSMakeRect(0, 0, 200, 100)]);
 
-      pass([sv orientation] == NSUserInterfaceLayoutOrientationHorizontal,
+      PASS([sv orientation] == NSUserInterfaceLayoutOrientationHorizontal,
            "a stack view is horizontal by default");
-      pass([sv delegate] == nil, "the default delegate is nil");
-      pass([[sv arrangedSubviews] count] == 0,
+      PASS([sv delegate] == nil, "the default delegate is nil");
+      PASS([[sv arrangedSubviews] count] == 0,
            "a new stack view has no arranged subviews");
-      pass([sv hasEqualSpacing] == NO, "hasEqualSpacing is NO by default");
+      PASS([sv hasEqualSpacing] == NO, "hasEqualSpacing is NO by default");
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]

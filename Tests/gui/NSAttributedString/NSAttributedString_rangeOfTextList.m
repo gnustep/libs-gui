@@ -60,25 +60,25 @@ int main(int argc, char **argv)
   
   expected = NSMakeRange(pos3, pos4 - pos3);
   actual = [storage rangeOfTextList: list2 atIndex: pos3 + 1];
-  pass(NSEqualRanges(expected, actual), "Found correct range of nested list");
+  PASS(NSEqualRanges(expected, actual), "Found correct range of nested list");
   
   expected = NSMakeRange(pos2, pos5 - pos2);
   actual = [storage rangeOfTextList: list1 atIndex: pos3 + 1];
-  pass(NSEqualRanges(expected, actual), "Found correct range of enclosing list");
+  PASS(NSEqualRanges(expected, actual), "Found correct range of enclosing list");
   
   expected = NSMakeRange(pos2, pos5 - pos2);
   actual = [storage rangeOfTextList: list1 atIndex: pos2 + 1];
-  pass(NSEqualRanges(expected, actual), "Found correct range including nested list");
+  PASS(NSEqualRanges(expected, actual), "Found correct range including nested list");
   
   expected = NSMakeRange(pos5, pos6 - pos5);
   actual = [storage rangeOfTextList: list3 atIndex: pos5 + 1];
-  pass(NSEqualRanges(expected, actual), "Found correct range of an adjacent list");
+  PASS(NSEqualRanges(expected, actual), "Found correct range of an adjacent list");
   
   actual = [storage rangeOfTextList: list1 atIndex: pos5];
-  pass(actual.location == NSNotFound, "Returned not found for location in different list");
+  PASS(actual.location == NSNotFound, "Returned not found for location in different list");
   
   actual = [storage rangeOfTextList: list1 atIndex: pos1];
-  pass(actual.location == NSNotFound, "Returned not found for location not in any list");
+  PASS(actual.location == NSNotFound, "Returned not found for location not in any list");
   
   END_SET("NSAttributedString rangeOfTextList:atIndex: category method");
   

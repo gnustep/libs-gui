@@ -46,7 +46,7 @@ main(int argc, char **argv)
       [NSApp setApplicationIconImage: img];
       NSImage *icon = [NSApp applicationIconImage];
 
-      pass(icon != nil && [[icon representations] count] > 0,
+      PASS(icon != nil && [[icon representations] count] > 0,
            "the application icon keeps a representation");
 
       NSBitmapImageRep *bitmap = nil;
@@ -57,13 +57,13 @@ main(int argc, char **argv)
           if ([rep isKindOfClass: [NSBitmapImageRep class]])
             bitmap = (NSBitmapImageRep *)rep;
         }
-      pass(bitmap != nil, "the application icon has a bitmap representation");
+      PASS(bitmap != nil, "the application icon has a bitmap representation");
 
       if (bitmap != nil)
         {
           NSColor *c = [[bitmap colorAtX: 24 y: 24]
             colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
-          pass(c != nil
+          PASS(c != nil
                && [c redComponent] > 0.9
                && [c greenComponent] < 0.1
                && [c blueComponent] < 0.1,

@@ -108,13 +108,13 @@ int main()
   data = [NSData dataWithBytes: badICNSunderflow
                         length: sizeof(badICNSunderflow)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep == nil,
+  PASS(rep == nil,
     "an ICNS file with an undersized family resource size is rejected, not decoded with a buffer overflow");
   [rep release];
 
   data = [NSData dataWithBytes: goodICNS32 length: sizeof(goodICNS32)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep != nil && [rep pixelsWide] == 32 && [rep pixelsHigh] == 32,
+  PASS(rep != nil && [rep pixelsWide] == 32 && [rep pixelsHigh] == 32,
     "a valid 32x32 ICNS icon still decodes");
   [rep release];
 

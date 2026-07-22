@@ -25,9 +25,9 @@ int main()
     {
       tv = AUTORELEASE([[NSTabView alloc]
         initWithFrame: NSMakeRect(0, 0, 200, 200)]);
-      pass([tv drawsBackground] == YES,
+      PASS([tv drawsBackground] == YES,
            "a new tab view draws its background");
-      pass([tv allowsTruncatedLabels] == YES,
+      PASS([tv allowsTruncatedLabels] == YES,
            "a new tab view allows truncated labels");
     }
   NS_HANDLER

@@ -31,9 +31,9 @@ main(int argc, char **argv)
   {
     NSColorList *list = [[[NSColorList alloc] initWithName: @"UnitTestList"] autorelease];
 
-    pass([list isEditable] == YES, "a new named colour list is editable");
-    pass([[list allKeys] count] == 0, "a new colour list has no keys");
-    pass([list colorWithKey: @"missing"] == nil,
+    PASS([list isEditable] == YES, "a new named colour list is editable");
+    PASS([[list allKeys] count] == 0, "a new colour list has no keys");
+    PASS([list colorWithKey: @"missing"] == nil,
       "an unknown key has no colour");
   }
 
@@ -42,14 +42,14 @@ main(int argc, char **argv)
     NSColorList *list = [[[NSColorList alloc] initWithName: @"UnitTestList"] autorelease];
 
     [list setColor: red forKey: @"red"];
-    pass([[list colorWithKey: @"red"] isEqual: red]
+    PASS([[list colorWithKey: @"red"] isEqual: red]
       && [[list allKeys] containsObject: @"red"]
       && [[list allKeys] count] == 1,
       "setColor:forKey: adds the colour under its key");
 
     /* Setting the same key updates the colour without adding a second key. */
     [list setColor: blue forKey: @"red"];
-    pass([[list colorWithKey: @"red"] isEqual: blue]
+    PASS([[list colorWithKey: @"red"] isEqual: blue]
       && [[list allKeys] count] == 1,
       "setColor:forKey: on an existing key updates without duplicating it");
   }
@@ -61,7 +61,7 @@ main(int argc, char **argv)
     [list setColor: red forKey: @"one"];
     [list setColor: green forKey: @"two"];
     [list setColor: blue forKey: @"three"];
-    pass([[[list allKeys] objectAtIndex: 0] isEqual: @"one"]
+    PASS([[[list allKeys] objectAtIndex: 0] isEqual: @"one"]
       && [[[list allKeys] objectAtIndex: 1] isEqual: @"two"]
       && [[[list allKeys] objectAtIndex: 2] isEqual: @"three"],
       "setColor:forKey: appends keys in insertion order");
@@ -77,12 +77,12 @@ main(int argc, char **argv)
     [list setColor: blue forKey: @"three"];
 
     [list insertColor: rgb(1, 1, 0) key: @"zero" atIndex: 0];
-    pass([[[list allKeys] objectAtIndex: 0] isEqual: @"zero"]
+    PASS([[[list allKeys] objectAtIndex: 0] isEqual: @"zero"]
       && [[list allKeys] count] == 4,
       "insertColor:key:atIndex: inserts a new key at the index");
 
     [list insertColor: blue key: @"three" atIndex: 0];
-    pass([[[list allKeys] objectAtIndex: 0] isEqual: @"three"]
+    PASS([[[list allKeys] objectAtIndex: 0] isEqual: @"three"]
       && [[list allKeys] count] == 4,
       "insertColor:key:atIndex: moves an existing key without duplicating it");
   }
@@ -94,7 +94,7 @@ main(int argc, char **argv)
     [list setColor: red forKey: @"red"];
     [list setColor: green forKey: @"green"];
     [list removeColorWithKey: @"red"];
-    pass([list colorWithKey: @"red"] == nil
+    PASS([list colorWithKey: @"red"] == nil
       && [[list allKeys] containsObject: @"red"] == NO
       && [[list allKeys] count] == 1,
       "removeColorWithKey: deletes the colour and its key");

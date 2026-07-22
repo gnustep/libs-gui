@@ -38,22 +38,22 @@ int main()
                                    attribute: NSLayoutAttributeWidth
                                   multiplier: 2.0
                                     constant: 5.0];
-  pass(c != nil, "the factory returns a constraint");
-  pass([c firstItem] == v1, "firstItem is the first item passed in");
-  pass([c firstAttribute] == NSLayoutAttributeWidth,
+  PASS(c != nil, "the factory returns a constraint");
+  PASS([c firstItem] == v1, "firstItem is the first item passed in");
+  PASS([c firstAttribute] == NSLayoutAttributeWidth,
        "firstAttribute is the attribute passed in");
-  pass([c relation] == NSLayoutRelationEqual, "relation is the relation passed in");
-  pass([c secondItem] == v2, "secondItem is the second item passed in");
-  pass([c secondAttribute] == NSLayoutAttributeWidth,
+  PASS([c relation] == NSLayoutRelationEqual, "relation is the relation passed in");
+  PASS([c secondItem] == v2, "secondItem is the second item passed in");
+  PASS([c secondAttribute] == NSLayoutAttributeWidth,
        "secondAttribute is the attribute passed in");
-  pass([c multiplier] == 2.0, "multiplier is the multiplier passed in");
-  pass([c constant] == 5.0, "constant is the constant passed in");
-  pass([c priority] == NSLayoutPriorityRequired,
+  PASS([c multiplier] == 2.0, "multiplier is the multiplier passed in");
+  PASS([c constant] == 5.0, "constant is the constant passed in");
+  PASS([c priority] == NSLayoutPriorityRequired,
        "a factory constraint has the required priority");
-  pass([c isActive] == NO, "a factory constraint is inactive");
+  PASS([c isActive] == NO, "a factory constraint is inactive");
 
   [c setPriority: NSLayoutPriorityDefaultHigh];
-  pass([c priority] == NSLayoutPriorityDefaultHigh, "priority round-trips");
+  PASS([c priority] == NSLayoutPriorityDefaultHigh, "priority round-trips");
 
   END_SET("NSLayoutConstraint basic")
 

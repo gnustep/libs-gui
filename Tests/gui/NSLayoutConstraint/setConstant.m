@@ -39,11 +39,11 @@ int main()
                                    attribute: NSLayoutAttributeWidth
                                   multiplier: 1.0
                                     constant: 5.0];
-  pass([c respondsToSelector: @selector(setConstant:)], "responds to -setConstant:");
+  PASS([c respondsToSelector: @selector(setConstant:)], "responds to -setConstant:");
   if ([c respondsToSelector: @selector(setConstant:)])
     {
       [c setConstant: 42.0];
-      pass([c constant] == 42.0, "-setConstant: changes the constant");
+      PASS([c constant] == 42.0, "-setConstant: changes the constant");
     }
 
   END_SET("NSLayoutConstraint setConstant")

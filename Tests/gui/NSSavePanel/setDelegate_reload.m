@@ -66,14 +66,14 @@ int main(int argc, char **argv)
                      stringByAppendingPathComponent: @"dummy"]];
   
   m = [p lastColumnMatrix];
-  pass([m numberOfRows] == 2
+  PASS([m numberOfRows] == 2
        && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"]
        && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @"B"],
        "browser initially contains all files");
   
   [p setDelegate: [Delegate self]];
   m = [p lastColumnMatrix];
-  pass([m numberOfRows] == 1
+  PASS([m numberOfRows] == 1
        && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"],
        "browser is reloaded after -setDelegate:");
   
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
   [p setDelegate: nil];
   m = [p lastColumnMatrix];
   testHopeful = YES;
-  pass([m numberOfRows] == 2
+  PASS([m numberOfRows] == 2
        && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"]
        && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @"B"],
        "browser contains all files after resetting delegate");
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
   
   [p setDelegate: [Delegate self]];
   m = [p lastColumnMatrix];
-  pass([m numberOfRows] == 1
+  PASS([m numberOfRows] == 1
        && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"],
        "browser is reloaded after -setDelegate: (2)");
 

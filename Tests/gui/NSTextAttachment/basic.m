@@ -33,8 +33,8 @@ main(int argc, char **argv)
     NSTextAttachment *a = AUTORELEASE([[NSTextAttachment alloc]
       initWithFileWrapper: nil]);
 
-    pass([a fileWrapper] == nil, "an attachment with no wrapper has none");
-    pass([(id)[a attachmentCell] isKindOfClass: [NSTextAttachmentCell class]],
+    PASS([a fileWrapper] == nil, "an attachment with no wrapper has none");
+    PASS([(id)[a attachmentCell] isKindOfClass: [NSTextAttachmentCell class]],
          "an attachment has a text attachment cell by default");
   }
 
@@ -42,8 +42,8 @@ main(int argc, char **argv)
     NSTextAttachment *a = AUTORELEASE([[NSTextAttachment alloc]
       initWithFileWrapper: fw]);
 
-    pass([a fileWrapper] == fw, "initWithFileWrapper: stores the wrapper");
-    pass([(id)[a attachmentCell] isKindOfClass: [NSTextAttachmentCell class]],
+    PASS([a fileWrapper] == fw, "initWithFileWrapper: stores the wrapper");
+    PASS([(id)[a attachmentCell] isKindOfClass: [NSTextAttachmentCell class]],
          "an attachment from a wrapper still has a cell");
   }
 
@@ -51,7 +51,7 @@ main(int argc, char **argv)
     NSTextAttachment *a = AUTORELEASE([[NSTextAttachment alloc] init]);
 
     [a setFileWrapper: fw];
-    pass([a fileWrapper] == fw, "setFileWrapper: round trips");
+    PASS([a fileWrapper] == fw, "setFileWrapper: round trips");
   }
 
   {
@@ -59,8 +59,8 @@ main(int argc, char **argv)
     NSTextAttachmentCell *cell = AUTORELEASE([[NSTextAttachmentCell alloc] init]);
 
     [a setAttachmentCell: cell];
-    pass([a attachmentCell] == cell, "setAttachmentCell: round trips");
-    pass([cell attachment] == a,
+    PASS([a attachmentCell] == cell, "setAttachmentCell: round trips");
+    PASS([cell attachment] == a,
          "setAttachmentCell: points the cell back at the attachment");
   }
 

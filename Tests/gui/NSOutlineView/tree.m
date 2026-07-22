@@ -59,31 +59,31 @@ int main()
       [col setWidth: 100.0];
       [ov addTableColumn: col];
       [ov setOutlineTableColumn: col];
-      pass([ov outlineTableColumn] == col, "outlineTableColumn round-trips");
+      PASS([ov outlineTableColumn] == col, "outlineTableColumn round-trips");
       ds = AUTORELEASE([Tree new]);
       [ov setDataSource: ds];
       [ov reloadData];
 
-      pass([ov numberOfRows] == 2, "a collapsed tree shows its two roots");
-      pass([ov isExpandable: @"A"] == YES, "A is expandable");
-      pass([ov isExpandable: @"B"] == NO, "B is not expandable");
-      pass([ov isItemExpanded: @"A"] == NO, "A is collapsed to start");
-      pass([[ov itemAtRow: 0] isEqual: @"A"], "row 0 is A");
-      pass([ov rowForItem: @"B"] == 1, "B is at row 1 while collapsed");
-      pass([ov levelForRow: 0] == 0, "a root is at level 0");
+      PASS([ov numberOfRows] == 2, "a collapsed tree shows its two roots");
+      PASS([ov isExpandable: @"A"] == YES, "A is expandable");
+      PASS([ov isExpandable: @"B"] == NO, "B is not expandable");
+      PASS([ov isItemExpanded: @"A"] == NO, "A is collapsed to start");
+      PASS([[ov itemAtRow: 0] isEqual: @"A"], "row 0 is A");
+      PASS([ov rowForItem: @"B"] == 1, "B is at row 1 while collapsed");
+      PASS([ov levelForRow: 0] == 0, "a root is at level 0");
 
       [ov expandItem: @"A"];
-      pass([ov numberOfRows] == 4, "expanding A reveals its two children");
-      pass([ov isItemExpanded: @"A"] == YES, "A is expanded");
-      pass([[ov itemAtRow: 1] isEqual: @"A1"], "row 1 is A1 after expanding");
-      pass([ov levelForItem: @"A1"] == 1, "A1 is at level 1");
-      pass([ov levelForRow: 1] == 1, "row 1 is at level 1");
-      pass([[ov parentForItem: @"A1"] isEqual: @"A"], "A1's parent is A");
-      pass([ov rowForItem: @"B"] == 3, "B moves to row 3 after expanding A");
+      PASS([ov numberOfRows] == 4, "expanding A reveals its two children");
+      PASS([ov isItemExpanded: @"A"] == YES, "A is expanded");
+      PASS([[ov itemAtRow: 1] isEqual: @"A1"], "row 1 is A1 after expanding");
+      PASS([ov levelForItem: @"A1"] == 1, "A1 is at level 1");
+      PASS([ov levelForRow: 1] == 1, "row 1 is at level 1");
+      PASS([[ov parentForItem: @"A1"] isEqual: @"A"], "A1's parent is A");
+      PASS([ov rowForItem: @"B"] == 3, "B moves to row 3 after expanding A");
 
       [ov collapseItem: @"A"];
-      pass([ov numberOfRows] == 2, "collapsing A hides its children");
-      pass([ov isItemExpanded: @"A"] == NO, "A is collapsed again");
+      PASS([ov numberOfRows] == 2, "collapsing A hides its children");
+      PASS([ov isItemExpanded: @"A"] == NO, "A is collapsed again");
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]

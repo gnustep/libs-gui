@@ -22,7 +22,7 @@ int main()
   NS_ENDHANDLER
 
   cell = AUTORELEASE([[NSLevelIndicatorCell alloc] init]);
-  pass([cell style] == NSDiscreteCapacityLevelIndicatorStyle,
+  PASS([cell style] == NSDiscreteCapacityLevelIndicatorStyle,
        "a default level indicator cell uses the discrete-capacity style");
 
   END_SET("NSLevelIndicatorCell initStyle")

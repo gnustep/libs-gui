@@ -71,9 +71,9 @@ main(int argc, char **argv)
       CGFloat none = secondParagraphY(0.0);
       CGFloat spaced = secondParagraphY(20.0);
 
-      pass(none > 0.0,
+      PASS(none > 0.0,
            "the second paragraph is below the first without extra spacing");
-      pass(spaced - none == 20.0,
+      PASS(spaced - none == 20.0,
            "paragraphSpacing pushes the next paragraph down by that amount");
     }
   NS_HANDLER

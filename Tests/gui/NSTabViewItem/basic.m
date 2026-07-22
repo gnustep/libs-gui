@@ -27,23 +27,23 @@ int main()
 
   /* init defaults */
   item = AUTORELEASE([[NSTabViewItem alloc] initWithIdentifier: @"myId"]);
-  pass([[item identifier] isEqual: @"myId"],
+  PASS([[item identifier] isEqual: @"myId"],
        "identifier is the identifier passed in");
-  pass([item view] != nil, "a new item has a view");
-  pass([item initialFirstResponder] == nil,
+  PASS([item view] != nil, "a new item has a view");
+  PASS([item initialFirstResponder] == nil,
        "default initialFirstResponder is nil");
-  pass([item tabState] == NSBackgroundTab, "default tabState is background");
-  pass([item toolTip] == nil, "default toolTip is nil");
-  pass([item viewController] == nil, "default viewController is nil");
+  PASS([item tabState] == NSBackgroundTab, "default tabState is background");
+  PASS([item toolTip] == nil, "default toolTip is nil");
+  PASS([item viewController] == nil, "default viewController is nil");
 
   /* setter round-trips */
   item = AUTORELEASE([[NSTabViewItem alloc] initWithIdentifier: @"x"]);
   [item setIdentifier: @"ID2"];
   [item setLabel: @"L"];
   [item setToolTip: @"T"];
-  pass([[item identifier] isEqual: @"ID2"], "identifier round-trips");
-  pass([[item label] isEqualToString: @"L"], "label round-trips");
-  pass([[item toolTip] isEqualToString: @"T"], "toolTip round-trips");
+  PASS([[item identifier] isEqual: @"ID2"], "identifier round-trips");
+  PASS([[item label] isEqualToString: @"L"], "label round-trips");
+  PASS([[item toolTip] isEqualToString: @"T"], "toolTip round-trips");
 
   END_SET("NSTabViewItem basic")
 

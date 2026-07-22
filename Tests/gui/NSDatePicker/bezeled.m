@@ -35,12 +35,12 @@ main(int argc, char **argv)
       dp = AUTORELEASE([[NSDatePicker alloc]
         initWithFrame: NSMakeRect(0, 0, 180, 24)]);
 
-      pass([dp isBezeled] == YES, "a date picker is bezeled by default");
+      PASS([dp isBezeled] == YES, "a date picker is bezeled by default");
 
       [dp setBezeled: NO];
-      pass([dp isBezeled] == NO, "setBezeled: NO round trips");
+      PASS([dp isBezeled] == NO, "setBezeled: NO round trips");
       [dp setBezeled: YES];
-      pass([dp isBezeled] == YES, "setBezeled: YES round trips");
+      PASS([dp isBezeled] == YES, "setBezeled: YES round trips");
     }
   NS_HANDLER
     {

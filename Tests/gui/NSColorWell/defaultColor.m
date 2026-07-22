@@ -37,7 +37,7 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 40, 40)]);
 
       NSColor *c = [[cw color] colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
-      pass(c != nil
+      PASS(c != nil
            && [c redComponent] > 0.9
            && [c greenComponent] > 0.9
            && [c blueComponent] > 0.9,

@@ -28,14 +28,14 @@ int main()
 
   /* init defaults */
   cell = AUTORELEASE([[NSDatePickerCell alloc] init]);
-  pass([cell datePickerStyle] == NSTextFieldAndStepperDatePickerStyle,
+  PASS([cell datePickerStyle] == NSTextFieldAndStepperDatePickerStyle,
        "default style is text-field-and-stepper");
-  pass([cell datePickerMode] == NSSingleDateMode,
+  PASS([cell datePickerMode] == NSSingleDateMode,
        "default mode is single-date");
-  pass([cell timeInterval] == 0.0, "default timeInterval is 0");
-  pass([cell minDate] == nil, "default minDate is nil");
-  pass([cell maxDate] == nil, "default maxDate is nil");
-  pass([cell drawsBackground] == NO, "default drawsBackground is NO");
+  PASS([cell timeInterval] == 0.0, "default timeInterval is 0");
+  PASS([cell minDate] == nil, "default minDate is nil");
+  PASS([cell maxDate] == nil, "default maxDate is nil");
+  PASS([cell drawsBackground] == NO, "default drawsBackground is NO");
 
   /* setter round-trips */
   cell = AUTORELEASE([[NSDatePickerCell alloc] init]);
@@ -44,13 +44,13 @@ int main()
   [cell setDatePickerElements: NSYearMonthDayDatePickerElementFlag];
   [cell setTimeInterval: 3600.0];
   [cell setDrawsBackground: YES];
-  pass([cell datePickerStyle] == NSClockAndCalendarDatePickerStyle,
+  PASS([cell datePickerStyle] == NSClockAndCalendarDatePickerStyle,
        "datePickerStyle round-trips");
-  pass([cell datePickerMode] == NSRangeDateMode, "datePickerMode round-trips");
-  pass([cell datePickerElements] == NSYearMonthDayDatePickerElementFlag,
+  PASS([cell datePickerMode] == NSRangeDateMode, "datePickerMode round-trips");
+  PASS([cell datePickerElements] == NSYearMonthDayDatePickerElementFlag,
        "datePickerElements round-trips");
-  pass([cell timeInterval] == 3600.0, "timeInterval round-trips");
-  pass([cell drawsBackground] == YES, "drawsBackground round-trips");
+  PASS([cell timeInterval] == 3600.0, "timeInterval round-trips");
+  PASS([cell drawsBackground] == YES, "drawsBackground round-trips");
 
   /* a date inside [minDate, maxDate] is kept as-is */
   cell = AUTORELEASE([[NSDatePickerCell alloc] init]);
@@ -58,7 +58,7 @@ int main()
   [cell setMaxDate: [NSDate dateWithTimeIntervalSinceReferenceDate: 1000000.0]];
   inRange = [NSDate dateWithTimeIntervalSinceReferenceDate: 500000.0];
   [cell setDateValue: inRange];
-  pass([[cell dateValue] isEqualToDate: inRange],
+  PASS([[cell dateValue] isEqualToDate: inRange],
        "a date within [minDate, maxDate] is kept");
 
   END_SET("NSDatePickerCell basic")

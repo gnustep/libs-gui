@@ -57,19 +57,19 @@ int main(int argc, char **argv)
   [storage appendAttributedString: 
     [[NSMutableAttributedString alloc] initWithString: @"extra text\n" attributes: attrs3]];
   
-  pass([storage itemNumberInTextList: list1 atIndex: index1] == 1, "Index for first list item");
-  pass([storage itemNumberInTextList: list1 atIndex: index2] == 2, "Index with CR+LF sequence");
-  pass([storage itemNumberInTextList: list1 atIndex: index3 - 1] == 2, "Index on boundary");
-  pass([storage itemNumberInTextList: list1 atIndex: index3] == 3, "Index for third list item");
-  pass([storage itemNumberInTextList: list1 atIndex: index4] == 3, "Index for third list item (sublist 1)");
-  pass([storage itemNumberInTextList: list1 atIndex: index5] == 3, "Index for third list item (sublist 2");
-  pass([storage itemNumberInTextList: list1 atIndex: index6] == 4, "Index for fourth list item");
+  PASS([storage itemNumberInTextList: list1 atIndex: index1] == 1, "Index for first list item");
+  PASS([storage itemNumberInTextList: list1 atIndex: index2] == 2, "Index with CR+LF sequence");
+  PASS([storage itemNumberInTextList: list1 atIndex: index3 - 1] == 2, "Index on boundary");
+  PASS([storage itemNumberInTextList: list1 atIndex: index3] == 3, "Index for third list item");
+  PASS([storage itemNumberInTextList: list1 atIndex: index4] == 3, "Index for third list item (sublist 1)");
+  PASS([storage itemNumberInTextList: list1 atIndex: index5] == 3, "Index for third list item (sublist 2");
+  PASS([storage itemNumberInTextList: list1 atIndex: index6] == 4, "Index for fourth list item");
   
-  pass([storage itemNumberInTextList: list2 atIndex: index4] == 1, "Index for first sublist item");  
-  pass([storage itemNumberInTextList: list2 atIndex: index5] == 2, "Index for second sublist item");
+  PASS([storage itemNumberInTextList: list2 atIndex: index4] == 1, "Index for first sublist item");  
+  PASS([storage itemNumberInTextList: list2 atIndex: index5] == 2, "Index for second sublist item");
   
-  pass([storage itemNumberInTextList: list2 atIndex: index1] == 0, "Index in other list is zero");
-  pass([storage itemNumberInTextList: list1 atIndex: index7] == 0, "Index in nonlist is zero");
+  PASS([storage itemNumberInTextList: list2 atIndex: index1] == 0, "Index in other list is zero");
+  PASS([storage itemNumberInTextList: list1 atIndex: index7] == 0, "Index in nonlist is zero");
   
   END_SET("NSAttributedString itemNumberInTextList:atIndex: category method");
   

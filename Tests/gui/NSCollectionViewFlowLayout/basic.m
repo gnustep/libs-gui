@@ -28,20 +28,20 @@ int main()
 
   /* init defaults */
   l = AUTORELEASE([[NSCollectionViewFlowLayout alloc] init]);
-  pass([l estimatedItemSize].width == 0 && [l estimatedItemSize].height == 0,
+  PASS([l estimatedItemSize].width == 0 && [l estimatedItemSize].height == 0,
        "default estimatedItemSize is zero");
-  pass([l scrollDirection] == NSCollectionViewScrollDirectionVertical,
+  PASS([l scrollDirection] == NSCollectionViewScrollDirectionVertical,
        "default scrollDirection is vertical");
-  pass([l headerReferenceSize].width == 0 && [l headerReferenceSize].height == 0,
+  PASS([l headerReferenceSize].width == 0 && [l headerReferenceSize].height == 0,
        "default headerReferenceSize is zero");
-  pass([l footerReferenceSize].width == 0 && [l footerReferenceSize].height == 0,
+  PASS([l footerReferenceSize].width == 0 && [l footerReferenceSize].height == 0,
        "default footerReferenceSize is zero");
   inset = [l sectionInset];
-  pass(inset.top == 0 && inset.left == 0 && inset.bottom == 0 && inset.right == 0,
+  PASS(inset.top == 0 && inset.left == 0 && inset.bottom == 0 && inset.right == 0,
        "default sectionInset is zero");
-  pass([l sectionHeadersPinToVisibleBounds] == NO,
+  PASS([l sectionHeadersPinToVisibleBounds] == NO,
        "section headers do not pin by default");
-  pass([l sectionFootersPinToVisibleBounds] == NO,
+  PASS([l sectionFootersPinToVisibleBounds] == NO,
        "section footers do not pin by default");
 
   /* setter round-trips */
@@ -56,23 +56,23 @@ int main()
   [l setSectionInset: NSEdgeInsetsMake(1, 2, 3, 4)];
   [l setSectionHeadersPinToVisibleBounds: YES];
   [l setSectionFootersPinToVisibleBounds: YES];
-  pass([l minimumLineSpacing] == 5.0, "minimumLineSpacing round-trips");
-  pass([l minimumInteritemSpacing] == 6.0, "minimumInteritemSpacing round-trips");
-  pass([l itemSize].width == 30 && [l itemSize].height == 40, "itemSize round-trips");
-  pass([l estimatedItemSize].width == 11 && [l estimatedItemSize].height == 12,
+  PASS([l minimumLineSpacing] == 5.0, "minimumLineSpacing round-trips");
+  PASS([l minimumInteritemSpacing] == 6.0, "minimumInteritemSpacing round-trips");
+  PASS([l itemSize].width == 30 && [l itemSize].height == 40, "itemSize round-trips");
+  PASS([l estimatedItemSize].width == 11 && [l estimatedItemSize].height == 12,
        "estimatedItemSize round-trips");
-  pass([l scrollDirection] == NSCollectionViewScrollDirectionHorizontal,
+  PASS([l scrollDirection] == NSCollectionViewScrollDirectionHorizontal,
        "scrollDirection round-trips");
-  pass([l headerReferenceSize].width == 100 && [l headerReferenceSize].height == 20,
+  PASS([l headerReferenceSize].width == 100 && [l headerReferenceSize].height == 20,
        "headerReferenceSize round-trips");
-  pass([l footerReferenceSize].width == 100 && [l footerReferenceSize].height == 10,
+  PASS([l footerReferenceSize].width == 100 && [l footerReferenceSize].height == 10,
        "footerReferenceSize round-trips");
   inset = [l sectionInset];
-  pass(inset.top == 1 && inset.left == 2 && inset.bottom == 3 && inset.right == 4,
+  PASS(inset.top == 1 && inset.left == 2 && inset.bottom == 3 && inset.right == 4,
        "sectionInset round-trips");
-  pass([l sectionHeadersPinToVisibleBounds] == YES,
+  PASS([l sectionHeadersPinToVisibleBounds] == YES,
        "sectionHeadersPinToVisibleBounds round-trips");
-  pass([l sectionFootersPinToVisibleBounds] == YES,
+  PASS([l sectionFootersPinToVisibleBounds] == YES,
        "sectionFootersPinToVisibleBounds round-trips");
 
   END_SET("NSCollectionViewFlowLayout basic")

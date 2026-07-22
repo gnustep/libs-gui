@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 			r.origin.x, r.origin.y, r.size.width, r.size.height);
 	}
 
-	pass(passed, "NSView -convertRect:toView:/-convertRect:fromView: apply the hierarchy transform without a window");
+	PASS(passed, "NSView -convertRect:toView:/-convertRect:fromView: apply the hierarchy transform without a window");
 
 	END_SET("NSView GNUstep convertRectNoWindow")
 

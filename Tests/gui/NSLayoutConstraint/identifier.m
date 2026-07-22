@@ -40,14 +40,14 @@ int main()
                                    attribute: NSLayoutAttributeWidth
                                   multiplier: 1.0
                                     constant: 5.0];
-  pass([c respondsToSelector: @selector(identifier)], "responds to -identifier");
-  pass([c respondsToSelector: @selector(setIdentifier:)],
+  PASS([c respondsToSelector: @selector(identifier)], "responds to -identifier");
+  PASS([c respondsToSelector: @selector(setIdentifier:)],
        "responds to -setIdentifier:");
   if ([c respondsToSelector: @selector(setIdentifier:)])
     {
-      pass([c identifier] == nil, "default identifier is nil");
+      PASS([c identifier] == nil, "default identifier is nil");
       [c setIdentifier: @"myC"];
-      pass([[c identifier] isEqualToString: @"myC"], "identifier round-trips");
+      PASS([[c identifier] isEqualToString: @"myC"], "identifier round-trips");
     }
 
   END_SET("NSLayoutConstraint identifier")

@@ -34,12 +34,12 @@ main(int argc, char **argv)
     {
       g = [NSGridView gridViewWithNumberOfColumns: 2 rows: 2];
 
-      pass([g xPlacement] == NSGridCellPlacementLeading,
+      PASS([g xPlacement] == NSGridCellPlacementLeading,
            "the default x placement is leading");
-      pass([g yPlacement] == NSGridCellPlacementTop,
+      PASS([g yPlacement] == NSGridCellPlacementTop,
            "the default y placement is top");
-      pass([g columnSpacing] == 6.0, "the default column spacing is six");
-      pass([g rowSpacing] == 6.0, "the default row spacing is six");
+      PASS([g columnSpacing] == 6.0, "the default column spacing is six");
+      PASS([g rowSpacing] == 6.0, "the default row spacing is six");
     }
   NS_HANDLER
     {

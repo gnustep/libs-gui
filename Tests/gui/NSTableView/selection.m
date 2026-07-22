@@ -48,25 +48,25 @@ int main()
       ds = AUTORELEASE([TVDS new]);
       [tv setDataSource: ds];
       [tv reloadData];
-      pass([tv numberOfRows] == 5, "the data source drives numberOfRows");
+      PASS([tv numberOfRows] == 5, "the data source drives numberOfRows");
 
       [tv setAllowsMultipleSelection: YES];
       [tv selectRowIndexes: [NSIndexSet indexSetWithIndex: 1]
         byExtendingSelection: NO];
       [tv selectRowIndexes: [NSIndexSet indexSetWithIndex: 3]
         byExtendingSelection: YES];
-      pass([tv numberOfSelectedRows] == 2, "two rows are selected");
-      pass([tv isRowSelected: 1] == YES, "row 1 is selected");
-      pass([tv isRowSelected: 0] == NO, "row 0 is not selected");
-      pass([tv selectedRow] == 3, "selectedRow is the last selected row");
+      PASS([tv numberOfSelectedRows] == 2, "two rows are selected");
+      PASS([tv isRowSelected: 1] == YES, "row 1 is selected");
+      PASS([tv isRowSelected: 0] == NO, "row 0 is not selected");
+      PASS([tv selectedRow] == 3, "selectedRow is the last selected row");
 
       [tv deselectRow: 1];
-      pass([tv isRowSelected: 1] == NO, "deselectRow: clears that row");
-      pass([tv numberOfSelectedRows] == 1, "one row remains selected");
+      PASS([tv isRowSelected: 1] == NO, "deselectRow: clears that row");
+      PASS([tv numberOfSelectedRows] == 1, "one row remains selected");
 
       [tv deselectAll: nil];
-      pass([tv numberOfSelectedRows] == 0, "deselectAll: clears the selection");
-      pass([tv selectedRow] == -1, "selectedRow is -1 after deselectAll:");
+      PASS([tv numberOfSelectedRows] == 0, "deselectAll: clears the selection");
+      PASS([tv selectedRow] == -1, "selectedRow is -1 after deselectAll:");
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]

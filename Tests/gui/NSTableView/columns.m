@@ -44,22 +44,22 @@ int main()
 
       [tv addTableColumn: c1];
       [tv addTableColumn: c2];
-      pass([tv numberOfColumns] == 2, "two columns were added");
-      pass([c1 tableView] == tv, "an added column points back at the table");
-      pass([tv columnWithIdentifier: @"c2"] == 1,
+      PASS([tv numberOfColumns] == 2, "two columns were added");
+      PASS([c1 tableView] == tv, "an added column points back at the table");
+      PASS([tv columnWithIdentifier: @"c2"] == 1,
            "columnWithIdentifier: finds c2 at index 1");
-      pass([[tv tableColumns] containsObject: c1],
+      PASS([[tv tableColumns] containsObject: c1],
            "tableColumns contains an added column");
-      pass([[tv tableColumns] objectAtIndex: 0] == c1,
+      PASS([[tv tableColumns] objectAtIndex: 0] == c1,
            "the first column is the first one added");
 
       [tv moveColumn: 0 toColumn: 1];
-      pass([[tv tableColumns] objectAtIndex: 0] == c2,
+      PASS([[tv tableColumns] objectAtIndex: 0] == c2,
            "moveColumn:toColumn: reorders the columns");
 
       [tv removeTableColumn: c1];
-      pass([tv numberOfColumns] == 1, "removeTableColumn: lowers the count");
-      pass([[tv tableColumns] objectAtIndex: 0] == c2,
+      PASS([tv numberOfColumns] == 1, "removeTableColumn: lowers the count");
+      PASS([[tv tableColumns] objectAtIndex: 0] == c2,
            "the remaining column is the one not removed");
     }
   NS_HANDLER

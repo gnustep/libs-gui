@@ -31,20 +31,20 @@ int main()
         initWithFrame: NSMakeRect(0, 0, 200, 100)]);
 
       [sv setOrientation: NSUserInterfaceLayoutOrientationVertical];
-      pass([sv orientation] == NSUserInterfaceLayoutOrientationVertical,
+      PASS([sv orientation] == NSUserInterfaceLayoutOrientationVertical,
            "an empty stack view accepts setOrientation:");
       [sv setSpacing: 12.0];
-      pass([sv spacing] == 12.0, "an empty stack view accepts setSpacing:");
+      PASS([sv spacing] == 12.0, "an empty stack view accepts setSpacing:");
       [sv setDistribution: NSStackViewDistributionFillEqually];
-      pass([sv distribution] == NSStackViewDistributionFillEqually,
+      PASS([sv distribution] == NSStackViewDistributionFillEqually,
            "an empty stack view accepts setDistribution:");
       [sv setAlignment: NSLayoutAttributeCenterX];
-      pass([sv alignment] == NSLayoutAttributeCenterX,
+      PASS([sv alignment] == NSLayoutAttributeCenterX,
            "an empty stack view accepts setAlignment:");
       [sv setEdgeInsets: NSEdgeInsetsMake(1, 2, 3, 4)];
       {
         NSEdgeInsets e = [sv edgeInsets];
-        pass(e.top == 1 && e.left == 2 && e.bottom == 3 && e.right == 4,
+        PASS(e.top == 1 && e.left == 2 && e.bottom == 3 && e.right == 4,
              "an empty stack view accepts setEdgeInsets:");
       }
     }

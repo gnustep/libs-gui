@@ -23,8 +23,8 @@ int main()
   NS_ENDHANDLER
 
   cell = AUTORELEASE([[NSDatePickerCell alloc] init]);
-  pass([cell dateValue] != nil, "default dateValue is non-nil");
-  pass([[cell dateValue] isEqualToDate:
+  PASS([cell dateValue] != nil, "default dateValue is non-nil");
+  PASS([[cell dateValue] isEqualToDate:
           [NSDate dateWithTimeIntervalSinceReferenceDate: 0.0]],
        "default dateValue is the reference date");
 
