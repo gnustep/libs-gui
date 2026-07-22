@@ -87,7 +87,6 @@ static Class pathCellClass;
       [self setPathStyle: NSPathStyleStandard];
       [self setURL: nil];
       [self setDelegate: nil];
-      [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
       _pathItems = [[NSArray alloc] init];
       _editable = YES;
     }
