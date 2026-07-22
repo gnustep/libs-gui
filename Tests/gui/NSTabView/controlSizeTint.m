@@ -28,15 +28,15 @@ int main()
       tv = AUTORELEASE([[NSTabView alloc]
         initWithFrame: NSMakeRect(0, 0, 200, 150)]);
 
-      pass([tv controlSize] == NSRegularControlSize,
+      PASS([tv controlSize] == NSRegularControlSize,
            "the default control size is regular");
-      pass([tv controlTint] == NSDefaultControlTint,
+      PASS([tv controlTint] == NSDefaultControlTint,
            "the default control tint is the default tint");
 
       [tv setControlSize: NSSmallControlSize];
-      pass([tv controlSize] == NSSmallControlSize, "controlSize round-trips");
+      PASS([tv controlSize] == NSSmallControlSize, "controlSize round-trips");
       [tv setControlTint: NSBlueControlTint];
-      pass([tv controlTint] == NSBlueControlTint, "controlTint round-trips");
+      PASS([tv controlTint] == NSBlueControlTint, "controlTint round-trips");
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]
