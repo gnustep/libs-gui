@@ -72,11 +72,11 @@ main(int argc, char **argv)
       [browser loadColumnZero];
 
       [browser selectRow: 0 inColumn: 0];
-      pass([[browser path] isEqualToString: @"/c0r0"],
+      PASS([[browser path] isEqualToString: @"/c0r0"],
            "a selected branch ends the path with no trailing separator");
 
       [browser selectRow: 0 inColumn: 1];
-      pass([[browser path] isEqualToString: @"/c0r0/c1r0"],
+      PASS([[browser path] isEqualToString: @"/c0r0/c1r0"],
            "a selected leaf extends the path with its branch");
     }
   NS_HANDLER
