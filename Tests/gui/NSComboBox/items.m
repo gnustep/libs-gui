@@ -39,26 +39,26 @@ main(int argc, char **argv)
       [cb addItemWithObjectValue: @"alpha"];
       [cb addItemWithObjectValue: @"beta"];
       [cb addItemWithObjectValue: @"gamma"];
-      pass([cb numberOfItems] == 3, "three items were added");
-      pass([[cb itemObjectValueAtIndex: 1] isEqualToString: @"beta"],
+      PASS([cb numberOfItems] == 3, "three items were added");
+      PASS([[cb itemObjectValueAtIndex: 1] isEqualToString: @"beta"],
            "the item at index one is the second added");
 
       [cb selectItemAtIndex: 2];
-      pass([cb indexOfSelectedItem] == 2, "selecting an item reports its index");
-      pass([[cb objectValueOfSelectedItem] isEqualToString: @"gamma"],
+      PASS([cb indexOfSelectedItem] == 2, "selecting an item reports its index");
+      PASS([[cb objectValueOfSelectedItem] isEqualToString: @"gamma"],
            "the selected item's object value is reported");
 
       [cb insertItemWithObjectValue: @"delta" atIndex: 0];
-      pass([cb numberOfItems] == 4, "inserting adds an item");
-      pass([[cb itemObjectValueAtIndex: 0] isEqualToString: @"delta"],
+      PASS([cb numberOfItems] == 4, "inserting adds an item");
+      PASS([[cb itemObjectValueAtIndex: 0] isEqualToString: @"delta"],
            "the inserted item is at the given index");
-      pass([cb indexOfItemWithObjectValue: @"beta"] == 2,
+      PASS([cb indexOfItemWithObjectValue: @"beta"] == 2,
            "an item is found by its object value");
 
       [cb removeItemAtIndex: 0];
-      pass([cb numberOfItems] == 3, "removing an item drops the count");
+      PASS([cb numberOfItems] == 3, "removing an item drops the count");
       [cb removeAllItems];
-      pass([cb numberOfItems] == 0, "removeAllItems empties the list");
+      PASS([cb numberOfItems] == 0, "removeAllItems empties the list");
     }
   NS_HANDLER
     {
