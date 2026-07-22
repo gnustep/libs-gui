@@ -130,6 +130,11 @@ jobs:
       - name: Run tests
         run: |
           . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          # Start the distributed notification server up front. Tests that post a
+          # distributed notification otherwise race its on-demand launch, which
+          # intermittently times out on a headless runner.
+          gdnc &
+          sleep 1
           make check
 
       - name: Upload logs
@@ -137,6 +142,87 @@ jobs:
         if: always()
         with:
           name: Logs - ${{ matrix.name }}
+          path: |
+            ${{ env.SRC_PATH }}/config.log
+            ${{ env.SRC_PATH }}/Tests/tests.log
+
+  ########### Linux (cairo backend, virtual display) ###########
+  linux-headless:
+    name: Ubuntu x64 Clang gnustep-2.0 (cairo backend, Xvfb)
+    runs-on: ubuntu-latest
+    # don't run pull requests from local branches twice
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+
+    env:
+      SRC_PATH: ${{ github.workspace }}/source
+      DEPS_PATH: ${{ github.workspace }}/dependencies
+      INSTALL_PATH: ${{ github.workspace }}/build
+      CC: clang
+      CXX: clang++
+      LIBRARY_COMBO: ng-gnu-gnu
+      RUNTIME_VERSION: gnustep-2.0
+
+    defaults:
+      run:
+        working-directory: ${{ env.SRC_PATH }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ env.SRC_PATH }}
+
+      - name: Install packages
+        run: |
+          sudo apt-get -q -y update
+          # libs-back builds an x11 server layer even for the cairo graphics
+          # backend, so the X development libraries are required to build it.
+          # xvfb provides a virtual display so the gui tests that reach the
+          # window server can run on a runner with no physical display.
+          sudo apt-get -q -y install $APT_PACKAGES $APT_PACKAGES_clang \
+            libxt-dev libxmu-dev libxft-dev libxrandr-dev libxfixes-dev libxcursor-dev \
+            xvfb
+
+          # gnustep-2.0 runtime requires ld.gold or lld
+          sudo update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 10
+
+      - name: Install dependencies
+        env:
+          TOOLS_MAKE_BRANCH: ${{github.event.inputs.tools_make_branch}}
+          LIBS_BASE_BRANCH: ${{github.event.inputs.libs_base_branch}}
+        run: ./.github/scripts/dependencies.sh
+
+      - name: Build source
+        run: |
+          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          ./configure
+          make && make install
+
+      - name: Build libs-back # cairo backend, required to run the gui tests instead of skipping them
+        working-directory: ${{env.DEPS_PATH}}
+        env:
+          LIBS_BACK_BRANCH: ${{github.event.inputs.libs_back_branch}}
+        run: |
+          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          git clone -q -b ${LIBS_BACK_BRANCH:-master} https://github.com/gnustep/libs-back.git
+          cd libs-back
+          ./configure --enable-graphics=cairo
+          make && make install
+
+      - name: Run tests
+        run: |
+          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          # Start the distributed notification server up front. Tests that post a
+          # distributed notification otherwise race its on-demand launch, which
+          # intermittently times out on a headless runner.
+          gdnc &
+          sleep 1
+          xvfb-run -a make check
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Logs - Ubuntu x64 Clang gnustep-2.0 (headless)
           path: |
             ${{ env.SRC_PATH }}/config.log
             ${{ env.SRC_PATH }}/Tests/tests.log

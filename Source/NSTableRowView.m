@@ -76,7 +76,7 @@
   return _draggingDestinationFeedbackStyle;
 }
 
-- (void) setTableViewDraggingDestinationFeedbackStyle: (NSTableViewDraggingDestinationFeedbackStyle) draggingDestinationFeedbackStyle
+- (void) setDraggingDestinationFeedbackStyle: (NSTableViewDraggingDestinationFeedbackStyle) draggingDestinationFeedbackStyle
 {
   _draggingDestinationFeedbackStyle = draggingDestinationFeedbackStyle;
 }
@@ -91,7 +91,7 @@
   _indentationForDropOperation = indentationForDropOperation;
 }
 
-- (BOOL) targetForDropOperation
+- (BOOL) isTargetForDropOperation
 {
   return _targetForDropOperation;
 }
@@ -101,7 +101,7 @@
   _targetForDropOperation = flag;
 }
 
-- (BOOL) groupRowStyle
+- (BOOL) isGroupRowStyle
 {
   return _groupRowStyle;
 }

@@ -979,7 +979,12 @@ static BOOL _isAutolaunchChecked = NO;
    * initialization code behaves always in the same way for this class
    * and for subclasses.
    */
-  NSAssert (NSApp == nil, _(@"[NSApplication -init] called more than once"));
+  if (NSApp != nil)
+    {
+      RELEASE(self);
+      [NSException raise: NSInternalInconsistencyException
+  		  format: _(@"[NSApplication -init] called more than once")];
+    }
 
   /*
    * The appkit should run in the main thread ... so to be sure we perform
@@ -2424,6 +2429,26 @@ image.</p><p>See Also: -applicationIconImage</p>
   // Use a copy as we change the name and size
   ASSIGNCOPY(_app_icon, anImage);
 
+  /* -[NSImage copyWithZone:] does not copy cached representations, so an image
+     that was only drawn into (e.g. with -lockFocus, whose sole representation
+     is a cached one) copies to an image with no representations and would draw
+     nothing. Take an independent bitmap snapshot of the original in that case
+     so the icon still draws. */
+  if ([[_app_icon representations] count] == 0)
+    {
+      NSData *tiff = [anImage TIFFRepresentation];
+
+      if (tiff != nil)
+        {
+          NSImageRep *bitmap = [NSBitmapImageRep imageRepWithData: tiff];
+
+          if (bitmap != nil)
+            {
+              [_app_icon addRepresentation: bitmap];
+            }
+        }
+    }
+
   server = GSCurrentServer();
   miniWindowSize = server != 0 ? [server iconSize] : NSZeroSize;
   if (miniWindowSize.width <= 0 || miniWindowSize.height <= 0) 
@@ -2485,6 +2510,7 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (!_dock_tile)
     {
       _dock_tile = [[NSDockTile alloc] init];
+      [_dock_tile setOwner: self];
       [_dock_tile setContentView: [_app_icon_window contentView]];
     }
   return _dock_tile;

@@ -35,34 +35,34 @@ int main()
 
   /* Defaults from -init. */
   cell = AUTORELEASE([[NSFormCell alloc] init]);
-  pass([[cell title] isEqualToString: @"Field:"], "default title is Field:");
-  pass([cell titleAlignment] == NSRightTextAlignment, "title is right aligned by default");
-  pass([cell alignment] == NSLeftTextAlignment, "the entry itself is left aligned by default");
-  pass([cell isEditable], "a form cell is editable by default");
-  pass([cell isBezeled], "a form cell is bezeled by default");
-  pass([cell titleBaseWritingDirection] == NSWritingDirectionNatural,
+  PASS([[cell title] isEqualToString: @"Field:"], "default title is Field:");
+  PASS([cell titleAlignment] == NSRightTextAlignment, "title is right aligned by default");
+  PASS([cell alignment] == NSLeftTextAlignment, "the entry itself is left aligned by default");
+  PASS([cell isEditable], "a form cell is editable by default");
+  PASS([cell isBezeled], "a form cell is bezeled by default");
+  PASS([cell titleBaseWritingDirection] == NSWritingDirectionNatural,
        "title writing direction is natural by default");
 
   /* Title, alignment, font and writing-direction accessors. */
   [cell setTitle: @"Name:"];
-  pass([[cell title] isEqualToString: @"Name:"], "setTitle: updates the title");
-  pass([[[cell attributedTitle] string] isEqualToString: @"Name:"],
+  PASS([[cell title] isEqualToString: @"Name:"], "setTitle: updates the title");
+  PASS([[[cell attributedTitle] string] isEqualToString: @"Name:"],
        "attributedTitle tracks the title string");
   [cell setTitleAlignment: NSLeftTextAlignment];
-  pass([cell titleAlignment] == NSLeftTextAlignment, "setTitleAlignment: updates the alignment");
+  PASS([cell titleAlignment] == NSLeftTextAlignment, "setTitleAlignment: updates the alignment");
   [cell setTitleFont: [NSFont systemFontOfSize: 24.0]];
-  pass([[cell titleFont] pointSize] == 24.0, "setTitleFont: updates the title font");
+  PASS([[cell titleFont] pointSize] == 24.0, "setTitleFont: updates the title font");
   [cell setTitleBaseWritingDirection: NSWritingDirectionRightToLeft];
-  pass([cell titleBaseWritingDirection] == NSWritingDirectionRightToLeft,
+  PASS([cell titleBaseWritingDirection] == NSWritingDirectionRightToLeft,
        "setTitleBaseWritingDirection: updates the writing direction");
 
   /* A manually set title width is reported verbatim and ignores the
      available size passed to -titleWidth:. */
   [cell setTitleWidth: 123.0];
-  pass([cell titleWidth] == 123.0, "a manual title width is reported verbatim");
-  pass([cell titleWidth: NSMakeSize(500.0, 20.0)] == 123.0,
+  PASS([cell titleWidth] == 123.0, "a manual title width is reported verbatim");
+  PASS([cell titleWidth: NSMakeSize(500.0, 20.0)] == 123.0,
        "a manual title width ignores the offered size");
-  pass([cell titleWidth: NSMakeSize(10.0, 20.0)] == 123.0,
+  PASS([cell titleWidth: NSMakeSize(10.0, 20.0)] == 123.0,
        "a manual title width ignores a small offered size too");
 
   /* A negative width restores automatic sizing: -titleWidth is then the
@@ -70,34 +70,33 @@ int main()
   [cell setTitleWidth: -1.0];
   {
     CGFloat natural = [cell titleWidth];
-    pass(natural > 0.0, "the automatic title width is positive");
-    pass([cell titleWidth: NSMakeSize(1.0, 20.0)] == 1.0,
+    PASS(natural > 0.0, "the automatic title width is positive");
+    PASS([cell titleWidth: NSMakeSize(1.0, 20.0)] == 1.0,
          "an offered width below the natural width is used as is");
-    pass([cell titleWidth: NSMakeSize(natural + 1000.0, 20.0)] == natural,
+    PASS([cell titleWidth: NSMakeSize(natural + 1000.0, 20.0)] == natural,
          "an offered width above the natural width falls back to the natural width");
   }
 
   /* The mnemonic title strips the ampersand. */
   cell = AUTORELEASE([[NSFormCell alloc] init]);
   [cell setTitleWithMnemonic: @"&File"];
-  pass([[cell title] isEqualToString: @"File"], "setTitleWithMnemonic: drops the ampersand");
+  PASS([[cell title] isEqualToString: @"File"], "setTitleWithMnemonic: drops the ampersand");
 
   /* The placeholder is either a plain string or an attributed string; the
      accessor for the other kind returns nil. */
   cell = AUTORELEASE([[NSFormCell alloc] init]);
   [cell setPlaceholderString: @"type here"];
-  pass([[cell placeholderString] isEqualToString: @"type here"],
+  PASS([[cell placeholderString] isEqualToString: @"type here"],
        "placeholderString returns the plain placeholder");
-  pass([cell placeholderAttributedString] == nil,
+  PASS([cell placeholderAttributedString] == nil,
        "placeholderAttributedString is nil for a plain placeholder");
   {
     NSAttributedString *attr = AUTORELEASE([[NSAttributedString alloc] initWithString: @"attr ph"]);
     [cell setPlaceholderAttributedString: attr];
-    pass([[[cell placeholderAttributedString] string] isEqualToString: @"attr ph"],
+    PASS([[[cell placeholderAttributedString] string] isEqualToString: @"attr ph"],
          "placeholderAttributedString returns the attributed placeholder");
-    pass([cell placeholderString] == nil,
+    PASS([cell placeholderString] == nil,
          "placeholderString is nil for an attributed placeholder");
-    RELEASE(attr);
   }
 
   END_SET("NSFormCell title")

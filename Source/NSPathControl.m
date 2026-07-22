@@ -89,6 +89,7 @@ static Class pathCellClass;
       [self setDelegate: nil];
       [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
       _pathItems = [[NSArray alloc] init];
+      _editable = YES;
     }
   return self;
 }
@@ -272,6 +273,16 @@ static Class pathCellClass;
 {
   [_cell setPlaceholderString: string];
   [self setNeedsDisplay];
+}
+
+- (BOOL) isEditable
+{
+  return _editable;
+}
+
+- (void) setEditable: (BOOL)flag
+{
+  _editable = flag;
 }
 
 - (NSColor *) backgroundColor

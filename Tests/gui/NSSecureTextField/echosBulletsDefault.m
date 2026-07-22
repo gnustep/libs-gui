@@ -27,9 +27,9 @@ int main()
   }
   NS_ENDHANDLER
 
-  pass([AUTORELEASE([[NSSecureTextFieldCell alloc] init]) echosBullets] == YES,
+  PASS([AUTORELEASE([[NSSecureTextFieldCell alloc] init]) echosBullets] == YES,
        "a freshly created secure cell echoes bullets by default");
-  pass([AUTORELEASE([[NSSecureTextFieldCell alloc] initTextCell: @""]) echosBullets] == YES,
+  PASS([AUTORELEASE([[NSSecureTextFieldCell alloc] initTextCell: @""]) echosBullets] == YES,
        "a secure cell from initTextCell: echoes bullets by default");
 
   END_SET("NSSecureTextFieldCell default echosBullets")

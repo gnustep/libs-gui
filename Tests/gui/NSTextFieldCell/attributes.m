@@ -35,43 +35,42 @@ main(int argc, char **argv)
 
   /* Defaults. */
   cell = AUTORELEASE([[NSTextFieldCell alloc] initTextCell: @""]);
-  pass([cell drawsBackground] == NO, "a text field cell does not draw its background by default");
-  pass([cell bezelStyle] == NSTextFieldSquareBezel, "the default bezel style is square");
-  pass([[cell backgroundColor] isEqual: [NSColor textBackgroundColor]],
+  PASS([cell drawsBackground] == NO, "a text field cell does not draw its background by default");
+  PASS([cell bezelStyle] == NSTextFieldSquareBezel, "the default bezel style is square");
+  PASS([[cell backgroundColor] isEqual: [NSColor textBackgroundColor]],
        "the default background colour is the text background colour");
-  pass([cell textColor] != nil, "a default text colour is set");
-  pass([cell placeholderString] == nil && [cell placeholderAttributedString] == nil,
+  PASS([cell textColor] != nil, "a default text colour is set");
+  PASS([cell placeholderString] == nil && [cell placeholderAttributedString] == nil,
        "there is no placeholder by default");
 
   /* Colour and bezel-style accessors. */
   [cell setTextColor: [NSColor redColor]];
-  pass([[cell textColor] isEqual: [NSColor redColor]], "setTextColor: updates the text colour");
+  PASS([[cell textColor] isEqual: [NSColor redColor]], "setTextColor: updates the text colour");
   [cell setBackgroundColor: [NSColor blueColor]];
-  pass([[cell backgroundColor] isEqual: [NSColor blueColor]], "setBackgroundColor: updates the background colour");
+  PASS([[cell backgroundColor] isEqual: [NSColor blueColor]], "setBackgroundColor: updates the background colour");
   [cell setBezelStyle: NSTextFieldRoundedBezel];
-  pass([cell bezelStyle] == NSTextFieldRoundedBezel, "setBezelStyle: updates the bezel style");
+  PASS([cell bezelStyle] == NSTextFieldRoundedBezel, "setBezelStyle: updates the bezel style");
 
   /* The placeholder is either a plain string or an attributed string; the
      accessor for the other kind returns nil. */
   cell = AUTORELEASE([[NSTextFieldCell alloc] initTextCell: @""]);
   [cell setPlaceholderString: @"type here"];
-  pass([[cell placeholderString] isEqualToString: @"type here"],
+  PASS([[cell placeholderString] isEqualToString: @"type here"],
        "placeholderString returns the plain placeholder");
-  pass([cell placeholderAttributedString] == nil,
+  PASS([cell placeholderAttributedString] == nil,
        "placeholderAttributedString is nil for a plain placeholder");
   {
     NSAttributedString *attr = AUTORELEASE([[NSAttributedString alloc] initWithString: @"attr ph"]);
     [cell setPlaceholderAttributedString: attr];
-    pass([[[cell placeholderAttributedString] string] isEqualToString: @"attr ph"],
+    PASS([[[cell placeholderAttributedString] string] isEqualToString: @"attr ph"],
          "placeholderAttributedString returns the attributed placeholder");
-    pass([cell placeholderString] == nil,
+    PASS([cell placeholderString] == nil,
          "placeholderString is nil for an attributed placeholder");
-    RELEASE(attr);
   }
 
   /* The real string value is stored. */
   [cell setStringValue: @"hello"];
-  pass([[cell stringValue] isEqualToString: @"hello"], "the cell stores its string value");
+  PASS([[cell stringValue] isEqualToString: @"hello"], "the cell stores its string value");
 
   END_SET("NSTextFieldCell attributes")
 

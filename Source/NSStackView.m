@@ -181,7 +181,7 @@
     {
       if (sp == 0.0)
         {
-          if (n >= 0)
+          if (n > 0)
             {
               NSView *v = [sv objectAtIndex: 0];
               sp = [v frame].size.height;
@@ -196,7 +196,7 @@
     {
       if (sp == 0.0)
         {
-          if (n >= 0)
+          if (n > 0)
             {
               NSView *v = [sv objectAtIndex: 0];
               sp = [v frame].size.width;

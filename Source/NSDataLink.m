@@ -182,6 +182,7 @@
 - (void)writeToPasteboard:(NSPasteboard *)pasteboard
 {
   NSData *data = [NSArchiver archivedDataWithRootObject: self];
+  [pasteboard declareTypes: [NSArray arrayWithObject: NSDataLinkPboardType] owner: nil];
   [pasteboard setData: data forType: NSDataLinkPboardType];
 }
 

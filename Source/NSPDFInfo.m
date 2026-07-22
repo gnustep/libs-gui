@@ -29,6 +29,19 @@
 
 @implementation NSPDFInfo
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _attributes = [[NSMutableDictionary alloc] init];
+      _tagNames = [[NSArray alloc] init];
+      _fileExtensionHidden = YES;
+      _paperSize = [[NSPrintInfo sharedPrintInfo] paperSize];
+    }
+  return self;
+}
+
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   return nil;
@@ -48,7 +61,22 @@
 
 - (instancetype) copyWithZone: (NSZone *)zone
 {
-  return nil;
+  NSPDFInfo *copy = [[[self class] allocWithZone: zone] init];
+
+  if (copy != nil)
+    {
+      RELEASE(copy->_url);
+      copy->_url = [_url copyWithZone: zone];
+      copy->_fileExtensionHidden = _fileExtensionHidden;
+      RELEASE(copy->_tagNames);
+      copy->_tagNames = [_tagNames copyWithZone: zone];
+      copy->_paperSize = _paperSize;
+      RELEASE(copy->_attributes);
+      copy->_attributes = [_attributes mutableCopyWithZone: zone];
+      copy->_orientation = _orientation;
+    }
+
+  return copy;
 }
 
 - (NSURL *) URL

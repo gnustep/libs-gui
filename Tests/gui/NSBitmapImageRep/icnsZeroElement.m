@@ -32,12 +32,12 @@ int main()
                         length: sizeof(zeroSizeElementICNS)];
 
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep == nil,
+  PASS(rep == nil,
     "an ICNS file with a zero-size element does not hang -initWithData:");
   [rep release];
 
   reps = [NSBitmapImageRep imageRepsWithData: data];
-  pass(reps != nil,
+  PASS(reps != nil,
     "an ICNS file with a zero-size element does not hang +imageRepsWithData:");
 
   [arp release];

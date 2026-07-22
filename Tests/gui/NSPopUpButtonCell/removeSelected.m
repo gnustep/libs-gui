@@ -44,7 +44,7 @@ main(int argc, char **argv)
 
     [c selectItemAtIndex: 1];
     [c removeItemAtIndex: 1];
-    pass([c indexOfSelectedItem] == 0
+    PASS([c indexOfSelectedItem] == 0
       && [[c titleOfSelectedItem] isEqualToString: @"a"],
       "removing the selected middle item selects the first item");
   }
@@ -55,7 +55,7 @@ main(int argc, char **argv)
 
     [c selectItemAtIndex: 3];
     [c removeItemAtIndex: 3];
-    pass([c indexOfSelectedItem] == 0
+    PASS([c indexOfSelectedItem] == 0
       && [[c titleOfSelectedItem] isEqualToString: @"a"],
       "removing the selected last item selects the first item");
   }
@@ -66,7 +66,7 @@ main(int argc, char **argv)
 
     [c addItemWithTitle: @"only"];
     [c removeItemAtIndex: 0];
-    pass([c numberOfItems] == 0 && [c indexOfSelectedItem] == -1,
+    PASS([c numberOfItems] == 0 && [c indexOfSelectedItem] == -1,
       "removing the only item clears the selection");
   }
 
@@ -77,7 +77,7 @@ main(int argc, char **argv)
 
     [c selectItemAtIndex: 2];      /* c */
     [c removeItemAtIndex: 0];       /* -> b c d */
-    pass([c indexOfSelectedItem] == 1
+    PASS([c indexOfSelectedItem] == 1
       && [[c titleOfSelectedItem] isEqualToString: @"c"],
       "removing an earlier item keeps the selection on the same item");
   }

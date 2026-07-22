@@ -32,7 +32,8 @@ NSAppearance *__currentAppearance = nil;
 // Creating an appearance...
 + (instancetype) appearanceNamed: (NSString *)name
 {
-  return [[NSAppearance alloc] initWithAppearanceNamed: name bundle: nil];
+  return AUTORELEASE([[NSAppearance alloc] initWithAppearanceNamed: name
+                                                            bundle: nil]);
 }
 
 - (instancetype) initWithAppearanceNamed: (NSString *)name bundle: (NSBundle *)bundle
@@ -41,7 +42,13 @@ NSAppearance *__currentAppearance = nil;
   if (self)
     {
       ASSIGNCOPY(_name, name);
-      _allowsVibrancy = NO;
+      _allowsVibrancy
+        = [name isEqualToString: NSAppearanceNameVibrantLight]
+        || [name isEqualToString: NSAppearanceNameVibrantDark]
+        || [name isEqualToString:
+             NSAppearanceNameAccessibilityHighContrastVibrantLight]
+        || [name isEqualToString:
+             NSAppearanceNameAccessibilityHighContrastVibrantDark];
     }
   return self;
 }
@@ -50,8 +57,15 @@ NSAppearance *__currentAppearance = nil;
 {
   if ([coder allowsKeyedCoding])
     {
+      /* The name carries the vibrancy with it, so the designated initialiser
+         works the rest out. */
+      return [self initWithAppearanceNamed:
+        [coder decodeObjectForKey: @"NSAppearanceName"]
+                                    bundle: nil];
     }
-  else
+
+  self = [super init];
+  if (self != nil)
     {
       ASSIGN(_name, [coder decodeObject]);
       [coder decodeValueOfObjCType: @encode(BOOL) at: &_allowsVibrancy];
@@ -61,8 +75,9 @@ NSAppearance *__currentAppearance = nil;
 
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-    if ([coder allowsKeyedCoding])
+  if ([coder allowsKeyedCoding])
     {
+      [coder encodeObject: _name forKey: @"NSAppearanceName"];
     }
   else
     {
@@ -83,9 +98,41 @@ NSAppearance *__currentAppearance = nil;
   return _name;
 }
 
+/* The appearance a vibrant appearance is a variant of.  Anything else stands
+   for itself, so it only ever matches its own name. */
+- (NSAppearanceName) _baseAppearanceName
+{
+  if ([_name isEqualToString: NSAppearanceNameVibrantLight]
+    || [_name isEqualToString:
+         NSAppearanceNameAccessibilityHighContrastVibrantLight])
+    {
+      return NSAppearanceNameAqua;
+    }
+  if ([_name isEqualToString: NSAppearanceNameVibrantDark]
+    || [_name isEqualToString:
+         NSAppearanceNameAccessibilityHighContrastVibrantDark])
+    {
+      return NSAppearanceNameDarkAqua;
+    }
+  return _name;
+}
+
 // Determining the most appropriate appearance
 - (NSAppearanceName) bestMatchFromAppearancesWithNames: (NSArray *)appearances
 {
+  NSAppearanceName base;
+
+  if ([appearances containsObject: _name])
+    {
+      return _name;
+    }
+
+  base = [self _baseAppearanceName];
+  if (base != nil && [appearances containsObject: base])
+    {
+      return base;
+    }
+
   return nil;
 }
 
@@ -97,6 +144,12 @@ NSAppearance *__currentAppearance = nil;
 
 + (NSAppearance *) currentAppearance
 {
+  if (__currentAppearance == nil)
+    {
+      __currentAppearance = [[NSAppearance alloc]
+        initWithAppearanceNamed: NSAppearanceNameAqua
+                         bundle: nil];
+    }
   return __currentAppearance;
 }
 

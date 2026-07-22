@@ -37,8 +37,8 @@ main(int argc, char **argv)
                                      numberOfRows: 1
                                   numberOfColumns: 1]);
 
-    pass([m prototype] != nil, "the prototype is set");
-    pass([m cellClass] == Nil, "a matrix with a prototype has no cell class");
+    PASS([m prototype] != nil, "the prototype is set");
+    PASS([m cellClass] == Nil, "a matrix with a prototype has no cell class");
   }
 
   /* Setting a cell class clears the prototype and reports the class. */
@@ -46,8 +46,8 @@ main(int argc, char **argv)
     NSMatrix *m = AUTORELEASE([[NSMatrix alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)]);
 
     [m setCellClass: [NSButtonCell class]];
-    pass([m cellClass] == [NSButtonCell class], "setCellClass: reports the cell class");
-    pass([m prototype] == nil, "setCellClass: clears the prototype");
+    PASS([m cellClass] == [NSButtonCell class], "setCellClass: reports the cell class");
+    PASS([m prototype] == nil, "setCellClass: clears the prototype");
   }
 
   /* Setting a prototype on that matrix hides the cell class again. */
@@ -56,7 +56,7 @@ main(int argc, char **argv)
 
     [m setCellClass: [NSButtonCell class]];
     [m setPrototype: AUTORELEASE([[NSButtonCell alloc] init])];
-    pass([m cellClass] == Nil, "setPrototype: makes the cell class Nil again");
+    PASS([m cellClass] == Nil, "setPrototype: makes the cell class Nil again");
   }
 
   END_SET("NSMatrix cell class vs prototype")
