@@ -40,48 +40,48 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 200, 24)]);
 
       /* Defaults. */
-      pass([sc segmentCount] == 0, "a new control has no segments");
-      pass([sc selectedSegment] == -1, "nothing is selected by default");
-      pass([sc segmentStyle] == NSSegmentStyleAutomatic,
+      PASS([sc segmentCount] == 0, "a new control has no segments");
+      PASS([sc selectedSegment] == -1, "nothing is selected by default");
+      PASS([sc segmentStyle] == NSSegmentStyleAutomatic,
            "the default style is automatic");
 
       /* Segment management. */
       [sc setSegmentCount: 3];
-      pass([sc segmentCount] == 3, "setSegmentCount: sets the number of segments");
+      PASS([sc segmentCount] == 3, "setSegmentCount: sets the number of segments");
       [sc setLabel: @"A" forSegment: 0];
       [sc setLabel: @"B" forSegment: 1];
       [sc setLabel: @"C" forSegment: 2];
-      pass([[sc labelForSegment: 1] isEqualToString: @"B"],
+      PASS([[sc labelForSegment: 1] isEqualToString: @"B"],
            "a segment keeps its label");
-      pass([sc isEnabledForSegment: 0] == YES,
+      PASS([sc isEnabledForSegment: 0] == YES,
            "a segment is enabled by default");
       [sc setWidth: 40.0 forSegment: 0];
-      pass([sc widthForSegment: 0] == 40.0, "a segment keeps its width");
-      pass([sc widthForSegment: 1] == 0.0,
+      PASS([sc widthForSegment: 0] == 40.0, "a segment keeps its width");
+      PASS([sc widthForSegment: 1] == 0.0,
            "an unset width is zero (auto sized)");
 
       /* setSelectedSegment: selects one segment. */
       [sc setSelectedSegment: 2];
-      pass([sc selectedSegment] == 2, "setSelectedSegment: selects the segment");
-      pass([sc isSelectedForSegment: 2] == YES, "the selected segment reports selected");
-      pass([sc isSelectedForSegment: 0] == NO, "another segment is not selected");
+      PASS([sc selectedSegment] == 2, "setSelectedSegment: selects the segment");
+      PASS([sc isSelectedForSegment: 2] == YES, "the selected segment reports selected");
+      PASS([sc isSelectedForSegment: 0] == NO, "another segment is not selected");
 
       /* setSelected:forSegment: keeps a single selection (select-one tracking). */
       [sc setSelected: YES forSegment: 1];
-      pass([sc selectedSegment] == 1, "selecting a segment updates selectedSegment");
-      pass([sc isSelectedForSegment: 1] == YES, "the newly selected segment is selected");
-      pass([sc isSelectedForSegment: 2] == NO,
+      PASS([sc selectedSegment] == 1, "selecting a segment updates selectedSegment");
+      PASS([sc isSelectedForSegment: 1] == YES, "the newly selected segment is selected");
+      PASS([sc isSelectedForSegment: 2] == NO,
            "the previously selected segment is deselected");
 
       /* Per-segment enabled state. */
       [sc setEnabled: NO forSegment: 1];
-      pass([sc isEnabledForSegment: 1] == NO, "a segment can be disabled");
-      pass([sc isEnabledForSegment: 0] == YES,
+      PASS([sc isEnabledForSegment: 1] == NO, "a segment can be disabled");
+      PASS([sc isEnabledForSegment: 0] == YES,
            "disabling one segment leaves the others enabled");
 
       /* Segment style round-trip. */
       [sc setSegmentStyle: NSSegmentStyleCapsule];
-      pass([sc segmentStyle] == NSSegmentStyleCapsule,
+      PASS([sc segmentStyle] == NSSegmentStyleCapsule,
            "setSegmentStyle: round trips");
     }
   NS_HANDLER
