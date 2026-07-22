@@ -979,7 +979,12 @@ static BOOL _isAutolaunchChecked = NO;
    * initialization code behaves always in the same way for this class
    * and for subclasses.
    */
-  NSAssert (NSApp == nil, _(@"[NSApplication -init] called more than once"));
+  if (NSApp != nil)
+    {
+      RELEASE(self);
+      [NSException raise: NSInternalInconsistencyException
+  		  format: _(@"[NSApplication -init] called more than once")];
+    }
 
   /*
    * The appkit should run in the main thread ... so to be sure we perform
