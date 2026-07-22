@@ -3246,6 +3246,7 @@ didStartElement: (NSString*)elementName
       [runtimeAttribute setValue: visibleAtLaunch];
 
       [_flattenedProperties setElement: runtimeAttribute forKey: refID];
+      RELEASE(runtimeAttribute);
     }
 
   return object;
