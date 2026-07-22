@@ -717,6 +717,7 @@
 
       if (url != nil)
 	{
+          unsigned int i;
 	  const char *path = [[url path] UTF8String];
 
 	  NSDebugLog(@"[Info] Opening file: %s | Timestamp: %ld", path, av_gettime());
@@ -735,7 +736,7 @@
 	    }
 
 	  _videoStreamIndex = -1;
-	  for (unsigned int i = 0; i < _formatCtx->nb_streams; i++)
+	  for (i = 0; i < _formatCtx->nb_streams; i++)
 	    {
 	      if (_formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
 		{
@@ -746,7 +747,7 @@
 	    }
 
 	  _audioStreamIndex = -1;
-	  for (unsigned int i = 0; i < _formatCtx->nb_streams; i++)
+	  for (i = 0; i < _formatCtx->nb_streams; i++)
 	    {
 	      if (_formatCtx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
 		{
