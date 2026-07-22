@@ -37,23 +37,23 @@ main(int argc, char **argv)
       f = AUTORELEASE([[NSForm alloc]
         initWithFrame: NSMakeRect(0, 0, 200, 100)]);
 
-      pass([f numberOfRows] == 0, "a new form has no entries");
+      PASS([f numberOfRows] == 0, "a new form has no entries");
 
       NSFormCell *e0 = [f addEntry: @"Name"];
       NSFormCell *e1 = [f addEntry: @"Email"];
       [e1 setTag: 42];
 
-      pass([e0 isKindOfClass: [NSFormCell class]],
+      PASS([e0 isKindOfClass: [NSFormCell class]],
            "addEntry: returns a form cell");
-      pass([f numberOfRows] == 2, "adding two entries makes two rows");
-      pass([f cellAtIndex: 0] == e0, "the cell at index zero is the first entry");
-      pass([[[f cellAtIndex: 1] title] isEqualToString: @"Email"],
+      PASS([f numberOfRows] == 2, "adding two entries makes two rows");
+      PASS([f cellAtIndex: 0] == e0, "the cell at index zero is the first entry");
+      PASS([[[f cellAtIndex: 1] title] isEqualToString: @"Email"],
            "the second entry keeps its title");
-      pass([f indexOfCellWithTag: 42] == 1, "an entry is found by its tag");
+      PASS([f indexOfCellWithTag: 42] == 1, "an entry is found by its tag");
 
       [f removeEntryAtIndex: 0];
-      pass([f numberOfRows] == 1, "removing an entry drops a row");
-      pass([[[f cellAtIndex: 0] title] isEqualToString: @"Email"],
+      PASS([f numberOfRows] == 1, "removing an entry drops a row");
+      PASS([[[f cellAtIndex: 0] title] isEqualToString: @"Email"],
            "the remaining entry shifts into index zero");
     }
   NS_HANDLER
