@@ -1243,21 +1243,39 @@
   if (tiles == nil)
     {
       NSColor	*backgroundColor = [cell backgroundColor];
+      CGFloat radius = 0.0;
+
+      /* Only a highlighted item shows a coloured background, so round just
+         that one; rounding the plain items would notch every row. */
+      if (state == GSThemeHighlightedState || state == GSThemeSelectedState)
+        {
+          radius = [self menuItemBackgroundRadius];
+        }
 
       if (isHorizontal)
 	{
 	  cellFrame = [cell drawingRectForBounds: cellFrame];
-	  [backgroundColor set];
-	  NSRectFill(cellFrame);
+	}
+
+      [backgroundColor set];
+      if (radius > 0.0)
+        {
+          [[NSBezierPath bezierPathWithRoundedRect: cellFrame
+                                           xRadius: radius
+                                           yRadius: radius] fill];
+        }
+      else
+        {
+          NSRectFill(cellFrame);
+        }
+
+      if (isHorizontal)
+	{
 	  return;
 	}
 
-      // Set cell's background color
-      [backgroundColor set];
-      NSRectFill(cellFrame);
-
-      if (![self drawsBorderForMenuItemCell: cell 
-                                      state: state 
+      if (![self drawsBorderForMenuItemCell: cell
+                                      state: state
                                isHorizontal: isHorizontal])
         {
           return;
@@ -1440,6 +1458,11 @@
       return 20;
     }
   return height;
+}
+
+- (CGFloat) menuItemBackgroundRadius
+{
+  return 0.0;
 }
 
 - (NSEdgeInsets) menuItemAreaInsets

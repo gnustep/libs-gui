@@ -1212,6 +1212,13 @@ APPKIT_EXPORT_CLASS
 - (CGFloat) menuSeparatorHeight;
 
 /**
+ * Corner radius used when filling the background of a highlighted menu item.
+ * The default is zero, which fills the whole item rectangle; a larger value
+ * rounds the corners of the highlight.
+ */
+- (CGFloat) menuItemBackgroundRadius;
+
+/**
  * Padding between the edges of a vertical menu and its item cells.  The
  * default is zero on every side; a theme can return larger insets to inset the
  * list of items within the menu.
