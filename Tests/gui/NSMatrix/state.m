@@ -30,33 +30,33 @@ int main()
         initWithFrame: NSMakeRect(0, 0, 100, 100)]);
 
       /* matching defaults */
-      pass([m mode] == NSRadioModeMatrix, "the default mode is radio");
+      PASS([m mode] == NSRadioModeMatrix, "the default mode is radio");
       {
         NSSize s = [m intercellSpacing];
-        pass(s.width == 1 && s.height == 1, "the default intercell spacing is 1x1");
+        PASS(s.width == 1 && s.height == 1, "the default intercell spacing is 1x1");
       }
-      pass([m drawsBackground] == NO, "a matrix does not draw its background by default");
-      pass([m drawsCellBackground] == NO,
+      PASS([m drawsBackground] == NO, "a matrix does not draw its background by default");
+      PASS([m drawsCellBackground] == NO,
            "a matrix does not draw its cell background by default");
-      pass([m isSelectionByRect] == YES, "selection by rect is on by default");
-      pass([m numberOfRows] == 0, "a new matrix has no rows");
-      pass([m numberOfColumns] == 0, "a new matrix has no columns");
-      pass([m selectedRow] == -1, "no row is selected by default");
-      pass([m selectedColumn] == -1, "no column is selected by default");
-      pass([m allowsEmptySelection] == NO,
+      PASS([m isSelectionByRect] == YES, "selection by rect is on by default");
+      PASS([m numberOfRows] == 0, "a new matrix has no rows");
+      PASS([m numberOfColumns] == 0, "a new matrix has no columns");
+      PASS([m selectedRow] == -1, "no row is selected by default");
+      PASS([m selectedColumn] == -1, "no column is selected by default");
+      PASS([m allowsEmptySelection] == NO,
            "empty selection is not allowed by default");
 
       /* round-trips */
       [m setMode: NSListModeMatrix];
-      pass([m mode] == NSListModeMatrix, "mode round-trips");
+      PASS([m mode] == NSListModeMatrix, "mode round-trips");
       [m setSelectionByRect: NO];
-      pass([m isSelectionByRect] == NO, "selectionByRect round-trips");
+      PASS([m isSelectionByRect] == NO, "selectionByRect round-trips");
       [m setDrawsBackground: YES];
-      pass([m drawsBackground] == YES, "drawsBackground round-trips");
+      PASS([m drawsBackground] == YES, "drawsBackground round-trips");
       [m setIntercellSpacing: NSMakeSize(4, 6)];
       {
         NSSize s = [m intercellSpacing];
-        pass(s.width == 4 && s.height == 6, "intercellSpacing round-trips");
+        PASS(s.width == 4 && s.height == 6, "intercellSpacing round-trips");
       }
     }
   NS_HANDLER
