@@ -43,40 +43,40 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 120, 22)]);
 
       /* Defaults. */
-      pass([tf isEditable] == YES, "a text field is editable by default");
-      pass([tf isSelectable] == YES, "a text field is selectable by default");
-      pass([tf isBezeled] == YES, "a text field is bezeled by default");
-      pass([tf isBordered] == NO, "a text field is not bordered by default");
-      pass([tf drawsBackground] == YES,
+      PASS([tf isEditable] == YES, "a text field is editable by default");
+      PASS([tf isSelectable] == YES, "a text field is selectable by default");
+      PASS([tf isBezeled] == YES, "a text field is bezeled by default");
+      PASS([tf isBordered] == NO, "a text field is not bordered by default");
+      PASS([tf drawsBackground] == YES,
            "a text field draws its background by default");
-      pass([tf alignment] == NSTextAlignmentLeft,
+      PASS([tf alignment] == NSTextAlignmentLeft,
            "the default alignment is left");
-      pass([tf allowsEditingTextAttributes] == NO,
+      PASS([tf allowsEditingTextAttributes] == NO,
            "attribute editing is off by default");
-      pass([tf textColor] != nil, "there is a text colour by default");
-      pass([tf backgroundColor] != nil, "there is a background colour by default");
-      pass([[tf stringValue] isEqualToString: @""],
+      PASS([tf textColor] != nil, "there is a text colour by default");
+      PASS([tf backgroundColor] != nil, "there is a background colour by default");
+      PASS([[tf stringValue] isEqualToString: @""],
            "the default string value is empty");
-      pass([tf placeholderString] == nil, "there is no placeholder by default");
+      PASS([tf placeholderString] == nil, "there is no placeholder by default");
 
       /* Setter round-trips. */
       [tf setEditable: NO];
-      pass([tf isEditable] == NO, "setEditable: round trips");
+      PASS([tf isEditable] == NO, "setEditable: round trips");
       [tf setSelectable: NO];
-      pass([tf isSelectable] == NO, "setSelectable: round trips");
+      PASS([tf isSelectable] == NO, "setSelectable: round trips");
       [tf setBezeled: NO];
-      pass([tf isBezeled] == NO, "setBezeled: round trips");
+      PASS([tf isBezeled] == NO, "setBezeled: round trips");
       [tf setBordered: YES];
-      pass([tf isBordered] == YES, "setBordered: round trips");
+      PASS([tf isBordered] == YES, "setBordered: round trips");
       [tf setDrawsBackground: NO];
-      pass([tf drawsBackground] == NO, "setDrawsBackground: round trips");
+      PASS([tf drawsBackground] == NO, "setDrawsBackground: round trips");
       [tf setAlignment: NSTextAlignmentRight];
-      pass([tf alignment] == NSTextAlignmentRight, "setAlignment: round trips");
+      PASS([tf alignment] == NSTextAlignmentRight, "setAlignment: round trips");
       [tf setStringValue: @"hello"];
-      pass([[tf stringValue] isEqualToString: @"hello"],
+      PASS([[tf stringValue] isEqualToString: @"hello"],
            "setStringValue: round trips");
       [tf setPlaceholderString: @"type here"];
-      pass([[tf placeholderString] isEqualToString: @"type here"],
+      PASS([[tf placeholderString] isEqualToString: @"type here"],
            "setPlaceholderString: round trips");
 
       /* Making a field editable makes it selectable too. */
@@ -84,7 +84,7 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 120, 22)]);
       [tf2 setSelectable: NO];
       [tf2 setEditable: YES];
-      pass([tf2 isSelectable] == YES,
+      PASS([tf2 isSelectable] == YES,
            "making a field editable makes it selectable");
     }
   NS_HANDLER
