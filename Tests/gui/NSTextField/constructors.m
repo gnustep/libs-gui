@@ -43,48 +43,48 @@ main(int argc, char **argv)
     {
       /* +labelWithString: a static, non-interactive label. */
       label = [NSTextField labelWithString: @"Label"];
-      pass([[label stringValue] isEqualToString: @"Label"],
+      PASS([[label stringValue] isEqualToString: @"Label"],
            "the label keeps its string");
-      pass([label isEditable] == NO, "a label is not editable");
-      pass([label isSelectable] == NO, "a label is not selectable");
-      pass([label isBezeled] == NO, "a label is not bezeled");
-      pass([label isBordered] == NO, "a label is not bordered");
-      pass([label drawsBackground] == NO, "a label draws no background");
-      pass([[label cell] lineBreakMode] == NSLineBreakByClipping,
+      PASS([label isEditable] == NO, "a label is not editable");
+      PASS([label isSelectable] == NO, "a label is not selectable");
+      PASS([label isBezeled] == NO, "a label is not bezeled");
+      PASS([label isBordered] == NO, "a label is not bordered");
+      PASS([label drawsBackground] == NO, "a label draws no background");
+      PASS([[label cell] lineBreakMode] == NSLineBreakByClipping,
            "a label clips its line");
-      pass([label alignment] == NSTextAlignmentNatural,
+      PASS([label alignment] == NSTextAlignmentNatural,
            "a label uses natural alignment");
 
       /* +textFieldWithString: a standard editable field. */
       field = [NSTextField textFieldWithString: @"Field"];
-      pass([[field stringValue] isEqualToString: @"Field"],
+      PASS([[field stringValue] isEqualToString: @"Field"],
            "the text field keeps its string");
-      pass([field isEditable] == YES, "a text field is editable");
-      pass([field isSelectable] == YES, "a text field is selectable");
-      pass([field isBezeled] == YES, "a text field is bezeled");
-      pass([field isBordered] == NO, "a text field is not bordered");
-      pass([field drawsBackground] == YES, "a text field draws its background");
+      PASS([field isEditable] == YES, "a text field is editable");
+      PASS([field isSelectable] == YES, "a text field is selectable");
+      PASS([field isBezeled] == YES, "a text field is bezeled");
+      PASS([field isBordered] == NO, "a text field is not bordered");
+      PASS([field drawsBackground] == YES, "a text field draws its background");
 
       /* +wrappingLabelWithString: a selectable, wrapping label. */
       wrap = [NSTextField wrappingLabelWithString: @"Wrap"];
-      pass([[wrap stringValue] isEqualToString: @"Wrap"],
+      PASS([[wrap stringValue] isEqualToString: @"Wrap"],
            "the wrapping label keeps its string");
-      pass([wrap isEditable] == NO, "a wrapping label is not editable");
-      pass([wrap isSelectable] == YES, "a wrapping label is selectable");
-      pass([wrap isBezeled] == NO, "a wrapping label is not bezeled");
-      pass([wrap drawsBackground] == NO, "a wrapping label draws no background");
-      pass([[wrap cell] lineBreakMode] == NSLineBreakByWordWrapping,
+      PASS([wrap isEditable] == NO, "a wrapping label is not editable");
+      PASS([wrap isSelectable] == YES, "a wrapping label is selectable");
+      PASS([wrap isBezeled] == NO, "a wrapping label is not bezeled");
+      PASS([wrap drawsBackground] == NO, "a wrapping label draws no background");
+      PASS([[wrap cell] lineBreakMode] == NSLineBreakByWordWrapping,
            "a wrapping label wraps at word boundaries");
 
       /* +labelWithAttributedString: a rich-text label. */
       attr = [NSTextField labelWithAttributedString:
         AUTORELEASE([[NSAttributedString alloc] initWithString: @"Attr"])];
-      pass([[attr stringValue] isEqualToString: @"Attr"],
+      PASS([[attr stringValue] isEqualToString: @"Attr"],
            "the attributed label exposes its plain string");
-      pass([attr isEditable] == NO, "an attributed label is not editable");
-      pass([attr isSelectable] == NO, "an attributed label is not selectable");
-      pass([attr isBezeled] == NO, "an attributed label is not bezeled");
-      pass([[attr cell] lineBreakMode] == NSLineBreakByWordWrapping,
+      PASS([attr isEditable] == NO, "an attributed label is not editable");
+      PASS([attr isSelectable] == NO, "an attributed label is not selectable");
+      PASS([attr isBezeled] == NO, "an attributed label is not bezeled");
+      PASS([[attr cell] lineBreakMode] == NSLineBreakByWordWrapping,
            "an attributed label wraps at word boundaries");
     }
   NS_HANDLER
