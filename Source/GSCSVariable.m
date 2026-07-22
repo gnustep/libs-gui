@@ -104,7 +104,7 @@
 
 - (BOOL) isRestricted
 {
-  return _type == GSCSVariableTypeExternal || _type == GSCSVariableTypeSlack;
+  return _type == GSCSVariableTypeDummy || _type == GSCSVariableTypeSlack;
 }
 
 - (NSString *) description

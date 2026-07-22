@@ -44,6 +44,9 @@
    NSMapTable *_internalConstraintsByViewIndex;
    NSMapTable *_supportingConstraintsByConstraint;
    int _viewCounter;
+   NSView *_contentView;
+   NSLayoutConstraint *_contentWidthConstraint;
+   NSLayoutConstraint *_contentHeightConstraint;
 }
 
 - (instancetype) initWithSolver: (GSCassowarySolver*)solver;
@@ -59,6 +62,10 @@
 - (NSRect) alignmentRectForView: (NSView *)view;
 
 - (NSArray *) constraintsForView: (NSView *)view;
+
+- (void) pinContentView: (NSView *)contentView;
+
+- (BOOL) updateContentViewSize;
 
 @end
 

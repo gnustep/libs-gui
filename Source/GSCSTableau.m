@@ -265,7 +265,7 @@
   [expression removeVariable: term];
   [expression setConstant: (coefficieint * [newExpression constant]) +
                            [expression constant]];
-  NSArray *termVariables = [expression termVariables];
+  NSArray *termVariables = [newExpression termVariables];
   FOR_IN(GSCSVariable *, newExpressionTerm, termVariables)
     [self substituteOutTermInExpression: expression
                           newExpression: newExpression

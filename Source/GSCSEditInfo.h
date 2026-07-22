@@ -33,7 +33,7 @@
   GSCSVariable *_variable;
   GSCSVariable *_plusVariable;
   GSCSVariable *_minusVariable;
-  NSInteger _previousConstant;
+  CGFloat _previousConstant;
 }
 
 #if GS_HAS_DECLARED_PROPERTIES
@@ -48,11 +48,19 @@
 - (GSCSVariable *) variable;
 #endif
 
+- (GSCSVariable *) plusVariable;
+
+- (GSCSVariable *) minusVariable;
+
+- (CGFloat) previousConstant;
+
+- (void) setPreviousConstant: (CGFloat)previousConstant;
+
 - (instancetype) initWithVariable: (GSCSVariable *)variable
                        constraint: (GSCSConstraint *)constraint
                      plusVariable: (GSCSVariable *)plusVariable
                     minusVariable: (GSCSVariable *)minusVariable
-                 previousConstant: (NSInteger)previousConstant;
+                 previousConstant: (CGFloat)previousConstant;
 
 @end
 
