@@ -36,12 +36,12 @@ main(int argc, char **argv)
       iv = AUTORELEASE([[NSImageView alloc]
         initWithFrame: NSMakeRect(0, 0, 80, 80)]);
 
-      pass([iv animates] == YES, "an image view animates by default");
+      PASS([iv animates] == YES, "an image view animates by default");
 
       [iv setAnimates: NO];
-      pass([iv animates] == NO, "setAnimates: NO round trips");
+      PASS([iv animates] == NO, "setAnimates: NO round trips");
       [iv setAnimates: YES];
-      pass([iv animates] == YES, "setAnimates: YES round trips");
+      PASS([iv animates] == YES, "setAnimates: YES round trips");
     }
   NS_HANDLER
     {
