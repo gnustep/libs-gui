@@ -36,17 +36,17 @@ int main()
       c0 = [m cellAtRow: 0 column: 0];
       c1 = [m cellAtRow: 0 column: 1];
 
-      pass([m toolTipForCell: c0] == nil,
+      PASS([m toolTipForCell: c0] == nil,
            "a cell with no tool tip returns nil");
 
       [m setToolTip: @"hello" forCell: c0];
-      pass([[m toolTipForCell: c0] isEqualToString: @"hello"],
+      PASS([[m toolTipForCell: c0] isEqualToString: @"hello"],
            "setToolTip:forCell: records the tool tip");
-      pass([m toolTipForCell: c1] == nil,
+      PASS([m toolTipForCell: c1] == nil,
            "another cell still has no tool tip");
 
       [m setToolTip: nil forCell: c0];
-      pass([m toolTipForCell: c0] == nil, "a nil tool tip clears the cell");
+      PASS([m toolTipForCell: c0] == nil, "a nil tool tip clears the cell");
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]
