@@ -92,13 +92,13 @@ main(int argc, char **argv)
       [img addRepresentation: rep];
 
       NSColor *first = renderCentre(img);
-      pass(first != nil && [first redComponent] > 0.9
+      PASS(first != nil && [first redComponent] > 0.9
            && [first blueComponent] < 0.1,
            "the custom rep draws red the first time");
 
       p->color = [NSColor blueColor];
       NSColor *second = renderCentre(img);
-      pass(second != nil && [second blueComponent] > 0.9
+      PASS(second != nil && [second blueComponent] > 0.9
            && [second redComponent] < 0.1,
            "the custom rep redraws in the new colour, not a stale cache");
     }
