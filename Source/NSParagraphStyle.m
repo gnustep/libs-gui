@@ -468,9 +468,11 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   if ([aCoder allowsKeyedCoding])
     {
-      _firstLineHeadIndent = [aCoder decodeFloatForKey: @"NSFirstLineHeadIndent"];
+      _firstLineHeadIndent
+	= [aCoder decodeFloatForKey: @"NSFirstLineHeadIndent"];
       _headIndent = [aCoder decodeFloatForKey: @"NSHeadIndent"];
-      _paragraphSpacing = [aCoder decodeFloatForKey: @"NSParagraphSpacingBefore"];
+      _paragraphSpacing
+	= [aCoder decodeFloatForKey: @"NSParagraphSpacingBefore"];
       ASSIGN(_tabStops, [aCoder decodeObjectForKey: @"NSTabStops"]);
       ASSIGN(_textLists, [aCoder decodeObjectForKey: @"NSTextLists"]);
       _baseDirection = [aCoder decodeIntForKey: @"NSWritingDirection"];
@@ -512,14 +514,23 @@ static NSParagraphStyle	*defaultStyle = nil;
           NSTextTabType *types;
           NSUInteger i;
 
-	  /* NB. NSZoneMalloc() raises an exception if we are out of memory
-	   * so we could leak the object being initialised here. Maybe the
-	   * stack would be better.
-	   */
-          locations = NSZoneMalloc(NSDefaultMallocZone(),
-                                   count * sizeof(float));
-          types = NSZoneMalloc(NSDefaultMallocZone(),
-                               count * sizeof(NSTextTabType));
+          locations = malloc(count * sizeof(float));
+          types = malloc(count * sizeof(NSTextTabType));
+	  if (NULL == types || NULL == locations)
+	    {
+	      if (types)
+		{
+		  free(types);
+		}
+	      if (locations)
+		{
+		  free(locations);
+		}
+	      RELEASE(self);
+	      [NSException raise: NSInternalInconsistencyException
+		format: @"not enough memory to decode (%"PRIdPTR
+		@") tab stops", count];
+	    }
           [aCoder decodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
@@ -535,13 +546,14 @@ static NSParagraphStyle	*defaultStyle = nil;
               [_tabStops addObject: tab];
               RELEASE(tab);
             }
-          NSZoneFree(NSDefaultMallocZone(), locations);
-          NSZoneFree(NSDefaultMallocZone(), types);
+          free(locations);
+          free(types);
         }
       
       if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 2)
         {
-          [aCoder decodeValueOfObjCType: @encode(NSInteger) at: &_baseDirection];
+          [aCoder decodeValueOfObjCType: @encode(NSInteger)
+				     at: &_baseDirection];
         }
     }
 
