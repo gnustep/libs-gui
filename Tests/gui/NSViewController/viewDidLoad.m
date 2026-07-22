@@ -56,17 +56,17 @@ main(int argc, char **argv)
       CodeViewController *vc = AUTORELEASE([[CodeViewController alloc]
         initWithNibName: nil bundle: nil]);
 
-      pass([vc isViewLoaded] == NO, "the view is not loaded before it is used");
-      pass(vc->viewDidLoadCount == 0, "viewDidLoad has not been sent yet");
+      PASS([vc isViewLoaded] == NO, "the view is not loaded before it is used");
+      PASS(vc->viewDidLoadCount == 0, "viewDidLoad has not been sent yet");
 
       NSView *v = [vc view];
-      pass(v != nil, "accessing the view loads it from -loadView");
-      pass([vc isViewLoaded] == YES, "the view reports as loaded");
-      pass(vc->viewDidLoadCount == 1, "viewDidLoad is sent once the view loads");
+      PASS(v != nil, "accessing the view loads it from -loadView");
+      PASS([vc isViewLoaded] == YES, "the view reports as loaded");
+      PASS(vc->viewDidLoadCount == 1, "viewDidLoad is sent once the view loads");
 
       /* Accessing the view again must not send viewDidLoad a second time. */
       [vc view];
-      pass(vc->viewDidLoadCount == 1, "viewDidLoad is sent only once");
+      PASS(vc->viewDidLoadCount == 1, "viewDidLoad is sent only once");
     }
   NS_HANDLER
     {
