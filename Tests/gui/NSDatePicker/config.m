@@ -42,44 +42,44 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 180, 24)]);
 
       /* Defaults. */
-      pass([dp datePickerStyle] == NSTextFieldAndStepperDatePickerStyle,
+      PASS([dp datePickerStyle] == NSTextFieldAndStepperDatePickerStyle,
            "the default style is text field and stepper");
-      pass([dp datePickerMode] == NSSingleDateMode,
+      PASS([dp datePickerMode] == NSSingleDateMode,
            "the default mode is a single date");
-      pass([dp datePickerElements] == (NSYearMonthDayDatePickerElementFlag
+      PASS([dp datePickerElements] == (NSYearMonthDayDatePickerElementFlag
              | NSHourMinuteSecondDatePickerElementFlag),
            "the default elements are year-month-day and hour-minute-second");
-      pass([dp drawsBackground] == NO, "the picker draws no background by default");
-      pass([dp isBordered] == NO, "the picker is not bordered by default");
-      pass([dp minDate] == nil, "there is no minimum date by default");
-      pass([dp maxDate] == nil, "there is no maximum date by default");
+      PASS([dp drawsBackground] == NO, "the picker draws no background by default");
+      PASS([dp isBordered] == NO, "the picker is not bordered by default");
+      PASS([dp minDate] == nil, "there is no minimum date by default");
+      PASS([dp maxDate] == nil, "there is no maximum date by default");
 
       /* Setter round-trips. */
       [dp setDatePickerStyle: NSClockAndCalendarDatePickerStyle];
-      pass([dp datePickerStyle] == NSClockAndCalendarDatePickerStyle,
+      PASS([dp datePickerStyle] == NSClockAndCalendarDatePickerStyle,
            "setDatePickerStyle: round trips");
       [dp setDatePickerMode: NSRangeDateMode];
-      pass([dp datePickerMode] == NSRangeDateMode, "setDatePickerMode: round trips");
+      PASS([dp datePickerMode] == NSRangeDateMode, "setDatePickerMode: round trips");
       [dp setDatePickerElements: NSYearMonthDayDatePickerElementFlag];
-      pass([dp datePickerElements] == NSYearMonthDayDatePickerElementFlag,
+      PASS([dp datePickerElements] == NSYearMonthDayDatePickerElementFlag,
            "setDatePickerElements: round trips");
       [dp setDrawsBackground: YES];
-      pass([dp drawsBackground] == YES, "setDrawsBackground: round trips");
+      PASS([dp drawsBackground] == YES, "setDrawsBackground: round trips");
       [dp setBezeled: NO];
-      pass([dp isBezeled] == NO, "setBezeled: NO round trips");
+      PASS([dp isBezeled] == NO, "setBezeled: NO round trips");
 
       /* Date value and range round-trips. */
       NSDate *d  = [NSDate dateWithTimeIntervalSinceReferenceDate: 700000000.0];
       NSDate *lo = [NSDate dateWithTimeIntervalSinceReferenceDate: 600000000.0];
       NSDate *hi = [NSDate dateWithTimeIntervalSinceReferenceDate: 800000000.0];
       [dp setDateValue: d];
-      pass([[dp dateValue] timeIntervalSinceReferenceDate] == 700000000.0,
+      PASS([[dp dateValue] timeIntervalSinceReferenceDate] == 700000000.0,
            "setDateValue: round trips");
       [dp setMinDate: lo];
-      pass([[dp minDate] timeIntervalSinceReferenceDate] == 600000000.0,
+      PASS([[dp minDate] timeIntervalSinceReferenceDate] == 600000000.0,
            "setMinDate: round trips");
       [dp setMaxDate: hi];
-      pass([[dp maxDate] timeIntervalSinceReferenceDate] == 800000000.0,
+      PASS([[dp maxDate] timeIntervalSinceReferenceDate] == 800000000.0,
            "setMaxDate: round trips");
     }
   NS_HANDLER
