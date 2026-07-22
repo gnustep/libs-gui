@@ -1237,12 +1237,6 @@ static BOOL _isAutolaunchChecked = NO;
 
 - (void) dealloc
 {
-  GSDisplayServer *srv = GSServerForWindow(_app_icon_window);
-
-  if (srv == nil)
-    {
-      srv = GSCurrentServer();
-    }
   [[[NSWorkspace sharedWorkspace] notificationCenter]
     removeObserver: self];
   [nc removeObserver: self];
@@ -1276,9 +1270,23 @@ static BOOL _isAutolaunchChecked = NO;
   [NSGraphicsContext setCurrentContext: nil];
   DESTROY(_default_context);
 
-  /* Close the server */
-  [srv closeServer];
-  DESTROY(srv);
+  /* The display server is notionally owned by the NSApplication singleton
+   * so if (and only if) this is that object, we should shut it down.
+   */
+  if (self == NSApp)
+    {
+      GSDisplayServer *srv;
+
+      NSApp = nil;
+      /* Close the server */
+      srv = GSServerForWindow(_app_icon_window);
+      if (srv == nil)
+	{
+	  srv = GSCurrentServer();
+	}
+      [srv closeServer];
+      DESTROY(srv);
+    }
 
   [super dealloc];
 }
