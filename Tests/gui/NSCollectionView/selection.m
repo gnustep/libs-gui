@@ -41,13 +41,13 @@ main(int argc, char **argv)
 
       /* No items are loaded, so index 1 is past the end. */
       [cv setSelectionIndexes: [NSIndexSet indexSetWithIndex: 1]];
-      pass([[cv selectionIndexes] count] == 1,
+      PASS([[cv selectionIndexes] count] == 1,
            "an out-of-range selection index is still stored");
-      pass([[cv selectionIndexes] containsIndex: 1],
+      PASS([[cv selectionIndexes] containsIndex: 1],
            "the stored selection keeps the given index");
 
       [cv setSelectionIndexes: [NSIndexSet indexSet]];
-      pass([[cv selectionIndexes] count] == 0,
+      PASS([[cv selectionIndexes] count] == 0,
            "the selection can be cleared");
     }
   NS_HANDLER
