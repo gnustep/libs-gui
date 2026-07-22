@@ -36,15 +36,15 @@ main(int argc, char **argv)
       cb = AUTORELEASE([[NSComboBox alloc]
         initWithFrame: NSMakeRect(0, 0, 120, 22)]);
 
-      pass([cb numberOfVisibleItems] == 5,
+      PASS([cb numberOfVisibleItems] == 5,
            "the default number of visible items is five");
 
       [cb setNumberOfVisibleItems: 8];
-      pass([cb numberOfVisibleItems] == 8,
+      PASS([cb numberOfVisibleItems] == 8,
            "a count of eight is stored");
 
       [cb setNumberOfVisibleItems: 12];
-      pass([cb numberOfVisibleItems] == 12,
+      PASS([cb numberOfVisibleItems] == 12,
            "a count above ten is stored");
     }
   NS_HANDLER
