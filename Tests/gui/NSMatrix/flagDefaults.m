@@ -27,15 +27,15 @@ int main()
       m = AUTORELEASE([[NSMatrix alloc]
         initWithFrame: NSMakeRect(0, 0, 100, 100)]);
 
-      pass([m autosizesCells] == NO,
+      PASS([m autosizesCells] == NO,
            "a new matrix does not autosize its cells");
-      pass([m tabKeyTraversesCells] == NO,
+      PASS([m tabKeyTraversesCells] == NO,
            "a new matrix does not let the tab key traverse cells");
 
       [m setAutosizesCells: YES];
-      pass([m autosizesCells] == YES, "autosizesCells round-trips");
+      PASS([m autosizesCells] == YES, "autosizesCells round-trips");
       [m setTabKeyTraversesCells: YES];
-      pass([m tabKeyTraversesCells] == YES, "tabKeyTraversesCells round-trips");
+      PASS([m tabKeyTraversesCells] == YES, "tabKeyTraversesCells round-trips");
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]
