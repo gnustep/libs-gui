@@ -30,24 +30,24 @@ int main()
         initWithFrame: NSMakeRect(0, 0, 200, 200)]);
 
       [tv setGridStyleMask: NSTableViewSolidHorizontalGridLineMask];
-      pass([tv gridStyleMask] == NSTableViewSolidHorizontalGridLineMask,
+      PASS([tv gridStyleMask] == NSTableViewSolidHorizontalGridLineMask,
            "gridStyleMask round-trips");
-      pass([tv drawsGrid] == YES, "a non-empty grid mask means drawsGrid is YES");
+      PASS([tv drawsGrid] == YES, "a non-empty grid mask means drawsGrid is YES");
 
       [tv setGridStyleMask: NSTableViewGridNone];
-      pass([tv drawsGrid] == NO, "the none grid mask means drawsGrid is NO");
+      PASS([tv drawsGrid] == NO, "the none grid mask means drawsGrid is NO");
 
       [tv setDrawsGrid: YES];
-      pass([tv gridStyleMask] == (NSTableViewSolidVerticalGridLineMask
+      PASS([tv gridStyleMask] == (NSTableViewSolidVerticalGridLineMask
                                   | NSTableViewSolidHorizontalGridLineMask),
            "setDrawsGrid: YES sets the solid vertical and horizontal mask");
       [tv setDrawsGrid: NO];
-      pass([tv gridStyleMask] == NSTableViewGridNone,
+      PASS([tv gridStyleMask] == NSTableViewGridNone,
            "setDrawsGrid: NO clears the grid mask");
 
-      pass([tv allowsTypeSelect] == YES, "type select is allowed by default");
+      PASS([tv allowsTypeSelect] == YES, "type select is allowed by default");
       [tv setAllowsTypeSelect: NO];
-      pass([tv allowsTypeSelect] == NO, "allowsTypeSelect round-trips");
+      PASS([tv allowsTypeSelect] == NO, "allowsTypeSelect round-trips");
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]
