@@ -36,15 +36,15 @@ main(int argc, char **argv)
       b = AUTORELEASE([[NSStatusBarButton alloc]
         initWithFrame: NSMakeRect(0, 0, 24, 24)]);
 
-      pass([b isKindOfClass: [NSButton class]],
+      PASS([b isKindOfClass: [NSButton class]],
            "a status bar button is a kind of button");
-      pass([b appearsDisabled] == NO,
+      PASS([b appearsDisabled] == NO,
            "a status bar button does not appear disabled by default");
 
       [b setAppearsDisabled: YES];
-      pass([b appearsDisabled] == YES, "setAppearsDisabled: YES round trips");
+      PASS([b appearsDisabled] == YES, "setAppearsDisabled: YES round trips");
       [b setAppearsDisabled: NO];
-      pass([b appearsDisabled] == NO, "setAppearsDisabled: NO round trips");
+      PASS([b appearsDisabled] == NO, "setAppearsDisabled: NO round trips");
     }
   NS_HANDLER
     {
