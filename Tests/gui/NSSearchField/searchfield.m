@@ -42,29 +42,29 @@ main(int argc, char **argv)
       NSSearchFieldCell *cell = [sf cell];
 
       /* Defaults. */
-      pass([cell isKindOfClass: [NSSearchFieldCell class]],
+      PASS([cell isKindOfClass: [NSSearchFieldCell class]],
            "a search field is backed by a search field cell");
-      pass([sf recentSearches] != nil
+      PASS([sf recentSearches] != nil
            && [[sf recentSearches] count] == 0,
            "the recent searches start empty");
-      pass([sf recentsAutosaveName] == nil,
+      PASS([sf recentsAutosaveName] == nil,
            "there is no recents autosave name by default");
-      pass([cell sendsWholeSearchString] == NO,
+      PASS([cell sendsWholeSearchString] == NO,
            "the whole search string is not sent by default");
-      pass([cell sendsSearchStringImmediately] == NO,
+      PASS([cell sendsSearchStringImmediately] == NO,
            "the search string is not sent immediately by default");
 
       /* Round-trips. */
       [sf setRecentSearches: [NSArray arrayWithObjects: @"a", @"b", nil]];
-      pass([[sf recentSearches] count] == 2, "setRecentSearches: round trips");
+      PASS([[sf recentSearches] count] == 2, "setRecentSearches: round trips");
       [sf setRecentsAutosaveName: @"mySearches"];
-      pass([[sf recentsAutosaveName] isEqualToString: @"mySearches"],
+      PASS([[sf recentsAutosaveName] isEqualToString: @"mySearches"],
            "setRecentsAutosaveName: round trips");
       [cell setSendsWholeSearchString: YES];
-      pass([cell sendsWholeSearchString] == YES,
+      PASS([cell sendsWholeSearchString] == YES,
            "setSendsWholeSearchString: round trips");
       [cell setMaximumRecents: 5];
-      pass([cell maximumRecents] == 5, "setMaximumRecents: round trips");
+      PASS([cell maximumRecents] == 5, "setMaximumRecents: round trips");
     }
   NS_HANDLER
     {
