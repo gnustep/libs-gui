@@ -39,17 +39,17 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 40, 40)]);
 
       /* Defaults. */
-      pass([cw isActive] == NO, "a color well is not active by default");
-      pass([cw isBordered] == YES, "a color well is bordered by default");
-      pass([cw color] != nil, "a color well has a colour by default");
+      PASS([cw isActive] == NO, "a color well is not active by default");
+      PASS([cw isBordered] == YES, "a color well is bordered by default");
+      PASS([cw color] != nil, "a color well has a colour by default");
 
       /* Round-trips. */
       [cw setBordered: NO];
-      pass([cw isBordered] == NO, "setBordered: round trips");
+      PASS([cw isBordered] == NO, "setBordered: round trips");
 
       [cw setColor: [NSColor redColor]];
       NSColor *c = [[cw color] colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
-      pass(c != nil
+      PASS(c != nil
            && [c redComponent] > 0.9
            && [c greenComponent] < 0.1
            && [c blueComponent] < 0.1,
