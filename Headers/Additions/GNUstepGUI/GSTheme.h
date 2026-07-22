@@ -1211,6 +1211,13 @@ APPKIT_EXPORT_CLASS
 - (CGFloat) menuItemHeight;
 - (CGFloat) menuSeparatorHeight;
 
+/**
+ * Padding between the edges of a vertical menu and its item cells.  The
+ * default is zero on every side; a theme can return larger insets to inset the
+ * list of items within the menu.
+ */
+- (NSEdgeInsets) menuItemAreaInsets;
+
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well
                     withBounds: (NSRect)bounds
