@@ -236,7 +236,7 @@ int main(int argc, const char **argv)
     [view1 scaleUnitSquareToSize: NSMakeSize(2, 3)];
     passed = FBCheckFrameBounds(view1, NSMakeRect(20, 20, 100, 100), NSMakeRect(-40.3553, -3.33333, 70.7107, 47.1405)) && passed;
 
-    pass(passed, "NSView -frame and -bounds hold across a combined rotation/translation/scale sequence");
+    PASS(passed, "NSView -frame and -bounds hold across a combined rotation/translation/scale sequence");
   }
 
   /* setBoundsRotation:/scaleUnitSquareToSize: interaction, checked against
@@ -310,7 +310,7 @@ int main(int argc, const char **argv)
     passed = FBCheckBoundsRotation(view1, 30) && passed;
 
     testHopeful = YES;
-    pass(passed, "NSView -scaleUnitSquareToSize interacts correctly with a rotated bounds");
+    PASS(passed, "NSView -scaleUnitSquareToSize interacts correctly with a rotated bounds");
     testHopeful = NO;
   }
 

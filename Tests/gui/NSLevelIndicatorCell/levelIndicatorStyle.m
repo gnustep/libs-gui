@@ -28,12 +28,12 @@ int main()
   NS_ENDHANDLER
 
   cell = AUTORELEASE([[NSLevelIndicatorCell alloc] init]);
-  pass([cell respondsToSelector: @selector(levelIndicatorStyle)],
+  PASS([cell respondsToSelector: @selector(levelIndicatorStyle)],
        "responds to -levelIndicatorStyle");
   if ([cell respondsToSelector: @selector(levelIndicatorStyle)])
     {
       [cell setLevelIndicatorStyle: NSContinuousCapacityLevelIndicatorStyle];
-      pass([cell levelIndicatorStyle] == NSContinuousCapacityLevelIndicatorStyle,
+      PASS([cell levelIndicatorStyle] == NSContinuousCapacityLevelIndicatorStyle,
            "-levelIndicatorStyle returns the style set with -setLevelIndicatorStyle:");
     }
 

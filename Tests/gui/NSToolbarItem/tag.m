@@ -21,7 +21,7 @@ int main()
   NS_ENDHANDLER
 
   item = AUTORELEASE([[NSToolbarItem alloc] initWithItemIdentifier: @"t"]);
-  pass([item tag] == -1, "default tag is -1");
+  PASS([item tag] == -1, "default tag is -1");
 
   END_SET("NSToolbarItem tag")
 

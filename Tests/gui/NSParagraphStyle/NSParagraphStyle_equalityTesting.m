@@ -30,7 +30,7 @@ int main(int argc, char **argv)
   [style1 setTextLists: [NSArray arrayWithObject: [[NSTextList alloc] init]]];
   [style2 setTextLists: [NSArray arrayWithObject: [[NSTextList alloc] init]]];
   
-  pass(![style1 isEqual: style2], "NSParagraphStyle isEqual: works for different textlists");
+  PASS(![style1 isEqual: style2], "NSParagraphStyle isEqual: works for different textlists");
   
   END_SET("NSParagraphStyle equality tests");
   

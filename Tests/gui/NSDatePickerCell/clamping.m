@@ -30,23 +30,23 @@ int main()
   [cell setMinDate: minD];
   [cell setMaxDate: maxD];
   [cell setDateValue: [NSDate dateWithTimeIntervalSinceReferenceDate: -1000000.0]];
-  pass([[cell dateValue] isEqualToDate: minD],
+  PASS([[cell dateValue] isEqualToDate: minD],
        "a date before minDate is clamped to minDate");
   [cell setDateValue: [NSDate dateWithTimeIntervalSinceReferenceDate: 2000000.0]];
-  pass([[cell dateValue] isEqualToDate: maxD],
+  PASS([[cell dateValue] isEqualToDate: maxD],
        "a date after maxDate is clamped to maxDate");
 
   cell = AUTORELEASE([[NSDatePickerCell alloc] init]);
   [cell setDateValue: [NSDate dateWithTimeIntervalSinceReferenceDate: 500000.0]];
   [cell setMinDate: [NSDate dateWithTimeIntervalSinceReferenceDate: 600000.0]];
-  pass([[cell dateValue] isEqualToDate:
+  PASS([[cell dateValue] isEqualToDate:
           [NSDate dateWithTimeIntervalSinceReferenceDate: 600000.0]],
        "raising minDate past the value clamps the value up");
 
   cell = AUTORELEASE([[NSDatePickerCell alloc] init]);
   [cell setDateValue: [NSDate dateWithTimeIntervalSinceReferenceDate: 500000.0]];
   [cell setMaxDate: [NSDate dateWithTimeIntervalSinceReferenceDate: 400000.0]];
-  pass([[cell dateValue] isEqualToDate:
+  PASS([[cell dateValue] isEqualToDate:
           [NSDate dateWithTimeIntervalSinceReferenceDate: 400000.0]],
        "lowering maxDate past the value clamps the value down");
 

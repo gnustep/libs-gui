@@ -56,11 +56,16 @@
   else
     {
       // Test to see if this is an Xcode 5 XIB...
-      NSArray *documentNodes = [document nodesForXPath: @"/document" error: NULL];
+      NSArray *documentNodes;
+      BOOL	hasNodes;
+
+      documentNodes = [document nodesForXPath: @"/document" error: NULL];
 
       // Need at LEAST ONE document node...we should find something a bit more
       // specific to check here...
-      return [documentNodes count] != 0;
+      hasNodes = [documentNodes count] != 0 ? YES : NO;
+      RELEASE(document);
+      return hasNodes;
     }
 #else
   // We now default to checking XIB 5 versions

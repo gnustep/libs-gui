@@ -50,18 +50,18 @@ main(int argc, char **argv)
 
     /* fontAttributesInRange keeps the character-level attributes and drops the
      * paragraph style. */
-    pass([fa objectForKey: NSFontAttributeName] == font,
+    PASS([fa objectForKey: NSFontAttributeName] == font,
          "fontAttributesInRange keeps the font");
-    pass([fa objectForKey: NSForegroundColorAttributeName] != nil
+    PASS([fa objectForKey: NSForegroundColorAttributeName] != nil
       && [[fa objectForKey: NSKernAttributeName] intValue] == 2,
       "fontAttributesInRange keeps the colour and kerning");
-    pass([fa objectForKey: NSParagraphStyleAttributeName] == nil,
+    PASS([fa objectForKey: NSParagraphStyleAttributeName] == nil,
       "fontAttributesInRange drops the paragraph style");
 
     /* rulerAttributesInRange keeps only the paragraph style. */
-    pass([ra objectForKey: NSParagraphStyleAttributeName] == ps,
+    PASS([ra objectForKey: NSParagraphStyleAttributeName] == ps,
       "rulerAttributesInRange keeps the paragraph style");
-    pass([ra objectForKey: NSFontAttributeName] == nil
+    PASS([ra objectForKey: NSFontAttributeName] == nil
       && [ra count] == 1,
       "rulerAttributesInRange drops the character attributes");
   }
@@ -70,7 +70,7 @@ main(int argc, char **argv)
   {
     NSAttributedString *s = [[NSAttributedString alloc]
       initWithString: @"plain"];
-    pass([[s rulerAttributesInRange: NSMakeRange(0, 5)] count] == 0,
+    PASS([[s rulerAttributesInRange: NSMakeRange(0, 5)] count] == 0,
       "a string with no paragraph style has empty ruler attributes");
   }
 
@@ -89,7 +89,7 @@ main(int argc, char **argv)
       raised = [[localException name] isEqualToString: NSRangeException];
     }
     NS_ENDHANDLER
-    pass(raised, "fontAttributesInRange raises for a range beyond the string");
+    PASS(raised, "fontAttributesInRange raises for a range beyond the string");
   }
 
   /* containsAttachments is false for plain text and true once an attachment
@@ -101,9 +101,9 @@ main(int argc, char **argv)
     NSAttributedString *withAtt =
       [NSAttributedString attributedStringWithAttachment: att];
 
-    pass([plain containsAttachments] == NO,
+    PASS([plain containsAttachments] == NO,
       "plain text contains no attachments");
-    pass([withAtt containsAttachments] == YES,
+    PASS([withAtt containsAttachments] == YES,
       "an attachment string contains an attachment");
   }
 

@@ -828,6 +828,13 @@ APPKIT_EXPORT_CLASS
 				  style: (int)style 
 				  state: (GSThemeControlState)state;
 
+/**
+ * Amount by which a pushed-in button's contents are displaced to give it a
+ * pressed look.  The default is one pixel to the bottom right; return
+ * NSZeroSize to keep the contents fixed while the button is pressed.
+ */
+- (NSSize) buttonPushInOffsetForCell: (NSCell*)cell;
+
 /** 
  * Draws the indicator (normally a dotted rectangle) to show that
  * the view currently has keyboard focus.
@@ -1210,6 +1217,13 @@ APPKIT_EXPORT_CLASS
  * rounds the corners of the highlight.
  */
 - (CGFloat) menuItemBackgroundRadius;
+
+/**
+ * Padding between the edges of a vertical menu and its item cells.  The
+ * default is zero on every side; a theme can return larger insets to inset the
+ * list of items within the menu.
+ */
+- (NSEdgeInsets) menuItemAreaInsets;
 
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well

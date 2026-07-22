@@ -87,6 +87,8 @@ static Class pathCellClass;
       [self setPathStyle: NSPathStyleStandard];
       [self setURL: nil];
       [self setDelegate: nil];
+      [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
+      _pathItems = [[NSArray alloc] init];
       _editable = YES;
     }
   return self;
@@ -95,6 +97,7 @@ static Class pathCellClass;
 - (void) dealloc
 {
   [[self superview] removeTrackingRect: _trackingTag];
+  RELEASE(_pathItems);
   [super dealloc];
 }
 

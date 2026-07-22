@@ -1494,11 +1494,14 @@
 				 border.top : border.bottom);
       interiorFrame.size.height -= border.bottom + border.top;
 
-      /* Pushed in buttons contents are displaced to the bottom right 1px.  */
+      /* Pushed in buttons contents are displaced towards the bottom right, by
+         an amount the theme can change (or suppress).  */
       if (mask & NSPushInCellMask)
         {
-          interiorFrame = NSOffsetRect(interiorFrame, 1.0,
-	    [_control_view isFlipped] ? 1.0 : -1.0);
+          NSSize offset = [[GSTheme theme] buttonPushInOffsetForCell: self];
+
+          interiorFrame = NSOffsetRect(interiorFrame, offset.width,
+	    [_control_view isFlipped] ? offset.height : -offset.height);
         }
       return interiorFrame;
     }

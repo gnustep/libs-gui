@@ -130,6 +130,11 @@ jobs:
       - name: Run tests
         run: |
           . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          # Start the distributed notification server up front. Tests that post a
+          # distributed notification otherwise race its on-demand launch, which
+          # intermittently times out on a headless runner.
+          gdnc &
+          sleep 1
           make check
 
       - name: Upload logs
@@ -206,6 +211,11 @@ jobs:
       - name: Run tests
         run: |
           . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          # Start the distributed notification server up front. Tests that post a
+          # distributed notification otherwise race its on-demand launch, which
+          # intermittently times out on a headless runner.
+          gdnc &
+          sleep 1
           xvfb-run -a make check
 
       - name: Upload logs

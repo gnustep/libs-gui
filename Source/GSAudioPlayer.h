@@ -38,7 +38,7 @@
 #import <Foundation/NSObject.h>
 #import "AppKit/NSMovieView.h"
 
-#ifdef HAVE_AVCODEC
+#ifdef HAVE_LIBAVCODEC_AVCODEC_H
 #include <ao/ao.h>
 #include <unistd.h>
 
@@ -52,7 +52,7 @@
 #include <libavutil/time.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
-#endif /* HAVE_AVCODEC */
+#endif /* HAVE_LIBAVCODEC_AVCODEC_H */
 
 @class NSMutableArray;
 @class NSThread;

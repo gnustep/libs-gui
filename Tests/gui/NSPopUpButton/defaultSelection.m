@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 	[b addItemWithTitle: @"foo"];
 	[b addItemWithTitle: @"bar"];
 
-	pass([b indexOfSelectedItem] == 0,"first item is selected by default");
+	PASS([b indexOfSelectedItem] == 0,"first item is selected by default");
 
 	END_SET("NSPopupButton GNUstep defaultSelection")
 

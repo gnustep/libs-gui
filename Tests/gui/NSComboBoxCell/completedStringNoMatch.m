@@ -31,9 +31,9 @@ main(int argc, char **argv)
 
     [cell addItemsWithObjectValues:
       ([NSArray arrayWithObjects: @"Apple", @"Apricot", @"Banana", nil])];
-    pass([cell completedString: @"xyz"] == nil,
+    PASS([cell completedString: @"xyz"] == nil,
       "completedString: returns nil when no item completes the substring");
-    pass([[cell completedString: @"Ap"] isEqualToString: @"Apple"],
+    PASS([[cell completedString: @"Ap"] isEqualToString: @"Apple"],
       "completedString: still returns a matching completion");
   }
 

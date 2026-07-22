@@ -22,7 +22,7 @@ int main()
   NS_ENDHANDLER
 
   item = AUTORELEASE([[NSTabViewItem alloc] initWithIdentifier: @"l"]);
-  pass([[item label] isEqualToString: @""],
+  PASS([[item label] isEqualToString: @""],
        "default label is the empty string");
 
   END_SET("NSTabViewItem labelDefault")

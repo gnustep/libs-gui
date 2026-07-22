@@ -62,8 +62,8 @@ int main(int argc, char **argv)
     atIndex: pos4 
     effectiveRange: NULL];
   
-  pass(result1 == result2, "Did merge equal paragraph styles");
-  pass(result3 != result4, "Did not merge equal paragraph styles with text lists");
+  PASS(result1 == result2, "Did merge equal paragraph styles");
+  PASS(result3 != result4, "Did not merge equal paragraph styles with text lists");
   
   END_SET("NSAttributedString attribute merging");
   

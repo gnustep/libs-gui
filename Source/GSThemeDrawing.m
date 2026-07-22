@@ -316,6 +316,11 @@
     }
 }
 
+- (NSSize) buttonPushInOffsetForCell: (NSCell*)cell
+{
+  return NSMakeSize(1.0, 1.0);
+}
+
 - (void) drawFocusFrame: (NSRect) frame view: (NSView*) view
 {
   GSDrawTiles *tiles = [self tilesNamed: @"NSFocusRing" state: GSThemeNormalState];
@@ -1458,6 +1463,11 @@
 - (CGFloat) menuItemBackgroundRadius
 {
   return 0.0;
+}
+
+- (NSEdgeInsets) menuItemAreaInsets
+{
+  return NSEdgeInsetsMake(0.0, 0.0, 0.0, 0.0);
 }
 
 // NSColorWell drawing method

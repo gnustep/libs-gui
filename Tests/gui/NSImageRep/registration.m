@@ -38,16 +38,16 @@ main(int argc, char **argv)
   NS_ENDHANDLER
 
   /* NSBitmapImageRep is registered by default. */
-  pass([[NSImageRep registeredImageRepClasses]
+  PASS([[NSImageRep registeredImageRepClasses]
          containsObject: [NSBitmapImageRep class]],
     "NSBitmapImageRep is a registered image rep class");
 
   /* Class lookup by file type. */
-  pass([NSImageRep imageRepClassForFileType: @"tiff"] == [NSBitmapImageRep class],
+  PASS([NSImageRep imageRepClassForFileType: @"tiff"] == [NSBitmapImageRep class],
     "the tiff file type maps to NSBitmapImageRep");
-  pass([NSImageRep imageRepClassForFileType: @"png"] == [NSBitmapImageRep class],
+  PASS([NSImageRep imageRepClassForFileType: @"png"] == [NSBitmapImageRep class],
     "the png file type maps to NSBitmapImageRep");
-  pass([NSImageRep imageRepClassForFileType: @"bogustype"] == Nil,
+  PASS([NSImageRep imageRepClassForFileType: @"bogustype"] == Nil,
     "an unknown file type maps to no class");
 
   /* Class lookup by data, using TIFF data produced from a bitmap. */
@@ -67,13 +67,13 @@ main(int argc, char **argv)
     NSData *garbage = [@"this is not an image"
                         dataUsingEncoding: NSUTF8StringEncoding];
 
-    pass([NSBitmapImageRep canInitWithData: tiff],
+    PASS([NSBitmapImageRep canInitWithData: tiff],
       "NSBitmapImageRep can init with tiff data");
-    pass([NSImageRep imageRepClassForData: tiff] == [NSBitmapImageRep class],
+    PASS([NSImageRep imageRepClassForData: tiff] == [NSBitmapImageRep class],
       "tiff data maps to NSBitmapImageRep");
-    pass([NSBitmapImageRep canInitWithData: garbage] == NO,
+    PASS([NSBitmapImageRep canInitWithData: garbage] == NO,
       "NSBitmapImageRep cannot init with non-image data");
-    pass([NSImageRep imageRepClassForData: garbage] == Nil,
+    PASS([NSImageRep imageRepClassForData: garbage] == Nil,
       "non-image data maps to no class");
   }
 
@@ -83,17 +83,17 @@ main(int argc, char **argv)
     NSUInteger before = [[NSImageRep registeredImageRepClasses] count];
 
     [NSImageRep registerImageRepClass: [TestImageRep class]];
-    pass([[NSImageRep registeredImageRepClasses] count] == before + 1
+    PASS([[NSImageRep registeredImageRepClasses] count] == before + 1
       && [[NSImageRep registeredImageRepClasses]
            containsObject: [TestImageRep class]],
       "registering a subclass adds it to the registry");
 
     [NSImageRep registerImageRepClass: [TestImageRep class]];
-    pass([[NSImageRep registeredImageRepClasses] count] == before + 1,
+    PASS([[NSImageRep registeredImageRepClasses] count] == before + 1,
       "registering the same class again does not add it twice");
 
     [NSImageRep unregisterImageRepClass: [TestImageRep class]];
-    pass([[NSImageRep registeredImageRepClasses]
+    PASS([[NSImageRep registeredImageRepClasses]
            containsObject: [TestImageRep class]] == NO
       && [[NSImageRep registeredImageRepClasses] count] == before,
       "unregistering removes the class from the registry");
