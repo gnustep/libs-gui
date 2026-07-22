@@ -39,32 +39,32 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 120, 24)]);
 
       /* Defaults. */
-      pass([s minValue] == 0.0, "the default minimum is zero");
-      pass([s maxValue] == 1.0, "the default maximum is one");
-      pass([s doubleValue] == 0.0, "the default value is zero");
-      pass([s numberOfTickMarks] == 0, "there are no tick marks by default");
-      pass([s tickMarkPosition] == NSTickMarkBelow,
+      PASS([s minValue] == 0.0, "the default minimum is zero");
+      PASS([s maxValue] == 1.0, "the default maximum is one");
+      PASS([s doubleValue] == 0.0, "the default value is zero");
+      PASS([s numberOfTickMarks] == 0, "there are no tick marks by default");
+      PASS([s tickMarkPosition] == NSTickMarkBelow,
            "the default tick-mark position is below");
-      pass([s allowsTickMarkValuesOnly] == NO,
+      PASS([s allowsTickMarkValuesOnly] == NO,
            "the slider is not restricted to tick values by default");
 
       /* Round-trips. */
       [s setMinValue: 2.0];
-      pass([s minValue] == 2.0, "setMinValue: round trips");
+      PASS([s minValue] == 2.0, "setMinValue: round trips");
       [s setMaxValue: 10.0];
-      pass([s maxValue] == 10.0, "setMaxValue: round trips");
+      PASS([s maxValue] == 10.0, "setMaxValue: round trips");
       [s setDoubleValue: 5.0];
-      pass([s doubleValue] == 5.0, "setDoubleValue: round trips");
+      PASS([s doubleValue] == 5.0, "setDoubleValue: round trips");
       [s setNumberOfTickMarks: 6];
-      pass([s numberOfTickMarks] == 6, "setNumberOfTickMarks: round trips");
+      PASS([s numberOfTickMarks] == 6, "setNumberOfTickMarks: round trips");
       [s setTickMarkPosition: NSTickMarkAbove];
-      pass([s tickMarkPosition] == NSTickMarkAbove,
+      PASS([s tickMarkPosition] == NSTickMarkAbove,
            "setTickMarkPosition: round trips");
       [s setAllowsTickMarkValuesOnly: YES];
-      pass([s allowsTickMarkValuesOnly] == YES,
+      PASS([s allowsTickMarkValuesOnly] == YES,
            "setAllowsTickMarkValuesOnly: round trips");
       [s setAltIncrementValue: 0.5];
-      pass([s altIncrementValue] == 0.5, "setAltIncrementValue: round trips");
+      PASS([s altIncrementValue] == 0.5, "setAltIncrementValue: round trips");
 
       /* Clamping to the range. */
       NSSlider *s2 = AUTORELEASE([[NSSlider alloc]
@@ -72,10 +72,10 @@ main(int argc, char **argv)
       [s2 setMinValue: 0.0];
       [s2 setMaxValue: 10.0];
       [s2 setDoubleValue: 100.0];
-      pass([s2 doubleValue] == 10.0,
+      PASS([s2 doubleValue] == 10.0,
            "a value above the maximum clamps to the maximum");
       [s2 setDoubleValue: -5.0];
-      pass([s2 doubleValue] == 0.0,
+      PASS([s2 doubleValue] == 0.0,
            "a value below the minimum clamps to the minimum");
     }
   NS_HANDLER
