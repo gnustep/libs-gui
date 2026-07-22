@@ -41,37 +41,37 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 80, 80)]);
 
       /* Defaults. */
-      pass([iv image] == nil, "a new image view has no image");
-      pass([iv imageAlignment] == NSImageAlignCenter,
+      PASS([iv image] == nil, "a new image view has no image");
+      PASS([iv imageAlignment] == NSImageAlignCenter,
            "the default alignment is centre");
-      pass([iv imageFrameStyle] == NSImageFrameNone,
+      PASS([iv imageFrameStyle] == NSImageFrameNone,
            "the default frame style is none");
-      pass([iv isEditable] == NO, "an image view is not editable by default");
-      pass([iv allowsCutCopyPaste] == YES,
+      PASS([iv isEditable] == NO, "an image view is not editable by default");
+      PASS([iv allowsCutCopyPaste] == YES,
            "cut, copy and paste are allowed by default");
 
       /* Round-trips. */
       [iv setImageAlignment: NSImageAlignTop];
-      pass([iv imageAlignment] == NSImageAlignTop, "setImageAlignment: round trips");
+      PASS([iv imageAlignment] == NSImageAlignTop, "setImageAlignment: round trips");
       [iv setImageScaling: NSImageScaleNone];
-      pass([iv imageScaling] == NSImageScaleNone, "setImageScaling: round trips");
+      PASS([iv imageScaling] == NSImageScaleNone, "setImageScaling: round trips");
       [iv setImageFrameStyle: NSImageFramePhoto];
-      pass([iv imageFrameStyle] == NSImageFramePhoto,
+      PASS([iv imageFrameStyle] == NSImageFramePhoto,
            "setImageFrameStyle: round trips");
       [iv setEditable: YES];
-      pass([iv isEditable] == YES, "setEditable: round trips");
+      PASS([iv isEditable] == YES, "setEditable: round trips");
 
       /* Image round-trip. */
       NSImage *img = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(16, 16)]);
       [iv setImage: img];
-      pass([iv image] == img, "setImage: keeps the image");
+      PASS([iv image] == img, "setImage: keeps the image");
 
       /* +imageViewWithImage: builds a non-editable view holding the image. */
       NSImageView *iv2 = [NSImageView imageViewWithImage: img];
-      pass([iv2 image] == img, "+imageViewWithImage: sets the image");
-      pass([iv2 isEditable] == NO,
+      PASS([iv2 image] == img, "+imageViewWithImage: sets the image");
+      PASS([iv2 isEditable] == NO,
            "+imageViewWithImage: makes a non-editable view");
-      pass([iv2 imageFrameStyle] == NSImageFrameNone,
+      PASS([iv2 imageFrameStyle] == NSImageFrameNone,
            "+imageViewWithImage: uses no frame");
     }
   NS_HANDLER
