@@ -38,26 +38,26 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 400, 300)]);
 
       /* Defaults that match AppKit. */
-      pass([cv allowsMultipleSelection] == NO,
+      PASS([cv allowsMultipleSelection] == NO,
            "multiple selection is off by default");
-      pass([cv isSelectable] == NO, "the view is not selectable by default");
-      pass([cv selectionIndexes] != nil
+      PASS([cv isSelectable] == NO, "the view is not selectable by default");
+      PASS([cv selectionIndexes] != nil
            && [[cv selectionIndexes] count] == 0,
            "the default selection index set is empty");
-      pass([cv collectionViewLayout] == nil,
+      PASS([cv collectionViewLayout] == nil,
            "there is no layout by default");
 
       /* Setter round-trips. */
       [cv setAllowsMultipleSelection: YES];
-      pass([cv allowsMultipleSelection] == YES,
+      PASS([cv allowsMultipleSelection] == YES,
            "setAllowsMultipleSelection: round trips");
       [cv setSelectable: YES];
-      pass([cv isSelectable] == YES, "setSelectable: round trips");
+      PASS([cv isSelectable] == YES, "setSelectable: round trips");
       [cv setAllowsEmptySelection: YES];
-      pass([cv allowsEmptySelection] == YES,
+      PASS([cv allowsEmptySelection] == YES,
            "setAllowsEmptySelection: YES round trips");
       [cv setAllowsEmptySelection: NO];
-      pass([cv allowsEmptySelection] == NO,
+      PASS([cv allowsEmptySelection] == NO,
            "setAllowsEmptySelection: NO round trips");
     }
   NS_HANDLER

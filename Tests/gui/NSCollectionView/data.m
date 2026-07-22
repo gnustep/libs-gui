@@ -77,11 +77,11 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 400, 300)]);
       [cv setDataSource: two];
       [cv reloadData];
-      pass([cv numberOfSections] == 2,
+      PASS([cv numberOfSections] == 2,
            "the data source's section count is reported");
-      pass([cv numberOfItemsInSection: 0] == 3,
+      PASS([cv numberOfItemsInSection: 0] == 3,
            "the first section reports three items");
-      pass([cv numberOfItemsInSection: 1] == 2,
+      PASS([cv numberOfItemsInSection: 1] == 2,
            "the second section reports two items");
 
       /* A data source without the optional section method reports one section. */
@@ -90,9 +90,9 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 400, 300)]);
       [cv2 setDataSource: one];
       [cv2 reloadData];
-      pass([cv2 numberOfSections] == 1,
+      PASS([cv2 numberOfSections] == 1,
            "a data source without a section count reports one section");
-      pass([cv2 numberOfItemsInSection: 0] == 4,
+      PASS([cv2 numberOfItemsInSection: 0] == 4,
            "the single section reports its items");
     }
   NS_HANDLER
