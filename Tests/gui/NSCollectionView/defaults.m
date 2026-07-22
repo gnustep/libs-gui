@@ -37,13 +37,13 @@ main(int argc, char **argv)
       cv = AUTORELEASE([[NSCollectionView alloc]
         initWithFrame: NSMakeRect(0, 0, 400, 300)]);
 
-      pass([cv allowsEmptySelection] == YES,
+      PASS([cv allowsEmptySelection] == YES,
            "empty selection is allowed by default");
-      pass([cv selectionIndexPaths] != nil,
+      PASS([cv selectionIndexPaths] != nil,
            "the default selection index paths set is not nil");
-      pass([[cv selectionIndexPaths] count] == 0,
+      PASS([[cv selectionIndexPaths] count] == 0,
            "the default selection index paths set is empty");
-      pass([cv backgroundColors] != nil
+      PASS([cv backgroundColors] != nil
            && [[cv backgroundColors] count] > 0,
            "there is a non-empty backgroundColors array by default");
     }
