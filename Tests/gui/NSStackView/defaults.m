@@ -28,14 +28,14 @@ int main()
       sv = AUTORELEASE([[NSStackView alloc]
         initWithFrame: NSMakeRect(0, 0, 200, 100)]);
 
-      pass([sv distribution] == NSStackViewDistributionGravityAreas,
+      PASS([sv distribution] == NSStackViewDistributionGravityAreas,
            "the default distribution is gravity areas");
-      pass([sv spacing] == 8.0, "the default spacing is 8");
-      pass([sv detachesHiddenViews] == YES,
+      PASS([sv spacing] == 8.0, "the default spacing is 8");
+      PASS([sv detachesHiddenViews] == YES,
            "hidden views are detached by default");
-      pass([sv alignment] == NSLayoutAttributeCenterY,
+      PASS([sv alignment] == NSLayoutAttributeCenterY,
            "the default alignment is centre-Y");
-      pass([sv arrangedSubviews] != nil
+      PASS([sv arrangedSubviews] != nil
            && [[sv arrangedSubviews] count] == 0,
            "a frame-initialised stack view has no arranged subviews");
     }
