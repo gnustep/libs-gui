@@ -41,24 +41,24 @@ main(int argc, char **argv)
         initWithFrame: NSMakeRect(0, 0, 200, 22)]);
 
       /* Defaults. */
-      pass([tf tokenStyle] == NSDefaultTokenStyle,
+      PASS([tf tokenStyle] == NSDefaultTokenStyle,
            "the default token style is the default style");
-      pass([tf completionDelay] == 0.0, "the default completion delay is zero");
-      pass([[tf tokenizingCharacterSet] characterIsMember: ','],
+      PASS([tf completionDelay] == 0.0, "the default completion delay is zero");
+      PASS([[tf tokenizingCharacterSet] characterIsMember: ','],
            "the default tokenizing set contains a comma");
-      pass([[tf tokenizingCharacterSet] characterIsMember: ' '] == NO,
+      PASS([[tf tokenizingCharacterSet] characterIsMember: ' '] == NO,
            "the default tokenizing set does not contain a space");
 
       /* Setter round-trips. */
       [tf setTokenStyle: NSRoundedTokenStyle];
-      pass([tf tokenStyle] == NSRoundedTokenStyle, "setTokenStyle: round trips");
+      PASS([tf tokenStyle] == NSRoundedTokenStyle, "setTokenStyle: round trips");
       [tf setCompletionDelay: 0.5];
-      pass([tf completionDelay] == 0.5, "setCompletionDelay: round trips");
+      PASS([tf completionDelay] == 0.5, "setCompletionDelay: round trips");
       [tf setTokenizingCharacterSet:
         [NSCharacterSet characterSetWithCharactersInString: @";"]];
-      pass([[tf tokenizingCharacterSet] characterIsMember: ';'],
+      PASS([[tf tokenizingCharacterSet] characterIsMember: ';'],
            "setTokenizingCharacterSet: keeps the new separator");
-      pass([[tf tokenizingCharacterSet] characterIsMember: ','] == NO,
+      PASS([[tf tokenizingCharacterSet] characterIsMember: ','] == NO,
            "setTokenizingCharacterSet: replaces the old separator");
     }
   NS_HANDLER
