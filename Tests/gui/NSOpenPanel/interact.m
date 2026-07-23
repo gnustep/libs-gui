@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "GSRenderTest.h"
+#import "../GSRenderTest.h"
 
 /* Local interaction exercise for NSOpenPanel: drive the panel's modal session
    the way a user would end it, and check the result it returns.  Needs a
@@ -38,7 +38,7 @@ main(int argc, const char **argv)
         [p setCanChooseFiles: YES];
         [p setAllowsMultipleSelection: NO];
         [p setDirectory: dir];
-        r = GSRunModalDismissing(p, @selector(ok:), 0.2);
+        r = GSRunModalDismissing(p, @selector(ok:));
         PASS(r == NSOKButton, "confirming with ok: returns NSOKButton");
         PASS([[p URLs] count] >= 1 && [p URL] != nil,
           "the OK result is a non-empty list of URLs");
@@ -49,7 +49,7 @@ main(int argc, const char **argv)
         NSOpenPanel *p = [NSOpenPanel openPanel];
         NSInteger r;
         [p setDirectory: dir];
-        r = GSRunModalDismissing(p, @selector(cancel:), 0.2);
+        r = GSRunModalDismissing(p, @selector(cancel:));
         PASS(r == NSCancelButton, "cancelling returns NSCancelButton");
       }
     }

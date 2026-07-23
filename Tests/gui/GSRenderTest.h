@@ -179,10 +179,6 @@ GSClick(NSWindow *w, NSView *v, NSPoint pInView)
     }
 }
 
-/* Run a panel's modal loop, but dismiss it after `delay` seconds by performing
-   `dismiss` (e.g. @selector(ok:) or @selector(cancel:)), so the panel displays
-   and lays out for real without blocking on the user.  Returns the modal
-   result. */
 /* Run a panel modally but end the session ourselves by performing `dismiss`
    (e.g. @selector(ok:) or @selector(cancel:)), so the panel displays and lays
    out without blocking on the user.  A manual modal session is pumped a few
@@ -190,7 +186,7 @@ GSClick(NSWindow *w, NSView *v, NSPoint pInView)
    timer firing inside -runModal (which will not wake without server events).
    Returns the modal result code. */
 static inline NSInteger
-GSRunModalDismissing(id panel, SEL dismiss, NSTimeInterval delay)
+GSRunModalDismissing(id panel, SEL dismiss)
 {
   NSModalSession session = [NSApp beginModalSessionForWindow: panel];
   NSInteger code = NSRunContinuesResponse;

@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "GSRenderTest.h"
+#import "../GSRenderTest.h"
 
 /* Local interaction exercise for NSSavePanel: drive the panel's modal session
    the way a user would end it (OK / Cancel) without blocking on input, and
@@ -37,7 +37,7 @@ main(int argc, const char **argv)
         NSInteger r;
         [p setDirectory: dir];
         [p setNameFieldStringValue: @"chosen.txt"];
-        r = GSRunModalDismissing(p, @selector(ok:), 0.2);
+        r = GSRunModalDismissing(p, @selector(ok:));
         PASS(r == NSOKButton, "dismissing with ok: returns NSOKButton");
         PASS([[[p URL] lastPathComponent] isEqual: @"chosen.txt"],
           "the OK result carries the entered name");
@@ -48,7 +48,7 @@ main(int argc, const char **argv)
         NSSavePanel *p = [NSSavePanel savePanel];
         NSInteger r;
         [p setDirectory: dir];
-        r = GSRunModalDismissing(p, @selector(cancel:), 0.2);
+        r = GSRunModalDismissing(p, @selector(cancel:));
         PASS(r == NSCancelButton, "dismissing with cancel: returns NSCancelButton");
       }
     }
