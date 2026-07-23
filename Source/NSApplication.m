@@ -1237,47 +1237,49 @@ static BOOL _isAutolaunchChecked = NO;
 
 - (void) dealloc
 {
-  [[[NSWorkspace sharedWorkspace] notificationCenter]
-    removeObserver: self];
-  [nc removeObserver: self];
-
-  RELEASE(_hidden);
-  RELEASE(_inactive);
-  RELEASE(_listener);
-  RELEASE(null_event);
-  RELEASE(_current_event);
-
-  /* We may need to tidy up nested modal session structures. */
-  while (_session != 0)
-    {
-      NSModalSession tmp = _session;
-
-      _session = tmp->previous;
-      NSZoneFree(NSDefaultMallocZone(), tmp);
-    }
-
-  /* Release the menus, then set them to nil so we don't try updating
-     them after they have been deallocated.  */
-  DESTROY(_main_menu);
-  DESTROY(_windows_menu);
-
-  TEST_RELEASE(_app_icon);
-  TEST_RELEASE(_app_icon_window);
-  TEST_RELEASE(_dock_tile);
-  TEST_RELEASE(_infoPanel);
-
-  /* Destroy the default context */
-  [NSGraphicsContext setCurrentContext: nil];
-  DESTROY(_default_context);
-
   /* The display server is notionally owned by the NSApplication singleton
    * so if (and only if) this is that object, we should shut it down.
+   * We destroy additional app instnces st the start of the -init process,
+   * so nothing should have been created that actually needs to be handled
+   * here.
    */
   if (self == NSApp)
     {
       GSDisplayServer *srv;
 
-      NSApp = nil;
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+	removeObserver: self];
+      [nc removeObserver: self];
+
+      RELEASE(_hidden);
+      RELEASE(_inactive);
+      RELEASE(_listener);
+      RELEASE(null_event);
+      RELEASE(_current_event);
+
+      /* We may need to tidy up nested modal session structures. */
+      while (_session != 0)
+	{
+	  NSModalSession tmp = _session;
+
+	  _session = tmp->previous;
+	  NSZoneFree(NSDefaultMallocZone(), tmp);
+	}
+
+      /* Release the menus, then set them to nil so we don't try updating
+	 them after they have been deallocated.  */
+      DESTROY(_main_menu);
+      DESTROY(_windows_menu);
+
+      TEST_RELEASE(_app_icon);
+      TEST_RELEASE(_app_icon_window);
+      TEST_RELEASE(_dock_tile);
+      TEST_RELEASE(_infoPanel);
+
+      /* Destroy the default context */
+      [NSGraphicsContext setCurrentContext: nil];
+      DESTROY(_default_context);
+
       /* Close the server */
       srv = GSServerForWindow(_app_icon_window);
       if (srv == nil)
@@ -1286,6 +1288,7 @@ static BOOL _isAutolaunchChecked = NO;
 	}
       [srv closeServer];
       DESTROY(srv);
+      NSApp = nil;
     }
 
   [super dealloc];
