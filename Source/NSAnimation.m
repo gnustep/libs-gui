@@ -709,7 +709,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
   _NSANIMATION_LOCKING_SETUP;
 
   _NSANIMATION_LOCK;
-  GSIArrayEmpty(_progressMarks);
+  GSIArrayRemoveAllItems(_progressMarks);
   _nextMark = 0;
   if (marks != nil)
     {
