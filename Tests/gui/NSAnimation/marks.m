@@ -30,6 +30,11 @@ int main()
   PASS([[marks objectAtIndex: 2] floatValue] == 0.75,
        "marks are reported in sorted order (last)");
 
+  a = AUTORELEASE([[NSAnimation alloc]
+    initWithDuration: 1.0 animationCurve: NSAnimationLinear]);
+  [a addProgressMark: 0.5];
+  [a addProgressMark: 0.25];
+  [a addProgressMark: 0.75];
   [a removeProgressMark: 0.5];
   marks = [a progressMarks];
   PASS([marks count] == 2, "a removed mark drops out");
