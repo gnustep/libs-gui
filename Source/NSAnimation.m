@@ -500,7 +500,7 @@ nsanimation_progressMarkSorter(NSAnimationProgress first, NSAnimationProgress se
       for (i = 0; i < count; i++)
         {
           _cachedProgressMarkNumbers[i] =
-           [NSNumber numberWithFloat: GSIArrayItemAtIndex (_progressMarks,i)];
+           RETAIN([NSNumber numberWithFloat: GSIArrayItemAtIndex (_progressMarks,i)]);
         }
       _cachedProgressMarkNumberCount = count;
       _isCachedProgressMarkNumbersValid = YES;
