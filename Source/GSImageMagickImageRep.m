@@ -51,12 +51,12 @@
 #include <magick/MagickCore.h>
 #endif
 
-/* Whether we should try to decode a given format.  We only handle formats
-   ImageMagick can read directly from an in-memory blob: a format without a
-   decoder (such as HTML) produces nothing, and a document or vector format
-   without blob support (such as PDF or PostScript) is decoded through an
-   external delegate that can block on malformed input, neither of which
-   belongs in an image representation. */
+/* Whether GSImageMagickImageRep itself should claim a given format.  We only
+   claim formats ImageMagick can read directly from an in-memory blob: a format
+   without a decoder (such as HTML) produces nothing, and a document or vector
+   format without blob support (such as PDF or PostScript) has a dedicated
+   representation (NSPDFImageRep, NSEPSImageRep) that renders it through an
+   external delegate, bounded by a timeout (see imageRepsWithData:allImages:). */
 static BOOL
 GSImageMagickCanDecode(const MagickInfo *info)
 {
@@ -64,6 +64,48 @@ GSImageMagickCanDecode(const MagickInfo *info)
     && info->decoder != (DecodeImageHandler *)NULL
     && info->blob_support != MagickFalse);
 }
+
+/* Look up the ImageMagick coder that claims the leading bytes of DATA, or
+   NULL if the content is not recognised. */
+static const MagickInfo *
+GSImageMagickInfoForData(NSData *data)
+{
+  char buf[32];
+  ExceptionInfo *exception;
+  const MagicInfo *magic;
+  const MagickInfo *magick = (const MagickInfo *)NULL;
+
+  memset(buf, 0, 32);
+  [data getBytes: buf length: 32];
+
+  exception = AcquireExceptionInfo();
+  magic = GetMagicInfo((const unsigned char *)buf, 32, exception);
+  if (magic != (const MagicInfo *)NULL)
+    {
+      magick = GetMagickInfo(GetMagicName(magic), exception);
+    }
+  DestroyExceptionInfo(exception);
+
+  return magick;
+}
+
+/* Whether the content of DATA is decoded through an external delegate (such as
+   Ghostscript for PDF or PostScript) rather than directly from the blob. */
+static BOOL
+GSImageMagickUsesDelegate(NSData *data)
+{
+  const MagickInfo *info = GSImageMagickInfoForData(data);
+
+  return (info != (const MagickInfo *)NULL
+    && info->decoder != (DecodeImageHandler *)NULL
+    && info->blob_support == MagickFalse);
+}
+
+/* Seconds ImageMagick is allowed to spend decoding through an external
+   delegate before it is aborted.  Such a delegate can otherwise block
+   indefinitely on malformed input, while a valid document decodes well within
+   this limit. */
+#define GS_IMAGEMAGICK_DELEGATE_TIME_LIMIT 30
 
 @implementation GSImageMagickImageRep
 
@@ -150,6 +192,8 @@ GSImageMagickCanDecode(const MagickInfo *info)
   Image *images;
   Image *image;
   char signature[SIGNATURE_LENGTH];
+  BOOL usesDelegate = GSImageMagickUsesDelegate(data);
+  MagickSizeType savedTimeLimit = 0;
 
   // Set the background color to transparent
   // (otherwise SVG's are rendered against a white background by default)
@@ -172,7 +216,18 @@ GSImageMagickCanDecode(const MagickInfo *info)
         }
     }
 
+  if (usesDelegate)
+    {
+      savedTimeLimit = GetMagickResourceLimit(TimeResource);
+      SetMagickResourceLimit(TimeResource, GS_IMAGEMAGICK_DELEGATE_TIME_LIMIT);
+    }
+
   images = BlobToImage(imageinfo, [data bytes], [data length], exception);
+
+  if (usesDelegate)
+    {
+      SetMagickResourceLimit(TimeResource, savedTimeLimit);
+    }
 
   if (exception->severity != UndefinedException)
     {
@@ -207,23 +262,7 @@ GSImageMagickCanDecode(const MagickInfo *info)
 
 + (BOOL) canInitWithData: (NSData *)data
 {
-  char buf[32];
-  ExceptionInfo *exception;
-  const MagicInfo *magic;
-  const MagickInfo *magick = (const MagickInfo *)NULL;
-
-  memset(buf, 0, 32);
-  [data getBytes: buf length: 32];
-
-  exception = AcquireExceptionInfo();
-  magic = GetMagicInfo((const unsigned char *)buf, 32, exception);
-  if (magic != (const MagicInfo *)NULL)
-    {
-      magick = GetMagickInfo(GetMagicName(magic), exception);
-    }
-  DestroyExceptionInfo(exception);
-
-  return GSImageMagickCanDecode(magick);
+  return GSImageMagickCanDecode(GSImageMagickInfoForData(data));
 }
 
 + (NSArray *) imageUnfilteredFileTypes
