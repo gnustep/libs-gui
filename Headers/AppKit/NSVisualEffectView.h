@@ -61,6 +61,10 @@ enum {
 
 APPKIT_EXPORT_CLASS
 @interface NSVisualEffectView : NSView {
+  NSVisualEffectMaterial _material;
+  NSVisualEffectBlendingMode _blendingMode;
+  NSVisualEffectState _state;
+  NSImage *_maskImage;
 }
 
 #if GS_HAS_DECLARED_PROPERTIES
