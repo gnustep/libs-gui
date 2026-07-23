@@ -34,6 +34,22 @@
 #import "GSFastEnumeration.h"
 
 @implementation NSSplitViewController
+- (void) loadView
+{
+  if ([self nibName] != nil)
+    {
+      [super loadView];
+    }
+  else
+    {
+      NSSplitView *sv = [[NSSplitView alloc]
+        initWithFrame: NSMakeRect(0, 0, 250, 200)];
+
+      [self setSplitView: sv];
+      RELEASE(sv);
+    }
+}
+
 // return splitview...
 - (NSSplitView *) splitView
 {
