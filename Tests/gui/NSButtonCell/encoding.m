@@ -25,7 +25,7 @@ int main()
   NS_ENDHANDLER
 
   NSString	*mask = @"NSButtonFlags2";
-  NSButtonCell	*item = [[NSButtonCell alloc] init];
+  NSButtonCell	*item = AUTORELEASE([[NSButtonCell alloc] init]);
 
   item.keyEquivalent = @"A";
   item.keyEquivalentModifierMask = NSShiftKeyMask;
@@ -33,7 +33,8 @@ int main()
   NSMutableData		*data = [NSMutableData data];
   NSKeyedArchiver	*archiver;
 
-  archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData: data];
+  archiver = AUTORELEASE(
+    [[NSKeyedArchiver alloc] initForWritingWithMutableData: data]);
 
   [archiver encodeRootObject: item];
   [archiver finishEncoding];

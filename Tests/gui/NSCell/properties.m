@@ -32,22 +32,22 @@ int main()
   }
   NS_ENDHANDLER
 
-  imgCell = [[NSImageCell alloc] initImageCell:nil];
+  imgCell = AUTORELEASE([[NSImageCell alloc] initImageCell:nil]);
   PASS([imgCell refusesFirstResponder] == YES, "NSImageCell initImageCell refusesFirstResponder");
 
-  cell = [[NSCell alloc] initImageCell:nil];
+  cell = AUTORELEASE([[NSCell alloc] initImageCell:nil]);
   PASS([cell refusesFirstResponder] == NO, "NSCell initImageCell refusesFirstResponder");
 
-  buttCell = [[NSButtonCell alloc] init];
+  buttCell = AUTORELEASE([[NSButtonCell alloc] init]);
   PASS([buttCell refusesFirstResponder] == NO, "NSButtonCell init refusesFirstResponder");
 
-  tfCell = [[NSTextFieldCell alloc] initTextCell:@""];
+  tfCell = AUTORELEASE([[NSTextFieldCell alloc] initTextCell:@""]);
   PASS([tfCell refusesFirstResponder] == NO, "NSTextFieldCell initTextCell refusesFirstResponder");
 
-  actCell = [[NSActionCell alloc] init];
+  actCell = AUTORELEASE([[NSActionCell alloc] init]);
   PASS([actCell refusesFirstResponder] == NO, "NSActionCell init refusesFirstResponder");
 
-  cell = [[NSCell alloc] init];
+  cell = AUTORELEASE([[NSCell alloc] init]);
   PASS([cell refusesFirstResponder] == NO, "NSCell init refusesFirstResponder");
 
   END_SET("NSCell RefusesResponder")

@@ -28,7 +28,7 @@ main(int argc, char **argv)
   NS_ENDHANDLER
 
   /* A fresh cell is off and does not allow mixed state. */
-  cell = [[NSCell alloc] initTextCell: @"x"];
+  cell = AUTORELEASE([[NSCell alloc] initTextCell: @"x"]);
   PASS([cell state] == NSOffState, "a new cell starts in the off state");
   PASS([cell allowsMixedState] == NO,
        "a new cell does not allow mixed state");
