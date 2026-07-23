@@ -1159,6 +1159,11 @@
   return color;
 }
 
+- (CGFloat) menuBorderRadius
+{
+  return 0.0;
+}
+
 - (NSColor *) menuBarBackgroundColor
 {
   NSColor *color = [self colorNamed: @"menuBarBackgroundColor"
@@ -1206,15 +1211,32 @@
  
   if (tiles == nil)
     {
-      NSRectEdge sides[4] = { NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge }; 
-      NSColor *colors[] = {[self menuBorderColorForEdge: NSMinXEdge isHorizontal: horizontal], 
-                           [self menuBorderColorForEdge: NSMaxYEdge isHorizontal: horizontal], 
-                           [self menuBorderColorForEdge: NSMaxXEdge isHorizontal: horizontal],
-                           [self menuBorderColorForEdge: NSMinYEdge isHorizontal: horizontal]};
+      CGFloat radius = [self menuBorderRadius];
 
-      [[self menuBackgroundColor] set];
-      NSRectFill(NSIntersectionRect(bounds, dirtyRect));
-      NSDrawColorTiledRects(bounds, dirtyRect, sides, colors, 4);
+      if (radius > 0.0)
+        {
+          NSBezierPath *path = [NSBezierPath
+            bezierPathWithRoundedRect: NSInsetRect(bounds, 0.5, 0.5)
+                              xRadius: radius
+                              yRadius: radius];
+
+          [[self menuBackgroundColor] set];
+          [path fill];
+          [[self menuBorderColor] set];
+          [path stroke];
+        }
+      else
+        {
+          NSRectEdge sides[4] = { NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge };
+          NSColor *colors[] = {[self menuBorderColorForEdge: NSMinXEdge isHorizontal: horizontal],
+                               [self menuBorderColorForEdge: NSMaxYEdge isHorizontal: horizontal],
+                               [self menuBorderColorForEdge: NSMaxXEdge isHorizontal: horizontal],
+                               [self menuBorderColorForEdge: NSMinYEdge isHorizontal: horizontal]};
+
+          [[self menuBackgroundColor] set];
+          NSRectFill(NSIntersectionRect(bounds, dirtyRect));
+          NSDrawColorTiledRects(bounds, dirtyRect, sides, colors, 4);
+        }
     }
   else
     {
