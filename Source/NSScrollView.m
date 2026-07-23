@@ -106,6 +106,7 @@ typedef struct _scrollViewFlags
 /* GNUstep private methods */
 - (void) _synchronizeHeaderAndCornerView;
 - (void) _themeDidActivate: (NSNotification*)notification;
+- (void) _autohideScrollers;
 @end
 
 @implementation NSScrollView
@@ -826,6 +827,64 @@ static CGFloat scrollerWidth;
   [self _doScroll: scroller];
 }
 
+/* Show or hide the scrollers for -autohidesScrollers.  The two axes are
+ * coupled: a vertical scroller takes away width, which can make a horizontal
+ * scroller necessary, and a horizontal scroller takes away height, which can
+ * make a vertical scroller necessary.  They must therefore be decided
+ * together rather than one axis at a time.  Reconstruct the area the clip
+ * view would have with no scrollers (its current bounds plus the footprint of
+ * whatever scrollers are currently shown) and evaluate each axis against it,
+ * allowing for the space the other scroller takes.  The evaluation only ever
+ * turns scrollers on, so it settles on a single configuration.  Because the
+ * reconstructed area does not depend on which scrollers are currently shown,
+ * -setHas...Scroller: below re-tiles and re-enters this method with the same
+ * result, where it changes nothing further.
+ */
+- (void) _autohideScrollers
+{
+  NSView *documentView = [_contentView documentView];
+  NSSize documentSize;
+  NSSize clipSize;
+  CGFloat innerBorderWidth;
+  CGFloat footprint;
+  CGFloat availWidth;
+  CGFloat availHeight;
+  BOOL needsVert;
+  BOOL needsHoriz;
+
+  if (documentView == nil)
+    {
+      return;
+    }
+
+  documentSize = [documentView frame].size;
+  clipSize = [_contentView bounds].size;
+  innerBorderWidth = [[NSUserDefaults standardUserDefaults]
+                       boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
+  footprint = scrollerWidth + innerBorderWidth;
+
+  availWidth = clipSize.width + (_hasVertScroller ? footprint : 0.0);
+  availHeight = clipSize.height + (_hasHorizScroller ? footprint : 0.0);
+
+  needsVert = documentSize.height > availHeight;
+  needsHoriz = documentSize.width > availWidth;
+  if (needsVert)
+    {
+      needsHoriz = documentSize.width > (availWidth - footprint);
+    }
+  if (needsHoriz)
+    {
+      needsVert = documentSize.height > (availHeight - footprint);
+    }
+  if (needsVert)
+    {
+      needsHoriz = documentSize.width > (availWidth - footprint);
+    }
+
+  [self setHasVerticalScroller: needsVert];
+  [self setHasHorizontalScroller: needsHoriz];
+}
+
 - (void) reflectScrolledClipView: (NSClipView *)aClipView
 {
   NSRect documentFrame = NSZeroRect;
@@ -841,6 +900,11 @@ static CGFloat scrollerWidth;
 
   NSDebugLLog (@"NSScrollView", @"reflectScrolledClipView:");
 
+  if (_autohidesScrollers)
+    {
+      [self _autohideScrollers];
+    }
+
   if (_contentView)
     {
       clipViewBounds = [_contentView bounds];
@@ -850,25 +914,11 @@ static CGFloat scrollerWidth;
       documentFrame = [documentView frame];
     }
 
-  // FIXME: Should we just hide the scroll bar or remove it?
-  if ((_autohidesScrollers)
-    && (documentFrame.size.height > clipViewBounds.size.height))
-    {
-      [self setHasVerticalScroller: YES];        
-    } 
- 
   if (_hasVertScroller)
     {
       if (documentFrame.size.height <= clipViewBounds.size.height)
         {
-          if (_autohidesScrollers)
-            {
-              [self setHasVerticalScroller: NO];
-            }
-          else
-            {
-              [_vertScroller setEnabled: NO];
-            }
+          [_vertScroller setEnabled: NO];
         }
       else
         {
@@ -884,29 +934,16 @@ static CGFloat scrollerWidth;
             {
               floatValue = 1 - floatValue;
             }
-          [_vertScroller setFloatValue: floatValue 
+          [_vertScroller setFloatValue: floatValue
                          knobProportion: knobProportion];
         }
     }
 
-  if ((_autohidesScrollers)
-    && (documentFrame.size.width > clipViewBounds.size.width))
-    {
-      [self setHasHorizontalScroller: YES];        
-    } 
- 
   if (_hasHorizScroller)
     {
       if (documentFrame.size.width <= clipViewBounds.size.width)
         {
-          if (_autohidesScrollers)
-            {
-              [self setHasHorizontalScroller: NO];
-            }
-          else
-            {
-              [_horizScroller setEnabled: NO];
-            }
+          [_horizScroller setEnabled: NO];
         }
       else
         {
