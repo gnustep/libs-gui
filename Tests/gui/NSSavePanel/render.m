@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "GSRenderTest.h"
+#import "../GSRenderTest.h"
 
 /* Local render exercise for NSSavePanel: point the panel at a known directory,
    render its window for real, save a PNG to look at, and check structurally
