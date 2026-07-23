@@ -49,7 +49,13 @@
 
 + (instancetype) splitViewItemWithViewController: (NSViewController *)viewController
 {
-  return AUTORELEASE([[NSSplitViewItem alloc] initWithViewController: viewController]);  
+  return AUTORELEASE([[NSSplitViewItem alloc] initWithViewController: viewController]);
+}
+
+- (void) dealloc
+{
+  RELEASE(_viewController);
+  [super dealloc];
 }
 
 - (CGFloat) automaticMaximumThickness
@@ -149,7 +155,7 @@
 
 - (void) setViewController: (NSViewController *)vc
 {
-  _viewController = vc;
+  ASSIGN(_viewController, vc);
 }
 
 // NSCoding
@@ -160,7 +166,8 @@
     {
       if ([coder containsValueForKey: @"NSSplitViewItemViewController"])
         {
-          _viewController = [coder decodeObjectForKey: @"NSSplitViewItemViewController"];
+          ASSIGN(_viewController,
+            [coder decodeObjectForKey: @"NSSplitViewItemViewController"]);
         }
     }
   return self;
