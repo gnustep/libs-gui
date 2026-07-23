@@ -654,7 +654,7 @@ static GSComboWindow *gsWindow = nil;
   //_completes = NO;
   _popUpList = [[NSMutableArray alloc] init];
   _hasVerticalScroller = YES;
-  _visibleItems = 10;
+  _visibleItems = 5;
   _intercellSpacing = NSMakeSize(3.0, 2.0);
   _itemHeight = 16;
   _selectedItem = -1;
@@ -762,7 +762,7 @@ static GSComboWindow *gsWindow = nil;
  */
 - (void) setNumberOfVisibleItems: (NSInteger)visibleItems
 {
-  if (visibleItems > 10)
+  if (visibleItems > 0)
     _visibleItems = visibleItems;
 }
 
