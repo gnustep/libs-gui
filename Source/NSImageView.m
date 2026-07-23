@@ -94,6 +94,7 @@ static Class imageCellClass;
   [self setImageScaling: NSScaleProportionally];
   [self setEditable: NO];
   [self setAllowsCutCopyPaste: YES];
+  [self setAnimates: YES];
 
   return self;
 }
@@ -162,13 +163,12 @@ static Class imageCellClass;
 
 - (BOOL) animates
 {
-  // FIXME: Should be passed on to cell.
-  return NO;
+  return _ivflags.animates;
 }
 
 - (void) setAnimates: (BOOL) flag
 {
-  // FIXME: Should be passed on to cell.
+  _ivflags.animates = flag;
 }
 
 - (BOOL) allowsCutCopyPaste
@@ -419,6 +419,7 @@ static Class imageCellClass;
     return self;
 
   [self setAllowsCutCopyPaste: YES];
+  [self setAnimates: YES];
   if ([aDecoder allowsKeyedCoding])
     {
       //NSArray *dragType = [aDecoder decodeObjectForKey: @"NSDragTypes"];
