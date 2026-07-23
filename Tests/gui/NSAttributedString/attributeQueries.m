@@ -64,6 +64,7 @@ main(int argc, char **argv)
     PASS([ra objectForKey: NSFontAttributeName] == nil
       && [ra count] == 1,
       "rulerAttributesInRange drops the character attributes");
+    RELEASE(s);
   }
 
   /* A string carrying no paragraph style yields an empty ruler dictionary. */
@@ -72,6 +73,7 @@ main(int argc, char **argv)
       initWithString: @"plain"];
     PASS([[s rulerAttributesInRange: NSMakeRange(0, 5)] count] == 0,
       "a string with no paragraph style has empty ruler attributes");
+    RELEASE(s);
   }
 
   /* fontAttributesInRange raises for a range beyond the string. */
@@ -89,6 +91,7 @@ main(int argc, char **argv)
       raised = [[localException name] isEqualToString: NSRangeException];
     }
     NS_ENDHANDLER
+    RELEASE(s);
     PASS(raised, "fontAttributesInRange raises for a range beyond the string");
   }
 
@@ -105,6 +108,8 @@ main(int argc, char **argv)
       "plain text contains no attachments");
     PASS([withAtt containsAttachments] == YES,
       "an attachment string contains an attachment");
+    RELEASE(plain);
+    RELEASE(att);
   }
 
   END_SET("NSAttributedString attribute queries")

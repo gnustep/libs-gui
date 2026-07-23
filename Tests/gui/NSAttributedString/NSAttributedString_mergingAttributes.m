@@ -11,31 +11,33 @@ int main(int argc, char **argv)
   
   START_SET("NSAttributedString attribute merging");
   
-  NSMutableParagraphStyle *style1 = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  NSMutableParagraphStyle *style2 = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  NSMutableParagraphStyle *style3 = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  NSMutableParagraphStyle *style4 = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  NSMutableParagraphStyle *style1 = AUTORELEASE([[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
+  NSMutableParagraphStyle *style2 = AUTORELEASE(
+    [[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
+  NSMutableParagraphStyle *style3 = AUTORELEASE([[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
+  NSMutableParagraphStyle *style4 = AUTORELEASE([[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
   
-  NSTextList *list1 = [[NSTextList alloc] initWithMarkerFormat: @"{box}" options: 0];
-  NSTextList *list2 = [[NSTextList alloc] initWithMarkerFormat: @"{box}" options: 0];
+  NSTextList *list1 = AUTORELEASE([[NSTextList alloc] initWithMarkerFormat: @"{box}" options: 0]);
+  NSTextList *list2 = AUTORELEASE([[NSTextList alloc] initWithMarkerFormat: @"{box}" options: 0]);
   
   [style3 setTextLists: [NSArray arrayWithObject: list1]];
   [style4 setTextLists: [NSArray arrayWithObject: list2]];
   
-  NSAttributedString *str1 = [[NSAttributedString alloc] 
+  NSAttributedString *str1 = AUTORELEASE([[NSAttributedString alloc] 
     initWithString: @"string 1" 
-    attributes: [NSDictionary dictionaryWithObject: style1 forKey: NSParagraphStyleAttributeName]];
-  NSAttributedString *str2 = [[NSAttributedString alloc] 
+    attributes: [NSDictionary dictionaryWithObject: style1 forKey: NSParagraphStyleAttributeName]]);
+  NSAttributedString *str2 = AUTORELEASE([[NSAttributedString alloc] 
     initWithString: @"string 2"
-    attributes: [NSDictionary dictionaryWithObject: style2 forKey: NSParagraphStyleAttributeName]];
-  NSAttributedString *str3 = [[NSAttributedString alloc] 
+    attributes: [NSDictionary dictionaryWithObject: style2 forKey: NSParagraphStyleAttributeName]]);
+  NSAttributedString *str3 = AUTORELEASE([[NSAttributedString alloc] 
     initWithString: @"string 3" 
-    attributes: [NSDictionary dictionaryWithObject: style3 forKey: NSParagraphStyleAttributeName]];
-  NSAttributedString *str4 = [[NSAttributedString alloc] 
+    attributes: [NSDictionary dictionaryWithObject: style3 forKey: NSParagraphStyleAttributeName]]);
+  NSAttributedString *str4 = AUTORELEASE([[NSAttributedString alloc] 
     initWithString: @"string 4"
-    attributes: [NSDictionary dictionaryWithObject: style4 forKey: NSParagraphStyleAttributeName]];
+    attributes: [NSDictionary dictionaryWithObject: style4 forKey: NSParagraphStyleAttributeName]]);
   
-  NSMutableAttributedString *storage = [[NSMutableAttributedString alloc] init];
+  NSMutableAttributedString *storage = AUTORELEASE(
+    [[NSMutableAttributedString alloc] init]);
   
   NSUInteger pos1 = [storage length];
   [storage appendAttributedString: str1];

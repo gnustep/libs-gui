@@ -11,50 +11,58 @@ int main(int argc, char **argv)
   
   START_SET("NSAttributedString rangeOfTextList:atIndex: category method");
   
-  NSTextList *list1 = [[NSTextList alloc] initWithMarkerFormat: @"{box}" options: 0];
-  NSTextList *list2 = [[NSTextList alloc] initWithMarkerFormat: @"{box}" options: 0];
-  NSTextList *list3 = [[NSTextList alloc] initWithMarkerFormat: @"{box}" options: 0];
+  NSTextList *list1 = AUTORELEASE(
+    [[NSTextList alloc] initWithMarkerFormat: @"{box}" options: 0]);
+  NSTextList *list2 = AUTORELEASE(
+    [[NSTextList alloc] initWithMarkerFormat: @"{box}" options: 0]);
+  NSTextList *list3 = AUTORELEASE(
+    [[NSTextList alloc] initWithMarkerFormat: @"{box}" options: 0]);
 
-  NSMutableParagraphStyle *style1 = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  NSMutableParagraphStyle *style2 = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  NSMutableParagraphStyle *style3 = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  NSMutableParagraphStyle *style4 = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  NSMutableParagraphStyle *style1 = AUTORELEASE(
+    [[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
+  NSMutableParagraphStyle *style2 = AUTORELEASE(
+    [[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
+  NSMutableParagraphStyle *style3 = AUTORELEASE(
+    [[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
+  NSMutableParagraphStyle *style4 = AUTORELEASE(
+    [[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
   
   [style2 setTextLists: [NSArray arrayWithObject: list1]];
   [style3 setTextLists: [NSArray arrayWithObjects: list1, list2, nil]];
   [style4 setTextLists: [NSArray arrayWithObject: list3]];
   
-  NSMutableAttributedString *storage = [[NSMutableAttributedString alloc] init];
+  NSMutableAttributedString *storage = AUTORELEASE(
+    [[NSMutableAttributedString alloc] init]);
   
   NSUInteger pos1 = [storage length];
-  [storage appendAttributedString: [[NSAttributedString alloc] 
+  [storage appendAttributedString: AUTORELEASE([[NSAttributedString alloc] 
     initWithString: @"before\n"
-    attributes: [NSDictionary dictionaryWithObject: style1 forKey: NSParagraphStyleAttributeName]]];
+    attributes: [NSDictionary dictionaryWithObject: style1 forKey: NSParagraphStyleAttributeName]])];
     
   NSUInteger pos2 = [storage length];
-  [storage appendAttributedString: [[NSAttributedString alloc] 
+  [storage appendAttributedString: AUTORELEASE([[NSAttributedString alloc] 
     initWithString: @"list 1\n"
-    attributes: [NSDictionary dictionaryWithObject: style2 forKey: NSParagraphStyleAttributeName]]];
+    attributes: [NSDictionary dictionaryWithObject: style2 forKey: NSParagraphStyleAttributeName]])];
   
   NSUInteger pos3 = [storage length];
-  [storage appendAttributedString: [[NSAttributedString alloc] 
+  [storage appendAttributedString: AUTORELEASE([[NSAttributedString alloc] 
     initWithString: @"sublist 1\n"
-    attributes: [NSDictionary dictionaryWithObject: style3 forKey: NSParagraphStyleAttributeName]]];
+    attributes: [NSDictionary dictionaryWithObject: style3 forKey: NSParagraphStyleAttributeName]])];
   
   NSUInteger pos4 = [storage length];
-  [storage appendAttributedString: [[NSAttributedString alloc] 
+  [storage appendAttributedString: AUTORELEASE([[NSAttributedString alloc] 
     initWithString: @"list 1\n"
-    attributes: [NSDictionary dictionaryWithObject: style2 forKey: NSParagraphStyleAttributeName]]];
+    attributes: [NSDictionary dictionaryWithObject: style2 forKey: NSParagraphStyleAttributeName]])];
   
   NSUInteger pos5 = [storage length];
-  [storage appendAttributedString: [[NSAttributedString alloc] 
+  [storage appendAttributedString: AUTORELEASE([[NSAttributedString alloc] 
     initWithString: @"list 2\n"
-    attributes: [NSDictionary dictionaryWithObject: style4 forKey: NSParagraphStyleAttributeName]]];
+    attributes: [NSDictionary dictionaryWithObject: style4 forKey: NSParagraphStyleAttributeName]])];
   
   NSUInteger pos6 = [storage length];
-  [storage appendAttributedString: [[NSAttributedString alloc] 
+  [storage appendAttributedString: AUTORELEASE([[NSAttributedString alloc] 
     initWithString: @"ending\n"
-    attributes: [NSDictionary dictionaryWithObject: style1 forKey: NSParagraphStyleAttributeName]]];
+    attributes: [NSDictionary dictionaryWithObject: style1 forKey: NSParagraphStyleAttributeName]])];
   
   NSRange expected, actual;
   
