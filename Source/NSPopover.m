@@ -131,6 +131,16 @@
 /* Class */
 @implementation NSPopover
 
+- (instancetype) init
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _animates = YES;
+    }
+  return self;
+}
+
 /* Properties */
 
 - (void) setAnimates: (BOOL)flag
