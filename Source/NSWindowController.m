@@ -312,7 +312,10 @@
 	}
 
       [self loadWindow];
-      if ([self isWindowLoaded]) 
+      /* -loadWindow may supply the window through -setWindow: (for example a
+         subclass that builds it directly) rather than by loading a nib, so key
+         the completion off the window existing, not off -isWindowLoaded. */
+      if (_window != nil)
       {
         [self _windowDidLoad];
 	if (_owner != self &&
