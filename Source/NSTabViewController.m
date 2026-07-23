@@ -41,6 +41,22 @@
   _tabStyle = ts;
 }
 
+- (void) loadView
+{
+  if ([self nibName] != nil)
+    {
+      [super loadView];
+    }
+  else
+    {
+      NSTabView *tv = [[NSTabView alloc]
+        initWithFrame: NSMakeRect(0, 0, 250, 200)];
+
+      [self setTabView: tv];
+      RELEASE(tv);
+    }
+}
+
 - (NSTabView *) tabView
 {
   return (NSTabView *)[self view];
