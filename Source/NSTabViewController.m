@@ -115,7 +115,13 @@
 
 - (NSInteger) selectedTabViewItemIndex
 {
-  return [[self tabView] indexOfTabViewItem: [[self tabView] selectedTabViewItem]];
+  NSTabViewItem *selected = [[self tabView] selectedTabViewItem];
+
+  if (selected == nil)
+    {
+      return -1;
+    }
+  return [[self tabView] indexOfTabViewItem: selected];
 }
 
 - (void) setSelectedTabViewItemIndex: (NSInteger)idx
