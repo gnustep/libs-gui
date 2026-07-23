@@ -24,7 +24,10 @@
 
 #import <Foundation/NSArchiver.h>
 #import "AppKit/NSSplitViewItem.h"
+#import "AppKit/NSLayoutConstraint.h"
 #import "AppKit/NSViewController.h"
+
+const CGFloat NSSplitViewItemUnspecifiedDimension = -1.0;
 
 @implementation NSSplitViewItem
 - (instancetype) initWithViewController: (NSViewController *)viewController
@@ -32,6 +35,12 @@
   self = [super init];
   if (self != nil)
     {
+      _automaticMaximumThickness = NSSplitViewItemUnspecifiedDimension;
+      _preferredThicknessFraction = NSSplitViewItemUnspecifiedDimension;
+      _minimumThickness = NSSplitViewItemUnspecifiedDimension;
+      _maximumThickness = NSSplitViewItemUnspecifiedDimension;
+      _holdingPriority = NSLayoutPriorityDefaultLow;
+      _allowsFullHeightLayout = YES;
       ASSIGN(_viewController, viewController);
     }
   return self;
