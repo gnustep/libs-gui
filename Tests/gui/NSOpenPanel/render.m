@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "GSRenderTest.h"
+#import "../GSRenderTest.h"
 
 /* Local render exercise for NSOpenPanel: point it at a known directory, render
    its window, and check structurally that it laid out a populated file browser

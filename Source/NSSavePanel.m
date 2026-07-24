@@ -369,8 +369,20 @@ setPath(NSBrowser *browser, NSString *path)
   [_topView addSubview: _titleField];
   [_titleField release];
 
+  r = NSMakeRect (67, 258, 233, 14);
+  _messageField = [[NSTextField alloc] initWithFrame: r];
+  [_messageField setSelectable: NO];
+  [_messageField setEditable: NO];
+  [_messageField setDrawsBackground: NO];
+  [_messageField setBezeled: NO];
+  [_messageField setBordered: NO];
+  [_messageField setFont: [NSFont messageFontOfSize: 12]];
+  [_messageField setAutoresizingMask: NSViewWidthSizable|NSViewMinYMargin];
+  [_topView addSubview: _messageField];
+  [_messageField release];
+
   r = NSMakeRect (0, 252, 308, 2);
-  bar = [[NSBox alloc] initWithFrame: r]; 
+  bar = [[NSBox alloc] initWithFrame: r];
   [bar setBorderType: NSGrooveBorder];
   [bar setTitlePosition: NSNoTitle];
   [bar setAutoresizingMask: NSViewWidthSizable|NSViewMinYMargin];
@@ -431,9 +443,11 @@ setPath(NSBrowser *browser, NSString *path)
   [self _setDefaultDirectory];
   [self setPrompt: _(@"Name:")];
   [self setTitle: _(@"Save")];
+  [self setMessage: @""];
   [self setAllowedFileTypes: nil];
   [self setAllowsOtherFileTypes: NO];
   [self setTreatsFilePackagesAsDirectories: NO];
+  [self setCanCreateDirectories: YES];
   [self setDelegate: nil];
   [self setAccessoryView: nil];
 }
@@ -708,8 +722,9 @@ selectCellWithString: (NSString*)title
 {
   [[NSNotificationCenter defaultCenter] removeObserver: self];
   TEST_RELEASE (_fullFileName);
-  TEST_RELEASE (_directory);  
+  TEST_RELEASE (_directory);
   TEST_RELEASE (_allowedFileTypes);
+  TEST_RELEASE (_message);
 
   [super dealloc];
 }
@@ -927,13 +942,13 @@ selectCellWithString: (NSString*)title
 
 - (void) setMessage: (NSString *)message
 {
-  // FIXME
+  ASSIGNCOPY(_message, message);
+  [_messageField setStringValue: (message != nil) ? message : @""];
 }
 
 - (NSString *) message
 {
-  // FIXME
-  return nil;
+  return (_message != nil) ? _message : @"";
 }
 
 

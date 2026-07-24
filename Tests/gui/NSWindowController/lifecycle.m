@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "GSRenderTest.h"
+#import "../GSRenderTest.h"
 
 /* Local lifecycle exercise for NSWindowController: a controller that builds its
    window in -loadView should load it lazily, send -windowDidLoad once, show and

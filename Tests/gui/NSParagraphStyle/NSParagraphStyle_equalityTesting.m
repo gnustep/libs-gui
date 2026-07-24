@@ -15,20 +15,25 @@ int main(int argc, char **argv)
   
   PASS_EQUAL(default1, default2, "NSParagraphStyle isEqual: works for default paragraph styles");
   
-  NSMutableParagraphStyle *style1 = [[NSMutableParagraphStyle alloc] init];
-  NSMutableParagraphStyle *style2 = [[NSMutableParagraphStyle alloc] init];
+  NSMutableParagraphStyle *style1 = AUTORELEASE(
+    [[NSMutableParagraphStyle alloc] init]);
+  NSMutableParagraphStyle *style2 = AUTORELEASE(
+    [[NSMutableParagraphStyle alloc] init]);
   
   PASS_EQUAL(style1, style2, "NSParagraphStyle isEqual: works for default mutable copies");
   
-  NSTextList *textList = [[NSTextList alloc] init];
+  NSTextList *textList = AUTORELEASE(
+    [[NSTextList alloc] init]);
   
   [style1 setTextLists: [NSArray arrayWithObject: textList]];
   [style2 setTextLists: [NSArray arrayWithObject: textList]];
   
   PASS_EQUAL(style1, style2, "NSParagraphStyle isEqual: works for identical textlists");
   
-  [style1 setTextLists: [NSArray arrayWithObject: [[NSTextList alloc] init]]];
-  [style2 setTextLists: [NSArray arrayWithObject: [[NSTextList alloc] init]]];
+  [style1 setTextLists: [NSArray arrayWithObject: AUTORELEASE(
+    [[NSTextList alloc] init])]];
+  [style2 setTextLists: [NSArray arrayWithObject: AUTORELEASE(
+    [[NSTextList alloc] init])]];
   
   PASS(![style1 isEqual: style2], "NSParagraphStyle isEqual: works for different textlists");
   

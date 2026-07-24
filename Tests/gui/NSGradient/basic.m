@@ -24,8 +24,8 @@ int main(int argc, char **argv)
   NSColor	*blue = rgb(0, 0, 1);
 
   START_SET("construction and colour stops")
-    NSGradient	*g = [[NSGradient alloc] initWithStartingColor: red
-						   endingColor: blue];
+    NSGradient	*g = AUTORELEASE(
+      [[NSGradient alloc] initWithStartingColor: red endingColor: blue]);
     NSColor	*c = nil;
     CGFloat	loc = -1;
 
@@ -42,8 +42,8 @@ int main(int argc, char **argv)
   END_SET("construction and colour stops")
 
   START_SET("initWithColors evenly spaces the stops")
-    NSGradient	*g = [[NSGradient alloc] initWithColors:
-      [NSArray arrayWithObjects: red, green, blue, nil]];
+    NSGradient	*g = AUTORELEASE([[NSGradient alloc] initWithColors:
+      ([NSArray arrayWithObjects: red, green, blue, nil])]);
     CGFloat	loc = -1;
 
     PASS(3 == [g numberOfColorStops], "three colours give three stops");
@@ -56,8 +56,8 @@ int main(int argc, char **argv)
   END_SET("initWithColors evenly spaces the stops")
 
   START_SET("interpolatedColorAtLocation endpoints")
-    NSGradient	*g = [[NSGradient alloc] initWithStartingColor: red
-						   endingColor: blue];
+    NSGradient	*g = AUTORELEASE(
+      [[NSGradient alloc] initWithStartingColor: red endingColor: blue]);
 
     PASS([[g interpolatedColorAtLocation: 0.0] isEqual: red],
       "location 0 is the starting colour");
@@ -70,8 +70,8 @@ int main(int argc, char **argv)
   END_SET("interpolatedColorAtLocation endpoints")
 
   START_SET("interpolatedColorAtLocation interpolates toward the nearer stop")
-    NSGradient	*g = [[NSGradient alloc] initWithStartingColor: red
-						   endingColor: blue];
+    NSGradient	*g = AUTORELEASE(
+      [[NSGradient alloc] initWithStartingColor: red endingColor: blue]);
     NSColor	*c;
 
     c = [g interpolatedColorAtLocation: 0.25];
@@ -88,8 +88,8 @@ int main(int argc, char **argv)
   END_SET("interpolatedColorAtLocation interpolates toward the nearer stop")
 
   START_SET("interpolatedColorAtLocation across three stops")
-    NSGradient	*g = [[NSGradient alloc] initWithColors:
-      [NSArray arrayWithObjects: red, green, blue, nil]];
+    NSGradient	*g = AUTORELEASE([[NSGradient alloc] initWithColors:
+      ([NSArray arrayWithObjects: red, green, blue, nil])]);
     NSColor	*c;
 
     c = [g interpolatedColorAtLocation: 0.5];
@@ -104,9 +104,9 @@ int main(int argc, char **argv)
   END_SET("interpolatedColorAtLocation across three stops")
 
   START_SET("copy")
-    NSGradient	*g = [[NSGradient alloc] initWithStartingColor: red
-						   endingColor: blue];
-    NSGradient	*c = [g copy];
+    NSGradient	*g = AUTORELEASE(
+      [[NSGradient alloc] initWithStartingColor: red endingColor: blue]);
+    NSGradient	*c = AUTORELEASE([g copy]);
 
     PASS(c != nil && c != g, "copy is a distinct object");
     PASS(2 == [c numberOfColorStops], "copy preserves the stop count");
