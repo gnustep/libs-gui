@@ -93,6 +93,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   [self setCanChooseFiles: YES];
   [self setCanChooseDirectories: YES];
   [self setAllowsMultipleSelection: NO];
+  [self setResolvesAliases: YES];
   [_okButton setEnabled: NO];
 }
 
@@ -221,6 +222,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     {
       _canChooseDirectories = YES;
       _canChooseFiles = YES;
+      _resolvesAliases = YES;
     }
   return self;
 }
@@ -319,14 +321,11 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 */
 - (NSArray *) filenames
 {
+  NSMutableArray *ret = [NSMutableArray array];
+  NSString       *dir = [self directory];
+
   if ([_browser allowsMultipleSelection])
     {
-      NSArray         *cells = [_browser selectedCells];
-      NSEnumerator    *cellEnum = [cells objectEnumerator];
-      NSBrowserCell   *currCell;
-      NSMutableArray  *ret = [NSMutableArray array];
-      NSString        *dir = [self directory];
-      
       if ([_browser selectedColumn] != [_browser lastColumn])
 	{
 	  /*
@@ -340,24 +339,43 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	}
       else
 	{
-	  while ((currCell = [cellEnum nextObject]))
+	  NSEnumerator  *cellEnum = [[_browser selectedCells] objectEnumerator];
+	  NSBrowserCell *currCell;
+
+	  while ((currCell = [cellEnum nextObject]) != nil)
 	    {
 	      [ret addObject:
                 [dir stringByAppendingPathComponent: [currCell stringValue]]];
 	    }
 	}
-      return ret;
     }
   else
     {
-      if (_canChooseDirectories == YES)
+      if (_canChooseDirectories == YES
+	&& [_browser selectedColumn] != [_browser lastColumn])
 	{
-	  if ([_browser selectedColumn] != [_browser lastColumn])
-	    return [NSArray arrayWithObject: [self directory]];
+	  [ret addObject: dir];
 	}
-
-      return [NSArray arrayWithObject: [super filename]];
+      else
+	{
+	  [ret addObject: [super filename]];
+	}
     }
+
+  /* Resolve symbolic links in the chosen paths unless asked not to. */
+  if (_resolvesAliases)
+    {
+      NSUInteger i, count = [ret count];
+
+      for (i = 0; i < count; i++)
+	{
+	  [ret replaceObjectAtIndex: i
+			 withObject: [[ret objectAtIndex: i]
+			   stringByResolvingSymlinksInPath]];
+	}
+    }
+
+  return ret;
 }
 
 /** Returns an array of the selected files as URLs */
@@ -548,13 +566,12 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
 - (BOOL) resolvesAliases
 {
-  // FIXME
-  return YES;
+  return _resolvesAliases;
 }
 
 - (void) setResolvesAliases: (BOOL) flag
 {
-  // FIXME
+  _resolvesAliases = flag;
 }
 
 /*
