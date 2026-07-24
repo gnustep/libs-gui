@@ -175,7 +175,10 @@
 
 - (void) setContentViewController: (NSViewController *)controller
 {
-  if ([NSStoryboard mainStoryboard] == nil)
+  /* A controller that already provides its view, whether set directly or
+     loaded from its own nib, needs nothing loaded here. */
+  if (controller != nil && [controller view] == nil
+      && [NSStoryboard mainStoryboard] == nil)
     {
       NSString *controllerClassName = NSStringFromClass([controller class]);
       BOOL loaded = [NSBundle loadNibNamed: controllerClassName
