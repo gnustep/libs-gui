@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "GSRenderTest.h"
+#import "../GSRenderTest.h"
 #import <AppKit/NSButton.h>
 
 /* Local render exercise for NSPanel: build a titled panel with a button in its

@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "GSRenderTest.h"
+#import "../GSRenderTest.h"
 #import <AppKit/NSViewController.h>
 #import <AppKit/NSTabView.h>
 #import <AppKit/NSTabViewItem.h>
