@@ -30,12 +30,14 @@ main(int argc, const char **argv)
     {
       NSString *dir = dummyDir();
 
-      /* Confirming returns NSOKButton and a non-empty list of URLs.  (Which
-         file is chosen is driven by browser selection, exercised elsewhere.) */
+      /* Confirming returns NSOKButton and a non-empty list of URLs.  With no
+         browser selection the current directory is the result, so directories
+         are enabled here; browser-driven file choice is exercised elsewhere. */
       {
         NSOpenPanel *p = [NSOpenPanel openPanel];
         NSInteger r;
         [p setCanChooseFiles: YES];
+        [p setCanChooseDirectories: YES];
         [p setAllowsMultipleSelection: NO];
         [p setDirectory: dir];
         r = GSRunModalDismissing(p, @selector(ok:));

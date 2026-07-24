@@ -91,7 +91,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   [super _resetDefaults];
   [self setTitle: _(@"Open")];
   [self setCanChooseFiles: YES];
-  [self setCanChooseDirectories: YES];
+  [self setCanChooseDirectories: NO];
   [self setAllowsMultipleSelection: NO];
   [self setResolvesAliases: YES];
   [_okButton setEnabled: NO];
@@ -220,7 +220,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   self = [super init];
   if (self != nil)
     {
-      _canChooseDirectories = YES;
+      _canChooseDirectories = NO;
       _canChooseFiles = YES;
       _resolvesAliases = YES;
     }
