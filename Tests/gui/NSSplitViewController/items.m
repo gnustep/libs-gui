@@ -16,6 +16,7 @@ itemForController(NSViewController **outVC)
 {
   NSSplitViewItem *item = AUTORELEASE([[NSSplitViewItem alloc] init]);
   NSViewController *vc = AUTORELEASE([[NSViewController alloc] init]);
+
   [vc setView: AUTORELEASE([[NSView alloc]
     initWithFrame: NSMakeRect(0, 0, 120, 100)])];
   [item setViewController: vc];
@@ -56,6 +57,11 @@ main(int argc, const char **argv)
         "the items keep their order");
       PASS([svc splitViewItemForViewController: vc1] == it1,
         "an item is found by its view controller");
+
+      /* Break retain loop by removing items
+       */
+      [svc removeSplitViewItem: it1];
+      [svc removeSplitViewItem: it2];
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]

@@ -93,6 +93,7 @@
 {
   NSMutableArray *mutableItems = [items mutableCopy];
   ASSIGN(_splitViewItems, mutableItems);
+  RELEASE(mutableItems);
 }
 
 - (void) addSplitViewItem: (NSSplitViewItem *)item
