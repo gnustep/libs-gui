@@ -31,6 +31,18 @@
 #import "GSFastEnumeration.h"
 
 @implementation NSTabViewController
+- (instancetype) initWithNibName: (NSString *)nibNameOrNil
+                          bundle: (NSBundle *)nibBundleOrNil
+{
+  self = [super initWithNibName: nibNameOrNil bundle: nibBundleOrNil];
+  if (self != nil)
+    {
+      _transitionOptions = NSViewControllerTransitionAllowUserInteraction;
+      _canPropagateSelectedChildViewControllerTitle = YES;
+    }
+  return self;
+}
+
 - (NSTabViewControllerTabStyle) tabStyle
 {
   return _tabStyle;
@@ -145,7 +157,8 @@
   [[self tabView] selectTabViewItemAtIndex: idx];
   if (_canPropagateSelectedChildViewControllerTitle)
     {
-      NSString *title = [[[self tabView] tabViewItems] objectAtIndex: idx];
+      NSString *title = [[[[self tabView] tabViewItems]
+        objectAtIndex: idx] label];
       if (title != nil)
         {
           [self setTitle: title];
