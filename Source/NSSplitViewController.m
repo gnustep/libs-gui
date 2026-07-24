@@ -45,11 +45,6 @@
   return self;
 }
 
-- (instancetype) init
-{
-  return [self initWithNibName: nil bundle: nil];
-}
-
 // return splitview...
 - (NSSplitView *) splitView
 {
