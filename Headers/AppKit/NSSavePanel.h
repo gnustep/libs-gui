@@ -121,6 +121,9 @@ APPKIT_EXPORT_CLASS
 
   NSMenu *_showsHiddenFilesMenu;
   GSSavePanelCompletionHandler _completionHandler;
+
+  NSString *_message;
+  NSTextField *_messageField;
 }
 
 /*
