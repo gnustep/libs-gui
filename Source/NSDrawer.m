@@ -567,8 +567,8 @@ static NSNotificationCenter *nc = nil;
 	
 	_preferredEdge = edge;
 	_currentEdge = edge;
-	_maxContentSize = contentSize;
-	_minContentSize = NSMakeSize(200,200);
+	_maxContentSize = NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX);
+	_minContentSize = NSZeroSize;
 	
 	// for side drawers, top of drawer is immediately below the title bar
 	if (edge == NSMinXEdge || edge == NSMaxXEdge)

@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "GSRenderTest.h"
+#import "../GSRenderTest.h"
 
 /* Local interaction exercise for NSOpenPanel: drive the panel's modal session
    the way a user would end it, and check the result it returns.  Needs a
@@ -30,15 +30,17 @@ main(int argc, const char **argv)
     {
       NSString *dir = dummyDir();
 
-      /* Confirming returns NSOKButton and a non-empty list of URLs.  (Which
-         file is chosen is driven by browser selection, exercised elsewhere.) */
+      /* Confirming returns NSOKButton and a non-empty list of URLs.  With no
+         browser selection the current directory is the result, so directories
+         are enabled here; browser-driven file choice is exercised elsewhere. */
       {
         NSOpenPanel *p = [NSOpenPanel openPanel];
         NSInteger r;
         [p setCanChooseFiles: YES];
+        [p setCanChooseDirectories: YES];
         [p setAllowsMultipleSelection: NO];
         [p setDirectory: dir];
-        r = GSRunModalDismissing(p, @selector(ok:), 0.2);
+        r = GSRunModalDismissing(p, @selector(ok:));
         PASS(r == NSOKButton, "confirming with ok: returns NSOKButton");
         PASS([[p URLs] count] >= 1 && [p URL] != nil,
           "the OK result is a non-empty list of URLs");
@@ -49,7 +51,7 @@ main(int argc, const char **argv)
         NSOpenPanel *p = [NSOpenPanel openPanel];
         NSInteger r;
         [p setDirectory: dir];
-        r = GSRunModalDismissing(p, @selector(cancel:), 0.2);
+        r = GSRunModalDismissing(p, @selector(cancel:));
         PASS(r == NSCancelButton, "cancelling returns NSCancelButton");
       }
     }

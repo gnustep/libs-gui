@@ -34,6 +34,33 @@
 #import "GSFastEnumeration.h"
 
 @implementation NSSplitViewController
+- (instancetype) initWithNibName: (NSString *)nibNameOrNil
+                          bundle: (NSBundle *)nibBundleOrNil
+{
+  self = [super initWithNibName: nibNameOrNil bundle: nibBundleOrNil];
+  if (self != nil)
+    {
+      _splitViewItems = [[NSMutableArray alloc] init];
+    }
+  return self;
+}
+
+- (void) loadView
+{
+  if ([self nibName] != nil)
+    {
+      [super loadView];
+    }
+  else
+    {
+      NSSplitView *sv = [[NSSplitView alloc]
+        initWithFrame: NSMakeRect(0, 0, 250, 200)];
+
+      [self setSplitView: sv];
+      RELEASE(sv);
+    }
+}
+
 // return splitview...
 - (NSSplitView *) splitView
 {
@@ -77,6 +104,7 @@
 {
   NSMutableArray *mutableItems = [items mutableCopy];
   ASSIGN(_splitViewItems, mutableItems);
+  RELEASE(mutableItems);
 }
 
 - (void) addSplitViewItem: (NSSplitViewItem *)item
@@ -156,6 +184,11 @@
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
+  if (self == nil)
+    {
+      return nil;
+    }
+  _splitViewItems = [[NSMutableArray alloc] init];
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSSplitView"])
@@ -190,12 +223,10 @@
   [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
-      NSSplitView *sv = [coder decodeObjectForKey: @"NSSplitView"];
-      [self setSplitView: sv];
-      NSArray *items = [coder decodeObjectForKey: @"NSSplitViewItems"];
-      [_splitViewItems addObjectsFromArray: items];
-      _minimumThicknessForInlineSidebars =
-        [coder decodeFloatForKey: @"NSMinimumThicknessForInlineSidebars"];
+      [coder encodeObject: [self splitView] forKey: @"NSSplitView"];
+      [coder encodeObject: [self splitViewItems] forKey: @"NSSplitViewItems"];
+      [coder encodeFloat: _minimumThicknessForInlineSidebars
+                  forKey: @"NSMinimumThicknessForInlineSidebars"];
     }
   else
     {
