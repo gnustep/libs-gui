@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "GSRenderTest.h"
+#import "../GSRenderTest.h"
 #import <AppKit/NSFontPanel.h>
 
 /* Local render exercise for NSFontPanel: render the shared panel for real, save
