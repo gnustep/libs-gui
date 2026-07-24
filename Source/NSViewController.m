@@ -86,7 +86,7 @@ static void *viewControllerAssociationKey = &viewControllerAssociationKey;
   DESTROY(_editors);
   DESTROY(_autounbinder);
   DESTROY(_designNibBundleIdentifier);
-  DESTROY(view);
+  [self setView: nil];
   DESTROY(_segueMap);
 
   [super dealloc];
