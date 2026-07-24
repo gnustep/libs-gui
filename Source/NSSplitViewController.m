@@ -223,12 +223,10 @@
   [super encodeWithCoder: coder];
   if ([coder allowsKeyedCoding])
     {
-      NSSplitView *sv = [coder decodeObjectForKey: @"NSSplitView"];
-      [self setSplitView: sv];
-      NSArray *items = [coder decodeObjectForKey: @"NSSplitViewItems"];
-      [_splitViewItems addObjectsFromArray: items];
-      _minimumThicknessForInlineSidebars =
-        [coder decodeFloatForKey: @"NSMinimumThicknessForInlineSidebars"];
+      [coder encodeObject: [self splitView] forKey: @"NSSplitView"];
+      [coder encodeObject: [self splitViewItems] forKey: @"NSSplitViewItems"];
+      [coder encodeFloat: _minimumThicknessForInlineSidebars
+                  forKey: @"NSMinimumThicknessForInlineSidebars"];
     }
   else
     {
