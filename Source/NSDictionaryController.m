@@ -172,6 +172,15 @@
   return self;
 }
 
+- (instancetype) init
+{
+  NSMutableDictionary *content = [[NSMutableDictionary alloc] init];
+
+  self = [self initWithContent: content];
+  RELEASE(content);
+  return self;
+}
+
 - (void) dealloc
 {
   RELEASE(_contentDictionary);
