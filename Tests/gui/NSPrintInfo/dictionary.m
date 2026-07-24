@@ -113,6 +113,7 @@ int main()
     [dup setLeftMargin: 500.0];
     PASS([info leftMargin] == 5.0, "mutating the copy leaves the original unchanged");
     PASS([dup leftMargin] == 500.0, "the copy keeps its own value");
+    RELEASE(dup);
   }
 
   END_SET("NSPrintInfo dictionary")
