@@ -87,7 +87,7 @@ static Class pathCellClass;
       [self setPathStyle: NSPathStyleStandard];
       [self setURL: nil];
       [self setDelegate: nil];
-      _pathItems = [[NSArray alloc] init];
+      ASSIGN(_pathItems, [NSArray array]);
       _editable = YES;
     }
   return self;
@@ -164,7 +164,7 @@ static Class pathCellClass;
       [items addObject: pi];
     }
 
-  [self setPathItems: [items copy]];
+  [self setPathItems: items];
 }
 
 - (NSURL *) URL
@@ -245,6 +245,7 @@ static Class pathCellClass;
       [cell setImage: [item image]];
       [cell setURL: [item URL]];
       [array addObject: cell];
+      RELEASE(cell);
     }
 
   [self setPathComponentCells: array];

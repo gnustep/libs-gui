@@ -67,7 +67,7 @@
   _countKeyPath = nil;
   _leafKeyPath = nil;
   _sortDescriptors = nil;
-  _selection_index_paths = [[NSMutableArray alloc] init];
+  ASSIGN(_selection_index_paths, [NSMutableArray array]);
 
   _canInsert = YES;
   _canInsertChild = YES;
@@ -108,8 +108,7 @@
   RELEASE(_sortDescriptors);
   RELEASE(_arranged_objects);
   RELEASE(_selection_index_paths);
-  
-  [super dealloc];
+  DEALLOC
 }
 
 - (BOOL) addSelectionIndexPaths: (NSArray *)indexPaths
@@ -255,12 +254,12 @@
 
 - (NSArray *) selectionIndexPaths
 {
-  return [_selection_index_paths copy];
+  return AUTORELEASE([_selection_index_paths copy]);
 }
 
 - (NSArray *) sortDescriptors
 {
-  return [_sortDescriptors copy];
+  return AUTORELEASE([_sortDescriptors copy]);
 }
 
 - (NSString *) childrenKeyPath
