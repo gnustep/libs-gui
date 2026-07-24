@@ -34,6 +34,17 @@
 #import "GSFastEnumeration.h"
 
 @implementation NSSplitViewController
+- (instancetype) initWithNibName: (NSString *)nibNameOrNil
+                          bundle: (NSBundle *)nibBundleOrNil
+{
+  self = [super initWithNibName: nibNameOrNil bundle: nibBundleOrNil];
+  if (self != nil)
+    {
+      _splitViewItems = [[NSMutableArray alloc] init];
+    }
+  return self;
+}
+
 - (void) loadView
 {
   if ([self nibName] != nil)
@@ -173,6 +184,11 @@
 - (instancetype) initWithCoder: (NSCoder *)coder
 {
   self = [super initWithCoder: coder];
+  if (self == nil)
+    {
+      return nil;
+    }
+  _splitViewItems = [[NSMutableArray alloc] init];
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSSplitView"])
