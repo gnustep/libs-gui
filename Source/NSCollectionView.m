@@ -665,7 +665,7 @@ static NSString *_placeholderItem = nil;
     {
       if (index >= [_items count])
 	{
-	  continue;
+	  break;
 	}
 
       id item = [_items objectAtIndex: index];
