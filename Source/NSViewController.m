@@ -69,6 +69,11 @@ static void *viewControllerAssociationKey = &viewControllerAssociationKey;
   return self;
 }
 
+- (instancetype) init
+{
+  return [self initWithNibName: nil bundle: nil];
+}
+
 - (void) dealloc
 {
   // View Controllers are expect to release their own top-level objects
