@@ -43,11 +43,6 @@
   return self;
 }
 
-- (instancetype) init
-{
-  return [self initWithNibName: nil bundle: nil];
-}
-
 - (NSTabViewControllerTabStyle) tabStyle
 {
   return _tabStyle;
