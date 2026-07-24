@@ -1,5 +1,5 @@
 #import "Testing.h"
-#import "GSRenderTest.h"
+#import "../GSRenderTest.h"
 #import <AppKit/NSColorPanel.h>
 
 /* Local render exercise for NSColorPanel: render the shared panel for real,
