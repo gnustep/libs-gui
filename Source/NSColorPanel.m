@@ -535,6 +535,7 @@ static int _gs_gui_color_picker_mode = NSWheelModeColorPanel;
   [self _setupPickers];
   [self setMode: _gs_gui_color_picker_mode];
   [self setShowsAlpha: ![NSColor ignoresAlpha]];
+  [self setContinuous: YES];
 
   return self;
 }
