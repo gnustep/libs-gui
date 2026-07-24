@@ -812,6 +812,12 @@
   self = [super initWithCoder: coder];
   if (self != nil)
     {
+      _arrangedSubviews = [[NSMutableArray alloc] init];
+      _detachedViews = [[NSMutableArray alloc] init];
+      _views = [[NSMutableArray alloc] init];
+      _customSpacingMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+      _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSStackViewAlignment"])
