@@ -73,6 +73,10 @@
   _canInsertChild = YES;
   _canAddChild = YES;
 
+  _avoidsEmptySelection = YES;
+  _preservesSelection = YES;
+  _selectsInsertedObjects = YES;
+
   [self setObjectClass: [NSMutableDictionary class]];
 }
 
