@@ -24,13 +24,12 @@ static BOOL vcDeallocated;
 int main()
 {
   CREATE_AUTORELEASE_POOL(arp);
-  NSAutoreleasePool *pool;
   NSSplitViewItem *item;
   ProbeViewController *vc;
 
   /* Keep the only reference to the item so that releasing it below runs its
      deallocation. */
-  pool = [NSAutoreleasePool new];
+  CREATE_AUTORELEASE_POOL(pool);
   item = RETAIN([NSSplitViewItem splitViewItemWithViewController: nil]);
   RELEASE(pool);
 
