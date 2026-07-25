@@ -12,7 +12,7 @@
    Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
 
-   Author: Daniel B�hringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author: Daniel Böhringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
 
    Author: Fred Kiefer <FredKiefer@gmx.de>
