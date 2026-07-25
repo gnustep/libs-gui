@@ -561,4 +561,15 @@
   return error;
 }
 
+- (BOOL) validateProposedFirstResponder: (NSResponder *)responder
+                                forEvent: (NSEvent *)event
+{
+  return YES;
+}
+
+- (id) supplementalTargetForAction: (SEL)action sender: (id)sender
+{
+  return nil;
+}
+
 @end

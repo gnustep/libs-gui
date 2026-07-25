@@ -190,6 +190,12 @@ PACKAGE_SCOPE
 - (NSError *)willPresentError:(NSError *)error;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (BOOL) validateProposedFirstResponder: (NSResponder *)responder
+                                forEvent: (NSEvent *)event;
+- (id) supplementalTargetForAction: (SEL)action sender: (id)sender;
+#endif
+
 @end
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
