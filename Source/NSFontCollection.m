@@ -288,10 +288,7 @@ static NSLock *_fontCollectionLock = nil;
 
 - (void) _setFontCollectionDictionary: (NSMutableDictionary *)dict
 {
-  NSMutableDictionary *d = [dict mutableCopy];
-
-  RELEASE(_fontCollectionDictionary);
-  _fontCollectionDictionary = d;
+  ASSIGNMUTABLECOPY(_fontCollectionDictionary, dict);
 }
 
 - (void) _setQueryDescriptors: (NSArray *)queryDescriptors
