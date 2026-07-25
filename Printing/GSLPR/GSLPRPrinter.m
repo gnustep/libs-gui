@@ -97,8 +97,20 @@
                         withHost: [printerEntry objectForKey: @"Host"]
                         withNote: [printerEntry objectForKey: @"Note"]];
 
-  [printer parsePPDAtPath: [printerEntry objectForKey: @"PPDPath"]];
-                         
+  /* A stored printer may reference a PPD that no longer exists; an unreadable
+     PPD is a warning here and the printer is returned without it, so the caller
+     uses its defaults. */
+  NS_DURING
+    {
+      [printer parsePPDAtPath: [printerEntry objectForKey: @"PPDPath"]];
+    }
+  NS_HANDLER
+    {
+      NSLog(@"Could not read the PPD for printer %@: %@",
+            name, [localException reason]);
+    }
+  NS_ENDHANDLER
+
   return AUTORELEASE(printer);
 }
 
