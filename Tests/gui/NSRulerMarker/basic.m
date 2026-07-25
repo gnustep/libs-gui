@@ -45,18 +45,18 @@ int main()
                                             markerLocation: 100.0
                                                      image: img
                                                imageOrigin: NSMakePoint(3, 4)]);
-  pass([m markerLocation] == 100.0, "markerLocation is the value passed in");
-  pass([m imageOrigin].x == 3 && [m imageOrigin].y == 4,
+  PASS([m markerLocation] == 100.0, "markerLocation is the value passed in");
+  PASS([m imageOrigin].x == 3 && [m imageOrigin].y == 4,
        "imageOrigin is the point passed in");
-  pass([m image] == img, "image is the image passed in");
-  pass([m ruler] == rv, "ruler is the ruler view passed in");
-  pass([m isMovable] == YES, "a marker is movable by default");
-  pass([m isRemovable] == NO, "a marker is not removable by default");
-  pass([m representedObject] == nil, "default representedObject is nil");
+  PASS([m image] == img, "image is the image passed in");
+  PASS([m ruler] == rv, "ruler is the ruler view passed in");
+  PASS([m isMovable] == YES, "a marker is movable by default");
+  PASS([m isRemovable] == NO, "a marker is not removable by default");
+  PASS([m representedObject] == nil, "default representedObject is nil");
 
   /* thicknessRequiredInRuler: for a horizontal ruler this is the image height
      below the image origin (16 - 4). */
-  pass([m thicknessRequiredInRuler] == 12.0,
+  PASS([m thicknessRequiredInRuler] == 12.0,
        "thicknessRequiredInRuler is the image height minus the origin y");
 
   /* setter round-trips */
@@ -65,11 +65,11 @@ int main()
   [m setMovable: NO];
   [m setRemovable: YES];
   [m setRepresentedObject: @"obj"];
-  pass([m markerLocation] == 200.0, "markerLocation round-trips");
-  pass([m imageOrigin].x == 5 && [m imageOrigin].y == 6, "imageOrigin round-trips");
-  pass([m isMovable] == NO, "movable round-trips");
-  pass([m isRemovable] == YES, "removable round-trips");
-  pass([(NSString *)[m representedObject] isEqualToString: @"obj"],
+  PASS([m markerLocation] == 200.0, "markerLocation round-trips");
+  PASS([m imageOrigin].x == 5 && [m imageOrigin].y == 6, "imageOrigin round-trips");
+  PASS([m isMovable] == NO, "movable round-trips");
+  PASS([m isRemovable] == YES, "removable round-trips");
+  PASS([(NSString *)[m representedObject] isEqualToString: @"obj"],
        "representedObject round-trips");
 
   /* a nil ruler view or image raises NSInvalidArgumentException */
@@ -82,7 +82,7 @@ int main()
   NS_HANDLER
     raised = [[localException name] isEqualToString: NSInvalidArgumentException];
   NS_ENDHANDLER
-  pass(raised, "a nil ruler view raises NSInvalidArgumentException");
+  PASS(raised, "a nil ruler view raises NSInvalidArgumentException");
 
   raised = NO;
   NS_DURING
@@ -93,7 +93,7 @@ int main()
   NS_HANDLER
     raised = [[localException name] isEqualToString: NSInvalidArgumentException];
   NS_ENDHANDLER
-  pass(raised, "a nil image raises NSInvalidArgumentException");
+  PASS(raised, "a nil image raises NSInvalidArgumentException");
 
   END_SET("NSRulerMarker basic")
 

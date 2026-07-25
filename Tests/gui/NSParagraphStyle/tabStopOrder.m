@@ -34,8 +34,8 @@ main(int argc, char **argv)
     NSMutableParagraphStyle *p = AUTORELEASE([[NSMutableParagraphStyle alloc] init]);
 
     [p setTabStops: [NSArray arrayWithObjects: tab(300), tab(100), tab(200), nil]];
-    pass([[p tabStops] count] == 3, "setTabStops: keeps all of the stops");
-    pass(locAt(p, 0) == 300.0 && locAt(p, 1) == 100.0 && locAt(p, 2) == 200.0,
+    PASS([[p tabStops] count] == 3, "setTabStops: keeps all of the stops");
+    PASS(locAt(p, 0) == 300.0 && locAt(p, 1) == 100.0 && locAt(p, 2) == 200.0,
       "setTabStops: keeps the stops in the order given");
   }
 

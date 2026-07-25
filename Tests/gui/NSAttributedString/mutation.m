@@ -52,9 +52,9 @@ main(int argc, char **argv)
     NSMutableAttributedString *s = str();
 
     [s superscriptRange: NSMakeRange(0, 5)];
-    pass(superAt(s, 0) == 1, "superscriptRange sets the level to 1");
+    PASS(superAt(s, 0) == 1, "superscriptRange sets the level to 1");
     [s superscriptRange: NSMakeRange(0, 5)];
-    pass(superAt(s, 0) == 2, "superscriptRange raises the level to 2");
+    PASS(superAt(s, 0) == 2, "superscriptRange raises the level to 2");
   }
 
   /* subscriptRange lowers the level by one each time. */
@@ -62,9 +62,9 @@ main(int argc, char **argv)
     NSMutableAttributedString *s = str();
 
     [s subscriptRange: NSMakeRange(0, 5)];
-    pass(superAt(s, 0) == -1, "subscriptRange sets the level to -1");
+    PASS(superAt(s, 0) == -1, "subscriptRange sets the level to -1");
     [s subscriptRange: NSMakeRange(0, 5)];
-    pass(superAt(s, 0) == -2, "subscriptRange lowers the level to -2");
+    PASS(superAt(s, 0) == -2, "subscriptRange lowers the level to -2");
   }
 
   /* A superscript then a subscript cancel back to zero. */
@@ -73,7 +73,7 @@ main(int argc, char **argv)
 
     [s superscriptRange: NSMakeRange(0, 5)];
     [s subscriptRange: NSMakeRange(0, 5)];
-    pass(superAt(s, 0) == 0, "a superscript then a subscript cancel to 0");
+    PASS(superAt(s, 0) == 0, "a superscript then a subscript cancel to 0");
   }
 
   /* unscriptRange removes the attribute entirely. */
@@ -82,7 +82,7 @@ main(int argc, char **argv)
 
     [s superscriptRange: NSMakeRange(0, 5)];
     [s unscriptRange: NSMakeRange(0, 5)];
-    pass([s attribute: NSSuperscriptAttributeName atIndex: 0
+    PASS([s attribute: NSSuperscriptAttributeName atIndex: 0
          effectiveRange: NULL] == nil,
       "unscriptRange removes the superscript attribute");
   }
@@ -101,7 +101,7 @@ main(int argc, char **argv)
       raised = [[localException name] isEqualToString: NSRangeException];
     }
     NS_ENDHANDLER
-    pass(raised, "superscriptRange raises for a range beyond the string");
+    PASS(raised, "superscriptRange raises for a range beyond the string");
   }
 
   /* setAlignment sets the alignment on the paragraph style over the range. */
@@ -112,7 +112,7 @@ main(int argc, char **argv)
     [s setAlignment: NSRightTextAlignment range: NSMakeRange(0, [s length])];
     ps = [s attribute: NSParagraphStyleAttributeName atIndex: 0
         effectiveRange: NULL];
-    pass(ps != nil && [ps alignment] == NSRightTextAlignment,
+    PASS(ps != nil && [ps alignment] == NSRightTextAlignment,
       "setAlignment sets the paragraph alignment");
   }
 
@@ -124,9 +124,9 @@ main(int argc, char **argv)
     [s setAlignment: NSCenterTextAlignment range: NSMakeRange(0, 5)];
     inRange = [s attribute: NSParagraphStyleAttributeName atIndex: 0
              effectiveRange: NULL];
-    pass(inRange != nil && [inRange alignment] == NSCenterTextAlignment,
+    PASS(inRange != nil && [inRange alignment] == NSCenterTextAlignment,
       "setAlignment applies to the given range");
-    pass([s attribute: NSParagraphStyleAttributeName atIndex: 6
+    PASS([s attribute: NSParagraphStyleAttributeName atIndex: 6
          effectiveRange: NULL] == nil,
       "setAlignment leaves text outside the range without a paragraph style");
   }

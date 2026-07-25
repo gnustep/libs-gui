@@ -39,13 +39,13 @@ main(int argc, char **argv)
       initWithFrame: NSMakeRect(0, 0, 15, 200)]);
 
     [s setFloatValue: -1.0 knobProportion: 0.25];
-    pass(eq([s floatValue], 0.0), "a value of -1 clamps to 0");
+    PASS(eq([s floatValue], 0.0), "a value of -1 clamps to 0");
     [s setFloatValue: -0.5 knobProportion: 0.25];
-    pass(eq([s floatValue], 0.0), "a value below 0 clamps to 0");
+    PASS(eq([s floatValue], 0.0), "a value below 0 clamps to 0");
     [s setFloatValue: 2.0 knobProportion: 0.25];
-    pass(eq([s floatValue], 1.0), "a value above 1 clamps to 1");
+    PASS(eq([s floatValue], 1.0), "a value above 1 clamps to 1");
     [s setFloatValue: 0.3 knobProportion: 0.25];
-    pass(eq([s floatValue], 0.3), "a value within range is kept");
+    PASS(eq([s floatValue], 0.3), "a value within range is kept");
   }
 
   END_SET("NSScroller clamp float value")

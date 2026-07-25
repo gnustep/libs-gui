@@ -37,15 +37,15 @@ main(int argc, char **argv)
   cell = AUTORELEASE([[NSTableHeaderCell alloc] initTextCell: @"Col"]);
 
   /* Defaults. */
-  pass([cell alignment] == NSCenterTextAlignment, "the header title is centred");
-  pass([cell drawsBackground] == YES, "the header draws its background");
-  pass([cell isBezeled] == YES, "the header is bezeled");
-  pass([cell isBordered] == NO, "the header is not bordered");
-  pass([cell wraps] == NO, "the header title does not wrap");
-  pass([[cell stringValue] isEqualToString: @"Col"], "initTextCell: sets the title");
-  pass([cell font] != nil, "the header has a font");
-  pass([cell textColor] != nil, "the header has a text colour");
-  pass([[cell backgroundColor] isEqual: [NSColor controlShadowColor]],
+  PASS([cell alignment] == NSCenterTextAlignment, "the header title is centred");
+  PASS([cell drawsBackground] == YES, "the header draws its background");
+  PASS([cell isBezeled] == YES, "the header is bezeled");
+  PASS([cell isBordered] == NO, "the header is not bordered");
+  PASS([cell wraps] == NO, "the header title does not wrap");
+  PASS([[cell stringValue] isEqualToString: @"Col"], "initTextCell: sets the title");
+  PASS([cell font] != nil, "the header has a font");
+  PASS([cell textColor] != nil, "the header has a text colour");
+  PASS([[cell backgroundColor] isEqual: [NSColor controlShadowColor]],
        "the default background is the control shadow colour");
 
   /* The sort-indicator rectangle sits at the right of the bounds. */
@@ -54,20 +54,20 @@ main(int argc, char **argv)
     NSRect rect = [cell sortIndicatorRectForBounds: bounds];
     NSSize indicator = [[NSImage imageNamed: @"NSAscendingSortIndicator"] size];
 
-    pass(NSMaxX(rect) == NSMaxX(bounds), "the sort indicator is at the right edge");
-    pass(rect.origin.y == bounds.origin.y, "the sort indicator keeps the y origin");
-    pass(NSEqualSizes(rect.size, indicator),
+    PASS(NSMaxX(rect) == NSMaxX(bounds), "the sort indicator is at the right edge");
+    PASS(rect.origin.y == bounds.origin.y, "the sort indicator keeps the y origin");
+    PASS(NSEqualSizes(rect.size, indicator),
       "the sort indicator rect has the indicator image size");
   }
 
   /* Highlighting flips the flag and swaps the background colour. */
   [cell setHighlighted: YES];
-  pass([cell isHighlighted] == YES, "setHighlighted: YES sets the highlight");
-  pass([[cell backgroundColor] isEqual: [NSColor controlHighlightColor]],
+  PASS([cell isHighlighted] == YES, "setHighlighted: YES sets the highlight");
+  PASS([[cell backgroundColor] isEqual: [NSColor controlHighlightColor]],
        "highlighting uses the control highlight colour");
   [cell setHighlighted: NO];
-  pass([cell isHighlighted] == NO, "setHighlighted: NO clears the highlight");
-  pass([[cell backgroundColor] isEqual: [NSColor controlShadowColor]],
+  PASS([cell isHighlighted] == NO, "setHighlighted: NO clears the highlight");
+  PASS([[cell backgroundColor] isEqual: [NSColor controlShadowColor]],
        "clearing the highlight restores the control shadow colour");
 
   END_SET("NSTableHeaderCell")

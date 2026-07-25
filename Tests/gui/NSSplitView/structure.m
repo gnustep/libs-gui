@@ -35,12 +35,12 @@ int main()
       [sv addSubview: b];
       [sv adjustSubviews];
 
-      pass([[sv subviews] count] == 2, "two added subviews are present");
-      pass([sv isSubviewCollapsed: a] == NO,
+      PASS([[sv subviews] count] == 2, "two added subviews are present");
+      PASS([sv isSubviewCollapsed: a] == NO,
            "an added subview is not collapsed");
-      pass([sv isSubviewCollapsed: b] == NO,
+      PASS([sv isSubviewCollapsed: b] == NO,
            "the second added subview is not collapsed");
-      pass([sv minPossiblePositionOfDividerAtIndex: 0] == 0,
+      PASS([sv minPossiblePositionOfDividerAtIndex: 0] == 0,
            "the minimum position of the first divider is 0");
     }
   NS_HANDLER

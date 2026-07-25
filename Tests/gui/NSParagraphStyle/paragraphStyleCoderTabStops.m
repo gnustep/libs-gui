@@ -46,7 +46,7 @@
 int main(void)
 {
   NSAutoreleasePool *arp = [NSAutoreleasePool new];
-  HugeTabCountCoder *fc = [HugeTabCountCoder new];
+  HugeTabCountCoder *fc = AUTORELEASE([HugeTabCountCoder new]);
   NSMutableParagraphStyle *p;
   NSParagraphStyle *p2;
   NSData *d;
@@ -55,17 +55,17 @@ int main(void)
     [[NSParagraphStyle alloc] initWithCoder: fc];
   NS_HANDLER
   NS_ENDHANDLER
-  pass(YES,
+  PASS(YES,
     "decoding a paragraph style with a huge tab-stop count does not overflow the stack");
 
-  p = [[NSMutableParagraphStyle alloc] init];
+  p = AUTORELEASE([[NSMutableParagraphStyle alloc] init]);
   [p setTabStops: [NSArray arrayWithObjects:
     [[[NSTextTab alloc] initWithType: NSLeftTabStopType location: 72.0] autorelease],
     [[[NSTextTab alloc] initWithType: NSRightTabStopType location: 144.0] autorelease],
     nil]];
   d = [NSArchiver archivedDataWithRootObject: p];
   p2 = [NSUnarchiver unarchiveObjectWithData: d];
-  pass(p2 != nil && [[p2 tabStops] count] == 2,
+  PASS(p2 != nil && [[p2 tabStops] count] == 2,
     "a paragraph style with tab stops round-trips through a non-keyed archive");
 
   [arp release];

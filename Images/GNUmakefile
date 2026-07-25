@@ -115,6 +115,7 @@ Images_RESOURCE_FILES = \
  common_StepperDownHighlighted.tiff \
  common_StepperUp.tiff \
  common_StepperUpHighlighted.tiff \
+ common_SwitchMixed.tiff \
  common_SwitchOff.tiff \
  common_SwitchOn.tiff \
  common_TabDownSelectedLeft.tiff \

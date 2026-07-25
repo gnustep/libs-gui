@@ -37,6 +37,15 @@
 
 @implementation NSDatePickerCell
 
+- (void) dealloc
+{
+  RELEASE(_backgroundColor);
+  RELEASE(_textColor);
+  RELEASE(_maxDate);
+  RELEASE(_minDate);
+  DEALLOC
+}
+
 - (id) initTextCell: (NSString*)aString
 {
   if ((self = [super  initTextCell: aString]))

@@ -382,7 +382,7 @@ GSColorSliderCell.m \
 GSFontAssetDownloader.m \
 GSFontAssetInstaller.m
 
-ifeq ($(BUILD_MOVIE), yes)
+ifneq ($(filter yes 1,$(BUILD_MOVIE)),)
 libgnustep-gui_OBJC_FILES += GSMovieView.m
 libgnustep-gui_OBJC_FILES += GSAudioPlayer.m
 libgnustep-gui_OBJC_FILES += GSAVUtils.m

@@ -979,7 +979,12 @@ static BOOL _isAutolaunchChecked = NO;
    * initialization code behaves always in the same way for this class
    * and for subclasses.
    */
-  NSAssert (NSApp == nil, _(@"[NSApplication -init] called more than once"));
+  if (NSApp != nil)
+    {
+      RELEASE(self);
+      [NSException raise: NSInternalInconsistencyException
+  		  format: _(@"[NSApplication -init] called more than once")];
+    }
 
   /*
    * The appkit should run in the main thread ... so to be sure we perform
@@ -1232,48 +1237,59 @@ static BOOL _isAutolaunchChecked = NO;
 
 - (void) dealloc
 {
-  GSDisplayServer *srv = GSServerForWindow(_app_icon_window);
-
-  if (srv == nil)
+  /* The display server is notionally owned by the NSApplication singleton
+   * so if (and only if) this is that object, we should shut it down.
+   * We destroy additional app instnces st the start of the -init process,
+   * so nothing should have been created that actually needs to be handled
+   * here.
+   */
+  if (self == NSApp)
     {
-      srv = GSCurrentServer();
+      GSDisplayServer *srv;
+
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+	removeObserver: self];
+      [nc removeObserver: self];
+
+      RELEASE(_hidden);
+      RELEASE(_inactive);
+      RELEASE(_listener);
+      RELEASE(null_event);
+      RELEASE(_current_event);
+
+      /* We may need to tidy up nested modal session structures. */
+      while (_session != 0)
+	{
+	  NSModalSession tmp = _session;
+
+	  _session = tmp->previous;
+	  NSZoneFree(NSDefaultMallocZone(), tmp);
+	}
+
+      /* Release the menus, then set them to nil so we don't try updating
+	 them after they have been deallocated.  */
+      DESTROY(_main_menu);
+      DESTROY(_windows_menu);
+
+      TEST_RELEASE(_app_icon);
+      TEST_RELEASE(_app_icon_window);
+      TEST_RELEASE(_dock_tile);
+      TEST_RELEASE(_infoPanel);
+
+      /* Destroy the default context */
+      [NSGraphicsContext setCurrentContext: nil];
+      DESTROY(_default_context);
+
+      /* Close the server */
+      srv = GSServerForWindow(_app_icon_window);
+      if (srv == nil)
+	{
+	  srv = GSCurrentServer();
+	}
+      [srv closeServer];
+      DESTROY(srv);
+      NSApp = nil;
     }
-  [[[NSWorkspace sharedWorkspace] notificationCenter]
-    removeObserver: self];
-  [nc removeObserver: self];
-
-  RELEASE(_hidden);
-  RELEASE(_inactive);
-  RELEASE(_listener);
-  RELEASE(null_event);
-  RELEASE(_current_event);
-
-  /* We may need to tidy up nested modal session structures. */
-  while (_session != 0)
-    {
-      NSModalSession tmp = _session;
-
-      _session = tmp->previous;
-      NSZoneFree(NSDefaultMallocZone(), tmp);
-    }
-
-  /* Release the menus, then set them to nil so we don't try updating
-     them after they have been deallocated.  */
-  DESTROY(_main_menu);
-  DESTROY(_windows_menu);
-
-  TEST_RELEASE(_app_icon);
-  TEST_RELEASE(_app_icon_window);
-  TEST_RELEASE(_dock_tile);
-  TEST_RELEASE(_infoPanel);
-
-  /* Destroy the default context */
-  [NSGraphicsContext setCurrentContext: nil];
-  DESTROY(_default_context);
-
-  /* Close the server */
-  [srv closeServer];
-  DESTROY(srv);
 
   [super dealloc];
 }
@@ -2423,6 +2439,26 @@ image.</p><p>See Also: -applicationIconImage</p>
 
   // Use a copy as we change the name and size
   ASSIGNCOPY(_app_icon, anImage);
+
+  /* -[NSImage copyWithZone:] does not copy cached representations, so an image
+     that was only drawn into (e.g. with -lockFocus, whose sole representation
+     is a cached one) copies to an image with no representations and would draw
+     nothing. Take an independent bitmap snapshot of the original in that case
+     so the icon still draws. */
+  if ([[_app_icon representations] count] == 0)
+    {
+      NSData *tiff = [anImage TIFFRepresentation];
+
+      if (tiff != nil)
+        {
+          NSImageRep *bitmap = [NSBitmapImageRep imageRepWithData: tiff];
+
+          if (bitmap != nil)
+            {
+              [_app_icon addRepresentation: bitmap];
+            }
+        }
+    }
 
   server = GSCurrentServer();
   miniWindowSize = server != 0 ? [server iconSize] : NSZeroSize;

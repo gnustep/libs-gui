@@ -239,23 +239,26 @@ typedef enum
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super init];
+  if (nil == (self = [super init]))
+    {
+      return self;
+    }
   if ([aDecoder allowsKeyedCoding])
     {
-      _isWellKnownSelection = [aDecoder decodeBoolForKey: @"GSIsWellKnownSelection"];
+      _isWellKnownSelection
+	= [aDecoder decodeBoolForKey: @"GSIsWellKnownSelection"];
       _selectionType = [aDecoder decodeIntForKey: @"GSSelectionType"];
-      ASSIGN(_descriptionData, [aDecoder decodeObjectForKey: @"GSDescriptionData"]);
+      ASSIGN(_descriptionData,
+	[aDecoder decodeObjectForKey: @"GSDescriptionData"]);
     }
   else
     {
-      id obj;
       [aDecoder decodeValueOfObjCType: @encode(BOOL)
 		at: &_isWellKnownSelection];
       [aDecoder decodeValueOfObjCType: @encode(int)
 		at: &_selectionType];
       [aDecoder decodeValueOfObjCType: @encode(id)
-		at: &obj];
-      ASSIGN(_descriptionData, obj);
+		at: &_descriptionData];
     }
 
   // if it's a well known selection then determine which one it is.

@@ -29,20 +29,20 @@ int main()
       ov = AUTORELEASE([[NSOutlineView alloc]
         initWithFrame: NSMakeRect(0, 0, 200, 200)]);
 
-      pass([ov indentationMarkerFollowsCell] == YES,
+      PASS([ov indentationMarkerFollowsCell] == YES,
            "the indentation marker follows the cell by default");
-      pass([ov autosaveExpandedItems] == NO,
+      PASS([ov autosaveExpandedItems] == NO,
            "expanded items are not autosaved by default");
-      pass([ov outlineTableColumn] == nil,
+      PASS([ov outlineTableColumn] == nil,
            "the outline table column is nil by default");
 
       [ov setIndentationPerLevel: 24.0];
-      pass([ov indentationPerLevel] == 24.0, "indentationPerLevel round-trips");
+      PASS([ov indentationPerLevel] == 24.0, "indentationPerLevel round-trips");
       [ov setIndentationMarkerFollowsCell: NO];
-      pass([ov indentationMarkerFollowsCell] == NO,
+      PASS([ov indentationMarkerFollowsCell] == NO,
            "indentationMarkerFollowsCell round-trips");
       [ov setAutosaveExpandedItems: YES];
-      pass([ov autosaveExpandedItems] == YES,
+      PASS([ov autosaveExpandedItems] == YES,
            "autosaveExpandedItems round-trips");
     }
   NS_HANDLER

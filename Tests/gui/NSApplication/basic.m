@@ -10,6 +10,7 @@
 #import <Foundation/NSAutoreleasePool.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSNotification.h>
+#import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSUserDefaults.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSEvent.h>

@@ -28,9 +28,10 @@ int main()
 
   test_alloc(@"NSCell");
 
-  testObject = [NSCell new];
-  testObject1 = [[NSCell alloc] initImageCell: [NSImage imageNamed: @"GNUstep"]];
-  testObject2 = [[NSCell alloc] initTextCell: @"GNUstep"];
+  testObject = AUTORELEASE([NSCell new]);
+  testObject1 = AUTORELEASE(
+    [[NSCell alloc] initImageCell: [NSImage imageNamed: @"GNUstep"]]);
+  testObject2 = AUTORELEASE([[NSCell alloc] initTextCell: @"GNUstep"]);
 
   testObjects = [NSArray arrayWithObjects: testObject, testObject1, testObject2, nil];
   test_NSObject(@"NSCell", testObjects);

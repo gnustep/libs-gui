@@ -37,20 +37,20 @@ main(int argc, char **argv)
     {
       g = [NSGridView gridViewWithNumberOfColumns: 2 rows: 3];
 
-      pass([g numberOfColumns] == 2, "the constructor sets the column count");
-      pass([g numberOfRows] == 3, "the constructor sets the row count");
-      pass([g cellAtColumnIndex: 1 rowIndex: 2] != nil,
+      PASS([g numberOfColumns] == 2, "the constructor sets the column count");
+      PASS([g numberOfRows] == 3, "the constructor sets the row count");
+      PASS([g cellAtColumnIndex: 1 rowIndex: 2] != nil,
            "there is a cell at a valid column and row");
 
       NSView *v1 = AUTORELEASE([[NSView alloc] initWithFrame: NSMakeRect(0, 0, 10, 10)]);
       NSView *v2 = AUTORELEASE([[NSView alloc] initWithFrame: NSMakeRect(0, 0, 10, 10)]);
       [g addRowWithViews: [NSArray arrayWithObjects: v1, v2, nil]];
-      pass([g numberOfRows] == 4, "addRowWithViews: adds a row");
+      PASS([g numberOfRows] == 4, "addRowWithViews: adds a row");
       [g removeRowAtIndex: 0];
-      pass([g numberOfRows] == 3, "removeRowAtIndex: drops a row");
+      PASS([g numberOfRows] == 3, "removeRowAtIndex: drops a row");
 
       [g setColumnSpacing: 12.0];
-      pass([g columnSpacing] == 12.0, "setColumnSpacing: round trips");
+      PASS([g columnSpacing] == 12.0, "setColumnSpacing: round trips");
     }
   NS_HANDLER
     {

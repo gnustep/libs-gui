@@ -162,14 +162,14 @@ int main(int argc, char **argv)
 		} \
 		if (i) \
 		{ \
-			pass(NO, \
+			PASS(NO, \
 				"path '%s', %15.8e %15.8e, expected %i, got inconsistant results", \
 				str,(double)x,(double)y, \
 				e); \
 		} \
 		else \
 		{ \
-			pass(r == e, \
+			PASS(r == e, \
 				"path '%s', %15.8e %15.8e, expected %i, got %i", \
 				str,(double)x,(double)y, \
 				e,r); \

@@ -45,12 +45,12 @@ main(int argc, char **argv)
     NSScroller *h = AUTORELEASE([[NSScroller alloc]
       initWithFrame: NSMakeRect(0, 0, 200, 15)]);
 
-    pass([v arrowsPosition] == NSScrollerArrowsMaxEnd,
+    PASS([v arrowsPosition] == NSScrollerArrowsMaxEnd,
       "a vertical scroller keeps its arrows at the max end");
-    pass([h arrowsPosition] == NSScrollerArrowsMinEnd,
+    PASS([h arrowsPosition] == NSScrollerArrowsMinEnd,
       "a horizontal scroller keeps its arrows at the min end");
-    pass([v hitPart] == NSScrollerNoPart, "a new scroller has no hit part");
-    pass([v controlSize] == NSRegularControlSize, "the default control size is regular");
+    PASS([v hitPart] == NSScrollerNoPart, "a new scroller has no hit part");
+    PASS([v controlSize] == NSRegularControlSize, "the default control size is regular");
   }
 
   /* Value and knob proportion. */
@@ -59,20 +59,20 @@ main(int argc, char **argv)
       initWithFrame: NSMakeRect(0, 0, 15, 200)]);
 
     [s setFloatValue: 0.5 knobProportion: 0.25];
-    pass(eq([s floatValue], 0.5) && eq([s knobProportion], 0.25),
+    PASS(eq([s floatValue], 0.5) && eq([s knobProportion], 0.25),
       "setFloatValue:knobProportion: sets both the value and the proportion");
 
     /* The value clamps to at most 1. */
     [s setFloatValue: 2.0 knobProportion: 0.25];
-    pass(eq([s floatValue], 1.0), "a value above 1 clamps to 1");
+    PASS(eq([s floatValue], 1.0), "a value above 1 clamps to 1");
 
     /* The knob proportion clamps into [0,1]. */
     [s setKnobProportion: 1.5];
-    pass(eq([s knobProportion], 1.0), "a knob proportion above 1 clamps to 1");
+    PASS(eq([s knobProportion], 1.0), "a knob proportion above 1 clamps to 1");
     [s setKnobProportion: -0.5];
-    pass(eq([s knobProportion], 0.0), "a knob proportion below 0 clamps to 0");
+    PASS(eq([s knobProportion], 0.0), "a knob proportion below 0 clamps to 0");
     [s setKnobProportion: 0.4];
-    pass(eq([s knobProportion], 0.4), "a knob proportion within range is kept");
+    PASS(eq([s knobProportion], 0.4), "a knob proportion within range is kept");
   }
 
   /* Accessors round-trip. */
@@ -81,9 +81,9 @@ main(int argc, char **argv)
       initWithFrame: NSMakeRect(0, 0, 15, 200)]);
 
     [s setArrowsPosition: NSScrollerArrowsNone];
-    pass([s arrowsPosition] == NSScrollerArrowsNone, "setArrowsPosition: round trips");
+    PASS([s arrowsPosition] == NSScrollerArrowsNone, "setArrowsPosition: round trips");
     [s setControlSize: NSSmallControlSize];
-    pass([s controlSize] == NSSmallControlSize, "setControlSize: round trips");
+    PASS([s controlSize] == NSSmallControlSize, "setControlSize: round trips");
   }
 
   END_SET("NSScroller value")

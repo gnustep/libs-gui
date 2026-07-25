@@ -22,7 +22,7 @@ int main()
   NS_ENDHANDLER
 
   cell = AUTORELEASE([[NSDatePickerCell alloc] init]);
-  pass([cell datePickerElements]
+  PASS([cell datePickerElements]
          == (NSYearMonthDayDatePickerElementFlag
              | NSHourMinuteSecondDatePickerElementFlag),
        "default elements are year-month-day and hour-minute-second");

@@ -29,7 +29,7 @@ int main()
   
   copy2Bitmap = [copy1Bitmap copy];
     
-  pass([copy1Bitmap bitmapData] != [copy2Bitmap bitmapData],
+  PASS([copy1Bitmap bitmapData] != [copy2Bitmap bitmapData],
        "Copied bitmaps have a different image data pointer - could cause image data corruption.");
   
   DESTROY(copy1Bitmap);

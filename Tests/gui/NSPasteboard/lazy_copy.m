@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	s=[pb stringForType: NSStringPboardType];
 
 	testHopeful = YES;
-	pass([s isEqual: theString], "NSPasteboard handles lazy setting of data");
+	PASS([s isEqual: theString], "NSPasteboard handles lazy setting of data");
 	testHopeful = NO;
 
 	DESTROY(arp);

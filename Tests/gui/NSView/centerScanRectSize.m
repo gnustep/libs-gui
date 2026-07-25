@@ -50,14 +50,14 @@ int main(int argc, char **argv)
 	view = AUTORELEASE([[NSView alloc] initWithFrame: NSMakeRect(0,0,100,100)]);
 
 	/* origin and size each round to nearest, separately */
-	pass(checkRect(view, NSMakeRect(10.3,10.7,20.4,20.6),
+	PASS(checkRect(view, NSMakeRect(10.3,10.7,20.4,20.6),
 			 NSMakeRect(10.0,11.0,20.0,21.0)),
 		"NSView -centerScanRect: rounds origin and size to nearest");
 
 	/* witness that the size rounding is not coupled to the origin's rounding
 	   error: here the origin rounds down by 0.4 in x and up by 0.1 in y, but
 	   the size stays (5, 5) rather than picking up either error term */
-	pass(checkRect(view, NSMakeRect(0.4,0.9,5.3,5.3),
+	PASS(checkRect(view, NSMakeRect(0.4,0.9,5.3,5.3),
 			 NSMakeRect(0.0,1.0,5.0,5.0)),
 		"NSView -centerScanRect: size rounding is independent of the origin error");
 

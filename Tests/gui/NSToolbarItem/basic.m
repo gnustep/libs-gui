@@ -30,17 +30,17 @@ int main()
   /* init defaults */
   item = AUTORELEASE([[NSToolbarItem alloc]
                        initWithItemIdentifier: @"myItem"]);
-  pass([[item itemIdentifier] isEqualToString: @"myItem"],
+  PASS([[item itemIdentifier] isEqualToString: @"myItem"],
        "itemIdentifier is the identifier passed in");
-  pass([[item label] isEqualToString: @""], "default label is the empty string");
-  pass([item toolTip] == nil, "default toolTip is nil");
-  pass([item visibilityPriority] == NSToolbarItemVisibilityPriorityStandard,
+  PASS([[item label] isEqualToString: @""], "default label is the empty string");
+  PASS([item toolTip] == nil, "default toolTip is nil");
+  PASS([item visibilityPriority] == NSToolbarItemVisibilityPriorityStandard,
        "default visibilityPriority is standard");
-  pass([item autovalidates] == YES, "default autovalidates is YES");
-  pass([item view] == nil, "default view is nil");
-  pass([item target] == nil, "default target is nil");
-  pass([item action] == NULL, "default action is NULL");
-  pass([item allowsDuplicatesInToolbar] == NO,
+  PASS([item autovalidates] == YES, "default autovalidates is YES");
+  PASS([item view] == nil, "default view is nil");
+  PASS([item target] == nil, "default target is nil");
+  PASS([item action] == NULL, "default action is NULL");
+  PASS([item allowsDuplicatesInToolbar] == NO,
        "a normal item does not allow duplicates in the toolbar");
 
   /* setter round-trips */
@@ -55,17 +55,17 @@ int main()
   [item setEnabled: NO];
   [item setMinSize: NSMakeSize(10, 20)];
   [item setMaxSize: NSMakeSize(30, 40)];
-  pass([[item label] isEqualToString: @"L"], "label round-trips");
-  pass([[item paletteLabel] isEqualToString: @"P"], "paletteLabel round-trips");
-  pass([[item toolTip] isEqualToString: @"T"], "toolTip round-trips");
-  pass([item tag] == 42, "tag round-trips");
-  pass([item visibilityPriority] == NSToolbarItemVisibilityPriorityHigh,
+  PASS([[item label] isEqualToString: @"L"], "label round-trips");
+  PASS([[item paletteLabel] isEqualToString: @"P"], "paletteLabel round-trips");
+  PASS([[item toolTip] isEqualToString: @"T"], "toolTip round-trips");
+  PASS([item tag] == 42, "tag round-trips");
+  PASS([item visibilityPriority] == NSToolbarItemVisibilityPriorityHigh,
        "visibilityPriority round-trips");
-  pass([item autovalidates] == NO, "autovalidates round-trips");
-  pass([item isEnabled] == NO, "enabled round-trips");
-  pass([item minSize].width == 10 && [item minSize].height == 20,
+  PASS([item autovalidates] == NO, "autovalidates round-trips");
+  PASS([item isEnabled] == NO, "enabled round-trips");
+  PASS([item minSize].width == 10 && [item minSize].height == 20,
        "minSize round-trips");
-  pass([item maxSize].width == 30 && [item maxSize].height == 40,
+  PASS([item maxSize].width == 30 && [item maxSize].height == 40,
        "maxSize round-trips");
 
   END_SET("NSToolbarItem basic")

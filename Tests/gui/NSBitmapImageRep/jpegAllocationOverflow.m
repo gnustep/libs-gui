@@ -82,7 +82,7 @@ int main()
 
   data = [NSData dataWithBytes: validJPEG length: sizeof(validJPEG)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep != nil && [rep pixelsWide] == 8 && [rep pixelsHigh] == 8,
+  PASS(rep != nil && [rep pixelsWide] == 8 && [rep pixelsHigh] == 8,
     "a valid JPEG still decodes after the allocation size is computed safely");
   [rep release];
 

@@ -70,15 +70,15 @@ int main()
         initWithFrame: NSMakeRect(0, 0, 200, 200)]);
       rec = AUTORELEASE([Recorder new]);
       [tv setDelegate: rec];
-      pass([tv delegate] == rec, "delegate round-trips");
+      PASS([tv delegate] == rec, "delegate round-trips");
 
       [tv addTabViewItem: mk(@"ia", @"A")];
       [tv addTabViewItem: mk(@"ib", @"B")];
-      pass(rec->changeCount == 2,
+      PASS(rec->changeCount == 2,
            "tabViewDidChangeNumberOfTabViewItems: fires on each add");
 
       [tv selectTabViewItemAtIndex: 1];
-      pass([rec->lastDidSelect isEqualToString: @"B"],
+      PASS([rec->lastDidSelect isEqualToString: @"B"],
            "didSelectTabViewItem: reports the newly selected item");
 
       /* veto keeps the current selection */
@@ -90,7 +90,7 @@ int main()
       [tv addTabViewItem: mk(@"pa", @"A")];
       [tv addTabViewItem: mk(@"pb", @"B")];
       [tv selectTabViewItemAtIndex: 1];
-      pass([[[tv selectedTabViewItem] label] isEqualToString: @"A"],
+      PASS([[[tv selectedTabViewItem] label] isEqualToString: @"A"],
            "a shouldSelect of NO keeps the current selection");
     }
   NS_HANDLER

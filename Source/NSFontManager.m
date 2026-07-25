@@ -120,6 +120,7 @@ static Class         fontPanelClass = Nil;
 
   _action = @selector(changeFont:);
   _storedTag = NSNoFontChangeAction;
+  _enabled = YES;
   _fontEnumerator = RETAIN([GSFontEnumerator sharedEnumerator]);
   _collections = [[NSMutableDictionary alloc] initWithCapacity: 3];
 
@@ -870,12 +871,7 @@ static Class         fontPanelClass = Nil;
  */
 - (BOOL) isEnabled
 {
-  if (fontPanel != nil)
-    {
-      return [fontPanel isEnabled];
-    }
-  else
-    return NO;
+  return _enabled;
 }
 
 /**<p>Enables/disables the NSFontPanel and the font menu ( if they exist )</p>
@@ -884,6 +880,8 @@ static Class         fontPanelClass = Nil;
 - (void) setEnabled: (BOOL)flag
 {
   int i;
+
+  _enabled = flag;
 
   if (_fontMenu != nil)
     {

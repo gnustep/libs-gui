@@ -316,6 +316,11 @@
     }
 }
 
+- (NSSize) buttonPushInOffsetForCell: (NSCell*)cell
+{
+  return NSMakeSize(1.0, 1.0);
+}
+
 - (void) drawFocusFrame: (NSRect) frame view: (NSView*) view
 {
   GSDrawTiles *tiles = [self tilesNamed: @"NSFocusRing" state: GSThemeNormalState];
@@ -1154,6 +1159,11 @@
   return color;
 }
 
+- (CGFloat) menuBorderRadius
+{
+  return 0.0;
+}
+
 - (NSColor *) menuBarBackgroundColor
 {
   NSColor *color = [self colorNamed: @"menuBarBackgroundColor"
@@ -1201,15 +1211,32 @@
  
   if (tiles == nil)
     {
-      NSRectEdge sides[4] = { NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge }; 
-      NSColor *colors[] = {[self menuBorderColorForEdge: NSMinXEdge isHorizontal: horizontal], 
-                           [self menuBorderColorForEdge: NSMaxYEdge isHorizontal: horizontal], 
-                           [self menuBorderColorForEdge: NSMaxXEdge isHorizontal: horizontal],
-                           [self menuBorderColorForEdge: NSMinYEdge isHorizontal: horizontal]};
+      CGFloat radius = [self menuBorderRadius];
 
-      [[self menuBackgroundColor] set];
-      NSRectFill(NSIntersectionRect(bounds, dirtyRect));
-      NSDrawColorTiledRects(bounds, dirtyRect, sides, colors, 4);
+      if (radius > 0.0)
+        {
+          NSBezierPath *path = [NSBezierPath
+            bezierPathWithRoundedRect: NSInsetRect(bounds, 0.5, 0.5)
+                              xRadius: radius
+                              yRadius: radius];
+
+          [[self menuBackgroundColor] set];
+          [path fill];
+          [[self menuBorderColor] set];
+          [path stroke];
+        }
+      else
+        {
+          NSRectEdge sides[4] = { NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge };
+          NSColor *colors[] = {[self menuBorderColorForEdge: NSMinXEdge isHorizontal: horizontal],
+                               [self menuBorderColorForEdge: NSMaxYEdge isHorizontal: horizontal],
+                               [self menuBorderColorForEdge: NSMaxXEdge isHorizontal: horizontal],
+                               [self menuBorderColorForEdge: NSMinYEdge isHorizontal: horizontal]};
+
+          [[self menuBackgroundColor] set];
+          NSRectFill(NSIntersectionRect(bounds, dirtyRect));
+          NSDrawColorTiledRects(bounds, dirtyRect, sides, colors, 4);
+        }
     }
   else
     {
@@ -1238,21 +1265,39 @@
   if (tiles == nil)
     {
       NSColor	*backgroundColor = [cell backgroundColor];
+      CGFloat radius = 0.0;
+
+      /* Only a highlighted item shows a coloured background, so round just
+         that one; rounding the plain items would notch every row. */
+      if (state == GSThemeHighlightedState || state == GSThemeSelectedState)
+        {
+          radius = [self menuItemBackgroundRadius];
+        }
 
       if (isHorizontal)
 	{
 	  cellFrame = [cell drawingRectForBounds: cellFrame];
-	  [backgroundColor set];
-	  NSRectFill(cellFrame);
+	}
+
+      [backgroundColor set];
+      if (radius > 0.0)
+        {
+          [[NSBezierPath bezierPathWithRoundedRect: cellFrame
+                                           xRadius: radius
+                                           yRadius: radius] fill];
+        }
+      else
+        {
+          NSRectFill(cellFrame);
+        }
+
+      if (isHorizontal)
+	{
 	  return;
 	}
 
-      // Set cell's background color
-      [backgroundColor set];
-      NSRectFill(cellFrame);
-
-      if (![self drawsBorderForMenuItemCell: cell 
-                                      state: state 
+      if (![self drawsBorderForMenuItemCell: cell
+                                      state: state
                                isHorizontal: isHorizontal])
         {
           return;
@@ -1435,6 +1480,16 @@
       return 20;
     }
   return height;
+}
+
+- (CGFloat) menuItemBackgroundRadius
+{
+  return 0.0;
+}
+
+- (NSEdgeInsets) menuItemAreaInsets
+{
+  return NSEdgeInsetsMake(0.0, 0.0, 0.0, 0.0);
 }
 
 // NSColorWell drawing method

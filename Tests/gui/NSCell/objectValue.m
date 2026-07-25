@@ -25,14 +25,14 @@ int main()
        SKIP("It looks like GNUstep backend is not yet installed")
   }
   NS_ENDHANDLER
-  cell = [[NSCell alloc] init];
+  cell = AUTORELEASE([[NSCell alloc] init]);
   num = [NSNumber numberWithFloat:55.0]; 
   [cell setObjectValue:num];
-  pass([[cell objectValue] isEqual:num], 
+  PASS([[cell objectValue] isEqual:num], 
        "-objectValue with NSNumber works");
-  pass([cell floatValue] == 55.0, "-floatValue works");
-  pass([cell intValue] == 55, "-intValue works");
-  pass([cell doubleValue] == 55.0, "-doubleValue works");
+  PASS([cell floatValue] == 55.0, "-floatValue works");
+  PASS([cell intValue] == 55, "-intValue works");
+  PASS([cell doubleValue] == 55.0, "-doubleValue works");
   
   [cell setObjectValue:@"foo"];
 

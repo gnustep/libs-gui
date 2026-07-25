@@ -152,11 +152,12 @@
 
 - (void) _setup
 {
-  _contentDictionary = [[NSMutableDictionary alloc] init];
-  _includedKeys = [[NSArray alloc] init];
-  _excludedKeys = [[NSArray alloc] init];
-  _initialKey = [[NSString alloc] initWithString: @"key"];
-  _initialValue = [[NSString alloc] initWithString: @"value"];
+  // Values may already have been set
+  ASSIGN(_contentDictionary, [NSMutableDictionary dictionary]);
+  ASSIGN(_includedKeys, [NSArray array]);
+  ASSIGN(_excludedKeys, [NSArray array]);
+  ASSIGN(_initialKey, [NSString stringWithString: @"key"]);
+  ASSIGN(_initialValue, [NSString stringWithString: @"value"]);
   _count = 0;
 }
 
@@ -169,6 +170,15 @@
       [self _setup];
     }
 
+  return self;
+}
+
+- (instancetype) init
+{
+  NSMutableDictionary *content = [[NSMutableDictionary alloc] init];
+
+  self = [self initWithContent: content];
+  RELEASE(content);
   return self;
 }
 
@@ -243,7 +253,7 @@
     }
   else
     {
-      k = [_initialKey copy];
+      k = AUTORELEASE([_initialKey copy]);
     }
 
   [kvp setKey: k];
@@ -260,8 +270,8 @@
   [self willChangeValueForKey: NSContentBinding];
   DESTROY(_arranged_objects);
   _arranged_objects = [[GSObservableArray alloc]
-			initWithArray: [self arrangeObjects:
-					       [self _buildArray: _contentDictionary]]];
+    initWithArray: [self arrangeObjects:
+     [self _buildArray: _contentDictionary]]];
   [self didChangeValueForKey: NSContentBinding];
 }
 
@@ -429,7 +439,7 @@
 }
 
 /**
- * Returns a copy of the key
+ * Returns the key
  */
 - (NSString *) key
 {

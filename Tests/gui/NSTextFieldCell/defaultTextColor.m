@@ -30,7 +30,7 @@ main(int argc, char **argv)
   {
     NSTextFieldCell *cell = AUTORELEASE([[NSTextFieldCell alloc] initTextCell: @""]);
 
-    pass([[cell textColor] isEqual: [NSColor controlTextColor]],
+    PASS([[cell textColor] isEqual: [NSColor controlTextColor]],
       "the default text colour is the control text colour");
   }
 

@@ -26,6 +26,12 @@
 
 @implementation NSTableRowView
 
+- (void) dealloc
+{
+  RELEASE(_backgroundColor);
+  DEALLOC
+}
+
 - (BOOL) isEmphasized
 {
   return _emphasized;

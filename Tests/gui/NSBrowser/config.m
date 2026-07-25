@@ -38,60 +38,60 @@ main(int argc, char **argv)
     initWithFrame: NSMakeRect(0, 0, 300, 200)]);
 
   /* Defaults that match macOS. */
-  pass([browser allowsEmptySelection] == YES, "empty selection is allowed by default");
-  pass([browser reusesColumns] == NO, "columns are not reused by default");
-  pass([browser takesTitleFromPreviousColumn] == YES,
+  PASS([browser allowsEmptySelection] == YES, "empty selection is allowed by default");
+  PASS([browser reusesColumns] == NO, "columns are not reused by default");
+  PASS([browser takesTitleFromPreviousColumn] == YES,
        "a column takes its title from the previous one by default");
-  pass([browser separatesColumns] == YES, "columns are separated by default");
-  pass([browser isTitled] == YES, "the browser is titled by default");
-  pass([browser prefersAllColumnUserResizing] == NO,
+  PASS([browser separatesColumns] == YES, "columns are separated by default");
+  PASS([browser isTitled] == YES, "the browser is titled by default");
+  PASS([browser prefersAllColumnUserResizing] == NO,
        "it does not prefer all-column user resizing by default");
-  pass([[browser pathSeparator] isEqualToString: @"/"], "the path separator is a slash");
-  pass([browser minColumnWidth] == 100.0, "the default minimum column width is 100");
-  pass([[browser cellPrototype] isKindOfClass: [NSBrowserCell class]],
+  PASS([[browser pathSeparator] isEqualToString: @"/"], "the path separator is a slash");
+  PASS([browser minColumnWidth] == 100.0, "the default minimum column width is 100");
+  PASS([[browser cellPrototype] isKindOfClass: [NSBrowserCell class]],
        "the cell prototype is an NSBrowserCell");
 
   /* Defaults that follow GNUstep's configuration (macOS differs here). */
-  pass([browser allowsBranchSelection] == YES, "branch selection is allowed by default");
-  pass([browser allowsMultipleSelection] == YES, "multiple selection is allowed by default");
-  pass([browser hasHorizontalScroller] == YES, "it has a horizontal scroller by default");
-  pass([browser sendsActionOnArrowKeys] == YES, "it sends the action on arrow keys by default");
-  pass([browser maxVisibleColumns] == 3, "up to three columns are visible by default");
-  pass([browser columnResizingType] == NSBrowserNoColumnResizing,
+  PASS([browser allowsBranchSelection] == YES, "branch selection is allowed by default");
+  PASS([browser allowsMultipleSelection] == YES, "multiple selection is allowed by default");
+  PASS([browser hasHorizontalScroller] == YES, "it has a horizontal scroller by default");
+  PASS([browser sendsActionOnArrowKeys] == YES, "it sends the action on arrow keys by default");
+  PASS([browser maxVisibleColumns] == 3, "up to three columns are visible by default");
+  PASS([browser columnResizingType] == NSBrowserNoColumnResizing,
        "columns do not resize by default");
 
   /* Accessors round-trip. */
   [browser setAllowsMultipleSelection: NO];
-  pass([browser allowsMultipleSelection] == NO, "setAllowsMultipleSelection: round trips");
+  PASS([browser allowsMultipleSelection] == NO, "setAllowsMultipleSelection: round trips");
   [browser setAllowsBranchSelection: NO];
-  pass([browser allowsBranchSelection] == NO, "setAllowsBranchSelection: round trips");
+  PASS([browser allowsBranchSelection] == NO, "setAllowsBranchSelection: round trips");
   [browser setAllowsEmptySelection: NO];
-  pass([browser allowsEmptySelection] == NO, "setAllowsEmptySelection: round trips");
+  PASS([browser allowsEmptySelection] == NO, "setAllowsEmptySelection: round trips");
   [browser setHasHorizontalScroller: NO];
-  pass([browser hasHorizontalScroller] == NO, "setHasHorizontalScroller: round trips");
+  PASS([browser hasHorizontalScroller] == NO, "setHasHorizontalScroller: round trips");
   [browser setSendsActionOnArrowKeys: NO];
-  pass([browser sendsActionOnArrowKeys] == NO, "setSendsActionOnArrowKeys: round trips");
+  PASS([browser sendsActionOnArrowKeys] == NO, "setSendsActionOnArrowKeys: round trips");
   [browser setReusesColumns: YES];
-  pass([browser reusesColumns] == YES, "setReusesColumns: round trips");
+  PASS([browser reusesColumns] == YES, "setReusesColumns: round trips");
   [browser setPathSeparator: @":"];
-  pass([[browser pathSeparator] isEqualToString: @":"], "setPathSeparator: round trips");
+  PASS([[browser pathSeparator] isEqualToString: @":"], "setPathSeparator: round trips");
   [browser setMinColumnWidth: 120.0];
-  pass([browser minColumnWidth] == 120.0, "setMinColumnWidth: round trips");
+  PASS([browser minColumnWidth] == 120.0, "setMinColumnWidth: round trips");
   [browser setMaxVisibleColumns: 4];
-  pass([browser maxVisibleColumns] == 4, "setMaxVisibleColumns: round trips");
+  PASS([browser maxVisibleColumns] == 4, "setMaxVisibleColumns: round trips");
   [browser setColumnResizingType: NSBrowserUserColumnResizing];
-  pass([browser columnResizingType] == NSBrowserUserColumnResizing,
+  PASS([browser columnResizingType] == NSBrowserUserColumnResizing,
        "setColumnResizingType: round trips");
 
   /* A titled browser keeps its columns separated: separatesColumns only
      changes once the browser is no longer titled. */
   [browser setSeparatesColumns: NO];
-  pass([browser separatesColumns] == YES,
+  PASS([browser separatesColumns] == YES,
        "separatesColumns is unchanged while the browser is titled");
   [browser setTitled: NO];
-  pass([browser isTitled] == NO, "setTitled: round trips");
+  PASS([browser isTitled] == NO, "setTitled: round trips");
   [browser setSeparatesColumns: NO];
-  pass([browser separatesColumns] == NO,
+  PASS([browser separatesColumns] == NO,
        "separatesColumns changes once the browser is not titled");
 
   END_SET("NSBrowser config")

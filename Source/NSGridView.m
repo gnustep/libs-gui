@@ -287,6 +287,7 @@
           [cell setContentView: v];
           
           [_cells addObject: cell];
+	  RELEASE(cell);
           c++;
         }
       END_FOR_IN(row);
@@ -302,11 +303,11 @@
 {
   NSUInteger r = 0;
   NSUInteger c = 0;
-  NSMutableArray *rows = [[NSMutableArray alloc] initWithCapacity: rowCount];
+  NSMutableArray *rows = [NSMutableArray arrayWithCapacity: rowCount];
   
   for (r = 0; r < rowCount; r++)
     {
-      NSMutableArray *col = [[NSMutableArray alloc] initWithCapacity: columnCount];
+      NSMutableArray *col = [NSMutableArray arrayWithCapacity: columnCount];
       for (c = 0; c < columnCount; c++)
         {
           NSView *gv = [[NSView alloc] init];

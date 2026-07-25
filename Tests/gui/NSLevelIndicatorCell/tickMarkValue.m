@@ -30,16 +30,16 @@ int main()
   [cell setMaxValue: 10.0];
 
   [cell setNumberOfTickMarks: 11];
-  pass(eq([cell tickMarkValueAtIndex: 0], 0.0), "11 ticks: index 0 is minValue");
-  pass(eq([cell tickMarkValueAtIndex: 5], 5.0), "11 ticks: index 5 is the midpoint");
-  pass(eq([cell tickMarkValueAtIndex: 10], 10.0), "11 ticks: last index is maxValue");
+  PASS(eq([cell tickMarkValueAtIndex: 0], 0.0), "11 ticks: index 0 is minValue");
+  PASS(eq([cell tickMarkValueAtIndex: 5], 5.0), "11 ticks: index 5 is the midpoint");
+  PASS(eq([cell tickMarkValueAtIndex: 10], 10.0), "11 ticks: last index is maxValue");
 
   [cell setNumberOfTickMarks: 2];
-  pass(eq([cell tickMarkValueAtIndex: 0], 0.0), "2 ticks: index 0 is minValue");
-  pass(eq([cell tickMarkValueAtIndex: 1], 10.0), "2 ticks: index 1 is maxValue");
+  PASS(eq([cell tickMarkValueAtIndex: 0], 0.0), "2 ticks: index 0 is minValue");
+  PASS(eq([cell tickMarkValueAtIndex: 1], 10.0), "2 ticks: index 1 is maxValue");
 
   [cell setNumberOfTickMarks: 1];
-  pass(eq([cell tickMarkValueAtIndex: 0], 5.0), "1 tick: reports the midpoint");
+  PASS(eq([cell tickMarkValueAtIndex: 0], 5.0), "1 tick: reports the midpoint");
 
   END_SET("NSLevelIndicatorCell tickMarkValue")
 

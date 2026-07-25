@@ -21,7 +21,7 @@ int main()
   NS_ENDHANDLER
 
   item = AUTORELEASE([[NSToolbarItem alloc] initWithItemIdentifier: @"e"]);
-  pass([item isEnabled] == YES, "a fresh toolbar item is enabled by default");
+  PASS([item isEnabled] == YES, "a fresh toolbar item is enabled by default");
 
   END_SET("NSToolbarItem enabled")
 

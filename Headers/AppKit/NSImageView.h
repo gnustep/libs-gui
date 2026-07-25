@@ -68,9 +68,10 @@ APPKIT_EXPORT_CLASS
   id _target;
   SEL _action;
   struct GSImageViewFlagsType {
-    // total 32 bits.  30 bits left.
+    // total 32 bits.  29 bits left.
     unsigned allowsCutCopyPaste: 1;
     unsigned initiatesDrag: 1;
+    unsigned animates: 1;
   } _ivflags;
 }
 

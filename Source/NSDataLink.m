@@ -27,9 +27,11 @@
 */ 
 
 #include "config.h"
+#import <Foundation/NSDate.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSException.h>
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSDataLinkManager.h"
 #import "AppKit/NSPasteboard.h"
@@ -120,9 +122,20 @@
 - (id)initWithContentsOfFile:(NSString *)filename
 {
   NSData *data = [[NSData alloc] initWithContentsOfFile: filename];
-  id object = [NSUnarchiver unarchiveObjectWithData: data];
+  id object = nil;
 
-  RELEASE(data);
+  // A missing, unreadable or corrupt file must yield nil rather than an
+  // exception: -[NSUnarchiver unarchiveObjectWithData:] raises outright for
+  // nil data and raises while decoding malformed data.
+  if (data != nil)
+    {
+      NS_DURING
+	object = [NSUnarchiver unarchiveObjectWithData: data];
+      NS_HANDLER
+	object = nil;
+      NS_ENDHANDLER
+      RELEASE(data);
+    }
   RELEASE(self);
   return RETAIN(object);
 }
@@ -130,8 +143,17 @@
 - (id)initWithPasteboard:(NSPasteboard *)pasteboard
 {
   NSData *data = [pasteboard dataForType: NSDataLinkPboardType];
-  id object = [NSUnarchiver unarchiveObjectWithData: data];
+  id object = nil;
 
+  // A pasteboard without valid link data must yield nil in the same way.
+  if (data != nil)
+    {
+      NS_DURING
+	object = [NSUnarchiver unarchiveObjectWithData: data];
+      NS_HANDLER
+	object = nil;
+      NS_ENDHANDLER
+    }
   RELEASE(self);
   return RETAIN(object);
 }
@@ -297,7 +319,48 @@
 
 - (BOOL)updateDestination
 {
-  return NO;
+  id destinationDelegate = [_destinationManager delegate];
+  BOOL updated = NO;
+
+  // Only a link installed in a destination document can be updated.
+  if (_destinationManager == nil)
+    {
+      return NO;
+    }
+
+  // If the source document is available in the same process, copy its current
+  // data through a pasteboard and let the destination paste it.
+  if (_sourceManager != nil
+    && [[_sourceManager delegate] respondsToSelector:
+	  @selector(copyToPasteboard:at:cheapCopyAllowed:)]
+    && [destinationDelegate respondsToSelector:
+	  @selector(pasteFromPasteboard:at:)])
+    {
+      NSPasteboard *pb = [NSPasteboard pasteboardWithUniqueName];
+
+      if ([[_sourceManager delegate] copyToPasteboard: pb
+					           at: _sourceSelection
+				         cheapCopyAllowed: YES])
+	{
+	  updated = [destinationDelegate pasteFromPasteboard: pb
+						          at: _destinationSelection];
+	}
+    }
+  // Otherwise re-import the source file directly.
+  else if (_sourceFilename != nil
+    && [destinationDelegate respondsToSelector: @selector(importFile:at:)])
+    {
+      updated = [destinationDelegate importFile: _sourceFilename
+					     at: _destinationSelection];
+    }
+
+  if (updated)
+    {
+      ASSIGN(_lastUpdateTime, [NSDate date]);
+      _flags.isDirty = NO;
+    }
+
+  return updated;
 }
 
 - (NSDataLinkUpdateMode)updateMode

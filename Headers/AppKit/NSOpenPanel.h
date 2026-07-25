@@ -48,6 +48,7 @@ APPKIT_EXPORT_CLASS
 {
   BOOL _canChooseDirectories;
   BOOL _canChooseFiles;
+  BOOL _resolvesAliases;
 }
 // Accessing the NSOpenPanel shared instance
 + (NSOpenPanel *) openPanel;

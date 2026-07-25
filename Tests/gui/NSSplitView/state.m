@@ -31,30 +31,30 @@ int main()
       sv = AUTORELEASE([[NSSplitView alloc]
         initWithFrame: NSMakeRect(0, 0, 200, 100)]);
 
-      pass([sv isVertical] == NO, "a split view is horizontal by default");
-      pass([sv dividerStyle] == NSSplitViewDividerStyleThick,
+      PASS([sv isVertical] == NO, "a split view is horizontal by default");
+      PASS([sv dividerStyle] == NSSplitViewDividerStyleThick,
            "the default divider style is thick");
-      pass([sv dividerColor] != nil, "a split view has a divider colour");
-      pass([sv autosaveName] == nil, "the default autosave name is nil");
-      pass([sv delegate] == nil, "the default delegate is nil");
+      PASS([sv dividerColor] != nil, "a split view has a divider colour");
+      PASS([sv autosaveName] == nil, "the default autosave name is nil");
+      PASS([sv delegate] == nil, "the default delegate is nil");
 
       [sv setVertical: YES];
-      pass([sv isVertical] == YES, "isVertical round-trips");
+      PASS([sv isVertical] == YES, "isVertical round-trips");
       [sv setDividerStyle: NSSplitViewDividerStyleThin];
-      pass([sv dividerStyle] == NSSplitViewDividerStyleThin,
+      PASS([sv dividerStyle] == NSSplitViewDividerStyleThin,
            "dividerStyle round-trips to thin");
       [sv setDividerStyle: NSSplitViewDividerStylePaneSplitter];
-      pass([sv dividerStyle] == NSSplitViewDividerStylePaneSplitter,
+      PASS([sv dividerStyle] == NSSplitViewDividerStylePaneSplitter,
            "dividerStyle round-trips to pane splitter");
       [sv setAutosaveName: @"mySplit"];
-      pass([[sv autosaveName] isEqualToString: @"mySplit"],
+      PASS([[sv autosaveName] isEqualToString: @"mySplit"],
            "autosaveName round-trips");
 
       /* isPaneSplitter is a GNUstep extension */
       [sv setIsPaneSplitter: NO];
-      pass([sv isPaneSplitter] == NO, "isPaneSplitter round-trips to NO");
+      PASS([sv isPaneSplitter] == NO, "isPaneSplitter round-trips to NO");
       [sv setIsPaneSplitter: YES];
-      pass([sv isPaneSplitter] == YES, "isPaneSplitter round-trips to YES");
+      PASS([sv isPaneSplitter] == YES, "isPaneSplitter round-trips to YES");
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]

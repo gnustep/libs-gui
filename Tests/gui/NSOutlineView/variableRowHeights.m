@@ -185,12 +185,12 @@ int main()
   // Test 1: Basic setup without variable heights
   [outlineView reloadData];
   
-  pass([outlineView numberOfRows] == 3,
+  PASS([outlineView numberOfRows] == 3,
        "outline view has correct number of root rows");
   
   // Expand first item
   [outlineView expandItem: @"Root1"];
-  pass([outlineView numberOfRows] == 5,
+  PASS([outlineView numberOfRows] == 5,
        "outline view has correct number of rows after expanding");
   
   // Test 2: Row height with uniform heights
@@ -198,11 +198,11 @@ int main()
     NSRect rect0 = [outlineView rectOfRow: 0];
     NSRect rect1 = [outlineView rectOfRow: 1];
     
-    pass(rect0.size.height == 16.0,
+    PASS(rect0.size.height == 16.0,
          "row 0 has default height when delegate doesn't return variable heights");
-    pass(rect1.size.height == 16.0,
+    PASS(rect1.size.height == 16.0,
          "row 1 has default height when delegate doesn't return variable heights");
-    pass(rect1.origin.y == rect0.origin.y + 16.0,
+    PASS(rect1.origin.y == rect0.origin.y + 16.0,
          "row 1 starts after row 0 with uniform heights");
   }
   
@@ -217,15 +217,15 @@ int main()
     NSRect rect2 = [outlineView rectOfRow: 2]; // Child1-2
     NSRect rect3 = [outlineView rectOfRow: 3]; // Root2
     
-    pass(rect0.size.height == 30.0,
+    PASS(rect0.size.height == 30.0,
          "root item has height 30.0 from delegate");
-    pass(rect1.size.height == 20.0,
+    PASS(rect1.size.height == 20.0,
          "child item has height 20.0 from delegate");
-    pass(rect1.origin.y == rect0.origin.y + 30.0,
+    PASS(rect1.origin.y == rect0.origin.y + 30.0,
          "child row starts after root with variable height");
-    pass(rect2.origin.y == rect1.origin.y + 20.0,
+    PASS(rect2.origin.y == rect1.origin.y + 20.0,
          "second child row positioned correctly");
-    pass(rect3.origin.y == rect2.origin.y + 20.0,
+    PASS(rect3.origin.y == rect2.origin.y + 20.0,
          "next root row positioned after children with variable heights");
   }
   
@@ -235,7 +235,7 @@ int main()
     NSPoint midPoint = NSMakePoint(10, rect1.origin.y + rect1.size.height / 2);
     NSInteger rowAtMid = [outlineView rowAtPoint: midPoint];
     
-    pass(rowAtMid == 1,
+    PASS(rowAtMid == 1,
          "rowAtPoint correctly identifies row with variable heights");
   }
   
@@ -244,27 +244,27 @@ int main()
     NSRect cellFrame0 = [outlineView frameOfCellAtColumn: 0 row: 0];
     NSRect cellFrame1 = [outlineView frameOfCellAtColumn: 0 row: 1];
     
-    pass(cellFrame0.size.height > 0 && cellFrame0.size.height <= 30.0,
+    PASS(cellFrame0.size.height > 0 && cellFrame0.size.height <= 30.0,
          "cell frame height respects row height for root item");
-    pass(cellFrame1.size.height > 0 && cellFrame1.size.height <= 20.0,
+    PASS(cellFrame1.size.height > 0 && cellFrame1.size.height <= 20.0,
          "cell frame height respects row height for child item");
   }
   
   // Test 6: sizeToFitWidthOfColumn delegate method
   {
-    pass([delegate customSizeToFitCalled] == NO,
+    PASS([delegate customSizeToFitCalled] == NO,
          "sizeToFitWidthOfColumn not called yet");
     
     // Simulate double-click on column header
     [outlineView _sendDoubleActionForColumn: 0];
     
-    pass([delegate customSizeToFitCalled] == YES,
+    PASS([delegate customSizeToFitCalled] == YES,
          "sizeToFitWidthOfColumn called on double-click");
-    pass([delegate lastSizeToFitColumn] == 0,
+    PASS([delegate lastSizeToFitColumn] == 0,
          "correct column index passed to delegate");
     
     NSTableColumn *col = [[outlineView tableColumns] objectAtIndex: 0];
-    pass([col width] == 150.0,
+    PASS([col width] == 150.0,
          "column width set to value returned by delegate");
   }
   
@@ -276,7 +276,7 @@ int main()
     NSRect boundsRect = [outlineView bounds];
     
     // The frame should accommodate all rows plus grid line
-    pass(boundsRect.size.height >= expectedHeight,
+    PASS(boundsRect.size.height >= expectedHeight,
          "total height accounts for variable row heights");
   }
   

@@ -30,19 +30,19 @@ int main()
   g = [NSGlyphInfo glyphInfoWithCharacterIdentifier: 42
                                          collection: NSAdobeJapan1CharacterCollection
                                          baseString: @"X"];
-  pass(g != nil, "the character-identifier factory returns an object");
-  pass([g characterIdentifier] == 42, "characterIdentifier is the value passed in");
-  pass([g characterCollection] == NSAdobeJapan1CharacterCollection,
+  PASS(g != nil, "the character-identifier factory returns an object");
+  PASS([g characterIdentifier] == 42, "characterIdentifier is the value passed in");
+  PASS([g characterCollection] == NSAdobeJapan1CharacterCollection,
        "characterCollection is the collection passed in");
-  pass([[g baseString] isEqualToString: @"X"], "baseString is the string passed in");
-  pass([g glyphName] == nil,
+  PASS([[g baseString] isEqualToString: @"X"], "baseString is the string passed in");
+  PASS([g glyphName] == nil,
        "glyphName is nil for a character-identifier glyph info");
 
   /* the CG-glyph factory */
   font = [NSFont systemFontOfSize: 12];
   g = [NSGlyphInfo glyphInfoWithCGGlyph: 36 forFont: font baseString: @"A"];
-  pass(g != nil, "the CG-glyph factory returns an object");
-  pass([[g baseString] isEqualToString: @"A"],
+  PASS(g != nil, "the CG-glyph factory returns an object");
+  PASS([[g baseString] isEqualToString: @"A"],
        "baseString is the string passed in for a CG-glyph info");
 
   END_SET("NSGlyphInfo basic")

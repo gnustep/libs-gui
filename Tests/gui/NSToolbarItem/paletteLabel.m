@@ -22,7 +22,7 @@ int main()
   NS_ENDHANDLER
 
   item = AUTORELEASE([[NSToolbarItem alloc] initWithItemIdentifier: @"p"]);
-  pass([[item paletteLabel] isEqualToString: @""],
+  PASS([[item paletteLabel] isEqualToString: @""],
        "default paletteLabel is the empty string");
 
   END_SET("NSToolbarItem paletteLabel")

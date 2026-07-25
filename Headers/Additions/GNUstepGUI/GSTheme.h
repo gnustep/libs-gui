@@ -828,6 +828,13 @@ APPKIT_EXPORT_CLASS
 				  style: (int)style 
 				  state: (GSThemeControlState)state;
 
+/**
+ * Amount by which a pushed-in button's contents are displaced to give it a
+ * pressed look.  The default is one pixel to the bottom right; return
+ * NSZeroSize to keep the contents fixed while the button is pressed.
+ */
+- (NSSize) buttonPushInOffsetForCell: (NSCell*)cell;
+
 /** 
  * Draws the indicator (normally a dotted rectangle) to show that
  * the view currently has keyboard focus.
@@ -1078,8 +1085,23 @@ APPKIT_EXPORT_CLASS
  * should not.  Instead themes should provide default colors in the
  * GSThemeDomain (in their Info.plist).</p>
  */
-- (NSColor *) menuBorderColorForEdge: (NSRectEdge)edge 
+- (NSColor *) menuBorderColorForEdge: (NSRectEdge)edge
                         isHorizontal: (BOOL)horizontal;
+
+/**
+ * <p>Returns the corner radius used to draw a menu view background.</p>
+ *
+ * <p>The default is zero, which fills the whole menu rectangle and draws its
+ * per-edge borders.  A larger value fills and strokes the background through a
+ * rounded rectangle, leaving the corners to the menu window (which is
+ * borderless with a clear background), so a compositing backend shows rounded
+ * menu corners.</p>
+ *
+ * <p>The returned value is used by
+ * -drawBackgroundForMenuView:withFrame:dirtyRect:horizontal:</p>
+ */
+- (CGFloat) menuBorderRadius;
+
 - (void) drawBackgroundForMenuView: (NSMenuView*)menuView
                          withFrame: (NSRect)bounds
                          dirtyRect: (NSRect)dirtyRect
@@ -1203,6 +1225,20 @@ APPKIT_EXPORT_CLASS
 - (CGFloat) menuBarHeight;
 - (CGFloat) menuItemHeight;
 - (CGFloat) menuSeparatorHeight;
+
+/**
+ * Corner radius used when filling the background of a highlighted menu item.
+ * The default is zero, which fills the whole item rectangle; a larger value
+ * rounds the corners of the highlight.
+ */
+- (CGFloat) menuItemBackgroundRadius;
+
+/**
+ * Padding between the edges of a vertical menu and its item cells.  The
+ * default is zero on every side; a theme can return larger insets to inset the
+ * list of items within the menu.
+ */
+- (NSEdgeInsets) menuItemAreaInsets;
 
 // NSColorWell drawing method
 - (NSRect) drawColorWellBorder: (NSColorWell*)well

@@ -238,7 +238,6 @@ static Class imageClass;
   if (submenu != nil)
     {
       [submenu setSupermenu: _menu];
-      [submenu setTitle: _title];
     }
   [self setTarget: _menu];
   [self setAction: @selector(submenuAction:)];

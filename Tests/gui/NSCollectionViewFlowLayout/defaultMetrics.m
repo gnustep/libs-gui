@@ -23,10 +23,10 @@ int main()
   NS_ENDHANDLER
 
   l = AUTORELEASE([[NSCollectionViewFlowLayout alloc] init]);
-  pass([l minimumLineSpacing] == 10.0, "default minimumLineSpacing is 10");
-  pass([l minimumInteritemSpacing] == 10.0,
+  PASS([l minimumLineSpacing] == 10.0, "default minimumLineSpacing is 10");
+  PASS([l minimumInteritemSpacing] == 10.0,
        "default minimumInteritemSpacing is 10");
-  pass([l itemSize].width == 50 && [l itemSize].height == 50,
+  PASS([l itemSize].width == 50 && [l itemSize].height == 50,
        "default itemSize is 50x50");
 
   END_SET("NSCollectionViewFlowLayout defaultMetrics")

@@ -56,6 +56,7 @@
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSCursor.h"
+#import "AppKit/NSViewController.h"
 #import "AppKit/NSDocumentController.h"
 #import "AppKit/NSDocument.h"
 #import "AppKit/NSClipView.h"
@@ -109,6 +110,14 @@ NSView *viewIsPrinting = nil;
 
 const CGFloat NSViewNoInstrinsicMetric = -1;
 const CGFloat NSViewNoIntrinsicMetric = -1;
+
+/* Private NSViewController hooks used to drive a controller's appearance
+   transitions when its view moves between windows. */
+@interface NSViewController (GSViewAppearance)
++ (NSViewController *) _viewControllerForView: (NSView *)aView;
+- (void) _viewWillMoveToWindow: (NSWindow *)newWindow;
+- (void) _viewDidMoveToWindow;
+@end
 
 /**
   <p>NSView is an abstract class which provides facilities for drawing
@@ -369,7 +378,13 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) _viewDidMoveToWindow
 {
+  NSViewController *vc = [NSViewController _viewControllerForView: self];
+
   [self viewDidMoveToWindow];
+  if (vc != nil)
+    {
+      [vc _viewDidMoveToWindow];
+    }
   if (_rFlags.has_subviews)
     {
       NSUInteger count = [_sub_views count];
@@ -407,7 +422,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       return;
     }
 
-  // This call also reset _allocate_gstate, so we have 
+  {
+    NSViewController *vc = [NSViewController _viewControllerForView: self];
+
+    if (vc != nil)
+      {
+	[vc _viewWillMoveToWindow: newWindow];
+      }
+  }
+
+  // This call also reset _allocate_gstate, so we have
   // to store this value and set it again.
   // This way we keep the logic in one place.
   old_allocate_gstate = _allocate_gstate;
@@ -2958,12 +2982,36 @@ in the main thread.
 /*
  * Hidding Views
  */
+- (void) _sendViewDidUnhide: (BOOL)unhide
+{
+  NSUInteger i, count;
+
+  if (unhide)
+    [self viewDidUnhide];
+  else
+    [self viewDidHide];
+
+  count = [_sub_views count];
+  for (i = 0; i < count; i++)
+    {
+      NSView *sub = [_sub_views objectAtIndex: i];
+
+      if (![sub isHidden])
+        [sub _sendViewDidUnhide: unhide];
+    }
+}
+
 - (void) setHidden: (BOOL)flag
 {
   id view;
+  BOOL notify;
 
   if (_is_hidden == flag)
       return;
+
+  /* The view and its unhidden descendants only change effective visibility
+     when no ancestor is already hidden. */
+  notify = (_super_view == nil) || ![_super_view isHiddenOrHasHiddenAncestor];
 
   _is_hidden = flag;
 
@@ -3015,6 +3063,19 @@ in the main thread.
         }
       [self setNeedsDisplay: YES];
     }
+
+  if (notify)
+    {
+      [self _sendViewDidUnhide: (flag == NO)];
+    }
+}
+
+- (void) viewDidHide
+{
+}
+
+- (void) viewDidUnhide
+{
 }
 
 - (BOOL) isHidden

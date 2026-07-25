@@ -374,6 +374,8 @@ PACKAGE_SCOPE
 - (void) setHidden: (BOOL)flag;
 - (BOOL) isHidden;
 - (BOOL) isHiddenOrHasHiddenAncestor;
+- (void) viewDidHide;
+- (void) viewDidUnhide;
 #endif
 
 - (void) drawRect: (NSRect)rect;

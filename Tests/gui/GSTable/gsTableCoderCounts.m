@@ -32,7 +32,7 @@
 
 int main(void)
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  ENTER_POOL
   GSTable *t;
   GSTable *t2;
   NSData *d;
@@ -46,13 +46,15 @@ int main(void)
     [u decodeObjectForKey: @"root"];
   NS_HANDLER
   NS_ENDHANDLER
-  pass(YES,
+  PASS(YES,
     "decoding a GSTable with a negative column count does not crash");
 
   t2 = [NSKeyedUnarchiver unarchiveObjectWithData: d];
-  pass(t2 != nil && [t2 numberOfRows] == 2 && [t2 numberOfColumns] == 3,
+  PASS(t2 != nil && [t2 numberOfRows] == 2 && [t2 numberOfColumns] == 3,
     "a GSTable round-trips through a keyed archive");
 
-  [arp release];
+  RELEASE(t);
+  RELEASE(u);
+  LEAVE_POOL
   return 0;
 }

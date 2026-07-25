@@ -50,36 +50,36 @@ main(int argc, char **argv)
 			textContainer: tc];
 
   // Check text view returns the expected elements
-  pass([tv textContainer] == tc,
+  PASS([tv textContainer] == tc,
        "NSTextView -textContainer returns text container");
-  pass([tv layoutManager] == lm,
+  PASS([tv layoutManager] == lm,
        "NSTextView -layoutManager returns layout manager");
-  pass([tv textStorage] == ts,
+  PASS([tv textStorage] == ts,
        "NSTextView -textStorage returns text storage");
 
   // Release text storage
   [ts release];
   RECREATE_AUTORELEASE_POOL(arp);
-  pass([tv textContainer] == tc,
+  PASS([tv textContainer] == tc,
        "NSTextView -textContainer returns text container");
-  pass([tv layoutManager] == lm,
+  PASS([tv layoutManager] == lm,
        "NSTextView -layoutManager returns layout manager");
-  pass([tv textStorage] == nil, "NSTextView -textStorage returns nil");
+  PASS([tv textStorage] == nil, "NSTextView -textStorage returns nil");
 
   // Release layout manager
   [lm release];
   RECREATE_AUTORELEASE_POOL(arp);
-  pass([tv textContainer] == tc,
+  PASS([tv textContainer] == tc,
        "NSTextView -textContainer returns text container");
-  pass([tv layoutManager] == nil, "NSTextView -layoutManager returns nil");
-  pass([tv textStorage] == nil, "NSTextView -textStorage returns nil");
+  PASS([tv layoutManager] == nil, "NSTextView -layoutManager returns nil");
+  PASS([tv textStorage] == nil, "NSTextView -textStorage returns nil");
 
   // Release text container
   [tc release];
   RECREATE_AUTORELEASE_POOL(arp);
-  pass([tv textContainer] == nil, "NSTextView -textContainer returns nil");
-  pass([tv layoutManager] == nil, "NSTextView -layoutManager returns nil");
-  pass([tv textStorage] == nil, "NSTextView -textStorage returns nil");
+  PASS([tv textContainer] == nil, "NSTextView -textContainer returns nil");
+  PASS([tv layoutManager] == nil, "NSTextView -layoutManager returns nil");
+  PASS([tv textStorage] == nil, "NSTextView -textStorage returns nil");
 
   DESTROY(arp);
   END_SET("TextSystem GNUstep deallocation")

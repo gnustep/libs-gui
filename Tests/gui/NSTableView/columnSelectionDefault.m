@@ -25,11 +25,11 @@ int main()
     {
       tv = AUTORELEASE([[NSTableView alloc]
         initWithFrame: NSMakeRect(0, 0, 200, 200)]);
-      pass([tv allowsColumnSelection] == NO,
+      PASS([tv allowsColumnSelection] == NO,
            "a new table does not allow column selection");
 
       [tv setAllowsColumnSelection: YES];
-      pass([tv allowsColumnSelection] == YES,
+      PASS([tv allowsColumnSelection] == YES,
            "allowsColumnSelection round-trips");
     }
   NS_HANDLER

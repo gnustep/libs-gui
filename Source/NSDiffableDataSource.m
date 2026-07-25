@@ -113,7 +113,7 @@ GSDiffableDefaultSectionIdentifier()
       return [NSArray array];
     }
 
-  return [_sections copy];
+  return AUTORELEASE([_sections copy]);
 }
 
 - (NSArray *) itemIdentifiers
@@ -130,7 +130,7 @@ GSDiffableDefaultSectionIdentifier()
     }
   END_FOR_IN(_sections);
 
-  return [result copy];
+  return AUTORELEASE([result copy]);
 }
 
 - (NSArray *) itemIdentifiersInSectionWithIdentifier: (id)sectionIdentifier
@@ -142,7 +142,7 @@ GSDiffableDefaultSectionIdentifier()
       return [NSArray array];
     }
 
-  return [items copy];
+  return AUTORELEASE([items copy]);
 }
 
 - (NSInteger) numberOfSections
@@ -472,23 +472,14 @@ GSDiffableDefaultSectionIdentifier()
   animatingDifferences: (BOOL)animatingDifferences
 {
   DESTROY(_snapshot);
-
-  if (snapshot == nil)
-    {
-      _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-    }
-  else
-    {
-      _snapshot = [snapshot copy];
-    }
-
+  _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
   [self _rebuildIndexLookup];
   [_collectionView reloadData];
 }
 
 - (NSDiffableDataSourceSnapshot *) snapshot
 {
-  return [_snapshot copy];
+  return AUTORELEASE([_snapshot copy]);
 }
 
 - (NSIndexPath *) indexPathForItemIdentifier: (id)itemIdentifier
@@ -714,22 +705,14 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 {
   DESTROY(_snapshot);
 
-  if (snapshot == nil)
-    {
-      _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-    }
-  else
-    {
-      _snapshot = [snapshot copy];
-    }
-
+  _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
   [self _rebuildIndexLookup];
   [_tableView reloadData];
 }
 
 - (NSDiffableDataSourceSnapshot *) snapshot
 {
-  return [_snapshot copy];
+  return AUTORELEASE([_snapshot copy]);
 }
 
 - (NSIndexPath *) indexPathForItemIdentifier: (id)itemIdentifier

@@ -32,9 +32,9 @@ main(int argc, char **argv)
     NSTableColumn *col = AUTORELEASE([[NSTableColumn alloc] initWithIdentifier: @"c"]);
 
     [col setResizingMask: NSTableColumnNoResizing];
-    pass([col isResizable] == NO, "a no-resizing mask makes the column not resizable");
+    PASS([col isResizable] == NO, "a no-resizing mask makes the column not resizable");
     [col setResizingMask: NSTableColumnUserResizingMask];
-    pass([col isResizable] == YES, "a user-resizing mask makes the column resizable");
+    PASS([col isResizable] == YES, "a user-resizing mask makes the column resizable");
   }
 
   /* setResizable: drives the mask. */
@@ -42,11 +42,11 @@ main(int argc, char **argv)
     NSTableColumn *col = AUTORELEASE([[NSTableColumn alloc] initWithIdentifier: @"c"]);
 
     [col setResizable: NO];
-    pass([col resizingMask] == NSTableColumnNoResizing
+    PASS([col resizingMask] == NSTableColumnNoResizing
       && [col isResizable] == NO,
       "setResizable: NO clears the resizing mask");
     [col setResizable: YES];
-    pass([col resizingMask] == (NSTableColumnAutoresizingMask | NSTableColumnUserResizingMask)
+    PASS([col resizingMask] == (NSTableColumnAutoresizingMask | NSTableColumnUserResizingMask)
       && [col isResizable] == YES,
       "setResizable: YES sets the auto and user resizing mask");
   }

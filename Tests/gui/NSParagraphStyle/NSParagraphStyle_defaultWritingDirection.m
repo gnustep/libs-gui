@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 	ok = [NSParagraphStyle defaultWritingDirectionForLanguage: @"en"]==NSWritingDirectionLeftToRight
 	  && [NSParagraphStyle defaultWritingDirectionForLanguage: @"ar"]==NSWritingDirectionRightToLeft;
 
-	pass(ok,"[NSParagraphStyle defaultWritingDirectionForLanguage:] works");
+	PASS(ok,"[NSParagraphStyle defaultWritingDirectionForLanguage:] works");
 
 	DESTROY(arp);
 	return 0;

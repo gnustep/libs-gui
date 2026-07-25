@@ -57,6 +57,8 @@ APPKIT_EXPORT_CLASS
   id _delegate;
   NSView *_original_nextKeyView;
   NSUInteger _selected_item;
+  NSControlSize _controlSize;
+  NSControlTint _controlTint;
 }
 - (void)addTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)insertTabViewItem:(NSTabViewItem *)tabViewItem

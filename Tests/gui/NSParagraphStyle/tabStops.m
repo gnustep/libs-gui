@@ -42,11 +42,11 @@ main(int argc, char **argv)
   {
     NSParagraphStyle *d = [NSParagraphStyle defaultParagraphStyle];
 
-    pass([[d tabStops] count] == 12, "the default style has twelve tab stops");
-    pass(eq(locAt(d, 0), 28.0) && eq(locAt(d, 1), 56.0)
+    PASS([[d tabStops] count] == 12, "the default style has twelve tab stops");
+    PASS(eq(locAt(d, 0), 28.0) && eq(locAt(d, 1), 56.0)
       && eq(locAt(d, 11), 336.0),
       "the default tab stops are spaced every 28 points");
-    pass(eq([d defaultTabInterval], 0.0),
+    PASS(eq([d defaultTabInterval], 0.0),
       "the default tab interval is zero");
   }
 
@@ -58,15 +58,15 @@ main(int argc, char **argv)
     [p setTabStops: [NSArray arrayWithObjects: tab(100), tab(200), tab(300), nil]];
 
     [p addTabStop: tab(150)];
-    pass(eq(locAt(p, 0), 100.0) && eq(locAt(p, 1), 150.0)
+    PASS(eq(locAt(p, 0), 100.0) && eq(locAt(p, 1), 150.0)
       && eq(locAt(p, 2), 200.0) && eq(locAt(p, 3), 300.0),
       "addTabStop: inserts a stop in the middle in order");
 
     [p addTabStop: tab(50)];
-    pass(eq(locAt(p, 0), 50.0), "addTabStop: places an earlier stop first");
+    PASS(eq(locAt(p, 0), 50.0), "addTabStop: places an earlier stop first");
 
     [p addTabStop: tab(400)];
-    pass(eq(locAt(p, [[p tabStops] count] - 1), 400.0)
+    PASS(eq(locAt(p, [[p tabStops] count] - 1), 400.0)
       && [[p tabStops] count] == 6,
       "addTabStop: places a later stop last");
   }
@@ -80,7 +80,7 @@ main(int argc, char **argv)
       tab(50), tab(100), tab(200), tab(300), nil]];
     mid = [[p tabStops] objectAtIndex: 2];      /* the 200 stop */
     [p removeTabStop: mid];
-    pass([[p tabStops] count] == 3
+    PASS([[p tabStops] count] == 3
       && eq(locAt(p, 0), 50.0) && eq(locAt(p, 1), 100.0)
       && eq(locAt(p, 2), 300.0),
       "removeTabStop: removes the stop and leaves the rest in order");
@@ -91,7 +91,7 @@ main(int argc, char **argv)
     NSMutableParagraphStyle *p = AUTORELEASE([[NSMutableParagraphStyle alloc] init]);
 
     [p setDefaultTabInterval: 36.0];
-    pass(eq([p defaultTabInterval], 36.0),
+    PASS(eq([p defaultTabInterval], 36.0),
       "setDefaultTabInterval: stores the interval");
   }
 

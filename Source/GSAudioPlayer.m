@@ -446,8 +446,9 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 	  // Apply volume
 	  int16_t *samples = (int16_t *)_audioBuffer;
 	  int sampleCount = convertedSamples * 2; // stereo
+          int i;
 
-	  for (int i = 0; i < sampleCount; ++i)
+	  for (i = 0; i < sampleCount; ++i)
 	    {
 	      if ([self isMuted])
 		{

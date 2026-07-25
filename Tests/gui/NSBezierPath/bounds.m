@@ -15,16 +15,16 @@ int main(int argc, char **argv)
   NSBezierPath *p=[[NSBezierPath alloc] init];
   NSRect r;
 
-  pass(NSIsEmptyRect([p bounds]),"empty path gives empty bounds");
+  PASS(NSIsEmptyRect([p bounds]),"empty path gives empty bounds");
 
   [p moveToPoint: NSMakePoint(100,100)];
   [p lineToPoint: NSMakePoint(150,150)];
 
-  pass(NSEqualRects([p bounds],NSMakeRect(100,100,50,50)),"bounds accuracy (1)");
-  pass(NSEqualRects([p controlPointBounds],NSMakeRect(100,100,50,50)),"control-point bounds accuracy (1)");
+  PASS(NSEqualRects([p bounds],NSMakeRect(100,100,50,50)),"bounds accuracy (1)");
+  PASS(NSEqualRects([p controlPointBounds],NSMakeRect(100,100,50,50)),"control-point bounds accuracy (1)");
 
   [p removeAllPoints];
-  pass(NSIsEmptyRect([p bounds]),"empty path gives empty bounds (2)");
+  PASS(NSIsEmptyRect([p bounds]),"empty path gives empty bounds (2)");
 
   [p moveToPoint: NSMakePoint(100,100)];
   [p curveToPoint: NSMakePoint(200,100)
@@ -38,15 +38,15 @@ int main(int argc, char **argv)
       fabs(r.size.width  - 100.0000) > 0.001 ||
       fabs(r.size.height -  28.8678) > 0.001)
     {
-      pass(0,"bounds accuracy (2)");
+      PASS(0,"bounds accuracy (2)");
       printf("expected %s, got %s\n",
 	[NSStringFromRect(NSMakeRect(100.0000, 85.5662, 100.0000, 28.8678)) lossyCString],
 	[NSStringFromRect(r) lossyCString]);
     }
   else
-    pass(1,"bounds accuracy (2)");
+    PASS(1,"bounds accuracy (2)");
 
-  pass(NSEqualRects([p controlPointBounds],NSMakeRect(100,50,100,100)),"control-point bounds accuracy (2)");
+  PASS(NSEqualRects([p controlPointBounds],NSMakeRect(100,50,100,100)),"control-point bounds accuracy (2)");
 
   /* Basic checking X. */
   [p removeAllPoints];
@@ -61,13 +61,13 @@ int main(int argc, char **argv)
       fabs(r.size.height - 100.0000) > 0.001 ||
       fabs(r.size.width  -  28.8678) > 0.001)
   {
-	  pass(0,"bounds accuracy (3)");
+	  PASS(0,"bounds accuracy (3)");
 	  printf("expected %s, got %s\n",
 		  [NSStringFromRect(NSMakeRect(85.5662, 100.0000, 28.8678, 100.0000)) lossyCString],
 		  [NSStringFromRect(r) lossyCString]);
   }
   else
-	  pass(1,"bounds accuracy (3)");
+	  PASS(1,"bounds accuracy (3)");
 
 
   /* A bit of both, and extreme values beyond the initial points. */
@@ -83,13 +83,13 @@ int main(int argc, char **argv)
       fabs(r.size.width  - 202.0) > 0.001 ||
       fabs(r.size.height -   6.0) > 0.001)
   {
-	  pass(0,"bounds accuracy (4)");
+	  PASS(0,"bounds accuracy (4)");
 	  printf("expected %s, got %s\n",
 		  [NSStringFromRect(NSMakeRect(-101.0, -3.0, 202.0, 6.0)) lossyCString],
 		  [NSStringFromRect(r) lossyCString]);
   }
   else
-	  pass(1,"bounds accuracy (4)");
+	  PASS(1,"bounds accuracy (4)");
 
 
   /* Check the control-point bounding box. */
@@ -99,13 +99,13 @@ int main(int argc, char **argv)
       fabs(r.size.width  - 236.4  ) > 0.001 ||
       fabs(r.size.height -  20.786) > 0.001)
   {
-	  pass(0,"control-point bounds accuracy (3)");
+	  PASS(0,"control-point bounds accuracy (3)");
 	  printf("expected %s, got %s\n",
 		  [NSStringFromRect(NSMakeRect(-118.2, -10.393, 236.4, 20.786)) lossyCString],
 		  [NSStringFromRect(r) lossyCString]);
   }
   else
-	  pass(1,"control-point bounds accuracy (3)");
+	  PASS(1,"control-point bounds accuracy (3)");
 
 
   /*

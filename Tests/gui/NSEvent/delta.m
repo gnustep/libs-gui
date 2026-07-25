@@ -34,9 +34,9 @@ int main()
                        eventNumber: 0
                         clickCount: 0
                           pressure: 0.0];
-  pass([ev deltaX] == 0.0, "-deltaX with NSLeftMouseDown event works");
-  pass([ev deltaY] == 0.0, "-deltaY with NSLeftMouseDown event works");
-  pass([ev deltaZ] == 0.0, "-deltaZ with NSLeftMouseDown event works");
+  PASS([ev deltaX] == 0.0, "-deltaX with NSLeftMouseDown event works");
+  PASS([ev deltaY] == 0.0, "-deltaY with NSLeftMouseDown event works");
+  PASS([ev deltaZ] == 0.0, "-deltaZ with NSLeftMouseDown event works");
 
   ev = [NSEvent keyEventWithType: NSKeyDown
                         location: NSMakePoint(0.0, 0.0)
@@ -48,9 +48,9 @@ int main()
                 charactersIgnoringModifiers: @"a"
                        isARepeat: NO
                          keyCode: 65];
-  pass([ev deltaX] == 0.0, "-deltaX with NSKeyDown event works");
-  pass([ev deltaY] == 0.0, "-deltaY with NSKeyDown event works");
-  pass([ev deltaZ] == 0.0, "-deltaZ with NSKeyDown event works");
+  PASS([ev deltaX] == 0.0, "-deltaX with NSKeyDown event works");
+  PASS([ev deltaY] == 0.0, "-deltaY with NSKeyDown event works");
+  PASS([ev deltaZ] == 0.0, "-deltaZ with NSKeyDown event works");
 
   END_SET("NSEvent GNUstep delta")
 

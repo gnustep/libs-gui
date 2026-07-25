@@ -40,40 +40,40 @@ main(int argc, char **argv)
   [cell setMaxValue: 10];
 
   /* Defaults: no tick marks, values not restricted to ticks. */
-  pass([cell numberOfTickMarks] == 0, "a new slider cell has no tick marks");
-  pass([cell allowsTickMarkValuesOnly] == NO,
+  PASS([cell numberOfTickMarks] == 0, "a new slider cell has no tick marks");
+  PASS([cell allowsTickMarkValuesOnly] == NO,
        "a new slider cell does not restrict values to ticks");
 
   /* With no tick marks the closest tick value is the value itself. */
-  pass(eq([cell closestTickMarkValueToValue: 3.7], 3.7),
+  PASS(eq([cell closestTickMarkValueToValue: 3.7], 3.7),
        "with no tick marks the value is returned unchanged");
 
   /* A single tick sits at the middle of the range. */
   [cell setNumberOfTickMarks: 1];
-  pass(eq([cell closestTickMarkValueToValue: 3.7], 5.0),
+  PASS(eq([cell closestTickMarkValueToValue: 3.7], 5.0),
        "with one tick mark the closest value is the middle of the range");
-  pass(eq([cell tickMarkValueAtIndex: 0], 5.0),
+  PASS(eq([cell tickMarkValueAtIndex: 0], 5.0),
        "the single tick mark is at the middle of the range");
 
   /* Eleven ticks over 0..10 sit at every integer. */
   [cell setNumberOfTickMarks: 11];
-  pass([cell numberOfTickMarks] == 11, "the tick mark count is stored");
+  PASS([cell numberOfTickMarks] == 11, "the tick mark count is stored");
 
-  pass(eq([cell tickMarkValueAtIndex: 0], 0.0)
+  PASS(eq([cell tickMarkValueAtIndex: 0], 0.0)
     && eq([cell tickMarkValueAtIndex: 5], 5.0)
     && eq([cell tickMarkValueAtIndex: 10], 10.0),
     "tickMarkValueAtIndex spaces the ticks evenly across the range");
 
   /* Snapping to the nearest tick. */
-  pass(eq([cell closestTickMarkValueToValue: 3.4], 3.0),
+  PASS(eq([cell closestTickMarkValueToValue: 3.4], 3.0),
        "a value just below a tick snaps down");
-  pass(eq([cell closestTickMarkValueToValue: 3.6], 4.0),
+  PASS(eq([cell closestTickMarkValueToValue: 3.6], 4.0),
        "a value just above a tick snaps up");
 
   /* Out-of-range values clamp to the end ticks. */
-  pass(eq([cell closestTickMarkValueToValue: -5.0], 0.0),
+  PASS(eq([cell closestTickMarkValueToValue: -5.0], 0.0),
        "a value below the range snaps to the first tick");
-  pass(eq([cell closestTickMarkValueToValue: 15.0], 10.0),
+  PASS(eq([cell closestTickMarkValueToValue: 15.0], 10.0),
        "a value above the range snaps to the last tick");
 
   /* tickMarkValueAtIndex: out of range raises. */
@@ -89,12 +89,12 @@ main(int argc, char **argv)
       raised = [[localException name] isEqualToString: NSRangeException];
     }
     NS_ENDHANDLER
-    pass(raised, "tickMarkValueAtIndex: out of range raises NSRangeException");
+    PASS(raised, "tickMarkValueAtIndex: out of range raises NSRangeException");
   }
 
   /* The restrict-to-ticks flag round-trips. */
   [cell setAllowsTickMarkValuesOnly: YES];
-  pass([cell allowsTickMarkValuesOnly] == YES,
+  PASS([cell allowsTickMarkValuesOnly] == YES,
        "setAllowsTickMarkValuesOnly: is stored");
 
   /* A fractional range snaps to the quarter ticks. */
@@ -104,9 +104,9 @@ main(int argc, char **argv)
     [c setMinValue: 0];
     [c setMaxValue: 1];
     [c setNumberOfTickMarks: 5];
-    pass(eq([c closestTickMarkValueToValue: 0.3], 0.25),
+    PASS(eq([c closestTickMarkValueToValue: 0.3], 0.25),
          "a value near a quarter tick snaps to it");
-    pass(eq([c closestTickMarkValueToValue: 0.4], 0.5),
+    PASS(eq([c closestTickMarkValueToValue: 0.4], 0.5),
          "a value nearer the half tick snaps to the half");
   }
 

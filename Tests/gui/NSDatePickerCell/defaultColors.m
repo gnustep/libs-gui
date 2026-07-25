@@ -23,9 +23,9 @@ int main()
   NS_ENDHANDLER
 
   cell = AUTORELEASE([[NSDatePickerCell alloc] init]);
-  pass([[cell textColor] isEqual: [NSColor controlTextColor]],
+  PASS([[cell textColor] isEqual: [NSColor controlTextColor]],
        "default textColor is controlTextColor");
-  pass([[cell backgroundColor] isEqual: [NSColor controlBackgroundColor]],
+  PASS([[cell backgroundColor] isEqual: [NSColor controlBackgroundColor]],
        "default backgroundColor is controlBackgroundColor");
 
   END_SET("NSDatePickerCell defaultColors")

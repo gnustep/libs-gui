@@ -52,9 +52,9 @@ main(int argc, char **argv)
   {
     NSMatrix *m = matrix(NSRadioModeMatrix);
 
-    pass([m allowsEmptySelection] == NO,
+    PASS([m allowsEmptySelection] == NO,
       "radio mode disallows an empty selection by default");
-    pass([m selectedCell] != nil && [m selectedRow] == 0
+    PASS([m selectedCell] != nil && [m selectedRow] == 0
       && [m selectedColumn] == 0 && [[m selectedCells] count] == 1,
       "radio mode selects the first cell automatically");
   }
@@ -64,7 +64,7 @@ main(int argc, char **argv)
     NSMatrix *m = matrix(NSRadioModeMatrix);
 
     [m selectCellAtRow: 1 column: 1];
-    pass([m selectedRow] == 1 && [m selectedColumn] == 1
+    PASS([m selectedRow] == 1 && [m selectedColumn] == 1
       && [[m selectedCells] count] == 1,
       "selecting another radio cell moves the single selection");
   }
@@ -76,13 +76,13 @@ main(int argc, char **argv)
 
     [m selectCellAtRow: 1 column: 0];
     [m deselectAllCells];
-    pass([m selectedCell] != nil && [m selectedRow] == 1
+    PASS([m selectedCell] != nil && [m selectedRow] == 1
       && [m selectedColumn] == 0,
       "deselectAllCells keeps the selection when empty selection is disallowed");
 
     [m setAllowsEmptySelection: YES];
     [m deselectAllCells];
-    pass([m selectedCell] == nil && [m selectedRow] == -1
+    PASS([m selectedCell] == nil && [m selectedRow] == -1
       && [m selectedColumn] == -1 && [[m selectedCells] count] == 0,
       "deselectAllCells clears the selection once empty selection is allowed");
   }
@@ -91,10 +91,10 @@ main(int argc, char **argv)
   {
     NSMatrix *m = matrix(NSRadioModeMatrix);
 
-    pass([m selectCellWithTag: 13] == YES
+    PASS([m selectCellWithTag: 13] == YES
       && [m selectedRow] == 1 && [m selectedColumn] == 1,
       "selectCellWithTag: selects the cell carrying the tag");
-    pass([m selectCellWithTag: 99] == NO,
+    PASS([m selectCellWithTag: 99] == NO,
       "selectCellWithTag: returns NO for an unknown tag");
   }
 
@@ -102,7 +102,7 @@ main(int argc, char **argv)
   {
     NSMatrix *m = matrix(NSListModeMatrix);
 
-    pass([m selectedCell] == nil && [[m selectedCells] count] == 0,
+    PASS([m selectedCell] == nil && [[m selectedCells] count] == 0,
       "list mode starts with no selection");
   }
 
@@ -111,9 +111,9 @@ main(int argc, char **argv)
     NSMatrix *m = matrix(NSListModeMatrix);
 
     [m selectAll: nil];
-    pass([[m selectedCells] count] == 4, "selectAll: selects every cell");
+    PASS([[m selectedCells] count] == 4, "selectAll: selects every cell");
     [m deselectAllCells];
-    pass([[m selectedCells] count] == 0
+    PASS([[m selectedCells] count] == 0
       && [m selectedCell] == nil,
       "deselectAllCells clears the list selection");
   }
@@ -123,7 +123,7 @@ main(int argc, char **argv)
     NSMatrix *m = matrix(NSRadioModeMatrix);
 
     [m selectAll: nil];
-    pass([[m selectedCells] count] == 1,
+    PASS([[m selectedCells] count] == 1,
       "selectAll: does not select multiple cells in radio mode");
   }
 

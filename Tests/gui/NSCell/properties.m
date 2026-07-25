@@ -32,23 +32,23 @@ int main()
   }
   NS_ENDHANDLER
 
-  imgCell = [[NSImageCell alloc] initImageCell:nil];
-  pass([imgCell refusesFirstResponder] == YES, "NSImageCell initImageCell refusesFirstResponder");
+  imgCell = AUTORELEASE([[NSImageCell alloc] initImageCell:nil]);
+  PASS([imgCell refusesFirstResponder] == YES, "NSImageCell initImageCell refusesFirstResponder");
 
-  cell = [[NSCell alloc] initImageCell:nil];
-  pass([cell refusesFirstResponder] == NO, "NSCell initImageCell refusesFirstResponder");
+  cell = AUTORELEASE([[NSCell alloc] initImageCell:nil]);
+  PASS([cell refusesFirstResponder] == NO, "NSCell initImageCell refusesFirstResponder");
 
-  buttCell = [[NSButtonCell alloc] init];
-  pass([buttCell refusesFirstResponder] == NO, "NSButtonCell init refusesFirstResponder");
+  buttCell = AUTORELEASE([[NSButtonCell alloc] init]);
+  PASS([buttCell refusesFirstResponder] == NO, "NSButtonCell init refusesFirstResponder");
 
-  tfCell = [[NSTextFieldCell alloc] initTextCell:@""];
-  pass([tfCell refusesFirstResponder] == NO, "NSTextFieldCell initTextCell refusesFirstResponder");
+  tfCell = AUTORELEASE([[NSTextFieldCell alloc] initTextCell:@""]);
+  PASS([tfCell refusesFirstResponder] == NO, "NSTextFieldCell initTextCell refusesFirstResponder");
 
-  actCell = [[NSActionCell alloc] init];
-  pass([actCell refusesFirstResponder] == NO, "NSActionCell init refusesFirstResponder");
+  actCell = AUTORELEASE([[NSActionCell alloc] init]);
+  PASS([actCell refusesFirstResponder] == NO, "NSActionCell init refusesFirstResponder");
 
-  cell = [[NSCell alloc] init];
-  pass([cell refusesFirstResponder] == NO, "NSCell init refusesFirstResponder");
+  cell = AUTORELEASE([[NSCell alloc] init]);
+  PASS([cell refusesFirstResponder] == NO, "NSCell init refusesFirstResponder");
 
   END_SET("NSCell RefusesResponder")
 

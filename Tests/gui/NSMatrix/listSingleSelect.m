@@ -37,9 +37,9 @@ main(int argc, char **argv)
 
     [m selectCellAtRow: 0 column: 1];
     [m selectCellAtRow: 1 column: 0];
-    pass([[m selectedCells] count] == 1,
+    PASS([[m selectedCells] count] == 1,
       "selectCellAtRow:column: keeps a single selection in list mode");
-    pass([m selectedRow] == 1 && [m selectedColumn] == 0,
+    PASS([m selectedRow] == 1 && [m selectedColumn] == 0,
       "the last selected cell is the selected one");
   }
 

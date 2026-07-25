@@ -766,8 +766,8 @@ If a text view is added to an empty text network, it keeps its attributes.
   _tf.allows_undo = NO;
   _tf.smart_insert_delete = YES;
   _tf.uses_find_panel = NO;
-  _tf.accepts_glyph_info = NO;
-  _tf.allows_document_background_color_change = YES;
+  _tf.accepts_glyph_info = YES;
+  _tf.allows_document_background_color_change = NO;
 
   _dragTargetLocation = NSNotFound;
 

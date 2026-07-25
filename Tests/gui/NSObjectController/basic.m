@@ -30,7 +30,7 @@ main(int argc, char **argv)
   START_SET("newObject")
     NSObjectController	*oc = AUTORELEASE([[NSObjectController alloc] init]);
 
-    PASS([[oc newObject] isKindOfClass: [NSMutableDictionary class]],
+    PASS([AUTORELEASE([oc newObject]) isKindOfClass: [NSMutableDictionary class]],
       "newObject makes an instance of the object class");
   END_SET("newObject")
 

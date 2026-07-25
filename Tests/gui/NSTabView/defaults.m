@@ -29,31 +29,31 @@ int main()
       tv = AUTORELEASE([[NSTabView alloc]
         initWithFrame: NSMakeRect(0, 0, 200, 200)]);
 
-      pass([tv tabViewType] == NSTopTabsBezelBorder,
+      PASS([tv tabViewType] == NSTopTabsBezelBorder,
            "the default tab view type is NSTopTabsBezelBorder");
-      pass([tv font] != nil, "a tab view has a font");
-      pass([tv controlSize] == NSRegularControlSize,
+      PASS([tv font] != nil, "a tab view has a font");
+      PASS([tv controlSize] == NSRegularControlSize,
            "the default control size is regular");
-      pass([tv controlTint] == NSDefaultControlTint,
+      PASS([tv controlTint] == NSDefaultControlTint,
            "the default control tint is the default tint");
 
       [tv setTabViewType: NSNoTabsNoBorder];
-      pass([tv tabViewType] == NSNoTabsNoBorder, "tabViewType round-trips");
+      PASS([tv tabViewType] == NSNoTabsNoBorder, "tabViewType round-trips");
 
       [tv setDrawsBackground: YES];
-      pass([tv drawsBackground] == YES, "drawsBackground round-trips to YES");
+      PASS([tv drawsBackground] == YES, "drawsBackground round-trips to YES");
       [tv setDrawsBackground: NO];
-      pass([tv drawsBackground] == NO, "drawsBackground round-trips to NO");
+      PASS([tv drawsBackground] == NO, "drawsBackground round-trips to NO");
 
       [tv setAllowsTruncatedLabels: YES];
-      pass([tv allowsTruncatedLabels] == YES,
+      PASS([tv allowsTruncatedLabels] == YES,
            "allowsTruncatedLabels round-trips to YES");
       [tv setAllowsTruncatedLabels: NO];
-      pass([tv allowsTruncatedLabels] == NO,
+      PASS([tv allowsTruncatedLabels] == NO,
            "allowsTruncatedLabels round-trips to NO");
 
       [tv setFont: [NSFont boldSystemFontOfSize: 12]];
-      pass([[tv font] isEqual: [NSFont boldSystemFontOfSize: 12]],
+      PASS([[tv font] isEqual: [NSFont boldSystemFontOfSize: 12]],
            "font round-trips");
     }
   NS_HANDLER

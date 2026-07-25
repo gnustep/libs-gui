@@ -26,8 +26,9 @@ int main(int argc, char **argv)
   NSColor	*blue = rgb(0, 0, 1);
 
   START_SET("initWithColorsAndLocations records the given locations")
-    NSGradient	*g = [[NSGradient alloc] initWithColorsAndLocations:
-      red, (CGFloat)0.0, green, (CGFloat)0.2, blue, (CGFloat)1.0, nil];
+    NSGradient	*g = AUTORELEASE((
+      [[NSGradient alloc] initWithColorsAndLocations:
+      red, (CGFloat)0.0, green, (CGFloat)0.2, blue, (CGFloat)1.0, nil]));
     NSColor	*c = nil;
     CGFloat	loc = -1;
 
@@ -40,8 +41,9 @@ int main(int argc, char **argv)
   END_SET("initWithColorsAndLocations records the given locations")
 
   START_SET("interpolation across unequal segments")
-    NSGradient	*g = [[NSGradient alloc] initWithColorsAndLocations:
-      red, (CGFloat)0.0, green, (CGFloat)0.2, blue, (CGFloat)1.0, nil];
+    NSGradient	*g = AUTORELEASE((
+      [[NSGradient alloc] initWithColorsAndLocations:
+      red, (CGFloat)0.0, green, (CGFloat)0.2, blue, (CGFloat)1.0, nil]));
     NSColor	*c;
 
     /* Inside the first segment (0.0 to 0.2) the colour is a mix of red and
@@ -69,8 +71,9 @@ int main(int argc, char **argv)
   END_SET("interpolation across unequal segments")
 
   START_SET("clamping when the stops do not span 0 to 1")
-    NSGradient	*g = [[NSGradient alloc] initWithColorsAndLocations:
-      red, (CGFloat)0.25, blue, (CGFloat)0.75, nil];
+    NSGradient	*g = AUTORELEASE((
+      [[NSGradient alloc] initWithColorsAndLocations:
+      red, (CGFloat)0.25, blue, (CGFloat)0.75, nil]));
     NSColor	*c;
 
     /* A location below the first stop clamps to the first colour even though
@@ -90,10 +93,10 @@ int main(int argc, char **argv)
 
   START_SET("initWithColors:atLocations:colorSpace: honours the locations")
     CGFloat	locations[3] = { 0.0, 0.75, 1.0 };
-    NSGradient	*g = [[NSGradient alloc] initWithColors:
-      [NSArray arrayWithObjects: red, green, blue, nil]
+    NSGradient	*g = AUTORELEASE([[NSGradient alloc] initWithColors:
+      ([NSArray arrayWithObjects: red, green, blue, nil])
       atLocations: locations
-      colorSpace: nil];
+      colorSpace: nil]);
     CGFloat	loc = -1;
     NSColor	*c;
 

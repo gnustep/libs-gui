@@ -68,8 +68,8 @@ int main(int argc, char **argv)
 
 	[text beginEditing];
 	[text appendAttributedString:
-		[[NSAttributedString alloc] initWithString:
-			[NSString stringWithCharacters: chars length: 4]]];
+		AUTORELEASE([[NSAttributedString alloc] initWithString:
+			[NSString stringWithCharacters: chars length: 4]])];
 	[text addAttribute: NSAttachmentAttributeName
 		value: ta
 		range: NSMakeRange(3,1)];

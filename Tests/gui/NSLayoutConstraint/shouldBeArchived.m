@@ -39,13 +39,13 @@ int main()
                                    attribute: NSLayoutAttributeWidth
                                   multiplier: 1.0
                                     constant: 5.0];
-  pass([c respondsToSelector: @selector(shouldBeArchived)],
+  PASS([c respondsToSelector: @selector(shouldBeArchived)],
        "responds to -shouldBeArchived");
   if ([c respondsToSelector: @selector(shouldBeArchived)])
     {
-      pass([c shouldBeArchived] == NO, "default shouldBeArchived is NO");
+      PASS([c shouldBeArchived] == NO, "default shouldBeArchived is NO");
       [c setShouldBeArchived: YES];
-      pass([c shouldBeArchived] == YES, "shouldBeArchived round-trips");
+      PASS([c shouldBeArchived] == YES, "shouldBeArchived round-trips");
     }
 
   END_SET("NSLayoutConstraint shouldBeArchived")

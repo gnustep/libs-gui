@@ -41,26 +41,26 @@ main(int argc, char **argv)
                                   numberOfColumns: 3]);
 
     /* Dimensions and cells from the prototype. */
-    pass([m numberOfRows] == 2 && [m numberOfColumns] == 3,
+    PASS([m numberOfRows] == 2 && [m numberOfColumns] == 3,
       "the matrix has the requested dimensions");
-    pass([[m prototype] isKindOfClass: [NSButtonCell class]],
+    PASS([[m prototype] isKindOfClass: [NSButtonCell class]],
       "the prototype is the given cell");
-    pass([[m cellAtRow: 0 column: 0] isKindOfClass: [NSButtonCell class]],
+    PASS([[m cellAtRow: 0 column: 0] isKindOfClass: [NSButtonCell class]],
       "cells are built from the prototype");
 
     /* Adding rows and columns. */
     [m addRow];
     [m addColumn];
-    pass([m numberOfRows] == 3 && [m numberOfColumns] == 4,
+    PASS([m numberOfRows] == 3 && [m numberOfColumns] == 4,
       "addRow and addColumn grow the grid");
 
     /* Inserting and removing. */
     [m insertRow: 1];
-    pass([m numberOfRows] == 4, "insertRow: adds a row");
+    PASS([m numberOfRows] == 4, "insertRow: adds a row");
     [m removeRow: 0];
-    pass([m numberOfRows] == 3, "removeRow: removes a row");
+    PASS([m numberOfRows] == 3, "removeRow: removes a row");
     [m removeColumn: 0];
-    pass([m numberOfColumns] == 3, "removeColumn: removes a column");
+    PASS([m numberOfColumns] == 3, "removeColumn: removes a column");
 
     /* Locating a cell by its position. */
     {
@@ -68,21 +68,21 @@ main(int argc, char **argv)
       NSInteger row = -1, col = -1;
       BOOL found = [m getRow: &row column: &col ofCell: cell];
 
-      pass(found && row == 1 && col == 2,
+      PASS(found && row == 1 && col == 2,
         "getRow:column:ofCell: reports the cell's position");
     }
 
     /* Locating a cell by tag. */
     [[m cellAtRow: 0 column: 0] setTag: 77];
-    pass([m cellWithTag: 77] == [m cellAtRow: 0 column: 0],
+    PASS([m cellWithTag: 77] == [m cellAtRow: 0 column: 0],
       "cellWithTag: finds the tagged cell");
-    pass([m cellWithTag: 99] == nil, "cellWithTag: returns nil for an absent tag");
+    PASS([m cellWithTag: 99] == nil, "cellWithTag: returns nil for an absent tag");
 
     /* Cell size and mode. */
     [m setCellSize: NSMakeSize(40.0, 18.0)];
-    pass(NSEqualSizes([m cellSize], NSMakeSize(40.0, 18.0)), "setCellSize: round trips");
+    PASS(NSEqualSizes([m cellSize], NSMakeSize(40.0, 18.0)), "setCellSize: round trips");
     [m setMode: NSRadioModeMatrix];
-    pass([m mode] == NSRadioModeMatrix, "setMode: round trips");
+    PASS([m mode] == NSRadioModeMatrix, "setMode: round trips");
 
     /* Replacing a cell. */
     {
@@ -90,7 +90,7 @@ main(int argc, char **argv)
 
       [repl setTag: 555];
       [m putCell: repl atRow: 0 column: 0];
-      pass([[m cellAtRow: 0 column: 0] tag] == 555,
+      PASS([[m cellAtRow: 0 column: 0] tag] == 555,
         "putCell:atRow:column: replaces the cell");
     }
   }
@@ -100,7 +100,7 @@ main(int argc, char **argv)
     NSMatrix *m = AUTORELEASE([[NSMatrix alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)]);
 
     [m setCellClass: [NSButtonCell class]];
-    pass([m cellClass] == [NSButtonCell class], "setCellClass: sets the cell class");
+    PASS([m cellClass] == [NSButtonCell class], "setCellClass: sets the cell class");
   }
 
   END_SET("NSMatrix grid")

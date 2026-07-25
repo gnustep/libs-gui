@@ -50,36 +50,36 @@ int main()
       [tv addTabViewItem: c];
 
       /* the selected item is NSSelectedTab, the others NSBackgroundTab */
-      pass([a tabState] == NSSelectedTab,
+      PASS([a tabState] == NSSelectedTab,
            "the selected item's tabState is NSSelectedTab");
-      pass([b tabState] == NSBackgroundTab,
+      PASS([b tabState] == NSBackgroundTab,
            "an unselected item's tabState is NSBackgroundTab");
 
       [tv selectTabViewItemAtIndex: 2];
-      pass([tv selectedTabViewItem] == c,
+      PASS([tv selectedTabViewItem] == c,
            "selectTabViewItemAtIndex: 2 selects c");
-      pass([c tabState] == NSSelectedTab, "c becomes NSSelectedTab");
-      pass([a tabState] == NSBackgroundTab,
+      PASS([c tabState] == NSSelectedTab, "c becomes NSSelectedTab");
+      PASS([a tabState] == NSBackgroundTab,
            "the previously selected a returns to NSBackgroundTab");
 
       [tv selectFirstTabViewItem: nil];
-      pass([tv selectedTabViewItem] == a, "selectFirstTabViewItem: selects a");
+      PASS([tv selectedTabViewItem] == a, "selectFirstTabViewItem: selects a");
       [tv selectLastTabViewItem: nil];
-      pass([tv selectedTabViewItem] == c, "selectLastTabViewItem: selects c");
+      PASS([tv selectedTabViewItem] == c, "selectLastTabViewItem: selects c");
 
       [tv selectFirstTabViewItem: nil];
       [tv selectNextTabViewItem: nil];
-      pass([tv selectedTabViewItem] == b,
+      PASS([tv selectedTabViewItem] == b,
            "selectNextTabViewItem: moves from a to b");
       [tv selectPreviousTabViewItem: nil];
-      pass([tv selectedTabViewItem] == a,
+      PASS([tv selectedTabViewItem] == a,
            "selectPreviousTabViewItem: moves from b to a");
 
       /* removing the selected item leaves a valid selection */
       [tv selectTabViewItemAtIndex: 1];
       [tv removeTabViewItem: b];
-      pass([tv numberOfTabViewItems] == 2, "the item count drops after remove");
-      pass([tv selectedTabViewItem] != nil,
+      PASS([tv numberOfTabViewItems] == 2, "the item count drops after remove");
+      PASS([tv selectedTabViewItem] != nil,
            "a selection survives removing the selected item");
     }
   NS_HANDLER

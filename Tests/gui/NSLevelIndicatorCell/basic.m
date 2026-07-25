@@ -35,13 +35,13 @@ int main()
 
   /* init defaults (AppKit: min 0, max 5, warning/critical/value 0, no ticks) */
   cell = AUTORELEASE([[NSLevelIndicatorCell alloc] init]);
-  pass([cell minValue] == 0.0, "default minValue is 0");
-  pass([cell maxValue] == 5.0, "default maxValue is 5");
-  pass([cell warningValue] == 0.0, "default warningValue is 0");
-  pass([cell criticalValue] == 0.0, "default criticalValue is 0");
-  pass([cell doubleValue] == 0.0, "default value is 0");
-  pass([cell numberOfTickMarks] == 0, "default numberOfTickMarks is 0");
-  pass([cell numberOfMajorTickMarks] == 0, "default numberOfMajorTickMarks is 0");
+  PASS([cell minValue] == 0.0, "default minValue is 0");
+  PASS([cell maxValue] == 5.0, "default maxValue is 5");
+  PASS([cell warningValue] == 0.0, "default warningValue is 0");
+  PASS([cell criticalValue] == 0.0, "default criticalValue is 0");
+  PASS([cell doubleValue] == 0.0, "default value is 0");
+  PASS([cell numberOfTickMarks] == 0, "default numberOfTickMarks is 0");
+  PASS([cell numberOfMajorTickMarks] == 0, "default numberOfMajorTickMarks is 0");
 
   /* per-style default maxValue: capacity/relevancy 100, discrete/rating 5 */
   styles[0] = NSRelevancyLevelIndicatorStyle;         maxes[0] = 100.0;
@@ -53,7 +53,7 @@ int main()
       NSLevelIndicatorCell *s =
           AUTORELEASE([[NSLevelIndicatorCell alloc]
                         initWithLevelIndicatorStyle: styles[i]]);
-      pass([s minValue] == 0.0 && [s maxValue] == maxes[i]
+      PASS([s minValue] == 0.0 && [s maxValue] == maxes[i]
              && [s doubleValue] == 0.0,
            "style %d default is min 0, max %g, value 0", (int)styles[i], maxes[i]);
     }
@@ -66,21 +66,21 @@ int main()
   [cell setCriticalValue: 9.25];
   [cell setNumberOfTickMarks: 9];
   [cell setNumberOfMajorTickMarks: 3];
-  pass([cell minValue] == 1.0, "minValue round-trips");
-  pass([cell maxValue] == 20.0, "maxValue round-trips");
-  pass([cell warningValue] == 7.5, "warningValue round-trips");
-  pass([cell criticalValue] == 9.25, "criticalValue round-trips");
-  pass([cell numberOfTickMarks] == 9, "numberOfTickMarks round-trips");
-  pass([cell numberOfMajorTickMarks] == 3, "numberOfMajorTickMarks round-trips");
+  PASS([cell minValue] == 1.0, "minValue round-trips");
+  PASS([cell maxValue] == 20.0, "maxValue round-trips");
+  PASS([cell warningValue] == 7.5, "warningValue round-trips");
+  PASS([cell criticalValue] == 9.25, "criticalValue round-trips");
+  PASS([cell numberOfTickMarks] == 9, "numberOfTickMarks round-trips");
+  PASS([cell numberOfMajorTickMarks] == 3, "numberOfMajorTickMarks round-trips");
 
   /* the cell value is not clamped to [min,max] (matches AppKit) */
   cell = AUTORELEASE([[NSLevelIndicatorCell alloc] init]);
   [cell setMinValue: 2.0];
   [cell setMaxValue: 8.0];
   [cell setDoubleValue: 100.0];
-  pass([cell doubleValue] == 100.0, "value above max is not clamped");
+  PASS([cell doubleValue] == 100.0, "value above max is not clamped");
   [cell setDoubleValue: -100.0];
-  pass([cell doubleValue] == -100.0, "value below min is not clamped");
+  PASS([cell doubleValue] == -100.0, "value below min is not clamped");
 
   /* moving min/max past the current value does not re-clamp it */
   cell = AUTORELEASE([[NSLevelIndicatorCell alloc] init]);
@@ -88,16 +88,16 @@ int main()
   [cell setMaxValue: 10.0];
   [cell setDoubleValue: 5.0];
   [cell setMaxValue: 3.0];
-  pass([cell doubleValue] == 5.0, "lowering max does not re-clamp the value");
+  PASS([cell doubleValue] == 5.0, "lowering max does not re-clamp the value");
   [cell setMinValue: 4.0];
-  pass([cell doubleValue] == 5.0, "raising min does not re-clamp the value");
+  PASS([cell doubleValue] == 5.0, "raising min does not re-clamp the value");
 
   /* tickMarkValueAtIndex: the first tick is the minimum value */
   cell = AUTORELEASE([[NSLevelIndicatorCell alloc] init]);
   [cell setMinValue: 0.0];
   [cell setMaxValue: 10.0];
   [cell setNumberOfTickMarks: 11];
-  pass([cell tickMarkValueAtIndex: 0] == 0.0,
+  PASS([cell tickMarkValueAtIndex: 0] == 0.0,
        "tickMarkValueAtIndex: 0 is the minimum value");
 
   /* out-of-range and negative tick indices raise NSRangeException */
@@ -107,7 +107,7 @@ int main()
   NS_HANDLER
     raised = [[localException name] isEqualToString: NSRangeException];
   NS_ENDHANDLER
-  pass(raised, "tickMarkValueAtIndex: past the last tick raises NSRangeException");
+  PASS(raised, "tickMarkValueAtIndex: past the last tick raises NSRangeException");
 
   raised = NO;
   NS_DURING
@@ -115,7 +115,7 @@ int main()
   NS_HANDLER
     raised = [[localException name] isEqualToString: NSRangeException];
   NS_ENDHANDLER
-  pass(raised, "tickMarkValueAtIndex: a negative index raises NSRangeException");
+  PASS(raised, "tickMarkValueAtIndex: a negative index raises NSRangeException");
 
   END_SET("NSLevelIndicatorCell basic")
 

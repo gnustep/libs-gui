@@ -831,7 +831,7 @@ static float menuBarHeight = 0.0;
               NSMenuItemCell *msr;
 
               msr = [r menuItemCellForItemAtIndex:
-                [m indexOfItemWithTitle: [_attachedMenu title]]];
+                [m indexOfItemWithSubmenu: _attachedMenu]];
               neededImageAndTitleWidth
                 = [msr titleWidth] + GSCellTextImageXDist;
             }
@@ -969,10 +969,15 @@ static float menuBarHeight = 0.0;
           _keyEqOffset = _cellSize.width - _keyEqWidth - popupImageWidth;
         }
 
-      [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
-                                     [self totalHeight] 
+      NSEdgeInsets insets = [[GSTheme theme] menuItemAreaInsets];
+
+      [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset
+                                     + insets.left + insets.right,
+                                     [self totalHeight]
+                                     + insets.top + insets.bottom
                                      + menuBarHeight)];
-      [_titleView setFrame: NSMakeRect (0, [self totalHeight],
+      [_titleView setFrame: NSMakeRect (0, [self totalHeight]
+                                        + insets.top + insets.bottom,
                                         NSWidth (_bounds), menuBarHeight)];
     }
   _needsSizing = NO;
@@ -1069,9 +1074,10 @@ static float menuBarHeight = 0.0;
   else
     {
       NSRect theRect;
+      NSEdgeInsets insets = [[GSTheme theme] menuItemAreaInsets];
 
-      theRect.origin.y	= [self yOriginForItem: index];
-      theRect.origin.x = _leftBorderOffset;
+      theRect.origin.y	= [self yOriginForItem: index] + insets.bottom;
+      theRect.origin.x = _leftBorderOffset + insets.left;
       theRect.size = _cellSize;
       theRect.size.height = [self heightForItem: index];
 

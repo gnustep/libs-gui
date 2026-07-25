@@ -66,9 +66,9 @@
                                forFont: (NSFont *)font
                             baseString: (NSString *)string
 {
-  return [[NSGlyphInfo alloc] initWithCGGlyph: glyph
-                                      forFont: font
-                                   baseString: string];
+  return AUTORELEASE([[NSGlyphInfo alloc] initWithCGGlyph: glyph
+						  forFont: font
+					       baseString: string]);
 }
 
 - (NSString *) baseString

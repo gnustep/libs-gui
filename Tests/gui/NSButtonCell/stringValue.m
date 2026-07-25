@@ -30,12 +30,12 @@ main(int argc, char **argv)
   cell = AUTORELEASE([[NSButtonCell alloc] init]);
 
   [cell setState: NSOnState];
-  pass([[cell stringValue] isEqualToString: @"1"], "an on cell has string value 1");
+  PASS([[cell stringValue] isEqualToString: @"1"], "an on cell has string value 1");
   [cell setState: NSOffState];
-  pass([[cell stringValue] isEqualToString: @"0"], "an off cell has string value 0");
+  PASS([[cell stringValue] isEqualToString: @"0"], "an off cell has string value 0");
   [cell setAllowsMixedState: YES];
   [cell setState: NSMixedState];
-  pass([[cell stringValue] isEqualToString: @"-1"], "a mixed cell has string value -1");
+  PASS([[cell stringValue] isEqualToString: @"-1"], "a mixed cell has string value -1");
 
   END_SET("NSButtonCell stringValue")
 
