@@ -73,6 +73,7 @@ static Class defaultCellClass = nil;
     return nil;
 
   [self setIntercellSpacing: NSMakeSize (0, 4)];
+  [self setTabKeyTraversesCells: YES];
   return self;
 }
 
@@ -90,7 +91,8 @@ static Class defaultCellClass = nil;
   if (nil == self)
     return nil;
 
-  [self setIntercellSpacing: NSMakeSize (0, 4)];  
+  [self setIntercellSpacing: NSMakeSize (0, 4)];
+  [self setTabKeyTraversesCells: YES];
   return self;
 }
 
