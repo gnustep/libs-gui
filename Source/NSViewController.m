@@ -69,6 +69,11 @@ static void *viewControllerAssociationKey = &viewControllerAssociationKey;
   return self;
 }
 
+- (instancetype) init
+{
+  return [self initWithNibName: nil bundle: nil];
+}
+
 - (void) dealloc
 {
   // View Controllers are expect to release their own top-level objects
@@ -81,7 +86,7 @@ static void *viewControllerAssociationKey = &viewControllerAssociationKey;
   DESTROY(_editors);
   DESTROY(_autounbinder);
   DESTROY(_designNibBundleIdentifier);
-  DESTROY(view);
+  [self setView: nil];
   DESTROY(_segueMap);
 
   [super dealloc];

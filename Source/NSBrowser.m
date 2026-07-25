@@ -875,11 +875,6 @@ static BOOL browserUseBezels;
     {
       id cell = [self selectedCellInColumn: i];
 
-      if (i != 0)
-	{
-	  [separator appendString: _pathSeparator];
-	}
-
       string = [cell stringValue];
 
       if (string == nil)
@@ -888,10 +883,12 @@ static BOOL browserUseBezels;
 	     doesn't make sense to go with the path */
 	  break;
 	}
-      else
+
+      if (i != 0)
 	{
-	  [separator appendString: string];
+	  [separator appendString: _pathSeparator];
 	}
+      [separator appendString: string];
     }
   /*
    * We actually return a mutable string, but that's ok since a mutable

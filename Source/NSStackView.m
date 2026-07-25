@@ -443,16 +443,19 @@
 
 // Instance methods
 // Manage views...
-- (instancetype) initWithViews: (NSArray *)views
+- (instancetype) initWithFrame: (NSRect)frameRect
 {
-  self = [super init];
+  self = [super initWithFrame: frameRect];
   if (self != nil)
     {
-      NSUInteger c = [views count];
-      
-      _arrangedSubviews = [[NSMutableArray alloc] initWithArray: views];
-      _detachedViews = [[NSMutableArray alloc] initWithCapacity: c];
-      ASSIGNCOPY(_views, views);
+      _distribution = NSStackViewDistributionGravityAreas;
+      _spacing = 8.0;
+      _detachesHiddenViews = YES;
+      _alignment = NSLayoutAttributeCenterY;
+
+      _arrangedSubviews = [[NSMutableArray alloc] init];
+      _detachedViews = [[NSMutableArray alloc] init];
+      _views = [[NSMutableArray alloc] init];
       _customSpacingMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
       _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
 
@@ -460,6 +463,19 @@
       _beginningContainer = nil;
       _middleContainer = nil;
       _endContainer = nil;
+
+      [self _refreshView];
+    }
+  return self;
+}
+
+- (instancetype) initWithViews: (NSArray *)views
+{
+  self = [self initWithFrame: NSZeroRect];
+  if (self != nil)
+    {
+      [_arrangedSubviews addObjectsFromArray: views];
+      ASSIGNCOPY(_views, views);
 
       [self _refreshView];
     }
@@ -796,6 +812,12 @@
   self = [super initWithCoder: coder];
   if (self != nil)
     {
+      _arrangedSubviews = [[NSMutableArray alloc] init];
+      _detachedViews = [[NSMutableArray alloc] init];
+      _views = [[NSMutableArray alloc] init];
+      _customSpacingMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+      _visiblePriorityMap = RETAIN([NSMapTable weakToWeakObjectsMapTable]);
+
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSStackViewAlignment"])

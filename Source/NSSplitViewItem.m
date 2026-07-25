@@ -24,7 +24,10 @@
 
 #import <Foundation/NSArchiver.h>
 #import "AppKit/NSSplitViewItem.h"
+#import "AppKit/NSLayoutConstraint.h"
 #import "AppKit/NSViewController.h"
+
+const CGFloat NSSplitViewItemUnspecifiedDimension = -1.0;
 
 @implementation NSSplitViewItem
 - (instancetype) initWithViewController: (NSViewController *)viewController
@@ -32,6 +35,12 @@
   self = [super init];
   if (self != nil)
     {
+      _automaticMaximumThickness = NSSplitViewItemUnspecifiedDimension;
+      _preferredThicknessFraction = NSSplitViewItemUnspecifiedDimension;
+      _minimumThickness = NSSplitViewItemUnspecifiedDimension;
+      _maximumThickness = NSSplitViewItemUnspecifiedDimension;
+      _holdingPriority = NSLayoutPriorityDefaultLow;
+      _allowsFullHeightLayout = YES;
       ASSIGN(_viewController, viewController);
     }
   return self;
@@ -162,6 +171,19 @@
         {
           _viewController = [coder decodeObjectForKey: @"NSSplitViewItemViewController"];
         }
+      _automaticMaximumThickness =
+        [coder decodeDoubleForKey: @"NSAutomaticMaximumThickness"];
+      _preferredThicknessFraction =
+        [coder decodeDoubleForKey: @"NSPreferredThicknessFraction"];
+      _minimumThickness = [coder decodeDoubleForKey: @"NSMinimumThickness"];
+      _maximumThickness = [coder decodeDoubleForKey: @"NSMaximumThickness"];
+      _holdingPriority = [coder decodeDoubleForKey: @"NSHoldingPriority"];
+      _collapseBehavior = [coder decodeIntegerForKey: @"NSCollapseBehavior"];
+      _titlebarSeparatorStyle =
+        [coder decodeIntegerForKey: @"NSTitlebarSeparatorStyle"];
+      _springLoaded = [coder decodeBoolForKey: @"NSSpringLoaded"];
+      _allowsFullHeightLayout =
+        [coder decodeBoolForKey: @"NSAllowsFullHeightLayout"];
     }
   return self;
 }
@@ -172,6 +194,19 @@
     {
       [coder encodeObject: _viewController
                    forKey: @"NSSplitViewItemViewController"];
+      [coder encodeDouble: _automaticMaximumThickness
+                   forKey: @"NSAutomaticMaximumThickness"];
+      [coder encodeDouble: _preferredThicknessFraction
+                   forKey: @"NSPreferredThicknessFraction"];
+      [coder encodeDouble: _minimumThickness forKey: @"NSMinimumThickness"];
+      [coder encodeDouble: _maximumThickness forKey: @"NSMaximumThickness"];
+      [coder encodeDouble: _holdingPriority forKey: @"NSHoldingPriority"];
+      [coder encodeInteger: _collapseBehavior forKey: @"NSCollapseBehavior"];
+      [coder encodeInteger: _titlebarSeparatorStyle
+                    forKey: @"NSTitlebarSeparatorStyle"];
+      [coder encodeBool: _springLoaded forKey: @"NSSpringLoaded"];
+      [coder encodeBool: _allowsFullHeightLayout
+                 forKey: @"NSAllowsFullHeightLayout"];
     }
 }
 

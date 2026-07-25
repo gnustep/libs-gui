@@ -663,6 +663,11 @@ static NSString *_placeholderItem = nil;
   while ((index = [_selectionIndexes indexGreaterThanIndex: index]) !=
 	 NSNotFound)
     {
+      if (index >= [_items count])
+	{
+	  break;
+	}
+
       id item = [_items objectAtIndex: index];
       if ([item respondsToSelector: @selector(setSelected:)])
 	{

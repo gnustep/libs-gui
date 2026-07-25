@@ -29,6 +29,8 @@
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
 
+@class NSDictionary, NSMutableDictionary;
+
 APPKIT_EXPORT_CLASS
 @interface NSDictionaryControllerKeyValuePair : NSObject
 {

@@ -89,6 +89,39 @@ static Class cellClass;
   return cellClass;
 }
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
++ (instancetype) sliderWithTarget: (id)target
+                           action: (SEL)action
+{
+  NSSlider *slider = AUTORELEASE([[self alloc]
+    initWithFrame: NSMakeRect(0, 0, 100, 20)]);
+
+  [slider setMinValue: 0.0];
+  [slider setMaxValue: 1.0];
+  [slider setDoubleValue: 0.0];
+  [slider setTarget: target];
+  [slider setAction: action];
+  return slider;
+}
+
++ (instancetype) sliderWithValue: (double)value
+                        minValue: (double)minValue
+                        maxValue: (double)maxValue
+                          target: (id)target
+                          action: (SEL)action
+{
+  NSSlider *slider = AUTORELEASE([[self alloc]
+    initWithFrame: NSMakeRect(0, 0, 100, 20)]);
+
+  [slider setMinValue: minValue];
+  [slider setMaxValue: maxValue];
+  [slider setDoubleValue: value];
+  [slider setTarget: target];
+  [slider setAction: action];
+  return slider;
+}
+#endif
+
 - (id) initWithFrame: (NSRect)frameRect
 {
   self = [super initWithFrame: frameRect];

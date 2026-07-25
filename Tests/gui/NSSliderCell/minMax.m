@@ -25,7 +25,7 @@ int main()
   }
   NS_ENDHANDLER
 
-  cell = [[NSSliderCell alloc] init];
+  cell = AUTORELEASE([[NSSliderCell alloc] init]);
 
   PASS([cell isContinuous], "slider continuous by default");
 

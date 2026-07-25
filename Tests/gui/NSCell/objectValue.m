@@ -25,7 +25,7 @@ int main()
        SKIP("It looks like GNUstep backend is not yet installed")
   }
   NS_ENDHANDLER
-  cell = [[NSCell alloc] init];
+  cell = AUTORELEASE([[NSCell alloc] init]);
   num = [NSNumber numberWithFloat:55.0]; 
   [cell setObjectValue:num];
   PASS([[cell objectValue] isEqual:num], 
