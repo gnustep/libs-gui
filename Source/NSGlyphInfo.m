@@ -96,18 +96,39 @@
 }
 
   
-+ (NSGlyphInfo *)glyphInfoWithGlyph:(NSGlyph)glyph 
-                            forFont:(NSFont *)font 
++ (NSGlyphInfo *)glyphInfoWithGlyph:(NSGlyph)glyph
+                            forFont:(NSFont *)font
                          baseString:(NSString *)string
 {
-  return nil;
+  return [self glyphInfoWithCGGlyph: (CGGlyph)glyph
+                            forFont: font
+                         baseString: string];
 }
 
-+ (NSGlyphInfo *)glyphInfoWithGlyphName:(NSString *)glyphName 
-                                forFont:(NSFont *)font 
++ (NSGlyphInfo *)glyphInfoWithGlyphName:(NSString *)glyphName
+                                forFont:(NSFont *)font
                              baseString:(NSString *)string
 {
-  return nil;
+  NSGlyph glyph;
+  NSGlyphInfo *info;
+
+  if (glyphName == nil || font == nil)
+    {
+      return nil;
+    }
+
+  glyph = [font glyphWithName: glyphName];
+  if (glyph == NSNullGlyph)
+    {
+      return nil;
+    }
+
+  info = [self glyphInfoWithCGGlyph: (CGGlyph)glyph
+                            forFont: font
+                         baseString: string];
+  ASSIGN(info->_glyphName, glyphName);
+  info->_characterIdentifier = 0;
+  return info;
 }
 
 - (NSUInteger) characterIdentifier
