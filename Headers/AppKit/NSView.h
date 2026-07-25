@@ -311,6 +311,10 @@ PACKAGE_SCOPE
 - (NSSize) convertSizeFromBase: (NSSize)aSize;
 - (NSSize) convertSizeToBase: (NSSize)aSize;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (NSRect) backingAlignedRect: (NSRect)aRect
+                      options: (NSAlignmentOptions)options;
+#endif
 
 /*
  * Notifying Ancestor Views
