@@ -115,6 +115,25 @@ PACKAGE_SCOPE
 - (void) scrollWheel: (NSEvent *)theEvent;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void) cursorUpdate: (NSEvent *)theEvent;
+- (void) magnifyWithEvent: (NSEvent *)theEvent;
+- (void) rotateWithEvent: (NSEvent *)theEvent;
+- (void) swipeWithEvent: (NSEvent *)theEvent;
+- (void) touchesBeganWithEvent: (NSEvent *)theEvent;
+- (void) touchesMovedWithEvent: (NSEvent *)theEvent;
+- (void) touchesEndedWithEvent: (NSEvent *)theEvent;
+- (void) touchesCancelledWithEvent: (NSEvent *)theEvent;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+- (void) smartMagnifyWithEvent: (NSEvent *)theEvent;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+- (void) pressureChangeWithEvent: (NSEvent *)theEvent;
+#endif
+
 /*
  * Services menu support
  */

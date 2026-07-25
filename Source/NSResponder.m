@@ -316,6 +316,92 @@
     [self noResponderFor: @selector(scrollWheel:)];
 }
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
+- (void) cursorUpdate: (NSEvent *)theEvent
+{
+  if (_next_responder)
+    [_next_responder cursorUpdate: theEvent];
+  else
+    [self noResponderFor: @selector(cursorUpdate:)];
+}
+
+- (void) magnifyWithEvent: (NSEvent *)theEvent
+{
+  if (_next_responder)
+    [_next_responder magnifyWithEvent: theEvent];
+  else
+    [self noResponderFor: @selector(magnifyWithEvent:)];
+}
+
+- (void) rotateWithEvent: (NSEvent *)theEvent
+{
+  if (_next_responder)
+    [_next_responder rotateWithEvent: theEvent];
+  else
+    [self noResponderFor: @selector(rotateWithEvent:)];
+}
+
+- (void) swipeWithEvent: (NSEvent *)theEvent
+{
+  if (_next_responder)
+    [_next_responder swipeWithEvent: theEvent];
+  else
+    [self noResponderFor: @selector(swipeWithEvent:)];
+}
+
+- (void) touchesBeganWithEvent: (NSEvent *)theEvent
+{
+  if (_next_responder)
+    [_next_responder touchesBeganWithEvent: theEvent];
+  else
+    [self noResponderFor: @selector(touchesBeganWithEvent:)];
+}
+
+- (void) touchesMovedWithEvent: (NSEvent *)theEvent
+{
+  if (_next_responder)
+    [_next_responder touchesMovedWithEvent: theEvent];
+  else
+    [self noResponderFor: @selector(touchesMovedWithEvent:)];
+}
+
+- (void) touchesEndedWithEvent: (NSEvent *)theEvent
+{
+  if (_next_responder)
+    [_next_responder touchesEndedWithEvent: theEvent];
+  else
+    [self noResponderFor: @selector(touchesEndedWithEvent:)];
+}
+
+- (void) touchesCancelledWithEvent: (NSEvent *)theEvent
+{
+  if (_next_responder)
+    [_next_responder touchesCancelledWithEvent: theEvent];
+  else
+    [self noResponderFor: @selector(touchesCancelledWithEvent:)];
+}
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_8, GS_API_LATEST)
+- (void) smartMagnifyWithEvent: (NSEvent *)theEvent
+{
+  if (_next_responder)
+    [_next_responder smartMagnifyWithEvent: theEvent];
+  else
+    [self noResponderFor: @selector(smartMagnifyWithEvent:)];
+}
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
+- (void) pressureChangeWithEvent: (NSEvent *)theEvent
+{
+  if (_next_responder)
+    [_next_responder pressureChangeWithEvent: theEvent];
+  else
+    [self noResponderFor: @selector(pressureChangeWithEvent:)];
+}
+#endif
+
 /*
  * Services menu support
  */
