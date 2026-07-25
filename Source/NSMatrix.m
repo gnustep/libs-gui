@@ -374,7 +374,7 @@ static SEL getSel;
   [_cellPrototype release];
   [_backgroundColor release];
   [_cellBackgroundColor release];
-  [_reserved1 release];
+  [_tooltipMap release];
 
   if (_delegate != nil)
     {
@@ -2686,14 +2686,14 @@ static SEL getSel;
 
 - (NSString*) toolTipForCell: (NSCell*)cell
 {
-  return [(NSMapTable *)_reserved1 objectForKey: cell];
+  return [(NSMapTable *)_tooltipMap objectForKey: cell];
 }
 
 - (void) setToolTip: (NSString*)toolTipString forCell: (NSCell*)cell
 {
-  if (_reserved1 == nil)
+  if (_tooltipMap == nil)
     {
-      _reserved1 = [[NSMapTable alloc]
+      _tooltipMap = [[NSMapTable alloc]
         initWithKeyOptions: NSPointerFunctionsWeakMemory
                               | NSPointerFunctionsObjectPointerPersonality
               valueOptions: NSPointerFunctionsStrongMemory
@@ -2702,11 +2702,11 @@ static SEL getSel;
     }
   if (toolTipString == nil)
     {
-      [(NSMapTable *)_reserved1 removeObjectForKey: cell];
+      [(NSMapTable *)_tooltipMap removeObjectForKey: cell];
     }
   else
     {
-      [(NSMapTable *)_reserved1 setObject: toolTipString forKey: cell];
+      [(NSMapTable *)_tooltipMap setObject: toolTipString forKey: cell];
     }
 }
 
