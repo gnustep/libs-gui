@@ -38,6 +38,12 @@ typedef enum _NSSegmentStyle {
   NSSegmentStyleCapsule = 5,
   NSSegmentStyleSmallSquare = 6
 } NSSegmentStyle;
+
+typedef enum {
+  NSSegmentSwitchTrackingSelectOne = 0,
+  NSSegmentSwitchTrackingSelectAny = 1,
+  NSSegmentSwitchTrackingMomentary = 2
+} NSSegmentSwitchTracking;
 #endif
 
 APPKIT_EXPORT_CLASS
@@ -51,6 +57,10 @@ APPKIT_EXPORT_CLASS
 - (void) setSelectedSegment: (NSInteger)segment;
 - (NSInteger) selectedSegment;
 - (void) selectSegmentWithTag: (NSInteger)tag;
+
+// Specifying tracking mode...
+- (void) setTrackingMode: (NSSegmentSwitchTracking)mode;
+- (NSSegmentSwitchTracking) trackingMode;
 
 // Working with individual segments...
 - (void) setWidth: (CGFloat)width forSegment: (NSInteger)segment;

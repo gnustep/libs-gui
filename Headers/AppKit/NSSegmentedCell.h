@@ -29,13 +29,6 @@
 #import <AppKit/NSActionCell.h>
 #import <AppKit/NSSegmentedControl.h>
 
-// tracking types...
-typedef enum {
-  NSSegmentSwitchTrackingSelectOne = 0,
-  NSSegmentSwitchTrackingSelectAny = 1,
-  NSSegmentSwitchTrackingMomentary = 2 
-} NSSegmentSwitchTracking;
-
 // forward declarations
 @class NSMutableArray;
 @class NSImage;
