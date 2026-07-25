@@ -95,6 +95,7 @@ APPKIT_EXPORT_CLASS
   id _fontEnumerator;
   NSDictionary *_selectedAttributes;
   NSMutableDictionary *_collections;
+  BOOL _enabled;
 }
 
 //
