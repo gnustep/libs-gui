@@ -43,7 +43,7 @@
         return nil;
 
       numFields = 4;
-      currentMode = NSColorPanelCMYKModeMask;
+      currentMode = NSCMYKModeColorPanel;
 
       b = [NSBundle bundleForClass: [self class]];
       r_names[0] = NSLocalizedStringFromTableInBundle(@"Cyan",@"StandardPicker",b,@"");

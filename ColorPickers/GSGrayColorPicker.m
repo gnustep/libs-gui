@@ -45,7 +45,7 @@
 	return nil;
 
       numFields = 1;
-      currentMode = NSColorPanelGrayModeMask;
+      currentMode = NSGrayModeColorPanel;
       maxValue = 100;
 
       b = [NSBundle bundleForClass: [self class]];
