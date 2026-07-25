@@ -2982,12 +2982,36 @@ in the main thread.
 /*
  * Hidding Views
  */
+- (void) _sendViewDidUnhide: (BOOL)unhide
+{
+  NSUInteger i, count;
+
+  if (unhide)
+    [self viewDidUnhide];
+  else
+    [self viewDidHide];
+
+  count = [_sub_views count];
+  for (i = 0; i < count; i++)
+    {
+      NSView *sub = [_sub_views objectAtIndex: i];
+
+      if (![sub isHidden])
+        [sub _sendViewDidUnhide: unhide];
+    }
+}
+
 - (void) setHidden: (BOOL)flag
 {
   id view;
+  BOOL notify;
 
   if (_is_hidden == flag)
       return;
+
+  /* The view and its unhidden descendants only change effective visibility
+     when no ancestor is already hidden. */
+  notify = (_super_view == nil) || ![_super_view isHiddenOrHasHiddenAncestor];
 
   _is_hidden = flag;
 
@@ -3039,6 +3063,19 @@ in the main thread.
         }
       [self setNeedsDisplay: YES];
     }
+
+  if (notify)
+    {
+      [self _sendViewDidUnhide: (flag == NO)];
+    }
+}
+
+- (void) viewDidHide
+{
+}
+
+- (void) viewDidUnhide
+{
 }
 
 - (BOOL) isHidden
