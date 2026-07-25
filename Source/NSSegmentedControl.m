@@ -46,6 +46,50 @@ static Class segmentedControlCellClass;
   return segmentedControlCellClass;
 }
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
++ (instancetype) segmentedControlWithLabels: (NSArray *)labels
+                               trackingMode: (NSSegmentSwitchTracking)trackingMode
+                                     target: (id)target
+                                     action: (SEL)action
+{
+  NSSegmentedControl *control = AUTORELEASE([[self alloc]
+    initWithFrame: NSMakeRect(0, 0, 100, 24)]);
+  NSUInteger i, count = [labels count];
+
+  [control setSegmentCount: count];
+  for (i = 0; i < count; i++)
+    {
+      [control setLabel: [labels objectAtIndex: i] forSegment: i];
+    }
+  [(NSSegmentedCell *)[control cell] setTrackingMode: trackingMode];
+  [control setTarget: target];
+  [control setAction: action];
+  [control sizeToFit];
+  return control;
+}
+
++ (instancetype) segmentedControlWithImages: (NSArray *)images
+                               trackingMode: (NSSegmentSwitchTracking)trackingMode
+                                     target: (id)target
+                                     action: (SEL)action
+{
+  NSSegmentedControl *control = AUTORELEASE([[self alloc]
+    initWithFrame: NSMakeRect(0, 0, 100, 24)]);
+  NSUInteger i, count = [images count];
+
+  [control setSegmentCount: count];
+  for (i = 0; i < count; i++)
+    {
+      [control setImage: [images objectAtIndex: i] forSegment: i];
+    }
+  [(NSSegmentedCell *)[control cell] setTrackingMode: trackingMode];
+  [control setTarget: target];
+  [control setAction: action];
+  [control sizeToFit];
+  return control;
+}
+#endif
+
 // Specifying number of segments...
 - (void) setSegmentCount: (NSInteger) count
 {
