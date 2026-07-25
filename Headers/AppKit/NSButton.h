@@ -136,6 +136,14 @@ APPKIT_EXPORT_CLASS
 - (NSSound *)sound;
 #endif
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+//
+// Bezel color
+//
+- (NSColor *) bezelColor;
+- (void) setBezelColor: (NSColor *)color;
+#endif
+
 @end
 
 #endif // _GNUstep_H_NSButton

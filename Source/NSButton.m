@@ -549,6 +549,17 @@ static id buttonCellClass = nil;
   return [_cell sound];
 }
 
+- (NSColor *) bezelColor
+{
+  return [(NSButtonCell *)_cell bezelColor];
+}
+
+- (void) setBezelColor: (NSColor *)color
+{
+  [(NSButtonCell *)_cell setBezelColor: color];
+  [self setNeedsDisplay: YES];
+}
+
 // Implement 10.7+ radio button behavior
 - (void) _flipState: (NSButton *)b
 {
