@@ -45,8 +45,30 @@ APPKIT_EXPORT_CLASS
   // Attributes
 }
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 //
-// Setting the Button Type 
+// Creating Buttons
+//
++ (instancetype)buttonWithTitle:(NSString *)title
+                         target:(id)target
+                         action:(SEL)action;
++ (instancetype)buttonWithImage:(NSImage *)image
+                         target:(id)target
+                         action:(SEL)action;
++ (instancetype)buttonWithTitle:(NSString *)title
+                          image:(NSImage *)image
+                         target:(id)target
+                         action:(SEL)action;
++ (instancetype)checkboxWithTitle:(NSString *)title
+                           target:(id)target
+                           action:(SEL)action;
++ (instancetype)radioButtonWithTitle:(NSString *)title
+                              target:(id)target
+                              action:(SEL)action;
+#endif
+
+//
+// Setting the Button Type
 //
 - (void)setButtonType:(NSButtonType)aType;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)

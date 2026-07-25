@@ -23,6 +23,8 @@
 */
 
 #import "AppKit/NSLayoutGuide.h"
+#import "AppKit/NSLayoutAnchor.h"
+#import "GSAutoLayoutAnchorPrivate.h"
 
 @implementation NSLayoutGuide
 
@@ -53,52 +55,72 @@
 
 - (NSLayoutXAxisAnchor *) leadingAnchor
 {
-  return _leadingAnchor;
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLeading]);
 }
 
 - (NSLayoutXAxisAnchor *) trailingAnchor
 {
-  return _trailingAnchor;
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeTrailing]);
 }
 
 - (NSLayoutXAxisAnchor *) leftAnchor
 {
-  return _leftAnchor;
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLeft]);
 }
 
 - (NSLayoutXAxisAnchor *) rightAnchor
 {
-  return _rightAnchor;
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeRight]);
 }
 
 - (NSLayoutYAxisAnchor *) topAnchor
 {
-  return _topAnchor;
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeTop]);
 }
 
 - (NSLayoutYAxisAnchor *) bottomAnchor
 {
-  return _bottomAnchor;
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeBottom]);
 }
 
 - (NSLayoutDimension *) widthAnchor
 {
-  return _widthAnchor;
+  return AUTORELEASE([[NSLayoutDimension alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeWidth]);
 }
 
 - (NSLayoutDimension *) heightAnchor
 {
-  return _heightAnchor;
+  return AUTORELEASE([[NSLayoutDimension alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeHeight]);
 }
 
 - (NSLayoutXAxisAnchor *) centerXAnchor
 {
-  return _centerXAnchor;
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeCenterX]);
 }
 
 - (NSLayoutYAxisAnchor *) centerYAnchor
 {
-  return _centerYAnchor;
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeCenterY]);
 }
 
 - (BOOL) hasAmbiguousLayout

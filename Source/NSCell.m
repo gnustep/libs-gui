@@ -2924,9 +2924,29 @@ static NSColor *dtxtCol;
   return _cell.uses_single_line_mode;
 }
 
+- (NSRect) expansionFrameWithFrame: (NSRect)cellFrame inView: (NSView *)view
+{
+  return NSZeroRect;
+}
+
 - (void) drawWithExpansionFrame: (NSRect)cellFrame inView: (NSView *)view
 {
   [self drawWithFrame: cellFrame inView: view];
+}
+
+- (BOOL) wantsNotificationForMarkedText
+{
+  return NO;
+}
+
+- (NSText *) fieldEditorForView: (NSView *)controlView
+{
+  return nil;
+}
+
+- (NSRect) focusRingMaskBoundsForFrame: (NSRect)cellFrame inView: (NSView *)view
+{
+  return NSZeroRect;
 }
 
 - (void) drawFocusRingMaskWithFrame: (NSRect)cellFrame inView: (NSView *)view

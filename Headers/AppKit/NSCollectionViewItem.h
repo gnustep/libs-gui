@@ -39,7 +39,7 @@
 extern "C" {
 #endif
 
-@class NSImageView, NSTextField;
+@class NSCollectionView, NSImageView, NSTextField;
 
 APPKIT_EXPORT_CLASS
 /**

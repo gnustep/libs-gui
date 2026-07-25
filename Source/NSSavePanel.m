@@ -1479,6 +1479,8 @@ selectCellWithString: (NSString*)title
 
 - (void) setDelegate: (id<NSOpenSavePanelDelegate>)aDelegate
 {
+  BOOL hadShowFilenameFilter = _delegateHasShowFilenameFilter;
+
   if ([aDelegate respondsToSelector:
 		   @selector(panel:compareFilename:with:caseSensitive:)])
     _delegateHasCompareFilter = YES;
@@ -1511,7 +1513,14 @@ selectCellWithString: (NSString*)title
     _delegateHasSelectionDidChange = NO;      
 
   [super setDelegate: aDelegate];
-  [self validateVisibleColumns];
+  /* -validateVisibleColumns can hide files a filter excludes but cannot
+     restore files a previous filter hid, so reload whenever the old or the new
+     delegate filters filenames, dropping the old filter and applying the new
+     one if any. */
+  if (hadShowFilenameFilter || _delegateHasShowFilenameFilter)
+    [self _reloadBrowser];
+  else
+    [self validateVisibleColumns];
 }
 
 - (void) setCanSelectHiddenExtension: (BOOL) flag

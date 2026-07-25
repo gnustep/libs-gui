@@ -40,7 +40,17 @@
 
 APPKIT_EXPORT_CLASS
 @interface NSSlider : NSControl
-// appearance 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+// Creating Sliders
++ (instancetype) sliderWithTarget: (id)target
+                           action: (SEL)action;
++ (instancetype) sliderWithValue: (double)value
+                        minValue: (double)minValue
+                        maxValue: (double)maxValue
+                          target: (id)target
+                          action: (SEL)action;
+#endif
+// appearance
 - (double) altIncrementValue;
 - (NSImage*) image;
 - (NSInteger) isVertical;
