@@ -40,6 +40,21 @@ shouldShowFilename: (NSString *)fname
 
 @end
 
+/* A second delegate that also filters filenames but hides nothing, so it
+   should reveal the files the first delegate hid. */
+@interface Delegate2 : NSObject
+@end
+
+@implementation Delegate2
+
++ (BOOL) panel: (NSSavePanel *)p
+shouldShowFilename: (NSString *)fname
+{
+  return YES;
+}
+
+@end
+
 int main(int argc, char **argv)
 {
   NSAutoreleasePool *arp = [NSAutoreleasePool new];
@@ -77,22 +92,26 @@ int main(int argc, char **argv)
        && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"],
        "browser is reloaded after -setDelegate:");
   
-  /* Not really a -setDelegate: issue, but the other methods involved are
-     documented as doing the wrong thing.  */
   [p setDelegate: nil];
   m = [p lastColumnMatrix];
-  testHopeful = YES;
   PASS([m numberOfRows] == 2
        && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"]
        && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @"B"],
        "browser contains all files after resetting delegate");
-  testHopeful = NO;
-  
+
   [p setDelegate: [Delegate self]];
   m = [p lastColumnMatrix];
   PASS([m numberOfRows] == 1
        && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"],
        "browser is reloaded after -setDelegate: (2)");
+
+  [p setDelegate: [Delegate2 self]];
+  m = [p lastColumnMatrix];
+  PASS([m numberOfRows] == 2
+       && [[[m cellAtRow: 0 column: 0] stringValue] isEqual: @"A"]
+       && [[[m cellAtRow: 1 column: 0] stringValue] isEqual: @"B"],
+       "replacing a filtering delegate with one that hides nothing restores "
+       "the files the previous filter hid");
 
   END_SET("NSSavePanel GNUstep setDelegate")
 
