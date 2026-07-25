@@ -1033,8 +1033,12 @@ static GSComboWindow *gsWindow = nil;
   else
     {
       [_popUpList removeObject: object];
+      if (_selectedItem >= (NSInteger)[_popUpList count])
+        {
+          _selectedItem = -1;
+        }
     }
-    
+
   [self reloadData];
 }
 
@@ -1053,8 +1057,12 @@ static GSComboWindow *gsWindow = nil;
   else
     {
       [_popUpList removeObjectAtIndex: index];
+      if (_selectedItem >= (NSInteger)[_popUpList count])
+        {
+          _selectedItem = -1;
+        }
     }
-    
+
   [self reloadData];
 }
 
@@ -1073,8 +1081,9 @@ static GSComboWindow *gsWindow = nil;
   else
     {
       [_popUpList removeAllObjects];
+      _selectedItem = -1;
     }
-    
+
   [self reloadData];
 }
 
