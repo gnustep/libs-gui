@@ -2929,6 +2929,11 @@ static NSColor *dtxtCol;
   return NSZeroRect;
 }
 
+- (void) drawWithExpansionFrame: (NSRect)cellFrame inView: (NSView *)view
+{
+  [self drawWithFrame: cellFrame inView: view];
+}
+
 - (BOOL) wantsNotificationForMarkedText
 {
   return NO;
@@ -2942,6 +2947,11 @@ static NSColor *dtxtCol;
 - (NSRect) focusRingMaskBoundsForFrame: (NSRect)cellFrame inView: (NSView *)view
 {
   return NSZeroRect;
+}
+
+- (void) drawFocusRingMaskWithFrame: (NSRect)cellFrame inView: (NSView *)view
+{
+  NSRectFill(cellFrame);
 }
 
 @end

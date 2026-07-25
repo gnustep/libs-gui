@@ -676,6 +676,7 @@ APPKIT_EXPORT_CLASS
 - (BOOL) usesSingleLineMode;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (void) drawWithExpansionFrame: (NSRect)cellFrame inView: (NSView *)view;
 - (NSRect) expansionFrameWithFrame: (NSRect)cellFrame inView: (NSView *)view;
 - (BOOL) wantsNotificationForMarkedText;
 #endif
@@ -683,6 +684,7 @@ APPKIT_EXPORT_CLASS
 - (NSText *) fieldEditorForView: (NSView *)controlView;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+- (void) drawFocusRingMaskWithFrame: (NSRect)cellFrame inView: (NSView *)view;
 - (NSRect) focusRingMaskBoundsForFrame: (NSRect)cellFrame inView: (NSView *)view;
 #endif
 
