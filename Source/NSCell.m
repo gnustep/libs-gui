@@ -2924,6 +2924,26 @@ static NSColor *dtxtCol;
   return _cell.uses_single_line_mode;
 }
 
+- (NSRect) expansionFrameWithFrame: (NSRect)cellFrame inView: (NSView *)view
+{
+  return NSZeroRect;
+}
+
+- (BOOL) wantsNotificationForMarkedText
+{
+  return NO;
+}
+
+- (NSText *) fieldEditorForView: (NSView *)controlView
+{
+  return nil;
+}
+
+- (NSRect) focusRingMaskBoundsForFrame: (NSRect)cellFrame inView: (NSView *)view
+{
+  return NSZeroRect;
+}
+
 @end
 
 @implementation NSCell (PrivateMethods)
