@@ -3141,6 +3141,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   float width;
   int i;
   NSCell *cell;
+  NSImage *indicatorImage;
 
   if (tableView == nil)
     return;
@@ -3177,6 +3178,24 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
         }
       [cell drawWithFrame: drawingRect
                            inView: tableHeaderView];
+
+      indicatorImage = [tableView indicatorImageInTableColumn: column];
+      if (indicatorImage != nil)
+        {
+          NSSize size = [indicatorImage size];
+          NSRect indicatorRect;
+
+          indicatorRect.size = size;
+          indicatorRect.origin.x = NSMaxX(drawingRect) - size.width - 4.0;
+          indicatorRect.origin.y = drawingRect.origin.y
+            + (drawingRect.size.height - size.height) / 2.0;
+          [indicatorImage drawInRect: indicatorRect
+                            fromRect: NSZeroRect
+                           operation: NSCompositeSourceOver
+                            fraction: 1.0
+                      respectFlipped: YES
+                               hints: nil];
+        }
       drawingRect.origin.x += width;
     }
 }

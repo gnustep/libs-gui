@@ -152,6 +152,7 @@
   RELEASE(_dataCell);
   RELEASE(_sortDescriptorPrototype);
   RELEASE(_prototypeCellViews);
+  TEST_RELEASE(_indicatorImage);
   TEST_RELEASE(_identifier);
   [super dealloc];
 }
@@ -641,6 +642,16 @@ to YES. */
 - (NSArray *) _prototypeCellViews
 {
   return _prototypeCellViews;
+}
+
+- (void) _setIndicatorImage: (NSImage *)image
+{
+  ASSIGN(_indicatorImage, image);
+}
+
+- (NSImage *) _indicatorImage
+{
+  return _indicatorImage;
 }
 
 - (void) setTitle: (NSString *)title

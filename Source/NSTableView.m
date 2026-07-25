@@ -199,6 +199,8 @@ typedef struct _tableViewFlags
 - (void) _applyBindingsToCell: (NSCell *)cell
 			atRow: (NSInteger)index;
 - (NSString *) _keyPathForValueBinding;
+- (void) _setIndicatorImage: (NSImage *)image;
+- (NSImage *) _indicatorImage;
 @end
 
 /*
@@ -5535,18 +5537,13 @@ This method is deprecated, use -columnIndexesInRect:. */
 /* indicator image */
 - (NSImage *) indicatorImageInTableColumn: (NSTableColumn *)aTableColumn
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"indicatorImageInTableColumn:", "NSTableView");
-  return nil;
+  return [aTableColumn _indicatorImage];
 }
 
 - (void) setIndicatorImage: (NSImage *)anImage
 	     inTableColumn: (NSTableColumn *)aTableColumn
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"setIndicatorImage:inTableColumn:", "NSTableView");
+  [aTableColumn _setIndicatorImage: anImage];
 }
 
 /* highlighting columns */
