@@ -87,7 +87,7 @@ APPKIT_EXPORT_CLASS
   BOOL		_drawsCellBackground;
   BOOL		_autosizesCells;
   BOOL		_autoscroll;
-  id            _reserved1;
+  id            _tooltipMap;
   NSInteger	_dottedRow;
   NSInteger	_dottedColumn;
 }
