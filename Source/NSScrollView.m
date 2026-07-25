@@ -107,6 +107,8 @@ typedef struct _scrollViewFlags
 - (void) _synchronizeHeaderAndCornerView;
 - (void) _themeDidActivate: (NSNotification*)notification;
 - (void) _autohideScrollers;
+- (void) _setHasHorizScroller: (BOOL)flag;
+- (void) _setHasVertScroller: (BOOL)flag;
 @end
 
 @implementation NSScrollView
@@ -317,6 +319,12 @@ static CGFloat scrollerWidth;
 
 - (void) setHasHorizontalScroller: (BOOL)flag
 {
+  _hasHorizScrollerRequested = flag;
+  [self _setHasHorizScroller: flag];
+}
+
+- (void) _setHasHorizScroller: (BOOL)flag
+{
   if (_hasHorizScroller == flag)
     return;
 
@@ -357,6 +365,12 @@ static CGFloat scrollerWidth;
 }
 
 - (void) setHasVerticalScroller: (BOOL)flag
+{
+  _hasVertScrollerRequested = flag;
+  [self _setHasVertScroller: flag];
+}
+
+- (void) _setHasVertScroller: (BOOL)flag
 {
   if (_hasVertScroller == flag)
     return;
@@ -866,23 +880,30 @@ static CGFloat scrollerWidth;
   availWidth = clipSize.width + (_hasVertScroller ? footprint : 0.0);
   availHeight = clipSize.height + (_hasHorizScroller ? footprint : 0.0);
 
-  needsVert = documentSize.height > availHeight;
-  needsHoriz = documentSize.width > availWidth;
+  /* Only an axis that the client asked to scroll may get a scroller. Gating
+     each axis by its requested flag also keeps a disabled axis out of the
+     coupling below, so it does not reserve space for a scroller that will not
+     appear. */
+  needsVert = _hasVertScrollerRequested && (documentSize.height > availHeight);
+  needsHoriz = _hasHorizScrollerRequested && (documentSize.width > availWidth);
   if (needsVert)
     {
-      needsHoriz = documentSize.width > (availWidth - footprint);
+      needsHoriz = _hasHorizScrollerRequested
+        && (documentSize.width > (availWidth - footprint));
     }
   if (needsHoriz)
     {
-      needsVert = documentSize.height > (availHeight - footprint);
+      needsVert = _hasVertScrollerRequested
+        && (documentSize.height > (availHeight - footprint));
     }
   if (needsVert)
     {
-      needsHoriz = documentSize.width > (availWidth - footprint);
+      needsHoriz = _hasHorizScrollerRequested
+        && (documentSize.width > (availWidth - footprint));
     }
 
-  [self setHasVerticalScroller: needsVert];
-  [self setHasHorizontalScroller: needsHoriz];
+  [self _setHasVertScroller: needsVert];
+  [self _setHasHorizScroller: needsHoriz];
 }
 
 - (void) reflectScrolledClipView: (NSClipView *)aClipView
@@ -1708,6 +1729,8 @@ GSOppositeEdge(NSRectEdge edge)
           _borderType = flags & 3;
           _hasVertScroller = (flags & 16) == 16;
           _hasHorizScroller = (flags & 32) == 32;
+          _hasVertScrollerRequested = _hasVertScroller;
+          _hasHorizScrollerRequested = _hasHorizScroller;
           _autohidesScrollers = (flags & 512) == 512;
         }
 
@@ -1771,13 +1794,15 @@ GSOppositeEdge(NSRectEdge edge)
       [aDecoder decodeValueOfObjCType: @encode(float) at: &_vPageScroll];
       
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHorizScroller];
+      _hasHorizScrollerRequested = _hasHorizScroller;
       if (_hasHorizScroller)
         [aDecoder decodeValueOfObjCType: @encode(id) at: &_horizScroller];
-      
+
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasVertScroller];
+      _hasVertScrollerRequested = _hasVertScroller;
       if (_hasVertScroller)
         [aDecoder decodeValueOfObjCType: @encode(id) at: &_vertScroller];
-      
+
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHorizRuler];
       if (_hasHorizRuler)
         [aDecoder decodeValueOfObjCType: @encode(id) at: &_horizRuler];

@@ -79,6 +79,8 @@ APPKIT_EXPORT_CLASS
   NSScrollElasticity _vertScrollElasticity;
   NSScrollerStyle _scrollerStyle;
   NSScrollerKnobStyle _scrollerKnobStyle;
+  BOOL _hasHorizScrollerRequested;
+  BOOL _hasVertScrollerRequested;
 }
 
 /* Calculating layout */
