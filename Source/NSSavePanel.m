@@ -1498,10 +1498,11 @@ selectCellWithString: (NSString*)title
     _delegateHasSelectionDidChange = NO;      
 
   [super setDelegate: aDelegate];
-  /* -validateVisibleColumns can hide files that a new filter excludes, but it
-     cannot restore files that a removed filter should show again, so a change
-     to the show-filename filter needs a full reload. */
-  if (_delegateHasShowFilenameFilter != hadShowFilenameFilter)
+  /* -validateVisibleColumns can hide files a filter excludes but cannot
+     restore files a previous filter hid, so reload whenever the old or the new
+     delegate filters filenames, dropping the old filter and applying the new
+     one if any. */
+  if (hadShowFilenameFilter || _delegateHasShowFilenameFilter)
     [self _reloadBrowser];
   else
     [self validateVisibleColumns];
