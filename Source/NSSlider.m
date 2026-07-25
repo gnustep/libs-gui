@@ -93,15 +93,11 @@ static Class cellClass;
 + (instancetype) sliderWithTarget: (id)target
                            action: (SEL)action
 {
-  NSSlider *slider = AUTORELEASE([[self alloc]
-    initWithFrame: NSMakeRect(0, 0, 100, 20)]);
-
-  [slider setMinValue: 0.0];
-  [slider setMaxValue: 1.0];
-  [slider setDoubleValue: 0.0];
-  [slider setTarget: target];
-  [slider setAction: action];
-  return slider;
+  return [self sliderWithValue: 0.0
+                      minValue: 0.0
+                      maxValue: 1.0
+                        target: target
+                        action: action];
 }
 
 + (instancetype) sliderWithValue: (double)value
