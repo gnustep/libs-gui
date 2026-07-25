@@ -630,6 +630,52 @@
     }
 }
 
+- (NSSize) cellSize
+{
+  NSDictionary *attributes = [self _nonAutoreleasedTypingAttributes];
+  NSUInteger i, count = [_items count];
+  const CGFloat hPadding = 6.0;
+  const CGFloat vPadding = 4.0;
+  const CGFloat imageTextGap = 3.0;
+  NSSize size = NSMakeSize(0.0, 0.0);
+
+  for (i = 0; i < count; i++)
+    {
+      NSSegmentItem *segment = [_items objectAtIndex: i];
+      NSString *label = [segment label];
+      NSImage *image = [segment image];
+      CGFloat content = 0.0;
+      CGFloat height = 0.0;
+      CGFloat width;
+
+      if (image != nil)
+        {
+          NSSize imageSize = [image size];
+
+          content += imageSize.width;
+          height = MAX(height, imageSize.height);
+        }
+      if (label != nil && [label length] > 0)
+        {
+          NSSize textSize = [label sizeWithAttributes: attributes];
+
+          if (image != nil)
+            content += imageTextGap;
+          content += textSize.width;
+          height = MAX(height, textSize.height);
+        }
+
+      width = [segment width];
+      if (width <= 0.0)
+        width = content + 2.0 * hPadding;
+      size.width += width;
+      size.height = MAX(size.height, height);
+    }
+
+  size.height += 2.0 * vPadding;
+  return size;
+}
+
 // Setting the style of the segments
 - (void) setSegmentStyle: (NSSegmentStyle)style
 {
