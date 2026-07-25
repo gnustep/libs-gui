@@ -33,6 +33,7 @@
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSHashTable.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSThread.h>
@@ -45,6 +46,10 @@
 #import "AppKit/NSScreen.h"
 
 static NSNotificationCenter *nc = nil;
+
+/* All live drawers, held without retaining them, so a window can report the
+   drawers whose parent window it is. */
+static NSHashTable *_drawers = nil;
 
 @interface GSDrawerWindow : NSWindow
 {
@@ -536,8 +541,27 @@ static NSNotificationCenter *nc = nil;
   if (self == [NSDrawer class])
     {
       nc = [NSNotificationCenter defaultCenter];
+      _drawers = [[NSHashTable alloc] initWithOptions:
+	NSPointerFunctionsOpaqueMemory | NSPointerFunctionsOpaquePersonality
+					     capacity: 4];
       [self setVersion: 0];
     }
+}
+
++ (NSArray *) _drawersForParentWindow: (NSWindow *)window
+{
+  NSMutableArray *result = [NSMutableArray array];
+  NSEnumerator *e = [_drawers objectEnumerator];
+  NSDrawer *d;
+
+  while ((d = [e nextObject]) != nil)
+    {
+      if ([d parentWindow] == window)
+	{
+	  [result addObject: d];
+	}
+    }
+  return result;
 }
 
 // Creation
@@ -583,13 +607,15 @@ static NSNotificationCenter *nc = nil;
 	  }
 	
 	_state = NSDrawerClosedState;
+	[_drawers addObject: self];
     }
-  
+
   return self;
 }
 
 - (void) dealloc
 {
+  [_drawers removeObject: self];
   RELEASE(_drawerWindow);
   if (_delegate != nil)
     {

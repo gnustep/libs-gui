@@ -61,6 +61,7 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorList.h"
 #import "AppKit/NSCursor.h"
+#import "AppKit/NSDrawer.h"
 #import "AppKit/NSDocumentController.h"
 #import "AppKit/NSDocument.h"
 #import "AppKit/NSDragging.h"
@@ -170,6 +171,10 @@ static GSWindowAnimationDelegate *animationDelegate;
 - (NSView *) _windowView;
 - (NSView *) _borderView;
 - (NSScreen *) _screenForFrame: (NSRect)frame;
+@end
+
+@interface NSDrawer (GNUstepPrivate)
++ (NSArray *) _drawersForParentWindow: (NSWindow *)window;
 @end
 
 @implementation NSWindow (GNUstepPrivate)
@@ -5932,10 +5937,7 @@ current key view.<br />
 */
 - (NSArray *) drawers
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-        "drawers", "NSWindow");
-  return nil;
+  return [NSDrawer _drawersForParentWindow: self];
 }
 
 - (void *)windowRef
