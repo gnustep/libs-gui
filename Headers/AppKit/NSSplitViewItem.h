@@ -37,7 +37,7 @@ extern "C" {
 enum
 {
  NSSplitViewItemBehaviorDefault,
- NSSplibViewItemBehaviorSidebar,
+ NSSplitViewItemBehaviorSidebar,
  NSSplitViewItemBehaviorContentList
 };
 typedef NSInteger NSSplitViewItemBehavior;
@@ -76,6 +76,9 @@ APPKIT_EXPORT_CLASS
   NSSplitViewItemCollapseBehavior _collapseBehavior;
   NSViewController *_viewController;
   NSTitlebarSeparatorStyle _titlebarSeparatorStyle;
+  NSSplitViewItemBehavior _behavior;
+  BOOL _collapsed;
+  CGFloat _uncollapsedThickness;
 }
   
 + (instancetype)contentListWithViewController:(NSViewController *)viewController;
@@ -91,9 +94,13 @@ APPKIT_EXPORT_CLASS
 - (CGFloat) maximumThickness;
 - (void) setMaximumThickness: (CGFloat)f;
 
+- (NSSplitViewItemBehavior) behavior;
+
 - (/* NSLayoutPriority */ CGFloat) holdingPriority;
 
 - (BOOL) canCollapse;
+- (BOOL) isCollapsed;
+- (void) setCollapsed: (BOOL)flag;
 - (NSSplitViewItemCollapseBehavior) collapseBehavior;
 - (BOOL) isSpringLoaded;
 - (void) setSpringLoaded: (BOOL)flag;

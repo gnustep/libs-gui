@@ -25,6 +25,8 @@
 #import <Foundation/NSArchiver.h>
 #import "AppKit/NSSplitViewItem.h"
 #import "AppKit/NSLayoutConstraint.h"
+#import "AppKit/NSSplitView.h"
+#import "AppKit/NSView.h"
 #import "AppKit/NSViewController.h"
 
 const CGFloat NSSplitViewItemUnspecifiedDimension = -1.0;
@@ -48,17 +50,35 @@ const CGFloat NSSplitViewItemUnspecifiedDimension = -1.0;
 
 + (instancetype) contentListWithViewController: (NSViewController *)viewController
 {
-  return AUTORELEASE([[NSSplitViewItem alloc] initWithViewController: viewController]);
+  NSSplitViewItem *item = AUTORELEASE([[NSSplitViewItem alloc]
+    initWithViewController: viewController]);
+
+  item->_behavior = NSSplitViewItemBehaviorContentList;
+  item->_holdingPriority = 255;
+  item->_automaticMaximumThickness = 576;
+  return item;
 }
 
 + (instancetype) sidebarWithViewController: (NSViewController *)viewController
 {
-  return AUTORELEASE([[NSSplitViewItem alloc] initWithViewController: viewController]);
+  NSSplitViewItem *item = AUTORELEASE([[NSSplitViewItem alloc]
+    initWithViewController: viewController]);
+
+  item->_behavior = NSSplitViewItemBehaviorSidebar;
+  item->_holdingPriority = 260;
+  item->_canCollapse = YES;
+  item->_springLoaded = YES;
+  item->_automaticMaximumThickness = 250;
+  return item;
 }
 
 + (instancetype) splitViewItemWithViewController: (NSViewController *)viewController
 {
-  return AUTORELEASE([[NSSplitViewItem alloc] initWithViewController: viewController]);
+  NSSplitViewItem *item = AUTORELEASE([[NSSplitViewItem alloc]
+    initWithViewController: viewController]);
+
+  item->_behavior = NSSplitViewItemBehaviorDefault;
+  return item;
 }
 
 - (void) dealloc
@@ -117,9 +137,65 @@ const CGFloat NSSplitViewItemUnspecifiedDimension = -1.0;
   _holdingPriority = hp;
 }
 
+- (NSSplitViewItemBehavior) behavior
+{
+  return _behavior;
+}
+
 - (BOOL) canCollapse
 {
   return _canCollapse;
+}
+
+- (BOOL) isCollapsed
+{
+  NSView *view = [_viewController view];
+  NSView *superview = [view superview];
+
+  if ([superview isKindOfClass: [NSSplitView class]])
+    {
+      return [(NSSplitView *)superview isSubviewCollapsed: view];
+    }
+  return _collapsed;
+}
+
+- (void) setCollapsed: (BOOL)flag
+{
+  NSView *view = [_viewController view];
+  NSView *superview = [view superview];
+
+  _collapsed = flag;
+  if ([superview isKindOfClass: [NSSplitView class]])
+    {
+      NSSplitView *sv = (NSSplitView *)superview;
+      NSRect frame = [view frame];
+      BOOL vertical = [sv isVertical];
+
+      if (flag)
+        {
+          if (!NSIsEmptyRect(frame))
+            {
+              _uncollapsedThickness = vertical ? frame.size.width
+                                               : frame.size.height;
+            }
+          if (vertical)
+            frame.size.width = 0.0;
+          else
+            frame.size.height = 0.0;
+        }
+      else if (NSIsEmptyRect(frame))
+        {
+          CGFloat thickness = (_uncollapsedThickness > 0.0)
+            ? _uncollapsedThickness : 100.0;
+
+          if (vertical)
+            frame.size.width = thickness;
+          else
+            frame.size.height = thickness;
+        }
+      [view setFrame: frame];
+      [sv adjustSubviews];
+    }
 }
 
 - (NSSplitViewItemCollapseBehavior) collapseBehavior
@@ -191,6 +267,8 @@ const CGFloat NSSplitViewItemUnspecifiedDimension = -1.0;
       _springLoaded = [coder decodeBoolForKey: @"NSSpringLoaded"];
       _allowsFullHeightLayout =
         [coder decodeBoolForKey: @"NSAllowsFullHeightLayout"];
+      _behavior = [coder decodeIntegerForKey: @"NSBehavior"];
+      _collapsed = [coder decodeBoolForKey: @"NSCollapsed"];
     }
   return self;
 }
@@ -214,6 +292,8 @@ const CGFloat NSSplitViewItemUnspecifiedDimension = -1.0;
       [coder encodeBool: _springLoaded forKey: @"NSSpringLoaded"];
       [coder encodeBool: _allowsFullHeightLayout
                  forKey: @"NSAllowsFullHeightLayout"];
+      [coder encodeInteger: _behavior forKey: @"NSBehavior"];
+      [coder encodeBool: _collapsed forKey: @"NSCollapsed"];
     }
 }
 
