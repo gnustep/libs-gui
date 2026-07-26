@@ -1462,7 +1462,7 @@ GSOppositeEdge(NSRectEdge edge)
  */
 - (BOOL) hasHorizontalScroller
 {
-  return _hasHorizScroller;
+  return _hasHorizScrollerRequested;
 }
 
 /** <p>Returns whether the NSScrollView has a vertical ruler</p>
@@ -1478,7 +1478,7 @@ GSOppositeEdge(NSRectEdge edge)
  */
 - (BOOL) hasVerticalScroller
 {
-  return _hasVertScroller;
+  return _hasVertScrollerRequested;
 }
 
 /**<p>Returns the size of the NSScrollView's content view</p>
