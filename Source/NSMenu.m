@@ -2040,8 +2040,15 @@ static BOOL menuBarVisible = YES;
         {
           [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
           [[self window] setLevel: NSMainMenuWindowLevel];
-          [self _setGeometry];
+          /* sizeToFit must run first so that [_aWindow frame].size.height
+           * is non-zero when _setGeometry uses it to place the bar at the
+           * top of the screen.  Without this ordering, external Menu.app
+           * mode (which never calls -display) leaves the window frame at
+           * {0,0,w,h} instead of the correct top-of-screen position,
+           * breaking the NSMouseInRect re-entry check in
+           * _trackWithEvent:startingMenuView: (step 3a). */
           [self sizeToFit];
+          [self _setGeometry];
 
           if ([NSApp isActive])
             {
