@@ -104,6 +104,9 @@ APPKIT_EXPORT_CLASS
 - (void) viewDidAppear;
 - (void) viewWillDisappear;
 - (void) viewDidDisappear;
+- (void) updateViewConstraints;
+- (void) viewWillLayout;
+- (void) viewDidLayout;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 - (void) dismissViewController: (NSViewController *)viewController;
