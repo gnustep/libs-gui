@@ -21,6 +21,9 @@ int main()
   PASS([tc selectsInsertedObjects] == YES,
        "default selectsInsertedObjects is YES");
 
+  // Break retain loop to allow this objecty to be deallocated
+  [tc setContent: nil];
+
   DESTROY(arp);
   return 0;
 }
