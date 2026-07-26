@@ -149,6 +149,7 @@ APPKIT_EXPORT_CLASS
   NSBezelStyle _bezel_style;
   NSGradientType _gradient_type;
   NSColor *_backgroundColor;
+  NSColor *_bezelColor;
   // Think of the following as a BOOL ivars
 #define _buttoncell_is_transparent _cell.subclass_bool_one
 #define _image_dims_when_disabled _cell.subclass_bool_two
@@ -479,6 +480,20 @@ APPKIT_EXPORT_CLASS
  * use the default system background color for the button's style.
  */
 - (void) setBackgroundColor: (NSColor *)color;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+/**
+ * Returns the tint color drawn behind the button's bezel, or nil when the
+ * button uses its default bezel colour.
+ */
+- (NSColor *) bezelColor;
+/**
+ * Sets a tint color to draw behind the button's bezel. Pass nil to use the
+ * default bezel colour for the button's style and state.
+ */
+- (void) setBezelColor: (NSColor *)color;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 /**
  * Draws the button's bezel (border and background) within the specified
  * frame in the given view. This method handles the visual rendering of

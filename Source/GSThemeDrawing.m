@@ -159,6 +159,16 @@
 	}
     }
 
+  if ([cell isKindOfClass: [NSButtonCell class]])
+    {
+      NSColor *bezelColor = [(NSButtonCell *)cell bezelColor];
+
+      if (bezelColor != nil)
+        {
+          color = bezelColor;
+        }
+    }
+
   tiles = [self tilesNamed: name state: state];
   if (tiles == nil)
     {
