@@ -5253,20 +5253,25 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (void) layout
 {
+  NSViewController *vc = [NSViewController _viewControllerForView: self];
+  GSAutoLayoutEngine *engine;
+
+  [vc viewWillLayout];
+
   _needsLayout = NO;
 
-  GSAutoLayoutEngine *engine = [self _layoutEngine];
-  if (!engine)
+  engine = [self _layoutEngine];
+  if (engine)
     {
-      return;
+      NSArray *subviews = [self subviews];
+      FOR_IN (NSView *, subview, subviews)
+        NSRect subviewAlignmentRect =
+            [engine alignmentRectForView: subview];
+        [subview setFrame: subviewAlignmentRect];
+      END_FOR_IN (subviews);
     }
 
-  NSArray *subviews = [self subviews];
-  FOR_IN (NSView *, subview, subviews)
-    NSRect subviewAlignmentRect =
-        [engine alignmentRectForView: subview];
-    [subview setFrame: subviewAlignmentRect];
-  END_FOR_IN (subviews);
+  [vc viewDidLayout];
 }
 
 - (void) layoutSubtreeIfNeeded
@@ -5440,7 +5445,16 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
   if ([self needsUpdateConstraints])
     {
-      [self updateConstraints];
+      NSViewController *vc = [NSViewController _viewControllerForView: self];
+
+      if (vc != nil)
+        {
+          [vc updateViewConstraints];
+        }
+      else
+        {
+          [self updateConstraints];
+        }
     }
 }
 

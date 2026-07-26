@@ -140,6 +140,19 @@ static void *viewControllerAssociationKey = &viewControllerAssociationKey;
 {
 }
 
+- (void) updateViewConstraints
+{
+  [[self view] updateConstraints];
+}
+
+- (void) viewWillLayout
+{
+}
+
+- (void) viewDidLayout
+{
+}
+
 - (void)setRepresentedObject:(id)representedObject
 {
   ASSIGN(_representedObject, representedObject);
