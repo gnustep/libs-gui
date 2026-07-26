@@ -33,6 +33,10 @@
 
 #import "GSFastEnumeration.h"
 
+#include <float.h>
+
+const CGFloat NSSplitViewControllerAutomaticDimension = -FLT_MAX;
+
 @implementation NSSplitViewController
 - (instancetype) initWithNibName: (NSString *)nibNameOrNil
                           bundle: (NSBundle *)nibBundleOrNil
@@ -41,6 +45,7 @@
   if (self != nil)
     {
       _splitViewItems = [[NSMutableArray alloc] init];
+      _minimumThicknessForInlineSidebars = NSSplitViewControllerAutomaticDimension;
     }
   return self;
 }
@@ -189,6 +194,7 @@
       return nil;
     }
   _splitViewItems = [[NSMutableArray alloc] init];
+  _minimumThicknessForInlineSidebars = NSSplitViewControllerAutomaticDimension;
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSSplitView"])
