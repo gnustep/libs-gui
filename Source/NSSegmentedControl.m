@@ -117,6 +117,16 @@ static Class segmentedControlCellClass;
   [_cell selectSegmentWithTag: tag];
 }
 
+- (void) setTrackingMode: (NSSegmentSwitchTracking)mode
+{
+  [_cell setTrackingMode: mode];
+}
+
+- (NSSegmentSwitchTracking) trackingMode
+{
+  return [_cell trackingMode];
+}
+
 // Working with individual segments...
 - (void) setWidth: (CGFloat)width forSegment: (NSInteger)segment
 {

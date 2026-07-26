@@ -786,7 +786,10 @@
       NSRect frame = [segment frame];
       if(NSPointInRect(lastPoint,frame))
 	{
-	  [self setSelectedSegment: i];
+	  if (_segmentCellFlags._tracking_mode == NSSegmentSwitchTrackingSelectAny)
+	    [self setSelected: ![self isSelectedForSegment: i] forSegment: i];
+	  else
+	    [self setSelectedSegment: i];
 	  break;
 	}
     }
