@@ -499,15 +499,19 @@ static NSLock *_fontCollectionLock = nil;
 - (instancetype) copyWithZone: (NSZone *)zone
 {
   NSFontCollection *fc = [[NSFontCollection allocWithZone: zone] init];
+
   [fc _setFontCollectionDictionary: _fontCollectionDictionary];
   return fc;
 }
 
 - (instancetype) mutableCopyWithZone: (NSZone *)zone
 {
-  NSMutableFontCollection *fc = [[NSMutableFontCollection allocWithZone: zone] init];
+  NSMutableFontCollection *fc;
 
-  [fc _setFontCollectionDictionary: [_fontCollectionDictionary mutableCopyWithZone: zone]];
+  fc = [[NSMutableFontCollection allocWithZone: zone] init];
+
+  [fc _setFontCollectionDictionary:
+    AUTORELEASE([_fontCollectionDictionary mutableCopyWithZone: zone])];
 
   return fc;
 }
@@ -550,28 +554,33 @@ static NSLock *_fontCollectionLock = nil;
 
 + (NSMutableFontCollection *) fontCollectionWithDescriptors: (NSArray *)queryDescriptors
 {
-  return [[NSFontCollection fontCollectionWithDescriptors: queryDescriptors] mutableCopy];
+  return AUTORELEASE([[NSFontCollection
+    fontCollectionWithDescriptors: queryDescriptors] mutableCopy]);
 }
 
 + (NSMutableFontCollection *) fontCollectionWithAllAvailableDescriptors
 {
-  return [[NSFontCollection fontCollectionWithAllAvailableDescriptors] mutableCopy];
+  return AUTORELEASE([[NSFontCollection
+    fontCollectionWithAllAvailableDescriptors] mutableCopy]);
 }
 
 + (NSMutableFontCollection *) fontCollectionWithLocale: (NSLocale *)locale
 {
-  return [[NSFontCollection fontCollectionWithLocale: locale] mutableCopy];
+  return AUTORELEASE([[NSFontCollection
+    fontCollectionWithLocale: locale] mutableCopy]);
 }
 
 + (NSMutableFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
 {
-  return [[NSFontCollection fontCollectionWithName: name] mutableCopy];
+  return AUTORELEASE([[NSFontCollection
+    fontCollectionWithName: name] mutableCopy]);
 }
 
 + (NSMutableFontCollection *) fontCollectionWithName: (NSFontCollectionName)name
                                           visibility: (NSFontCollectionVisibility)visibility
 {
-  return [[NSFontCollection fontCollectionWithName: name visibility: visibility] mutableCopy];
+  return AUTORELEASE([[NSFontCollection
+    fontCollectionWithName: name visibility: visibility] mutableCopy]);
 }
 
 - (NSArray *) queryDescriptors
@@ -595,8 +604,9 @@ static NSLock *_fontCollectionLock = nil;
 
 - (void) setExclusionDescriptors: (NSArray *)exclusionDescriptors
 {
-  NSMutableArray *copy = exclusionDescriptors ? [exclusionDescriptors mutableCopy]
-                                              : [[NSMutableArray alloc] init];
+  NSMutableArray *copy = exclusionDescriptors
+    ? [exclusionDescriptors mutableCopy]
+    : [[NSMutableArray alloc] init];
 
   [_fontCollectionDictionary setObject: copy
                                 forKey: @"NSFontExclusionDescriptorAttributes"];
