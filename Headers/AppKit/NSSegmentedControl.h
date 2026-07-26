@@ -38,12 +38,6 @@ typedef enum _NSSegmentStyle {
   NSSegmentStyleCapsule = 5,
   NSSegmentStyleSmallSquare = 6
 } NSSegmentStyle;
-
-typedef enum {
-  NSSegmentSwitchTrackingSelectOne = 0,
-  NSSegmentSwitchTrackingSelectAny = 1,
-  NSSegmentSwitchTrackingMomentary = 2
-} NSSegmentSwitchTracking;
 #endif
 
 // tracking types...
