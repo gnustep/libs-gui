@@ -50,6 +50,10 @@ int main()
   PASS([tc alwaysUsesMultipleValuesMarker] == YES,
        "alwaysUsesMultipleValuesMarker round-trips");
 
+  /* Break retain loop so this object can be deallocated.
+   */
+  [tc setContent: nil];
+
   DESTROY(arp);
   return 0;
 }
