@@ -2339,6 +2339,51 @@ forStartOfGlyphRange: (NSRange)glyphRange
 }
 
 
+- (void) setTruncationGlyph: (NSGlyph)glyph
+		    atPoint: (NSPoint)location
+		       font: (NSFont *)font
+	      forGlyphRange: (NSRange)glyphRange
+{
+  textcontainer_t *tc;
+  int i;
+  linefrag_t *lf;
+
+  SETUP_STUFF
+
+  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+    {
+      if (tc->pos <= glyphRange.location &&
+	  tc->pos + tc->length >= glyphRange.location + glyphRange.length)
+	break;
+    }
+  if (i == num_textcontainers)
+    {
+      [NSException raise: NSRangeException
+		  format: @"%s: glyph range not consistent with existing layout",
+			  __PRETTY_FUNCTION__];
+      return;
+    }
+
+  for (i = tc->num_linefrags - 1, lf = tc->linefrags + i; i >= 0; i--, lf--)
+    {
+      if (lf->pos <= glyphRange.location &&
+	  lf->pos + lf->length >= glyphRange.location + glyphRange.length)
+	break;
+    }
+  if (i < 0)
+    {
+      [NSException raise: NSRangeException
+		  format: @"%s: glyph range not consistent with existing layout",
+			  __PRETTY_FUNCTION__];
+      return;
+    }
+
+  lf->truncationGlyph = glyph;
+  lf->truncationPoint = location;
+  lf->truncationFont = font;
+}
+
+
 -(void) setAttachmentSize: (NSSize)size
 	    forGlyphRange: (NSRange)glyphRange
 {
@@ -2561,6 +2606,29 @@ forStartOfGlyphRange: (NSRange)glyphRange
 {
   return [self rangeOfNominallySpacedGlyphsContainingIndex: glyphIndex
 	       startLocation: NULL];
+}
+
+
+- (NSGlyph) truncationGlyphForGlyphAtIndex: (NSUInteger)glyphIndex
+{
+  int i;
+  textcontainer_t *tc;
+  linefrag_t *lf;
+
+  [self _doLayoutToGlyph: glyphIndex];
+  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+    if (tc->pos + tc->length > glyphIndex)
+      break;
+  if (i == num_textcontainers)
+    return NSNullGlyph;
+
+  for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
+    if (lf->pos + lf->length > glyphIndex)
+      break;
+  if (i == tc->num_linefrags)
+    return NSNullGlyph;
+
+  return lf->truncationGlyph;
 }
 
 
