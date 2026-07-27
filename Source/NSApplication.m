@@ -904,8 +904,8 @@ static BOOL _isAutolaunchChecked = NO;
   /* Initialize font manager.  */
   [NSFontManager sharedFontManager];
 
-  _hidden = [[NSMutableArray alloc] init];
-  _inactive = [[NSMutableArray alloc] init];
+  ASSIGN(_hidden, [NSMutableArray array]);
+  ASSIGN(_inactive, [NSMutableArray array]);
   _unhide_on_activation = YES;
   _app_is_hidden = NO;
   /* Ivar already automatically initialized to NO when the app is
@@ -1237,6 +1237,9 @@ static BOOL _isAutolaunchChecked = NO;
 
 - (void) dealloc
 {
+  DESTROY(_hidden);
+  DESTROY(_inactive);
+
   /* The display server is notionally owned by the NSApplication singleton
    * so if (and only if) this is that object, we should shut it down.
    * We destroy additional app instnces st the start of the -init process,
@@ -1251,8 +1254,6 @@ static BOOL _isAutolaunchChecked = NO;
 	removeObserver: self];
       [nc removeObserver: self];
 
-      RELEASE(_hidden);
-      RELEASE(_inactive);
       RELEASE(_listener);
       RELEASE(null_event);
       RELEASE(_current_event);

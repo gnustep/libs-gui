@@ -854,6 +854,7 @@ typedef	struct {
       [self _revokeOwnerships];
       RELEASE(_overrides);
       RELEASE(_owned);
+      RELEASE(_name);
       NSZoneFree ([self zone], _reserved);
     }
   [super dealloc];
