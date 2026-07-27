@@ -111,6 +111,7 @@ NSDictionaryController.m \
 NSDockTile.m \
 NSDocument.m \
 NSDocumentController.m \
+NSDraggingItem.m \
 NSDrawer.m \
 NSEPSImageRep.m \
 NSEvent.m \
@@ -469,6 +470,7 @@ NSDiffableDataSource.h \
 NSDockTile.h \
 NSDocument.h \
 NSDocumentController.h \
+NSDraggingItem.h \
 NSDrawer.h \
 NSEPSImageRep.h \
 NSErrors.h \
