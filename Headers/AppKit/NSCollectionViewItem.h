@@ -32,6 +32,7 @@
 
 #import <Foundation/NSArray.h>
 #import <AppKit/NSViewController.h>
+#import <AppKit/NSCollectionView.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
@@ -56,6 +57,7 @@ APPKIT_EXPORT_CLASS
   IBOutlet NSTextField *textField;
   IBOutlet NSImageView *imageView;
   BOOL _isSelected;
+  NSInteger _highlightState;
 }
 
 /**
@@ -92,6 +94,22 @@ APPKIT_EXPORT_CLASS
  * differently in user interactions and operations.
  */
 - (BOOL)isSelected;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)
+/**
+ * Returns the current highlight state of the item, used to draw a
+ * highlight while it participates in selection, deselection or as a
+ * drop target. The default is NSCollectionViewItemHighlightNone. The
+ * highlight state is independent of the selection state.
+ */
+- (NSCollectionViewItemHighlightState)highlightState;
+/**
+ * Sets the current highlight state of the item. This changes how the
+ * item is drawn while the collection view tracks selection or a drag,
+ * and does not change the selection state.
+ */
+- (void)setHighlightState:(NSCollectionViewItemHighlightState)highlightState;
+#endif
 
 /**
  * Returns the text field outlet that displays textual content for this

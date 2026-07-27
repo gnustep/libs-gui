@@ -47,6 +47,16 @@
   return _isSelected;
 }
 
+- (NSCollectionViewItemHighlightState) highlightState
+{
+  return _highlightState;
+}
+
+- (void) setHighlightState: (NSCollectionViewItemHighlightState)state
+{
+  _highlightState = state;
+}
+
 - (void) dealloc
 {
   DESTROY(textField);
