@@ -37,6 +37,7 @@
 #import "AppKit/NSFontCollection.h"
 #import "AppKit/NSTextFinder.h"
 #import "AppKit/NSCollectionView.h"
+#import "AppKit/NSDraggingItem.h"
 
 // Global strings
 APPKIT_DECLARE APPKIT_DECLARE NSString *NSModalPanelRunLoopMode = @"NSModalPanelRunLoopMode";
@@ -774,6 +775,10 @@ APPKIT_DECLARE NSFontCollectionName const NSFontCollectionRecentlyUsed = @"NSFon
 APPKIT_DECLARE NSFontCollectionMatchingOptionKey const NSFontCollectionIncludeDisabledFontsOption = @"NSFontCollectionIncludeDisabledFontsOption";
 APPKIT_DECLARE NSFontCollectionMatchingOptionKey const NSFontCollectionRemoveDuplicatesOption = @"NSFontCollectionRemoveDuplicatesOption";
 APPKIT_DECLARE NSFontCollectionMatchingOptionKey const NSFontCollectionDisallowAutoActivationOption = @"NSFontCollectionDisallowAutoActivationOption";
+
+// Dragging image components
+APPKIT_DECLARE NSDraggingImageComponentKey const NSDraggingImageComponentIconKey = @"icon";
+APPKIT_DECLARE NSDraggingImageComponentKey const NSDraggingImageComponentLabelKey = @"label";
 
 // Speech recognition...
 APPKIT_DECLARE const NSString *GSSpeechRecognizerDidRecognizeWordNotification = @"GSSpeechRecognizerDidRecognizeWordNotification"; 
