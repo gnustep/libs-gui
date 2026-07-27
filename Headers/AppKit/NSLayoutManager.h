@@ -70,6 +70,10 @@ APPKIT_EXPORT_CLASS
   NSMutableDictionary *_typingAttributes;
 
   NSMutableAttributedString *_temporaryAttributes;
+
+@protected
+  float _hyphenationFactor;
+  BOOL _allowsNonContiguousLayout;
 }
 
 /* TODO */
