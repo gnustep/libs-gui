@@ -522,7 +522,6 @@ typedef	struct {
   [defaults synchronize];
   NSDebugMLLog(@"GSTheme", @"default theme is now %@",
     [defaults objectForKey: @"GSTheme"]);
-  [self defaultsDidChange: nil];
 }
 
 + (void) setTheme: (GSTheme*)theme
