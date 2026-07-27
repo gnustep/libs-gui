@@ -596,6 +596,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
  *     }
  *   );
  * }
+ * </example>
  */
 @implementation	NSWorkspace
 
