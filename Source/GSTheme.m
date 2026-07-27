@@ -518,11 +518,11 @@ typedef	struct {
 {
   NSUserDefaults	*defaults;
 
-  NSLog(@"System preference changing");
   defaults = [NSUserDefaults standardUserDefaults];
   [defaults synchronize];
-  NSLog(@"System preference changed; default theme is %@",
+  NSDebugMLLog(@"GSTheme", @"default theme is now %@",
     [defaults objectForKey: @"GSTheme"]);
+  [self defaultsDidChange: nil];
 }
 
 + (void) setTheme: (GSTheme*)theme
