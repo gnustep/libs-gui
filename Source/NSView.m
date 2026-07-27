@@ -1744,6 +1744,34 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
   return aRect;
 }
 
+- (NSRect) backingAlignedRect: (NSRect)aRect
+                      options: (NSAlignmentOptions)options
+{
+  CGFloat scale = 1.0;
+
+  if (_window != nil)
+    {
+      scale = [_window backingScaleFactor];
+    }
+  if (scale <= 0.0)
+    {
+      scale = 1.0;
+    }
+
+  if (scale == 1.0)
+    {
+      return NSIntegralRectWithOptions(aRect, options);
+    }
+
+  /* Align on the backing store pixel grid: scale the rectangle into backing
+     coordinates, align it to whole pixels there, then scale it back. */
+  aRect = NSMakeRect(NSMinX(aRect) * scale, NSMinY(aRect) * scale,
+                     NSWidth(aRect) * scale, NSHeight(aRect) * scale);
+  aRect = NSIntegralRectWithOptions(aRect, options);
+  return NSMakeRect(NSMinX(aRect) / scale, NSMinY(aRect) / scale,
+                    NSWidth(aRect) / scale, NSHeight(aRect) / scale);
+}
+
 - (NSPoint) convertPoint: (NSPoint)aPoint fromView: (NSView*)aView
 {
   NSPoint inBase;
