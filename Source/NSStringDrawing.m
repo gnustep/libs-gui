@@ -344,11 +344,33 @@ static inline void prepare_string(NSString *string, NSDictionary *attributes)
                                     withString: string];
   if ([string length])
     {
-      [scratchTextStorage setAttributes: attributes
-			  range: NSMakeRange(0, [string length])];
+      NSParagraphStyle *style = [attributes objectForKey:
+                                   NSParagraphStyleAttributeName];
+
+      /* AppKit ignores a paragraph first line head indent in these
+         convenience methods (see strip_first_line_indent).  The whole string
+         shares one attributes dictionary here, so dropping the indent from a
+         copy before it is applied avoids rewriting the laid out text. */
+      if (style != nil && [style firstLineHeadIndent] != 0.0)
+        {
+          NSMutableParagraphStyle *stripped = [style mutableCopy];
+          NSMutableDictionary *noIndent = [attributes mutableCopy];
+
+          [stripped setFirstLineHeadIndent: 0.0];
+          [noIndent setObject: stripped
+                       forKey: NSParagraphStyleAttributeName];
+          [scratchTextStorage setAttributes: noIndent
+                                      range: NSMakeRange(0, [string length])];
+          RELEASE(stripped);
+          RELEASE(noIndent);
+        }
+      else
+        {
+          [scratchTextStorage setAttributes: attributes
+                                      range: NSMakeRange(0, [string length])];
+        }
     }
   [scratchTextStorage endEditing];
-  strip_first_line_indent(scratchTextStorage);
 }
 
 static inline void prepare_attributed_string(NSAttributedString *string)
