@@ -36,7 +36,9 @@
 #import <Foundation/NSLock.h>
 
 #import "AppKit/NSAffineTransform.h"
+#import "AppKit/NSAttributedString.h"
 #import "AppKit/NSLayoutManager.h"
+#import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSTextStorage.h"
@@ -294,6 +296,44 @@ static cache_t *cache_lookup(BOOL hasSize, NSSize size, BOOL useScreenFonts)
   return c;
 }
 
+/* AppKit ignores a paragraph first line head indent in the convenience string
+   drawing methods: the text is laid out, measured and drawn from the origin,
+   not from the indent. Drop the indent from our private working copy so that
+   -boundingRectWithSize:options: and -drawInRect: agree and match AppKit. */
+static void strip_first_line_indent(NSTextStorage *textStorage)
+{
+  NSUInteger length = [textStorage length];
+  NSUInteger index = 0;
+
+  if (length == 0)
+    {
+      return;
+    }
+
+  [textStorage beginEditing];
+  while (index < length)
+    {
+      NSRange range;
+      NSParagraphStyle *style;
+
+      style = [textStorage attribute: NSParagraphStyleAttributeName
+                             atIndex: index
+                      effectiveRange: &range];
+      if (style != nil && [style firstLineHeadIndent] != 0.0)
+        {
+          NSMutableParagraphStyle *stripped = [style mutableCopy];
+
+          [stripped setFirstLineHeadIndent: 0.0];
+          [textStorage addAttribute: NSParagraphStyleAttributeName
+                              value: stripped
+                              range: range];
+          RELEASE(stripped);
+        }
+      index = NSMaxRange(range);
+    }
+  [textStorage endEditing];
+}
+
 static inline void prepare_string(NSString *string, NSDictionary *attributes)
 {
   cache_t *scratch = cache + NUM_CACHE_ENTRIES;
@@ -308,6 +348,7 @@ static inline void prepare_string(NSString *string, NSDictionary *attributes)
 			  range: NSMakeRange(0, [string length])];
     }
   [scratchTextStorage endEditing];
+  strip_first_line_indent(scratchTextStorage);
 }
 
 static inline void prepare_attributed_string(NSAttributedString *string)
@@ -317,6 +358,7 @@ static inline void prepare_attributed_string(NSAttributedString *string)
 
   [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
                           withAttributedString: string];
+  strip_first_line_indent(scratchTextStorage);
 }
 
 static BOOL use_screen_fonts(void)
