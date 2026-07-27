@@ -111,12 +111,28 @@ NSView *viewIsPrinting = nil;
 const CGFloat NSViewNoInstrinsicMetric = -1;
 const CGFloat NSViewNoIntrinsicMetric = -1;
 
+/* Largest representable CGFloat.  Defined here so the library does not pull in
+   CoreFoundation for it; gated so it does not clash where CoreFoundation is
+   present. */
+#ifndef CGFLOAT_MAX
+#  include <float.h>
+#  if defined(__LP64__) && __LP64__
+#    define CGFLOAT_MAX DBL_MAX
+#  else
+#    define CGFLOAT_MAX FLT_MAX
+#  endif
+#endif
+
 /* Private NSViewController hooks used to drive a controller's appearance
    transitions when its view moves between windows. */
 @interface NSViewController (GSViewAppearance)
 + (NSViewController *) _viewControllerForView: (NSView *)aView;
 - (void) _viewWillMoveToWindow: (NSWindow *)newWindow;
 - (void) _viewDidMoveToWindow;
+@end
+
+@interface NSView (GSPrivateVisibleRect)
+- (NSRect) _geometricVisibleRect;
 @end
 
 /**
@@ -363,9 +379,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 	  if (_super_view != nil)
 	    {
-	      superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
+	      superviewsVisibleRect = [self convertRect: [_super_view _geometricVisibleRect]
 					       fromView: _super_view];
-	      
+
 	      _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
 	    }
 	  else
@@ -2439,7 +2455,7 @@ static void autoresize(CGFloat oldContainerSize,
 
 - (void) lockFocus
 {
-  [self lockFocusInRect: [self visibleRect]];
+  [self lockFocusInRect: [self _geometricVisibleRect]];
 }
 
 - (void) unlockFocus
@@ -2456,7 +2472,7 @@ static void autoresize(CGFloat oldContainerSize,
 {
   if ([self canDraw])
     {
-      [self _lockFocusInContext: context inRect: [self visibleRect]];
+      [self _lockFocusInContext: context inRect: [self _geometricVisibleRect]];
       return YES;
     }
   else
@@ -2510,14 +2526,14 @@ static void autoresize(CGFloat oldContainerSize,
 
 - (void) display
 {
-  [self displayRect: [self visibleRect]];
+  [self displayRect: [self _geometricVisibleRect]];
 }
 
 - (void) displayIfNeeded
 {
   if (_rFlags.needs_display == YES)
     {
-      [self displayIfNeededInRect: [self visibleRect]];
+      [self displayIfNeededInRect: [self _geometricVisibleRect]];
     }
 }
 
@@ -2525,7 +2541,7 @@ static void autoresize(CGFloat oldContainerSize,
 {
   if (_rFlags.needs_display == YES)
     {
-      [self displayIfNeededInRectIgnoringOpacity: [self visibleRect]];
+      [self displayIfNeededInRectIgnoringOpacity: [self _geometricVisibleRect]];
     }
 }
 
@@ -2650,7 +2666,7 @@ static void autoresize(CGFloat oldContainerSize,
   if (context == wContext)
     {
       NSRect neededRect;
-      NSRect visibleRect = [self visibleRect];
+      NSRect visibleRect = [self _geometricVisibleRect];
 
       flush = YES;
       [_window disableFlushWindow];
@@ -2763,7 +2779,10 @@ static void autoresize(CGFloat oldContainerSize,
 - (void) drawRect: (NSRect)rect
 {}
 
-- (NSRect) visibleRect
+/* The visible rectangle clipped to the superview chain, in the receiver's
+   coordinates.  Used for the coordinate and drawing machinery, which needs a
+   bounded rectangle even when the view has no window. */
+- (NSRect) _geometricVisibleRect
 {
   if ([self isHiddenOrHasHiddenAncestor])
     {
@@ -2775,6 +2794,19 @@ static void autoresize(CGFloat oldContainerSize,
       [self _rebuildCoordinates];
     }
   return _visibleRect;
+}
+
+- (NSRect) visibleRect
+{
+  if (_window == nil && ![self isHiddenOrHasHiddenAncestor])
+    {
+      /* AppKit reports an unbounded visible rectangle for a view that is not
+         in a window. */
+      return NSMakeRect(-CGFLOAT_MAX / 2, -CGFLOAT_MAX / 2,
+                        CGFLOAT_MAX, CGFLOAT_MAX);
+    }
+
+  return [self _geometricVisibleRect];
 }
 
 - (BOOL) wantsDefaultClipping

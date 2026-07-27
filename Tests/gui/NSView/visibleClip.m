@@ -20,10 +20,8 @@ int main(int argc, const char **argv)
       SKIP("It looks like GNUstep backend is not yet installed")
   NS_ENDHANDLER
 
-  /* -[NSView visibleRect] on a view with no window returns the view's own
-     bounds in GNUstep, rather than AppKit's unbounded sentinel rect for a
-     view with no clip context at all. Confirmed divergence, not asserted
-     here (see Divergences). */
+  /* -[NSView visibleRect] on a view with no window returns AppKit's unbounded
+     rect; that is exercised in visibleRectNoWindow.m. */
 
   {
     NSScrollView *sv = AUTORELEASE([[NSScrollView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)]);
