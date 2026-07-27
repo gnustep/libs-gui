@@ -77,15 +77,22 @@ GSDiffableDefaultSectionIdentifier()
 
 - (id) copyWithZone: (NSZone *)zone
 {
-  NSDiffableDataSourceSnapshot *copy = [[[self class] allocWithZone: zone] init];
-  NSMutableArray *copiedSections = [_sections mutableCopy];
-  NSMutableDictionary *copiedItems = [NSMutableDictionary dictionaryWithCapacity: [_itemsBySection count]];
-  NSEnumerator *sectionEnumerator = [copiedSections objectEnumerator];
-  id section = nil;
+  NSDiffableDataSourceSnapshot	*copy;
+  NSMutableDictionary 		*copiedItems;
+  NSMutableArray 		*copiedSections;
+  NSEnumerator 			*sectionEnumerator;
+  id 				section;
+
+  copy = [[[self class] allocWithZone: zone] init];
+  copiedItems = [NSMutableDictionary dictionaryWithCapacity:
+    [_itemsBySection count]];
+  copiedSections = AUTORELEASE([_sections mutableCopy]);
+  sectionEnumerator = [copiedSections objectEnumerator];
 
   while ((section = [sectionEnumerator nextObject]) != nil)
     {
       NSArray *items = [_itemsBySection objectForKey: section];
+
       if (items != nil)
 	{
 	  NSMutableArray *sectionItems = [items mutableCopy];
