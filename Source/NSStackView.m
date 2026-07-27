@@ -413,10 +413,11 @@
 
 - (void) setArrangedSubviews: (NSArray *)arrangedSubviews
 {
-  ASSIGN(_arrangedSubviews, arrangedSubviews);
-  _distribution = NSStackViewDistributionFill;
-
   [self _removeAllSubviews];
+
+  RELEASE(_arrangedSubviews);
+  _arrangedSubviews = [[NSMutableArray alloc] initWithArray: arrangedSubviews];
+  _distribution = NSStackViewDistributionFill;
 
   _beginningContainer = nil;
   _middleContainer = nil;
@@ -428,7 +429,7 @@
 
 - (NSArray *) arrangedSubviews
 {
-  return [self subviews];
+  return AUTORELEASE([_arrangedSubviews copy]);
 }
 
 - (void) setDetachedViews: (NSArray *)detachedViews
@@ -474,17 +475,20 @@
   self = [self initWithFrame: NSZeroRect];
   if (self != nil)
     {
-      [_arrangedSubviews addObjectsFromArray: views];
-      ASSIGNCOPY(_views, views);
-
-      [self _refreshView];
+      FOR_IN(NSView*, v, views)
+        {
+          [self addArrangedSubview: v];
+        }
+      END_FOR_IN(views);
     }
   return self;
 }
 
 - (void) dealloc
 {
-  RELEASE(_arrangedSubviews);
+  /* Cleared, not released: -[super dealloc] removes the subviews and reaches
+     -willRemoveSubview:, which reads _arrangedSubviews. */
+  DESTROY(_arrangedSubviews);
   RELEASE(_detachedViews);
   RELEASE(_views);
   RELEASE(_customSpacingMap);
@@ -521,18 +525,55 @@
 
 - (void) addArrangedSubview: (NSView *)v
 {
+  if (v == nil)
+    {
+      return;
+    }
+
+  [_arrangedSubviews removeObject: v];
   [_arrangedSubviews addObject: v];
+  if ([v superview] != self)
+    {
+      [self addSubview: v];
+    }
   [self _refreshView];
 }
 
 - (void) insertArrangedSubview: (NSView *)v atIndex: (NSInteger)idx
 {
+  if (v == nil)
+    {
+      return;
+    }
+
+  [_arrangedSubviews removeObject: v];
+  if (idx > (NSInteger)[_arrangedSubviews count])
+    {
+      idx = [_arrangedSubviews count];
+    }
   [_arrangedSubviews insertObject: v atIndex: idx];
+  if ([v superview] != self)
+    {
+      [self addSubview: v];
+    }
+  [self _refreshView];
 }
 
 - (void) removeArrangedSubview: (NSView *)v
 {
+  if (![_arrangedSubviews containsObject: v])
+    {
+      return;
+    }
+
   [_arrangedSubviews removeObject: v];
+  [self _refreshView];
+}
+
+- (void) willRemoveSubview: (NSView *)subview
+{
+  [_arrangedSubviews removeObject: subview];
+  [super willRemoveSubview: subview];
 }
 
 // Custom priorities
