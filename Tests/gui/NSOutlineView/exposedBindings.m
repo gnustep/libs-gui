@@ -8,6 +8,7 @@
 #include "Testing.h"
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSSet.h>
 #include <Foundation/NSString.h>
 
@@ -33,6 +34,7 @@ occurrences(NSArray *array, NSString *name)
 
 int main()
 {
+  CREATE_AUTORELEASE_POOL(arp);
   NSOutlineView	*ov;
   NSArray	*exposed;
 
@@ -61,6 +63,8 @@ int main()
        "no binding is reported more than once");
 
   END_SET("NSOutlineView exposed bindings are not repeated")
+
+  DESTROY(arp);
 
   return 0;
 }
