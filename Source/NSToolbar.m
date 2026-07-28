@@ -491,6 +491,11 @@ static GSValidationCenter *vc = nil;
 
 // Instance methods
 
+- (id) init
+{
+  return [self initWithIdentifier: @""];
+}
+
 - (id) initWithIdentifier: (NSString *)identifier
 {
   NSToolbar *toolbarModel = nil;
@@ -1233,6 +1238,12 @@ static GSValidationCenter *vc = nil;
 {
   NSArray *linked;
   id toolbar;
+
+  /* A toolbar without an identifier shares its configuration with nothing. */
+  if ([[self identifier] length] == 0)
+    {
+      return nil;
+    }
 
   linked = [[self class] _toolbarsWithIdentifier: [self identifier]];
 
