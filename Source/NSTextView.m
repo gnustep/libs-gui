@@ -515,6 +515,36 @@ decoded.
 
 
 /*
+Returns YES if the text contains any attribute that -resetCursorRects turns
+into a custom (non-I-beam) cursor rect.  Currently that is only
+NSLinkAttributeName (the pointing-hand cursor over links); NSCursorAttributeName
+is still a FIXME in -resetCursorRects and so is intentionally not checked here.
+*/
+- (BOOL) _hasCustomCursorRegions
+{
+  NSTextStorage *storage = [self textStorage];
+  NSUInteger length = [storage length];
+  NSUInteger i = 0;
+
+  while (i < length)
+    {
+      NSRange effectiveRange;
+      id linkValue = [storage attribute: NSLinkAttributeName
+				 atIndex: i
+			   longestEffectiveRange: &effectiveRange
+				 inRange: NSMakeRange(i, length - i)];
+
+      if (linkValue != nil)
+	{
+	  return YES;
+	}
+      i = NSMaxRange(effectiveRange);
+    }
+
+  return NO;
+}
+
+/*
 Called when our state needs updating due to external changes. Currently,
 this happens when layout has been invalidated, and when we are resized.
 */
@@ -526,8 +556,15 @@ this happens when layout has been invalidated, and when we are resized.
   [self updateInsertionPointStateAndRestartTimer:
     [self shouldDrawInsertionPoint]];
   [self _updateInputMethodState];
-  /* In case any sections of text with custom cursors were moved */
-  [[self window] invalidateCursorRectsForView: self];
+  /* In case any sections of text with custom cursors were moved.  Only
+     invalidate when the text actually has custom cursor regions (links);
+     for plain text the sole cursor rect is the static I-beam over the whole
+     visible rect, and rebuilding it on every layout change makes the mouse
+     cursor flicker while typing (bug #353). */
+  if ([self _hasCustomCursorRegions])
+    {
+      [[self window] invalidateCursorRectsForView: self];
+    }
 }
 
 - (void) _layoutManagerDidInvalidateLayout
