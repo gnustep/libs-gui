@@ -113,6 +113,34 @@ static NSNotificationCenter *nc;
 
 static GSComboWindow *gsWindow = nil;
 
+static void
+GSSyncComboPopupParentWindow(NSWindow *popupWindow, NSWindow *ownerWindow)
+{
+  NSWindow *parentWindow = [popupWindow parentWindow];
+
+  if (parentWindow != nil && parentWindow != ownerWindow)
+    {
+      [parentWindow removeChildWindow: popupWindow];
+      parentWindow = nil;
+    }
+
+  if (ownerWindow != nil && parentWindow != ownerWindow)
+    {
+      [ownerWindow addChildWindow: popupWindow ordered: NSWindowAbove];
+    }
+}
+
+static void
+GSDetachComboPopupParentWindow(NSWindow *popupWindow)
+{
+  NSWindow *parentWindow = [popupWindow parentWindow];
+
+  if (parentWindow != nil)
+    {
+      [parentWindow removeChildWindow: popupWindow];
+    }
+}
+
 @implementation GSComboWindow
 
 + (GSComboWindow *) defaultPopUp
@@ -368,7 +396,8 @@ static GSComboWindow *gsWindow = nil;
   [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowDidResizeNotification object: onWindow];
   // End of the code to remove
-  
+
+  GSSyncComboPopupParentWindow(self, onWindow);
   [self orderFront: self];
   [self makeFirstResponder: _tableView];
   [self runLoopWithComboBoxCell: comboBoxCell];
@@ -376,6 +405,7 @@ static GSComboWindow *gsWindow = nil;
   [nc removeObserver: self name: nil object: onWindow];
   
   [self close];
+  GSDetachComboPopupParentWindow(self);
 
   [onWindow makeFirstResponder: [_cell controlView]];
 }
