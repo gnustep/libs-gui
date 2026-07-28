@@ -68,14 +68,16 @@
  * FIXME We won't get here on Solaris at all because it defines the
  * mntent struct in sys/mnttab.h instead of sys/mntent.h.
  */
+#if defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
 # ifdef _PATH_MOUNTED
 #  define MOUNTED_PATH _PATH_MOUNTED
 # elif defined(MOUNTED)
 #  define MOUNTED_PATH MOUNTED
 # else
-#  define MNTTAB "/etc/mtab"
-#  warning "Mounted path file for you OS guessed to /etc/mtab";
+#  define MOUNTED_PATH "/etc/mtab"
+#  warning "Mounted path file for your OS guessed to /etc/mtab"
 # endif
+#endif
 
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSData.h>
