@@ -255,7 +255,6 @@ static BOOL browserUseBezels;
 //
 @interface NSBrowser (Private)
 - (NSString *) _getTitleOfColumn: (NSInteger)column;
-- (void) _lastColumnChangedFrom: (NSInteger)oldLastColumn;
 - (void) _performLoadOfColumn: (NSInteger)column;
 - (id) _itemForColumn: (NSInteger)column;
 - (void) _remapColumnSubviews: (BOOL)flag;
@@ -1092,7 +1091,6 @@ static BOOL browserUseBezels;
 - (void) setLastColumn: (NSInteger)column
 {
   NSInteger i, count;
-  NSInteger oldLastColumn = _lastColumnLoaded;
   NSBrowserColumn *bc;
   NSScrollView *sc;
 
@@ -1138,8 +1136,6 @@ static BOOL browserUseBezels;
     }
 
   [self scrollColumnToVisible:column];
-
-  [self _lastColumnChangedFrom: oldLastColumn];
 }
 
 /** Returns the index of the first visible column. */
@@ -3231,20 +3227,6 @@ static BOOL browserUseBezels;
  */
 @implementation NSBrowser (Private)
 
-/* Tell the delegate the last loaded column moved, unless it did not.
- */
-- (void) _lastColumnChangedFrom: (NSInteger)oldLastColumn
-{
-  if (oldLastColumn != _lastColumnLoaded
-    && [_browserDelegate respondsToSelector:
-      @selector(browser:didChangeLastColumn:toColumn:)])
-    {
-      [_browserDelegate browser: self
-	    didChangeLastColumn: oldLastColumn
-		       toColumn: _lastColumnLoaded];
-    }
-}
-
 - (void) _remapColumnSubviews: (BOOL)fromFirst
 {
   NSBrowserColumn *bc;
@@ -3636,10 +3618,7 @@ static BOOL browserUseBezels;
 
   if (column > _lastColumnLoaded)
     {
-      NSInteger oldLastColumn = _lastColumnLoaded;
-
       _lastColumnLoaded = column;
-      [self _lastColumnChangedFrom: oldLastColumn];
     }
 
   /* Determine the height of a cell in the matrix, and set that as the
