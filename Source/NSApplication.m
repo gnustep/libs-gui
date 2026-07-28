@@ -3673,6 +3673,11 @@ struct _DelegateWrapper
         DESTROY(pool);
       }
 
+      /* exit() does not unwind the stack, so objects still held by pools
+         created outside this method would otherwise be deallocated from an
+         atexit handler, after parts of the runtime have been torn down.  */
+      [[NSAutoreleasePool currentPool] emptyPool];
+
       /* And finally, stop the program.  */
       exit(0);
     }
