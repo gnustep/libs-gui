@@ -294,7 +294,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
       CGFloat menuBarHeight = [theme menuHeightForWindow: _window];
       NSRect menuRect = 
 	NSMakeRect(contentViewFrame.origin.x,
-		   (NSMaxY(contentRect) + 1) - menuBarHeight,  
+		   NSMaxY(contentRect) - menuBarHeight,  
 		   contentViewFrame.size.width, 
 		   menuBarHeight);
       NSEnumerator *e = [[self subviews] objectEnumerator];
@@ -536,7 +536,7 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 			  menuHeightForWindow: 
 			    _window];
   NSRect menuRect = NSMakeRect(contentRect.origin.x,
-			       (NSMaxY(contentRect) + 1) - menubarHeight,  
+			       NSMaxY(contentRect) - menubarHeight,  
 			       contentRect.size.width, 
 			       menubarHeight);
   hasMenu = YES;
