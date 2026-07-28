@@ -6,6 +6,7 @@
 #include "Testing.h"
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 
@@ -59,6 +60,7 @@ node(NSString *aName)
 
 int main()
 {
+  CREATE_AUTORELEASE_POOL(arp);
   NSBrowser		*br;
   NSTreeController	*tc;
   NSObjectController	*oc;
@@ -120,6 +122,8 @@ withKeyPath: @"arrangedObjects"
   [tc setContent: nil];
 
   END_SET("NSBrowser content binding")
+
+  DESTROY(arp);
 
   return 0;
 }
