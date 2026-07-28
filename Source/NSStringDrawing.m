@@ -296,44 +296,6 @@ static cache_t *cache_lookup(BOOL hasSize, NSSize size, BOOL useScreenFonts)
   return c;
 }
 
-/* AppKit ignores a paragraph first line head indent in the convenience string
-   drawing methods: the text is laid out, measured and drawn from the origin,
-   not from the indent. Drop the indent from our private working copy so that
-   -boundingRectWithSize:options: and -drawInRect: agree and match AppKit. */
-static void strip_first_line_indent(NSTextStorage *textStorage)
-{
-  NSUInteger length = [textStorage length];
-  NSUInteger index = 0;
-
-  if (length == 0)
-    {
-      return;
-    }
-
-  [textStorage beginEditing];
-  while (index < length)
-    {
-      NSRange range;
-      NSParagraphStyle *style;
-
-      style = [textStorage attribute: NSParagraphStyleAttributeName
-                             atIndex: index
-                      effectiveRange: &range];
-      if (style != nil && [style firstLineHeadIndent] != 0.0)
-        {
-          NSMutableParagraphStyle *stripped = [style mutableCopy];
-
-          [stripped setFirstLineHeadIndent: 0.0];
-          [textStorage addAttribute: NSParagraphStyleAttributeName
-                              value: stripped
-                              range: range];
-          RELEASE(stripped);
-        }
-      index = NSMaxRange(range);
-    }
-  [textStorage endEditing];
-}
-
 static inline void prepare_string(NSString *string, NSDictionary *attributes)
 {
   cache_t *scratch = cache + NUM_CACHE_ENTRIES;
@@ -344,31 +306,8 @@ static inline void prepare_string(NSString *string, NSDictionary *attributes)
                                     withString: string];
   if ([string length])
     {
-      NSParagraphStyle *style = [attributes objectForKey:
-                                   NSParagraphStyleAttributeName];
-
-      /* AppKit ignores a paragraph first line head indent in these
-         convenience methods (see strip_first_line_indent).  The whole string
-         shares one attributes dictionary here, so dropping the indent from a
-         copy before it is applied avoids rewriting the laid out text. */
-      if (style != nil && [style firstLineHeadIndent] != 0.0)
-        {
-          NSMutableParagraphStyle *stripped = [style mutableCopy];
-          NSMutableDictionary *noIndent = [attributes mutableCopy];
-
-          [stripped setFirstLineHeadIndent: 0.0];
-          [noIndent setObject: stripped
-                       forKey: NSParagraphStyleAttributeName];
-          [scratchTextStorage setAttributes: noIndent
-                                      range: NSMakeRange(0, [string length])];
-          RELEASE(stripped);
-          RELEASE(noIndent);
-        }
-      else
-        {
-          [scratchTextStorage setAttributes: attributes
-                                      range: NSMakeRange(0, [string length])];
-        }
+      [scratchTextStorage setAttributes: attributes
+                                  range: NSMakeRange(0, [string length])];
     }
   [scratchTextStorage endEditing];
 }
@@ -380,7 +319,6 @@ static inline void prepare_attributed_string(NSAttributedString *string)
 
   [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
                           withAttributedString: string];
-  strip_first_line_indent(scratchTextStorage);
 }
 
 static BOOL use_screen_fonts(void)
@@ -577,6 +515,11 @@ static void draw_in_rect(cache_t *c, NSRect rect)
       prepare_attributed_string(self);
       c = cache_lookup(hasSize, size, YES);
       result = c->usedRect;
+      /* A paragraph head indent shifts the laid out glyphs to the right, so it
+         appears in the used rect origin.  AppKit does not fold that offset into
+         the rectangle reported by the convenience methods: the origin stays at
+         zero (the indent still moves the drawn glyphs, see draw_in_rect).  */
+      result.origin.x = 0.0;
     }
   NS_HANDLER
     {
