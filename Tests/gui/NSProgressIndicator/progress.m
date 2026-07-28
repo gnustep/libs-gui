@@ -51,6 +51,8 @@ main(int argc, char **argv)
            "the default control size is regular");
       PASS([pi style] == NSProgressIndicatorBarStyle,
            "the default style is the bar style");
+      PASS([pi usesThreadedAnimation] == YES,
+           "an indicator uses threaded animation by default");
 
       /* Setter round-trips. */
       [pi setIndeterminate: NO];
