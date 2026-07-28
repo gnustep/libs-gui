@@ -9,6 +9,7 @@
 #include "Testing.h"
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
 
@@ -63,6 +64,7 @@ node(NSString *aName)
 
 int main()
 {
+  CREATE_AUTORELEASE_POOL(arp);
   NSTreeController	*tc;
   NSObjectController	*oc;
   NSMutableDictionary	*model;
@@ -137,6 +139,8 @@ withKeyPath: @"content.roots"
   [tc setContent: nil];
 
   END_SET("NSTreeController content array binding")
+
+  DESTROY(arp);
 
   return 0;
 }
