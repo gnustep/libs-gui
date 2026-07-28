@@ -78,6 +78,12 @@ static CGFloat browserColumnSeparation;
 static CGFloat browserVerticalPadding;
 static BOOL browserUseBezels;
 
+/* The drop the current drag is over, as the delegate last left it. */
+static NSInteger currentDropRow = -1;
+static NSInteger currentDropColumn = -1;
+static NSBrowserDropOperation currentDropOperation = NSBrowserDropOn;
+static NSDragOperation currentDragOperation = NSDragOperationNone;
+
 #define NSBR_COLUMN_IS_VISIBLE(i) \
 (((i)>=_firstVisibleColumn)&&((i)<=_lastVisibleColumn))
 
@@ -262,6 +268,10 @@ static BOOL browserUseBezels;
 - (void) _setColumnTitlesNeedDisplay;
 - (NSBorderType) _resolvedBorderType;
 - (void) _themeDidActivate: (NSNotification*)notification;
+- (NSInteger) _columnAtPoint: (NSPoint)point;
+- (NSInteger) _dropRowAtPoint: (NSPoint)point
+		     inColumn: (NSInteger)column
+		    operation: (NSBrowserDropOperation *)operation;
 @end
 
 // Category to handle bindings
@@ -1561,6 +1571,80 @@ static BOOL browserUseBezels;
       // FIXME
       return NO;
     }
+}
+
+/*
+ * Dragging destination
+ */
+
+- (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
+{
+  return [self draggingUpdated: sender];
+}
+
+- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>)sender
+{
+  NSPoint point = [self convertPoint: [sender draggingLocation] fromView: nil];
+  NSInteger row = -1;
+  NSInteger column = [self _columnAtPoint: point];
+  NSBrowserDropOperation operation = NSBrowserDropOn;
+
+  if (column != -1)
+    {
+      row = [self _dropRowAtPoint: point
+			 inColumn: column
+			operation: &operation];
+      if (row == -1)
+	{
+	  column = -1;
+	}
+    }
+
+  currentDragOperation = NSDragOperationNone;
+  if ([_browserDelegate respondsToSelector:
+	@selector(browser:validateDrop:proposedRow:column:dropOperation:)])
+    {
+      currentDragOperation = [_browserDelegate browser: self
+					  validateDrop: sender
+					   proposedRow: &row
+						column: &column
+					 dropOperation: &operation];
+    }
+
+  currentDropRow = row;
+  currentDropColumn = column;
+  currentDropOperation = operation;
+
+  return currentDragOperation;
+}
+
+- (void) draggingExited: (id <NSDraggingInfo>)sender
+{
+  currentDropRow = -1;
+  currentDropColumn = -1;
+  currentDropOperation = NSBrowserDropOn;
+  currentDragOperation = NSDragOperationNone;
+}
+
+- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
+{
+  return currentDragOperation != NSDragOperationNone;
+}
+
+- (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
+{
+  if (currentDragOperation != NSDragOperationNone
+    && [_browserDelegate respondsToSelector:
+	 @selector(browser:acceptDrop:atRow:column:dropOperation:)])
+    {
+      return [_browserDelegate browser: self
+			   acceptDrop: sender
+				atRow: currentDropRow
+			       column: currentDropColumn
+			dropOperation: currentDropOperation];
+    }
+
+  return NO;
 }
 
 /*
@@ -3243,6 +3327,62 @@ static BOOL browserUseBezels;
 	    didChangeLastColumn: oldLastColumn
 		       toColumn: _lastColumnLoaded];
     }
+}
+
+- (NSInteger) _columnAtPoint: (NSPoint)point
+{
+  NSInteger i;
+
+  for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
+    {
+      if (NSPointInRect(point, [self frameOfColumn: i]))
+	{
+	  return i;
+	}
+    }
+
+  return -1;
+}
+
+/* Which row of a column a point drops on, and whether it drops on that row or
+   above it. A point past the last row gives the row after the last, a point
+   above the first row gives no row at all. */
+- (NSInteger) _dropRowAtPoint: (NSPoint)point
+		     inColumn: (NSInteger)column
+		    operation: (NSBrowserDropOperation *)operation
+{
+  NSMatrix *matrix = [self matrixInColumn: column];
+  NSPoint inMatrix = [matrix convertPoint: point fromView: self];
+  NSInteger rows = [matrix numberOfRows];
+  CGFloat height = [matrix cellSize].height + [matrix intercellSpacing].height;
+  NSInteger row;
+  CGFloat inRow;
+
+  *operation = NSBrowserDropOn;
+
+  if (height <= 0.0 || inMatrix.y < 0.0)
+    {
+      return -1;
+    }
+
+  row = (NSInteger)(inMatrix.y / height);
+  if (row >= rows)
+    {
+      return rows;
+    }
+
+  inRow = inMatrix.y - row * height;
+  if (inRow <= height / 4)
+    {
+      *operation = NSBrowserDropAbove;
+    }
+  else if (inRow > (3 * height) / 4)
+    {
+      *operation = NSBrowserDropAbove;
+      row++;
+    }
+
+  return row;
 }
 
 - (void) _remapColumnSubviews: (BOOL)fromFirst
