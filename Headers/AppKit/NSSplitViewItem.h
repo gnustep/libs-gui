@@ -54,8 +54,8 @@ typedef NSInteger NSSplitViewItemCollapseBehavior;
 enum
 {
  NSTitlebarSeparatorStyleAutomatic,
- NSTitlebarSeparatorStyleLine,
  NSTitlebarSeparatorStyleNone,
+ NSTitlebarSeparatorStyleLine,
  NSTitlebarSeparatorStyleShadow
 };
 typedef NSInteger NSTitlebarSeparatorStyle;
