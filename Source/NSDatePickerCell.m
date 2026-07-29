@@ -45,6 +45,7 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSTheme.h"
 
