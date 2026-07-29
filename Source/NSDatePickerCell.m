@@ -44,12 +44,17 @@
 #import "AppKit/NSDatePickerCell.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
 #import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSTheme.h"
 
 @interface NSDatePickerCell (Private)
 - (void) _updateDateFormat;
 - (NSArray *) _editableFields;
 - (NSCalendar *) _pickerCalendar;
+- (NSRange) _rangeOfFieldAtIndex: (NSInteger)wanted
+                        inString: (NSString *)text;
+- (void) _setSelectedFieldIndex: (NSInteger)index;
 @end
 
 @implementation NSDatePickerCell
@@ -696,6 +701,155 @@
   [self setDateValue: edited];
 
   return YES;
+}
+
+/* The style with a stepper keeps room for it at the trailing edge, and the
+   text is drawn in what is left.
+*/
+- (BOOL) _hasStepper
+{
+  return (_datePickerStyle == NSTextFieldAndStepperDatePickerStyle);
+}
+
+- (CGFloat) _stepperWidth
+{
+  NSImage *image = [NSImage imageNamed: @"common_StepperUp"];
+
+  return (image == nil) ? 0.0 : [image size].width;
+}
+
+- (NSRect) _stepperFrameForFrame: (NSRect)frame
+{
+  NSRect stepper = frame;
+
+  stepper.size.width = [self _stepperWidth];
+  stepper.origin.x = NSMaxX(frame) - NSWidth(stepper);
+
+  return stepper;
+}
+
+- (NSRect) _textFrameForFrame: (NSRect)frame
+{
+  if ([self _hasStepper])
+    {
+      frame.size.width -= [self _stepperWidth];
+    }
+
+  return frame;
+}
+
+- (NSSize) cellSize
+{
+  NSSize size = [super cellSize];
+
+  if ([self _hasStepper])
+    {
+      size.width += [self _stepperWidth];
+    }
+
+  return size;
+}
+
+- (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
+{
+  if ([self _hasStepper] && NSWidth(cellFrame) > [self _stepperWidth])
+    {
+      [[GSTheme theme] drawStepperCell: self
+                             withFrame: [self _stepperFrameForFrame: cellFrame]
+                                inView: controlView
+                           highlightUp: NO
+                         highlightDown: NO];
+    }
+
+  [super drawInteriorWithFrame: [self _textFrameForFrame: cellFrame]
+                        inView: controlView];
+}
+
+/* Where the text starts inside the frame it is drawn in. */
+- (CGFloat) _textOriginForFrame: (NSRect)frame width: (CGFloat)width
+{
+  NSRect title = [self titleRectForBounds: [self _textFrameForFrame: frame]];
+
+  switch ([self alignment])
+    {
+      case NSRightTextAlignment:
+        return NSMaxX(title) - width;
+      case NSCenterTextAlignment:
+        return NSMidX(title) - width / 2.0;
+      default:
+        return NSMinX(title);
+    }
+}
+
+/* Picks the part of the date the point falls in.  Returns NO when the point
+   is not over the text at all.
+*/
+- (BOOL) _selectFieldAtPoint: (NSPoint)point inRect: (NSRect)frame
+{
+  NSAttributedString *text = [self attributedStringValue];
+  NSString *string = [text string];
+  NSArray *fields = [self _editableFields];
+  NSUInteger count = [fields count];
+  NSUInteger index;
+  CGFloat origin;
+
+  if ([string length] == 0 || count == 0)
+    {
+      return NO;
+    }
+  if ([self _hasStepper] && point.x >= NSMaxX([self _textFrameForFrame: frame]))
+    {
+      return NO;
+    }
+
+  origin = [self _textOriginForFrame: frame width: [text size].width];
+  for (index = 0; index < count; index++)
+    {
+      NSRange range = [self _rangeOfFieldAtIndex: index inString: string];
+      CGFloat end;
+
+      if (range.location == NSNotFound)
+        {
+          continue;
+        }
+      end = origin + [[text attributedSubstringFromRange:
+        NSMakeRange(0, NSMaxRange(range))] size].width;
+      if (point.x < end || index + 1 == count)
+        {
+          [self _setSelectedFieldIndex: index];
+          return YES;
+        }
+    }
+
+  return NO;
+}
+
+/* Which half of the stepper the point is in: one for the upper button,
+   minus one for the lower one, zero for anywhere else.
+*/
+- (NSInteger) _stepperDirectionAtPoint: (NSPoint)point
+                                inRect: (NSRect)frame
+                                ofView: (NSView *)view
+{
+  NSRect stepper;
+  BOOL flipped = [view isFlipped];
+
+  if (![self _hasStepper] || NSWidth(frame) <= [self _stepperWidth])
+    {
+      return 0;
+    }
+
+  stepper = [self _stepperFrameForFrame: frame];
+  if (!NSMouseInRect(point, stepper, flipped))
+    {
+      return 0;
+    }
+  if (flipped)
+    {
+      return (point.y < NSMidY(stepper)) ? 1 : -1;
+    }
+
+  return (point.y > NSMidY(stepper)) ? 1 : -1;
 }
 
 /* Returns YES when the key belongs to the picker.  The caller looks at the
