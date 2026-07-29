@@ -82,6 +82,27 @@ main(int argc, char **argv)
                  "the background colour survives the archive");
       PASS([decoded isBezeled] == [cell isBezeled],
            "the state NSCell holds survives the archive");
+
+      /* The same, through an archive written without keys. */
+      data = [NSArchiver archivedDataWithRootObject: cell];
+      decoded = [NSUnarchiver unarchiveObjectWithData: data];
+
+      PASS([decoded isKindOfClass: [NSDatePickerCell class]],
+           "a cell comes back from an archive written without keys");
+      PASS([decoded datePickerStyle] == NSClockAndCalendarDatePickerStyle
+           && [decoded datePickerMode] == NSRangeDateMode
+           && [decoded datePickerElements] == NSYearMonthDayDatePickerElementFlag
+           && [decoded timeInterval] == 3600.0
+           && [decoded drawsBackground] == YES,
+           "the settings survive an archive without keys");
+      PASS_EQUAL([decoded dateValue], value,
+                 "the date survives an archive without keys");
+      PASS_EQUAL([decoded minDate], low,
+                 "the minimum date survives an archive without keys");
+      PASS_EQUAL([decoded maxDate], high,
+                 "the maximum date survives an archive without keys");
+      PASS_EQUAL([decoded textColor], [NSColor blueColor],
+                 "the text colour survives an archive without keys");
     }
   NS_HANDLER
     {
