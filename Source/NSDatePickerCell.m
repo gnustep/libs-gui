@@ -40,10 +40,15 @@
 #import <Foundation/NSLocale.h>
 #import <Foundation/NSTimeZone.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSDictionary.h>
+
 #import "AppKit/NSAttributedString.h"
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSDatePickerCell.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSWindow.h"
@@ -704,6 +709,398 @@
   return YES;
 }
 
+/* The clock and calendar style draws a month of days, a clock, or both,
+   depending on the elements it is asked for.
+*/
+- (BOOL) _showsCalendar
+{
+  return (_datePickerStyle == NSClockAndCalendarDatePickerStyle
+    && (_datePickerElements & NSYearMonthDatePickerElementFlag) != 0);
+}
+
+- (BOOL) _showsClock
+{
+  return (_datePickerStyle == NSClockAndCalendarDatePickerStyle
+    && (_datePickerElements & NSHourMinuteDatePickerElementFlag) != 0);
+}
+
+- (NSFont *) _drawingFont
+{
+  NSFont *font = [self font];
+
+  return (font == nil) ? [NSFont userFontOfSize: 0.0] : font;
+}
+
+- (NSDictionary *) _dayAttributes
+{
+  NSColor *color = [self textColor];
+
+  if (color == nil)
+    {
+      color = [NSColor controlTextColor];
+    }
+
+  return [NSDictionary dictionaryWithObjectsAndKeys:
+    [self _drawingFont], NSFontAttributeName,
+    color, NSForegroundColorAttributeName,
+    nil];
+}
+
+/* One row of the month, and one column of it.  Wide enough for two digits
+   and for the initial of a weekday.
+*/
+- (NSSize) _dayCellSize
+{
+  NSFont *font = [self _drawingFont];
+  NSSize size = [@"88" sizeWithAttributes:
+    [NSDictionary dictionaryWithObject: font forKey: NSFontAttributeName]];
+
+  size.width = ceil(size.width) + 8.0;
+  size.height = ceil([font boundingRectForFont].size.height) + 2.0;
+
+  return size;
+}
+
+/* The month takes a row for its name, a row for the initials of the
+   weekdays and six rows of days.
+*/
+- (NSSize) _calendarSize
+{
+  NSSize day = [self _dayCellSize];
+
+  return NSMakeSize(day.width * 7.0, day.height * 8.0);
+}
+
+- (NSRect) _calendarFrameForFrame: (NSRect)frame
+{
+  NSRect calendar = frame;
+
+  if ([self _showsClock])
+    {
+      calendar.size.width = [self _calendarSize].width;
+    }
+
+  return calendar;
+}
+
+- (NSRect) _clockFrameForFrame: (NSRect)frame
+{
+  NSRect clock = frame;
+
+  if ([self _showsCalendar])
+    {
+      CGFloat used = [self _calendarSize].width;
+
+      clock.origin.x += used;
+      clock.size.width -= used;
+    }
+
+  return clock;
+}
+
+/* Where a day of the month sits in the grid.  Row zero is the first week
+   under the initials of the weekdays.
+*/
+- (NSRect) _dayCellRectAtRow: (NSInteger)row
+                      column: (NSInteger)column
+                     inFrame: (NSRect)frame
+                      ofView: (NSView *)view
+{
+  NSRect calendar = [self _calendarFrameForFrame: frame];
+  NSSize day = [self _dayCellSize];
+  NSRect cell;
+
+  cell.size = day;
+  cell.origin.x = NSMinX(calendar) + column * day.width;
+  if ([view isFlipped])
+    {
+      cell.origin.y = NSMinY(calendar) + (row + 2) * day.height;
+    }
+  else
+    {
+      cell.origin.y = NSMaxY(calendar) - (row + 3) * day.height;
+    }
+
+  return cell;
+}
+
+/* The day of the month in a cell of the grid, or zero when the cell falls
+   outside the month.
+*/
+- (NSInteger) _dayAtRow: (NSInteger)row column: (NSInteger)column
+{
+  NSCalendar *calendar = [self _pickerCalendar];
+  NSDate *date = [self dateValue];
+  NSDateComponents *parts;
+  NSDate *first;
+  NSInteger lead;
+  NSInteger day;
+  NSInteger length;
+
+  if (date == nil)
+    {
+      return 0;
+    }
+
+  parts = [calendar components: NSCalendarUnitEra | NSCalendarUnitYear
+    | NSCalendarUnitMonth fromDate: date];
+  [parts setDay: 1];
+  first = [calendar dateFromComponents: parts];
+  if (first == nil)
+    {
+      return 0;
+    }
+
+  lead = [[calendar components: NSCalendarUnitWeekday fromDate: first] weekday]
+    - (NSInteger)[calendar firstWeekday];
+  while (lead < 0)
+    {
+      lead += 7;
+    }
+  length = [calendar rangeOfUnit: NSCalendarUnitDay
+                          inUnit: NSCalendarUnitMonth
+                         forDate: date].length;
+  day = row * 7 + column - lead + 1;
+  if (day < 1 || day > length)
+    {
+      return 0;
+    }
+
+  return day;
+}
+
+- (NSString *) _monthTitle
+{
+  NSDateFormatter *formatter = (NSDateFormatter *)[self formatter];
+  NSDateFormatter *scratch = AUTORELEASE([[NSDateFormatter alloc] init]);
+  NSString *pattern;
+
+  if (![formatter isKindOfClass: [NSDateFormatter class]]
+    || [self dateValue] == nil)
+    {
+      return @"";
+    }
+
+  [scratch setLocale: [formatter locale]];
+  [scratch setTimeZone: [formatter timeZone]];
+  [scratch setCalendar: [formatter calendar]];
+  pattern = [NSDateFormatter dateFormatFromTemplate: @"yMMMM"
+                                            options: 0
+                                             locale: [formatter locale]];
+  [scratch setDateFormat: (pattern == nil) ? (NSString *)@"MMMM y" : pattern];
+
+  return [scratch stringFromDate: [self dateValue]];
+}
+
+- (NSArray *) _weekdayInitials
+{
+  NSDateFormatter *formatter = (NSDateFormatter *)[self formatter];
+  NSArray *symbols = nil;
+
+  if ([formatter isKindOfClass: [NSDateFormatter class]])
+    {
+      symbols = [formatter veryShortWeekdaySymbols];
+      if ([symbols count] != 7)
+        {
+          symbols = [formatter shortWeekdaySymbols];
+        }
+    }
+  if ([symbols count] != 7)
+    {
+      symbols = [NSArray arrayWithObjects: @"S", @"M", @"T", @"W", @"T",
+        @"F", @"S", nil];
+    }
+
+  return symbols;
+}
+
+static void
+drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
+{
+  NSSize size = [text sizeWithAttributes: attributes];
+  NSPoint at;
+
+  at.x = NSMinX(rect) + (NSWidth(rect) - size.width) / 2.0;
+  at.y = NSMinY(rect) + (NSHeight(rect) - size.height) / 2.0;
+  [text drawAtPoint: at withAttributes: attributes];
+}
+
+- (void) _drawCalendarInFrame: (NSRect)frame ofView: (NSView *)view
+{
+  NSDictionary *attributes = [self _dayAttributes];
+  NSRect calendar = [self _calendarFrameForFrame: frame];
+  NSSize day = [self _dayCellSize];
+  NSArray *initials = [self _weekdayInitials];
+  NSCalendar *cal = [self _pickerCalendar];
+  NSInteger today = [[cal components: NSCalendarUnitDay
+                            fromDate: [self dateValue]] day];
+  NSInteger first = (NSInteger)[cal firstWeekday];
+  NSRect row;
+  NSInteger index;
+
+  row = NSMakeRect(NSMinX(calendar), 0.0, NSWidth(calendar), day.height);
+  row.origin.y = [view isFlipped] ? NSMinY(calendar)
+    : NSMaxY(calendar) - day.height;
+  drawCentred([self _monthTitle], row, attributes);
+
+  for (index = 0; index < 7; index++)
+    {
+      NSRect cell = [self _dayCellRectAtRow: -1 column: index
+                                    inFrame: frame ofView: view];
+
+      drawCentred([initials objectAtIndex: (first - 1 + index) % 7],
+                  cell, attributes);
+    }
+
+  for (index = 0; index < 42; index++)
+    {
+      NSInteger number = [self _dayAtRow: index / 7 column: index % 7];
+      NSRect cell;
+
+      if (number == 0)
+        {
+          continue;
+        }
+      cell = [self _dayCellRectAtRow: index / 7 column: index % 7
+                             inFrame: frame ofView: view];
+      if (number == today)
+        {
+          NSMutableDictionary *marked = AUTORELEASE([attributes mutableCopy]);
+
+          [[NSColor selectedTextBackgroundColor] set];
+          NSRectFill(cell);
+          [marked setObject: [NSColor selectedTextColor]
+                     forKey: NSForegroundColorAttributeName];
+          drawCentred([NSString stringWithFormat: @"%ld", (long)number],
+                      cell, marked);
+        }
+      else
+        {
+          drawCentred([NSString stringWithFormat: @"%ld", (long)number],
+                      cell, attributes);
+        }
+    }
+}
+
+- (void) _drawClockInFrame: (NSRect)frame
+{
+  NSRect clock = [self _clockFrameForFrame: frame];
+  CGFloat size = MIN(NSWidth(clock), NSHeight(clock)) - 4.0;
+  NSPoint centre = NSMakePoint(NSMidX(clock), NSMidY(clock));
+  NSCalendar *calendar = [self _pickerCalendar];
+  NSDateComponents *parts;
+  NSBezierPath *face;
+  CGFloat hour;
+  CGFloat minute;
+  NSInteger index;
+
+  if (size <= 0.0 || [self dateValue] == nil)
+    {
+      return;
+    }
+
+  face = [NSBezierPath bezierPathWithOvalInRect:
+    NSMakeRect(centre.x - size / 2.0, centre.y - size / 2.0, size, size)];
+  [[NSColor controlBackgroundColor] set];
+  [face fill];
+  [[NSColor controlDarkShadowColor] set];
+  [face stroke];
+
+  for (index = 0; index < 12; index++)
+    {
+      CGFloat angle = index * M_PI / 6.0;
+      NSPoint from = NSMakePoint(centre.x + sin(angle) * size * 0.45,
+                                 centre.y + cos(angle) * size * 0.45);
+      NSPoint to = NSMakePoint(centre.x + sin(angle) * size * 0.40,
+                               centre.y + cos(angle) * size * 0.40);
+
+      [NSBezierPath strokeLineFromPoint: from toPoint: to];
+    }
+
+  parts = [calendar components: NSCalendarUnitHour | NSCalendarUnitMinute
+                      fromDate: [self dateValue]];
+  minute = [parts minute] * M_PI / 30.0;
+  hour = ([parts hour] % 12) * M_PI / 6.0 + minute / 12.0;
+  [NSBezierPath strokeLineFromPoint: centre
+                            toPoint: NSMakePoint(
+                              centre.x + sin(hour) * size * 0.25,
+                              centre.y + cos(hour) * size * 0.25)];
+  [NSBezierPath strokeLineFromPoint: centre
+                            toPoint: NSMakePoint(
+                              centre.x + sin(minute) * size * 0.38,
+                              centre.y + cos(minute) * size * 0.38)];
+}
+
+/* Picks the day the point falls on.  Returns NO for a point that is not on
+   a day of this month.
+*/
+- (BOOL) _selectDayAtPoint: (NSPoint)point
+                   inRect: (NSRect)frame
+                   ofView: (NSView *)view
+{
+  NSCalendar *calendar = [self _pickerCalendar];
+  NSDateComponents *parts;
+  NSInteger index;
+
+  if ([self dateValue] == nil)
+    {
+      return NO;
+    }
+
+  for (index = 0; index < 42; index++)
+    {
+      NSRect cell = [self _dayCellRectAtRow: index / 7 column: index % 7
+                                    inFrame: frame ofView: view];
+      NSInteger number = [self _dayAtRow: index / 7 column: index % 7];
+      NSDate *picked;
+
+      if (number == 0 || !NSMouseInRect(point, cell, [view isFlipped]))
+        {
+          continue;
+        }
+      parts = [calendar components: NSCalendarUnitEra | NSCalendarUnitYear
+        | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour
+        | NSCalendarUnitMinute | NSCalendarUnitSecond
+                          fromDate: [self dateValue]];
+      [parts setDay: number];
+      picked = [calendar dateFromComponents: parts];
+      if (picked == nil)
+        {
+          return NO;
+        }
+      [self setDateValue: picked];
+      return YES;
+    }
+
+  return NO;
+}
+
+/* In the calendar the arrow keys walk the grid, a day across and a week up
+   or down.
+*/
+- (BOOL) _stepDaysBy: (NSInteger)days
+{
+  NSCalendar *calendar = [self _pickerCalendar];
+  NSDateComponents *step = AUTORELEASE([[NSDateComponents alloc] init]);
+  NSDate *stepped;
+
+  if ([self dateValue] == nil)
+    {
+      return NO;
+    }
+  [step setDay: days];
+  stepped = [calendar dateByAddingComponents: step
+                                      toDate: [self dateValue]
+                                     options: 0];
+  if (stepped == nil)
+    {
+      return NO;
+    }
+  [self setDateValue: stepped];
+
+  return YES;
+}
+
 /* The style with a stepper keeps room for it at the trailing edge, and the
    text is drawn in what is left.
 */
@@ -741,8 +1138,24 @@
 
 - (NSSize) cellSize
 {
-  NSSize size = [super cellSize];
+  NSSize size;
 
+  if ([self _showsCalendar] || [self _showsClock])
+    {
+      size = NSMakeSize(0.0, [self _calendarSize].height);
+      if ([self _showsCalendar])
+        {
+          size.width += [self _calendarSize].width;
+        }
+      if ([self _showsClock])
+        {
+          size.width += size.height;
+        }
+
+      return size;
+    }
+
+  size = [super cellSize];
   if ([self _hasStepper])
     {
       size.width += [self _stepperWidth];
@@ -753,6 +1166,20 @@
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
+  if ([self _showsCalendar] || [self _showsClock])
+    {
+      if ([self _showsCalendar])
+        {
+          [self _drawCalendarInFrame: cellFrame ofView: controlView];
+        }
+      if ([self _showsClock])
+        {
+          [self _drawClockInFrame: cellFrame];
+        }
+
+      return;
+    }
+
   if ([self _hasStepper] && NSWidth(cellFrame) > [self _stepperWidth])
     {
       [[GSTheme theme] drawStepperCell: self
@@ -874,20 +1301,34 @@
     }
 
   c = [characters characterAtIndex: 0];
-  switch (c)
+  if ([self _showsCalendar])
     {
-      case NSUpArrowFunctionKey:
-        return [self _stepSelectedFieldBy: 1];
-      case NSDownArrowFunctionKey:
-        return [self _stepSelectedFieldBy: -1];
-      case NSLeftArrowFunctionKey:
-        [self _setSelectedFieldIndex: [self _selectedFieldIndex] - 1];
-        return YES;
-      case NSRightArrowFunctionKey:
-        [self _setSelectedFieldIndex: [self _selectedFieldIndex] + 1];
-        return YES;
-      default:
-        break;
+      switch (c)
+        {
+          case NSUpArrowFunctionKey:    return [self _stepDaysBy: -7];
+          case NSDownArrowFunctionKey:  return [self _stepDaysBy: 7];
+          case NSLeftArrowFunctionKey:  return [self _stepDaysBy: -1];
+          case NSRightArrowFunctionKey: return [self _stepDaysBy: 1];
+          default: break;
+        }
+    }
+  else
+    {
+      switch (c)
+        {
+          case NSUpArrowFunctionKey:
+            return [self _stepSelectedFieldBy: 1];
+          case NSDownArrowFunctionKey:
+            return [self _stepSelectedFieldBy: -1];
+          case NSLeftArrowFunctionKey:
+            [self _setSelectedFieldIndex: [self _selectedFieldIndex] - 1];
+            return YES;
+          case NSRightArrowFunctionKey:
+            [self _setSelectedFieldIndex: [self _selectedFieldIndex] + 1];
+            return YES;
+          default:
+            break;
+        }
     }
 
   if (c >= '0' && c <= '9')
