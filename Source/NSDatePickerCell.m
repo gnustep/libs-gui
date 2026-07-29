@@ -1486,14 +1486,38 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
   [[self formatter] setTimeZone: zone];
 }
 
+/* NSCell copies its own object ivars as bare pointers and then retains them,
+   leaving the ones added here held by two cells but retained by one.
+*/
+- (id) copyWithZone: (NSZone *)zone
+{
+  NSDatePickerCell *copy = [super copyWithZone: zone];
+
+  copy->_backgroundColor = TEST_RETAIN(_backgroundColor);
+  copy->_textColor = TEST_RETAIN(_textColor);
+  copy->_minDate = TEST_RETAIN(_minDate);
+  copy->_maxDate = TEST_RETAIN(_maxDate);
+
+  return copy;
+}
+
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
+  [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeDouble: [self timeInterval] forKey: @"NSTimeInterval"];
       [aCoder encodeInt: [self datePickerElements] forKey: @"NSDatePickerElements"];
       [aCoder encodeInt: [self datePickerStyle] forKey: @"NSDatePickerType"];
+      [aCoder encodeInt: [self datePickerMode] forKey: @"NSDatePickerMode"];
       [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
+      [aCoder encodeObject: [self textColor] forKey: @"NSTextColor"];
+      [aCoder encodeBool: [self drawsBackground] forKey: @"NSDrawsBackground"];
+      [aCoder encodeObject: [self minDate] forKey: @"NSMinDate"];
+      [aCoder encodeObject: [self maxDate] forKey: @"NSMaxDate"];
+      /* NSCell writes the text of its value, not the value, and the text of
+         a date does not read back as one. */
+      [aCoder encodeObject: [self dateValue] forKey: @"NSDateValue"];
     }
   else
     {
@@ -1516,7 +1540,28 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
           [self setTimeInterval: [aDecoder decodeDoubleForKey: @"NSTimeInterval"]];
           [self setDatePickerElements: [aDecoder decodeIntForKey: @"NSDatePickerElements"]];
           [self setDatePickerStyle: [aDecoder decodeIntForKey: @"NSDatePickerType"]];
+          if ([aDecoder containsValueForKey: @"NSDatePickerMode"])
+            {
+              [self setDatePickerMode:
+                [aDecoder decodeIntForKey: @"NSDatePickerMode"]];
+            }
           [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
+          if ([aDecoder containsValueForKey: @"NSTextColor"])
+            {
+              [self setTextColor: [aDecoder decodeObjectForKey: @"NSTextColor"]];
+            }
+          if ([aDecoder containsValueForKey: @"NSDrawsBackground"])
+            {
+              [self setDrawsBackground:
+                [aDecoder decodeBoolForKey: @"NSDrawsBackground"]];
+            }
+          [self setMinDate: [aDecoder decodeObjectForKey: @"NSMinDate"]];
+          [self setMaxDate: [aDecoder decodeObjectForKey: @"NSMaxDate"]];
+          if ([aDecoder containsValueForKey: @"NSDateValue"])
+            {
+              [self setDateValue:
+                [aDecoder decodeObjectForKey: @"NSDateValue"]];
+            }
         }
       else
         {
