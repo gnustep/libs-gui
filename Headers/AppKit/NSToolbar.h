@@ -101,6 +101,9 @@ APPKIT_EXPORT_CLASS
 }
 
 // Instance methods
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
+- (id) init;
+#endif
 - (id) initWithIdentifier: (NSString*)identifier;
 
 - (void) insertItemWithItemIdentifier: (NSString*)itemIdentifier 
