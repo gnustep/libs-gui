@@ -1129,6 +1129,14 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
   return frame;
 }
 
+/* Which of the two stepper buttons is drawn pressed: one for the upper,
+   minus one for the lower, zero for neither.
+*/
+- (void) _setHighlightedStepper: (NSInteger)direction
+{
+  _highlightedStepper = direction;
+}
+
 - (NSSize) cellSize
 {
   NSSize size;
@@ -1184,8 +1192,8 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
       [[GSTheme theme] drawStepperCell: self
                              withFrame: [self _stepperFrameForFrame: cellFrame]
                                 inView: controlView
-                           highlightUp: NO
-                         highlightDown: NO];
+                           highlightUp: (_highlightedStepper > 0)
+                         highlightDown: (_highlightedStepper < 0)];
     }
 
   [super drawInteriorWithFrame: [self _textFrameForFrame: cellFrame]
