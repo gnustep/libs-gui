@@ -154,7 +154,6 @@ pointInRow(NSInteger row, CGFloat fraction)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   FakeDrag *drag;
   Dropper *dropper;
 
@@ -225,7 +224,6 @@ main(int argc, const char **argv)
 
   END_SET("NSBrowser drop delegate methods")
 
-  DESTROY(arp);
 
   return 0;
 }
