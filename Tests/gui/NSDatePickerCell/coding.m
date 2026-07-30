@@ -17,7 +17,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePickerCell *cell;
   NSDatePickerCell *decoded;
   NSData *data;
@@ -116,6 +115,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePickerCell coding")
 
-  DESTROY(arp);
   return 0;
 }

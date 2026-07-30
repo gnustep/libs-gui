@@ -15,7 +15,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePickerCell *cell;
   NSDatePickerCell *copy;
   NSColor *colour;
@@ -104,6 +103,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePickerCell copying")
 
-  DESTROY(arp);
   return 0;
 }

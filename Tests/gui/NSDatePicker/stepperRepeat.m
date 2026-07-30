@@ -67,7 +67,6 @@ periodicEvent(void)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePicker *dp;
   NSDateFormatter *fmt;
   Counter *counter;
@@ -137,6 +136,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePicker stepper repeat")
 
-  DESTROY(arp);
   return 0;
 }

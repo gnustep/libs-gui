@@ -48,7 +48,6 @@ isRed(NSColor *colour)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSWindow *window;
   NSDatePicker *dp;
   NSColor *textColour;
@@ -126,6 +125,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePicker background")
 
-  DESTROY(arp);
   return 0;
 }

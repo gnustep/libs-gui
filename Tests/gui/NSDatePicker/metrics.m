@@ -51,7 +51,6 @@ dayCentre(NSDatePicker *dp, int row, int column)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDateFormatter *fmt;
   NSDatePicker *dp;
   NSSize text;
@@ -168,6 +167,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePicker metrics")
 
-  DESTROY(arp);
   return 0;
 }
