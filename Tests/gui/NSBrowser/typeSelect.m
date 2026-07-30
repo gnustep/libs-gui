@@ -136,7 +136,6 @@ typeCharacter(NSBrowser *browser, NSString *characters)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSBrowser *browser;
   Vetoer *vetoer;
   Searcher *searcher;
@@ -205,7 +204,6 @@ main(int argc, const char **argv)
 
   END_SET("NSBrowser type select delegate methods")
 
-  DESTROY(arp);
 
   return 0;
 }
