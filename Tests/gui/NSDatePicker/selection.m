@@ -77,7 +77,6 @@ marked(NSDatePicker *dp)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSWindow *window;
   NSDatePicker *dp;
   NSString *text;
@@ -151,6 +150,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePicker selection")
 
-  DESTROY(arp);
   return 0;
 }
