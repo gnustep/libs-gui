@@ -15,7 +15,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("GSImageMagickImageRep non-raster formats")
 
   Class imageMagickRep = NSClassFromString(@"GSImageMagickImageRep");
@@ -53,6 +52,5 @@ main(int argc, const char **argv)
     }
 
   END_SET("GSImageMagickImageRep non-raster formats")
-  DESTROY(arp);
   return 0;
 }

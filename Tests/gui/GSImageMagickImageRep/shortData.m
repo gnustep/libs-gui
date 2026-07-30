@@ -14,7 +14,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("GSImageMagickImageRep short data")
 
   Class imageMagickRep = NSClassFromString(@"GSImageMagickImageRep");
@@ -42,6 +41,5 @@ main(int argc, const char **argv)
     }
 
   END_SET("GSImageMagickImageRep short data")
-  DESTROY(arp);
   return 0;
 }

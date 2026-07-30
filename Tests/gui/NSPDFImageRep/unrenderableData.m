@@ -15,7 +15,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSPDFImageRep unrenderable data")
 
   const char *bytes = "%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\n%%EOF\n";
@@ -32,6 +31,5 @@ main(int argc, const char **argv)
   PASS(rep != nil, "initWithData: handles empty data");
 
   END_SET("NSPDFImageRep unrenderable data")
-  DESTROY(arp);
   return 0;
 }
