@@ -23,8 +23,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSPredicateEditorRowTemplate")
 
   NSPredicateEditorRowTemplate *plain;
@@ -276,6 +274,5 @@ rightExpressionAttributeType: NSStringAttributeType
 
   END_SET("NSPredicateEditorRowTemplate")
 
-  DESTROY(arp);
   return 0;
 }
