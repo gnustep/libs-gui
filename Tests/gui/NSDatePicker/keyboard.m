@@ -101,7 +101,6 @@ value(NSDatePicker *dp)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePicker *dp;
   NSDatePickerElementFlags all;
   BOOL generator;
@@ -285,6 +284,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePicker keyboard")
 
-  DESTROY(arp);
   return 0;
 }
