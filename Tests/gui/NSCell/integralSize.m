@@ -21,15 +21,14 @@ isWhole(CGFloat v)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTextFieldCell *cell;
   NSSize size;
+
+  START_SET("NSCell size with a scale factor")
 
   [[NSUserDefaults standardUserDefaults]
     setObject: [NSNumber numberWithDouble: 1.5]
        forKey: @"GSScaleFactor"];
-
-  START_SET("NSCell size with a scale factor")
 
   NS_DURING
     [NSApplication sharedApplication];
@@ -64,8 +63,6 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSCell size with a scale factor")
-
-  DESTROY(arp);
 
   return 0;
 }
