@@ -16,8 +16,6 @@ marker(NSString *fmt, int item)
 
 int main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("accessors")
     NSTextList	*l = [[[NSTextList alloc]
       initWithMarkerFormat: @"{decimal}." options: 7] autorelease];
@@ -101,6 +99,5 @@ int main(int argc, char **argv)
       && 3 == [c listOptions], "copy preserves the marker format and options");
   END_SET("copy")
 
-  DESTROY(arp);
   return 0;
 }

@@ -60,7 +60,6 @@ node(NSString *aName)
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSBrowser		*br;
   NSTreeController	*tc;
   NSObjectController	*oc;
@@ -123,7 +122,6 @@ withKeyPath: @"arrangedObjects"
 
   END_SET("NSBrowser content binding")
 
-  DESTROY(arp);
 
   return 0;
 }

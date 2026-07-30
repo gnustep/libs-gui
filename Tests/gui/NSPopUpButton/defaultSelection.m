@@ -9,7 +9,6 @@ copyright 2005 Alexander Malmberg <alexander@malmberg.org>
 
 int main(int argc, char **argv)
 {
-  ENTER_POOL
   NSPopUpButton *b;
 
   START_SET("NSPopupButton GNUstep defaultSelection")
@@ -34,7 +33,6 @@ int main(int argc, char **argv)
 
   END_SET("NSPopupButton GNUstep defaultSelection")
 
-  LEAVE_POOL
 
   return 0;
 }

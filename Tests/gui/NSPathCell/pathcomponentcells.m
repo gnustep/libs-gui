@@ -7,8 +7,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSPathCell pathComponentCells")
 
   NS_DURING
@@ -29,6 +27,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSPathCell pathComponentCells")
 
-  DESTROY(arp);
   return 0;
 }

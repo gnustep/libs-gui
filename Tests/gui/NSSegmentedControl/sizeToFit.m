@@ -26,7 +26,6 @@ control(NSInteger count)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSegmentedControl *three;
   NSSegmentedControl *one;
   NSSegmentedControl *longLabels;
@@ -90,6 +89,5 @@ main(int argc, char **argv)
 
   END_SET("NSSegmentedControl sizeToFit")
 
-  DESTROY(arp);
   return 0;
 }

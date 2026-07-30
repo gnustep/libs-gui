@@ -44,7 +44,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSToolbar *t1;
   NSToolbar *t2;
 
@@ -88,6 +87,5 @@ main(int argc, char **argv)
 
   END_SET("NSToolbar default identifier items")
 
-  DESTROY(arp);
   return 0;
 }

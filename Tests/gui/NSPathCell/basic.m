@@ -14,8 +14,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   /* Enum values match AppKit; these need no backend. */
   PASS(NSPathStyleStandard == 0, "NSPathStyleStandard is 0");
   PASS(NSPathStyleNavigationBar == 1, "NSPathStyleNavigationBar is 1");
@@ -70,6 +68,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSPathCell basic")
 
-  DESTROY(arp);
   return 0;
 }

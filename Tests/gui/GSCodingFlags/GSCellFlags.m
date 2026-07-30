@@ -7,7 +7,6 @@
 
 int main()
 {
-    CREATE_AUTORELEASE_POOL(arp);
     GSCellFlagsUnion mask = { { 0 } };
 
     START_SET("GSCodingFlags GNUstep CellFlags Union")
@@ -40,6 +39,5 @@ int main()
     
     END_SET("GSCodingFlags GNUstep CellFlags Union")
 
-    DESTROY(arp);
     return 0;
 }

@@ -57,7 +57,6 @@ shouldShowFilename: (NSString *)fname
 
 int main(int argc, char **argv)
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
   NSSavePanel *p;
   NSMatrix *m;
 
@@ -115,6 +114,5 @@ int main(int argc, char **argv)
 
   END_SET("NSSavePanel GNUstep setDelegate")
 
-  [arp release];
   return 0;
 }

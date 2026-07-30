@@ -12,7 +12,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSOutlineView *ov;
 
   START_SET("NSOutlineView state")
@@ -53,6 +52,5 @@ int main()
 
   END_SET("NSOutlineView state")
 
-  DESTROY(arp);
   return 0;
 }

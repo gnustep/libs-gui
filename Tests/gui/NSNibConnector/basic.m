@@ -11,8 +11,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("a new connector")
     NSNibConnector	*connector;
 
@@ -133,6 +131,5 @@ main(int argc, char **argv)
       "the archived connector keeps its label");
   END_SET("archiving")
 
-  DESTROY(arp);
   return 0;
 }

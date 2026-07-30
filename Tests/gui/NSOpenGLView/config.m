@@ -11,7 +11,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSOpenGLView config")
 
   NS_DURING
@@ -52,6 +51,5 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSOpenGLView config")
-  DESTROY(arp);
   return 0;
 }

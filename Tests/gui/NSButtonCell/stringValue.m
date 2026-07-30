@@ -11,7 +11,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSButtonCell *cell;
 
   START_SET("NSButtonCell stringValue")
@@ -39,6 +38,5 @@ main(int argc, char **argv)
 
   END_SET("NSButtonCell stringValue")
 
-  DESTROY(arp);
   return 0;
 }

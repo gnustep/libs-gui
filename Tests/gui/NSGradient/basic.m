@@ -18,7 +18,6 @@ rgb(CGFloat r, CGFloat g, CGFloat b)
 
 int main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSColor	*red = rgb(1, 0, 0);
   NSColor	*green = rgb(0, 1, 0);
   NSColor	*blue = rgb(0, 0, 1);
@@ -114,6 +113,5 @@ int main(int argc, char **argv)
       "copy interpolates like the original");
   END_SET("copy")
 
-  DESTROY(arp);
   return 0;
 }

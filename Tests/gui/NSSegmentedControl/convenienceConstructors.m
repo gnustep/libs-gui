@@ -24,7 +24,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   SegTarget *t;
 
   START_SET("NSSegmentedControl convenience constructors")
@@ -78,6 +77,5 @@ main(int argc, const char **argv)
 
   END_SET("NSSegmentedControl convenience constructors")
 
-  DESTROY(arp);
   return 0;
 }

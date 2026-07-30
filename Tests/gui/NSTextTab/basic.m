@@ -13,8 +13,6 @@
 
 int main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("initWithType:location: maps type to alignment")
     NSTextTab	*t;
 
@@ -139,6 +137,5 @@ int main(int argc, char **argv)
     PASS([c isEqual: t], "the copy is equal to the original");
   END_SET("copy")
 
-  DESTROY(arp);
   return 0;
 }

@@ -9,8 +9,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("a nil primary string")
     NSArray		*alternatives;
     NSTextAlternatives	*alt;
@@ -45,6 +43,5 @@ main(int argc, char **argv)
       "the primary string reads back when there are no alternatives");
   END_SET("a nil primary string")
 
-  DESTROY(arp);
   return 0;
 }

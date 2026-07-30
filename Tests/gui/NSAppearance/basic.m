@@ -10,8 +10,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("the appearance names")
     PASS([NSAppearanceNameAqua isEqualToString: @"NSAppearanceNameAqua"],
       "the aqua appearance name is the documented one");
@@ -65,6 +63,5 @@ main(int argc, char **argv)
       "the current appearance reads back");
   END_SET("the current appearance")
 
-  DESTROY(arp);
   return 0;
 }

@@ -15,7 +15,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSDatePicker rendering")
 
   NS_DURING
@@ -53,6 +52,5 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSDatePicker rendering")
-  DESTROY(arp);
   return 0;
 }

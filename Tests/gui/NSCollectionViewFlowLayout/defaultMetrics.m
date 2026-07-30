@@ -10,7 +10,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSCollectionViewFlowLayout *l;
 
   START_SET("NSCollectionViewFlowLayout defaultMetrics")
@@ -31,6 +30,5 @@ int main()
 
   END_SET("NSCollectionViewFlowLayout defaultMetrics")
 
-  DESTROY(arp);
   return 0;
 }

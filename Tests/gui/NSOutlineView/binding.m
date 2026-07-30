@@ -62,7 +62,6 @@ node(NSString *aName)
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSOutlineView		*ov;
   NSTableColumn		*col;
   NSTreeController	*tc;
@@ -133,7 +132,6 @@ withKeyPath: @"arrangedObjects"
 
   END_SET("NSOutlineView content binding")
 
-  DESTROY(arp);
 
   return 0;
 }

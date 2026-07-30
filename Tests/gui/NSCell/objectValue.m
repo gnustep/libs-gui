@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSCell *cell;
   NSNumber *num;
 
@@ -44,7 +43,6 @@ int main()
  
   END_SET("NSCell GNUstep objectValue")
 
-  DESTROY(arp);
   return 0;
 }
 

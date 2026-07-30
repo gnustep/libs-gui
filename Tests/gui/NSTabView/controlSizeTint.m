@@ -11,7 +11,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTabView *tv;
 
   START_SET("NSTabView controlSizeTint")
@@ -46,6 +45,5 @@ int main()
 
   END_SET("NSTabView controlSizeTint")
 
-  DESTROY(arp);
   return 0;
 }

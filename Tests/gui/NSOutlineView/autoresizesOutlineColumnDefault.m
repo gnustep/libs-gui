@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSOutlineView *ov;
 
   START_SET("NSOutlineView autoresizesOutlineColumnDefault")
@@ -40,6 +39,5 @@ int main()
 
   END_SET("NSOutlineView autoresizesOutlineColumnDefault")
 
-  DESTROY(arp);
   return 0;
 }

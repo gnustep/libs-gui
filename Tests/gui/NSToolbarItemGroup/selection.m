@@ -40,8 +40,6 @@ groupWithMode(NSToolbarItemGroupSelectionMode mode)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("selection")
 
   NS_DURING
@@ -196,6 +194,5 @@ main(int argc, char **argv)
 
   END_SET("selection")
 
-  DESTROY(arp);
   return 0;
 }

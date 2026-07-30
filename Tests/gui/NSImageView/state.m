@@ -19,7 +19,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSImageView *iv;
 
   START_SET("NSImageView state")
@@ -86,6 +85,5 @@ main(int argc, char **argv)
 
   END_SET("NSImageView state")
 
-  DESTROY(arp);
   return 0;
 }

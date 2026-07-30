@@ -11,7 +11,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSData *data = [@"hello" dataUsingEncoding: NSUTF8StringEncoding];
   NSFileWrapper *fw = AUTORELEASE([[NSFileWrapper alloc]
     initRegularFileWithContents: data]);
@@ -66,6 +65,5 @@ main(int argc, char **argv)
 
   END_SET("NSTextAttachment")
 
-  DESTROY(arp);
   return 0;
 }

@@ -16,7 +16,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSStepper *stepper;
 
   START_SET("NSStepper control")
@@ -70,6 +69,5 @@ main(int argc, char **argv)
 
   END_SET("NSStepper control")
 
-  DESTROY(arp);
   return 0;
 }

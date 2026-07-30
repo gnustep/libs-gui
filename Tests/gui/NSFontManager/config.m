@@ -12,7 +12,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("shared font manager")
 
   NS_DURING
@@ -51,6 +50,5 @@ main(int argc, char **argv)
   NS_ENDHANDLER
 
   END_SET("shared font manager")
-  DESTROY(arp);
   return 0;
 }

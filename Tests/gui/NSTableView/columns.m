@@ -22,7 +22,6 @@ mkcol(NSString *ident)
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTableView *tv;
   NSTableColumn *c1, *c2;
 
@@ -70,6 +69,5 @@ int main()
 
   END_SET("NSTableView columns")
 
-  DESTROY(arp);
   return 0;
 }

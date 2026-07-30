@@ -15,7 +15,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSegmentedCell *cell;
 
   START_SET("NSSegmentedCell model")
@@ -86,6 +85,5 @@ main(int argc, char **argv)
 
   END_SET("NSSegmentedCell model")
 
-  DESTROY(arp);
   return 0;
 }

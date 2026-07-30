@@ -34,7 +34,6 @@ occurrences(NSArray *array, NSString *name)
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSOutlineView	*ov;
   NSArray	*exposed;
 
@@ -64,7 +63,6 @@ int main()
 
   END_SET("NSOutlineView exposed bindings are not repeated")
 
-  DESTROY(arp);
 
   return 0;
 }

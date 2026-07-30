@@ -17,7 +17,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSStepperCell *cell;
 
   START_SET("NSStepperCell value logic")
@@ -145,6 +144,5 @@ int main()
 
   END_SET("NSStepperCell value logic")
 
-  DESTROY(arp);
   return 0;
 }

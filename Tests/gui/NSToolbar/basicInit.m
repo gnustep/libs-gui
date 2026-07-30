@@ -12,7 +12,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSToolbar *ref;
   NSToolbar *tb;
 
@@ -62,6 +61,5 @@ main(int argc, char **argv)
 
   END_SET("NSToolbar basic init")
 
-  DESTROY(arp);
   return 0;
 }

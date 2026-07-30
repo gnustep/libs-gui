@@ -7,8 +7,6 @@
 
 int main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSAttributedString rangeOfTextBlock:atIndex: category method");
 
   NSTextBlock *block1 = AUTORELEASE([[NSTextBlock alloc] init]);
@@ -165,7 +163,6 @@ int main(int argc, char **argv)
 
   END_SET("NSAttributedString rangeOfTextTable:atIndex: category method");
 
-  DESTROY(arp);
 
   return 0;
 }

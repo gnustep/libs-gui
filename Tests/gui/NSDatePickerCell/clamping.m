@@ -10,7 +10,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePickerCell *cell;
   NSDate *minD, *maxD;
 
@@ -52,6 +51,5 @@ int main()
 
   END_SET("NSDatePickerCell clamping")
 
-  DESTROY(arp);
   return 0;
 }

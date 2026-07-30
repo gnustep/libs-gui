@@ -10,8 +10,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   /* Enum values match AppKit; these need no backend. */
   PASS(NSImageAlignCenter == 0, "NSImageAlignCenter is 0");
   PASS(NSImageAlignTop == 1, "NSImageAlignTop is 1");
@@ -60,6 +58,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSImageCell basic")
 
-  DESTROY(arp);
   return 0;
 }

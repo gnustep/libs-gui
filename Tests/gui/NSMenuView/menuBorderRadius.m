@@ -93,8 +93,6 @@ isWhite(NSColor *c)
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSMenuView border radius")
 
   NS_DURING
@@ -132,6 +130,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSMenuView border radius")
 
-  DESTROY(arp);
   return 0;
 }

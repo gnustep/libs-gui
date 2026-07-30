@@ -12,8 +12,6 @@
 
 int main(int argc, char **argv)
 {
-	CREATE_AUTORELEASE_POOL(arp);
-
 	NSView *view;
 	int passed;
 
@@ -52,6 +50,5 @@ int main(int argc, char **argv)
 
 	END_SET("NSView GNUstep frameRotationSign")
 
-	DESTROY(arp);
 	return 0;
 }

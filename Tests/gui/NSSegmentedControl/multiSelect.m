@@ -24,7 +24,6 @@ control(NSInteger count)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSegmentedControl *sc;
 
   START_SET("NSSegmentedControl multiSelect")
@@ -84,6 +83,5 @@ main(int argc, char **argv)
 
   END_SET("NSSegmentedControl multiSelect")
 
-  DESTROY(arp);
   return 0;
 }

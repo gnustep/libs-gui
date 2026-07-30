@@ -54,7 +54,6 @@ buildBundle(void)
 int
 main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSString *root;
   NSBundle *bundle;
   NSDataAsset *a;
@@ -88,6 +87,5 @@ main()
 
   END_SET("NSDataAsset loading")
 
-  DESTROY(arp);
   return 0;
 }

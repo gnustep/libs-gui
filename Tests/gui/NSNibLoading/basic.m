@@ -16,7 +16,6 @@
 
 int main()
 {
-  NSAutoreleasePool	*arp = [NSAutoreleasePool new];
   NSArray		**testObjects = NULL;
   BOOL 			success = NO;
   NSFileManager		*mgr = [NSFileManager defaultManager];
@@ -77,6 +76,5 @@ int main()
   
   END_SET("NSNibLoading GNUstep basic")
 
-  [arp release];
   return 0;
 }

@@ -9,8 +9,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("shared instance")
     NSHelpManager	*hm = [NSHelpManager sharedHelpManager];
 
@@ -50,6 +48,5 @@ main(int argc, char **argv)
       "setContextHelpModeActive: turns the mode off");
   END_SET("context help mode")
 
-  DESTROY(arp);
   return 0;
 }

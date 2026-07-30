@@ -47,7 +47,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Recorder *r;
   NSMenu *menu;
   NSMenuItem *item;
@@ -113,6 +112,5 @@ main(int argc, const char **argv)
 
   END_SET("NSMenu performAction")
 
-  DESTROY(arp);
   return 0;
 }

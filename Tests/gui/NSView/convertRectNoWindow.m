@@ -12,8 +12,6 @@
 
 int main(int argc, char **argv)
 {
-	CREATE_AUTORELEASE_POOL(arp);
-
 	NSView *outer;
 	NSView *inner;
 	NSRect r;
@@ -64,6 +62,5 @@ int main(int argc, char **argv)
 
 	END_SET("NSView GNUstep convertRectNoWindow")
 
-	DESTROY(arp);
 	return 0;
 }

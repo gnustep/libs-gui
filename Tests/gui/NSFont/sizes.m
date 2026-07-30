@@ -16,8 +16,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   CGFloat system = [NSFont systemFontSize];
   CGFloat small = [NSFont smallSystemFontSize];
   CGFloat label = [NSFont labelFontSize];
@@ -42,6 +40,5 @@ main(int argc, char **argv)
       "the control sizes are ordered mini < small < regular");
   END_SET("control sizes")
 
-  DESTROY(arp);
   return 0;
 }

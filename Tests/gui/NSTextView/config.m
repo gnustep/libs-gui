@@ -21,7 +21,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTextView *tv;
   NSSize inset;
 
@@ -80,6 +79,5 @@ int main()
 
   END_SET("NSTextView config")
 
-  DESTROY(arp);
   return 0;
 }

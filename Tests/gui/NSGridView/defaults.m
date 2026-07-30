@@ -14,7 +14,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSGridView *g;
 
   START_SET("NSGridView defaults")
@@ -53,6 +52,5 @@ main(int argc, char **argv)
 
   END_SET("NSGridView defaults")
 
-  DESTROY(arp);
   return 0;
 }

@@ -91,7 +91,6 @@ scaledAutoresizeCase(void)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSView *sub;
 
   START_SET("NSView autoresizeRounding")
@@ -227,6 +226,5 @@ main(int argc, char **argv)
 
   END_SET("NSView autoresizeRounding")
 
-  DESTROY(arp);
   return 0;
 }

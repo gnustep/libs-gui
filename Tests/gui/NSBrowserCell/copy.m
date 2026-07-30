@@ -9,8 +9,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSBrowserCell copy")
 
   NS_DURING
@@ -39,6 +37,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSBrowserCell copy")
 
-  DESTROY(arp);
   return 0;
 }

@@ -53,7 +53,6 @@ observe(NSNotificationCenter *nc, Recorder *r, NSSplitView *sv)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Recorder *r, *r2;
   NSSplitView *sv, *empty;
   NSNotificationCenter *nc;
@@ -115,6 +114,5 @@ main(int argc, char **argv)
 
   END_SET("NSSplitView resize notification")
 
-  DESTROY(arp);
   return 0;
 }

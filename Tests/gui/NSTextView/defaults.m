@@ -10,7 +10,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTextView *tv;
 
   START_SET("NSTextView defaults")
@@ -31,6 +30,5 @@ int main()
 
   END_SET("NSTextView defaults")
 
-  DESTROY(arp);
   return 0;
 }

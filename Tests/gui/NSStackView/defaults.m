@@ -11,7 +11,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSStackView *sv;
 
   START_SET("NSStackView defaults")
@@ -47,6 +46,5 @@ int main()
 
   END_SET("NSStackView defaults")
 
-  DESTROY(arp);
   return 0;
 }

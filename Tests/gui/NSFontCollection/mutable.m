@@ -12,8 +12,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes:
     [NSDictionary dictionaryWithObject: @"Helvetica" forKey: NSFontFamilyAttribute]];
   NSFontDescriptor *fd2 = [NSFontDescriptor fontDescriptorWithFontAttributes:
@@ -45,6 +43,5 @@ main(int argc, char **argv)
       "removeQueryForDescriptors: removes from the query");
   END_SET("add and remove query descriptors")
 
-  DESTROY(arp);
   return 0;
 }

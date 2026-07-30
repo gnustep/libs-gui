@@ -14,8 +14,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("dimension constant values")
     PASS(NSTextBlockWidth == 0 && NSTextBlockMinimumWidth == 1
       && NSTextBlockMaximumWidth == 2 && NSTextBlockHeight == 4
@@ -135,6 +133,5 @@ main(int argc, char **argv)
     PASS([tb table] == t, "the table is stored");
   END_SET("NSTextTableBlock position")
 
-  DESTROY(arp);
   return 0;
 }

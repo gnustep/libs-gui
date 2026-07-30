@@ -44,7 +44,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Recorder *model;
   NSWindow *win;
   NSTextField *field;
@@ -143,7 +142,6 @@ main(int argc, const char **argv)
 
   END_SET("NSControl continuous value binding")
 
-  DESTROY(arp);
 
   return 0;
 }

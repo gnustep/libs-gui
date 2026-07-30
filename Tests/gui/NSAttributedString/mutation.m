@@ -32,8 +32,6 @@ superAt(NSAttributedString *s, NSUInteger i)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSAttributedString mutation")
 
   NS_DURING
@@ -133,6 +131,5 @@ main(int argc, char **argv)
 
   END_SET("NSAttributedString mutation")
 
-  DESTROY(arp);
   return 0;
 }

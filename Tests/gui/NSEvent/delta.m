@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSEvent *ev;
 
   START_SET("NSEvent GNUstep delta")
@@ -54,6 +53,5 @@ int main()
 
   END_SET("NSEvent GNUstep delta")
 
-  DESTROY(arp);
   return 0;
 }

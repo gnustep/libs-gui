@@ -16,8 +16,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSPrinter missing PPD")
 
   NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
@@ -58,6 +56,5 @@ main(int argc, char **argv)
 
   END_SET("NSPrinter missing PPD")
 
-  DESTROY(arp);
   return 0;
 }

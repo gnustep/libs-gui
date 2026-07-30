@@ -25,7 +25,6 @@ textView(void)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTextView *tv;
 
   START_SET("NSTextView typing attributes")
@@ -106,6 +105,5 @@ main(int argc, char **argv)
 
   END_SET("NSTextView typing attributes")
 
-  DESTROY(arp);
   return 0;
 }

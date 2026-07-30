@@ -18,7 +18,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSegmentedControl *sc;
 
   START_SET("NSSegmentedControl segments")
@@ -96,6 +95,5 @@ main(int argc, char **argv)
 
   END_SET("NSSegmentedControl segments")
 
-  DESTROY(arp);
   return 0;
 }

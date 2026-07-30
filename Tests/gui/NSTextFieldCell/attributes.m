@@ -17,7 +17,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTextFieldCell *cell;
 
   START_SET("NSTextFieldCell attributes")
@@ -74,6 +73,5 @@ main(int argc, char **argv)
 
   END_SET("NSTextFieldCell attributes")
 
-  DESTROY(arp);
   return 0;
 }

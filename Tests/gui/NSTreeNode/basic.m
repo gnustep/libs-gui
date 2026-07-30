@@ -10,8 +10,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("a new node")
     NSTreeNode	*node = [NSTreeNode treeNodeWithRepresentedObject: @"root"];
 
@@ -79,6 +77,5 @@ main(int argc, char **argv)
       "a two-step index path reaches the grandchild");
   END_SET("descendantNodeAtIndexPath:")
 
-  DESTROY(arp);
   return 0;
 }

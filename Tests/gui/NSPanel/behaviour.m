@@ -12,7 +12,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSPanel behaviour")
 
   NS_DURING
@@ -57,6 +56,5 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSPanel behaviour")
-  DESTROY(arp);
   return 0;
 }

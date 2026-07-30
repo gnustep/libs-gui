@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePickerCell *cell;
 
   START_SET("NSDatePickerCell defaultElements")
@@ -29,6 +28,5 @@ int main()
 
   END_SET("NSDatePickerCell defaultElements")
 
-  DESTROY(arp);
   return 0;
 }

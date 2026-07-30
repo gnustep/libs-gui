@@ -16,7 +16,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSegmentedCell *cell;
 
   START_SET("NSSegmentedCell selectAny")
@@ -61,6 +60,5 @@ main(int argc, char **argv)
 
   END_SET("NSSegmentedCell selectAny")
 
-  DESTROY(arp);
   return 0;
 }

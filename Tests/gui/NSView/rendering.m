@@ -19,7 +19,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSView rendering")
 
   NS_DURING
@@ -66,6 +65,5 @@ int main(int argc, const char **argv)
     "centre pixel of a red-fill view is red");
 
   END_SET("NSView rendering")
-  DESTROY(arp);
   return 0;
 }
