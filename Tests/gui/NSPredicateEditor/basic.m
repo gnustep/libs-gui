@@ -22,8 +22,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSPredicateEditor")
 
   NSPredicateEditor *editor;
@@ -145,6 +143,5 @@ rightExpressionAttributeType: NSStringAttributeType
 
   END_SET("NSPredicateEditor")
 
-  DESTROY(arp);
   return 0;
 }
