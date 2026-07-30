@@ -122,8 +122,6 @@ displayValueForCriterion: (id)criterion
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSRuleEditor")
 
   NSRuleEditor *editor;
@@ -280,6 +278,5 @@ main(int argc, char **argv)
 
   END_SET("NSRuleEditor")
 
-  DESTROY(arp);
   return 0;
 }
