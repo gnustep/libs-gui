@@ -30,7 +30,6 @@ has(NSString *string, NSString *part)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePicker *dp;
   NSString *text;
   NSString *american;
@@ -120,6 +119,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePicker display")
 
-  DESTROY(arp);
   return 0;
 }
