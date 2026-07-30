@@ -98,7 +98,6 @@
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
   NSApplication *app1, *app2;
   TestApplicationDelegate *delegate;
 
@@ -140,17 +139,7 @@ int main()
     }
     else
     {
-      // Framework initialization error - skip remaining tests
-      if ([[localException name] isEqualToString: NSInternalInconsistencyException])
-      {
-        SKIP("Backend initialization failed - cannot test NSApplication");
-        [arp release];
-        return 0;
-      }
-      else
-      {
-        PASS(NO, "Unexpected exception: %s", [[localException name] UTF8String]);
-      }
+      PASS(NO, "Unexpected exception: %s", [[localException name] UTF8String]);
     }
   }
   NS_ENDHANDLER
@@ -271,6 +260,5 @@ int main()
   END_SET("NSApplication GNUstep basic")
 
   [delegate release];
-  [arp release];
   return 0;
 }
