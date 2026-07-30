@@ -99,7 +99,9 @@
 int main()
 {
   NSApplication *app1, *app2;
-  TestApplicationDelegate *delegate;
+  /* Released below the set, which is also reached when the set is skipped
+     before this has been assigned. */
+  TestApplicationDelegate *delegate = nil;
 
   START_SET("NSApplication GNUstep basic")
 
