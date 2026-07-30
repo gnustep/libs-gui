@@ -22,6 +22,7 @@
 #include <Foundation/NSRange.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSURL.h>
+#include <Foundation/NSValue.h>
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSAttributedString.h>
@@ -101,6 +102,37 @@ main(int argc, char **argv)
       [tv _updateState: nil];
       PASS(w->invalidateCount == 1,
         "layout change with a visible link still invalidates cursor rects");
+
+      /* A link that is not on screen has no cursor rect of its own, because
+         -resetCursorRects only builds them for the visible character range.
+         Looking for it costs a scan of the whole text on every keystroke, and
+         finding it makes us rebuild rects that cannot have changed. */
+      NSTextView *big;
+      NSMutableString *lines;
+      NSUInteger middle;
+      NSUInteger i;
+
+      lines = AUTORELEASE([[NSMutableString alloc] init]);
+      for (i = 0; i < 400; i++)
+        {
+          [lines appendString: @"a line of text in a long document\n"];
+        }
+      middle = [lines length] / 2;
+
+      big = AUTORELEASE([[NSTextView alloc]
+        initWithFrame: NSMakeRect(0, 0, 200, 100)]);
+      [big setEditable: YES];
+      [[w contentView] addSubview: big];
+      [big insertText: lines];
+      [[big textStorage]
+        addAttribute: NSLinkAttributeName
+               value: [NSURL URLWithString: @"http://www.gnustep.org"]
+               range: NSMakeRange(middle, 10)];
+
+      w->invalidateCount = 0;
+      [big _updateState: nil];
+      PASS(w->invalidateCount == 0,
+        "a link outside the visible text does not invalidate cursor rects");
     }
   NS_HANDLER
     {
