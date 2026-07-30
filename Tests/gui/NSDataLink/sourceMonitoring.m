@@ -58,13 +58,13 @@ waitForNotice(DLWatchDoc *doc, NSTimeInterval limit)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-  NSFileManager *mgr = [NSFileManager defaultManager];
+  NSFileManager *mgr;
   NSString *dir;
   NSString *source;
 
   START_SET("NSDataLinkManager source monitoring")
 
+  mgr = [NSFileManager defaultManager];
   dir = [NSTemporaryDirectory()
           stringByAppendingPathComponent: @"nsdl-monitor-test"];
   [mgr createDirectoryAtPath: dir
@@ -106,6 +106,5 @@ main(int argc, const char **argv)
 
   END_SET("NSDataLinkManager source monitoring")
 
-  DESTROY(arp);
   return 0;
 }
