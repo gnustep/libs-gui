@@ -50,8 +50,6 @@ layoutWithBreakMode(NSLineBreakMode mode)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("GSHorizontalTypesetter truncation")
 
   NS_DURING
@@ -123,6 +121,5 @@ main(int argc, char **argv)
 
   END_SET("GSHorizontalTypesetter truncation")
 
-  DESTROY(arp);
   return 0;
 }
