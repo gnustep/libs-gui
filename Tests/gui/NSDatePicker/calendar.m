@@ -73,7 +73,6 @@ value(NSDatePicker *dp)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePicker *dp;
   NSSize text;
   NSSize grid;
@@ -183,6 +182,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePicker calendar")
 
-  DESTROY(arp);
   return 0;
 }

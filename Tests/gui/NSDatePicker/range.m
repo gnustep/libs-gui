@@ -67,7 +67,6 @@ markedPixels(NSDatePicker *dp)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDateFormatter *fmt;
   NSWindow *window;
   NSDatePicker *dp;
@@ -142,6 +141,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePicker range")
 
-  DESTROY(arp);
   return 0;
 }
