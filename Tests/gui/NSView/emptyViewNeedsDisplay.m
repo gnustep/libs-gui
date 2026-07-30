@@ -18,7 +18,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSWindow *window;
   NSView *content;
   NSView *flat;
@@ -98,6 +97,5 @@ main(int argc, char **argv)
 
   END_SET("NSView empty view needs display")
 
-  DESTROY(arp);
   return 0;
 }
