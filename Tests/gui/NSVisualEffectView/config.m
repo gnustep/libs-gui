@@ -9,7 +9,7 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSVisualEffectView config")
 
   NSVisualEffectView *v = AUTORELEASE([[NSVisualEffectView alloc]
     initWithFrame: NSMakeRect(0, 0, 100, 100)]);
@@ -24,6 +24,6 @@ main(int argc, const char **argv)
     "the interior background style starts at zero");
   PASS([v maskImage] == nil, "there is no mask image by default");
 
-  DESTROY(arp);
+  END_SET("NSVisualEffectView config")
   return 0;
 }

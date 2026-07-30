@@ -18,7 +18,7 @@ isUnbounded(NSRect r)
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSView visibleRectNoWindow")
   NSView *v, *sup, *child, *hidden;
 
   v = AUTORELEASE([[NSView alloc] initWithFrame: NSMakeRect(0, 0, 100, 80)]);
@@ -40,6 +40,6 @@ int main(int argc, const char **argv)
   PASS(NSEqualRects([hidden visibleRect], NSZeroRect),
        "a hidden windowless view has a zero visibleRect");
 
-  DESTROY(arp);
+  END_SET("NSView visibleRectNoWindow")
   return 0;
 }

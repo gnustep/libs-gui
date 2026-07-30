@@ -9,7 +9,7 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSVisualEffectView roundtrips")
 
   NSVisualEffectView *v = AUTORELEASE([[NSVisualEffectView alloc]
     initWithFrame: NSMakeRect(0, 0, 100, 100)]);
@@ -38,6 +38,6 @@ main(int argc, const char **argv)
   [v setMaskImage: nil];
   PASS([v maskImage] == nil, "the mask image can be cleared");
 
-  DESTROY(arp);
+  END_SET("NSVisualEffectView roundtrips")
   return 0;
 }

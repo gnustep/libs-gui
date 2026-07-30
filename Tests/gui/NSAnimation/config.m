@@ -13,7 +13,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSAnimation config")
   NSAnimation *a;
 
   PASS(NSAnimationEaseInOut == 0, "NSAnimationEaseInOut is 0");
@@ -38,6 +38,6 @@ int main()
   PASS([[a progressMarks] count] == 0, "a new animation has no progress marks");
   PASS([a delegate] == nil, "default delegate is nil");
 
-  DESTROY(arp);
+  END_SET("NSAnimation config")
   return 0;
 }

@@ -9,7 +9,7 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSMovieView config")
 
   NSMovieView *v = AUTORELEASE([[NSMovieView alloc]
     initWithFrame: NSMakeRect(0, 0, 200, 150)]);
@@ -49,6 +49,6 @@ main(int argc, const char **argv)
   PASS([v volume] == 0.0 && [v isMuted] == YES,
     "a zero volume mutes playback");
 
-  DESTROY(arp);
+  END_SET("NSMovieView config")
   return 0;
 }

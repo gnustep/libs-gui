@@ -12,7 +12,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSSplitViewItem defaults")
   NSSplitViewItem *item;
 
   PASS(NSSplitViewItemUnspecifiedDimension == -1.0,
@@ -33,6 +33,6 @@ int main()
   PASS([item allowsFullHeightLayout] == YES,
        "default allowsFullHeightLayout is YES");
 
-  DESTROY(arp);
+  END_SET("NSSplitViewItem defaults")
   return 0;
 }

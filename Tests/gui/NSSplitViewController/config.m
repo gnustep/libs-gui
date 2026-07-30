@@ -12,7 +12,7 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSSplitViewController config")
 
   NSSplitViewController *svc = AUTORELEASE([[NSSplitViewController alloc] init]);
 
@@ -29,6 +29,6 @@ main(int argc, const char **argv)
   PASS([svc minimumThicknessForInlineSidebars] == 44.5,
     "the minimum inline sidebar thickness round-trips to another value");
 
-  DESTROY(arp);
+  END_SET("NSSplitViewController config")
   return 0;
 }

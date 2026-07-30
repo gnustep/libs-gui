@@ -10,7 +10,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSColorPicker config")
   NSColorPicker *picker;
 
   picker = AUTORELEASE([[NSColorPicker alloc]
@@ -19,6 +19,6 @@ int main()
   PASS(picker != nil, "a picker with a nil panel is created");
   PASS([picker colorPanel] == nil, "a nil color panel stays nil");
 
-  DESTROY(arp);
+  END_SET("NSColorPicker config")
   return 0;
 }

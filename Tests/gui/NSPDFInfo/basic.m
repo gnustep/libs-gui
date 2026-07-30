@@ -10,7 +10,7 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSPDFInfo basic")
 
   /* Enum values match AppKit. */
   PASS(NSPaperOrientationPortrait == 0, "NSPaperOrientationPortrait is 0");
@@ -41,6 +41,6 @@ int main(int argc, const char **argv)
   PASS([info conformsToProtocol: @protocol(NSCopying)], "conforms to NSCopying");
 
   RELEASE(info);
-  DESTROY(arp);
+  END_SET("NSPDFInfo basic")
   return 0;
 }

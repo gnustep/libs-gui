@@ -12,7 +12,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSArrayController nilSelection")
   NSArrayController *ac;
 
   ac = AUTORELEASE([[NSArrayController alloc] init]);
@@ -32,6 +32,6 @@ int main()
   PASS([[ac selectionIndexes] count] == 0,
        "setSelectionIndexes: nil leaves an empty selection index set");
 
-  DESTROY(arp);
+  END_SET("NSArrayController nilSelection")
   return 0;
 }

@@ -11,7 +11,7 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSPDFInfo initdefaults")
 
   NSPDFInfo *info = [[NSPDFInfo alloc] init];
 
@@ -33,6 +33,6 @@ int main(int argc, const char **argv)
        "default paperSize is non-zero");
 
   RELEASE(info);
-  DESTROY(arp);
+  END_SET("NSPDFInfo initdefaults")
   return 0;
 }

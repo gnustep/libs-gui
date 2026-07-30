@@ -8,7 +8,7 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSLayoutGuide anchors")
 
   NSLayoutGuide *g = AUTORELEASE([[NSLayoutGuide alloc] init]);
   NSLayoutGuide *g2 = AUTORELEASE([[NSLayoutGuide alloc] init]);
@@ -40,6 +40,6 @@ int main(int argc, const char **argv)
   PASS([lead secondAttribute] == NSLayoutAttributeLeading,
        "leading constraint secondAttribute is Leading");
 
-  DESTROY(arp);
+  END_SET("NSLayoutGuide anchors")
   return 0;
 }

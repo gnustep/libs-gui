@@ -9,7 +9,7 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSTabViewController delegate")
 
   NSTabViewController *tc = AUTORELEASE([[NSTabViewController alloc] init]);
 
@@ -23,6 +23,6 @@ main(int argc, const char **argv)
     && [[tc toolbarSelectableItemIdentifiers: nil] count] == 0,
     "the selectable toolbar identifiers start empty");
 
-  DESTROY(arp);
+  END_SET("NSTabViewController delegate")
   return 0;
 }

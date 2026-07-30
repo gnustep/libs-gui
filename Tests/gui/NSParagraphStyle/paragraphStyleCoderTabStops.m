@@ -45,7 +45,7 @@
 
 int main(void)
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSParagraphStyle paragraphStyleCoderTabStops")
   HugeTabCountCoder *fc = AUTORELEASE([HugeTabCountCoder new]);
   NSMutableParagraphStyle *p;
   NSParagraphStyle *p2;
@@ -68,6 +68,6 @@ int main(void)
   PASS(p2 != nil && [[p2 tabStops] count] == 2,
     "a paragraph style with tab stops round-trips through a non-keyed archive");
 
-  [arp release];
+  END_SET("NSParagraphStyle paragraphStyleCoderTabStops")
   return 0;
 }

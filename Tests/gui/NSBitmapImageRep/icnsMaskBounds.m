@@ -230,7 +230,7 @@ static const unsigned char truncatedMaskICNS[] = {
 #endif
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep icnsMaskBounds")
 #if !defined(GS_TEST_SYSTEM_ICNS)
   NSData            *data;
   NSBitmapImageRep  *rep;
@@ -248,6 +248,6 @@ int main()
 
   [rep release];
 #endif
-  [arp release];
+  END_SET("NSBitmapImageRep icnsMaskBounds")
   return 0;
 }

@@ -7,7 +7,7 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSLayoutGuide identifier")
 
   NSLayoutGuide *g = AUTORELEASE([[NSLayoutGuide alloc] init]);
 
@@ -19,6 +19,6 @@ int main(int argc, const char **argv)
   PASS([[g identifier] isEqualToString: @"id1"],
        "identifier is copied, not shared with the argument");
 
-  DESTROY(arp);
+  END_SET("NSLayoutGuide identifier")
   return 0;
 }

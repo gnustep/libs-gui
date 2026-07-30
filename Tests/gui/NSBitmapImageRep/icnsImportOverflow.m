@@ -101,7 +101,7 @@ static const unsigned char goodICNS32[] = {
  */
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep icnsImportOverflow")
   NSData            *data;
   NSBitmapImageRep  *rep;
 
@@ -118,6 +118,6 @@ int main()
     "a valid 32x32 ICNS icon still decodes");
   [rep release];
 
-  [arp release];
+  END_SET("NSBitmapImageRep icnsImportOverflow")
   return 0;
 }
