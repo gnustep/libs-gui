@@ -53,7 +53,6 @@ buildWindowWithToolbar(NSString *identifier)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSAutoreleasePool *inner;
   NSWindow *w;
 
@@ -99,6 +98,5 @@ main(int argc, char **argv)
 
   END_SET("NSToolbar window release")
 
-  DESTROY(arp);
   return 0;
 }
