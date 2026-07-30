@@ -54,7 +54,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTextView *tv;
   CursorCountWindow *w;
 
@@ -146,6 +145,5 @@ main(int argc, char **argv)
 
   END_SET("NSTextView cursor-rect invalidation")
 
-  DESTROY(arp);
   return 0;
 }
