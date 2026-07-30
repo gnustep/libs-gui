@@ -74,7 +74,6 @@ clickRow(NSBrowser *browser, NSInteger row)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSBrowser *browser;
   Chooser *chooser;
 
@@ -141,7 +140,6 @@ main(int argc, const char **argv)
 
   END_SET("NSBrowser proposed selection delegate method")
 
-  DESTROY(arp);
 
   return 0;
 }

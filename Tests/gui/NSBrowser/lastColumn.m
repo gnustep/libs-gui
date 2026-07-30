@@ -46,7 +46,6 @@ didChangeLastColumn: (NSInteger)oldLastColumn
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSBrowser *browser;
   ColumnWatcher *watcher;
 
@@ -98,7 +97,6 @@ main(int argc, const char **argv)
 
   END_SET("NSBrowser last column delegate method")
 
-  DESTROY(arp);
 
   return 0;
 }
