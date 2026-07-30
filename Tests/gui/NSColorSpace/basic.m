@@ -15,8 +15,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("model enum values")
     PASS(NSUnknownColorSpaceModel == -1 && NSGrayColorSpaceModel == 0
       && NSRGBColorSpaceModel == 1 && NSCMYKColorSpaceModel == 2
@@ -86,6 +84,5 @@ main(int argc, char **argv)
       "the generic and device RGB spaces are different objects");
   END_SET("standard spaces are shared")
 
-  DESTROY(arp);
   return 0;
 }
