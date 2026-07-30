@@ -69,8 +69,6 @@ static NSPrinter *printerWithResolution(NSString *resolution, NSString *path)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSPrinter device description")
 
   NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
@@ -167,6 +165,5 @@ main(int argc, char **argv)
 
   END_SET("NSPrinter device description")
 
-  DESTROY(arp);
   return 0;
 }

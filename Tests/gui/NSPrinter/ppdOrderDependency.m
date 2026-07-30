@@ -34,8 +34,6 @@ static NSString *ppdText =
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("PPD keyword after OrderDependency")
 
   NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
@@ -112,6 +110,5 @@ main(int argc, char **argv)
 
   END_SET("PPD keyword after OrderDependency")
 
-  DESTROY(arp);
   return 0;
 }
