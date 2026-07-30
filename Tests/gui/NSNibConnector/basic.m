@@ -11,8 +11,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("a new connector")
     NSNibConnector	*connector;
 
@@ -99,16 +97,9 @@ main(int argc, char **argv)
 
   START_SET("establishing a connection")
     NSNibConnector	*connector;
-    BOOL		raised;
 
     connector = AUTORELEASE([[NSNibConnector alloc] init]);
-    raised = NO;
-    NS_DURING
-      [connector establishConnection];
-    NS_HANDLER
-      raised = YES;
-    NS_ENDHANDLER
-    PASS(raised == NO,
+    PASS_RUNS([connector establishConnection],
       "establishing a connection with nothing to join does not raise");
   END_SET("establishing a connection")
 
@@ -133,6 +124,5 @@ main(int argc, char **argv)
       "the archived connector keeps its label");
   END_SET("archiving")
 
-  DESTROY(arp);
   return 0;
 }
