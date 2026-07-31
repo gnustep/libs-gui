@@ -11,11 +11,11 @@
 int
 main(int argc, char **argv)
 {
+  START_SET("NSTextAttachment")
+
   NSData *data = [@"hello" dataUsingEncoding: NSUTF8StringEncoding];
   NSFileWrapper *fw = AUTORELEASE([[NSFileWrapper alloc]
     initRegularFileWithContents: data]);
-
-  START_SET("NSTextAttachment")
 
   NS_DURING
   {
