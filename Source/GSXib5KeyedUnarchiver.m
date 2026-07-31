@@ -1522,6 +1522,8 @@ didStartElement: (NSString*)elementName
         size = [NSFont smallSystemFontSize];
       else if (metaFont)
         NSWarnMLog(@"unknown meta font value: %@", metaFont);
+      else if ([[attributes objectForKey: @"usesAppearanceFont"] boolValue])
+        size = [NSFont systemFontSize];
     }
 
   return [NSNumber numberWithFloat: size];
@@ -3576,7 +3578,15 @@ didStartElement: (NSString*)elementName
   if (hasValue == NO)
     {
       // Try reinterpreting the request...
-      if ([XmlKeyMapTable objectForKey: key])
+      if ([@"IBIsSystemFont" isEqualToString: key])
+        {
+          // A font element left on the appearance font carries no metaFont,
+          // and the appearance font is the system font.
+          hasValue  = [currentElement attributeForKey: @"metaFont"] != nil;
+          hasValue |= [[currentElement attributeForKey: @"usesAppearanceFont"]
+                        boolValue];
+        }
+      else if ([XmlKeyMapTable objectForKey: key])
         {
           hasValue = [self containsValueForKey: [XmlKeyMapTable objectForKey: key]];
         }
