@@ -1986,6 +1986,13 @@ static NSColor *dtxtCol;
   s.width += 2 * borderSize.width;
   s.height += 2 * borderSize.height;
 
+  /* Round the size up.  With a scale factor other than one the text
+     measurement comes out fractional, and a control sized to the fraction
+     has less room than the text needs, which loses the last glyph.
+   */
+  s.width = ceil(s.width);
+  s.height = ceil(s.height);
+
   return s;
 }
 
