@@ -12,7 +12,7 @@
 int
 main(int argc, char **argv)
 {
-  START_SET("set query and exclusion descriptors")
+  START_SET("query and exclusion descriptors")
     NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes:
       [NSDictionary dictionaryWithObject: @"Helvetica" forKey: NSFontFamilyAttribute]];
     NSFontDescriptor *fd2 = [NSFontDescriptor fontDescriptorWithFontAttributes:
@@ -28,9 +28,7 @@ main(int argc, char **argv)
           [[mc exclusionDescriptors] count] == 1
           && [[mc exclusionDescriptors] containsObject: fd2]),
       "setExclusionDescriptors: stores the exclusion descriptors");
-  END_SET("set query and exclusion descriptors")
 
-  START_SET("add and remove query descriptors")
     NSMutableFontCollection *mc = [NSMutableFontCollection
       fontCollectionWithDescriptors: [NSArray array]];
 
@@ -41,7 +39,7 @@ main(int argc, char **argv)
     PASS(([mc removeQueryForDescriptors: [NSArray arrayWithObject: fd]],
           [[mc queryDescriptors] count] == 0),
       "removeQueryForDescriptors: removes from the query");
-  END_SET("add and remove query descriptors")
+  END_SET("query and exclusion descriptors")
 
   return 0;
 }
