@@ -11,10 +11,12 @@
 
 int main(int argc, const char **argv)
 {
-  /* Enum values match AppKit; these need no backend. */
-  PASS(NSPathStyleStandard == 0, "NSPathStyleStandard is 0");
-  PASS(NSPathStyleNavigationBar == 1, "NSPathStyleNavigationBar is 1");
-  PASS(NSPathStylePopUp == 2, "NSPathStylePopUp is 2");
+  START_SET("NSPathControl enum")
+    /* Enum values match AppKit; these need no backend. */
+    PASS(NSPathStyleStandard == 0, "NSPathStyleStandard is 0");
+    PASS(NSPathStyleNavigationBar == 1, "NSPathStyleNavigationBar is 1");
+    PASS(NSPathStylePopUp == 2, "NSPathStylePopUp is 2");
+  END_SET("NSPathControl enum")
 
   START_SET("NSPathControl basic")
 
