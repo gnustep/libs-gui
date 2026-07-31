@@ -16,14 +16,14 @@
 int
 main(int argc, char **argv)
 {
-  CGFloat system = [NSFont systemFontSize];
-  CGFloat small = [NSFont smallSystemFontSize];
-  CGFloat label = [NSFont labelFontSize];
-  CGFloat mini = [NSFont systemFontSizeForControlSize: NSMiniControlSize];
-  CGFloat cSmall = [NSFont systemFontSizeForControlSize: NSSmallControlSize];
-  CGFloat cRegular = [NSFont systemFontSizeForControlSize: NSRegularControlSize];
-
   START_SET("system font sizes")
+    CGFloat system = [NSFont systemFontSize];
+    CGFloat small = [NSFont smallSystemFontSize];
+    CGFloat label = [NSFont labelFontSize];
+    CGFloat mini = [NSFont systemFontSizeForControlSize: NSMiniControlSize];
+    CGFloat cSmall = [NSFont systemFontSizeForControlSize: NSSmallControlSize];
+    CGFloat cRegular = [NSFont systemFontSizeForControlSize: NSRegularControlSize];
+
     PASS(system > 0, "the system font size is positive");
     PASS(small > 0, "the small system font size is positive");
     PASS(label > 0, "the label font size is positive");
