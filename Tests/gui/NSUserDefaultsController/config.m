@@ -15,7 +15,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSUserDefaultsController config")
   NSUserDefaultsController *shared;
   NSUserDefaultsController *c;
 
@@ -46,6 +46,6 @@ int main()
   [c setInitialValues: [NSDictionary dictionaryWithObject: @"v" forKey: @"k"]];
   PASS([[c initialValues] count] == 1, "initialValues round-trips");
 
-  DESTROY(arp);
+  END_SET("NSUserDefaultsController config")
   return 0;
 }

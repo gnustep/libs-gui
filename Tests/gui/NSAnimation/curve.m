@@ -30,7 +30,7 @@ valueFor(NSAnimationCurve curve, float progress)
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSAnimation curve")
 
   PASS(NEAR(valueFor(NSAnimationLinear, 0.25), 0.25),
        "linear value at 0.25 is 0.25");
@@ -50,6 +50,6 @@ int main()
   PASS(NEAR(valueFor(NSAnimationEaseIn, 1.0), 1.0), "ease-in value at 1 is 1");
   PASS(NEAR(valueFor(NSAnimationEaseOut, 1.0), 1.0), "ease-out value at 1 is 1");
 
-  DESTROY(arp);
+  END_SET("NSAnimation curve")
   return 0;
 }

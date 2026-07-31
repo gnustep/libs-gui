@@ -9,7 +9,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSTreeController defaults")
   NSTreeController *tc;
 
   tc = AUTORELEASE([[NSTreeController alloc] init]);
@@ -24,6 +24,6 @@ int main()
   // Break retain loop to allow this objecty to be deallocated
   [tc setContent: nil];
 
-  DESTROY(arp);
+  END_SET("NSTreeController defaults")
   return 0;
 }

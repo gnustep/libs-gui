@@ -42,7 +42,7 @@ static const unsigned char validPNG[] = {
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep pngAllocationOverflow")
   NSData            *data;
   NSBitmapImageRep  *rep;
   const unsigned char *px;
@@ -62,6 +62,6 @@ int main()
     "the valid PNG colour data is decoded correctly");
   [rep release];
 
-  [arp release];
+  END_SET("NSBitmapImageRep pngAllocationOverflow")
   return 0;
 }

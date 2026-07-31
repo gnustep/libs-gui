@@ -13,7 +13,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSTreeController config")
   NSTreeController *tc;
 
   tc = AUTORELEASE([[NSTreeController alloc] init]);
@@ -54,6 +54,6 @@ int main()
    */
   [tc setContent: nil];
 
-  DESTROY(arp);
+  END_SET("NSTreeController config")
   return 0;
 }

@@ -50,7 +50,7 @@ static const unsigned char validGIF[] = {
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep gifColorMapBounds")
 #if defined(GS_TEST_SYSTEM_GIF)
   NSData            *data;
   NSBitmapImageRep  *rep;
@@ -77,6 +77,6 @@ int main()
     "a valid GIF still decodes correctly");
   [rep release];
 #endif
-  [arp release];
+  END_SET("NSBitmapImageRep gifColorMapBounds")
   return 0;
 }

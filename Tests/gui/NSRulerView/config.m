@@ -9,7 +9,7 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSRulerView config")
 
   NSRulerView *r = AUTORELEASE([[NSRulerView alloc]
     initWithScrollView: nil orientation: NSHorizontalRuler]);
@@ -50,6 +50,6 @@ main(int argc, const char **argv)
     PASS([v isFlipped] == NO, "a vertical ruler is not flipped");
   }
 
-  DESTROY(arp);
+  END_SET("NSRulerView config")
   return 0;
 }

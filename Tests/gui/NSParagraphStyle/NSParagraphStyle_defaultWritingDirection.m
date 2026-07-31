@@ -11,14 +11,14 @@ int main(int argc, char **argv)
 {
 	int ok;
 
-	CREATE_AUTORELEASE_POOL(arp);
+	START_SET("NSParagraphStyle NSParagraphStyle_defaultWritingDirection")
 
 	ok = [NSParagraphStyle defaultWritingDirectionForLanguage: @"en"]==NSWritingDirectionLeftToRight
 	  && [NSParagraphStyle defaultWritingDirectionForLanguage: @"ar"]==NSWritingDirectionRightToLeft;
 
 	PASS(ok,"[NSParagraphStyle defaultWritingDirectionForLanguage:] works");
 
-	DESTROY(arp);
+	END_SET("NSParagraphStyle NSParagraphStyle_defaultWritingDirection")
 	return 0;
 }
 

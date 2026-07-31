@@ -10,7 +10,7 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSTabViewController config")
 
   NSTabViewController *tc = AUTORELEASE([[NSTabViewController alloc] init]);
 
@@ -38,6 +38,6 @@ main(int argc, const char **argv)
   PASS([tc canPropagateSelectedChildViewControllerTitle] == NO,
     "the title propagation flag round-trips to NO");
 
-  DESTROY(arp);
+  END_SET("NSTabViewController config")
   return 0;
 }

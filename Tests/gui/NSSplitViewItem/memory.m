@@ -23,7 +23,7 @@ static BOOL vcDeallocated;
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSSplitViewItem memory")
   NSSplitViewItem *item;
   ProbeViewController *vc;
 
@@ -46,6 +46,6 @@ int main()
   PASS(vcDeallocated == YES,
        "a deallocated item releases its view controller");
 
-  DESTROY(arp);
+  END_SET("NSSplitViewItem memory")
   return 0;
 }
