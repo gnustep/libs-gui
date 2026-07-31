@@ -13,6 +13,28 @@
 #import <AppKit/AppKit.h>
 #include <stdlib.h>
 
+/* Clip to the given path, then draw a gradient through
+ * -[NSGradient drawInRect:angle:], which saves and restores the graphics state
+ * itself.  The clip set beforehand has to survive that copy, so this reaches
+ * the same code as clipSaveFill but through the path gnustep/libs-gui#228
+ * reported.  The gradient runs green to blue, so a painted pixel has a zero red
+ * component while the background stays white. */
+static NSBitmapImageRep *
+clipGradientFill(int w, int h, NSBezierPath *clip)
+{
+  NSImage *img = GSDrawBeginWhite(w, h);
+  NSGradient *g = [[NSGradient alloc]
+    initWithStartingColor: [NSColor colorWithDeviceRed: 0.0 green: 1.0
+                                                  blue: 0.0 alpha: 1.0]
+              endingColor: [NSColor colorWithDeviceRed: 0.0 green: 0.0
+                                                  blue: 1.0 alpha: 1.0]];
+
+  [clip addClip];
+  [g drawInRect: [clip bounds] angle: 90.0];
+  [g release];
+  return GSDrawEnd(img, w, h);
+}
+
 /* Clip to the given path, save, fill everything red, restore.  The fill runs on
  * the copied state that inherited the clip. */
 static NSBitmapImageRep *
@@ -75,6 +97,17 @@ main(int argc, const char **argv)
        "an oval clip still paints its interior after save/restore");
   PASS(rep != nil && GSPixelIs(rep, 4, 4, 255, 255, 255),
        "an oval clip corner is not filled after save/restore");
+
+  /* The same oval, filled by a gradient.  -[NSGradient drawInRect:angle:] saves
+   * the graphics state internally, so the oval clip has to survive that save;
+   * this is the case reported in gnustep/libs-gui#228.  The centre is painted
+   * (non-white), a bounding-box corner stays white. */
+  p = [NSBezierPath bezierPathWithOvalInRect: NSMakeRect(3, 3, 18, 18)];
+  rep = clipGradientFill(w, h, p);
+  PASS(rep != nil && !GSPixelIs(rep, 12, 12, 255, 255, 255),
+       "a gradient clipped to an oval paints its interior");
+  PASS(rep != nil && GSPixelIs(rep, 4, 4, 255, 255, 255),
+       "a gradient clipped to an oval does not spill to its bounding box");
 
   /* An even-odd ring (outer rect minus inner rect): a point on the ring is
    * inside, the central hole is outside.  Checks that the even-odd rule is
