@@ -113,6 +113,28 @@ main(int argc, const char **argv)
   PASS(rep != nil && GSPixelIs(rep, w / 2, h / 2 - 7, 255, 255, 255),
        "pixels clear of the stroked line stay white");
 
+  /* A horizontal gradient runs dark on the left to light on the right. */
+  img = GSDrawBegin(w, h);
+  {
+    NSGradient *grad = [[NSGradient alloc]
+        initWithStartingColor: [NSColor colorWithDeviceRed: 0.0 green: 0.0
+                                                      blue: 0.0 alpha: 1.0]
+                  endingColor: [NSColor colorWithDeviceRed: 1.0 green: 1.0
+                                                      blue: 1.0 alpha: 1.0]];
+
+    [grad drawInRect: NSMakeRect(0, 0, w, h) angle: 0.0];
+    [grad release];
+  }
+  rep = GSDrawEnd(img, w, h);
+  {
+    int left = GSPixelChannel(rep, 2, h / 2, 0);
+    int mid = GSPixelChannel(rep, w / 2, h / 2, 0);
+    int right = GSPixelChannel(rep, w - 3, h / 2, 0);
+
+    PASS(rep != nil && left < 70 && right > 185 && mid > left && mid < right,
+         "a horizontal gradient runs dark-left to light-right");
+  }
+
   /* A clip rectangle confines drawing to the left half of the image. */
   img = GSDrawBegin(w, h);
   [[NSColor colorWithDeviceRed: 1.0 green: 1.0 blue: 1.0 alpha: 1.0] set];
