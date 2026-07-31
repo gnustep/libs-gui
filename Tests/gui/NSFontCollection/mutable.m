@@ -12,12 +12,12 @@
 int
 main(int argc, char **argv)
 {
-  NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes:
-    [NSDictionary dictionaryWithObject: @"Helvetica" forKey: NSFontFamilyAttribute]];
-  NSFontDescriptor *fd2 = [NSFontDescriptor fontDescriptorWithFontAttributes:
-    [NSDictionary dictionaryWithObject: @"Courier" forKey: NSFontFamilyAttribute]];
-
   START_SET("set query and exclusion descriptors")
+    NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes:
+      [NSDictionary dictionaryWithObject: @"Helvetica" forKey: NSFontFamilyAttribute]];
+    NSFontDescriptor *fd2 = [NSFontDescriptor fontDescriptorWithFontAttributes:
+      [NSDictionary dictionaryWithObject: @"Courier" forKey: NSFontFamilyAttribute]];
+
     NSMutableFontCollection *mc = [NSMutableFontCollection
       fontCollectionWithDescriptors: [NSArray arrayWithObject: fd]];
 
