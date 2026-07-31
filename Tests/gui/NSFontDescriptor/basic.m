@@ -16,11 +16,11 @@
 int
 main(int argc, char **argv)
 {
-  NSDictionary *attrs = [NSDictionary dictionaryWithObjectsAndKeys:
+  START_SET("attributes and extractors")
+    NSDictionary *attrs = [NSDictionary dictionaryWithObjectsAndKeys:
     @"Helvetica", NSFontNameAttribute,
     [NSNumber numberWithDouble: 12.0], NSFontSizeAttribute, nil];
 
-  START_SET("attributes and extractors")
     NSFontDescriptor *fd =
       [NSFontDescriptor fontDescriptorWithFontAttributes: attrs];
 
