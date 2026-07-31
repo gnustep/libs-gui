@@ -629,15 +629,32 @@ static NSDictionary		*urlPreferences = nil;
       NS_DURING
 	{
 	  NSFileManager	*mgr = [NSFileManager defaultManager];
+	  NSArray	*library;
 	  NSString	*service;
 	  NSData	*data;
 	  NSDictionary	*dict;
 
+	  /* Without a library directory of the user's own there is nowhere for
+	   * any of this to have been cached, which happens where the home
+	   * directory cannot be resolved.  Leave the paths unset and load
+	   * nothing: a nil path reads as unreadable, so the loads below are
+	   * skipped, and the class stays usable.
+	   */
+	  library = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+	    NSUserDomainMask, YES);
+	  if ([library count] == 0)
+	    {
+	      NSLog(@"No library directory for the user: the workspace"
+		@" preferences and the cached application list are"
+		@" unavailable.");
+	      service = nil;
+	    }
+	  else
+	    {
+	      service = [[library objectAtIndex: 0]
+		stringByAppendingPathComponent: @"Services"];
+	    }
 
-	  service = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, 
-	    NSUserDomainMask, YES) objectAtIndex: 0]
-	    stringByAppendingPathComponent: @"Services"];
-	  
 	  /*
 	   *	Load file extension preferences.
 	   */
@@ -691,7 +708,11 @@ static NSDictionary		*urlPreferences = nil;
 	}
       NS_HANDLER
 	{
-	  [localException raise];
+	  /* None of this is needed for the class to work, and raising from
+	   * +initialize leaves it half set up and hands the exception to
+	   * whichever caller happened to touch it first.  Report and carry on.
+	   */
+	  NSLog(@"Unable to read the workspace preferences: %@", localException);
 	}
       NS_ENDHANDLER
     }
