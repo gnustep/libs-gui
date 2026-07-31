@@ -7,7 +7,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSWindow cascade")
 
   NS_DURING
@@ -42,6 +41,5 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSWindow cascade")
-  DESTROY(arp);
   return 0;
 }

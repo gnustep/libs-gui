@@ -27,7 +27,6 @@ controllerWithView(void)
 int
 main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSViewController *vc;
   NSSplitViewItem *item;
   NSSplitViewItem *side;
@@ -91,6 +90,5 @@ main()
 
   END_SET("NSSplitViewItem behavior")
 
-  DESTROY(arp);
   return 0;
 }

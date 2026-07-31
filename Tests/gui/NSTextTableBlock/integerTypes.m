@@ -55,8 +55,6 @@ takesNSIntegerAt(const char *name, unsigned index)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("the row and column types")
 
   NS_DURING
@@ -104,6 +102,5 @@ main(int argc, char **argv)
 
   END_SET("the row and column types")
 
-  DESTROY(arp);
   return 0;
 }

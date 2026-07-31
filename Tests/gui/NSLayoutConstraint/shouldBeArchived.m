@@ -16,7 +16,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSView *v1, *v2;
   NSLayoutConstraint *c;
 
@@ -50,6 +49,5 @@ int main()
 
   END_SET("NSLayoutConstraint shouldBeArchived")
 
-  DESTROY(arp);
   return 0;
 }

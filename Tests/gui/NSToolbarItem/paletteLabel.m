@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSToolbarItem *item;
 
   START_SET("NSToolbarItem paletteLabel")
@@ -27,6 +26,5 @@ int main()
 
   END_SET("NSToolbarItem paletteLabel")
 
-  DESTROY(arp);
   return 0;
 }

@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSForm *f;
 
   START_SET("NSForm defaults")
@@ -39,6 +38,5 @@ int main()
 
   END_SET("NSForm defaults")
 
-  DESTROY(arp);
   return 0;
 }

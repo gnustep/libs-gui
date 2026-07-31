@@ -23,8 +23,6 @@ eq(CGFloat a, CGFloat b)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSScroller value")
 
   NS_DURING
@@ -88,6 +86,5 @@ main(int argc, char **argv)
 
   END_SET("NSScroller value")
 
-  DESTROY(arp);
   return 0;
 }

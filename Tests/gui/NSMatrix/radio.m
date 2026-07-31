@@ -14,7 +14,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSMatrix *r;
   NSButtonCell *proto;
 
@@ -73,6 +72,5 @@ int main()
 
   END_SET("NSMatrix radio")
 
-  DESTROY(arp);
   return 0;
 }

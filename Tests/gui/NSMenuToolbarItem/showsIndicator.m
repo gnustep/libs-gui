@@ -13,8 +13,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("showsIndicator default")
 
   NS_DURING
@@ -40,6 +38,5 @@ main(int argc, char **argv)
 
   END_SET("showsIndicator default")
 
-  DESTROY(arp);
   return 0;
 }

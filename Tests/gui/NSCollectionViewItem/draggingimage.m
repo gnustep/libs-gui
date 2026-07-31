@@ -18,7 +18,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSCollectionViewItem *item;
   NSArray *components;
   NSDraggingImageComponent *component;
@@ -69,6 +68,5 @@ int main()
 
   END_SET("NSCollectionViewItem draggingImageComponents")
 
-  DESTROY(arp);
   return 0;
 }

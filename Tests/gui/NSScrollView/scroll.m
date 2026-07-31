@@ -8,7 +8,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSScrollView scroll")
 
   NS_DURING
@@ -42,6 +41,5 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSScrollView scroll")
-  DESTROY(arp);
   return 0;
 }

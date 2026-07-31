@@ -14,8 +14,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("collection name constants")
     PASS(NSFontCollectionAllFonts != nil, "NSFontCollectionAllFonts is defined");
     PASS(NSFontCollectionUser != nil, "NSFontCollectionUser is defined");
@@ -47,6 +45,5 @@ main(int argc, char **argv)
       "an empty descriptor list gives no query descriptors");
   END_SET("query descriptors")
 
-  DESTROY(arp);
   return 0;
 }

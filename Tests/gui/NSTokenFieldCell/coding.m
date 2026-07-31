@@ -29,8 +29,6 @@ cellToArchive(void)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("coding")
 
   NS_DURING
@@ -73,6 +71,5 @@ main(int argc, char **argv)
 
   END_SET("coding")
 
-  DESTROY(arp);
   return 0;
 }

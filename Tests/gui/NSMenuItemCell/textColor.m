@@ -37,8 +37,6 @@ isRed(NSColor *c)
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSMenuItemCell text colour")
 
   NS_DURING
@@ -75,6 +73,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSMenuItemCell text colour")
 
-  DESTROY(arp);
   return 0;
 }

@@ -19,7 +19,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSFont creation")
 
   NS_DURING
@@ -76,6 +75,5 @@ main(int argc, char **argv)
   NS_ENDHANDLER
 
   END_SET("NSFont creation")
-  DESTROY(arp);
   return 0;
 }

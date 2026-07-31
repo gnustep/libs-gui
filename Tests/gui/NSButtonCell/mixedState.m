@@ -64,7 +64,6 @@ pixelDifference(NSBitmapImageRep *a, NSBitmapImageRep *b, int side)
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   int side = 20;
 
   START_SET("NSButtonCell mixed state")
@@ -98,6 +97,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSButtonCell mixed state")
 
-  DESTROY(arp);
   return 0;
 }

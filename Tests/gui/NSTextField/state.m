@@ -21,7 +21,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTextField *tf;
 
   START_SET("NSTextField state")
@@ -99,6 +98,5 @@ main(int argc, char **argv)
 
   END_SET("NSTextField state")
 
-  DESTROY(arp);
   return 0;
 }

@@ -13,7 +13,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSStackView *sv;
 
   START_SET("NSStackView emptyMutation")
@@ -56,6 +55,5 @@ int main()
 
   END_SET("NSStackView emptyMutation")
 
-  DESTROY(arp);
   return 0;
 }

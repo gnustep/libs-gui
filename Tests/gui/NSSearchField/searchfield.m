@@ -19,7 +19,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSearchField *sf;
 
   START_SET("NSSearchField search")
@@ -78,6 +77,5 @@ main(int argc, char **argv)
 
   END_SET("NSSearchField search")
 
-  DESTROY(arp);
   return 0;
 }

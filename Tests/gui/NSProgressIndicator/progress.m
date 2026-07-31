@@ -18,7 +18,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSProgressIndicator *pi;
 
   START_SET("NSProgressIndicator progress")
@@ -102,6 +101,5 @@ main(int argc, char **argv)
 
   END_SET("NSProgressIndicator progress")
 
-  DESTROY(arp);
   return 0;
 }

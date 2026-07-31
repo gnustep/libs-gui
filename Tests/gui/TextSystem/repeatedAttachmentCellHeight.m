@@ -38,7 +38,6 @@ static int count;
 int main(int argc, char **argv)
 {
 	unichar chars[4]={'a','b','c',NSAttachmentCharacter};
-	CREATE_AUTORELEASE_POOL(arp);
 	NSTextStorage *text;
 	NSLayoutManager *lm;
 	NSTextContainer *tc;
@@ -78,7 +77,6 @@ int main(int argc, char **argv)
 
 	END_SET("TextSystem GNUstep repeatedAttachmentCellHeight");
 
-	DESTROY(arp);
 	return 0;
 }
 

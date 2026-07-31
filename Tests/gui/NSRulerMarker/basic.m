@@ -18,7 +18,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSScrollView *sv;
   NSRulerView *rv;
   NSImage *img;
@@ -97,6 +96,5 @@ int main()
 
   END_SET("NSRulerMarker basic")
 
-  DESTROY(arp);
   return 0;
 }

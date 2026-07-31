@@ -32,7 +32,6 @@ drawer(void)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSWindow *w1, *w2;
   NSDrawer *d1, *d2, *d3;
   NSArray *list;
@@ -86,6 +85,5 @@ main(int argc, const char **argv)
 
   END_SET("NSWindow drawers")
 
-  DESTROY(arp);
   return 0;
 }

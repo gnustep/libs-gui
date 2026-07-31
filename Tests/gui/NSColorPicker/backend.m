@@ -15,7 +15,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSColorPicker *picker;
   NSColorPanel *panel;
   NSButtonCell *cell;
@@ -44,6 +43,5 @@ int main()
 
   END_SET("NSColorPicker backend")
 
-  DESTROY(arp);
   return 0;
 }

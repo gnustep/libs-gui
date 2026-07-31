@@ -29,7 +29,6 @@ threeItemComboBox(void)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSComboBox *cb;
 
   START_SET("NSComboBox selection")
@@ -103,6 +102,5 @@ main(int argc, char **argv)
 
   END_SET("NSComboBox selection")
 
-  DESTROY(arp);
   return 0;
 }

@@ -14,16 +14,16 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
-  /* Enum values match AppKit; these need no backend. */
-  PASS(NSPathStyleStandard == 0, "NSPathStyleStandard is 0");
-  PASS(NSPathStyleNavigationBar == 1, "NSPathStyleNavigationBar is 1");
-  PASS(NSPathStylePopUp == 2, "NSPathStylePopUp is 2");
+  START_SET("NSPathCell enum")
+    /* Enum values match AppKit; these need no backend. */
+    PASS(NSPathStyleStandard == 0, "NSPathStyleStandard is 0");
+    PASS(NSPathStyleNavigationBar == 1, "NSPathStyleNavigationBar is 1");
+    PASS(NSPathStylePopUp == 2, "NSPathStylePopUp is 2");
 
   /* Class method; needs no backend. */
   PASS([NSPathCell pathComponentCellClass] == [NSPathComponentCell class],
        "+pathComponentCellClass is NSPathComponentCell");
+  END_SET("NSPathCell enum")
 
   START_SET("NSPathCell basic")
 
@@ -70,6 +70,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSPathCell basic")
 
-  DESTROY(arp);
   return 0;
 }

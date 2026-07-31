@@ -10,7 +10,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSCollectionViewItem *item;
 
   START_SET("NSCollectionViewItem header")
@@ -28,6 +27,5 @@ int main()
 
   END_SET("NSCollectionViewItem header")
 
-  DESTROY(arp);
   return 0;
 }

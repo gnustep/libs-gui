@@ -13,8 +13,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSMatrix cell class vs prototype")
 
   NS_DURING
@@ -61,6 +59,5 @@ main(int argc, char **argv)
 
   END_SET("NSMatrix cell class vs prototype")
 
-  DESTROY(arp);
   return 0;
 }

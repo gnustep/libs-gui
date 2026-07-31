@@ -34,7 +34,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   LayoutVC *vc;
   NSView *view;
 
@@ -88,6 +87,5 @@ main(int argc, const char **argv)
 
   END_SET("NSViewController layout")
 
-  DESTROY(arp);
   return 0;
 }

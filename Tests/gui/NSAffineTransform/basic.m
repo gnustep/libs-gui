@@ -12,8 +12,6 @@
 
 int main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   /* Use a symbol from the GUI library to force the linker to link it and include the
    * categories for NSAffineTransform.
    */
@@ -134,6 +132,5 @@ int main(int argc, char **argv)
       "takeMatrixFromTransform: copies another transform");
   END_SET("makeIdentityMatrix and takeMatrixFromTransform")
 
-  DESTROY(arp);
   return 0;
 }

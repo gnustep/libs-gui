@@ -17,7 +17,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSColorWell *cw;
 
   START_SET("NSColorWell state")
@@ -67,6 +66,5 @@ main(int argc, char **argv)
 
   END_SET("NSColorWell state")
 
-  DESTROY(arp);
   return 0;
 }

@@ -7,7 +7,6 @@
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
   id testObject;
   id testObject1;
   id testObject2;
@@ -42,7 +41,6 @@ int main()
 		 testObjects, NO, NO);
 
   END_SET("NSCell GNUstep basic")
-  [arp release];
   return 0;
 }
 

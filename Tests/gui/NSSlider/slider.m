@@ -17,7 +17,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSlider *s;
 
   START_SET("NSSlider slider")
@@ -90,6 +89,5 @@ main(int argc, char **argv)
 
   END_SET("NSSlider slider")
 
-  DESTROY(arp);
   return 0;
 }

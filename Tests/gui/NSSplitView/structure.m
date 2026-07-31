@@ -12,7 +12,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSplitView *sv;
   NSView *a, *b;
 
@@ -51,6 +50,5 @@ int main()
 
   END_SET("NSSplitView structure")
 
-  DESTROY(arp);
   return 0;
 }

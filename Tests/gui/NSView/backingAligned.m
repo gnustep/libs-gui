@@ -28,7 +28,6 @@ rectEqual(NSRect r, CGFloat x, CGFloat y, CGFloat w, CGFloat h)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSView *v;
   NSRect r;
   NSRect n;
@@ -114,6 +113,5 @@ main(int argc, char **argv)
 
   END_SET("NSView backingAlignedRect")
 
-  DESTROY(arp);
   return 0;
 }

@@ -15,8 +15,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("empty subitems")
 
   NS_DURING
@@ -47,6 +45,5 @@ main(int argc, char **argv)
 
   END_SET("empty subitems")
 
-  DESTROY(arp);
   return 0;
 }

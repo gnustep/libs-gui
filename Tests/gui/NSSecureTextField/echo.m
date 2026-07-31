@@ -19,7 +19,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSecureTextField *field;
   NSSecureTextFieldCell *cell;
 
@@ -99,6 +98,5 @@ int main()
 
   END_SET("NSSecureTextField echo")
 
-  DESTROY(arp);
   return 0;
 }

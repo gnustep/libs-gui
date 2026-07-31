@@ -18,7 +18,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTableColumn *col;
 
   START_SET("NSTableColumn model")
@@ -87,6 +86,5 @@ main(int argc, char **argv)
 
   END_SET("NSTableColumn model")
 
-  DESTROY(arp);
   return 0;
 }

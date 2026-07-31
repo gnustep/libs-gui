@@ -31,7 +31,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   ClickCounter *c;
   NSButton *b;
 
@@ -92,6 +91,5 @@ main(int argc, const char **argv)
 
   END_SET("NSButton interaction")
 
-  DESTROY(arp);
   return 0;
 }

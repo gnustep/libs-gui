@@ -14,8 +14,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("defaults")
     NSTextContainer	*t = AUTORELEASE([[NSTextContainer alloc] init]);
     NSSize		size = [t containerSize];
@@ -76,6 +74,5 @@ main(int argc, char **argv)
       "the far corner is not contained");
   END_SET("containsPoint:")
 
-  DESTROY(arp);
   return 0;
 }

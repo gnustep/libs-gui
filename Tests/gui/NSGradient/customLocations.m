@@ -20,7 +20,6 @@ rgb(CGFloat r, CGFloat g, CGFloat b)
 
 int main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSColor	*red = rgb(1, 0, 0);
   NSColor	*green = rgb(0, 1, 0);
   NSColor	*blue = rgb(0, 0, 1);
@@ -113,6 +112,5 @@ int main(int argc, char **argv)
       "interpolation within the first segment follows the explicit locations");
   END_SET("initWithColors:atLocations:colorSpace: honours the locations")
 
-  DESTROY(arp);
   return 0;
 }

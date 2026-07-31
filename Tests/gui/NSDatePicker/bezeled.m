@@ -14,7 +14,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePicker *dp;
 
   START_SET("NSDatePicker bezeled")
@@ -54,6 +53,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePicker bezeled")
 
-  DESTROY(arp);
   return 0;
 }

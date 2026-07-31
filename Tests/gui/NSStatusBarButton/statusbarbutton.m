@@ -15,7 +15,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSStatusBarButton *b;
 
   START_SET("NSStatusBarButton statusbarbutton")
@@ -58,6 +57,5 @@ main(int argc, char **argv)
 
   END_SET("NSStatusBarButton statusbarbutton")
 
-  DESTROY(arp);
   return 0;
 }

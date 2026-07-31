@@ -22,8 +22,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("GSHorizontalTypesetter longRun")
 
   NS_DURING
@@ -82,6 +80,5 @@ main(int argc, char **argv)
 
   END_SET("GSHorizontalTypesetter longRun")
 
-  DESTROY(arp);
   return 0;
 }

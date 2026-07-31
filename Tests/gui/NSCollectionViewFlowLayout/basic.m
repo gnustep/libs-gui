@@ -13,7 +13,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSCollectionViewFlowLayout *l;
   NSEdgeInsets inset;
 
@@ -77,6 +76,5 @@ int main()
 
   END_SET("NSCollectionViewFlowLayout basic")
 
-  DESTROY(arp);
   return 0;
 }

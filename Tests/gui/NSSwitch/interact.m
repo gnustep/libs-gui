@@ -29,7 +29,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSwitch *sw;
   SwitchTarget *t;
 
@@ -84,6 +83,5 @@ main(int argc, char **argv)
 
   END_SET("NSSwitch interaction")
 
-  DESTROY(arp);
   return 0;
 }

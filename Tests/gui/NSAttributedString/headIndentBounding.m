@@ -38,7 +38,6 @@ noteString(CGFloat indent)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSRect r0, r20;
 
   START_SET("NSAttributedString head indent bounding rect")
@@ -68,6 +67,5 @@ main(int argc, char **argv)
 
   END_SET("NSAttributedString head indent bounding rect")
 
-  DESTROY(arp);
   return 0;
 }

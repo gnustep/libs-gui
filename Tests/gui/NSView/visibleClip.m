@@ -10,7 +10,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSView visibleClip (windowless)")
 
   NS_DURING
@@ -135,6 +134,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSView visibleClip (windowed)")
 
-  DESTROY(arp);
   return 0;
 }

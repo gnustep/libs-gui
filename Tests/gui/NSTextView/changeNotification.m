@@ -39,7 +39,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Recorder *r;
   NSTextView *tv;
   NSWindow *w;
@@ -108,6 +107,5 @@ main(int argc, char **argv)
 
   END_SET("NSTextView change notification")
 
-  DESTROY(arp);
   return 0;
 }

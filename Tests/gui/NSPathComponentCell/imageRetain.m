@@ -11,7 +11,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSPathComponentCell *cell;
   NSImage *img;
 
@@ -31,6 +30,5 @@ int main()
 
   END_SET("NSPathComponentCell imageRetain")
 
-  DESTROY(arp);
   return 0;
 }

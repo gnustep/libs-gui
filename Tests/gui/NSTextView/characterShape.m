@@ -18,7 +18,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTextView *tv;
 
   START_SET("NSTextView character shape")
@@ -69,6 +68,5 @@ main(int argc, char **argv)
 
   END_SET("NSTextView character shape")
 
-  DESTROY(arp);
   return 0;
 }

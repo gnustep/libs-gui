@@ -14,7 +14,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSplitView *sv;
 
   START_SET("NSSplitView state")
@@ -64,6 +63,5 @@ int main()
 
   END_SET("NSSplitView state")
 
-  DESTROY(arp);
   return 0;
 }

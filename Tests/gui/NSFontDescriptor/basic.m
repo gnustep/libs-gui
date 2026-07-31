@@ -16,7 +16,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDictionary *attrs = [NSDictionary dictionaryWithObjectsAndKeys:
     @"Helvetica", NSFontNameAttribute,
     [NSNumber numberWithDouble: 12.0], NSFontSizeAttribute, nil];
@@ -96,6 +95,5 @@ main(int argc, char **argv)
       "fontDescriptorWithFamily: adds the family attribute");
   END_SET("fontDescriptorWithFamily:")
 
-  DESTROY(arp);
   return 0;
 }

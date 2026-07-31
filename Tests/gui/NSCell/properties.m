@@ -12,7 +12,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSImageCell *imgCell;
   NSActionCell *actCell;
   NSButtonCell *buttCell;
@@ -52,6 +51,5 @@ int main()
 
   END_SET("NSCell RefusesResponder")
 
-  DESTROY(arp);
   return 0;
 }

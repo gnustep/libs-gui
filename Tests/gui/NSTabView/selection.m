@@ -25,7 +25,6 @@ mk(NSString *ident, NSString *label)
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTabView *tv;
   NSTabViewItem *a, *b, *c;
 
@@ -90,6 +89,5 @@ int main()
 
   END_SET("NSTabView selection")
 
-  DESTROY(arp);
   return 0;
 }

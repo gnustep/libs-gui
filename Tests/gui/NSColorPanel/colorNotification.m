@@ -36,7 +36,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Recorder *r;
   NSColorPanel *cp;
   NSNotificationCenter *nc;
@@ -97,6 +96,5 @@ main(int argc, char **argv)
 
   END_SET("NSColorPanel color notification")
 
-  DESTROY(arp);
   return 0;
 }
