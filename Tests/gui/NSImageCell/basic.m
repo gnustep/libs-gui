@@ -10,16 +10,18 @@
 
 int main(int argc, const char **argv)
 {
-  /* Enum values match AppKit; these need no backend. */
-  PASS(NSImageAlignCenter == 0, "NSImageAlignCenter is 0");
-  PASS(NSImageAlignTop == 1, "NSImageAlignTop is 1");
-  PASS(NSImageAlignRight == 8, "NSImageAlignRight is 8");
-  PASS(NSImageFrameNone == 0, "NSImageFrameNone is 0");
-  PASS(NSImageFramePhoto == 1, "NSImageFramePhoto is 1");
-  PASS(NSImageFrameButton == 4, "NSImageFrameButton is 4");
-  PASS(NSImageScaleProportionallyDown == 0,
+  START_SET("NSImageCell enum")
+    /* Enum values match AppKit; these need no backend. */
+    PASS(NSImageAlignCenter == 0, "NSImageAlignCenter is 0");
+    PASS(NSImageAlignTop == 1, "NSImageAlignTop is 1");
+    PASS(NSImageAlignRight == 8, "NSImageAlignRight is 8");
+    PASS(NSImageFrameNone == 0, "NSImageFrameNone is 0");
+    PASS(NSImageFramePhoto == 1, "NSImageFramePhoto is 1");
+    PASS(NSImageFrameButton == 4, "NSImageFrameButton is 4");
+    PASS(NSImageScaleProportionallyDown == 0,
        "NSImageScaleProportionallyDown is 0");
-  PASS(NSImageScaleNone == 2, "NSImageScaleNone is 2");
+    PASS(NSImageScaleNone == 2, "NSImageScaleNone is 2");
+  END_SET("NSImageCell enum")
 
   START_SET("NSImageCell basic")
 
