@@ -73,8 +73,16 @@
     {
 #if HAVE_IMAGEMAGICK
       ASSIGN(_pageReps, [GSImageMagickImageRep imageRepsWithData: imageData]);
-      _size = [[_pageReps objectAtIndex: 0] size];
-      _currentPage = 1;
+      if ([_pageReps count] > 0)
+        {
+          _size = [[_pageReps objectAtIndex: 0] size];
+          _currentPage = 1;
+        }
+      else
+        {
+          _size = NSMakeSize(0, 0);
+          _currentPage = 0;
+        }
 #else
       ASSIGN(_pageReps, [NSArray array]);
       _size = NSMakeSize(0,0);
