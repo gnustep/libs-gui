@@ -29,15 +29,15 @@ main(int argc, char **argv)
           && [[mc exclusionDescriptors] containsObject: fd2]),
       "setExclusionDescriptors: stores the exclusion descriptors");
 
-    NSMutableFontCollection *mc = [NSMutableFontCollection
+    NSMutableFontCollection *mc2 = [NSMutableFontCollection
       fontCollectionWithDescriptors: [NSArray array]];
 
-    PASS(([mc addQueryForDescriptors: [NSArray arrayWithObject: fd]],
-          [[mc queryDescriptors] count] == 1
-          && [[mc queryDescriptors] containsObject: fd]),
+    PASS(([mc2 addQueryForDescriptors: [NSArray arrayWithObject: fd]],
+          [[mc2 queryDescriptors] count] == 1
+          && [[mc2 queryDescriptors] containsObject: fd]),
       "addQueryForDescriptors: adds to the query");
-    PASS(([mc removeQueryForDescriptors: [NSArray arrayWithObject: fd]],
-          [[mc queryDescriptors] count] == 0),
+    PASS(([mc2 removeQueryForDescriptors: [NSArray arrayWithObject: fd]],
+          [[mc2 queryDescriptors] count] == 0),
       "removeQueryForDescriptors: removes from the query");
   END_SET("query and exclusion descriptors")
 
