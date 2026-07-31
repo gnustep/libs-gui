@@ -76,9 +76,9 @@ main(int argc, char **argv)
   START_SET("glyph metrics")
 
   NSFont *f, *big, *mono;
-  NSGlyph gW, gi, gA, bigW, monoW, monoi;
+  NSGlyph gW, gi, gA, bigW, bigi, monoW, monoi;
   NSSize aW, ai;
-  NSRect bW, bi;
+  NSRect bW;
 
   NS_DURING
     {
@@ -107,13 +107,13 @@ main(int argc, char **argv)
   gi = glyphInFont(f, @"Wi", 1);
   gA = glyphInFont(f, @"A", 0);
   bigW = glyphInFont(big, @"Wi", 0);
+  bigi = glyphInFont(big, @"Wi", 1);
   monoW = glyphInFont(mono, @"Wi", 0);
   monoi = glyphInFont(mono, @"Wi", 1);
 
   aW = [f advancementForGlyph: gW];
   ai = [f advancementForGlyph: gi];
   bW = [f boundingRectForGlyph: gW];
-  bi = [f boundingRectForGlyph: gi];
 
   PASS(gW != NSNullGlyph && gi != NSNullGlyph,
     "the layout manager finds a glyph for a character");
@@ -127,7 +127,12 @@ main(int argc, char **argv)
   PASS(bW.size.width > 0.0 && bW.size.height > 0.0,
     "a glyph has a non-empty ink bounding box");
 
-  PASS(bi.size.width > 0.0 && bi.size.width < ai.width,
+  /* Measured on the larger font: at 14 points a hinted i is a stem one or two
+     pixels wide, and rounding the ink box out to whole pixels can take it to
+     the whole advancement, leaving no side bearing to see. */
+  PASS([big boundingRectForGlyph: bigi].size.width > 0.0
+    && [big boundingRectForGlyph: bigi].size.width
+       < [big advancementForGlyph: bigi].width,
     "the ink box of an i is narrower than its advancement");
 
   PASS([mono advancementForGlyph: monoi].width > 0.0
