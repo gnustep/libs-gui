@@ -16,7 +16,7 @@
 int
 main(int argc, char **argv)
 {
-  START_SET("system font sizes")
+  START_SET("control sizes")
     CGFloat system = [NSFont systemFontSize];
     CGFloat small = [NSFont smallSystemFontSize];
     CGFloat label = [NSFont labelFontSize];
@@ -28,9 +28,7 @@ main(int argc, char **argv)
     PASS(small > 0, "the small system font size is positive");
     PASS(label > 0, "the label font size is positive");
     PASS(small < system, "the small system font size is below the system size");
-  END_SET("system font sizes")
 
-  START_SET("control sizes")
     PASS(EQ(cRegular, system),
       "the regular control size is the system font size");
     PASS(EQ(cSmall, small),
