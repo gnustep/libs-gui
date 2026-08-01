@@ -89,6 +89,11 @@ withCurrentSearchString: (NSString *)searchString
 @end
 
 @implementation Searcher
+- (void) dealloc
+{
+  RELEASE(forString);
+  DEALLOC
+}
 - (NSInteger) browser: (NSBrowser *)browser
 nextTypeSelectMatchFromRow: (NSInteger)startRow
 		toRow: (NSInteger)endRow

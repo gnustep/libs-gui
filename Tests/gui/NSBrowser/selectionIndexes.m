@@ -19,12 +19,17 @@ static NSArray *rows;
   NSInteger calls;
   NSIndexSet *proposed;
   NSInteger inColumn;
-  NSIndexSet *answer;
+  NSIndexSet *answer;		// Not retained
   BOOL answerWithProposed;
 }
 @end
 
 @implementation Chooser
+- (void) dealloc
+{
+  DESTROY(proposed);
+  DEALLOC
+}
 - (NSInteger) browser: (NSBrowser *)sender numberOfRowsInColumn: (NSInteger)column
 {
   return [rows count];
