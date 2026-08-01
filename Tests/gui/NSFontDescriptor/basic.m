@@ -16,6 +16,10 @@
 int
 main(int argc, char **argv)
 {
+  ENTER_POOL
+
+  /* Resource shared between sets of tests.
+   */
   NSDictionary *attrs = [NSDictionary dictionaryWithObjectsAndKeys:
     @"Helvetica", NSFontNameAttribute,
     [NSNumber numberWithDouble: 12.0], NSFontSizeAttribute, nil];
@@ -94,6 +98,8 @@ main(int argc, char **argv)
     PASS([[fam objectForKey: NSFontFamilyAttribute] isEqualToString: @"Courier"],
       "fontDescriptorWithFamily: adds the family attribute");
   END_SET("fontDescriptorWithFamily:")
+
+  LEAVE_POOL
 
   return 0;
 }
