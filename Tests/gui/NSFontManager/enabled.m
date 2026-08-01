@@ -11,7 +11,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("font manager enabled state")
 
   NS_DURING
@@ -37,6 +36,5 @@ main(int argc, char **argv)
   NS_ENDHANDLER
 
   END_SET("font manager enabled state")
-  DESTROY(arp);
   return 0;
 }

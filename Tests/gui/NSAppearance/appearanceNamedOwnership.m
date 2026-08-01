@@ -9,8 +9,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("appearanceNamed: ownership")
     NSAutoreleasePool	*pool;
     NSAppearance	*appearance;
@@ -38,6 +36,5 @@ main(int argc, char **argv)
       "the appearance keeps its name");
   END_SET("appearanceNamed: still works")
 
-  DESTROY(arp);
   return 0;
 }

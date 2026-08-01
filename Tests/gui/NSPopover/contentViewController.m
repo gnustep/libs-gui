@@ -11,7 +11,7 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSPopover contentViewController")
 
   NSPopover *p = AUTORELEASE([[NSPopover alloc] init]);
   NSViewController *vc = AUTORELEASE([[NSViewController alloc] init]);
@@ -23,6 +23,6 @@ main(int argc, const char **argv)
   PASS([p contentViewController] == vc,
     "a content view controller with a view is assigned directly");
 
-  DESTROY(arp);
+  END_SET("NSPopover contentViewController")
   return 0;
 }

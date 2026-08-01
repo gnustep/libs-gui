@@ -19,7 +19,6 @@ eq(double a, double b)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSliderCell *cell;
 
   START_SET("NSSliderCell tick marks")
@@ -112,6 +111,5 @@ main(int argc, char **argv)
 
   END_SET("NSSliderCell tick marks")
 
-  DESTROY(arp);
   return 0;
 }

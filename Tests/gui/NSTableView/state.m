@@ -13,7 +13,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTableView *tv;
 
   START_SET("NSTableView state")
@@ -76,6 +75,5 @@ int main()
 
   END_SET("NSTableView state")
 
-  DESTROY(arp);
   return 0;
 }

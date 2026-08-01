@@ -38,7 +38,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSViewController appearance")
 
   NS_DURING
@@ -80,6 +79,5 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSViewController appearance")
-  DESTROY(arp);
   return 0;
 }

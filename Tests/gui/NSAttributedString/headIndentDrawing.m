@@ -95,7 +95,6 @@ rowHasContent(NSBitmapImageRep *rep, int y)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSAttributedString head indent drawing")
 
   NS_DURING
@@ -152,6 +151,5 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSAttributedString head indent drawing")
-  DESTROY(arp);
   return 0;
 }

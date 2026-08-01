@@ -12,7 +12,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTableView *tv;
 
   START_SET("NSTableView gridStyle")
@@ -57,6 +56,5 @@ int main()
 
   END_SET("NSTableView gridStyle")
 
-  DESTROY(arp);
   return 0;
 }

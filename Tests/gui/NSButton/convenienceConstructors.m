@@ -23,7 +23,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   CtorTarget *t;
   NSImage *image;
 
@@ -80,6 +79,5 @@ main(int argc, const char **argv)
 
   END_SET("NSButton convenience constructors")
 
-  DESTROY(arp);
   return 0;
 }

@@ -31,7 +31,6 @@ centerColor(NSButton *b)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSButton *b;
 
   START_SET("NSButton bezelColor")
@@ -103,6 +102,5 @@ main(int argc, char **argv)
 
   END_SET("NSButton bezelColor")
 
-  DESTROY(arp);
   return 0;
 }

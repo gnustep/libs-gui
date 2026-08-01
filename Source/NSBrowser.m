@@ -45,6 +45,7 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSIndexPath.h>
+#import <Foundation/NSIndexSet.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
 
@@ -272,6 +273,8 @@ static NSDragOperation currentDragOperation = NSDragOperationNone;
 - (NSInteger) _dropRowAtPoint: (NSPoint)point
 		     inColumn: (NSInteger)column
 		    operation: (NSBrowserDropOperation *)operation;
+- (NSString *) _typeSelectStringForRow: (NSInteger)row
+			      inColumn: (NSInteger)column;
 @end
 
 // Category to handle bindings
@@ -2504,6 +2507,46 @@ static NSDragOperation currentDragOperation = NSDragOperationNone;
       [sender setAutoscroll: autoscroll];
     }
 
+  if ([_browserDelegate respondsToSelector:
+	@selector(browser:selectionIndexesForProposedSelection:inColumn:)])
+    {
+      NSMutableIndexSet *proposed = [NSMutableIndexSet indexSet];
+      NSIndexSet *allowed;
+      NSInteger cellRow, cellColumn;
+
+      enumerator = [selectedCells objectEnumerator];
+      while ((cell = [enumerator nextObject]))
+	{
+	  if ([sender getRow: &cellRow column: &cellColumn ofCell: cell])
+	    {
+	      [proposed addIndex: cellRow];
+	    }
+	}
+
+      allowed = [_browserDelegate browser: self
+	 selectionIndexesForProposedSelection: proposed
+				     inColumn: column];
+
+      if (allowed != nil && ![allowed isEqualToIndexSet: proposed])
+	{
+	  BOOL autoscroll = [sender isAutoscroll];
+	  NSUInteger i = [allowed firstIndex];
+
+	  [sender setAutoscroll: NO];
+	  [sender deselectAllCells];
+	  while (i != NSNotFound)
+	    {
+	      [sender selectCellAtRow: i column: 0];
+	      i = [allowed indexGreaterThanIndex: i];
+	    }
+	  [sender setAutoscroll: autoscroll];
+
+	  RELEASE(selectedCells);
+	  selectedCells = [[sender selectedCells] mutableCopy];
+	  selectedCellsCount = [selectedCells count];
+	}
+    }
+
   [self setLastColumn: column];
   // Single selection
   if (selectedCellsCount == 1)
@@ -2879,12 +2922,21 @@ static NSDragOperation currentDragOperation = NSDragOperationNone;
       NSInteger i, n, s;
       NSInteger match;
       NSInteger selectedColumn;
-      SEL lcarcSel = @selector(loadedCellAtRow:column:);
-      IMP lcarc = [self methodForSelector: lcarcSel];
+      BOOL newSearch = YES;
 
       selectedColumn = [self selectedColumn];
       if (selectedColumn != -1)
 	{
+	  if ([_browserDelegate respondsToSelector:
+		@selector(browser:shouldTypeSelectForEvent:withCurrentSearchString:)]
+	      && ![_browserDelegate browser: self
+		     shouldTypeSelectForEvent: theEvent
+		      withCurrentSearchString: _charBuffer])
+	    {
+	      [super keyDown: theEvent];
+	      return;
+	    }
+
 	  matrix = [self matrixInColumn: selectedColumn];
 	  n = [matrix numberOfRows];
 	  s = [matrix selectedRow];
@@ -2906,6 +2958,7 @@ static NSDragOperation currentDragOperation = NSDragOperationNone;
 		  RELEASE(_charBuffer);
 		  _charBuffer = transition;
 		  RETAIN(_charBuffer);
+		  newSearch = NO;
 		}
 	      else
 		{
@@ -2918,36 +2971,53 @@ static NSDragOperation currentDragOperation = NSDragOperationNone;
 	  _alphaNumericalLastColumn = selectedColumn;
 	  _lastKeyPressed = [theEvent timestamp];
 
-	  sv = [((*lcarc)(self, lcarcSel, s, selectedColumn))
-		 stringValue];
-
-	  if (([sv length] > 0)
-	      && ([sv hasPrefix: _charBuffer]))
-	    return;
-
-	  match = -1;
-	  for (i = s + 1; i < n; i++)
+	  if ((n > 0) && [_browserDelegate respondsToSelector:
+		@selector(browser:nextTypeSelectMatchFromRow:toRow:inColumn:forString:)])
 	    {
-	      sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-		     stringValue];
-	      if (([sv length] > 0)
-		  && ([sv hasPrefix: _charBuffer]))
+	      NSInteger from = newSearch ? (s + 1) % n : (s < 0 ? 0 : s);
+
+	      match = [_browserDelegate browser: self
+		     nextTypeSelectMatchFromRow: from
+					  toRow: (from + n - 1) % n
+				       inColumn: selectedColumn
+				      forString: _charBuffer];
+	      if ((match < 0) || (match >= n))
 		{
-		  match = i;
-		  break;
+		  match = -1;
 		}
 	    }
-	  if (i == n)
+	  else
 	    {
-	      for (i = 0; i < s; i++)
+	      sv = [self _typeSelectStringForRow: s inColumn: selectedColumn];
+
+	      if (([sv length] > 0)
+		  && ([sv hasPrefix: _charBuffer]))
+		return;
+
+	      match = -1;
+	      for (i = s + 1; i < n; i++)
 		{
-		  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-			 stringValue];
+		  sv = [self _typeSelectStringForRow: i
+					    inColumn: selectedColumn];
 		  if (([sv length] > 0)
 		      && ([sv hasPrefix: _charBuffer]))
 		    {
 		      match = i;
 		      break;
+		    }
+		}
+	      if (i == n)
+		{
+		  for (i = 0; i < s; i++)
+		    {
+		      sv = [self _typeSelectStringForRow: i
+						inColumn: selectedColumn];
+		      if (([sv length] > 0)
+			  && ([sv hasPrefix: _charBuffer]))
+			{
+			  match = i;
+			  break;
+			}
 		    }
 		}
 	    }
@@ -3383,6 +3453,20 @@ static NSDragOperation currentDragOperation = NSDragOperationNone;
     }
 
   return row;
+}
+  
+- (NSString *) _typeSelectStringForRow: (NSInteger)row
+			      inColumn: (NSInteger)column
+{
+  if ([_browserDelegate respondsToSelector:
+	@selector(browser:typeSelectStringForRow:inColumn:)])
+    {
+      return [_browserDelegate browser: self
+		typeSelectStringForRow: row
+			      inColumn: column];
+    }
+
+  return [[self loadedCellAtRow: row column: column] stringValue];
 }
 
 - (void) _remapColumnSubviews: (BOOL)fromFirst

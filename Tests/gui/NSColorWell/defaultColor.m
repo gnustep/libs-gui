@@ -15,7 +15,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSColorWell *cw;
 
   START_SET("NSColorWell default colour")
@@ -55,6 +54,5 @@ main(int argc, char **argv)
 
   END_SET("NSColorWell default colour")
 
-  DESTROY(arp);
   return 0;
 }

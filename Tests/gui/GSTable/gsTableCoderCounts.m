@@ -32,7 +32,7 @@
 
 int main(void)
 {
-  ENTER_POOL
+  START_SET("GSTable gsTableCoderCounts")
   GSTable *t;
   GSTable *t2;
   NSData *d;
@@ -55,6 +55,6 @@ int main(void)
 
   RELEASE(t);
   RELEASE(u);
-  LEAVE_POOL
+  END_SET("GSTable gsTableCoderCounts")
   return 0;
 }

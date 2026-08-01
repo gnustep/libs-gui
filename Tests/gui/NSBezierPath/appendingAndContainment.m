@@ -15,8 +15,6 @@
 
 int main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("appendBezierPathWithRect:")
     NSBezierPath	*p = [NSBezierPath bezierPath];
     NSPoint		pts[3];
@@ -153,6 +151,5 @@ int main(int argc, char **argv)
       "appending a path adds its elements to the receiver");
   END_SET("appendBezierPath:")
 
-  DESTROY(arp);
   return 0;
 }

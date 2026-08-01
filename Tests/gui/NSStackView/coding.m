@@ -19,7 +19,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSStackView *sv;
   NSStackView *decoded;
   NSView *v1;
@@ -70,6 +69,5 @@ int main()
 
   END_SET("NSStackView coding")
 
-  DESTROY(arp);
   return 0;
 }

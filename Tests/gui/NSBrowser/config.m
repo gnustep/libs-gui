@@ -18,7 +18,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSBrowser *browser;
 
   START_SET("NSBrowser config")
@@ -96,6 +95,5 @@ main(int argc, char **argv)
 
   END_SET("NSBrowser config")
 
-  DESTROY(arp);
   return 0;
 }

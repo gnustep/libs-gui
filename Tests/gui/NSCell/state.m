@@ -11,7 +11,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSCell *cell;
 
   START_SET("NSCell state")
@@ -89,6 +88,5 @@ main(int argc, char **argv)
 
   END_SET("NSCell state")
 
-  DESTROY(arp);
   return 0;
 }

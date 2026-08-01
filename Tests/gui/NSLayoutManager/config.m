@@ -18,7 +18,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSLayoutManager config")
   NSLayoutManager *lm;
   NSTextContainer *tc;
   NSTextStorage *ts;
@@ -71,6 +71,6 @@ int main()
   PASS([lm textStorage] == ts,
        "adding the layout manager to a text storage links it");
 
-  DESTROY(arp);
+  END_SET("NSLayoutManager config")
   return 0;
 }

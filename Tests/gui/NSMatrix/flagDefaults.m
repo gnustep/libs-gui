@@ -10,7 +10,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSMatrix *m;
 
   START_SET("NSMatrix flagDefaults")
@@ -45,6 +44,5 @@ int main()
 
   END_SET("NSMatrix flagDefaults")
 
-  DESTROY(arp);
   return 0;
 }

@@ -12,7 +12,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSMatrix *m;
 
   START_SET("NSMatrix state")
@@ -67,6 +66,5 @@ int main()
 
   END_SET("NSMatrix state")
 
-  DESTROY(arp);
   return 0;
 }

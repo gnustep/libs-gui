@@ -42,7 +42,6 @@ makeControl(void)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   ClickCounter *r;
   NSControl *c;
 
@@ -100,6 +99,5 @@ main(int argc, const char **argv)
 
   END_SET("NSControl interaction")
 
-  DESTROY(arp);
   return 0;
 }

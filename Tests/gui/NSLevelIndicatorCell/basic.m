@@ -13,7 +13,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSLevelIndicatorCell *cell;
   NSLevelIndicatorStyle styles[4];
   double maxes[4];
@@ -119,6 +118,5 @@ int main()
 
   END_SET("NSLevelIndicatorCell basic")
 
-  DESTROY(arp);
   return 0;
 }

@@ -18,7 +18,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSButton *b;
 
   START_SET("NSButton state")
@@ -88,6 +87,5 @@ main(int argc, char **argv)
 
   END_SET("NSButton state")
 
-  DESTROY(arp);
   return 0;
 }

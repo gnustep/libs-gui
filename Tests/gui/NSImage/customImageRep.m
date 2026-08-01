@@ -63,8 +63,6 @@ renderCentre(NSImage *img)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSImage customImageRep")
 
   NS_DURING
@@ -114,6 +112,5 @@ main(int argc, char **argv)
 
   END_SET("NSImage customImageRep")
 
-  DESTROY(arp);
   return 0;
 }

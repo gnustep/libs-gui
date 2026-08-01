@@ -270,6 +270,28 @@ const CGFloat NSSplitViewItemUnspecifiedDimension = -1.0;
       _behavior = [coder decodeIntegerForKey: @"NSBehavior"];
       _collapsed = [coder decodeBoolForKey: @"NSCollapsed"];
     }
+  else
+    {
+      NSInteger value;
+
+      [self setViewController: [coder decodeObject]];
+      [coder decodeValueOfObjCType: @encode(CGFloat)
+                                at: &_automaticMaximumThickness];
+      [coder decodeValueOfObjCType: @encode(CGFloat)
+                                at: &_preferredThicknessFraction];
+      [coder decodeValueOfObjCType: @encode(CGFloat) at: &_minimumThickness];
+      [coder decodeValueOfObjCType: @encode(CGFloat) at: &_maximumThickness];
+      [coder decodeValueOfObjCType: @encode(CGFloat) at: &_holdingPriority];
+      [coder decodeValueOfObjCType: @encode(NSInteger) at: &value];
+      _collapseBehavior = value;
+      [coder decodeValueOfObjCType: @encode(NSInteger) at: &value];
+      _titlebarSeparatorStyle = value;
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &_springLoaded];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &_allowsFullHeightLayout];
+      [coder decodeValueOfObjCType: @encode(NSInteger) at: &value];
+      _behavior = value;
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &_collapsed];
+    }
   return self;
 }
 
@@ -294,6 +316,28 @@ const CGFloat NSSplitViewItemUnspecifiedDimension = -1.0;
                  forKey: @"NSAllowsFullHeightLayout"];
       [coder encodeInteger: _behavior forKey: @"NSBehavior"];
       [coder encodeBool: _collapsed forKey: @"NSCollapsed"];
+    }
+  else
+    {
+      NSInteger value;
+
+      [coder encodeObject: _viewController];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_automaticMaximumThickness];
+      [coder encodeValueOfObjCType: @encode(CGFloat)
+                                at: &_preferredThicknessFraction];
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_minimumThickness];
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_maximumThickness];
+      [coder encodeValueOfObjCType: @encode(CGFloat) at: &_holdingPriority];
+      value = _collapseBehavior;
+      [coder encodeValueOfObjCType: @encode(NSInteger) at: &value];
+      value = _titlebarSeparatorStyle;
+      [coder encodeValueOfObjCType: @encode(NSInteger) at: &value];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_springLoaded];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_allowsFullHeightLayout];
+      value = _behavior;
+      [coder encodeValueOfObjCType: @encode(NSInteger) at: &value];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &_collapsed];
     }
 }
 

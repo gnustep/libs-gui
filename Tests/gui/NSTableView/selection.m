@@ -24,7 +24,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTableView *tv;
   TVDS *ds;
   NSTableColumn *col;
@@ -76,6 +75,5 @@ int main()
 
   END_SET("NSTableView selection")
 
-  DESTROY(arp);
   return 0;
 }

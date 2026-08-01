@@ -16,7 +16,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSControl state")
 
   NS_DURING
@@ -61,6 +60,5 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSControl state")
-  DESTROY(arp);
   return 0;
 }

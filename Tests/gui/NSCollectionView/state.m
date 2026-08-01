@@ -16,7 +16,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSCollectionView *cv;
 
   START_SET("NSCollectionView state")
@@ -72,6 +71,5 @@ main(int argc, char **argv)
 
   END_SET("NSCollectionView state")
 
-  DESTROY(arp);
   return 0;
 }

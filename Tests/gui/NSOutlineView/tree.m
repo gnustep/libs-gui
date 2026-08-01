@@ -37,7 +37,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSOutlineView *ov;
   NSTableColumn *col;
   Tree *ds;
@@ -93,6 +92,5 @@ int main()
 
   END_SET("NSOutlineView tree")
 
-  DESTROY(arp);
   return 0;
 }

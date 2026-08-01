@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSliderCell *cell;
 
   START_SET("NSSliderCell GNUstep minMax")
@@ -134,7 +133,6 @@ int main()
 
   END_SET("NSSliderCell GNUstep minMax")
 
-  DESTROY(arp);
   return 0;
 }
 

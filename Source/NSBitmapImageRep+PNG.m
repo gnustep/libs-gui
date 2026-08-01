@@ -99,8 +99,12 @@ static void reader_func(png_structp png_struct, png_bytep data,
   png_infop png_info, png_end_info;
 
   int width,height;
-  unsigned char *buf = NULL;
-  png_bytep *row_ptrs = NULL;
+  /* Written after setjmp() and read in the longjmp() handler below, so they
+     have to survive the jump; a plain local may be held in a register that
+     longjmp restores to its value at the setjmp call. */
+  unsigned char * volatile buf = NULL;
+  png_bytep * volatile row_ptrs = NULL;
+  unsigned char *plane;
   int bytes_per_row;
   size_t imageSize = 0;
   int type,channels,depth;
@@ -274,7 +278,8 @@ static void reader_func(png_structp png_struct, png_bytep data,
       bitmapFormat |= NSBitmapFormatThirtyTwoBitBigEndian;
     }
 
-  self = [self initWithBitmapDataPlanes: &buf
+  plane = (unsigned char *)buf;
+  self = [self initWithBitmapDataPlanes: &plane
                              pixelsWide: width
                              pixelsHigh: height
                           bitsPerSample: depth

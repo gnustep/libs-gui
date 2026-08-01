@@ -55,7 +55,6 @@ static NSSelection *aSelection(void)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSDataLink updateDestination")
 
   // A link with no destination manager cannot update anything.
@@ -120,6 +119,5 @@ main(int argc, const char **argv)
 
   END_SET("NSDataLink updateDestination")
 
-  DESTROY(arp);
   return 0;
 }

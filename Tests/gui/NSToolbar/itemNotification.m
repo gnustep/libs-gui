@@ -62,7 +62,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   TBDelegate *del;
   Recorder *r;
   NSToolbar *tb;
@@ -125,6 +124,5 @@ main(int argc, char **argv)
 
   END_SET("NSToolbar item notification")
 
-  DESTROY(arp);
   return 0;
 }

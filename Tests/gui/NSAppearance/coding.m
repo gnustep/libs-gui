@@ -8,8 +8,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("keyed coding")
     NSAppearance	*appearance;
     NSAppearance	*decoded;
@@ -38,6 +36,5 @@ main(int argc, char **argv)
       "the old style archived appearance keeps its name");
   END_SET("old style coding")
 
-  DESTROY(arp);
   return 0;
 }

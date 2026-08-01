@@ -13,7 +13,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSButtonCell *cell;
 
   START_SET("NSButtonCell state and value coupling")
@@ -86,6 +85,5 @@ main(int argc, char **argv)
 
   END_SET("NSButtonCell state and value coupling")
 
-  DESTROY(arp);
   return 0;
 }

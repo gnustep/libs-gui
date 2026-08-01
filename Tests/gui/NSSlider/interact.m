@@ -31,7 +31,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   SlideTarget *t;
   NSSlider *sl;
   NSWindow *w;
@@ -91,6 +90,5 @@ main(int argc, const char **argv)
 
   END_SET("NSSlider interaction")
 
-  DESTROY(arp);
   return 0;
 }

@@ -39,7 +39,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Recorder *r;
   NSMatrix *m;
   NSActionCell *proto;
@@ -101,6 +100,5 @@ main(int argc, const char **argv)
 
   END_SET("NSMatrix action")
 
-  DESTROY(arp);
   return 0;
 }

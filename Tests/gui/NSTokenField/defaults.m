@@ -19,7 +19,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTokenField *tf;
 
   START_SET("NSTokenField defaults")
@@ -73,6 +72,5 @@ main(int argc, char **argv)
 
   END_SET("NSTokenField defaults")
 
-  DESTROY(arp);
   return 0;
 }

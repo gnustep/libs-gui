@@ -32,7 +32,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Hit *h;
   NSMatrix *m;
   NSButtonCell *proto;
@@ -85,6 +84,5 @@ main(int argc, const char **argv)
 
   END_SET("NSMatrix click")
 
-  DESTROY(arp);
   return 0;
 }

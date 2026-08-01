@@ -12,7 +12,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTabView *tv;
 
   START_SET("NSTabView defaults")
@@ -64,6 +63,5 @@ int main()
 
   END_SET("NSTabView defaults")
 
-  DESTROY(arp);
   return 0;
 }

@@ -14,7 +14,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSArrayController config")
   NSArrayController *ac;
 
   ac = AUTORELEASE([[NSArrayController alloc] init]);
@@ -50,6 +50,6 @@ int main()
   PASS([ac automaticallyRearrangesObjects] == YES,
        "automaticallyRearrangesObjects round-trips");
 
-  DESTROY(arp);
+  END_SET("NSArrayController config")
   return 0;
 }

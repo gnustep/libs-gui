@@ -16,23 +16,19 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("control sizes")
+    CGFloat system = [NSFont systemFontSize];
+    CGFloat small = [NSFont smallSystemFontSize];
+    CGFloat label = [NSFont labelFontSize];
+    CGFloat mini = [NSFont systemFontSizeForControlSize: NSMiniControlSize];
+    CGFloat cSmall = [NSFont systemFontSizeForControlSize: NSSmallControlSize];
+    CGFloat cRegular = [NSFont systemFontSizeForControlSize: NSRegularControlSize];
 
-  CGFloat system = [NSFont systemFontSize];
-  CGFloat small = [NSFont smallSystemFontSize];
-  CGFloat label = [NSFont labelFontSize];
-  CGFloat mini = [NSFont systemFontSizeForControlSize: NSMiniControlSize];
-  CGFloat cSmall = [NSFont systemFontSizeForControlSize: NSSmallControlSize];
-  CGFloat cRegular = [NSFont systemFontSizeForControlSize: NSRegularControlSize];
-
-  START_SET("system font sizes")
     PASS(system > 0, "the system font size is positive");
     PASS(small > 0, "the small system font size is positive");
     PASS(label > 0, "the label font size is positive");
     PASS(small < system, "the small system font size is below the system size");
-  END_SET("system font sizes")
 
-  START_SET("control sizes")
     PASS(EQ(cRegular, system),
       "the regular control size is the system font size");
     PASS(EQ(cSmall, small),
@@ -42,6 +38,5 @@ main(int argc, char **argv)
       "the control sizes are ordered mini < small < regular");
   END_SET("control sizes")
 
-  DESTROY(arp);
   return 0;
 }

@@ -53,7 +53,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Source *ds;
   Recorder *r;
   NSTableView *tv;
@@ -128,6 +127,5 @@ main(int argc, char **argv)
 
   END_SET("NSTableView selection notification")
 
-  DESTROY(arp);
   return 0;
 }

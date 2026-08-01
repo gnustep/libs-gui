@@ -13,8 +13,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("a balancing release keeps the tile whole")
 
   NS_DURING
@@ -52,6 +50,5 @@ main(int argc, char **argv)
 
   END_SET("a balancing release keeps the tile whole")
 
-  DESTROY(arp);
   return 0;
 }

@@ -15,8 +15,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("the application dock tile")
 
   NS_DURING
@@ -57,6 +55,5 @@ main(int argc, char **argv)
 
   END_SET("the application dock tile")
 
-  DESTROY(arp);
   return 0;
 }

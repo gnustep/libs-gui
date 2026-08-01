@@ -12,8 +12,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSTextFieldCell default text colour")
 
   NS_DURING
@@ -36,6 +34,5 @@ main(int argc, char **argv)
 
   END_SET("NSTextFieldCell default text colour")
 
-  DESTROY(arp);
   return 0;
 }

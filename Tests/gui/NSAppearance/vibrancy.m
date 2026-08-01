@@ -8,8 +8,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("vibrancy")
     PASS([[NSAppearance appearanceNamed: NSAppearanceNameVibrantLight]
       allowsVibrancy] == YES, "the vibrant light appearance is vibrant");
@@ -24,6 +22,5 @@ main(int argc, char **argv)
       allowsVibrancy] == NO, "an unknown appearance is not vibrant");
   END_SET("vibrancy")
 
-  DESTROY(arp);
   return 0;
 }

@@ -18,7 +18,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTextStorage *ts;
   NSLayoutManager *lm;
 
@@ -61,6 +60,5 @@ int main()
 
   END_SET("NSTextStorage editing")
 
-  DESTROY(arp);
   return 0;
 }

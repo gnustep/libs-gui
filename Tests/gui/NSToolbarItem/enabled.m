@@ -8,7 +8,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSToolbarItem *item;
 
   START_SET("NSToolbarItem enabled")
@@ -25,6 +24,5 @@ int main()
 
   END_SET("NSToolbarItem enabled")
 
-  DESTROY(arp);
   return 0;
 }

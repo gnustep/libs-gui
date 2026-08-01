@@ -9,7 +9,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSSplitViewItem enumvalues")
 
   PASS(NSTitlebarSeparatorStyleAutomatic == 0,
        "NSTitlebarSeparatorStyleAutomatic is 0");
@@ -20,6 +20,6 @@ int main()
   PASS(NSTitlebarSeparatorStyleShadow == 3,
        "NSTitlebarSeparatorStyleShadow is 3");
 
-  DESTROY(arp);
+  END_SET("NSSplitViewItem enumvalues")
   return 0;
 }

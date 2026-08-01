@@ -16,7 +16,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSCollectionViewItem *item;
   NSTextField *tf;
   NSImageView *iv;
@@ -76,6 +75,5 @@ int main()
 
   END_SET("NSCollectionViewItem config")
 
-  DESTROY(arp);
   return 0;
 }

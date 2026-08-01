@@ -13,8 +13,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("font weight constants")
     PASS(EQ(NSFontWeightUltraLight, -0.8), "NSFontWeightUltraLight is -0.8");
     PASS(EQ(NSFontWeightThin, -0.6), "NSFontWeightThin is -0.6");
@@ -56,6 +54,5 @@ main(int argc, char **argv)
       "NSFontAntialiasedIntegerAdvancementsRenderingMode is 3");
   END_SET("rendering mode values")
 
-  DESTROY(arp);
   return 0;
 }

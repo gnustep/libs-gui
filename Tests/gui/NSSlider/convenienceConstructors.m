@@ -22,7 +22,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   SliderTarget *t;
 
   START_SET("NSSlider convenience constructors")
@@ -60,6 +59,5 @@ main(int argc, const char **argv)
 
   END_SET("NSSlider convenience constructors")
 
-  DESTROY(arp);
   return 0;
 }

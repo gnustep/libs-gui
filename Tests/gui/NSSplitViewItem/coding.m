@@ -11,7 +11,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSSplitViewItem coding")
   NSSplitViewItem *item;
   NSSplitViewItem *decoded;
   NSData *data;
@@ -45,6 +45,6 @@ int main()
   PASS([decoded titlebarSeparatorStyle] == NSTitlebarSeparatorStyleLine,
        "titlebarSeparatorStyle survives the round-trip");
 
-  DESTROY(arp);
+  END_SET("NSSplitViewItem coding")
   return 0;
 }

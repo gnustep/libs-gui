@@ -48,7 +48,6 @@ bounds(NSAttributedString *s, CGFloat w)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSRect indented, narrowed, full;
 
   START_SET("NSAttributedString wrapped head indent")
@@ -77,6 +76,5 @@ main(int argc, char **argv)
 
   END_SET("NSAttributedString wrapped head indent")
 
-  DESTROY(arp);
   return 0;
 }

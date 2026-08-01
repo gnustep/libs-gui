@@ -10,8 +10,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("defaults")
     NSObjectController	*oc = AUTORELEASE([[NSObjectController alloc] init]);
 
@@ -68,6 +66,5 @@ main(int argc, char **argv)
     PASS([oc content] == nil, "removeObject: clears the content");
   END_SET("addObject: and removeObject:")
 
-  DESTROY(arp);
   return 0;
 }

@@ -23,8 +23,6 @@ popup(void)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSPopUpButtonCell remove selected")
 
   NS_DURING
@@ -84,6 +82,5 @@ main(int argc, char **argv)
 
   END_SET("NSPopUpButtonCell remove selected")
 
-  DESTROY(arp);
   return 0;
 }

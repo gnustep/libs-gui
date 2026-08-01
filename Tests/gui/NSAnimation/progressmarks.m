@@ -13,7 +13,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSAnimation progressmarks")
   NSAnimation *a;
   NSArray *marks;
 
@@ -55,6 +55,6 @@ int main()
     && [[marks objectAtIndex: 1] floatValue] == 0.75,
        "setProgressMarks: replaces the previous marks, sorted");
 
-  DESTROY(arp);
+  END_SET("NSAnimation progressmarks")
   return 0;
 }
