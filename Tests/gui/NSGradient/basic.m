@@ -18,6 +18,10 @@ rgb(CGFloat r, CGFloat g, CGFloat b)
 
 int main(int argc, char **argv)
 {
+  ENTER_POOL
+
+  /* Resources shared between sets
+   */
   NSColor	*red = rgb(1, 0, 0);
   NSColor	*green = rgb(0, 1, 0);
   NSColor	*blue = rgb(0, 0, 1);
@@ -112,6 +116,8 @@ int main(int argc, char **argv)
     PASS([[c interpolatedColorAtLocation: 0.25] redComponent] > 0.7,
       "copy interpolates like the original");
   END_SET("copy")
+
+  LEAVE_POOL
 
   return 0;
 }
