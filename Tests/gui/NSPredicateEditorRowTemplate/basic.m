@@ -136,20 +136,9 @@ rightExpressionAttributeType: NSStringAttributeType
          [NSPredicate predicateWithFormat: @"name == 'a' AND title == 'b'"]] == 0.0,
        "a compound predicate does not match a comparison template");
 
-  {
-    BOOL raised = NO;
-
-    NS_DURING
-      {
-        [template matchForPredicate: nil];
-      }
-    NS_HANDLER
-      {
-        raised = YES;
-      }
-    NS_ENDHANDLER
-    PASS(raised == YES, "matching a nil predicate raises");
-  }
+  /* nil for the name: this check was written to accept any exception. */
+  PASS_EXCEPTION(({ [template matchForPredicate: nil]; }), nil,
+    "matching a nil predicate raises");
 
   /* Setting the row from a predicate, then reading it back. */
   [template setPredicate:

@@ -17,7 +17,6 @@ int main()
   NSLevelIndicatorStyle styles[4];
   double maxes[4];
   int i;
-  BOOL raised;
 
   START_SET("NSLevelIndicatorCell basic")
 
@@ -100,21 +99,11 @@ int main()
        "tickMarkValueAtIndex: 0 is the minimum value");
 
   /* out-of-range and negative tick indices raise NSRangeException */
-  raised = NO;
-  NS_DURING
-    [cell tickMarkValueAtIndex: 11];
-  NS_HANDLER
-    raised = [[localException name] isEqualToString: NSRangeException];
-  NS_ENDHANDLER
-  PASS(raised, "tickMarkValueAtIndex: past the last tick raises NSRangeException");
+  PASS_EXCEPTION(({ [cell tickMarkValueAtIndex: 11]; }), NSRangeException,
+    "tickMarkValueAtIndex: past the last tick raises NSRangeException");
 
-  raised = NO;
-  NS_DURING
-    [cell tickMarkValueAtIndex: -1];
-  NS_HANDLER
-    raised = [[localException name] isEqualToString: NSRangeException];
-  NS_ENDHANDLER
-  PASS(raised, "tickMarkValueAtIndex: a negative index raises NSRangeException");
+  PASS_EXCEPTION(({ [cell tickMarkValueAtIndex: -1]; }), NSRangeException,
+    "tickMarkValueAtIndex: a negative index raises NSRangeException");
 
   END_SET("NSLevelIndicatorCell basic")
 

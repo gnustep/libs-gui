@@ -98,18 +98,9 @@ main(int argc, char **argv)
                  4, 5, 6, 7),
        "an already integral rectangle is unchanged");
 
-  {
-    BOOL raised = NO;
-
-    NS_DURING
-      [v backingAlignedRect: r options: NSAlignMinXInward];
-    NS_HANDLER
-      if ([[localException name] isEqualToString: NSInvalidArgumentException])
-        raised = YES;
-    NS_ENDHANDLER
-    PASS(raised,
-         "an axis without exactly two of min, max and size raises");
-  }
+  PASS_EXCEPTION(({ [v backingAlignedRect: r options: NSAlignMinXInward]; }),
+    NSInvalidArgumentException,
+    "an axis without exactly two of min, max and size raises");
 
   END_SET("NSView backingAlignedRect")
 
