@@ -960,9 +960,11 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
               ia = pixelData[3];
             }
 
-          // Scale to [0.0 ... 1.0] and undo premultiplication
+          /* Scale to [0.0 ... 1.0] and undo premultiplication.  A zero alpha
+             leaves nothing to divide by, and the components are then taken as
+             they are, which is what AppKit answers. */
           fa = ia / scale;
-          if (_format & NSAlphaNonpremultipliedBitmapFormat)
+          if ((_format & NSAlphaNonpremultipliedBitmapFormat) || fa == 0.0)
             {
               fr = ir / scale;
               fg = ig / scale;
@@ -1025,7 +1027,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
           // Scale to [0.0 ... 1.0] and undo premultiplication
           fa = ia / scale;
-          if (_format & NSAlphaNonpremultipliedBitmapFormat)
+          if ((_format & NSAlphaNonpremultipliedBitmapFormat) || fa == 0.0)
             {
               fw = iw / scale;
             }
@@ -1076,7 +1078,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
             }
           // Scale to [0.0 ... 1.0] and undo premultiplication
           fa = ia / scale;
-         if (_format & NSAlphaNonpremultipliedBitmapFormat)
+         if ((_format & NSAlphaNonpremultipliedBitmapFormat) || fa == 0.0)
            {
              fw = 1.0 - ib / scale;
            }
@@ -1132,7 +1134,7 @@ _set_bit_value(unsigned char *base, long msb_off, int bit_width,
 
           // Scale to [0.0 ... 1.0] and undo premultiplication
           fa = ia / scale;
-          if (_format & NSAlphaNonpremultipliedBitmapFormat)
+          if ((_format & NSAlphaNonpremultipliedBitmapFormat) || fa == 0.0)
             {
               fc = ic / scale;
               fm = im / scale;
