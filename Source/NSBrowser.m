@@ -262,6 +262,8 @@ static BOOL browserUseBezels;
 - (void) _setColumnTitlesNeedDisplay;
 - (NSBorderType) _resolvedBorderType;
 - (void) _themeDidActivate: (NSNotification*)notification;
+- (NSString *) _typeSelectStringForRow: (NSInteger)row
+			      inColumn: (NSInteger)column;
 @end
 
 // Category to handle bindings
@@ -2795,12 +2797,21 @@ static BOOL browserUseBezels;
       NSInteger i, n, s;
       NSInteger match;
       NSInteger selectedColumn;
-      SEL lcarcSel = @selector(loadedCellAtRow:column:);
-      IMP lcarc = [self methodForSelector: lcarcSel];
+      BOOL newSearch = YES;
 
       selectedColumn = [self selectedColumn];
       if (selectedColumn != -1)
 	{
+	  if ([_browserDelegate respondsToSelector:
+		@selector(browser:shouldTypeSelectForEvent:withCurrentSearchString:)]
+	      && ![_browserDelegate browser: self
+		     shouldTypeSelectForEvent: theEvent
+		      withCurrentSearchString: _charBuffer])
+	    {
+	      [super keyDown: theEvent];
+	      return;
+	    }
+
 	  matrix = [self matrixInColumn: selectedColumn];
 	  n = [matrix numberOfRows];
 	  s = [matrix selectedRow];
@@ -2822,6 +2833,7 @@ static BOOL browserUseBezels;
 		  RELEASE(_charBuffer);
 		  _charBuffer = transition;
 		  RETAIN(_charBuffer);
+		  newSearch = NO;
 		}
 	      else
 		{
@@ -2834,36 +2846,53 @@ static BOOL browserUseBezels;
 	  _alphaNumericalLastColumn = selectedColumn;
 	  _lastKeyPressed = [theEvent timestamp];
 
-	  sv = [((*lcarc)(self, lcarcSel, s, selectedColumn))
-		 stringValue];
-
-	  if (([sv length] > 0)
-	      && ([sv hasPrefix: _charBuffer]))
-	    return;
-
-	  match = -1;
-	  for (i = s + 1; i < n; i++)
+	  if ((n > 0) && [_browserDelegate respondsToSelector:
+		@selector(browser:nextTypeSelectMatchFromRow:toRow:inColumn:forString:)])
 	    {
-	      sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-		     stringValue];
-	      if (([sv length] > 0)
-		  && ([sv hasPrefix: _charBuffer]))
+	      NSInteger from = newSearch ? (s + 1) % n : (s < 0 ? 0 : s);
+
+	      match = [_browserDelegate browser: self
+		     nextTypeSelectMatchFromRow: from
+					  toRow: (from + n - 1) % n
+				       inColumn: selectedColumn
+				      forString: _charBuffer];
+	      if ((match < 0) || (match >= n))
 		{
-		  match = i;
-		  break;
+		  match = -1;
 		}
 	    }
-	  if (i == n)
+	  else
 	    {
-	      for (i = 0; i < s; i++)
+	      sv = [self _typeSelectStringForRow: s inColumn: selectedColumn];
+
+	      if (([sv length] > 0)
+		  && ([sv hasPrefix: _charBuffer]))
+		return;
+
+	      match = -1;
+	      for (i = s + 1; i < n; i++)
 		{
-		  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-			 stringValue];
+		  sv = [self _typeSelectStringForRow: i
+					    inColumn: selectedColumn];
 		  if (([sv length] > 0)
 		      && ([sv hasPrefix: _charBuffer]))
 		    {
 		      match = i;
 		      break;
+		    }
+		}
+	      if (i == n)
+		{
+		  for (i = 0; i < s; i++)
+		    {
+		      sv = [self _typeSelectStringForRow: i
+						inColumn: selectedColumn];
+		      if (([sv length] > 0)
+			  && ([sv hasPrefix: _charBuffer]))
+			{
+			  match = i;
+			  break;
+			}
 		    }
 		}
 	    }
@@ -3243,6 +3272,20 @@ static BOOL browserUseBezels;
 	    didChangeLastColumn: oldLastColumn
 		       toColumn: _lastColumnLoaded];
     }
+}
+
+- (NSString *) _typeSelectStringForRow: (NSInteger)row
+			      inColumn: (NSInteger)column
+{
+  if ([_browserDelegate respondsToSelector:
+	@selector(browser:typeSelectStringForRow:inColumn:)])
+    {
+      return [_browserDelegate browser: self
+		typeSelectStringForRow: row
+			      inColumn: column];
+    }
+
+  return [[self loadedCellAtRow: row column: column] stringValue];
 }
 
 - (void) _remapColumnSubviews: (BOOL)fromFirst
