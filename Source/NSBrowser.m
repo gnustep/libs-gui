@@ -45,6 +45,7 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSIndexPath.h>
+#import <Foundation/NSIndexSet.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
 
@@ -2420,6 +2421,46 @@ static BOOL browserUseBezels;
       while ((cell = [enumerator nextObject]))
 	[sender selectCell: cell];
       [sender setAutoscroll: autoscroll];
+    }
+
+  if ([_browserDelegate respondsToSelector:
+	@selector(browser:selectionIndexesForProposedSelection:inColumn:)])
+    {
+      NSMutableIndexSet *proposed = [NSMutableIndexSet indexSet];
+      NSIndexSet *allowed;
+      NSInteger cellRow, cellColumn;
+
+      enumerator = [selectedCells objectEnumerator];
+      while ((cell = [enumerator nextObject]))
+	{
+	  if ([sender getRow: &cellRow column: &cellColumn ofCell: cell])
+	    {
+	      [proposed addIndex: cellRow];
+	    }
+	}
+
+      allowed = [_browserDelegate browser: self
+	 selectionIndexesForProposedSelection: proposed
+				     inColumn: column];
+
+      if (allowed != nil && ![allowed isEqualToIndexSet: proposed])
+	{
+	  BOOL autoscroll = [sender isAutoscroll];
+	  NSUInteger i = [allowed firstIndex];
+
+	  [sender setAutoscroll: NO];
+	  [sender deselectAllCells];
+	  while (i != NSNotFound)
+	    {
+	      [sender selectCellAtRow: i column: 0];
+	      i = [allowed indexGreaterThanIndex: i];
+	    }
+	  [sender setAutoscroll: autoscroll];
+
+	  RELEASE(selectedCells);
+	  selectedCells = [[sender selectedCells] mutableCopy];
+	  selectedCellsCount = [selectedCells count];
+	}
     }
 
   [self setLastColumn: column];
