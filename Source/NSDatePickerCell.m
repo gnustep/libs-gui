@@ -35,6 +35,10 @@
 #import "AppKit/NSDatePickerCell.h"
 #import "AppKit/NSColor.h"
 
+@interface NSDatePickerCell (Private)
+- (void) _updateDateFormat;
+@end
+
 @implementation NSDatePickerCell
 
 - (void) dealloc
@@ -60,9 +64,117 @@
       [self setBezeled: YES];
       _datePickerElements = NSYearMonthDayDatePickerElementFlag
         | NSHourMinuteSecondDatePickerElementFlag;
+      [self _updateDateFormat];
     }
 
   return self;
+}
+
+/* The template holds one letter per element the picker shows.  The pattern
+   generator turns it into the pattern the locale writes those elements in.
+   'j' stands for the hour in the clock the locale uses, twelve or twenty
+   four.
+*/
+- (NSString *) _dateFormatTemplate
+{
+  NSMutableString *template = [NSMutableString stringWithCapacity: 8];
+  NSDatePickerElementFlags elements = _datePickerElements;
+
+  if (elements & NSEraDatePickerElementFlag)
+    {
+      [template appendString: @"G"];
+    }
+  if (elements & NSYearMonthDatePickerElementFlag)
+    {
+      [template appendString: @"yM"];
+    }
+  if ((elements & NSYearMonthDayDatePickerElementFlag)
+    == NSYearMonthDayDatePickerElementFlag)
+    {
+      [template appendString: @"d"];
+    }
+  if (elements & NSHourMinuteDatePickerElementFlag)
+    {
+      [template appendString: @"jm"];
+    }
+  if ((elements & NSHourMinuteSecondDatePickerElementFlag)
+    == NSHourMinuteSecondDatePickerElementFlag)
+    {
+      [template appendString: @"s"];
+    }
+  if (elements & NSTimeZoneDatePickerElementFlag)
+    {
+      [template appendString: @"z"];
+    }
+
+  return template;
+}
+
+/* Used when the pattern generator is unavailable, which is the case in a
+   build without ICU.
+*/
+- (NSString *) _fallbackDateFormat
+{
+  NSMutableString *format = [NSMutableString stringWithCapacity: 24];
+  NSDatePickerElementFlags elements = _datePickerElements;
+
+  if (elements & NSYearMonthDatePickerElementFlag)
+    {
+      [format appendString: @"y-MM"];
+      if ((elements & NSYearMonthDayDatePickerElementFlag)
+        == NSYearMonthDayDatePickerElementFlag)
+        {
+          [format appendString: @"-dd"];
+        }
+    }
+  if (elements & NSHourMinuteDatePickerElementFlag)
+    {
+      if ([format length] > 0)
+        {
+          [format appendString: @" "];
+        }
+      [format appendString: @"HH:mm"];
+      if ((elements & NSHourMinuteSecondDatePickerElementFlag)
+        == NSHourMinuteSecondDatePickerElementFlag)
+        {
+          [format appendString: @":ss"];
+        }
+    }
+  if (elements & NSTimeZoneDatePickerElementFlag)
+    {
+      [format appendString: @" zzz"];
+    }
+  if (elements & NSEraDatePickerElementFlag)
+    {
+      [format appendString: @" G"];
+    }
+
+  return format;
+}
+
+- (void) _updateDateFormat
+{
+  NSDateFormatter *formatter = (NSDateFormatter *)[self formatter];
+  NSString *template;
+  NSString *format = nil;
+
+  if (![formatter isKindOfClass: [NSDateFormatter class]])
+    {
+      return;
+    }
+
+  template = [self _dateFormatTemplate];
+  if ([template length] > 0)
+    {
+      format = [NSDateFormatter dateFormatFromTemplate: template
+                                               options: 0
+                                                locale: [formatter locale]];
+      if (format == nil)
+        {
+          format = [self _fallbackDateFormat];
+        }
+    }
+  [formatter setDateFormat: (format == nil) ? (NSString *)@"" : format];
 }
 
 - (NSColor *) backgroundColor
@@ -93,6 +205,7 @@
 - (void) setDatePickerElements: (NSDatePickerElementFlags)flags
 {
   _datePickerElements = flags;
+  [self _updateDateFormat];
 }
 
 - (NSDatePickerMode) datePickerMode
@@ -142,6 +255,25 @@
   [self setObjectValue: [self _clampedDate: date]];
 }
 
+/* NSCell keeps the text its formatter made when the value was set, which is
+   stale once the elements or the locale change, and -stringForObjectValue:
+   builds that text from a %-style format rather than from the pattern.
+*/
+- (NSString *) stringValue
+{
+  NSDateFormatter *formatter = (NSDateFormatter *)[self formatter];
+  id value = [self objectValue];
+
+  if ([value isKindOfClass: [NSDate class]]
+    && [formatter isKindOfClass: [NSDateFormatter class]]
+    && [[formatter dateFormat] length] > 0)
+    {
+      return [formatter stringFromDate: (NSDate *)value];
+    }
+
+  return [super stringValue];
+}
+
 - (id) delegate
 {
   return _delegate;
@@ -170,6 +302,7 @@
 - (void) setLocale: (NSLocale *)locale
 {
   [[self formatter] setLocale: locale];
+  [self _updateDateFormat];
 }
 
 - (NSDate *) maxDate
@@ -242,6 +375,13 @@
 {
   if ((self = [super initWithCoder: aDecoder]))
     {
+      if (![[self formatter] isKindOfClass: [NSDateFormatter class]])
+        {
+          NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+
+          [self setFormatter: formatter];
+          RELEASE(formatter);
+        }
       if ([aDecoder allowsKeyedCoding])
         {
           [self setTimeInterval: [aDecoder decodeDoubleForKey: @"NSTimeInterval"]];
