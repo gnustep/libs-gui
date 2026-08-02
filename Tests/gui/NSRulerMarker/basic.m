@@ -22,7 +22,6 @@ int main()
   NSRulerView *rv;
   NSImage *img;
   NSRulerMarker *m;
-  BOOL raised;
 
   START_SET("NSRulerMarker basic")
 
@@ -72,27 +71,21 @@ int main()
        "representedObject round-trips");
 
   /* a nil ruler view or image raises NSInvalidArgumentException */
-  raised = NO;
-  NS_DURING
-    AUTORELEASE([[NSRulerMarker alloc] initWithRulerView: nil
-                                          markerLocation: 0.0
-                                                   image: img
-                                             imageOrigin: NSZeroPoint]);
-  NS_HANDLER
-    raised = [[localException name] isEqualToString: NSInvalidArgumentException];
-  NS_ENDHANDLER
-  PASS(raised, "a nil ruler view raises NSInvalidArgumentException");
+  PASS_EXCEPTION(({
+      AUTORELEASE([[NSRulerMarker alloc] initWithRulerView: nil
+                                            markerLocation: 0.0
+                                                     image: img
+                                               imageOrigin: NSZeroPoint]);
+    }), NSInvalidArgumentException,
+    "a nil ruler view raises NSInvalidArgumentException");
 
-  raised = NO;
-  NS_DURING
-    AUTORELEASE([[NSRulerMarker alloc] initWithRulerView: rv
-                                          markerLocation: 0.0
-                                                   image: nil
-                                             imageOrigin: NSZeroPoint]);
-  NS_HANDLER
-    raised = [[localException name] isEqualToString: NSInvalidArgumentException];
-  NS_ENDHANDLER
-  PASS(raised, "a nil image raises NSInvalidArgumentException");
+  PASS_EXCEPTION(({
+      AUTORELEASE([[NSRulerMarker alloc] initWithRulerView: rv
+                                            markerLocation: 0.0
+                                                     image: nil
+                                               imageOrigin: NSZeroPoint]);
+    }), NSInvalidArgumentException,
+    "a nil image raises NSInvalidArgumentException");
 
   END_SET("NSRulerMarker basic")
 

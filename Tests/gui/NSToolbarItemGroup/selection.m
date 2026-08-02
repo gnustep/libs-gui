@@ -51,7 +51,6 @@ main(int argc, char **argv)
 
   {
     NSToolbarItemGroup	*group;
-    BOOL		raised;
 
     /* the enumerations */
     PASS(NSToolbarItemGroupSelectionModeSelectOne == 0
@@ -167,29 +166,14 @@ main(int argc, char **argv)
 
     /* out of range */
     group = groupWithMode(NSToolbarItemGroupSelectionModeSelectOne);
-    raised = NO;
-    NS_DURING
-      [group isSelectedAtIndex: 99];
-    NS_HANDLER
-      raised = [[localException name] isEqualToString: NSRangeException];
-    NS_ENDHANDLER
-    PASS(raised == YES, "asking about an index out of range raises");
+    PASS_EXCEPTION(({ [group isSelectedAtIndex: 99]; }), NSRangeException,
+      "asking about an index out of range raises");
 
-    raised = NO;
-    NS_DURING
-      [group setSelected: YES atIndex: 99];
-    NS_HANDLER
-      raised = [[localException name] isEqualToString: NSRangeException];
-    NS_ENDHANDLER
-    PASS(raised == YES, "selecting an index out of range raises");
+    PASS_EXCEPTION(({ [group setSelected: YES atIndex: 99]; }), NSRangeException,
+      "selecting an index out of range raises");
 
-    raised = NO;
-    NS_DURING
-      [group setSelectedIndex: 99];
-    NS_HANDLER
-      raised = [[localException name] isEqualToString: NSRangeException];
-    NS_ENDHANDLER
-    PASS(raised == YES, "setting the selected index out of range raises");
+    PASS_EXCEPTION(({ [group setSelectedIndex: 99]; }), NSRangeException,
+      "setting the selected index out of range raises");
   }
 
   END_SET("selection")

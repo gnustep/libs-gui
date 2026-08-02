@@ -107,7 +107,6 @@ main(int argc, char **argv)
     NSImage *image;
     NSBitmapImageRep *rep;
     NSImageRep *best = nil;
-    BOOL raised = NO;
 
     image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(16, 16)]);
     rep = AUTORELEASE([[NSBitmapImageRep alloc]
@@ -123,19 +122,9 @@ main(int argc, char **argv)
                                     bitsPerPixel: 0]);
     [image addRepresentation: rep];
 
-    NS_DURING
-      {
-        best = [image bestRepresentationForDevice: description];
-      }
-    NS_HANDLER
-      {
-        raised = YES;
-      }
-    NS_ENDHANDLER
-
-    PASS(raised == NO,
-         "asking an image for its best representation for a printer does not "
-         "raise");
+    PASS_RUNS(({ best = [image bestRepresentationForDevice: description]; }),
+      "asking an image for its best representation for a printer does not "
+      "raise");
     PASS_EQUAL(best, rep,
                "the representation of the image is returned");
   }
