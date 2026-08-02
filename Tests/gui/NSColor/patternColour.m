@@ -42,16 +42,9 @@ main(int argc, char **argv)
     "a pattern colour asked for its own colour space answers itself");
 
   /* A component has no value to give, so that one does raise. */
-  {
-    BOOL raised = NO;
-
-    NS_DURING
-      (void)[pattern redComponent];
-    NS_HANDLER
-      raised = YES;
-    NS_ENDHANDLER
-    PASS(raised, "asking a pattern colour for a component raises");
-  }
+  PASS_EXCEPTION(({ (void)[pattern redComponent]; }),
+    NSInternalInconsistencyException,
+    "asking a pattern colour for a component raises");
 
   END_SET("NSColor patternColour")
 
