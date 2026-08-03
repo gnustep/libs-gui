@@ -61,8 +61,8 @@ static BOOL
 GSImageMagickCanDecode(const MagickInfo *info)
 {
   return (info != (const MagickInfo *)NULL
-    && info->decoder != (DecodeImageHandler *)NULL
-    && info->blob_support != MagickFalse);
+    && GetImageDecoder(info) != (DecodeImageHandler *)NULL
+    && GetMagickBlobSupport(info) != MagickFalse);
 }
 
 /* Look up the ImageMagick coder that claims the leading bytes of DATA, or
@@ -97,8 +97,8 @@ GSImageMagickUsesDelegate(NSData *data)
   const MagickInfo *info = GSImageMagickInfoForData(data);
 
   return (info != (const MagickInfo *)NULL
-    && info->decoder != (DecodeImageHandler *)NULL
-    && info->blob_support == MagickFalse);
+    && GetImageDecoder(info) != (DecodeImageHandler *)NULL
+    && GetMagickBlobSupport(info) == MagickFalse);
 }
 
 /* Seconds ImageMagick is allowed to spend decoding through an external
