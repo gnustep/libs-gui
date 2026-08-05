@@ -214,6 +214,103 @@
   return _spacing;
 }
 
+- (CGFloat) _intrinsicExtentOfView: (NSView *)v
+{
+  NSSize size = [v intrinsicContentSize];
+
+  if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
+    {
+      return size.width;
+    }
+  return size.height;
+}
+
+/* The space along the main axis that the arranged views have to share. */
+- (CGFloat) _availableExtent
+{
+  NSSize size = [self frame].size;
+
+  if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
+    {
+      return size.width - _edgeInsets.left - _edgeInsets.right;
+    }
+  return size.height - _edgeInsets.top - _edgeInsets.bottom;
+}
+
+/* The extents that Fill and FillEqually give the arranged views, or nil where
+   the views do not fit and keep their own extent.  No view is made smaller
+   than its own extent: the ones that fit share what the others leave. */
+- (NSArray *) _filledExtentsForViews: (NSArray *)views inSpace: (CGFloat)space
+{
+  NSUInteger count = [views count];
+  NSMutableArray *extents = [NSMutableArray arrayWithCapacity: count];
+  NSMutableIndexSet *keepingOwnExtent = [NSMutableIndexSet indexSet];
+  CGFloat content = 0.0;
+  CGFloat remaining = space;
+  NSUInteger sharing = count;
+  BOOL changed = YES;
+  NSUInteger i;
+
+  for (i = 0; i < count; i++)
+    {
+      CGFloat intrinsic
+        = [self _intrinsicExtentOfView: [views objectAtIndex: i]];
+
+      if (intrinsic < 0.0)
+        {
+          intrinsic = 0.0;
+        }
+      content += intrinsic;
+      [extents addObject: [NSNumber numberWithDouble: intrinsic]];
+    }
+
+  if (space < content)
+    {
+      return nil;
+    }
+
+  if (_distribution == NSStackViewDistributionFill)
+    {
+      [extents replaceObjectAtIndex: 0
+                         withObject: [NSNumber numberWithDouble:
+        [[extents objectAtIndex: 0] doubleValue] + space - content]];
+      return extents;
+    }
+
+  while (changed && sharing > 0)
+    {
+      CGFloat share = remaining / (CGFloat)sharing;
+
+      changed = NO;
+      for (i = 0; i < count; i++)
+        {
+          if (![keepingOwnExtent containsIndex: i]
+            && [[extents objectAtIndex: i] doubleValue] > share)
+            {
+              [keepingOwnExtent addIndex: i];
+              remaining -= [[extents objectAtIndex: i] doubleValue];
+              sharing--;
+              changed = YES;
+            }
+        }
+    }
+
+  if (sharing > 0)
+    {
+      NSNumber *share = [NSNumber numberWithDouble:
+        round(remaining / (CGFloat)sharing)];
+
+      for (i = 0; i < count; i++)
+        {
+          if (![keepingOwnExtent containsIndex: i])
+            {
+              [extents replaceObjectAtIndex: i withObject: share];
+            }
+        }
+    }
+  return extents;
+}
+
 - (void) _addMainAxisConstraintsForViews: (NSArray *)views
 {
   BOOL horizontal
@@ -230,8 +327,36 @@
   CGFloat direction = horizontal ? 1.0 : -1.0;
   NSUInteger count = [views count];
   NSView *firstView = [views objectAtIndex: 0];
-  NSView *lastView = [views objectAtIndex: count - 1];
+  CGFloat available = [self _availableExtent];
+  NSArray *filled = nil;
+  CGFloat content = 0.0;
+  CGFloat gaps = 0.0;
+  CGFloat proportion = 0.0;
+  CGFloat equalGap = 0.0;
+  CGFloat centreStep = 0.0;
   NSUInteger i;
+
+  for (i = 0; i < count; i++)
+    {
+      content += [self _intrinsicExtentOfView: [views objectAtIndex: i]];
+      if (i > 0)
+        {
+          gaps += [self _spacingAfterView: [views objectAtIndex: i - 1]];
+        }
+    }
+
+  if (count > 1)
+    {
+      equalGap = (available - content) / (CGFloat)(count - 1);
+      centreStep = (available
+        - [self _intrinsicExtentOfView: firstView] / 2.0
+        - [self _intrinsicExtentOfView: [views objectAtIndex: count - 1]] / 2.0)
+        / (CGFloat)(count - 1);
+    }
+  if (content > 0.0)
+    {
+      proportion = (available - gaps) / content;
+    }
 
   [self _pin: firstView
     attribute: head
@@ -245,59 +370,61 @@
     {
       NSView *v = [views objectAtIndex: i];
       NSView *previous = [views objectAtIndex: i - 1];
+      CGFloat gap = [self _spacingAfterView: previous];
 
+      if (_distribution == NSStackViewDistributionEqualSpacing)
+        {
+          gap = MAX(gap, equalGap);
+        }
+      else if (_distribution == NSStackViewDistributionEqualCentering)
+        {
+          gap = MAX(gap, centreStep
+            - ([self _intrinsicExtentOfView: previous]
+               + [self _intrinsicExtentOfView: v]) / 2.0);
+        }
       [self _pin: v
         attribute: head
         relatedBy: NSLayoutRelationEqual
            toItem: previous
         attribute: tail
        multiplier: 1.0
-         constant: direction * [self _spacingAfterView: previous]];
+         constant: direction * gap];
     }
 
-  /* A distribution that fills the stack view pins the last view to the
-     trailing edge; the others leave the arranged views their own extent. */
+  /* Extents are pinned to a length rather than related to another view by a
+     multiplier, which the layout engine rejects.  A distribution with no room
+     leaves every view its own extent and runs past the trailing edge. */
   if (_distribution == NSStackViewDistributionFill
-      || _distribution == NSStackViewDistributionFillEqually
-      || _distribution == NSStackViewDistributionFillProportionally)
+      || _distribution == NSStackViewDistributionFillEqually)
     {
-      [self _pin: lastView
-        attribute: tail
-        relatedBy: NSLayoutRelationEqual
-           toItem: self
-        attribute: tail
-       multiplier: 1.0
-         constant: -direction * tailInset];
-    }
-  else
-    {
-      [self _pin: lastView
-        attribute: tail
-        relatedBy: horizontal ? NSLayoutRelationLessThanOrEqual
-                              : NSLayoutRelationGreaterThanOrEqual
-           toItem: self
-        attribute: tail
-       multiplier: 1.0
-         constant: -direction * tailInset];
+      filled = [self _filledExtentsForViews: views inSpace: available - gaps];
     }
 
-  for (i = 1; i < count; i++)
+  for (i = 0; i < count; i++)
     {
       NSView *v = [views objectAtIndex: i];
+      CGFloat wanted = 0.0;
 
-      if (_distribution == NSStackViewDistributionFillEqually)
+      if (filled != nil)
+        {
+          wanted = [[filled objectAtIndex: i] doubleValue];
+        }
+      else if (_distribution == NSStackViewDistributionFillProportionally
+        && proportion > 1.0)
+        {
+          wanted = round([self _intrinsicExtentOfView: v] * proportion);
+        }
+
+      if (wanted > 0.0)
         {
           [self _pin: v
             attribute: extent
             relatedBy: NSLayoutRelationEqual
-               toItem: firstView
-            attribute: extent
+               toItem: nil
+            attribute: NSLayoutAttributeNotAnAttribute
            multiplier: 1.0
-             constant: 0.0];
+             constant: wanted];
         }
-      /* FIXME NSStackViewDistributionFillProportionally needs a constraint
-         whose multiplier is the ratio of the intrinsic extents, and the
-         layout engine does not terminate for every such multiplier. */
     }
 }
 

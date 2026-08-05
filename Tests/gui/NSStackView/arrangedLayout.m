@@ -1,8 +1,8 @@
 /* The arranged subviews of a stack view are placed by layout constraints.
    Every frame checked here was measured on a macOS runner with the same three
    arranged views, whose intrinsic content sizes are 40x20, 60x30 and 20x10, in
-   a 200x200 stack view that is a window's content view.  Coordinates are
-   unflipped, so a vertical stack runs from the top down. */
+   a stack view that is a window's content view.  Coordinates are unflipped, so
+   a vertical stack runs from the top down. */
 #import "Testing.h"
 #import <Foundation/NSArray.h>
 #import <Foundation/NSAutoreleasePool.h>
@@ -37,17 +37,21 @@
 @end
 
 static NSStackView *
-stackWithThreeViews(void)
+stackOfWidth3(CGFloat width, NSSize a, NSSize b, NSSize c)
 {
   NSWindow *w = AUTORELEASE([[NSWindow alloc]
-    initWithContentRect: NSMakeRect(0, 0, 200, 200)
+    initWithContentRect: NSMakeRect(0, 0, width, 200)
               styleMask: NSBorderlessWindowMask
                 backing: NSBackingStoreBuffered
                   defer: NO]);
   NSStackView *sv = AUTORELEASE([[NSStackView alloc]
-    initWithFrame: NSMakeRect(0, 0, 200, 200)]);
-  NSSize sizes[3] = {{40, 20}, {60, 30}, {20, 10}};
+    initWithFrame: NSMakeRect(0, 0, width, 200)]);
+  NSSize sizes[3];
   NSUInteger i;
+
+  sizes[0] = a;
+  sizes[1] = b;
+  sizes[2] = c;
 
   [w setContentView: sv];
   for (i = 0; i < 3; i++)
@@ -56,6 +60,13 @@ stackWithThreeViews(void)
         initWithIntrinsicSize: sizes[i]])];
     }
   return sv;
+}
+
+static NSStackView *
+stackOfWidth(CGFloat width)
+{
+  return stackOfWidth3(width, NSMakeSize(40, 20), NSMakeSize(60, 30),
+                       NSMakeSize(20, 10));
 }
 
 static BOOL
@@ -115,7 +126,7 @@ main(int argc, const char **argv)
 
   NS_DURING
     {
-      sv = stackWithThreeViews();
+      sv = stackOfWidth(200);
       [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
       [sv setSpacing: 10];
       [sv layoutSubtreeIfNeeded];
@@ -144,7 +155,7 @@ main(int argc, const char **argv)
         && frameIs(sv, 2, NSMakeRect(135, 95, 20, 10)),
         "the leading edge inset moves the views");
 
-      sv = stackWithThreeViews();
+      sv = stackOfWidth(200);
       [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
       [sv setSpacing: 10];
       [sv setDistribution: NSStackViewDistributionFill];
@@ -154,7 +165,7 @@ main(int argc, const char **argv)
         && frameIs(sv, 2, NSMakeRect(180, 95, 20, 10)),
         "Fill gives the slack to the first view and reaches the trailing edge");
 
-      sv = stackWithThreeViews();
+      sv = stackOfWidth(200);
       [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
       [sv setSpacing: 10];
       [sv setDistribution: NSStackViewDistributionFillEqually];
@@ -164,7 +175,89 @@ main(int argc, const char **argv)
         && frameIs(sv, 2, NSMakeRect(140, 95, 60, 10)),
         "FillEqually gives every view the same width");
 
-      sv = stackWithThreeViews();
+      sv = stackOfWidth(200);
+      [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
+      [sv setSpacing: 10];
+      [sv setDistribution: NSStackViewDistributionEqualSpacing];
+      [sv layoutSubtreeIfNeeded];
+      PASS(frameIs(sv, 0, NSMakeRect(0, 90, 40, 20))
+        && frameIs(sv, 1, NSMakeRect(80, 85, 60, 30))
+        && frameIs(sv, 2, NSMakeRect(180, 95, 20, 10)),
+        "EqualSpacing keeps the widths and equalises the gaps");
+
+      sv = stackOfWidth(200);
+      [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
+      [sv setSpacing: 10];
+      [sv setDistribution: NSStackViewDistributionEqualCentering];
+      [sv layoutSubtreeIfNeeded];
+      PASS(frameIs(sv, 0, NSMakeRect(0, 90, 40, 20))
+        && frameIs(sv, 1, NSMakeRect(75, 85, 60, 30))
+        && frameIs(sv, 2, NSMakeRect(180, 95, 20, 10)),
+        "EqualCentering puts the centres an equal distance apart");
+
+      sv = stackOfWidth(200);
+      [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
+      [sv setSpacing: 10];
+      [sv setDistribution: NSStackViewDistributionFillProportionally];
+      [sv layoutSubtreeIfNeeded];
+      PASS(frameIs(sv, 0, NSMakeRect(0, 90, 60, 20))
+        && frameIs(sv, 1, NSMakeRect(70, 85, 90, 30))
+        && frameIs(sv, 2, NSMakeRect(170, 95, 30, 10)),
+        "FillProportionally scales the widths by one factor");
+
+      sv = stackOfWidth(100);
+      [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
+      [sv setSpacing: 10];
+      [sv setDistribution: NSStackViewDistributionFill];
+      [sv layoutSubtreeIfNeeded];
+      PASS(frameIs(sv, 0, NSMakeRect(0, 90, 40, 20))
+        && frameIs(sv, 1, NSMakeRect(50, 85, 60, 30))
+        && frameIs(sv, 2, NSMakeRect(120, 95, 20, 10)),
+        "Fill leaves the extents alone and overflows where there is no room");
+
+      sv = stackOfWidth(100);
+      [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
+      [sv setSpacing: 10];
+      [sv setDistribution: NSStackViewDistributionFillEqually];
+      [sv layoutSubtreeIfNeeded];
+      PASS(frameIs(sv, 0, NSMakeRect(0, 90, 40, 20))
+        && frameIs(sv, 1, NSMakeRect(50, 85, 60, 30))
+        && frameIs(sv, 2, NSMakeRect(120, 95, 20, 10)),
+        "FillEqually overflows where there is no room");
+
+      sv = stackOfWidth3(170, NSMakeSize(10, 20), NSMakeSize(10, 20),
+                         NSMakeSize(100, 30));
+      [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
+      [sv setSpacing: 10];
+      [sv setDistribution: NSStackViewDistributionFillEqually];
+      [sv layoutSubtreeIfNeeded];
+      PASS(frameIs(sv, 0, NSMakeRect(0, 90, 25, 20))
+        && frameIs(sv, 1, NSMakeRect(35, 90, 25, 20))
+        && frameIs(sv, 2, NSMakeRect(70, 85, 100, 30)),
+        "FillEqually keeps a view that is wider than the equal share");
+
+      sv = stackOfWidth3(200, NSMakeSize(10, 20), NSMakeSize(10, 20),
+                         NSMakeSize(100, 30));
+      [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
+      [sv setSpacing: 10];
+      [sv setDistribution: NSStackViewDistributionFill];
+      [sv layoutSubtreeIfNeeded];
+      PASS(frameIs(sv, 0, NSMakeRect(0, 90, 70, 20))
+        && frameIs(sv, 1, NSMakeRect(80, 90, 10, 20))
+        && frameIs(sv, 2, NSMakeRect(100, 85, 100, 30)),
+        "Fill gives the slack to the first view");
+
+      sv = stackOfWidth(100);
+      [sv setOrientation: NSUserInterfaceLayoutOrientationHorizontal];
+      [sv setSpacing: 10];
+      [sv setDistribution: NSStackViewDistributionEqualSpacing];
+      [sv layoutSubtreeIfNeeded];
+      PASS(frameIs(sv, 0, NSMakeRect(0, 90, 40, 20))
+        && frameIs(sv, 1, NSMakeRect(50, 85, 60, 30))
+        && frameIs(sv, 2, NSMakeRect(120, 95, 20, 10)),
+        "EqualSpacing falls back to the spacing where there is no room");
+
+      sv = stackOfWidth(200);
       [sv setOrientation: NSUserInterfaceLayoutOrientationVertical];
       [sv setSpacing: 10];
       [sv setAlignment: NSLayoutAttributeLeading];
@@ -174,7 +267,7 @@ main(int argc, const char **argv)
         && frameIs(sv, 2, NSMakeRect(0, 120, 20, 10)),
         "a vertical stack runs from the top down, aligned leading");
 
-      sv = stackWithThreeViews();
+      sv = stackOfWidth(200);
       [sv setOrientation: NSUserInterfaceLayoutOrientationVertical];
       [sv setSpacing: 10];
       [sv setAlignment: NSLayoutAttributeCenterX];
@@ -184,7 +277,7 @@ main(int argc, const char **argv)
         && frameIs(sv, 2, NSMakeRect(90, 120, 20, 10)),
         "alignment NSLayoutAttributeCenterX centres each view");
 
-      sv = stackWithThreeViews();
+      sv = stackOfWidth(200);
       [sv setOrientation: NSUserInterfaceLayoutOrientationVertical];
       [sv setSpacing: 10];
       [sv setAlignment: NSLayoutAttributeTrailing];
