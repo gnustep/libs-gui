@@ -100,7 +100,8 @@ APPKIT_EXPORT_CLASS
 
 /**
  * Sets the currently selected page for display and rendering operations.
- * currentPage: Zero-based page index to select (must be within page count bounds)
+ * The size and the pixel size of the representation follow the selected page.
+ * currentPage: Zero-based page index to select, clamped to the page count
  */
 - (void) setCurrentPage: (NSInteger)currentPage;
 

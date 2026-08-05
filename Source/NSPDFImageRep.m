@@ -76,13 +76,12 @@
       if ([_pageReps count] > 0)
         {
           _size = [[_pageReps objectAtIndex: 0] size];
-          _currentPage = 1;
         }
       else
         {
           _size = NSMakeSize(0, 0);
-          _currentPage = 0;
         }
+      _currentPage = 0;
 #else
       ASSIGN(_pageReps, [NSArray array]);
       _size = NSMakeSize(0,0);
@@ -114,7 +113,29 @@
 
 - (void) setCurrentPage: (NSInteger)currentPage
 {
+  NSUInteger count = [_pageReps count];
+  NSImageRep *page;
+
+  if (count == 0)
+    {
+      _currentPage = 0;
+      return;
+    }
+
+  if (currentPage < 0)
+    {
+      currentPage = 0;
+    }
+  else if ((NSUInteger)currentPage >= count)
+    {
+      currentPage = count - 1;
+    }
   _currentPage = currentPage;
+
+  page = [_pageReps objectAtIndex: _currentPage];
+  [self setSize: [page size]];
+  [self setPixelsWide: [page pixelsWide]];
+  [self setPixelsHigh: [page pixelsHigh]];
 }
 
 - (NSInteger) pageCount
@@ -130,8 +151,11 @@
 // Override to draw the specified page...
 - (BOOL) draw
 {
-  NSBitmapImageRep *rep = [_pageReps objectAtIndex: _currentPage - 1];
-  return [rep draw];
+  if ([_pageReps count] == 0)
+    {
+      return NO;
+    }
+  return [[_pageReps objectAtIndex: _currentPage] draw];
 }
 @end
 
