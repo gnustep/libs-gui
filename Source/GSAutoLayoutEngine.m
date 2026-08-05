@@ -237,7 +237,14 @@ typedef NSInteger GSLayoutViewAttribute;
 
       ASSIGN(_variablesByKey, [NSMapTable strongToStrongObjectsMapTable]);
 
-      ASSIGN(_constraintsByAutoLayoutConstaintHash, [NSMapTable strongToStrongObjectsMapTable]);
+      /* Layout constraints are compared by value, so the solver constraint of
+         each one is kept against the object itself. */
+      ASSIGN(_constraintsByAutoLayoutConstaintHash,
+        [NSMapTable mapTableWithKeyOptions:
+                      NSPointerFunctionsObjectPointerPersonality
+                                | NSPointerFunctionsStrongMemory
+                      valueOptions: NSPointerFunctionsObjectPersonality
+                                | NSPointerFunctionsStrongMemory]);
 
       ASSIGN(_layoutConstraintsBySolverConstraint, [NSMapTable strongToStrongObjectsMapTable]);
 
@@ -318,17 +325,19 @@ typedef NSInteger GSLayoutViewAttribute;
       END_FOR_IN(internalConstraints);
     }
 
-  [_supportingConstraintsByConstraint setObject: nil forKey: solverConstraint];
+  [_supportingConstraintsByConstraint removeObjectForKey: solverConstraint];
 
   [self updateAlignmentRectsForTrackedViews];
   [self removeConstraintAgainstViewConstraintsArray: constraint];
 
-  if ([self hasConstraintsForView: [constraint firstItem]])
+  /* The internal constraints of a view exist to support its own constraints,
+     so they go when the last of those is removed. */
+  if (![self hasConstraintsForView: [constraint firstItem]])
     {
       [self removeInternalConstraintsForView: [constraint firstItem]];
     }
   if ([constraint secondItem] != nil &&
-      [self hasConstraintsForView: [constraint secondItem]])
+      ![self hasConstraintsForView: [constraint secondItem]])
     {
       [self removeInternalConstraintsForView: [constraint secondItem]];
     }
@@ -1006,7 +1015,7 @@ typedef NSInteger GSLayoutViewAttribute;
     [self removeSolverConstraint: constraint];
   END_FOR_IN(internalViewConstraints);
 
-  [_internalConstraintsByViewIndex setObject: nil forKey: view];
+  [_internalConstraintsByViewIndex removeObjectForKey: view];
 }
 
 - (BOOL) hasConstraintsForView: (NSView *)view
@@ -1039,13 +1048,16 @@ typedef NSInteger GSLayoutViewAttribute;
     {
       NSNumber *secondItemViewIndex =
         [self indexForView: [constraint secondItem]];
-      if ([_constraintsByViewIndex objectForKey: secondItemViewIndex])
+      NSMutableArray *constraintsForSecondItem =
+        [_constraintsByViewIndex objectForKey: secondItemViewIndex];
+
+      if (!constraintsForSecondItem)
         {
-          [_constraintsByViewIndex setObject: [NSMutableArray array]
+          constraintsForSecondItem = [NSMutableArray array];
+          [_constraintsByViewIndex setObject: constraintsForSecondItem
                                       forKey: secondItemViewIndex];
         }
-      [[_constraintsByViewIndex objectForKey: secondItemViewIndex]
-          addObject: constraint];
+      [constraintsForSecondItem addObject: constraint];
     }
 }
 
@@ -1057,8 +1069,12 @@ typedef NSInteger GSLayoutViewAttribute;
       [_constraintsByViewIndex objectForKey: firstItemViewIndex];
 
   NSUInteger indexOfConstraintInFirstItem =
-      [constraintsForFirstItem indexOfObject: constraint];
-  [constraintsForFirstItem removeObjectAtIndex: indexOfConstraintInFirstItem];
+      [constraintsForFirstItem indexOfObjectIdenticalTo: constraint];
+  if (indexOfConstraintInFirstItem != NSNotFound)
+    {
+      [constraintsForFirstItem
+          removeObjectAtIndex: indexOfConstraintInFirstItem];
+    }
 
   if ([constraint secondItem] != nil)
     {
@@ -1068,9 +1084,12 @@ typedef NSInteger GSLayoutViewAttribute;
           [_constraintsByViewIndex objectForKey: secondItemViewIndexIndex];
 
       NSUInteger indexOfConstraintInSecondItem =
-          [constraintsForSecondItem indexOfObject: constraint];
-      [constraintsForSecondItem
-          removeObjectAtIndex: indexOfConstraintInSecondItem];
+          [constraintsForSecondItem indexOfObjectIdenticalTo: constraint];
+      if (indexOfConstraintInSecondItem != NSNotFound)
+        {
+          [constraintsForSecondItem
+              removeObjectAtIndex: indexOfConstraintInSecondItem];
+        }
     }
 }
 
