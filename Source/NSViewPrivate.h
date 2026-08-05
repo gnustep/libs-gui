@@ -49,6 +49,8 @@
 
 - (void) _layoutEngineDidChangeAlignmentRect;
 
+- (void) _autoLayoutContentViewResized;
+
 @end
 
 #endif // _GNUstep_H_NSViewPrivate

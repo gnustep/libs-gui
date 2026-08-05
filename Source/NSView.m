@@ -88,6 +88,10 @@
 #import "NSViewPrivate.h"
 #import "NSWindowPrivate.h"
 
+@interface NSLayoutConstraint (GSPrivate)
++ (void) _installPendingConstraintsForView: (NSView *)view;
+@end
+
 /*
  * We need a fast array that can store objects without retain/release ...
  */
@@ -401,6 +405,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       [vc _viewDidMoveToWindow];
     }
+  if ([self window] != nil)
+    {
+      [NSLayoutConstraint _installPendingConstraintsForView: self];
+    }
   if (_rFlags.has_subviews)
     {
       NSUInteger count = [_sub_views count];
@@ -679,6 +687,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   _needsUpdateConstraints = YES;
   _translatesAutoresizingMaskIntoConstraints = YES;
+
+  _huggingPriorities.horizontal = NSLayoutPriorityDefaultLow;
+  _huggingPriorities.vertical = NSLayoutPriorityDefaultLow;
+  _compressionPriorities.horizontal = NSLayoutPriorityDefaultHigh;
+  _compressionPriorities.vertical = NSLayoutPriorityDefaultHigh;
 
   return self;
 }
@@ -1277,6 +1290,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
+      [self _autoLayoutContentViewResized];
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification
@@ -1371,6 +1385,7 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
+      [self _autoLayoutContentViewResized];
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification
@@ -5476,6 +5491,26 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 - (void) _layoutEngineDidChangeAlignmentRect
 {
   [[self superview] setNeedsLayout: YES];
+}
+
+// When a window content view that drives Auto Layout is resized, refresh the
+// content view size in the engine and lay the constrained subtree out again.
+- (void) _autoLayoutContentViewResized
+{
+  NSWindow *window = [self window];
+  if (window == nil || [window contentView] != self)
+    {
+      return;
+    }
+  GSAutoLayoutEngine *engine = [window _layoutEngine];
+  if (engine == nil)
+    {
+      return;
+    }
+  if ([engine updateContentViewSize])
+    {
+      [self _layoutViewAndSubViews];
+    }
 }
 
 - (GSAutoLayoutEngine*) _getOrCreateLayoutEngine

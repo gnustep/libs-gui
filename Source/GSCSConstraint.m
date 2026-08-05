@@ -157,11 +157,12 @@ operator: (GSCSConstraintOperator) operator
         {
           [rhsExpression addVariable: lhs coefficient: -1];
         }
-      
+
+      GSCSConstraint *constraint = AUTORELEASE([[GSCSConstraint alloc]
+          initLinearInequityConstraintWithExpression: rhsExpression]);
       RELEASE(rhsExpression);
 
-      return AUTORELEASE([[GSCSConstraint alloc]
-          initLinearInequityConstraintWithExpression: rhsExpression]);
+      return constraint;
     }
 }
 
