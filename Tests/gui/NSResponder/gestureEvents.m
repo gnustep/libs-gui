@@ -27,7 +27,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSResponder gesture events")
 
   /* NSResponder implements the gesture, touch, cursor-update and pressure
@@ -88,6 +87,5 @@ main(int argc, const char **argv)
     "default pressureChangeWithEvent: forwards to nextResponder");
 
   END_SET("NSResponder gesture events")
-  DESTROY(arp);
   return 0;
 }

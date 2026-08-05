@@ -9,7 +9,7 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSLayoutGuide basic")
 
   NSLayoutGuide *g = [[NSLayoutGuide alloc] init];
   PASS(g != nil, "NSLayoutGuide -init returns an instance");
@@ -26,6 +26,6 @@ int main(int argc, const char **argv)
        "conforms to NSUserInterfaceItemIdentification");
 
   RELEASE(g);
-  DESTROY(arp);
+  END_SET("NSLayoutGuide basic")
   return 0;
 }

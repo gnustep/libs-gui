@@ -12,14 +12,12 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("query and exclusion descriptors")
+    NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes:
+      [NSDictionary dictionaryWithObject: @"Helvetica" forKey: NSFontFamilyAttribute]];
+    NSFontDescriptor *fd2 = [NSFontDescriptor fontDescriptorWithFontAttributes:
+      [NSDictionary dictionaryWithObject: @"Courier" forKey: NSFontFamilyAttribute]];
 
-  NSFontDescriptor *fd = [NSFontDescriptor fontDescriptorWithFontAttributes:
-    [NSDictionary dictionaryWithObject: @"Helvetica" forKey: NSFontFamilyAttribute]];
-  NSFontDescriptor *fd2 = [NSFontDescriptor fontDescriptorWithFontAttributes:
-    [NSDictionary dictionaryWithObject: @"Courier" forKey: NSFontFamilyAttribute]];
-
-  START_SET("set query and exclusion descriptors")
     NSMutableFontCollection *mc = [NSMutableFontCollection
       fontCollectionWithDescriptors: [NSArray arrayWithObject: fd]];
 
@@ -30,21 +28,18 @@ main(int argc, char **argv)
           [[mc exclusionDescriptors] count] == 1
           && [[mc exclusionDescriptors] containsObject: fd2]),
       "setExclusionDescriptors: stores the exclusion descriptors");
-  END_SET("set query and exclusion descriptors")
 
-  START_SET("add and remove query descriptors")
-    NSMutableFontCollection *mc = [NSMutableFontCollection
+    NSMutableFontCollection *mc2 = [NSMutableFontCollection
       fontCollectionWithDescriptors: [NSArray array]];
 
-    PASS(([mc addQueryForDescriptors: [NSArray arrayWithObject: fd]],
-          [[mc queryDescriptors] count] == 1
-          && [[mc queryDescriptors] containsObject: fd]),
+    PASS(([mc2 addQueryForDescriptors: [NSArray arrayWithObject: fd]],
+          [[mc2 queryDescriptors] count] == 1
+          && [[mc2 queryDescriptors] containsObject: fd]),
       "addQueryForDescriptors: adds to the query");
-    PASS(([mc removeQueryForDescriptors: [NSArray arrayWithObject: fd]],
-          [[mc queryDescriptors] count] == 0),
+    PASS(([mc2 removeQueryForDescriptors: [NSArray arrayWithObject: fd]],
+          [[mc2 queryDescriptors] count] == 0),
       "removeQueryForDescriptors: removes from the query");
-  END_SET("add and remove query descriptors")
+  END_SET("query and exclusion descriptors")
 
-  DESTROY(arp);
   return 0;
 }

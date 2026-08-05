@@ -289,9 +289,14 @@ static void init_font_roles(void)
 {
   GSFontEnumerator *e = [GSFontEnumerator sharedEnumerator];
 
-  font_roles[RoleSystemFont].defaultFont = [e defaultSystemFontName];
-  font_roles[RoleBoldSystemFont].defaultFont = [e defaultBoldSystemFontName];
-  font_roles[RoleUserFixedPitchFont].defaultFont = [e defaultFixedPitchFontName];
+  /* Retain the returned names: they are kept for the lifetime of the process
+     and used again later (e.g. in keyForFont).  A backend that returns an
+     autoreleased name rather than a string constant would otherwise leave
+     these as dangling pointers once the current autorelease pool drains. */
+  ASSIGN(font_roles[RoleSystemFont].defaultFont, [e defaultSystemFontName]);
+  ASSIGN(font_roles[RoleBoldSystemFont].defaultFont, [e defaultBoldSystemFontName]);
+  ASSIGN(font_roles[RoleUserFixedPitchFont].defaultFont,
+         [e defaultFixedPitchFontName]);
 }
 
 

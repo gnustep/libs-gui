@@ -17,7 +17,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSFormCell *cell;
 
   START_SET("NSFormCell title")
@@ -101,6 +100,5 @@ int main()
 
   END_SET("NSFormCell title")
 
-  DESTROY(arp);
   return 0;
 }

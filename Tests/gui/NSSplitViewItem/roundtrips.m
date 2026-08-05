@@ -12,7 +12,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSSplitViewItem roundtrips")
   NSViewController *vc;
   NSSplitViewItem *item;
 
@@ -51,6 +51,6 @@ int main()
   [item setViewController: vc];
   PASS([item viewController] == vc, "viewController round-trips");
 
-  DESTROY(arp);
+  END_SET("NSSplitViewItem roundtrips")
   return 0;
 }

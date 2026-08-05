@@ -318,6 +318,10 @@
 
 - (BOOL) setSelectionIndexes: (NSIndexSet*)idx
 {
+  if (idx == nil)
+    {
+      idx = [NSIndexSet indexSet];
+    }
   if ([_selection_indexes isEqual: idx])
     {
       return NO;

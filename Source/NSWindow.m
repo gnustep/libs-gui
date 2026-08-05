@@ -2857,6 +2857,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
   NSRect       newFrame;
   NSEnumerator *e;
   NSScreen     *scr;
+  NSScreen     *newScreen = nil;
 
   // We need to get new screen from renewed screen list because
   // [NSScreen mainScreen] returns NSScreen object of key window and that object
@@ -2866,9 +2867,20 @@ titleWithRepresentedFilename(NSString *representedFilename)
     {
       if ([scr screenNumber] == screenNumber)
         {
-          ASSIGN(_screen, scr);
+          newScreen = scr;
           break;
         }
+    }
+  // The screen the window was on may have been removed (e.g. a monitor was
+  // disconnected). Fall back to the first available screen so the window is
+  // not left anchored to a screen that no longer exists.
+  if (newScreen == nil)
+    {
+      newScreen = [[NSScreen screens] firstObject];
+    }
+  if (newScreen != nil)
+    {
+      ASSIGN(_screen, newScreen);
     }
 
   // Do not adjust frame for mini and appicon windows - it's a WM's job.

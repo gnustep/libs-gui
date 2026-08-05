@@ -231,7 +231,7 @@ static const unsigned char goodPalette8bppTIFF[] = {
  */
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep tiffPaletteOverflow")
   NSData            *data;
   NSBitmapImageRep  *rep;
 
@@ -249,6 +249,6 @@ int main()
     "a valid 8-bit palette TIFF still decodes");
   [rep release];
 
-  [arp release];
+  END_SET("NSBitmapImageRep tiffPaletteOverflow")
   return 0;
 }

@@ -518,10 +518,9 @@ typedef	struct {
 {
   NSUserDefaults	*defaults;
 
-  NSLog(@"System preference changing");
   defaults = [NSUserDefaults standardUserDefaults];
   [defaults synchronize];
-  NSLog(@"System preference changed; default theme is %@",
+  NSDebugMLLog(@"GSTheme", @"default theme is now %@",
     [defaults objectForKey: @"GSTheme"]);
 }
 
@@ -854,6 +853,7 @@ typedef	struct {
       [self _revokeOwnerships];
       RELEASE(_overrides);
       RELEASE(_owned);
+      RELEASE(_name);
       NSZoneFree ([self zone], _reserved);
     }
   [super dealloc];

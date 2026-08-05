@@ -18,7 +18,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTableHeaderCell *cell;
 
   START_SET("NSTableHeaderCell")
@@ -72,6 +71,5 @@ main(int argc, char **argv)
 
   END_SET("NSTableHeaderCell")
 
-  DESTROY(arp);
   return 0;
 }

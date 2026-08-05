@@ -91,8 +91,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("selection")
 
   NS_DURING
@@ -106,7 +104,6 @@ main(int argc, char **argv)
     NSPageController	*controller;
     Delegate		*delegate;
     NSArray		*objects;
-    BOOL		raised;
 
     /* selecting through the delegate */
     controller = AUTORELEASE([[NSPageController alloc] init]);
@@ -136,14 +133,8 @@ main(int argc, char **argv)
     [controller setArrangedObjects:
       [NSArray arrayWithObjects: @"a", @"b", nil]];
 
-    raised = NO;
-    NS_DURING
-      [controller setSelectedIndex: 1];
-    NS_HANDLER
-      raised = YES;
-    NS_ENDHANDLER
-
-    PASS(raised == NO, "selecting a page with no delegate does not raise");
+    PASS_RUNS(({ [controller setSelectedIndex: 1]; }),
+      "selecting a page with no delegate does not raise");
     PASS([controller selectedIndex] == 1, "the selected index is still set");
     PASS([controller selectedViewController] == nil,
       "there is no selected view controller without a delegate");
@@ -152,61 +143,35 @@ main(int argc, char **argv)
      * nothing and so cannot be out of range, which is why an empty controller
      * tolerates zero. */
     controller = AUTORELEASE([[NSPageController alloc] init]);
-    raised = NO;
-    NS_DURING
-      [controller setSelectedIndex: 0];
-    NS_HANDLER
-      raised = YES;
-    NS_ENDHANDLER
-    PASS(raised == NO, "selecting zero on an empty controller does not raise");
+    PASS_RUNS(({ [controller setSelectedIndex: 0]; }),
+      "selecting zero on an empty controller does not raise");
     PASS([controller selectedIndex] == 0, "the selected index stays at zero");
 
-    raised = NO;
-    NS_DURING
-      [controller setSelectedIndex: 5];
-    NS_HANDLER
-      raised = [[localException name]
-        isEqualToString: NSInternalInconsistencyException];
-    NS_ENDHANDLER
-    PASS(raised == YES, "an index an empty controller has no object for raises");
+    PASS_EXCEPTION(({ [controller setSelectedIndex: 5]; }),
+      NSInternalInconsistencyException,
+      "an index an empty controller has no object for raises");
 
     controller = AUTORELEASE([[NSPageController alloc] init]);
     [controller setArrangedObjects:
       [NSArray arrayWithObjects: @"a", @"b", @"c", nil]];
 
-    raised = NO;
-    NS_DURING
-      [controller setSelectedIndex: 3];
-    NS_HANDLER
-      raised = [[localException name]
-        isEqualToString: NSInternalInconsistencyException];
-    NS_ENDHANDLER
-    PASS(raised == YES, "an index past the last object raises");
+    PASS_EXCEPTION(({ [controller setSelectedIndex: 3]; }),
+      NSInternalInconsistencyException,
+      "an index past the last object raises");
 
-    raised = NO;
-    NS_DURING
-      [controller setSelectedIndex: -1];
-    NS_HANDLER
-      raised = [[localException name]
-        isEqualToString: NSInternalInconsistencyException];
-    NS_ENDHANDLER
-    PASS(raised == YES, "a negative index raises");
+    PASS_EXCEPTION(({ [controller setSelectedIndex: -1]; }),
+      NSInternalInconsistencyException,
+      "a negative index raises");
 
     /* navigating an empty controller */
     controller = AUTORELEASE([[NSPageController alloc] init]);
-    raised = NO;
-    NS_DURING
-      [controller navigateBack: nil];
-    NS_HANDLER
-      raised = YES;
-    NS_ENDHANDLER
-    PASS(raised == NO, "navigating back on an empty controller does not raise");
+    PASS_RUNS(({ [controller navigateBack: nil]; }),
+      "navigating back on an empty controller does not raise");
     PASS([controller selectedIndex] == 0,
       "the selected index stays at zero when navigating back");
   }
 
   END_SET("selection")
 
-  DESTROY(arp);
   return 0;
 }

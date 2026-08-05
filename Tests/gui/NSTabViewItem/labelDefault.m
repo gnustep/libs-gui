@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTabViewItem *item;
 
   START_SET("NSTabViewItem labelDefault")
@@ -27,6 +26,5 @@ int main()
 
   END_SET("NSTabViewItem labelDefault")
 
-  DESTROY(arp);
   return 0;
 }

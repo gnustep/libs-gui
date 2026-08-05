@@ -11,7 +11,7 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSPathControlItem basic")
 
   NSPathControlItem *it = [[NSPathControlItem alloc] init];
   PASS(it != nil, "NSPathControlItem -init returns an instance");
@@ -49,6 +49,6 @@ int main(int argc, const char **argv)
   RELEASE(a);
 
   RELEASE(it);
-  DESTROY(arp);
+  END_SET("NSPathControlItem basic")
   return 0;
 }

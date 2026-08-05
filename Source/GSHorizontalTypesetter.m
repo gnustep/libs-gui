@@ -96,7 +96,7 @@ cache fairly aggressively without having to worry about memory consumption.
   return shared;
 }
 
-#define CACHE_INITIAL 192
+#define CACHE_INITIAL 512
 #define CACHE_STEP 192
 
 
@@ -224,7 +224,18 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
 
   if (cacheSize < newLength)
     {
-      cacheSize = newLength;
+      /* Grow the allocation geometrically but gently (half again, rather than
+         to exactly the requested length or by doubling) so that laying out a
+         long run reallocates only a handful of times, starting from a
+         reasonably large initial block. */
+      if (cacheSize < CACHE_INITIAL)
+        {
+          cacheSize = CACHE_INITIAL;
+        }
+      while (cacheSize < newLength)
+        {
+          cacheSize += cacheSize / 2;
+        }
       glyphCache = realloc(glyphCache, sizeof(GlyphCacheEntry) * cacheSize);
     }
 

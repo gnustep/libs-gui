@@ -7,7 +7,7 @@
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep testcopy")
   NSBitmapImageRep *origBitmap, *copy1Bitmap, *copy2Bitmap;
 
   origBitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes: NULL
@@ -35,6 +35,6 @@ int main()
   DESTROY(copy1Bitmap);
   DESTROY(copy2Bitmap);
   DESTROY(origBitmap);
-  [arp release];
+  END_SET("NSBitmapImageRep testcopy")
   return 0;
 }

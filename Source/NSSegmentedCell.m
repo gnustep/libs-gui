@@ -576,10 +576,16 @@
                                    roundedRight: roundedRight];
    if (label)
      {
-       NSSize textSize = [label sizeWithAttributes: [self _nonAutoreleasedTypingAttributes]];
-       NSRect textFrame = frame;
-       CGFloat x_offset = (frame.size.width - textSize.width) / 2;
+       NSDictionary	*attrs;
+       NSSize		textSize;
+       NSRect		textFrame;
+       CGFloat		x_offset;
 
+       attrs = [self _nonAutoreleasedTypingAttributes];
+       textSize = [label sizeWithAttributes: attrs];
+       RELEASE(attrs);
+       textFrame = frame;
+       x_offset = (frame.size.width - textSize.width) / 2;
        textFrame.origin.x += x_offset;
        textFrame.size.width -= x_offset;
        [self _drawText: label inFrame: textFrame];
@@ -673,6 +679,7 @@
     }
 
   size.height += 2.0 * vPadding;
+  RELEASE(attributes);
   return size;
 }
 
@@ -786,7 +793,10 @@
       NSRect frame = [segment frame];
       if(NSPointInRect(lastPoint,frame))
 	{
-	  [self setSelectedSegment: i];
+	  if (_segmentCellFlags._tracking_mode == NSSegmentSwitchTrackingSelectAny)
+	    [self setSelected: ![self isSelectedForSegment: i] forSegment: i];
+	  else
+	    [self setSelectedSegment: i];
 	  break;
 	}
     }

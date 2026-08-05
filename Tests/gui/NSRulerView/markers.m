@@ -24,7 +24,7 @@ markerAt(NSRulerView *r, CGFloat loc)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSRulerView markers")
 
   NSRulerView *r = AUTORELEASE([[NSRulerView alloc]
     initWithScrollView: nil orientation: NSHorizontalRuler]);
@@ -58,6 +58,6 @@ main(int argc, const char **argv)
   PASS([r markers] == nil || [[r markers] count] == 0,
     "setting nil markers clears the list");
 
-  DESTROY(arp);
+  END_SET("NSRulerView markers")
   return 0;
 }

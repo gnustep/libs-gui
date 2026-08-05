@@ -289,6 +289,7 @@ static NSString *_placeholderItem = nil;
 - (void) dealloc
 {
   DESTROY (_content);
+  DESTROY (_collectionViewLayout);
 
   // FIXME: Not clear if we should destroy the top-level item "itemPrototype" loaded in the nib file.
   DESTROY (itemPrototype);

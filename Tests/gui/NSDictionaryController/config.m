@@ -14,7 +14,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSDictionaryController config")
   NSDictionaryController *dc;
   NSDictionaryControllerKeyValuePair *kvp;
 
@@ -46,6 +46,6 @@ int main()
   [dc setExcludedKeys: [NSArray arrayWithObject: @"x"]];
   PASS([[dc excludedKeys] count] == 1, "excludedKeys round-trips");
 
-  DESTROY(arp);
+  END_SET("NSDictionaryController config")
   return 0;
 }

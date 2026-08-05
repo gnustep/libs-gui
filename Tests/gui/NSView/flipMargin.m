@@ -31,7 +31,6 @@ resized(Class superClass, NSUInteger mask)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSView autoresize flip invariance")
 
   NS_DURING
@@ -58,6 +57,5 @@ main(int argc, const char **argv)
     "maxYMargin autoresize is unchanged by a flipped superview");
 
   END_SET("NSView autoresize flip invariance")
-  DESTROY(arp);
   return 0;
 }

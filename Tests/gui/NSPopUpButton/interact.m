@@ -15,7 +15,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSPopUpButton *b;
 
   START_SET("NSPopUpButton interaction")
@@ -59,6 +58,5 @@ main(int argc, const char **argv)
 
   END_SET("NSPopUpButton interaction")
 
-  DESTROY(arp);
   return 0;
 }

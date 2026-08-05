@@ -15,7 +15,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSwitch *sw;
 
   START_SET("NSSwitch switch")
@@ -60,6 +59,5 @@ main(int argc, char **argv)
 
   END_SET("NSSwitch switch")
 
-  DESTROY(arp);
   return 0;
 }

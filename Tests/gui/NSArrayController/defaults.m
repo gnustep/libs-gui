@@ -12,7 +12,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSArrayController defaults")
   NSArrayController *ac;
 
   ac = AUTORELEASE([[NSArrayController alloc] init]);
@@ -29,6 +29,6 @@ int main()
   PASS([[ac selectedObjects] count] == 0,
        "an empty controller has an empty selected-objects array");
 
-  DESTROY(arp);
+  END_SET("NSArrayController defaults")
   return 0;
 }

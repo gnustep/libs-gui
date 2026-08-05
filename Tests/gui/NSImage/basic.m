@@ -6,7 +6,6 @@
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
   id testObject;
   id testObject1;
   id testObject2;
@@ -43,7 +42,6 @@ int main()
 
   END_SET("NSImage GNUstep basic")
 
-  [arp release];
   return 0;
 }
 

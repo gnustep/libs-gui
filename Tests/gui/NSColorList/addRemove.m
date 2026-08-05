@@ -19,8 +19,6 @@ rgb(CGFloat r, CGFloat g, CGFloat b)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSColorList editing")
 
   NSColor *red = rgb(1, 0, 0);
@@ -102,6 +100,5 @@ main(int argc, char **argv)
 
   END_SET("NSColorList editing")
 
-  DESTROY(arp);
   return 0;
 }

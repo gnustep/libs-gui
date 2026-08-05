@@ -13,7 +13,6 @@ static BOOL eq(double a, double b) { return fabs(a - b) < 1e-9; }
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSLevelIndicatorCell *cell;
 
   START_SET("NSLevelIndicatorCell tickMarkValue")
@@ -43,6 +42,5 @@ int main()
 
   END_SET("NSLevelIndicatorCell tickMarkValue")
 
-  DESTROY(arp);
   return 0;
 }

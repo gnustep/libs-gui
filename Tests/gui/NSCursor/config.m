@@ -12,7 +12,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSCursor config")
   NSCursor *c;
 
   c = AUTORELEASE([[NSCursor alloc] initWithImage: nil
@@ -30,6 +30,6 @@ int main()
   [c setOnMouseExited: YES];
   PASS([c isSetOnMouseExited] == YES, "setOnMouseExited: round-trips");
 
-  DESTROY(arp);
+  END_SET("NSCursor config")
   return 0;
 }

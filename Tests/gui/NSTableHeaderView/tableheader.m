@@ -20,7 +20,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTableView *tv;
 
   START_SET("NSTableHeaderView tableheader")
@@ -79,6 +78,5 @@ main(int argc, char **argv)
 
   END_SET("NSTableHeaderView tableheader")
 
-  DESTROY(arp);
   return 0;
 }

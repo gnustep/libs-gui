@@ -5,7 +5,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSResponder first responder validation")
 
   NSResponder *r = AUTORELEASE([NSResponder new]);
@@ -20,6 +19,5 @@ main(int argc, const char **argv)
     "supplementalTargetForAction:sender: returns nil by default");
 
   END_SET("NSResponder first responder validation")
-  DESTROY(arp);
   return 0;
 }

@@ -48,8 +48,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("a new object")
     NSArray		*alternatives;
     NSTextAlternatives	*alt;
@@ -106,6 +104,5 @@ main(int argc, char **argv)
       "the user info carries the selected alternative string");
   END_SET("noteSelectedAlternativeString:")
 
-  DESTROY(arp);
   return 0;
 }

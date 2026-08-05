@@ -16,7 +16,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("standard role fonts")
 
   NS_DURING
@@ -59,6 +58,5 @@ main(int argc, char **argv)
   NS_ENDHANDLER
 
   END_SET("standard role fonts")
-  DESTROY(arp);
   return 0;
 }

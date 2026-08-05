@@ -71,6 +71,10 @@ APPKIT_EXPORT_CLASS
 - (NSInteger) selectedSegment;
 - (void) selectSegmentWithTag: (NSInteger)tag;
 
+// Specifying tracking mode...
+- (void) setTrackingMode: (NSSegmentSwitchTracking)mode;
+- (NSSegmentSwitchTracking) trackingMode;
+
 // Working with individual segments...
 - (void) setWidth: (CGFloat)width forSegment: (NSInteger)segment;
 - (CGFloat) widthForSegment: (NSInteger)segment;

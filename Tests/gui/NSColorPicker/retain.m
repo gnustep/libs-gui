@@ -23,7 +23,7 @@ static BOOL panelDeallocated;
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSColorPicker retain")
   NSColorPicker *picker;
   id panel;
 
@@ -37,6 +37,6 @@ int main()
 
   RELEASE(picker);
 
-  DESTROY(arp);
+  END_SET("NSColorPicker retain")
   return 0;
 }

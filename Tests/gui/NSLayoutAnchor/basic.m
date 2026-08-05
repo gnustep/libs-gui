@@ -9,7 +9,7 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSLayoutAnchor basic")
 
   PASS([NSLayoutDimension isSubclassOfClass: [NSLayoutAnchor class]],
        "NSLayoutDimension is a subclass of NSLayoutAnchor");
@@ -23,6 +23,6 @@ int main(int argc, const char **argv)
   PASS([NSLayoutAnchor conformsToProtocol: @protocol(NSCoding)],
        "NSLayoutAnchor conforms to NSCoding");
 
-  DESTROY(arp);
+  END_SET("NSLayoutAnchor basic")
   return 0;
 }

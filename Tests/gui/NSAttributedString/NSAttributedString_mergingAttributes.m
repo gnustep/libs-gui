@@ -7,8 +7,6 @@
 
 int main(int argc, char **argv)
 {  
-  CREATE_AUTORELEASE_POOL(arp);
-  
   START_SET("NSAttributedString attribute merging");
   
   NSMutableParagraphStyle *style1 = AUTORELEASE([[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
@@ -69,7 +67,6 @@ int main(int argc, char **argv)
   
   END_SET("NSAttributedString attribute merging");
   
-  DESTROY(arp);
   
   return 0;
 }

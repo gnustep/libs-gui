@@ -15,7 +15,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSImageView *iv;
 
   START_SET("NSImageView animates")
@@ -55,6 +54,5 @@ main(int argc, char **argv)
 
   END_SET("NSImageView animates")
 
-  DESTROY(arp);
   return 0;
 }

@@ -29,11 +29,15 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSKeyedArchiver.h>
 
+#import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSCollectionView.h"
 #import "AppKit/NSCollectionViewItem.h"
+#import "AppKit/NSDraggingItem.h"
+#import "AppKit/NSImage.h"
 #import "AppKit/NSImageView.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTextField.h"
+#import "AppKit/NSView.h"
 #import "AppKit/NSDragging.h"
 
 @implementation NSCollectionViewItem
@@ -45,6 +49,16 @@
 - (BOOL) isSelected
 {
   return _isSelected;
+}
+
+- (NSCollectionViewItemHighlightState) highlightState
+{
+  return _highlightState;
+}
+
+- (void) setHighlightState: (NSCollectionViewItemHighlightState)state
+{
+  _highlightState = state;
 }
 
 - (void) dealloc
@@ -61,8 +75,36 @@
 
 - (NSArray *) draggingImageComponents
 {
-  // FIXME: We don't have NSDraggingImageComponent
-  return [NSArray array];
+  NSView *view = [self view];
+  NSDraggingImageComponent *component;
+  NSRect bounds;
+  NSImage *image = nil;
+
+  if (view == nil)
+    {
+      return [NSArray array];
+    }
+
+  bounds = [view bounds];
+  component = [NSDraggingImageComponent
+    draggingImageComponentWithKey: NSDraggingImageComponentIconKey];
+  [component setFrame: NSMakeRect(0.0, 0.0, NSWidth(bounds), NSHeight(bounds))];
+
+  if (NSWidth(bounds) > 0.0 && NSHeight(bounds) > 0.0)
+    {
+      NSBitmapImageRep *rep =
+        [view bitmapImageRepForCachingDisplayInRect: bounds];
+
+      if (rep != nil)
+        {
+          [view cacheDisplayInRect: bounds toBitmapImageRep: rep];
+          image = AUTORELEASE([[NSImage alloc] initWithSize: bounds.size]);
+          [image addRepresentation: rep];
+        }
+    }
+  [component setContents: image];
+
+  return [NSArray arrayWithObject: component];
 }
 
 - (void) setSelected: (BOOL)flag

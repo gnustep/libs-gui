@@ -3,7 +3,10 @@
    Private interface used to create NSLayoutAnchor instances bound to a
    particular item and layout attribute.
 
-   Copyright (C) 2020 Free Software Foundation, Inc.
+   Copyright (C) 2026 Free Software Foundation, Inc.
+
+   Author: Todd White <todd.white@thalion.global>
+   Date: July 2026
 
    This file is part of the GNUstep Library.
 

@@ -3,8 +3,7 @@
    flags, hyphenation factor, non-contiguous layout flag and first text view of
    a new layout manager; the flag and delegate round-trips; adding a text
    container; and the link established by adding the layout manager to a text
-   storage.  Every assertion here matches AppKit (verified on a macOS runner)
-   and passes on unmodified GNUstep. */
+   storage.  Every assertion here matches AppKit (verified on a macOS runner). */
 #include "Testing.h"
 
 #include <Foundation/NSAutoreleasePool.h>
@@ -19,7 +18,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSLayoutManager config")
   NSLayoutManager *lm;
   NSTextContainer *tc;
   NSTextStorage *ts;
@@ -48,6 +47,14 @@ int main()
   PASS([lm showsControlCharacters] == YES,
        "showsControlCharacters round-trips");
 
+  [lm setHyphenationFactor: 0.75];
+  PASS([lm hyphenationFactor] == 0.75f, "hyphenationFactor round-trips");
+  [lm setAllowsNonContiguousLayout: YES];
+  PASS([lm allowsNonContiguousLayout] == YES,
+       "allowsNonContiguousLayout round-trips");
+  PASS([lm hasNonContiguousLayout] == NO,
+       "hasNonContiguousLayout stays NO with no non-contiguous layout done");
+
   delegate = AUTORELEASE([[NSObject alloc] init]);
   [lm setDelegate: delegate];
   PASS([lm delegate] == delegate, "delegate round-trips");
@@ -64,6 +71,6 @@ int main()
   PASS([lm textStorage] == ts,
        "adding the layout manager to a text storage links it");
 
-  DESTROY(arp);
+  END_SET("NSLayoutManager config")
   return 0;
 }

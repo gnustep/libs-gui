@@ -30,8 +30,6 @@ checkRect(NSView *view, NSRect in, NSRect want)
 
 int main(int argc, char **argv)
 {
-	CREATE_AUTORELEASE_POOL(arp);
-
 	NSView *view;
 
 	START_SET("NSView GNUstep centerScanRectSize")
@@ -63,6 +61,5 @@ int main(int argc, char **argv)
 
 	END_SET("NSView GNUstep centerScanRectSize")
 
-	DESTROY(arp);
 	return 0;
 }

@@ -3429,6 +3429,26 @@ static	NSRecursiveLock		*namedColorLock = nil;
   return NSPatternColorSpace;
 }
 
+- (NSColor*) colorUsingColorSpaceName: (NSString *)colorSpace
+			       device: (NSDictionary *)deviceDescription
+{
+  if (colorSpace == nil)
+    {
+      if (deviceDescription != nil)
+	colorSpace = [deviceDescription objectForKey: NSDeviceColorSpaceName];
+      if (colorSpace == nil)
+        colorSpace = NSDeviceRGBColorSpace;
+    }
+  if ([colorSpace isEqualToString: NSPatternColorSpace])
+    {
+      return self;
+    }
+  /* An image is not a set of components, so there is nothing to convert to
+   * any other space.  Answer nil, which is what a caller tests for, rather
+   * than raising the way the inherited method would. */
+  return nil;
+}
+
 - (NSImage*) patternImage
 {
   return _pattern;

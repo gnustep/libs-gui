@@ -34,14 +34,16 @@ layoutScrollView(NSSize frame, NSSize document, BOOL wantHoriz, BOOL wantVert,
   [sv setFrame: NSMakeRect(0, 0, frame.width, frame.height)];
   [sv tile];
 
-  *hasVert = [sv hasVerticalScroller];
-  *hasHoriz = [sv hasHorizontalScroller];
+  /* -hasVerticalScroller/-hasHorizontalScroller report the configured setting,
+     not the current autohidden visibility, so check whether each scroller is
+     actually shown by whether it is in the view hierarchy. */
+  *hasVert = ([[sv verticalScroller] superview] != nil);
+  *hasHoriz = ([[sv horizontalScroller] superview] != nil);
 }
 
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSScrollView autohidesScrollers")
 
   NS_DURING
@@ -67,6 +69,25 @@ main(int argc, const char **argv)
       layoutScrollView(frame, NSMakeSize(400, 300), YES, YES, &hasVert, &hasHoriz);
       PASS(hasVert == NO && hasHoriz == NO,
         "no scrollers are shown when the document fits");
+
+      /* The getter reports the configured setting, not the autohidden
+         visibility, as on macOS. */
+      {
+        NSScrollView *sv = AUTORELEASE([[NSScrollView alloc]
+          initWithFrame: NSMakeRect(0, 0, frame.width, frame.height)]);
+        NSView *doc = AUTORELEASE([[NSView alloc]
+          initWithFrame: NSMakeRect(0, 0, 400, 300)]);
+        [sv setBorderType: NSNoBorder];
+        [sv setDocumentView: doc];
+        [sv setHasVerticalScroller: YES];
+        [sv setAutohidesScrollers: YES];
+        [sv reflectScrolledClipView: [sv contentView]];
+        [sv tile];
+        PASS([sv hasVerticalScroller] == YES,
+          "hasVerticalScroller reports the configured value when autohidden");
+        PASS([[sv verticalScroller] superview] == nil,
+          "the configured scroller is hidden for a document that fits");
+      }
 
       /* A document taller than the frame needs a vertical scroller; that
          scroller then narrows the clip view enough that the horizontal scroller
@@ -103,6 +124,5 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSScrollView autohidesScrollers")
-  DESTROY(arp);
   return 0;
 }

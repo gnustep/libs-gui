@@ -148,7 +148,6 @@
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
   NSOutlineView *outlineView;
   TestDataSource *dataSource;
   TestDelegate *delegate;
@@ -287,6 +286,5 @@ int main()
 
   END_SET("NSOutlineView variable row heights")
 
-  [arp release];
   return 0;
 }

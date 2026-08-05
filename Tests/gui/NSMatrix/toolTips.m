@@ -12,7 +12,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSMatrix *m;
   NSCell *c0, *c1;
 
@@ -56,6 +55,5 @@ int main()
 
   END_SET("NSMatrix toolTips")
 
-  DESTROY(arp);
   return 0;
 }

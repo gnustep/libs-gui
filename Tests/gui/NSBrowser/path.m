@@ -46,7 +46,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSBrowser *browser;
   BrowserContent *content;
 
@@ -91,6 +90,5 @@ main(int argc, char **argv)
 
   END_SET("NSBrowser path")
 
-  DESTROY(arp);
   return 0;
 }

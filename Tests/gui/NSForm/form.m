@@ -16,7 +16,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSForm *f;
 
   START_SET("NSForm form")
@@ -68,6 +67,5 @@ main(int argc, char **argv)
 
   END_SET("NSForm form")
 
-  DESTROY(arp);
   return 0;
 }

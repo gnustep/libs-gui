@@ -11,8 +11,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSButtonCell push-in offset")
 
   NS_DURING
@@ -49,6 +47,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSButtonCell push-in offset")
 
-  DESTROY(arp);
   return 0;
 }

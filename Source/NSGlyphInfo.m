@@ -46,6 +46,14 @@
   _characterIdentifier = _glyphID;
 }
 
+- (void) dealloc
+{
+  RELEASE(_font);
+  RELEASE(_baseString);
+  RELEASE(_glyphName);
+  DEALLOC
+}
+
 // GNUstep specific method...
 - (instancetype) initWithCGGlyph: (CGGlyph)g
                          forFont: (NSFont *)f

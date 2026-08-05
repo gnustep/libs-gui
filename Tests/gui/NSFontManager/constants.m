@@ -9,8 +9,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("trait mask values")
     PASS(NSItalicFontMask == 1, "NSItalicFontMask is 1");
     PASS(NSBoldFontMask == 2, "NSBoldFontMask is 2");
@@ -37,6 +35,5 @@ main(int argc, char **argv)
     PASS(NSAddTraitFontAction == 2, "NSAddTraitFontAction is 2");
   END_SET("font action values")
 
-  DESTROY(arp);
   return 0;
 }

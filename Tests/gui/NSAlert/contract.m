@@ -18,7 +18,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSAlert *a;
 
   START_SET("NSAlert contract")
@@ -81,6 +80,5 @@ main(int argc, const char **argv)
 
   END_SET("NSAlert contract")
 
-  DESTROY(arp);
   return 0;
 }

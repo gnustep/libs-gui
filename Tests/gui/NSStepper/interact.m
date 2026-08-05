@@ -27,7 +27,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   StepTarget *t;
   NSStepper *st;
   NSWindow *w;
@@ -79,6 +78,5 @@ main(int argc, const char **argv)
 
   END_SET("NSStepper interaction")
 
-  DESTROY(arp);
   return 0;
 }

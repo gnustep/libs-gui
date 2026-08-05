@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTableView *tv;
 
   START_SET("NSTableView columnSelectionDefault")
@@ -40,6 +39,5 @@ int main()
 
   END_SET("NSTableView columnSelectionDefault")
 
-  DESTROY(arp);
   return 0;
 }

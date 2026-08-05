@@ -408,24 +408,27 @@ static GSValidationCenter *vc = nil;
 {
   GSValidationObject *vobj;
   NSMutableArray *observersWindow;
-  NSArray *windows;
+  NSArray *vobjs;
   NSEnumerator *e;
-  NSWindow *w;
 
+  /* Walk the validation objects themselves. A window reaches this while it is
+     deallocating, and a validation object keeps no reference to the window it
+     observes, so reading one back out here would touch an object that is
+     already going away. */
   if (window == nil)
     {
-      windows = [_vobjs valueForKey: @"_window"];
+      vobjs = [NSArray arrayWithArray: _vobjs];
     }
   else
     {
-      windows = [NSArray arrayWithObject: window];
+      vobj = [self validationObjectForWindow: window];
+      vobjs = (vobj != nil) ? [NSArray arrayWithObject: vobj] : [NSArray array];
     }
 
-  e = [windows objectEnumerator];
+  e = [vobjs objectEnumerator];
 
-  while ((w = [e nextObject]) != nil)
+  while ((vobj = [e nextObject]) != nil)
     {
-      vobj = [self validationObjectForWindow: w];
       observersWindow = [vobj observers];
 
       if (observersWindow != nil && [observersWindow containsObject: observer])
@@ -490,6 +493,11 @@ static GSValidationCenter *vc = nil;
 }
 
 // Instance methods
+
+- (id) init
+{
+  return [self initWithIdentifier: @""];
+}
 
 - (id) initWithIdentifier: (NSString *)identifier
 {
@@ -1233,6 +1241,12 @@ static GSValidationCenter *vc = nil;
 {
   NSArray *linked;
   id toolbar;
+
+  /* A toolbar without an identifier shares its configuration with nothing. */
+  if ([[self identifier] length] == 0)
+    {
+      return nil;
+    }
 
   linked = [[self class] _toolbarsWithIdentifier: [self identifier]];
 

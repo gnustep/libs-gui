@@ -1,7 +1,7 @@
-/* Coverage for NSCollectionViewItem: the selection flag, the text field and
-   image view outlets, the represented object and the collection view of an item
-   that is not in a collection.  Every assertion here matches AppKit (verified on
-   a macOS runner) and passes on unmodified GNUstep. */
+/* Coverage for NSCollectionViewItem: the selection flag, the highlight state,
+   the text field and image view outlets, the represented object and the
+   collection view of an item that is not in a collection.  Every assertion here
+   matches AppKit (verified on a macOS runner). */
 #include "Testing.h"
 
 #include <Foundation/NSAutoreleasePool.h>
@@ -16,7 +16,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSCollectionViewItem *item;
   NSTextField *tf;
   NSImageView *iv;
@@ -33,6 +32,8 @@ int main()
   item = AUTORELEASE([[NSCollectionViewItem alloc] init]);
 
   PASS([item isSelected] == NO, "default isSelected is NO");
+  PASS([item highlightState] == NSCollectionViewItemHighlightNone,
+       "default highlightState is None");
   PASS([item textField] == nil, "default textField is nil");
   PASS([item imageView] == nil, "default imageView is nil");
   PASS([item representedObject] == nil, "default representedObject is nil");
@@ -43,6 +44,20 @@ int main()
   PASS([item isSelected] == YES, "setSelected: YES round-trips");
   [item setSelected: NO];
   PASS([item isSelected] == NO, "setSelected: NO round-trips");
+
+  [item setHighlightState: NSCollectionViewItemHighlightForSelection];
+  PASS([item highlightState] == NSCollectionViewItemHighlightForSelection,
+       "setHighlightState: round-trips");
+  PASS([item isSelected] == NO,
+       "setting the highlight state does not change the selection");
+  [item setHighlightState: NSCollectionViewItemHighlightAsDropTarget];
+  PASS([item highlightState] == NSCollectionViewItemHighlightAsDropTarget,
+       "the drop-target highlight state round-trips");
+  [item setSelected: YES];
+  PASS([item highlightState] == NSCollectionViewItemHighlightAsDropTarget,
+       "selecting the item does not change the highlight state");
+  [item setSelected: NO];
+  [item setHighlightState: NSCollectionViewItemHighlightNone];
 
   tf = AUTORELEASE([[NSTextField alloc]
     initWithFrame: NSMakeRect(0, 0, 100, 20)]);
@@ -60,6 +75,5 @@ int main()
 
   END_SET("NSCollectionViewItem config")
 
-  DESTROY(arp);
   return 0;
 }

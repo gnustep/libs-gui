@@ -8,8 +8,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("the accessibility appearance names")
     PASS([NSAppearanceNameAccessibilityHighContrastAqua
       isEqualToString: @"NSAppearanceNameAccessibilityAqua"],
@@ -33,6 +31,5 @@ main(int argc, char **argv)
       "the vibrant light name is unchanged");
   END_SET("the other appearance names are unchanged")
 
-  DESTROY(arp);
   return 0;
 }

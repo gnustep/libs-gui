@@ -83,7 +83,6 @@ FBCheckMatrix(NSView *view, CGFloat *ts)
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSView frame and bounds")
 
   NS_DURING
@@ -347,6 +346,5 @@ int main(int argc, const char **argv)
   NS_ENDHANDLER
   END_SET("NSView frame and bounds (windowed)")
 
-  DESTROY(arp);
   return 0;
 }

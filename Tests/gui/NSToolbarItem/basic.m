@@ -15,7 +15,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSToolbarItem *item;
 
   START_SET("NSToolbarItem basic")
@@ -70,6 +69,5 @@ int main()
 
   END_SET("NSToolbarItem basic")
 
-  DESTROY(arp);
   return 0;
 }

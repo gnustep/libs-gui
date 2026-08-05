@@ -13,7 +13,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSArrayController content")
   NSArrayController *ac;
   NSSortDescriptor *sd;
   NSArray *arranged;
@@ -41,6 +41,6 @@ int main()
   PASS([[[ac selectedObjects] objectAtIndex: 0] isEqual: @"bravo"],
        "the selected object is the one at the selection index");
 
-  DESTROY(arp);
+  END_SET("NSArrayController content")
   return 0;
 }

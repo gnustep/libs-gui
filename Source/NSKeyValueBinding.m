@@ -64,7 +64,18 @@
       tmp = [GSKeyValueBinding exposedBindingsForClass: class];
       if (tmp != nil)
         {
-          [exposedBindings addObjectsFromArray: tmp];
+          NSUInteger i;
+
+          /* A class may expose a binding its superclass also exposes.  */
+          for (i = 0; i < [tmp count]; i++)
+            {
+              id name = [tmp objectAtIndex: i];
+
+              if ([exposedBindings containsObject: name] == NO)
+                {
+                  [exposedBindings addObject: name];
+                }
+            }
         }
   
       class = [class superclass];

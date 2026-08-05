@@ -9,7 +9,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSTreeController defaults")
   NSTreeController *tc;
 
   tc = AUTORELEASE([[NSTreeController alloc] init]);
@@ -21,6 +21,9 @@ int main()
   PASS([tc selectsInsertedObjects] == YES,
        "default selectsInsertedObjects is YES");
 
-  DESTROY(arp);
+  // Break retain loop to allow this objecty to be deallocated
+  [tc setContent: nil];
+
+  END_SET("NSTreeController defaults")
   return 0;
 }

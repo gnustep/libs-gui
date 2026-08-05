@@ -10,8 +10,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("mutable strings are copied")
     NSMutableString	*primary;
     NSMutableArray	*alternatives;
@@ -69,6 +67,5 @@ main(int argc, char **argv)
       "copying an immutable array keeps the array passed in");
   END_SET("immutable strings are kept")
 
-  DESTROY(arp);
   return 0;
 }

@@ -51,8 +51,6 @@ secondParagraphY(CGFloat spacing)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("GSHorizontalTypesetter paragraphSpacing")
 
   NS_DURING
@@ -88,6 +86,5 @@ main(int argc, char **argv)
 
   END_SET("GSHorizontalTypesetter paragraphSpacing")
 
-  DESTROY(arp);
   return 0;
 }

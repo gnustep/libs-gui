@@ -10,7 +10,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePickerCell *cell;
 
   START_SET("NSDatePickerCell defaultColors")
@@ -30,6 +29,5 @@ int main()
 
   END_SET("NSDatePickerCell defaultColors")
 
-  DESTROY(arp);
   return 0;
 }

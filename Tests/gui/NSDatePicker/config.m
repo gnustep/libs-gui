@@ -20,7 +20,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePicker *dp;
 
   START_SET("NSDatePicker config")
@@ -94,6 +93,5 @@ main(int argc, char **argv)
 
   END_SET("NSDatePicker config")
 
-  DESTROY(arp);
   return 0;
 }

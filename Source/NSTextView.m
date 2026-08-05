@@ -515,6 +515,69 @@ decoded.
 
 
 /*
+The characters that are laid out inside the visible rect.  -resetCursorRects
+builds the custom cursor rects for this range alone, so anything deciding
+whether those rects have to be rebuilt must ask about the same range.  This
+uses the layout that already exists rather than forcing more.
+*/
+- (NSRange) _visibleCharacterRange
+{
+  NSPoint containerOrigin;
+  NSRect visibleRect;
+  NSRange visibleGlyphs;
+
+  if (_layoutManager == nil || _textContainer == nil)
+    {
+      return NSMakeRange(0, 0);
+    }
+
+  containerOrigin = [self textContainerOrigin];
+  visibleRect = [self visibleRect];
+  visibleRect.origin.x -= containerOrigin.x;
+  visibleRect.origin.y -= containerOrigin.y;
+
+  visibleGlyphs = [_layoutManager
+    glyphRangeForBoundingRectWithoutAdditionalLayout: visibleRect
+				     inTextContainer: _textContainer];
+  return [_layoutManager characterRangeForGlyphRange: visibleGlyphs
+					actualGlyphRange: NULL];
+}
+
+/*
+Returns YES if the visible text contains any attribute that -resetCursorRects
+turns into a custom (non-I-beam) cursor rect.  Currently that is only
+NSLinkAttributeName (the pointing-hand cursor over links); NSCursorAttributeName
+is still a FIXME in -resetCursorRects and so is intentionally not checked here.
+*/
+- (BOOL) _hasCustomCursorRegions
+{
+  NSTextStorage *storage = [self textStorage];
+  NSRange visible = [self _visibleCharacterRange];
+  NSUInteger i;
+
+  visible = NSIntersectionRange(visible,
+    NSMakeRange(0, [storage length]));
+
+  i = visible.location;
+  while (i < NSMaxRange(visible))
+    {
+      NSRange effectiveRange;
+      id linkValue = [storage attribute: NSLinkAttributeName
+				 atIndex: i
+			   longestEffectiveRange: &effectiveRange
+				 inRange: visible];
+
+      if (linkValue != nil)
+	{
+	  return YES;
+	}
+      i = NSMaxRange(effectiveRange);
+    }
+
+  return NO;
+}
+
+/*
 Called when our state needs updating due to external changes. Currently,
 this happens when layout has been invalidated, and when we are resized.
 */
@@ -526,8 +589,15 @@ this happens when layout has been invalidated, and when we are resized.
   [self updateInsertionPointStateAndRestartTimer:
     [self shouldDrawInsertionPoint]];
   [self _updateInputMethodState];
-  /* In case any sections of text with custom cursors were moved */
-  [[self window] invalidateCursorRectsForView: self];
+  /* In case any sections of text with custom cursors were moved.  Only
+     invalidate when the text actually has custom cursor regions (links);
+     for plain text the sole cursor rect is the static I-beam over the whole
+     visible rect, and rebuilding it on every layout change makes the mouse
+     cursor flicker while typing (bug #353). */
+  if ([self _hasCustomCursorRegions])
+    {
+      [[self window] invalidateCursorRectsForView: self];
+    }
 }
 
 - (void) _layoutManagerDidInvalidateLayout
@@ -4108,17 +4178,8 @@ Figure out how the additional layout stuff is supposed to work.
       if (_layoutManager != nil && _textContainer != nil)
 	{
 	  NSInteger i;
-	  NSRange visibleGlyphs, visibleCharacters;
 	  const NSPoint containerOrigin = [self textContainerOrigin];
-
-	  NSRect visibleRectInContainerCoordinates = visibleRect;
-	  visibleRectInContainerCoordinates.origin.x -= containerOrigin.x;
-	  visibleRectInContainerCoordinates.origin.y -= containerOrigin.y;
-
-	  visibleGlyphs = [_layoutManager glyphRangeForBoundingRectWithoutAdditionalLayout: visibleRectInContainerCoordinates
-									   inTextContainer: _textContainer];
-	  visibleCharacters = [_layoutManager characterRangeForGlyphRange: visibleGlyphs
-							 actualGlyphRange: NULL];
+	  const NSRange visibleCharacters = [self _visibleCharacterRange];
 	  
 	  for (i = visibleCharacters.location; i < NSMaxRange(visibleCharacters); )
 	    {

@@ -36,7 +36,9 @@ extern "C" {
 #endif
 
 @class NSSplitView, NSSplitViewItem, NSArray, NSMutableArray;
-  
+
+APPKIT_EXPORT const CGFloat NSSplitViewControllerAutomaticDimension;
+
 APPKIT_EXPORT_CLASS
 @interface NSSplitViewController : NSViewController
 {

@@ -9,11 +9,11 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSDictionaryController headeronly")
 
   PASS([NSDictionaryController class] != Nil,
        "the NSDictionaryController class is available");
 
-  DESTROY(arp);
+  END_SET("NSDictionaryController headeronly")
   return 0;
 }

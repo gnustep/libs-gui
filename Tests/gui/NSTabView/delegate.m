@@ -51,7 +51,6 @@ mk(NSString *ident, NSString *label)
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTabView *tv;
   Recorder *rec;
 
@@ -101,6 +100,5 @@ int main()
 
   END_SET("NSTabView delegate")
 
-  DESTROY(arp);
   return 0;
 }

@@ -10,8 +10,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSView layout anchors")
 
   NS_DURING
@@ -60,6 +58,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSView layout anchors")
 
-  DESTROY(arp);
   return 0;
 }

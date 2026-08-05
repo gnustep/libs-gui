@@ -20,7 +20,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   HideRecorder *parent, *visibleChild, *hiddenChild;
 
   START_SET("NSView hidden notifications")
@@ -90,6 +89,5 @@ main(int argc, char **argv)
 
   END_SET("NSView hidden notifications")
 
-  DESTROY(arp);
   return 0;
 }

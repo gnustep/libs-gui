@@ -18,7 +18,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSPrintInfo *info;
   NSSize size;
 
@@ -118,6 +117,5 @@ int main()
 
   END_SET("NSPrintInfo dictionary")
 
-  DESTROY(arp);
   return 0;
 }

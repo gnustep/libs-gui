@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSLevelIndicatorCell *cell;
 
   START_SET("NSLevelIndicatorCell initStyle")
@@ -27,6 +26,5 @@ int main()
 
   END_SET("NSLevelIndicatorCell initStyle")
 
-  DESTROY(arp);
   return 0;
 }

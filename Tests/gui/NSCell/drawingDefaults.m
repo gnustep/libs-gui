@@ -46,7 +46,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   ForwardCell *cell;
   MaskView *view;
   NSBitmapImageRep *rep;
@@ -83,6 +82,5 @@ main(int argc, const char **argv)
 
   END_SET("NSCell drawing defaults")
 
-  DESTROY(arp);
   return 0;
 }

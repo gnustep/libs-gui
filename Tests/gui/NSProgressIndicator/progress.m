@@ -18,7 +18,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSProgressIndicator *pi;
 
   START_SET("NSProgressIndicator progress")
@@ -51,6 +50,8 @@ main(int argc, char **argv)
            "the default control size is regular");
       PASS([pi style] == NSProgressIndicatorBarStyle,
            "the default style is the bar style");
+      PASS([pi usesThreadedAnimation] == YES,
+           "an indicator uses threaded animation by default");
 
       /* Setter round-trips. */
       [pi setIndeterminate: NO];
@@ -100,6 +101,5 @@ main(int argc, char **argv)
 
   END_SET("NSProgressIndicator progress")
 
-  DESTROY(arp);
   return 0;
 }

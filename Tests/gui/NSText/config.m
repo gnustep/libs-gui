@@ -20,7 +20,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSText *t;
   id delegate;
 
@@ -76,6 +75,5 @@ int main()
 
   END_SET("NSText config")
 
-  DESTROY(arp);
   return 0;
 }

@@ -12,7 +12,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSAnimation roundtrips")
   NSAnimation *a;
   NSObject *delegate;
 
@@ -49,6 +49,6 @@ int main()
   [a setDelegate: delegate];
   PASS([a delegate] == delegate, "delegate round-trips");
 
-  DESTROY(arp);
+  END_SET("NSAnimation roundtrips")
   return 0;
 }

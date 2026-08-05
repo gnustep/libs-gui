@@ -16,8 +16,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSPrinter missing PPD")
 
   NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
@@ -25,7 +23,6 @@ main(int argc, char **argv)
   NSDictionary *entry;
   NSDictionary *printers;
   NSPrinter *printer = nil;
-  BOOL raised = NO;
 
   entry = [NSDictionary dictionaryWithObjectsAndKeys:
     @"/does/not/exist/Generic.ppd", @"PPDPath",
@@ -36,18 +33,9 @@ main(int argc, char **argv)
   printers = [NSDictionary dictionaryWithObject: entry forKey: @"MissingPPDPrinter"];
   [ud setObject: printers forKey: @"GSLPRPrinters"];
 
-  NS_DURING
-    {
-      printer = [NSPrinter printerWithName: @"MissingPPDPrinter"];
-    }
-  NS_HANDLER
-    {
-      raised = YES;
-    }
-  NS_ENDHANDLER
-
-  PASS(raised == NO,
-       "loading a printer whose PPD is missing does not raise");
+  PASS_RUNS(({
+    printer = [NSPrinter printerWithName: @"MissingPPDPrinter"];
+  }), "loading a printer whose PPD is missing does not raise");
   PASS(printer != nil,
        "a printer is still returned when its PPD is missing");
 
@@ -58,6 +46,5 @@ main(int argc, char **argv)
 
   END_SET("NSPrinter missing PPD")
 
-  DESTROY(arp);
   return 0;
 }

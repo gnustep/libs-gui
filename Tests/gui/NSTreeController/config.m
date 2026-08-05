@@ -13,7 +13,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSTreeController config")
   NSTreeController *tc;
 
   tc = AUTORELEASE([[NSTreeController alloc] init]);
@@ -50,6 +50,10 @@ int main()
   PASS([tc alwaysUsesMultipleValuesMarker] == YES,
        "alwaysUsesMultipleValuesMarker round-trips");
 
-  DESTROY(arp);
+  /* Break retain loop so this object can be deallocated.
+   */
+  [tc setContent: nil];
+
+  END_SET("NSTreeController config")
   return 0;
 }

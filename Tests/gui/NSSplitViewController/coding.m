@@ -14,7 +14,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSplitViewController *svc;
   NSSplitViewController *decoded;
   NSSplitView *before;
@@ -45,6 +44,5 @@ int main()
 
   END_SET("NSSplitViewController coding")
 
-  DESTROY(arp);
   return 0;
 }

@@ -33,7 +33,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTableView *tv;
   NSTableColumn *col;
   ProbeImage *img;
@@ -113,6 +112,5 @@ main(int argc, const char **argv)
 
   END_SET("NSTableView indicator image")
 
-  DESTROY(arp);
   return 0;
 }

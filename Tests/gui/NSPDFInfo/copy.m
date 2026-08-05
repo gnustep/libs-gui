@@ -8,7 +8,7 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSPDFInfo copy")
 
   NSPDFInfo *info = [[NSPDFInfo alloc] init];
   [info setFileExtensionHidden: YES];
@@ -27,6 +27,6 @@ int main(int argc, const char **argv)
 
   RELEASE(info);
   RELEASE(copy);
-  DESTROY(arp);
+  END_SET("NSPDFInfo copy")
   return 0;
 }
