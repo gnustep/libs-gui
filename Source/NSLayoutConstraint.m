@@ -34,12 +34,18 @@
 #import "NSWindowPrivate.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSApplication.h"
-#import "NSAutoresizingMaskLayoutConstraint.h" 
+#import "NSAutoresizingMaskLayoutConstraint.h"
+#import "AppKit/NSLayoutGuide.h"
 #import "GSFastEnumeration.h"
 #import "GSAutoLayoutVFLParser.h"
 #import "GSAutoLayoutEngine.h"
 
+@interface NSView (GSAutoLayoutInstall)
+- (void) removeConstraint: (NSLayoutConstraint *)constraint;
+@end
+
 static NSMutableArray *activeConstraints = nil;
+static NSMapTable *installedContainers = nil;
 // static NSNotificationCenter *nc = nil;
 
 @implementation NSLayoutConstraint
@@ -50,6 +56,10 @@ static NSMutableArray *activeConstraints = nil;
     {
       [self setVersion: 1];
       activeConstraints = [[NSMutableArray alloc] initWithCapacity: 10];
+      installedContainers =
+        [[NSMapTable alloc] initWithKeyOptions: NSMapTableObjectPointerPersonality
+                                  valueOptions: NSMapTableWeakMemory
+                                      capacity: 10];
       // nc = [NSNotificationCenter defaultCenter];
 
       // [nc addObserver: self
@@ -226,15 +236,92 @@ static NSMutableArray *activeConstraints = nil;
   return r;
 }
 
++ (NSView *) _viewForLayoutItem: (id)item
+{
+  if (item == nil)
+    {
+      return nil;
+    }
+  if ([item isKindOfClass: [NSView class]])
+    {
+      return item;
+    }
+  if ([item respondsToSelector: @selector(owningView)])
+    {
+      return [item owningView];
+    }
+  return nil;
+}
+
+// The view that owns a constraint is the nearest ancestor shared by its two
+// items (or the single item for a non-relational constraint). The constraint is
+// handed to that view's per-window layout engine.
++ (NSView *) _containerViewForConstraint: (NSLayoutConstraint *)constraint
+{
+  NSView *firstView = [self _viewForLayoutItem: [constraint firstItem]];
+  NSView *secondView = [self _viewForLayoutItem: [constraint secondItem]];
+
+  if (secondView == nil)
+    {
+      return firstView;
+    }
+  if (firstView == nil)
+    {
+      return secondView;
+    }
+  if (firstView == secondView)
+    {
+      return firstView;
+    }
+  return [firstView ancestorSharedWithView: secondView];
+}
+
++ (void) _installConstraintIfPossible: (NSLayoutConstraint *)constraint
+{
+  if ([installedContainers objectForKey: constraint] != nil)
+    {
+      return;
+    }
+  NSView *container = [self _containerViewForConstraint: constraint];
+  if (container != nil && [container window] != nil)
+    {
+      [container addConstraint: constraint];
+      [installedContainers setObject: container forKey: constraint];
+    }
+}
+
++ (void) _installPendingConstraintsForView: (NSView *)view
+{
+  NSUInteger i, count = [activeConstraints count];
+  for (i = 0; i < count; i++)
+    {
+      [self _installConstraintIfPossible: [activeConstraints objectAtIndex: i]];
+    }
+}
+
 + (void) _activateConstraint: (NSLayoutConstraint *)constraint
 {
-  // [activeConstraints addObject: constraint];
-  // activeConstraints = [[activeConstraints sortedArrayUsingSelector: @selector(compare:)] mutableCopy];
+  if ([activeConstraints indexOfObjectIdenticalTo: constraint] == NSNotFound)
+    {
+      [activeConstraints addObject: constraint];
+    }
+  [self _installConstraintIfPossible: constraint];
 }
 
 + (void) _removeConstraint: (NSLayoutConstraint *)constraint
 {
-  [activeConstraints removeObject: constraint];
+  NSUInteger index = [activeConstraints indexOfObjectIdenticalTo: constraint];
+  if (index != NSNotFound)
+    {
+      [activeConstraints removeObjectAtIndex: index];
+    }
+
+  NSView *container = [installedContainers objectForKey: constraint];
+  if (container != nil)
+    {
+      [container removeConstraint: constraint];
+      [installedContainers removeObjectForKey: constraint];
+    }
 }
 
 + (NSArray *) constraintsWithVisualFormat: (NSString *)fmt 
@@ -274,13 +361,11 @@ static NSMutableArray *activeConstraints = nil;
       _multiplier = multiplier;
       _constant = constant;
       _priority = priority;
-      
-      [NSLayoutConstraint _activateConstraint: self];
     }
   return self;
 }
 
-+ (instancetype) constraintWithItem: (id)view1 
++ (instancetype) constraintWithItem: (id)view1
                           attribute: (NSLayoutAttribute)attr1 
                           relatedBy: (NSLayoutRelation)relation 
                              toItem: (id)view2 
@@ -662,6 +747,11 @@ static NSMutableArray *activeConstraints = nil;
   GSAutoLayoutEngine *layoutEngine = [[GSAutoLayoutEngine alloc] init];
   [self _setLayoutEngine: layoutEngine];
   RELEASE(layoutEngine);
+
+  // Pin the content view to its own bounds so subview constraints resolve to
+  // absolute positions in the content view's coordinate system. Without this
+  // the content view's origin and size are left undetermined by the solver.
+  [layoutEngine pinContentView: [self contentView]];
 }
 
-@end 
+@end

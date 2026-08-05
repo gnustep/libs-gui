@@ -224,8 +224,6 @@ typedef NSInteger GSLayoutViewAttribute;
 - (CGFloat) valueForView: (NSView *)view
                attribute: (GSLayoutViewAttribute)attribute;
 
-- (int) getConstantMultiplierForLayoutAttribute: (NSLayoutAttribute)attribute;
-
 @end
 
 @implementation GSAutoLayoutEngine
@@ -239,7 +237,14 @@ typedef NSInteger GSLayoutViewAttribute;
 
       ASSIGN(_variablesByKey, [NSMapTable strongToStrongObjectsMapTable]);
 
-      ASSIGN(_constraintsByAutoLayoutConstaintHash, [NSMapTable strongToStrongObjectsMapTable]);
+      /* Layout constraints are compared by value, so the solver constraint of
+         each one is kept against the object itself. */
+      ASSIGN(_constraintsByAutoLayoutConstaintHash,
+        [NSMapTable mapTableWithKeyOptions:
+                      NSPointerFunctionsObjectPointerPersonality
+                                | NSPointerFunctionsStrongMemory
+                      valueOptions: NSPointerFunctionsObjectPersonality
+                                | NSPointerFunctionsStrongMemory]);
 
       ASSIGN(_layoutConstraintsBySolverConstraint, [NSMapTable strongToStrongObjectsMapTable]);
 
@@ -320,17 +325,19 @@ typedef NSInteger GSLayoutViewAttribute;
       END_FOR_IN(internalConstraints);
     }
 
-  [_supportingConstraintsByConstraint setObject: nil forKey: solverConstraint];
+  [_supportingConstraintsByConstraint removeObjectForKey: solverConstraint];
 
   [self updateAlignmentRectsForTrackedViews];
   [self removeConstraintAgainstViewConstraintsArray: constraint];
 
-  if ([self hasConstraintsForView: [constraint firstItem]])
+  /* The internal constraints of a view exist to support its own constraints,
+     so they go when the last of those is removed. */
+  if (![self hasConstraintsForView: [constraint firstItem]])
     {
       [self removeInternalConstraintsForView: [constraint firstItem]];
     }
   if ([constraint secondItem] != nil &&
-      [self hasConstraintsForView: [constraint secondItem]])
+      ![self hasConstraintsForView: [constraint secondItem]])
     {
       [self removeInternalConstraintsForView: [constraint secondItem]];
     }
@@ -409,8 +416,7 @@ typedef NSInteger GSLayoutViewAttribute;
       op = GSCSConstraintOperationGreaterThanOrEqual;
       break;
     }
-  double constant =
-    [self getConstantMultiplierForLayoutAttribute: [constraint secondAttribute]] * [constraint constant];
+  double constant = [constraint constant];
 
   GSCSLinearExpression *rightExpression = [[GSCSLinearExpression alloc]
     initWithVariable: secondItemConstraintVariable
@@ -425,27 +431,6 @@ typedef NSInteger GSLayoutViewAttribute;
   RELEASE(strength);
 
   return newConstraint;
-}
-
-- (int) getConstantMultiplierForLayoutAttribute: (NSLayoutAttribute)attribute
-{
-  switch (attribute)
-    {
-    case NSLayoutAttributeTop:
-      return -1;
-    case NSLayoutAttributeBottom:
-      return 1;
-    case NSLayoutAttributeLeading:
-      return 1;
-    case NSLayoutAttributeTrailing:
-      return -1;
-    case NSLayoutAttributeLeft:
-      return 1;
-    case NSLayoutAttributeRight:
-      return -1;
-    default:
-      return 1;
-    }
 }
 
 - (GSCSVariable *) variableForView: (NSView *)view
@@ -1030,7 +1015,7 @@ typedef NSInteger GSLayoutViewAttribute;
     [self removeSolverConstraint: constraint];
   END_FOR_IN(internalViewConstraints);
 
-  [_internalConstraintsByViewIndex setObject: nil forKey: view];
+  [_internalConstraintsByViewIndex removeObjectForKey: view];
 }
 
 - (BOOL) hasConstraintsForView: (NSView *)view
@@ -1063,13 +1048,16 @@ typedef NSInteger GSLayoutViewAttribute;
     {
       NSNumber *secondItemViewIndex =
         [self indexForView: [constraint secondItem]];
-      if ([_constraintsByViewIndex objectForKey: secondItemViewIndex])
+      NSMutableArray *constraintsForSecondItem =
+        [_constraintsByViewIndex objectForKey: secondItemViewIndex];
+
+      if (!constraintsForSecondItem)
         {
-          [_constraintsByViewIndex setObject: [NSMutableArray array]
+          constraintsForSecondItem = [NSMutableArray array];
+          [_constraintsByViewIndex setObject: constraintsForSecondItem
                                       forKey: secondItemViewIndex];
         }
-      [[_constraintsByViewIndex objectForKey: secondItemViewIndex]
-          addObject: constraint];
+      [constraintsForSecondItem addObject: constraint];
     }
 }
 
@@ -1081,8 +1069,12 @@ typedef NSInteger GSLayoutViewAttribute;
       [_constraintsByViewIndex objectForKey: firstItemViewIndex];
 
   NSUInteger indexOfConstraintInFirstItem =
-      [constraintsForFirstItem indexOfObject: constraint];
-  [constraintsForFirstItem removeObjectAtIndex: indexOfConstraintInFirstItem];
+      [constraintsForFirstItem indexOfObjectIdenticalTo: constraint];
+  if (indexOfConstraintInFirstItem != NSNotFound)
+    {
+      [constraintsForFirstItem
+          removeObjectAtIndex: indexOfConstraintInFirstItem];
+    }
 
   if ([constraint secondItem] != nil)
     {
@@ -1092,9 +1084,12 @@ typedef NSInteger GSLayoutViewAttribute;
           [_constraintsByViewIndex objectForKey: secondItemViewIndexIndex];
 
       NSUInteger indexOfConstraintInSecondItem =
-          [constraintsForSecondItem indexOfObject: constraint];
-      [constraintsForSecondItem
-          removeObjectAtIndex: indexOfConstraintInSecondItem];
+          [constraintsForSecondItem indexOfObjectIdenticalTo: constraint];
+      if (indexOfConstraintInSecondItem != NSNotFound)
+        {
+          [constraintsForSecondItem
+              removeObjectAtIndex: indexOfConstraintInSecondItem];
+        }
     }
 }
 
@@ -1145,8 +1140,20 @@ typedef NSInteger GSLayoutViewAttribute;
 - (BOOL) solverCanSolveAlignmentRectForView: (NSView *)view
                                    solution: (GSCSSolution *)solution
 {
-  // FIXME
-  return NO;
+  GSCSVariable *minX = [self getExistingVariableForView: view
+                                          withAttribute: GSLayoutAttributeMinX];
+  GSCSVariable *minY = [self getExistingVariableForView: view
+                                          withAttribute: GSLayoutAttributeMinY];
+  GSCSVariable *width = [self getExistingVariableForView: view
+                                           withAttribute: GSLayoutAttributeWidth];
+  GSCSVariable *height = [self getExistingVariableForView: view
+                                            withAttribute: GSLayoutAttributeHeight];
+
+  return minX != nil && minY != nil && width != nil && height != nil
+    && [solution resultForVariable: minX] != nil
+    && [solution resultForVariable: minY] != nil
+    && [solution resultForVariable: width] != nil
+    && [solution resultForVariable: height] != nil;
 }
 
 - (void) recordAlignmentRect: (NSRect)alignmentRect
@@ -1172,8 +1179,21 @@ typedef NSInteger GSLayoutViewAttribute;
 - (NSRect) solverAlignmentRectForView: (NSView *)view
                              solution: (GSCSSolution *)solution
 {
-  // FIXME Get view solution from solver
-  return NSZeroRect;
+  GSCSVariable *minX = [self getExistingVariableForView: view
+                                          withAttribute: GSLayoutAttributeMinX];
+  GSCSVariable *minY = [self getExistingVariableForView: view
+                                          withAttribute: GSLayoutAttributeMinY];
+  GSCSVariable *width = [self getExistingVariableForView: view
+                                           withAttribute: GSLayoutAttributeWidth];
+  GSCSVariable *height = [self getExistingVariableForView: view
+                                            withAttribute: GSLayoutAttributeHeight];
+
+  CGFloat x = [[solution resultForVariable: minX] doubleValue];
+  CGFloat y = [[solution resultForVariable: minY] doubleValue];
+  CGFloat w = [[solution resultForVariable: width] doubleValue];
+  CGFloat h = [[solution resultForVariable: height] doubleValue];
+
+  return NSMakeRect(x, y, w, h);
 }
 
 - (void) notifyViewsOfAlignmentRectChange: (NSArray *)viewsWithChanges
@@ -1185,8 +1205,12 @@ typedef NSInteger GSLayoutViewAttribute;
 
 - (NSRect) alignmentRectForView: (NSView *)view
 {
-  // FIXME Get alignment rect for view from solver
-  return NSZeroRect;
+  GSCSSolution *solution = [_solver solve];
+  if (![self solverCanSolveAlignmentRectForView: view solution: solution])
+    {
+      return NSZeroRect;
+    }
+  return [self solverAlignmentRectForView: view solution: solution];
 }
 
 - (void) addSupportingSolverConstraint: (GSCSConstraint *)supportingConstraint
@@ -1274,8 +1298,81 @@ typedef NSInteger GSLayoutViewAttribute;
     }
 }
 
+- (NSLayoutConstraint *) _pinConstraintForView: (NSView *)view
+                                      attribute: (NSLayoutAttribute)attribute
+                                       constant: (CGFloat)constant
+{
+  return [NSLayoutConstraint constraintWithItem: view
+                                      attribute: attribute
+                                      relatedBy: NSLayoutRelationEqual
+                                         toItem: nil
+                                      attribute: NSLayoutAttributeNotAnAttribute
+                                     multiplier: 1.0
+                                       constant: constant];
+}
+
+// Pin a view (normally a window content view) to its own bounds so that
+// constraints expressed against it resolve to absolute positions. The width
+// and height constraints are kept so they can track the view's size.
+- (void) pinContentView: (NSView *)contentView
+{
+  if (contentView == nil)
+    {
+      return;
+    }
+  ASSIGN(_contentView, contentView);
+
+  NSRect bounds = [contentView bounds];
+  NSLayoutConstraint *left = [self _pinConstraintForView: contentView
+                                               attribute: NSLayoutAttributeLeft
+                                                constant: NSMinX(bounds)];
+  NSLayoutConstraint *bottom = [self _pinConstraintForView: contentView
+                                                 attribute: NSLayoutAttributeBottom
+                                                  constant: NSMinY(bounds)];
+  ASSIGN(_contentWidthConstraint,
+         [self _pinConstraintForView: contentView
+                           attribute: NSLayoutAttributeWidth
+                            constant: NSWidth(bounds)]);
+  ASSIGN(_contentHeightConstraint,
+         [self _pinConstraintForView: contentView
+                           attribute: NSLayoutAttributeHeight
+                            constant: NSHeight(bounds)]);
+
+  [self addConstraint: left];
+  [self addConstraint: bottom];
+  [self addConstraint: _contentWidthConstraint];
+  [self addConstraint: _contentHeightConstraint];
+}
+
+- (BOOL) updateContentViewSize
+{
+  if (_contentView == nil)
+    {
+      return NO;
+    }
+
+  BOOL changed = NO;
+  NSRect bounds = [_contentView bounds];
+  if ([_contentWidthConstraint constant] != NSWidth(bounds))
+    {
+      [_contentWidthConstraint setConstant: NSWidth(bounds)];
+      [self updateConstraint: _contentWidthConstraint];
+      changed = YES;
+    }
+  if ([_contentHeightConstraint constant] != NSHeight(bounds))
+    {
+      [_contentHeightConstraint setConstant: NSHeight(bounds)];
+      [self updateConstraint: _contentHeightConstraint];
+      changed = YES;
+    }
+  return changed;
+}
+
 - (void) dealloc
 {
+    RELEASE(_contentView);
+    RELEASE(_contentWidthConstraint);
+    RELEASE(_contentHeightConstraint);
     RELEASE(_trackedViews);
     RELEASE(_viewAlignmentRectByViewIndex);
     RELEASE(_viewIndexByViewHash);
