@@ -31,6 +31,17 @@
 
 2026-07-12 Todd White <todd.white@thalion.global>
 
+	* Resources/ColorSpaces/sRGB2014.icc: The ICC sRGB v2 reference
+	profile, redistributed under the ICC licence.
+	* Resources/ColorSpaces/README: Its provenance and licence.
+	* Resources/GNUmakefile: Install the ColorSpaces resources.
+	* Source/NSColorSpace.m (-[NSColorSpace _loadICCProfileNamed:],
+	+[NSColorSpace genericRGBColorSpace]): Load the profile as a library
+	resource so the generic RGB space reports ICC profile data.
+	* Tests/gui/NSColorSpace/basic.m: Check the generic RGB profile data.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
 	* Tests/gui/NSColorSpace/basic.m:
 	* Tests/gui/NSColorSpace/TestInfo:
 	Add tests for NSColorSpace: the model enum values, and the colour
