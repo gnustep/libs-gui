@@ -25,7 +25,6 @@ mk(NSString *ident, NSString *label)
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTabView *tv;
   NSTabViewItem *a, *b, *c, *d;
 
@@ -89,6 +88,5 @@ int main()
 
   END_SET("NSTabView structure")
 
-  DESTROY(arp);
   return 0;
 }

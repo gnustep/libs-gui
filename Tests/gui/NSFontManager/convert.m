@@ -19,7 +19,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("convertFont:toSize:")
 
   NS_DURING
@@ -49,6 +48,5 @@ main(int argc, char **argv)
   NS_ENDHANDLER
 
   END_SET("convertFont:toSize:")
-  DESTROY(arp);
   return 0;
 }

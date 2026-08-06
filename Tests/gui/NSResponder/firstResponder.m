@@ -6,7 +6,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSResponder first responder")
 
   NSResponder *r = AUTORELEASE([NSResponder new]);
@@ -25,6 +24,5 @@ main(int argc, const char **argv)
     "validRequestorForSendType:returnType: defaults to nil");
 
   END_SET("NSResponder first responder")
-  DESTROY(arp);
   return 0;
 }

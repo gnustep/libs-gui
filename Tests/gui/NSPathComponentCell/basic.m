@@ -15,7 +15,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSPathComponentCell *cell;
   NSImage *img;
   NSURL *url;
@@ -54,6 +53,5 @@ int main()
 
   END_SET("NSPathComponentCell basic")
 
-  DESTROY(arp);
   return 0;
 }

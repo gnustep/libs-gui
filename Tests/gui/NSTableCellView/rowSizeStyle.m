@@ -13,8 +13,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("the default row size style")
 
   NS_DURING
@@ -43,6 +41,5 @@ main(int argc, char **argv)
 
   END_SET("the default row size style")
 
-  DESTROY(arp);
   return 0;
 }

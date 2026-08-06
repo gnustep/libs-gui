@@ -12,7 +12,7 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSPasteboardItem basic")
 
   NSString *t1 = @"public.data";
   NSString *t2 = @"public.utf8-plain-text";
@@ -47,6 +47,6 @@ int main(int argc, const char **argv)
 
   RELEASE(a);
   RELEASE(b);
-  DESTROY(arp);
+  END_SET("NSPasteboardItem basic")
   return 0;
 }

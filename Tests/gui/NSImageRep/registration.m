@@ -22,8 +22,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSImageRep registration")
 
   NS_DURING
@@ -101,6 +99,5 @@ main(int argc, char **argv)
 
   END_SET("NSImageRep registration")
 
-  DESTROY(arp);
   return 0;
 }

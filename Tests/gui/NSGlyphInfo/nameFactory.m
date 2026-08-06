@@ -47,7 +47,6 @@ fontThatNamesGlyphs(NSString **outName)
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSGlyphInfo *g;
   NSFont *font;
   NSFont *namedFont;
@@ -102,6 +101,5 @@ int main()
 
   END_SET("NSGlyphInfo name factory")
 
-  DESTROY(arp);
   return 0;
 }

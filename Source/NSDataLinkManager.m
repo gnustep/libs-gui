@@ -146,13 +146,14 @@
       _destinationLinks = [[NSMutableArray alloc] init];
       _watchDescriptors = [[NSMutableDictionary alloc] init];
       _nextLinkNumber = 1;
+      _inotifyFD = -1;
 #ifdef HAVE_SYS_INOTIFY_H
       _inotifyFD = inotify_init();
-#endif
       if (_inotifyFD < 0)
 	{
 	  NSLog(@"Failed to initialize inotify");
 	}
+#endif
       [self startMonitoring];
     }
 
@@ -166,11 +167,13 @@
 
 - (void) dealloc
 {
+  /* Monitoring reads the watch table, so it has to be stopped first. */
+  [self stopMonitoring];
+
   RELEASE(_sourceLinks);
   RELEASE(_destinationLinks);
   RELEASE(_watchDescriptors);
-
-  [self stopMonitoring];
+  RELEASE(_monitorThread);
   [super dealloc];
 }
 
@@ -206,8 +209,81 @@
 
 - (void)startMonitoring
 {
+  /* With no descriptor to read there is nothing to wait on, and the loop
+     would spin. */
+  if (_inotifyFD < 0)
+    {
+      return;
+    }
+
   _monitorThread = [[NSThread alloc] initWithTarget:self selector:@selector(monitorLoop) object:nil];
   [_monitorThread start];
+}
+
+/* Watch the file a link takes its contents from, and remember which link the
+   watch belongs to.  Watching the same file twice returns the same descriptor,
+   so the table keeps the most recently added link for it. */
+- (void) _watchSourceOfLink: (NSDataLink *)link
+{
+#ifdef HAVE_SYS_INOTIFY_H
+  NSString *path = [link sourceFilename];
+  int wd;
+
+  if (_inotifyFD < 0 || path == nil)
+    {
+      return;
+    }
+
+  wd = inotify_add_watch(_inotifyFD, [path fileSystemRepresentation],
+			 IN_CLOSE_WRITE | IN_MODIFY | IN_MOVE_SELF);
+  if (wd < 0)
+    {
+      return;
+    }
+
+  [_watchDescriptors setObject: link forKey: [NSNumber numberWithInt: wd]];
+#endif
+}
+
+- (void) _unwatchSourceOfLink: (NSDataLink *)link
+{
+#ifdef HAVE_SYS_INOTIFY_H
+  NSArray *keys = [_watchDescriptors allKeysForObject: link];
+  NSEnumerator *en = [keys objectEnumerator];
+  NSNumber *key;
+
+  while ((key = [en nextObject]) != nil)
+    {
+      if (_inotifyFD >= 0)
+	{
+	  inotify_rm_watch(_inotifyFD, [key intValue]);
+	}
+      [_watchDescriptors removeObjectForKey: key];
+    }
+#endif
+}
+
+/* Called on the main thread for each watch that reported a change, so the
+   delegate is never messaged from the monitoring thread. */
+- (void) _sourceChangedForWatch: (NSNumber *)descriptor
+{
+  NSDataLink *link = [_watchDescriptors objectForKey: descriptor];
+
+  if (link == nil)
+    {
+      return;
+    }
+
+  [link noteSourceEdited];
+
+  if ([_delegate respondsToSelector:
+	@selector(dataLinkManager:isUpdateNeededForLink:)])
+    {
+      if ([_delegate dataLinkManager: self isUpdateNeededForLink: link])
+	{
+	  [link updateDestination];
+	}
+    }
 }
 
 - (void)monitorLoop
@@ -223,28 +299,21 @@
 	}
 
       ssize_t i = 0;
+      CREATE_AUTORELEASE_POOL(pool);
+
       while (i < length)
 	{
 	  struct inotify_event *event = (struct inotify_event *)&buffer[i];
-	  NSNumber *key = [NSNumber numberWithInt:event->wd];
-	  NSDataLink *link = [_watchDescriptors objectForKey: key];
-	  if (link != nil)
-	    {
-	      [link noteSourceEdited];
-	      NSLog(@"Source file changed for link #%d", [link linkNumber]);
+	  NSNumber *key = [NSNumber numberWithInt: event->wd];
 
-	      // Check if delegate wants to verify this update
-	      if ([_delegate respondsToSelector: @selector(dataLinkManager:isUpdateNeededForLink:)])
-		{
-		  BOOL needsUpdate = [_delegate dataLinkManager: self isUpdateNeededForLink: link];
-		  if (needsUpdate)
-		    {
-		      [link updateDestination];
-		    }
-		}
-	    }
+	  /* The watch table and the delegate belong to the main thread. */
+	  [self performSelectorOnMainThread: @selector(_sourceChangedForWatch:)
+				 withObject: key
+			      waitUntilDone: NO];
+
 	  i += sizeof(struct inotify_event) + event->len;
 	}
+      DESTROY(pool);
     }
 #endif
 }
@@ -272,6 +341,7 @@
   if ([_destinationLinks containsObject: link] == NO)
     {
       [_destinationLinks addObject: link];
+      [self _watchSourceOfLink: link];
       result = YES;
 
       // Notify delegate that we're starting to track this link
@@ -356,6 +426,8 @@
 	}
       [_destinationLinks removeObject: link];
     }
+
+  [self _unwatchSourceOfLink: link];
 }
 
 - (BOOL) addSourceLink: (NSDataLink *)link

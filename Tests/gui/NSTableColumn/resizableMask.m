@@ -12,8 +12,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSTableColumn resizable / mask")
 
   NS_DURING
@@ -53,6 +51,5 @@ main(int argc, char **argv)
 
   END_SET("NSTableColumn resizable / mask")
 
-  DESTROY(arp);
   return 0;
 }

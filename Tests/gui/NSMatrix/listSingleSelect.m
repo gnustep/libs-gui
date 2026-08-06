@@ -12,8 +12,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSMatrix list single selection")
 
   NS_DURING
@@ -45,6 +43,5 @@ main(int argc, char **argv)
 
   END_SET("NSMatrix list single selection")
 
-  DESTROY(arp);
   return 0;
 }

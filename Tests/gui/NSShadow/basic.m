@@ -12,8 +12,6 @@
 
 int main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("defaults")
     NSShadow	*s = [[[NSShadow alloc] init] autorelease];
     NSSize	off = [s shadowOffset];
@@ -105,6 +103,5 @@ int main(int argc, char **argv)
       "non-keyed archiving preserves the colour");
   END_SET("non-keyed archiving round-trip")
 
-  DESTROY(arp);
   return 0;
 }

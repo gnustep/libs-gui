@@ -26,8 +26,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSMenuView item area insets")
 
   NS_DURING
@@ -80,6 +78,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSMenuView item area insets")
 
-  DESTROY(arp);
   return 0;
 }

@@ -14,7 +14,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSTextStorage config")
   NSTextStorage *ts;
   id delegate;
 
@@ -37,6 +37,6 @@ int main()
   [ts setDelegate: delegate];
   PASS([ts delegate] == delegate, "delegate round-trips");
 
-  DESTROY(arp);
+  END_SET("NSTextStorage config")
   return 0;
 }

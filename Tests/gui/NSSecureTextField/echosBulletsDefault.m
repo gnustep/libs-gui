@@ -12,8 +12,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSSecureTextFieldCell default echosBullets")
 
   NS_DURING
@@ -34,6 +32,5 @@ int main()
 
   END_SET("NSSecureTextFieldCell default echosBullets")
 
-  DESTROY(arp);
   return 0;
 }

@@ -11,8 +11,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSMenuItemCell basic")
 
   NS_DURING
@@ -55,6 +53,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSMenuItemCell basic")
 
-  DESTROY(arp);
   return 0;
 }

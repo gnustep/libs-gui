@@ -28,7 +28,6 @@ RotRectsClose(NSRect a, NSRect b, CGFloat eps)
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSView rotation")
 
   NS_DURING
@@ -142,6 +141,5 @@ int main(int argc, const char **argv)
   NS_ENDHANDLER
   END_SET("NSView rotation (windowed)")
 
-  DESTROY(arp);
   return 0;
 }

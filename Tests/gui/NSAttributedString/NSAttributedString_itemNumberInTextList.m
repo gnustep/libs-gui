@@ -7,8 +7,6 @@
 
 int main(int argc, char **argv)
 {  
-  CREATE_AUTORELEASE_POOL(arp);
-  
   START_SET("NSAttributedString itemNumberInTextList:atIndex: category method");
   
   NSTextList *list1 = AUTORELEASE(
@@ -77,7 +75,6 @@ int main(int argc, char **argv)
   
   END_SET("NSAttributedString itemNumberInTextList:atIndex: category method");
   
-  DESTROY(arp);
   
   return 0;
 }

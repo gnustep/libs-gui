@@ -639,11 +639,16 @@ static NSParagraphStyle	*defaultStyle = nil;
   C(_lineHeightMultiple);
   C(_tighteningFactorForTruncation);
   C(_headerLevel);
+  C(_baseDirection);
 #undef C
 
-#define C(x) if (![x isEqualToArray: other->x]) return NO;
+/* _textBlocks is nil rather than an empty array in a style that has none,
+   so compare the pointers before sending isEqualToArray:.
+ */
+#define C(x) if ((x != other->x) && ![x isEqualToArray: other->x]) return NO;
   C(_tabStops);
   C(_textLists);
+  C(_textBlocks);
 #undef C
 
   return YES;

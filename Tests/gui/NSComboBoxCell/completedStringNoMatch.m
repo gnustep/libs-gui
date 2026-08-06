@@ -11,8 +11,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSComboBoxCell completedString: no match")
 
   NS_DURING
@@ -39,6 +37,5 @@ main(int argc, char **argv)
 
   END_SET("NSComboBoxCell completedString: no match")
 
-  DESTROY(arp);
   return 0;
 }

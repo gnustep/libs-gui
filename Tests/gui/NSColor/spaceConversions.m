@@ -19,7 +19,7 @@ eq(CGFloat a, CGFloat b)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSColor spaceConversions")
 
   /* An achromatic RGB colour keeps its value when converted to grayscale. */
   {
@@ -76,6 +76,6 @@ main(int argc, char **argv)
       "the grayscale and CMYK spaces report two and five components");
   }
 
-  DESTROY(arp);
+  END_SET("NSColor spaceConversions")
   return 0;
 }

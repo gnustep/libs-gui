@@ -14,7 +14,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSDraggingImageComponent basic")
   NSDraggingImageComponent *c;
   NSImage *image;
 
@@ -45,6 +45,6 @@ int main()
   [c setContents: image];
   PASS([c contents] == image, "the contents round-trip");
 
-  DESTROY(arp);
+  END_SET("NSDraggingImageComponent basic")
   return 0;
 }

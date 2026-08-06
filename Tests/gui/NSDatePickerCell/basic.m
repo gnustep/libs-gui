@@ -13,7 +13,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSDatePickerCell *cell;
   NSDate *inRange;
 
@@ -63,6 +62,5 @@ int main()
 
   END_SET("NSDatePickerCell basic")
 
-  DESTROY(arp);
   return 0;
 }

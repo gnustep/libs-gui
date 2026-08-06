@@ -16,7 +16,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSDataLink init failure")
 
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -57,6 +56,5 @@ main(int argc, const char **argv)
   [fm removeFileAtPath: corrupt handler: nil];
 
   END_SET("NSDataLink init failure")
-  DESTROY(arp);
   return 0;
 }

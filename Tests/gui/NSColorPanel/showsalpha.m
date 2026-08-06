@@ -8,8 +8,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSColorPanel showsAlpha")
 
   NS_DURING
@@ -24,6 +22,5 @@ int main()
 
   END_SET("NSColorPanel showsAlpha")
 
-  DESTROY(arp);
   return 0;
 }

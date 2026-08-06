@@ -9,7 +9,7 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSPasteboardItem registertype")
 
   NSString *t1 = @"public.utf8-plain-text";
   NSString *t2 = @"public.data";
@@ -30,6 +30,6 @@ int main(int argc, const char **argv)
        "setting the same type twice does not duplicate it");
 
   RELEASE(item);
-  DESTROY(arp);
+  END_SET("NSPasteboardItem registertype")
   return 0;
 }

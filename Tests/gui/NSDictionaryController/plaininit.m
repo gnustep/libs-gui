@@ -11,13 +11,13 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSDictionaryController plaininit")
   NSDictionaryController *dc;
 
   dc = AUTORELEASE([[NSDictionaryController alloc] init]);
   PASS(dc != nil, "a dictionary controller can be created with -init");
   PASS([[dc initialKey] isEqual: @"key"], "its initial key is the default");
 
-  DESTROY(arp);
+  END_SET("NSDictionaryController plaininit")
   return 0;
 }

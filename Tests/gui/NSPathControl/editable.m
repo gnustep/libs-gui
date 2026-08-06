@@ -7,8 +7,6 @@
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSPathControl editable")
 
   NS_DURING
@@ -33,6 +31,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSPathControl editable")
 
-  DESTROY(arp);
   return 0;
 }

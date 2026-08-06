@@ -14,8 +14,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("option constants match AppKit")
     PASS(NSTrackingMouseEnteredAndExited == 0x01
       && NSTrackingMouseMoved == 0x02
@@ -76,6 +74,5 @@ main(int argc, char **argv)
       "the copy keeps the rect, options, owner and userInfo");
   END_SET("copy preserves the rect, options, owner and userInfo")
 
-  DESTROY(arp);
   return 0;
 }

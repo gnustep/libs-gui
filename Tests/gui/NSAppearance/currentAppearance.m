@@ -9,8 +9,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   /* This has to come before anything sets the current appearance. */
   START_SET("before anything sets one")
     NSAppearance	*current;
@@ -33,6 +31,5 @@ main(int argc, char **argv)
       "the current appearance keeps its name");
   END_SET("setting one")
 
-  DESTROY(arp);
   return 0;
 }

@@ -12,7 +12,7 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSSplitViewItem config")
   NSViewController *vc;
   NSSplitViewItem *item;
 
@@ -28,6 +28,6 @@ int main()
   PASS([item titlebarSeparatorStyle] == NSTitlebarSeparatorStyleAutomatic,
        "default titlebarSeparatorStyle is Automatic");
 
-  DESTROY(arp);
+  END_SET("NSSplitViewItem config")
   return 0;
 }

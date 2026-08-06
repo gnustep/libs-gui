@@ -15,7 +15,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSComboBoxCell *cell;
 
   START_SET("NSComboBoxCell item list")
@@ -98,6 +97,5 @@ main(int argc, char **argv)
 
   END_SET("NSComboBoxCell item list")
 
-  DESTROY(arp);
   return 0;
 }

@@ -18,7 +18,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSStackView *sv;
   NSView *a, *b, *c, *d;
 
@@ -89,6 +88,5 @@ int main()
 
   END_SET("NSStackView membership")
 
-  DESTROY(arp);
   return 0;
 }

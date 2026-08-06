@@ -45,6 +45,7 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSIndexPath.h>
+#import <Foundation/NSIndexSet.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
 
@@ -77,6 +78,12 @@ static NSTextFieldCell *titleCell;
 static CGFloat browserColumnSeparation;
 static CGFloat browserVerticalPadding;
 static BOOL browserUseBezels;
+
+/* The drop the current drag is over, as the delegate last left it. */
+static NSInteger currentDropRow = -1;
+static NSInteger currentDropColumn = -1;
+static NSBrowserDropOperation currentDropOperation = NSBrowserDropOn;
+static NSDragOperation currentDragOperation = NSDragOperationNone;
 
 #define NSBR_COLUMN_IS_VISIBLE(i) \
 (((i)>=_firstVisibleColumn)&&((i)<=_lastVisibleColumn))
@@ -255,12 +262,19 @@ static BOOL browserUseBezels;
 //
 @interface NSBrowser (Private)
 - (NSString *) _getTitleOfColumn: (NSInteger)column;
+- (void) _lastColumnChangedFrom: (NSInteger)oldLastColumn;
 - (void) _performLoadOfColumn: (NSInteger)column;
 - (id) _itemForColumn: (NSInteger)column;
 - (void) _remapColumnSubviews: (BOOL)flag;
 - (void) _setColumnTitlesNeedDisplay;
 - (NSBorderType) _resolvedBorderType;
 - (void) _themeDidActivate: (NSNotification*)notification;
+- (NSInteger) _columnAtPoint: (NSPoint)point;
+- (NSInteger) _dropRowAtPoint: (NSPoint)point
+		     inColumn: (NSInteger)column
+		    operation: (NSBrowserDropOperation *)operation;
+- (NSString *) _typeSelectStringForRow: (NSInteger)row
+			      inColumn: (NSInteger)column;
 @end
 
 // Category to handle bindings
@@ -1091,6 +1105,7 @@ static BOOL browserUseBezels;
 - (void) setLastColumn: (NSInteger)column
 {
   NSInteger i, count;
+  NSInteger oldLastColumn = _lastColumnLoaded;
   NSBrowserColumn *bc;
   NSScrollView *sc;
 
@@ -1136,6 +1151,8 @@ static BOOL browserUseBezels;
     }
 
   [self scrollColumnToVisible:column];
+
+  [self _lastColumnChangedFrom: oldLastColumn];
 }
 
 /** Returns the index of the first visible column. */
@@ -1557,6 +1574,80 @@ static BOOL browserUseBezels;
       // FIXME
       return NO;
     }
+}
+
+/*
+ * Dragging destination
+ */
+
+- (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)sender
+{
+  return [self draggingUpdated: sender];
+}
+
+- (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>)sender
+{
+  NSPoint point = [self convertPoint: [sender draggingLocation] fromView: nil];
+  NSInteger row = -1;
+  NSInteger column = [self _columnAtPoint: point];
+  NSBrowserDropOperation operation = NSBrowserDropOn;
+
+  if (column != -1)
+    {
+      row = [self _dropRowAtPoint: point
+			 inColumn: column
+			operation: &operation];
+      if (row == -1)
+	{
+	  column = -1;
+	}
+    }
+
+  currentDragOperation = NSDragOperationNone;
+  if ([_browserDelegate respondsToSelector:
+	@selector(browser:validateDrop:proposedRow:column:dropOperation:)])
+    {
+      currentDragOperation = [_browserDelegate browser: self
+					  validateDrop: sender
+					   proposedRow: &row
+						column: &column
+					 dropOperation: &operation];
+    }
+
+  currentDropRow = row;
+  currentDropColumn = column;
+  currentDropOperation = operation;
+
+  return currentDragOperation;
+}
+
+- (void) draggingExited: (id <NSDraggingInfo>)sender
+{
+  currentDropRow = -1;
+  currentDropColumn = -1;
+  currentDropOperation = NSBrowserDropOn;
+  currentDragOperation = NSDragOperationNone;
+}
+
+- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
+{
+  return currentDragOperation != NSDragOperationNone;
+}
+
+- (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
+{
+  if (currentDragOperation != NSDragOperationNone
+    && [_browserDelegate respondsToSelector:
+	 @selector(browser:acceptDrop:atRow:column:dropOperation:)])
+    {
+      return [_browserDelegate browser: self
+			   acceptDrop: sender
+				atRow: currentDropRow
+			       column: currentDropColumn
+			dropOperation: currentDropOperation];
+    }
+
+  return NO;
 }
 
 /*
@@ -2416,6 +2507,46 @@ static BOOL browserUseBezels;
       [sender setAutoscroll: autoscroll];
     }
 
+  if ([_browserDelegate respondsToSelector:
+	@selector(browser:selectionIndexesForProposedSelection:inColumn:)])
+    {
+      NSMutableIndexSet *proposed = [NSMutableIndexSet indexSet];
+      NSIndexSet *allowed;
+      NSInteger cellRow, cellColumn;
+
+      enumerator = [selectedCells objectEnumerator];
+      while ((cell = [enumerator nextObject]))
+	{
+	  if ([sender getRow: &cellRow column: &cellColumn ofCell: cell])
+	    {
+	      [proposed addIndex: cellRow];
+	    }
+	}
+
+      allowed = [_browserDelegate browser: self
+	 selectionIndexesForProposedSelection: proposed
+				     inColumn: column];
+
+      if (allowed != nil && ![allowed isEqualToIndexSet: proposed])
+	{
+	  BOOL autoscroll = [sender isAutoscroll];
+	  NSUInteger i = [allowed firstIndex];
+
+	  [sender setAutoscroll: NO];
+	  [sender deselectAllCells];
+	  while (i != NSNotFound)
+	    {
+	      [sender selectCellAtRow: i column: 0];
+	      i = [allowed indexGreaterThanIndex: i];
+	    }
+	  [sender setAutoscroll: autoscroll];
+
+	  RELEASE(selectedCells);
+	  selectedCells = [[sender selectedCells] mutableCopy];
+	  selectedCellsCount = [selectedCells count];
+	}
+    }
+
   [self setLastColumn: column];
   // Single selection
   if (selectedCellsCount == 1)
@@ -2791,12 +2922,21 @@ static BOOL browserUseBezels;
       NSInteger i, n, s;
       NSInteger match;
       NSInteger selectedColumn;
-      SEL lcarcSel = @selector(loadedCellAtRow:column:);
-      IMP lcarc = [self methodForSelector: lcarcSel];
+      BOOL newSearch = YES;
 
       selectedColumn = [self selectedColumn];
       if (selectedColumn != -1)
 	{
+	  if ([_browserDelegate respondsToSelector:
+		@selector(browser:shouldTypeSelectForEvent:withCurrentSearchString:)]
+	      && ![_browserDelegate browser: self
+		     shouldTypeSelectForEvent: theEvent
+		      withCurrentSearchString: _charBuffer])
+	    {
+	      [super keyDown: theEvent];
+	      return;
+	    }
+
 	  matrix = [self matrixInColumn: selectedColumn];
 	  n = [matrix numberOfRows];
 	  s = [matrix selectedRow];
@@ -2818,6 +2958,7 @@ static BOOL browserUseBezels;
 		  RELEASE(_charBuffer);
 		  _charBuffer = transition;
 		  RETAIN(_charBuffer);
+		  newSearch = NO;
 		}
 	      else
 		{
@@ -2830,36 +2971,53 @@ static BOOL browserUseBezels;
 	  _alphaNumericalLastColumn = selectedColumn;
 	  _lastKeyPressed = [theEvent timestamp];
 
-	  sv = [((*lcarc)(self, lcarcSel, s, selectedColumn))
-		 stringValue];
-
-	  if (([sv length] > 0)
-	      && ([sv hasPrefix: _charBuffer]))
-	    return;
-
-	  match = -1;
-	  for (i = s + 1; i < n; i++)
+	  if ((n > 0) && [_browserDelegate respondsToSelector:
+		@selector(browser:nextTypeSelectMatchFromRow:toRow:inColumn:forString:)])
 	    {
-	      sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-		     stringValue];
-	      if (([sv length] > 0)
-		  && ([sv hasPrefix: _charBuffer]))
+	      NSInteger from = newSearch ? (s + 1) % n : (s < 0 ? 0 : s);
+
+	      match = [_browserDelegate browser: self
+		     nextTypeSelectMatchFromRow: from
+					  toRow: (from + n - 1) % n
+				       inColumn: selectedColumn
+				      forString: _charBuffer];
+	      if ((match < 0) || (match >= n))
 		{
-		  match = i;
-		  break;
+		  match = -1;
 		}
 	    }
-	  if (i == n)
+	  else
 	    {
-	      for (i = 0; i < s; i++)
+	      sv = [self _typeSelectStringForRow: s inColumn: selectedColumn];
+
+	      if (([sv length] > 0)
+		  && ([sv hasPrefix: _charBuffer]))
+		return;
+
+	      match = -1;
+	      for (i = s + 1; i < n; i++)
 		{
-		  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-			 stringValue];
+		  sv = [self _typeSelectStringForRow: i
+					    inColumn: selectedColumn];
 		  if (([sv length] > 0)
 		      && ([sv hasPrefix: _charBuffer]))
 		    {
 		      match = i;
 		      break;
+		    }
+		}
+	      if (i == n)
+		{
+		  for (i = 0; i < s; i++)
+		    {
+		      sv = [self _typeSelectStringForRow: i
+						inColumn: selectedColumn];
+		      if (([sv length] > 0)
+			  && ([sv hasPrefix: _charBuffer]))
+			{
+			  match = i;
+			  break;
+			}
 		    }
 		}
 	    }
@@ -3226,6 +3384,90 @@ static BOOL browserUseBezels;
  *
  */
 @implementation NSBrowser (Private)
+
+/* Tell the delegate the last loaded column moved, unless it did not.
+ */
+- (void) _lastColumnChangedFrom: (NSInteger)oldLastColumn
+{
+  if (oldLastColumn != _lastColumnLoaded
+    && [_browserDelegate respondsToSelector:
+      @selector(browser:didChangeLastColumn:toColumn:)])
+    {
+      [_browserDelegate browser: self
+	    didChangeLastColumn: oldLastColumn
+		       toColumn: _lastColumnLoaded];
+    }
+}
+
+- (NSInteger) _columnAtPoint: (NSPoint)point
+{
+  NSInteger i;
+
+  for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
+    {
+      if (NSPointInRect(point, [self frameOfColumn: i]))
+	{
+	  return i;
+	}
+    }
+
+  return -1;
+}
+
+/* Which row of a column a point drops on, and whether it drops on that row or
+   above it. A point past the last row gives the row after the last, a point
+   above the first row gives no row at all. */
+- (NSInteger) _dropRowAtPoint: (NSPoint)point
+		     inColumn: (NSInteger)column
+		    operation: (NSBrowserDropOperation *)operation
+{
+  NSMatrix *matrix = [self matrixInColumn: column];
+  NSPoint inMatrix = [matrix convertPoint: point fromView: self];
+  NSInteger rows = [matrix numberOfRows];
+  CGFloat height = [matrix cellSize].height + [matrix intercellSpacing].height;
+  NSInteger row;
+  CGFloat inRow;
+
+  *operation = NSBrowserDropOn;
+
+  if (height <= 0.0 || inMatrix.y < 0.0)
+    {
+      return -1;
+    }
+
+  row = (NSInteger)(inMatrix.y / height);
+  if (row >= rows)
+    {
+      return rows;
+    }
+
+  inRow = inMatrix.y - row * height;
+  if (inRow <= height / 4)
+    {
+      *operation = NSBrowserDropAbove;
+    }
+  else if (inRow > (3 * height) / 4)
+    {
+      *operation = NSBrowserDropAbove;
+      row++;
+    }
+
+  return row;
+}
+  
+- (NSString *) _typeSelectStringForRow: (NSInteger)row
+			      inColumn: (NSInteger)column
+{
+  if ([_browserDelegate respondsToSelector:
+	@selector(browser:typeSelectStringForRow:inColumn:)])
+    {
+      return [_browserDelegate browser: self
+		typeSelectStringForRow: row
+			      inColumn: column];
+    }
+
+  return [[self loadedCellAtRow: row column: column] stringValue];
+}
 
 - (void) _remapColumnSubviews: (BOOL)fromFirst
 {
@@ -3618,7 +3860,10 @@ static BOOL browserUseBezels;
 
   if (column > _lastColumnLoaded)
     {
+      NSInteger oldLastColumn = _lastColumnLoaded;
+
       _lastColumnLoaded = column;
+      [self _lastColumnChangedFrom: oldLastColumn];
     }
 
   /* Determine the height of a cell in the matrix, and set that as the

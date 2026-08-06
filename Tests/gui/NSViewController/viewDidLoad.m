@@ -36,8 +36,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSViewController viewDidLoad")
 
   NS_DURING
@@ -80,6 +78,5 @@ main(int argc, char **argv)
 
   END_SET("NSViewController viewDidLoad")
 
-  DESTROY(arp);
   return 0;
 }

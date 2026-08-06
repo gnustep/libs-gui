@@ -11,7 +11,7 @@ copyright 2004 Alexander Malmberg <alexander@malmberg.org>
 
 int main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSBezierPath bounds")
   NSBezierPath *p=[[NSBezierPath alloc] init];
   NSRect r;
 
@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 
 //	printf("bounds=%@\n",NSStringFromRect([p bounds]));
   DESTROY(p);
-  DESTROY(arp);
+  END_SET("NSBezierPath bounds")
 
   return 0;
 }

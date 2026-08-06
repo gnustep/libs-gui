@@ -44,7 +44,6 @@ layoutScrollView(NSSize frame, NSSize document, BOOL wantHoriz, BOOL wantVert,
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSScrollView autohidesScrollers")
 
   NS_DURING
@@ -125,6 +124,5 @@ main(int argc, const char **argv)
   NS_ENDHANDLER
 
   END_SET("NSScrollView autohidesScrollers")
-  DESTROY(arp);
   return 0;
 }

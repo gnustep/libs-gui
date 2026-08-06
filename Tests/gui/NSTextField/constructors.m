@@ -23,7 +23,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTextField *label, *field, *wrap, *attr;
 
   START_SET("NSTextField constructors")
@@ -99,6 +98,5 @@ main(int argc, char **argv)
 
   END_SET("NSTextField constructors")
 
-  DESTROY(arp);
   return 0;
 }

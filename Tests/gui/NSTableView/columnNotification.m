@@ -52,7 +52,6 @@ column(NSString *ident)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Recorder *r;
   NSTableView *tv;
   NSTableColumn *c0;
@@ -124,6 +123,5 @@ main(int argc, char **argv)
 
   END_SET("NSTableView column notification")
 
-  DESTROY(arp);
   return 0;
 }

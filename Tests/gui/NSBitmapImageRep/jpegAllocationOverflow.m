@@ -76,7 +76,7 @@ static const unsigned char validJPEG[] = {
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep jpegAllocationOverflow")
   NSData            *data;
   NSBitmapImageRep  *rep;
 
@@ -86,6 +86,6 @@ int main()
     "a valid JPEG still decodes after the allocation size is computed safely");
   [rep release];
 
-  [arp release];
+  END_SET("NSBitmapImageRep jpegAllocationOverflow")
   return 0;
 }

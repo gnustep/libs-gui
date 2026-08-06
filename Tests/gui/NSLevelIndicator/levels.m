@@ -18,7 +18,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSLevelIndicator *li;
 
   START_SET("NSLevelIndicator levels")
@@ -106,6 +105,5 @@ main(int argc, char **argv)
 
   END_SET("NSLevelIndicator levels")
 
-  DESTROY(arp);
   return 0;
 }

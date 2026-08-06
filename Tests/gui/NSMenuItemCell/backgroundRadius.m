@@ -94,8 +94,6 @@ isRed(NSColor *c)
 
 int main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("NSMenuItemCell background radius")
 
   NS_DURING
@@ -135,6 +133,5 @@ int main(int argc, const char **argv)
 
   END_SET("NSMenuItemCell background radius")
 
-  DESTROY(arp);
   return 0;
 }

@@ -9,7 +9,7 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
+  START_SET("NSPopover config")
 
   NSPopover *p = AUTORELEASE([[NSPopover alloc] init]);
 
@@ -51,6 +51,6 @@ main(int argc, const char **argv)
   PASS(NSEqualRects([p positioningRect], NSMakeRect(1, 2, 3, 4)),
     "the positioning rect round-trips");
 
-  DESTROY(arp);
+  END_SET("NSPopover config")
   return 0;
 }

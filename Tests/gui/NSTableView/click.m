@@ -41,7 +41,6 @@ clickRow(NSWindow *w, NSTableView *tv, NSInteger row)
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Source *ds;
   NSTableView *tv;
   NSTableColumn *col;
@@ -95,6 +94,5 @@ main(int argc, const char **argv)
 
   END_SET("NSTableView click")
 
-  DESTROY(arp);
   return 0;
 }

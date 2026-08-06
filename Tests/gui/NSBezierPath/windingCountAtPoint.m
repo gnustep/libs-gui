@@ -115,7 +115,7 @@ MyView *view;
 
 int main(int argc, char **argv)
 {
-	CREATE_AUTORELEASE_POOL(arp);
+	START_SET("NSBezierPath windingCountAtPoint")
 	NSBezierPath *p=[[NSBezierPath alloc] init];
 	int i;
 	const char *str;
@@ -701,7 +701,7 @@ int main(int argc, char **argv)
 	}
 
 	DESTROY(p);
-	DESTROY(arp);
+	END_SET("NSBezierPath windingCountAtPoint")
 
 	return 0;
 }

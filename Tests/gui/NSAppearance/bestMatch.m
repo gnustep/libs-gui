@@ -9,8 +9,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("an exact name wins")
     NSAppearance	*aqua;
     NSAppearance	*dark;
@@ -87,6 +85,5 @@ main(int argc, char **argv)
       "one vibrant appearance does not match the other");
   END_SET("no match")
 
-  DESTROY(arp);
   return 0;
 }

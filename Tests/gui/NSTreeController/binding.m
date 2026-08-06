@@ -64,7 +64,6 @@ node(NSString *aName)
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSTreeController	*tc;
   NSObjectController	*oc;
   NSMutableDictionary	*model;
@@ -140,7 +139,6 @@ withKeyPath: @"content.roots"
 
   END_SET("NSTreeController content array binding")
 
-  DESTROY(arp);
 
   return 0;
 }

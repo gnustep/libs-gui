@@ -19,7 +19,6 @@
 int
 main(int argc, const char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSResponder chain")
 
   NSResponder *r = AUTORELEASE([NSResponder new]);
@@ -64,6 +63,5 @@ main(int argc, const char **argv)
     "default keyDown: forwards the event to nextResponder");
 
   END_SET("NSResponder chain")
-  DESTROY(arp);
   return 0;
 }

@@ -73,7 +73,6 @@
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   Tree *ds;
   Recorder *r;
   NSOutlineView *ov;
@@ -151,6 +150,5 @@ main(int argc, char **argv)
 
   END_SET("NSOutlineView expand notification")
 
-  DESTROY(arp);
   return 0;
 }

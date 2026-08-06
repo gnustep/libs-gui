@@ -23,7 +23,6 @@ popup(void)
 int
 main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSPopUpButtonCell *cell;
 
   START_SET("NSPopUpButtonCell menu")
@@ -118,6 +117,5 @@ main(int argc, char **argv)
 
   END_SET("NSPopUpButtonCell menu")
 
-  DESTROY(arp);
   return 0;
 }

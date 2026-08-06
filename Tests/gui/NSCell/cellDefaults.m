@@ -9,7 +9,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSCell *cell;
   NSRect frame = NSMakeRect(10, 20, 100, 40);
   NSRect r;
@@ -48,6 +47,5 @@ int main()
 
   END_SET("NSCell defaults")
 
-  DESTROY(arp);
   return 0;
 }

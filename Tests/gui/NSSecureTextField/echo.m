@@ -19,7 +19,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSSecureTextField *field;
   NSSecureTextFieldCell *cell;
 
@@ -39,16 +38,9 @@ int main()
   /* The cell class is hard-wired and cannot be replaced. */
   PASS([NSSecureTextField cellClass] == [NSSecureTextFieldCell class],
        "the cell class is NSSecureTextFieldCell");
-  {
-    BOOL raised = NO;
-
-    NS_DURING
-      [NSSecureTextField setCellClass: [NSTextFieldCell class]];
-    NS_HANDLER
-      raised = [[localException name] isEqualToString: NSInvalidArgumentException];
-    NS_ENDHANDLER
-    PASS(raised, "setCellClass: raises rather than accept another class");
-  }
+  PASS_EXCEPTION(({ [NSSecureTextField setCellClass: [NSTextFieldCell class]]; }),
+    NSInvalidArgumentException,
+    "setCellClass: raises rather than accept another class");
 
   /* A field uses a secure cell, echoes bullets by default, and forwards
      the flag to its cell. */
@@ -99,6 +91,5 @@ int main()
 
   END_SET("NSSecureTextField echo")
 
-  DESTROY(arp);
   return 0;
 }

@@ -13,8 +13,6 @@
 
 int main(int argc, char **argv)
 {
-  CREATE_AUTORELEASE_POOL(arp);
-
   START_SET("calibrated RGB components")
     NSColor *c = [NSColor colorWithCalibratedRed: 0.2 green: 0.4
 					    blue: 0.6 alpha: 0.8];
@@ -195,6 +193,5 @@ int main(int argc, char **argv)
     PASS(![a isEqual: d], "colours differing only in alpha are not equal");
   END_SET("equality")
 
-  DESTROY(arp);
   return 0;
 }

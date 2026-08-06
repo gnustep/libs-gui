@@ -13,7 +13,6 @@
 
 int main()
 {
-  CREATE_AUTORELEASE_POOL(arp);
   NSGlyphInfo *g;
   NSFont *font;
 
@@ -47,6 +46,5 @@ int main()
 
   END_SET("NSGlyphInfo basic")
 
-  DESTROY(arp);
   return 0;
 }
