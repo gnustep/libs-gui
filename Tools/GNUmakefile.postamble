@@ -20,8 +20,12 @@
 # before-install::
 
 # Things to do after installing
+# GSspell is built for the target, so it cannot be run here when cross
+# compiling.  GNUmakefile guards make_services the same way.
 after-install::
+ifneq ($(CROSS_COMPILING),yes)
 	GSspell.service/GSspell -RegisterOnly YES
+endif
 
 # Things to do before uninstalling
 # before-uninstall::
