@@ -1030,6 +1030,11 @@
 
       fraction = (![self isEnabled] &&
 		  [self imageDimsWhenDisabled]) ? 0.5 : 1.0;
+
+      if ([imageToDisplay isTemplate])
+	{
+	  [[self textColor] set];
+	}
       
       [imageToDisplay drawInRect: rect
 			fromRect: NSZeroRect

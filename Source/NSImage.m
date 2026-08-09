@@ -420,6 +420,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 @interface NSImage (Private)
 + (void) _clearFileTypeCaches: (NSNotification*)notif;
 + (void) _reloadCachedImages;
+- (void) _drawTemplateRep: (NSImageRep *)rep
+		  inRect: (NSRect)dstRect
+		fromRect: (NSRect)repSrcRect
+	       operation: (NSCompositingOperation)op
+		fraction: (CGFloat)delta
+	  respectFlipped: (BOOL)respectFlipped
+		   hints: (NSDictionary*)hints;
 - (BOOL) _useFromFile: (NSString *)fileName;
 - (BOOL) _loadFromData: (NSData *)data;
 - (BOOL) _loadFromFile: (NSString *)fileName;
@@ -489,6 +496,10 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
             {
               [image setName: realName];
               image->_flags.archiveByName = YES;
+	      if ([realName hasSuffix: @"Template"])
+		{
+		  [image setTemplate: YES];
+		}
               AUTORELEASE(image);
             }
         }
@@ -825,6 +836,16 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (void) setFlipped: (BOOL)flag
 {
   _flags.flipDraw = flag;
+}
+
+- (void) setTemplate: (BOOL)isTemplate
+{
+  _flags.template = isTemplate;
+}
+
+- (BOOL) isTemplate
+{
+  return _flags.template;
 }
 
 // Choosing Which Image Representation to Use 
@@ -1203,12 +1224,25 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   
   // FIXME: Draw background?
   
-  [rep drawInRect: dstRect
-	 fromRect: repSrcRect
-	operation: op
-	 fraction: delta
+  if ([self isTemplate])
+    {
+      [self _drawTemplateRep: rep
+		      inRect: dstRect
+		    fromRect: repSrcRect
+		   operation: op
+		    fraction: delta
+	      respectFlipped: respectFlipped
+		       hints: hints];
+    }
+  else
+    {
+      [rep drawInRect: dstRect
+	     fromRect: repSrcRect
+	    operation: op
+	     fraction: delta
        respectFlipped: respectFlipped
-	    hints: hints];
+		hints: hints];
+    }
 }
 
 - (void) addRepresentation: (NSImageRep *)imageRep
@@ -1905,6 +1939,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
       flags |= [self prefersColorMatch] ? 0x0100000 : 0;
       flags |= [self matchesOnMultipleResolution] ? 0x0080000 : 0;
       flags |= [self isFlipped] ? 0x0008000 : 0;
+      flags |= [self isTemplate] ? 0x0004000 : 0;
       flags |= [self cacheMode] << 11;
       [coder encodeInt: flags forKey: @"NSImageFlags"];
       if (_flags.sizeWasExplicitlySet)
@@ -2009,7 +2044,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
           [self setPrefersColorMatch: ((flags & 0x0100000) != 0)];
           [self setMatchesOnMultipleResolution: ((flags & 0x0080000) != 0)];
           [self setFlipped: ((flags & 0x0008000) != 0)];
-          // ALIASED ((flags & 0x0004000) != 0)
+          [self setTemplate: ((flags & 0x0004000) != 0)];
           [self setCacheMode: ((flags & 0x0001800) >> 11)];
         }
       if ([coder containsValueForKey: @"NSReps"])
@@ -2257,6 +2292,56 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	}   
     }
   [imageLock unlock];
+}
+
+- (void) _drawTemplateRep: (NSImageRep *)rep
+		  inRect: (NSRect)dstRect
+		fromRect: (NSRect)repSrcRect
+	       operation: (NSCompositingOperation)op
+		fraction: (CGFloat)delta
+	  respectFlipped: (BOOL)respectFlipped
+		   hints: (NSDictionary*)hints
+{
+  NSImage *mask;
+  NSRect maskRect;
+  CGFloat red = 0.0;
+  CGFloat green = 0.0;
+  CGFloat blue = 0.0;
+  CGFloat alpha = 1.0;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  if (dstRect.size.width <= 0 || dstRect.size.height <= 0)
+    {
+      return;
+    }
+
+  DPScurrentrgbcolor(ctxt, &red, &green, &blue);
+  DPScurrentalpha(ctxt, &alpha);
+
+  maskRect = NSMakeRect(0, 0, dstRect.size.width, dstRect.size.height);
+  mask = [[NSImage alloc] initWithSize: dstRect.size];
+  [mask setCacheMode: NSImageCacheNever];
+
+  [mask lockFocus];
+  NSRectFillUsingOperation(maskRect, NSCompositeClear);
+  DPSsetrgbcolor(GSCurrentContext(), red, green, blue);
+  DPSsetalpha(GSCurrentContext(), alpha);
+  NSRectFill(maskRect);
+  [rep drawInRect: maskRect
+	 fromRect: repSrcRect
+	operation: NSCompositeDestinationIn
+	 fraction: 1.0
+   respectFlipped: respectFlipped
+	    hints: hints];
+  [mask unlockFocus];
+
+  [mask drawInRect: dstRect
+	  fromRect: maskRect
+	 operation: op
+	  fraction: delta
+    respectFlipped: respectFlipped
+	     hints: hints];
+  RELEASE(mask);
 }
 
 

@@ -142,6 +142,7 @@ APPKIT_EXPORT_CLASS
     unsigned	cacheSeparately: 1;
     unsigned	unboundedCacheDepth: 1;
     unsigned	syncLoad: 1;
+    unsigned	template: 1;
   } _flags;
   NSMutableArray	*_reps;
   NSColor		*_color;
@@ -458,6 +459,9 @@ APPKIT_EXPORT_CLASS
 - (void) setFlipped: (BOOL)flag;
 - (BOOL) isFlipped;
 
+- (void) setTemplate: (BOOL)isTemplate;
+- (BOOL) isTemplate;
+
 //
 // Assigning a Delegate 
 //
@@ -513,4 +517,3 @@ APPKIT_EXPORT_CLASS
 #endif
 
 #endif // _GNUstep_H_NSImage
-
