@@ -2309,8 +2309,10 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   CGFloat blue = 0.0;
   CGFloat alpha = 1.0;
   NSGraphicsContext *ctxt = GSCurrentContext();
+  NSImageInterpolation interpolation = [ctxt imageInterpolation];
 
-  if (dstRect.size.width <= 0 || dstRect.size.height <= 0)
+  if (dstRect.size.width <= 0 || dstRect.size.height <= 0
+      || repSrcRect.size.width <= 0 || repSrcRect.size.height <= 0)
     {
       return;
     }
@@ -2318,16 +2320,18 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   DPScurrentrgbcolor(ctxt, &red, &green, &blue);
   DPScurrentalpha(ctxt, &alpha);
 
-  maskRect = NSMakeRect(0, 0, dstRect.size.width, dstRect.size.height);
+  maskRect = NSMakeRect(0, 0, repSrcRect.size.width, repSrcRect.size.height);
   mask = [[NSCachedImageRep alloc]
-	    initWithSize: dstRect.size
-	      pixelsWide: ceil(dstRect.size.width)
-	      pixelsHigh: ceil(dstRect.size.height)
+	    initWithSize: maskRect.size
+	      pixelsWide: ceil(maskRect.size.width)
+	      pixelsHigh: ceil(maskRect.size.height)
 		   depth: [[NSScreen mainScreen] depth]
 		separate: YES
 		   alpha: YES];
 
   [[[mask window] contentView] lockFocus];
+  [[NSGraphicsContext currentContext]
+    setImageInterpolation: interpolation];
   NSRectFillUsingOperation(maskRect, NSCompositeClear);
   DPSsetrgbcolor(GSCurrentContext(), red, green, blue);
   DPSsetalpha(GSCurrentContext(), alpha);
