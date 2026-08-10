@@ -70,3 +70,4 @@ compile_commands.json
 *.err
 *.out
 .vscode
+*.tmp

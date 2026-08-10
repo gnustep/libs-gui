@@ -94,8 +94,9 @@ main(int argc, char **argv)
             && [tinted redComponent] > [tinted greenComponent]
             && [tinted redComponent] > [tinted blueComponent],
             "a red bezel color makes the bezel red-dominant");
-          PASS([plain redComponent] <= [tinted redComponent]
-            && ([plain greenComponent] > 0.3 || [plain blueComponent] > 0.3),
+          PASS([plain redComponent] < 0.5
+            || [plain redComponent] <= [plain greenComponent]
+            || [plain redComponent] <= [plain blueComponent],
             "the default bezel is not the red tint");
         }
     }
