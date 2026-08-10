@@ -153,7 +153,7 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (id) instantiateInitialController
 {
-  return [self instantiateInitialControllerWithCreator: nil];
+  return [self instantiateInitialControllerWithCreator: NULL];
 }
 
 - (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block
@@ -165,7 +165,7 @@ static NSStoryboard *__mainStoryboard = nil;
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
 {
   return [self instantiateControllerWithIdentifier: identifier
-					       creator: nil];
+					       creator: NULL];
 }
 
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
@@ -259,7 +259,7 @@ static NSStoryboard *__mainStoryboard = nil;
 	}
 
 	// Execute the block if it's set...
-      if (block != nil)
+      if (block != NULL)
 	{
 	  CALL_BLOCK(block, self);
 	}
