@@ -15,7 +15,7 @@
 /* Draw SRC scaled over the whole 20x20 canvas with nearest-neighbour sampling,
  * so each source pixel stays a solid block. */
 static NSBitmapImageRep *
-drawWithColor(NSImage *src, NSColor *color)
+drawWithColorOnBackground(NSImage *src, NSColor *color, NSColor *background)
 {
   int w = 20, h = 20;
   NSImage *dst = [[NSImage alloc] initWithSize: NSMakeSize(w, h)];
@@ -24,7 +24,7 @@ drawWithColor(NSImage *src, NSColor *color)
   [dst lockFocus];
   [[NSGraphicsContext currentContext]
     setImageInterpolation: NSImageInterpolationNone];
-  [[NSColor colorWithDeviceRed: 0 green: 0 blue: 0 alpha: 1] set];
+  [background set];
   NSRectFill(NSMakeRect(0, 0, w, h));
   [color set];
   [src drawInRect: NSMakeRect(0, 0, w, h)
@@ -37,6 +37,12 @@ drawWithColor(NSImage *src, NSColor *color)
   [dst unlockFocus];
   [dst release];
   return [rep autorelease];
+}
+
+static NSBitmapImageRep *
+drawWithColor(NSImage *src, NSColor *color)
+{
+  return drawWithColorOnBackground(src, color, [NSColor blackColor]);
 }
 
 static NSBitmapImageRep *
@@ -124,11 +130,17 @@ main(int argc, const char **argv)
   [src setTemplate: YES];
   [rep release];
   out = drawWithColor(src, [NSColor redColor]);
-  [src release];
 
   PASS(GSPixelIs(out, 5, 10, 255, 0, 0)
     && GSPixelIs(out, 15, 10, 0, 0, 0),
-    "a template image draws with the current colour through source alpha");
+    "a template image preserves the current colour across mask drawing");
+
+  out = drawWithColorOnBackground(src, [NSColor redColor], [NSColor whiteColor]);
+  [src release];
+
+  PASS(GSPixelIs(out, 5, 10, 255, 0, 0)
+    && GSPixelIs(out, 15, 10, 255, 255, 255),
+    "a template image leaves transparent source pixels clear");
 
   END_SET("image pixels")
   return 0;

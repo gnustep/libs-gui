@@ -50,6 +50,7 @@
 @interface GSCacheW : NSWindow
 @end
 
+
 @implementation GSCacheW
 
 - (void) _initDefaults
@@ -122,6 +123,7 @@
     return nil;
   
   [self setAlpha: alpha];
+  [self setOpaque: !alpha];
   [self setBitsPerSample: NSBitsPerSampleFromDepth(aDepth)];
   [self setSize: aSize];
   [self setPixelsWide: pixelsWide];
@@ -324,4 +326,3 @@
 }
 
 @end
-

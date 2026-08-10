@@ -491,7 +491,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       if ([path length] != 0) 
         {
 	  image = [[[[GSTheme theme] imageClass] alloc]
-	    initByReferencingFile: path];
+		    initByReferencingFile: path];
           if (image != nil)
             {
               [image setName: realName];
@@ -2302,7 +2302,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	  respectFlipped: (BOOL)respectFlipped
 		   hints: (NSDictionary*)hints
 {
-  NSImage *mask;
+  NSCachedImageRep *mask;
   NSRect maskRect;
   CGFloat red = 0.0;
   CGFloat green = 0.0;
@@ -2319,10 +2319,15 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
   DPScurrentalpha(ctxt, &alpha);
 
   maskRect = NSMakeRect(0, 0, dstRect.size.width, dstRect.size.height);
-  mask = [[NSImage alloc] initWithSize: dstRect.size];
-  [mask setCacheMode: NSImageCacheNever];
+  mask = [[NSCachedImageRep alloc]
+	    initWithSize: dstRect.size
+	      pixelsWide: ceil(dstRect.size.width)
+	      pixelsHigh: ceil(dstRect.size.height)
+		   depth: [[NSScreen mainScreen] depth]
+		separate: YES
+		   alpha: YES];
 
-  [mask lockFocus];
+  [[[mask window] contentView] lockFocus];
   NSRectFillUsingOperation(maskRect, NSCompositeClear);
   DPSsetrgbcolor(GSCurrentContext(), red, green, blue);
   DPSsetalpha(GSCurrentContext(), alpha);
@@ -2333,7 +2338,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	 fraction: 1.0
    respectFlipped: respectFlipped
 	    hints: hints];
-  [mask unlockFocus];
+  [[[mask window] contentView] unlockFocus];
 
   [mask drawInRect: dstRect
 	  fromRect: maskRect
@@ -2341,6 +2346,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	  fraction: delta
     respectFlipped: respectFlipped
 	     hints: hints];
+
   RELEASE(mask);
 }
 
@@ -2617,7 +2623,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 			   pixelsHigh: pixelsHigh
 				depth: [[NSScreen mainScreen] depth]
 			     separate: _flags.cacheSeparately
-				alpha: [rep hasAlpha]];
+				alpha: (rep == nil || [rep hasAlpha])];
           if (cacheRep == nil)
             {
               return nil;
