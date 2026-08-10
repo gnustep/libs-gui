@@ -15,6 +15,7 @@
 #include <AppKit/NSImageView.h>
 #include <AppKit/NSImageCell.h>
 #include <AppKit/NSImage.h>
+#include <AppKit/NSColor.h>
 
 int
 main(int argc, char **argv)
@@ -48,6 +49,8 @@ main(int argc, char **argv)
       PASS([iv isEditable] == NO, "an image view is not editable by default");
       PASS([iv allowsCutCopyPaste] == YES,
            "cut, copy and paste are allowed by default");
+      PASS([iv contentTintColor] == nil,
+           "the content tint color is nil by default");
 
       /* Round-trips. */
       [iv setImageAlignment: NSImageAlignTop];
@@ -59,6 +62,12 @@ main(int argc, char **argv)
            "setImageFrameStyle: round trips");
       [iv setEditable: YES];
       PASS([iv isEditable] == YES, "setEditable: round trips");
+      [iv setContentTintColor: [NSColor redColor]];
+      PASS([[iv contentTintColor] isEqual: [NSColor redColor]],
+           "setContentTintColor: round trips");
+      [iv setContentTintColor: nil];
+      PASS([iv contentTintColor] == nil,
+           "setContentTintColor: can clear the content tint color");
 
       /* Image round-trip. */
       NSImage *img = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(16, 16)]);

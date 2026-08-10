@@ -34,6 +34,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImageCell.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSImageView.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
@@ -267,7 +268,17 @@ yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
 
   if ([_cell_image isTemplate])
     {
-      if ([self isEnabled])
+      NSColor *tintColor = nil;
+
+      if ([controlView respondsToSelector: @selector(contentTintColor)])
+        {
+          tintColor = [(NSImageView *)controlView contentTintColor];
+        }
+      if (tintColor != nil)
+        {
+          [tintColor set];
+        }
+      else if ([self isEnabled])
 	{
 	  [[NSColor controlTextColor] set];
 	}
