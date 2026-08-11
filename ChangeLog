@@ -1,3 +1,10 @@
+2026-08-11 Todd White <todd.white@thalion.global>
+
+	* Source/NSTabView.m: Give each item's tooltip the area that
+	item's tab occupies, renewed after each draw, since the theme
+	settles the tab rects as it draws.
+	* Tests/gui/NSTabView/toolTips.m: Cover it.
+
 2026-08-10 Todd White <todd.white@thalion.global>
 
 	* Source/NSTabViewItem.m: Copy the string passed to
