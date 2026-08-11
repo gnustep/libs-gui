@@ -1,12 +1,19 @@
-/* A printer stored in the GSLPRPrinters defaults can point at a PPD file that
-   has moved or been removed. Loading it must not raise an uncaught exception
-   (which aborts the application while it is only setting up printing); the
-   printer is returned without the PPD so the caller falls back to its defaults.
+/* A printer stored in a printing bundle's defaults can point at a PPD file
+   that has moved or been removed. Loading it must not raise an uncaught
+   exception (which aborts the application while it is only setting up
+   printing); the printer is returned without the PPD so the caller falls back
+   to its defaults.
+
+   The entry is written under the key of each bundle that reads one, since
+   which bundle is loaded is a property of the platform: GSLPR on Unix and
+   GSWIN32 on Windows, where only one of the two is installed.
 */
 #include "Testing.h"
 
+#include <Foundation/NSArray.h>
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
@@ -19,7 +26,11 @@ main(int argc, char **argv)
   START_SET("NSPrinter missing PPD")
 
   NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
-  id saved = [ud objectForKey: @"GSLPRPrinters"];
+  NSArray *keys = [NSArray arrayWithObjects:
+    @"GSLPRPrinters", @"GSWIN32Printers", nil];
+  NSMutableDictionary *saved = [NSMutableDictionary dictionary];
+  NSEnumerator *keyEnum;
+  NSString *key;
   NSDictionary *entry;
   NSDictionary *printers;
   NSPrinter *printer = nil;
@@ -31,7 +42,18 @@ main(int argc, char **argv)
     @"test", @"Note",
     nil];
   printers = [NSDictionary dictionaryWithObject: entry forKey: @"MissingPPDPrinter"];
-  [ud setObject: printers forKey: @"GSLPRPrinters"];
+
+  keyEnum = [keys objectEnumerator];
+  while ((key = [keyEnum nextObject]) != nil)
+    {
+      id was = [ud objectForKey: key];
+
+      if (was != nil)
+	{
+	  [saved setObject: was forKey: key];
+	}
+      [ud setObject: printers forKey: key];
+    }
 
   PASS_RUNS(({
     printer = [NSPrinter printerWithName: @"MissingPPDPrinter"];
@@ -39,10 +61,20 @@ main(int argc, char **argv)
   PASS(printer != nil,
        "a printer is still returned when its PPD is missing");
 
-  if (saved != nil)
-    [ud setObject: saved forKey: @"GSLPRPrinters"];
-  else
-    [ud removeObjectForKey: @"GSLPRPrinters"];
+  keyEnum = [keys objectEnumerator];
+  while ((key = [keyEnum nextObject]) != nil)
+    {
+      id was = [saved objectForKey: key];
+
+      if (was != nil)
+	{
+	  [ud setObject: was forKey: key];
+	}
+      else
+	{
+	  [ud removeObjectForKey: key];
+	}
+    }
 
   END_SET("NSPrinter missing PPD")
 

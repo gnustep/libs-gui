@@ -15,6 +15,41 @@
 #include <AppKit/NSImageView.h>
 #include <AppKit/NSImageCell.h>
 #include <AppKit/NSImage.h>
+#include <AppKit/NSColor.h>
+
+@interface TintRecordingImageCell : NSImageCell
+{
+  NSColor *_contentTintColor;
+  NSUInteger _setContentTintColorCount;
+}
+- (NSColor *) contentTintColor;
+- (void) setContentTintColor: (NSColor *)color;
+- (NSUInteger) setContentTintColorCount;
+@end
+
+@implementation TintRecordingImageCell
+- (void) dealloc
+{
+  RELEASE(_contentTintColor);
+  [super dealloc];
+}
+
+- (NSColor *) contentTintColor
+{
+  return _contentTintColor;
+}
+
+- (void) setContentTintColor: (NSColor *)color
+{
+  _setContentTintColorCount++;
+  ASSIGNCOPY(_contentTintColor, color);
+}
+
+- (NSUInteger) setContentTintColorCount
+{
+  return _setContentTintColorCount;
+}
+@end
 
 int
 main(int argc, char **argv)
@@ -48,6 +83,10 @@ main(int argc, char **argv)
       PASS([iv isEditable] == NO, "an image view is not editable by default");
       PASS([iv allowsCutCopyPaste] == YES,
            "cut, copy and paste are allowed by default");
+      PASS([iv contentTintColor] == nil,
+           "the content tint color is nil by default");
+      PASS([[iv cell] respondsToSelector: @selector(contentTintColor)] == NO,
+           "the default image cell does not store a content tint color");
 
       /* Round-trips. */
       [iv setImageAlignment: NSImageAlignTop];
@@ -59,6 +98,31 @@ main(int argc, char **argv)
            "setImageFrameStyle: round trips");
       [iv setEditable: YES];
       PASS([iv isEditable] == YES, "setEditable: round trips");
+      [iv setContentTintColor: [NSColor redColor]];
+      PASS([[iv contentTintColor] isEqual: [NSColor redColor]],
+           "setContentTintColor: round trips");
+      [iv setContentTintColor: nil];
+      PASS([iv contentTintColor] == nil,
+           "setContentTintColor: can clear the content tint color");
+
+      /* Unlike NSButton, NSImageView keeps contentTintColor on the view. */
+      {
+        Class originalCellClass = [NSImageView cellClass];
+        TintRecordingImageCell *tintCell;
+
+        [NSImageView setCellClass: [TintRecordingImageCell class]];
+        iv = AUTORELEASE([[NSImageView alloc]
+          initWithFrame: NSMakeRect(0, 0, 80, 80)]);
+        [NSImageView setCellClass: originalCellClass];
+
+        tintCell = (TintRecordingImageCell *)[iv cell];
+        [iv setContentTintColor: [NSColor blueColor]];
+        PASS([[iv contentTintColor] isEqual: [NSColor blueColor]],
+             "setContentTintColor: stores the color on the image view");
+        PASS([tintCell contentTintColor] == nil
+          && [tintCell setContentTintColorCount] == 0,
+             "setContentTintColor: is not forwarded to the image cell");
+      }
 
       /* Image round-trip. */
       NSImage *img = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(16, 16)]);

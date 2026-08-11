@@ -164,6 +164,12 @@ APPKIT_EXPORT_CLASS
 //
 - (NSColor *) bezelColor;
 - (void) setBezelColor: (NSColor *)color;
+
+//
+// Content tint color
+//
+- (NSColor *) contentTintColor;
+- (void) setContentTintColor: (NSColor *)color;
 #endif
 
 @end

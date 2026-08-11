@@ -639,6 +639,17 @@ static id buttonCellClass = nil;
   [self setNeedsDisplay: YES];
 }
 
+- (NSColor *) contentTintColor
+{
+  return [(NSButtonCell *)_cell contentTintColor];
+}
+
+- (void) setContentTintColor: (NSColor *)color
+{
+  [(NSButtonCell *)_cell setContentTintColor: color];
+  [self setNeedsDisplay: YES];
+}
+
 // Implement 10.7+ radio button behavior
 - (void) _flipState: (NSButton *)b
 {

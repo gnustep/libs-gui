@@ -606,6 +606,18 @@
           destinationRect = [view centerScanRect: destinationRect];
         }
 
+      if ([segmentImage isTemplate])
+	{
+	  if ([self isEnabledForSegment: seg])
+	    {
+	      [[NSColor controlTextColor] set];
+	    }
+	  else
+	    {
+	      [[NSColor disabledControlTextColor] set];
+	    }
+	}
+
       [segmentImage drawInRect: destinationRect
                       fromRect: NSZeroRect
                      operation: NSCompositeSourceOver
