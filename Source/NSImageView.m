@@ -51,7 +51,7 @@ static Class imageCellClass;
 {
   if (self == [NSImageView class])
     {
-      [self setVersion: 2];
+      [self setVersion: 3];
       imageCellClass = [NSImageCell class];
       usedCellClass = imageCellClass;
     }
@@ -433,14 +433,17 @@ static Class imageCellClass;
     {
       [aCoder encodeConditionalObject: _target];
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+      [aCoder encodeConditionalObject: _contentTintColor];
     }
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-  if (!self)
-    return self;
+  if (self == nil)
+    {
+      return self;
+    }
 
   [self setAllowsCutCopyPaste: YES];
   [self setAnimates: YES];
@@ -464,7 +467,12 @@ static Class imageCellClass;
 	  _target = [aDecoder decodeObject];
 	  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
 	}
+      if ([aDecoder versionForClassName: @"NSImageView"] >= 3)
+	{
+	  _contentTintColor = [aDecoder decodeObject];
+	}
     }
+
   return self;
 }
 

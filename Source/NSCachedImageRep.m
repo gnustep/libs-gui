@@ -50,7 +50,6 @@
 @interface GSCacheW : NSWindow
 @end
 
-
 @implementation GSCacheW
 
 - (void) _initDefaults
@@ -326,3 +325,4 @@
 }
 
 @end
+
