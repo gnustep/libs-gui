@@ -171,6 +171,7 @@ static GSWindowAnimationDelegate *animationDelegate;
 - (NSView *) _windowView;
 - (NSView *) _borderView;
 - (NSScreen *) _screenForFrame: (NSRect)frame;
+- (void) _moveChildWindowsByOffset: (NSSize)offset;
 @end
 
 @interface NSDrawer (GNUstepPrivate)
@@ -199,6 +200,37 @@ static GSWindowAnimationDelegate *animationDelegate;
       [self enableFlushWindow];
       [self flushWindowIfNeeded];
     }
+}
+
+- (void) _moveChildWindowsByOffset: (NSSize)offset
+{
+  NSArray *children;
+  NSUInteger i;
+  NSUInteger count;
+
+  if (offset.width == 0 && offset.height == 0)
+    {
+      return;
+    }
+
+  count = [_children count];
+  if (count == 0)
+    {
+      return;
+    }
+
+  children = [_children copy];
+  count = [children count];
+  for (i = 0; i < count; i++)
+    {
+      NSWindow *child = [children objectAtIndex: i];
+      NSRect childFrame = [child frame];
+
+      childFrame.origin.x += offset.width;
+      childFrame.origin.y += offset.height;
+      [child setFrame: childFrame display: NO];
+    }
+  RELEASE(children);
 }
 
 static NSArray *modes = nil;
@@ -2359,6 +2391,8 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (void) setFrame: (NSRect)frameRect display: (BOOL)flag
 {
+  NSPoint oldOrigin = _frame.origin;
+
   if (_maximumSize.width > 0 && frameRect.size.width > _maximumSize.width)
     {
       frameRect.size.width = _maximumSize.width;
@@ -2400,6 +2434,12 @@ titleWithRepresentedFilename(NSString *representedFilename)
    * We will recieve an event to tell us when the resize is done.
    */
   [self _applyFrame: frameRect];
+  if (_windowNum == 0)
+    {
+      [self _moveChildWindowsByOffset:
+        NSMakeSize(frameRect.origin.x - oldOrigin.x,
+                   frameRect.origin.y - oldOrigin.y)];
+    }
 
   if (flag)
     {
@@ -4384,6 +4424,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
             case GSAppKitWindowMoved:
               {
                 NSScreen *oldScreen = _screen;
+                NSPoint oldOrigin = _frame.origin;
 
                 _frame.origin.x = (CGFloat)[theEvent data1];
                 _frame.origin.y = (CGFloat)[theEvent data2];
@@ -4393,6 +4434,9 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                   {
                     [self saveFrameUsingName: _autosaveName];
                   }
+                [self _moveChildWindowsByOffset:
+                  NSMakeSize(_frame.origin.x - oldOrigin.x,
+                             _frame.origin.y - oldOrigin.y)];
                 [nc postNotificationName: NSWindowDidMoveNotification
                                   object: self];
                 if ([self screen] != oldScreen)
@@ -5512,18 +5556,20 @@ current key view.<br />
 - (void) addChildWindow: (NSWindow *)child
                 ordered: (NSWindowOrderingMode)place
 {
-  if (_children == nil)
+  if (child == nil || child == self)
     {
-      _children = [[NSMutableArray alloc] init];
+      return;
     }
-  [_children addObject: child];
+
   [child setParentWindow: self];
 }
 
 - (void) removeChildWindow: (NSWindow *)child
 {
-  [_children removeObject: child];
-  [child setParentWindow: nil];
+  if ([child parentWindow] == self)
+    {
+      [child setParentWindow: nil];
+    }
 }
 
 - (NSWindow *) parentWindow
@@ -5533,7 +5579,28 @@ current key view.<br />
 
 - (void) setParentWindow: (NSWindow *)window
 {
+  if (_parent == window)
+    {
+      return;
+    }
+
+  if (_parent != nil)
+    {
+      [_parent->_children removeObject: self];
+    }
   _parent = window;
+
+  if (_parent != nil)
+    {
+      if (_parent->_children == nil)
+        {
+          _parent->_children = [[NSMutableArray alloc] init];
+        }
+      if ([_parent->_children containsObject: self] == NO)
+        {
+          [_parent->_children addObject: self];
+        }
+    }
 
   if (_windowNum)
     {

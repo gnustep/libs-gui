@@ -5,6 +5,7 @@
 #import <AppKit/NSWindow.h>
 #import <AppKit/NSView.h>
 #import <AppKit/NSText.h>
+#import <AppKit/NSEvent.h>
 
 int
 main(int argc, const char **argv)
@@ -40,6 +41,27 @@ main(int argc, const char **argv)
       [w setContentView: cv];
       PASS([w contentView] == cv, "setContentView: sets the content view");
       PASS([cv window] == w, "a content view reports its window");
+
+      NSWindow *child = AUTORELEASE([[NSWindow alloc]
+        initWithContentRect: NSMakeRect(20, 30, 60, 60)
+                  styleMask: NSWindowStyleMaskBorderless
+                    backing: NSBackingStoreBuffered
+                      defer: YES]);
+      NSEvent *moveEvent = [NSEvent
+        otherEventWithType: NSAppKitDefined
+                  location: NSZeroPoint
+             modifierFlags: 0
+                 timestamp: 0
+              windowNumber: [w windowNumber]
+                   context: nil
+                   subtype: GSAppKitWindowMoved
+                     data1: 40
+                     data2: 50];
+
+      [w addChildWindow: child ordered: NSWindowAbove];
+      [w sendEvent: moveEvent];
+      PASS(NSEqualPoints([child frame].origin, NSMakePoint(60, 80)),
+        "a child window follows its parent when the parent moves");
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]
