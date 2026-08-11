@@ -517,3 +517,4 @@ APPKIT_EXPORT_CLASS
 #endif
 
 #endif // _GNUstep_H_NSImage
+
