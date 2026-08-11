@@ -1,3 +1,15 @@
+2026-08-11 Todd White <todd.white@thalion.global>
+
+	* Printing/GSWIN32/GSWIN32Printer.m: Read the printers named
+	in the GSWIN32Printers user default, which the fallback message
+	already said were read, and merge them over the printers the
+	spooler reports.  Fall back on an empty dictionary rather than
+	on nil, which EnumeratePrinters answers only when EnumPrinters
+	fails.
+	* Tests/gui/NSPrinter/badPPD.m: Write the entry under the key
+	of each bundle that reads one, since which bundle is loaded is
+	a property of the platform.
+
 2026-08-10 Todd White <todd.white@thalion.global>
 
 	* Source/NSTabViewItem.m: Copy the string passed to

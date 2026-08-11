@@ -195,17 +195,33 @@ NSMutableDictionary *EnumeratePrinters(DWORD flags)
 + (NSDictionary*) printersDictionary
 {
   static BOOL didWarn;
-  NSDictionary *printers;
-  
+  NSUserDefaults *defaults;
+  NSDictionary *configured;
+  NSMutableDictionary *printers;
+
+  defaults = [NSUserDefaults standardUserDefaults];
+  configured = [defaults dictionaryForKey: @"GSWIN32Printers"];
+
   printers = EnumeratePrinters(PRINTER_ENUM_LOCAL);
-  if (!printers) //Not set, make a default printer because we are nice.
+  if (printers == nil) //EnumPrinters failed; it answers an empty dictionary
+    {                  //when it succeeds and the spooler holds no printer.
+      printers = [NSMutableDictionary dictionary];
+    }
+
+  // A printer named in the defaults was configured deliberately, so it wins
+  // over one of the same name that the spooler reported.
+  if ([configured count] > 0)
     {
+      [printers addEntriesFromDictionary: configured];
+    }
+
+  if ([printers count] == 0) //Nothing anywhere, make a default printer
+    {                        //because we are nice.
       NSString *ppdPath;
       NSMutableDictionary *printerEntry;
-      
-      printers = [NSMutableDictionary dictionary];
+
       printerEntry = [NSMutableDictionary dictionary];
-      
+
       ppdPath = [NSBundle
 		      pathForLibraryResource: @"Generic-PostScript_Printer-Postscript"
 				      ofType: @"ppd"
