@@ -1,5 +1,13 @@
 2026-08-11 Todd White <todd.white@thalion.global>
 
+	* Printing/GSWIN32/GSWIN32Printer.m: Give an enumerated printer
+	the generic PostScript PPD and parse it, so that
+	-pageSizeForPaper: and +[NSPrintInfo sizeForPaperName:] answer a
+	size rather than 0 by 0.  An unreadable PPD is a warning and the
+	printer is still returned.
+
+2026-08-11 Todd White <todd.white@thalion.global>
+
 	* Source/NSTabView.m: Give each item's tooltip the area that
 	item's tab occupies, renewed after each draw, since the theme
 	settles the tab rects as it draws.
