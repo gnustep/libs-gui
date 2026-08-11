@@ -1,5 +1,17 @@
 2026-08-11 Todd White <todd.white@thalion.global>
 
+	* Headers/AppKit/NSDataLinkManager.h:
+	* Source/NSDataLinkManager.m: Watch the source file of a data
+	link with whatever the platform provides.  inotify reports the
+	file; on Windows a change notification handle reports its
+	directory, and every link taking its source from there is
+	reported; where there is neither, a timer compares each file's
+	modification date and size.  Before this the manager built and
+	accepted links on a platform with no inotify and never asked
+	the delegate, so a link never refreshed.
+
+2026-08-11 Todd White <todd.white@thalion.global>
+
 	* Source/NSApplication.m: Set the hidden flag, post the hide
 	notifications and swap the Hide menu item where an application
 	is hidden by miniaturizing its windows, which is the path taken
