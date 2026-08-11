@@ -76,7 +76,7 @@
 + (void) initialize
 {
   if (self == [NSButtonCell class])
-    [self setVersion: 3];
+    [self setVersion: 4];
 }
 
 /*
@@ -136,6 +136,7 @@
   RELEASE(_sound);
   RELEASE(_backgroundColor);
   RELEASE(_bezelColor);
+  RELEASE(_contentTintColor);
 
   [super dealloc];
 }
@@ -929,6 +930,24 @@
     }
 }
 
+- (NSColor *) contentTintColor
+{
+  return _contentTintColor;
+}
+
+- (void) setContentTintColor: (NSColor *)color
+{
+  ASSIGNCOPY(_contentTintColor, color);
+
+  if (_control_view)
+    {
+      if ([_control_view isKindOfClass: [NSControl class]])
+        {
+          [(NSControl*)_control_view updateCell: self];
+        }
+    }
+}
+
 - (GSThemeControlState) themeControlState
 {
   unsigned mask;
@@ -1030,6 +1049,17 @@
 
       fraction = (![self isEnabled] &&
 		  [self imageDimsWhenDisabled]) ? 0.5 : 1.0;
+
+      if ([imageToDisplay isTemplate])
+	{
+	  NSColor *tintColor = [self contentTintColor];
+
+	  if (tintColor == nil)
+	    {
+	      tintColor = [self textColor];
+	    }
+	  [tintColor set];
+	}
       
       [imageToDisplay drawInRect: rect
 			fromRect: NSZeroRect
@@ -1625,6 +1655,7 @@
   _sound = TEST_RETAIN(_sound);
   _backgroundColor = TEST_RETAIN(_backgroundColor);
   _bezelColor = TEST_RETAIN(_bezelColor);
+  _contentTintColor = TEST_RETAIN(_contentTintColor);
 
   return c;
 }
@@ -1659,6 +1690,10 @@
       if (_bezelColor != nil)
         {
           [aCoder encodeObject: _bezelColor forKey: @"NSBezelColor"];
+        }
+      if (_contentTintColor != nil)
+        {
+          [aCoder encodeObject: _contentTintColor forKey: @"NSContentTintColor"];
         }
 
       buttonCellFlags.useButtonImageSource = (([NSImage imageNamed: @"NSSwitch"] == image) ||
@@ -1772,6 +1807,7 @@
 
       [aCoder encodeObject: _sound];
       [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeObject: _contentTintColor];
       [aCoder encodeValueOfObjCType: @encode(float)
                                  at: &_delayInterval];
       [aCoder encodeValueOfObjCType: @encode(float)
@@ -1812,6 +1848,11 @@
       if ([aDecoder containsValueForKey: @"NSBezelColor"])
         {
           [self setBezelColor: [aDecoder decodeObjectForKey: @"NSBezelColor"]];
+        }
+      if ([aDecoder containsValueForKey: @"NSContentTintColor"])
+        {
+          [self setContentTintColor:
+            [aDecoder decodeObjectForKey: @"NSContentTintColor"]];
         }
       if ([aDecoder containsValueForKey: @"NSAlternateContents"])
         {
@@ -1979,6 +2020,10 @@
         {
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_sound];
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
+          if (version >= 4)
+            {
+              [aDecoder decodeValueOfObjCType: @encode(id) at: &_contentTintColor];
+            }
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_delayInterval];
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_repeatInterval];
           decode_NSUInteger(aDecoder, &tmp2);

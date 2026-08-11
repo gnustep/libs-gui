@@ -62,6 +62,8 @@
 #import <AppKit/NSControl.h>
 #import <AppKit/NSImageCell.h>
 
+@class NSColor;
+
 APPKIT_EXPORT_CLASS
 @interface NSImageView : NSControl
 {
@@ -73,6 +75,7 @@ APPKIT_EXPORT_CLASS
     unsigned initiatesDrag: 1;
     unsigned animates: 1;
   } _ivflags;
+  NSColor *_contentTintColor;
 }
 
 /**
@@ -159,6 +162,18 @@ APPKIT_EXPORT_CLASS
  * flag: YES to enable clipboard operations, NO to disable
  */
 - (void)setAllowsCutCopyPaste:(BOOL)flag;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_14, GS_API_LATEST)
+/**
+ * Returns the tint color used when drawing template image content, or nil
+ * when the image view uses its default content colour.
+ */
+- (NSColor *) contentTintColor;
+/**
+ * Sets the tint color used when drawing template image content. Pass nil to
+ * use the default content colour for the image view's state.
+ */
+- (void) setContentTintColor: (NSColor *)color;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 /**

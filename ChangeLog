@@ -9,6 +9,10 @@
 	* Tests/gui/NSPrinter/badPPD.m: Write the entry under the key
 	of each bundle that reads one, since which bundle is loaded is
 	a property of the platform.
+	* Source/NSTabView.m: Give each item's tooltip the area that
+	item's tab occupies, renewed after each draw, since the theme
+	settles the tab rects as it draws.
+	* Tests/gui/NSTabView/toolTips.m: Cover it.
 
 2026-08-10 Todd White <todd.white@thalion.global>
 
