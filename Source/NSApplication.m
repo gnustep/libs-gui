@@ -2540,22 +2540,45 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (void) hide: (id)sender
 {
-#ifdef __MINGW32__
-  [self miniaturizeAll: sender];
-#else
   if (_app_is_hidden == NO)
     {
-      if (![[NSUserDefaults standardUserDefaults]
-	     boolForKey: @"GSSuppressAppIcon"])
+      NSDictionary	*info;
+      id<NSMenuItem>	menuItem;
+      BOOL		miniaturize;
+
+#ifdef __MINGW32__
+      miniaturize = YES;
+#else
+      /*Minimize all windows if there isn't an AppIcon. This isn't the
+	most elegant solution, but avoids to loss the app if the user
+	hide it. */
+      miniaturize = [[NSUserDefaults standardUserDefaults]
+		      boolForKey: @"GSSuppressAppIcon"];
+#endif
+
+      [nc postNotificationName: NSApplicationWillHideNotification
+			object: self];
+
+      menuItem = [sender isKindOfClass: [NSMenuItem class]]
+		   ? sender
+		   : [_main_menu itemWithTitle: _(@"Hide")];
+      if (menuItem)
+	{
+	  [menuItem setAction: @selector(unhide:)];
+	  [menuItem setTitle: _(@"Show")];
+	}
+
+      _app_is_hidden = YES;
+
+      if (miniaturize)
+	{
+	  [self miniaturizeAll: sender];
+	}
+      else
 	{
 	  NSArray		*windows_list;
-	  NSDictionary  	*info;
 	  NSWindow		*win;
 	  NSEnumerator  	*iter;
-          id<NSMenuItem>  	menuItem;
-
-	  [nc postNotificationName: NSApplicationWillHideNotification
-	                    object: self];
 
 	  if ([self keyWindow] != nil)
 	    {
@@ -2601,17 +2624,7 @@ image.</p><p>See Also: -applicationIconImage</p>
                   [win orderOut: self];
                 }
 	    }
-	  menuItem = [sender isKindOfClass:[NSMenuItem class]]
-		       ? sender
-		       : [_main_menu itemWithTitle:_(@"Hide")];
-	  if (menuItem)
-	    {
-	      [menuItem setAction:@selector(unhide:)];
-	      [menuItem setTitle:_(@"Show")];
-	    }
 
-	  _app_is_hidden = YES;
-	  
 	  if (YES == [[NSUserDefaults standardUserDefaults]
 		       boolForKey: @"GSSuppressAppIcon"])
 	    {
@@ -2638,25 +2651,17 @@ image.</p><p>See Also: -applicationIconImage</p>
 	   */
 	  [self deactivate];
 	  _unhide_on_activation = YES;
-	  
-	  info = [self _notificationUserInfo];
-	  [nc postNotificationName: NSApplicationDidHideNotification
-			    object: self
-		          userInfo: info];
-	  [[[NSWorkspace sharedWorkspace] notificationCenter]
-	    postNotificationName: NSApplicationDidHideNotification
-		          object: [NSWorkspace sharedWorkspace]
-		        userInfo: info];
 	}
-      else
-	{
-	  /*Minimize all windows if there isn't an AppIcon. This isn't the
-	    most elegant solution, but avoids to loss the app if the user
-	    hide it. */
-	  [self miniaturizeAll: sender];
-	}
+
+      info = [self _notificationUserInfo];
+      [nc postNotificationName: NSApplicationDidHideNotification
+			object: self
+		      userInfo: info];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+	postNotificationName: NSApplicationDidHideNotification
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: info];
     }
-#endif
 }
 
 /**<p>Returns whether app is currently in hidden state.</p>
@@ -2714,6 +2719,25 @@ image.</p><p>See Also: -applicationIconImage</p>
       _app_is_hidden = NO;
 
       count = [_hidden count];
+      if (count == 0)
+	{
+	  /* Nothing was ordered out, so the application was hidden by
+	     miniaturizing its windows, and they are brought back the way
+	     they were put away.  A window the user had miniaturized before
+	     the application was hidden comes back with them. */
+	  NSArray      *windows = [self windows];
+	  NSEnumerator *iter = [windows objectEnumerator];
+	  NSWindow     *win;
+
+	  while ((win = [iter nextObject]) != nil)
+	    {
+	      if ([win isMiniaturized])
+		{
+		  [win deminiaturize: self];
+		}
+	    }
+	}
+
       for (i = 0; i < count; i++)
         {
           NSWindow *win = [_hidden objectAtIndex: i];
