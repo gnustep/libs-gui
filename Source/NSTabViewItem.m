@@ -64,6 +64,7 @@
   RELEASE(_label);
   RELEASE(_view);
   RELEASE(_color);
+  TEST_RELEASE(_toolTip);
   [super dealloc];
 }
 
@@ -251,7 +252,7 @@
 
 - (void) setToolTip: (NSString*)toolTip
 {
-  ASSIGN(_toolTip, toolTip);
+  ASSIGNCOPY(_toolTip, toolTip);
 }
 
 - (NSString*) toolTip
