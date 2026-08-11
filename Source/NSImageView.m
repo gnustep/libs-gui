@@ -27,6 +27,7 @@
 */
 
 #import "AppKit/NSDragging.h"
+#import "AppKit/NSColor.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSImageCell.h"
@@ -50,7 +51,7 @@ static Class imageCellClass;
 {
   if (self == [NSImageView class])
     {
-      [self setVersion: 2];
+      [self setVersion: 3];
       imageCellClass = [NSImageCell class];
       usedCellClass = imageCellClass;
     }
@@ -81,6 +82,13 @@ static Class imageCellClass;
 //
 // Instance methods
 //
+
+- (void) dealloc
+{
+  RELEASE(_contentTintColor);
+
+  [super dealloc];
+}
 
 - (id) initWithFrame: (NSRect)aFrame
 {
@@ -179,6 +187,17 @@ static Class imageCellClass;
 - (void) setAllowsCutCopyPaste: (BOOL)flag
 {
   _ivflags.allowsCutCopyPaste = flag;
+}
+
+- (NSColor *) contentTintColor
+{
+  return _contentTintColor;
+}
+
+- (void) setContentTintColor: (NSColor *)color
+{
+  ASSIGNCOPY(_contentTintColor, color);
+  [self setNeedsDisplay: YES];
 }
 
 - (void) delete: (id)sender
@@ -404,19 +423,27 @@ static Class imageCellClass;
       [aCoder encodeObject: [NSImage imagePasteboardTypes] 
                     forKey: @"NSDragTypes"];
       [aCoder encodeBool: [self isEditable] forKey: @"NSEditable"];
+      if (_contentTintColor != nil)
+        {
+          [aCoder encodeObject: _contentTintColor
+                        forKey: @"NSContentTintColor"];
+        }
     }
   else
     {
       [aCoder encodeConditionalObject: _target];
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+      [aCoder encodeConditionalObject: _contentTintColor];
     }
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];
-  if (!self)
-    return self;
+  if (self == nil)
+    {
+      return self;
+    }
 
   [self setAllowsCutCopyPaste: YES];
   [self setAnimates: YES];
@@ -427,6 +454,11 @@ static Class imageCellClass;
         {
 	  [self setEditable: [aDecoder decodeBoolForKey: @"NSEditable"]];
 	}
+      if ([aDecoder containsValueForKey: @"NSContentTintColor"])
+        {
+          [self setContentTintColor:
+            [aDecoder decodeObjectForKey: @"NSContentTintColor"]];
+        }
     }
   else
     {
@@ -435,7 +467,12 @@ static Class imageCellClass;
 	  _target = [aDecoder decodeObject];
 	  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
 	}
+      if ([aDecoder versionForClassName: @"NSImageView"] >= 3)
+	{
+	  _contentTintColor = [aDecoder decodeObject];
+	}
     }
+
   return self;
 }
 

@@ -15,7 +15,7 @@
 /* Draw SRC scaled over the whole 20x20 canvas with nearest-neighbour sampling,
  * so each source pixel stays a solid block. */
 static NSBitmapImageRep *
-draw(NSImage *src)
+drawWithColorOnBackground(NSImage *src, NSColor *color, NSColor *background)
 {
   int w = 20, h = 20;
   NSImage *dst = [[NSImage alloc] initWithSize: NSMakeSize(w, h)];
@@ -24,8 +24,9 @@ draw(NSImage *src)
   [dst lockFocus];
   [[NSGraphicsContext currentContext]
     setImageInterpolation: NSImageInterpolationNone];
-  [[NSColor colorWithDeviceRed: 0 green: 0 blue: 0 alpha: 1] set];
+  [background set];
   NSRectFill(NSMakeRect(0, 0, w, h));
+  [color set];
   [src drawInRect: NSMakeRect(0, 0, w, h)
          fromRect: NSZeroRect
         operation: NSCompositeSourceOver
@@ -36,6 +37,18 @@ draw(NSImage *src)
   [dst unlockFocus];
   [dst release];
   return [rep autorelease];
+}
+
+static NSBitmapImageRep *
+drawWithColor(NSImage *src, NSColor *color)
+{
+  return drawWithColorOnBackground(src, color, [NSColor blackColor]);
+}
+
+static NSBitmapImageRep *
+draw(NSImage *src)
+{
+  return drawWithColor(src, [NSColor blackColor]);
 }
 
 int
@@ -102,6 +115,32 @@ main(int argc, const char **argv)
 
   PASS(GSPixelIs(out, 10, 10, 0, 255, 255),
     "a 24-bit rgb image without alpha decodes to its colour");
+
+  /* A template image uses source alpha as a stencil and the current drawing
+   * colour as the fill. */
+  rep = [[NSBitmapImageRep alloc]
+    initWithBitmapDataPlanes: NULL pixelsWide: 2 pixelsHigh: 1
+                bitsPerSample: 8 samplesPerPixel: 4 hasAlpha: YES isPlanar: NO
+               colorSpaceName: NSDeviceRGBColorSpace bytesPerRow: 8 bitsPerPixel: 32];
+  d = [rep bitmapData];
+  d[0] = 0;   d[1] = 255; d[2] = 0; d[3] = 255;
+  d[4] = 255; d[5] = 255; d[6] = 255; d[7] = 0;
+  src = [[NSImage alloc] initWithSize: NSMakeSize(2, 1)];
+  [src addRepresentation: rep];
+  [src setTemplate: YES];
+  [rep release];
+  out = drawWithColor(src, [NSColor redColor]);
+
+  PASS(GSPixelIs(out, 5, 10, 255, 0, 0)
+    && GSPixelIs(out, 15, 10, 0, 0, 0),
+    "a template image preserves the current colour across mask drawing");
+
+  out = drawWithColorOnBackground(src, [NSColor redColor], [NSColor whiteColor]);
+  [src release];
+
+  PASS(GSPixelIs(out, 5, 10, 255, 0, 0)
+    && GSPixelIs(out, 15, 10, 255, 255, 255),
+    "a template image leaves transparent source pixels clear");
 
   END_SET("image pixels")
   return 0;

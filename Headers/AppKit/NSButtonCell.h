@@ -150,6 +150,7 @@ APPKIT_EXPORT_CLASS
   NSGradientType _gradient_type;
   NSColor *_backgroundColor;
   NSColor *_bezelColor;
+  NSColor *_contentTintColor;
   // Think of the following as a BOOL ivars
 #define _buttoncell_is_transparent _cell.subclass_bool_one
 #define _image_dims_when_disabled _cell.subclass_bool_two
@@ -492,6 +493,16 @@ APPKIT_EXPORT_CLASS
  * default bezel colour for the button's style and state.
  */
 - (void) setBezelColor: (NSColor *)color;
+/**
+ * Returns the tint color used when drawing template image content, or nil
+ * when the button uses its default content colour.
+ */
+- (NSColor *) contentTintColor;
+/**
+ * Sets the tint color used when drawing template image content. Pass nil to
+ * use the default content colour for the button's style and state.
+ */
+- (void) setContentTintColor: (NSColor *)color;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 /**
