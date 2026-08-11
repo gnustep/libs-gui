@@ -1,3 +1,10 @@
+2026-08-10 Todd White <todd.white@thalion.global>
+
+	* Source/NSTabViewItem.m: Copy the string passed to
+	-setToolTip:, which AppKit declares as a copy property, and
+	release it in -dealloc.
+	* Tests/gui/NSTabViewItem/toolTipMemory.m: Cover both.
+
 2026-07-14 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:
