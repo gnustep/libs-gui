@@ -5556,12 +5556,31 @@ current key view.<br />
 - (void) addChildWindow: (NSWindow *)child
                 ordered: (NSWindowOrderingMode)place
 {
+  NSInteger childWindowNumber;
+
   if (child == nil || child == self)
     {
       return;
     }
 
   [child setParentWindow: self];
+  RETAIN(child);
+  [_children removeObjectIdenticalTo: child];
+  if (place == NSWindowBelow)
+    {
+      [_children insertObject: child atIndex: 0];
+    }
+  else
+    {
+      [_children addObject: child];
+    }
+  RELEASE(child);
+
+  childWindowNumber = [child windowNumber];
+  if (childWindowNumber != 0 && _windowNum != 0)
+    {
+      [child orderWindow: place relativeTo: _windowNum];
+    }
 }
 
 - (void) removeChildWindow: (NSWindow *)child
@@ -5586,7 +5605,7 @@ current key view.<br />
 
   if (_parent != nil)
     {
-      [_parent->_children removeObject: self];
+      [_parent->_children removeObjectIdenticalTo: self];
     }
   _parent = window;
 
@@ -5596,7 +5615,7 @@ current key view.<br />
         {
           _parent->_children = [[NSMutableArray alloc] init];
         }
-      if ([_parent->_children containsObject: self] == NO)
+      if ([_parent->_children indexOfObjectIdenticalTo: self] == NSNotFound)
         {
           [_parent->_children addObject: self];
         }
