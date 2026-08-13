@@ -204,8 +204,6 @@ static GSWindowAnimationDelegate *animationDelegate;
 
 - (void) _moveChildWindowsByOffset: (NSSize)offset
 {
-  NSArray *children;
-  NSUInteger i;
   NSUInteger count;
 
   if (offset.width == 0 && offset.height == 0)
@@ -219,18 +217,17 @@ static GSWindowAnimationDelegate *animationDelegate;
       return;
     }
 
-  children = [_children copy];
-  count = [children count];
-  for (i = 0; i < count; i++)
+  // Iterate over all child windows.
+  NSEnumerator *en = [_children objectEnumerator];
+  NSWindow *child = nil;
+  while (child = [en nextObject])
     {
-      NSWindow *child = [children objectAtIndex: i];
       NSRect childFrame = [child frame];
 
       childFrame.origin.x += offset.width;
       childFrame.origin.y += offset.height;
       [child setFrame: childFrame display: NO];
     }
-  RELEASE(children);
 }
 
 static NSArray *modes = nil;
@@ -2429,10 +2426,11 @@ titleWithRepresentedFilename(NSString *representedFilename)
       [nc postNotificationName: NSWindowWillMoveNotification object: self];
     }
 
-  /*
-   * Now we can tell the graphics context to do the actual resizing.
-   * We will recieve an event to tell us when the resize is done.
-   */
+   /*
+    * Backend-backed windows move child windows when the backend move event
+    * updates _frame. Deferred/one-shot windows have no backend event here,
+    * so apply the parent delta to child windows immediately.
+    */
   [self _applyFrame: frameRect];
   if (_windowNum == 0)
     {
