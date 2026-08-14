@@ -28,6 +28,7 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSIndexPath.h>
 #import <Foundation/NSIndexSet.h>
+#import <Foundation/NSException.h>
 #import <Foundation/NSSet.h>
 #import <GNUstepBase/GSBlocks.h>
 
@@ -35,6 +36,7 @@
 #import "AppKit/NSCollectionViewItem.h"
 #import "AppKit/NSDiffableDataSource.h"
 #import "AppKit/NSTableColumn.h"
+#import "AppKit/NSTableRowView.h"
 #import "AppKit/NSTableView.h"
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSColor.h"
@@ -55,7 +57,99 @@ GSDiffableDefaultSectionIdentifier()
   return defaultIdentifier;
 }
 
+@interface NSDiffableDataSourceSnapshot (GSDiffablePrivate)
+- (NSSet *) _gsReloadedSections;
+- (NSSet *) _gsReloadedItems;
+@end
+
+static NSInteger
+GSDiffableRowForItemInSnapshot(NSDiffableDataSourceSnapshot *snapshot,
+			       id itemIdentifier)
+{
+  NSArray *sections = [snapshot sectionIdentifiers];
+  NSInteger row = 0;
+
+  FOR_IN(id, section, sections)
+    {
+      NSArray *items = [snapshot itemIdentifiersInSectionWithIdentifier: section];
+      NSUInteger itemIndex = [items indexOfObject: itemIdentifier];
+
+      if (itemIndex != NSNotFound)
+	{
+	  return row + itemIndex;
+	}
+      row += [items count];
+    }
+  END_FOR_IN(sections);
+
+  return NSNotFound;
+}
+
+static id
+GSDiffableSectionForRowInSnapshot(NSDiffableDataSourceSnapshot *snapshot,
+				  NSInteger row)
+{
+  NSArray *sections = [snapshot sectionIdentifiers];
+  NSInteger runningTotal = 0;
+
+  FOR_IN(id, section, sections)
+    {
+      NSInteger itemCount =
+	[[snapshot itemIdentifiersInSectionWithIdentifier: section] count];
+
+      if (row >= runningTotal && row < runningTotal + itemCount)
+	{
+	  return section;
+	}
+      runningTotal += itemCount;
+    }
+  END_FOR_IN(sections);
+
+  return nil;
+}
+
+static NSInteger
+GSDiffableRowForSectionInSnapshot(NSDiffableDataSourceSnapshot *snapshot,
+				  id sectionIdentifier)
+{
+  NSArray *sections = [snapshot sectionIdentifiers];
+  NSInteger runningTotal = 0;
+
+  FOR_IN(id, section, sections)
+    {
+      if ([section isEqual: sectionIdentifier])
+	{
+	  return runningTotal;
+	}
+      runningTotal +=
+	[[snapshot itemIdentifiersInSectionWithIdentifier: section] count];
+    }
+  END_FOR_IN(sections);
+
+  return NSNotFound;
+}
+
 @implementation NSDiffableDataSourceSnapshot
+
+- (id) _normalizedSectionIdentifier: (id)sectionIdentifier
+{
+  return sectionIdentifier ?: GSDiffableDefaultSectionIdentifier();
+}
+
+- (void) _raiseInvalidArgument: (NSString *)reason
+{
+  [NSException raise: NSInvalidArgumentException format: @"%@", reason];
+}
+
+- (NSSet *) _gsReloadedSections
+{
+  return _reloadedSections;
+}
+
+- (NSSet *) _gsReloadedItems
+{
+  return _reloadedItems;
+}
 
 - (id) init
 {
@@ -64,6 +158,8 @@ GSDiffableDefaultSectionIdentifier()
     {
       _sections = [[NSMutableArray alloc] init];
       _itemsBySection = [[NSMutableDictionary alloc] init];
+      _reloadedSections = [[NSMutableSet alloc] init];
+      _reloadedItems = [[NSMutableSet alloc] init];
     }
   return self;
 }
@@ -72,6 +168,8 @@ GSDiffableDefaultSectionIdentifier()
 {
   DESTROY(_sections);
   DESTROY(_itemsBySection);
+  DESTROY(_reloadedSections);
+  DESTROY(_reloadedItems);
   [super dealloc];
 }
 
@@ -104,6 +202,8 @@ GSDiffableDefaultSectionIdentifier()
   // These are already copied above, simply assign...
   ASSIGN(copy->_sections, copiedSections);
   ASSIGN(copy->_itemsBySection, copiedItems);
+  ASSIGN(copy->_reloadedSections, AUTORELEASE([_reloadedSections mutableCopy]));
+  ASSIGN(copy->_reloadedItems, AUTORELEASE([_reloadedItems mutableCopy]));
 
   return copy;
 }
@@ -142,6 +242,8 @@ GSDiffableDefaultSectionIdentifier()
 
 - (NSArray *) itemIdentifiersInSectionWithIdentifier: (id)sectionIdentifier
 {
+  sectionIdentifier = [self _normalizedSectionIdentifier: sectionIdentifier];
+
   NSArray *items = [_itemsBySection objectForKey: sectionIdentifier];
 
   if (items == nil)
@@ -178,10 +280,7 @@ GSDiffableDefaultSectionIdentifier()
 
 - (void) _ensureSection: (id)sectionIdentifier
 {
-  if (sectionIdentifier == nil)
-    {
-      sectionIdentifier = GSDiffableDefaultSectionIdentifier();
-    }
+  sectionIdentifier = [self _normalizedSectionIdentifier: sectionIdentifier];
 
   if ([_sections containsObject: sectionIdentifier] == NO)
     {
@@ -199,6 +298,12 @@ GSDiffableDefaultSectionIdentifier()
 {
   FOR_IN(id, section, sectionIdentifiers)
     {
+      section = [self _normalizedSectionIdentifier: section];
+      if ([_sections containsObject: section])
+	{
+	  [self _raiseInvalidArgument:
+	    [NSString stringWithFormat: @"Section identifier %@ already exists", section]];
+	}
       [self _ensureSection: section];
     }
   END_FOR_IN(sectionIdentifiers);
@@ -206,12 +311,14 @@ GSDiffableDefaultSectionIdentifier()
 
 - (NSInteger) _indexForSection: (id)sectionIdentifier
 {
+  sectionIdentifier = [self _normalizedSectionIdentifier: sectionIdentifier];
   return [_sections indexOfObject: sectionIdentifier];
 }
 
 - (void) insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
 	   beforeSectionWithIdentifier: (id)sectionIdentifier
 {
+  sectionIdentifier = [self _normalizedSectionIdentifier: sectionIdentifier];
   NSUInteger insertionIndex = [_sections indexOfObject: sectionIdentifier];
 
   if (insertionIndex == NSNotFound)
@@ -221,13 +328,16 @@ GSDiffableDefaultSectionIdentifier()
 
   FOR_IN(id, section, sectionIdentifiers)
     {
-      if ([_sections containsObject: section] == NO)
+      section = [self _normalizedSectionIdentifier: section];
+      if ([_sections containsObject: section])
 	{
-	  [_sections insertObject: section atIndex: insertionIndex];
-	  [_itemsBySection setObject: [NSMutableArray array]
-			      forKey: section];
-	  insertionIndex++;
+	  [self _raiseInvalidArgument:
+	    [NSString stringWithFormat: @"Section identifier %@ already exists", section]];
 	}
+      [_sections insertObject: section atIndex: insertionIndex];
+      [_itemsBySection setObject: [NSMutableArray array]
+			  forKey: section];
+      insertionIndex++;
     }
   END_FOR_IN(sectionIdentifiers);
 }
@@ -235,6 +345,7 @@ GSDiffableDefaultSectionIdentifier()
 - (void) insertSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
 	    afterSectionWithIdentifier: (id)sectionIdentifier
 {
+  sectionIdentifier = [self _normalizedSectionIdentifier: sectionIdentifier];
   NSUInteger index = [_sections indexOfObject: sectionIdentifier];
 
   if (index == NSNotFound)
@@ -246,13 +357,16 @@ GSDiffableDefaultSectionIdentifier()
   NSUInteger insertionIndex = index + 1;
   FOR_IN(id, section, sectionIdentifiers)
     {
-      if ([_sections containsObject: section] == NO)
+      section = [self _normalizedSectionIdentifier: section];
+      if ([_sections containsObject: section])
 	{
-	  [_sections insertObject: section atIndex: insertionIndex];
-	  [_itemsBySection setObject: [NSMutableArray array]
-			      forKey: section];
-	  insertionIndex++;
+	  [self _raiseInvalidArgument:
+	    [NSString stringWithFormat: @"Section identifier %@ already exists", section]];
 	}
+      [_sections insertObject: section atIndex: insertionIndex];
+      [_itemsBySection setObject: [NSMutableArray array]
+			  forKey: section];
+      insertionIndex++;
     }
   END_FOR_IN(sectionIdentifiers);
 }
@@ -261,8 +375,10 @@ GSDiffableDefaultSectionIdentifier()
 {
   FOR_IN(id, section, sectionIdentifiers)
     {
+      section = [self _normalizedSectionIdentifier: section];
       [_sections removeObject: section];
       [_itemsBySection removeObjectForKey: section];
+      [_reloadedSections removeObject: section];
     }
   END_FOR_IN(sectionIdentifiers);
 }
@@ -270,8 +386,15 @@ GSDiffableDefaultSectionIdentifier()
 - (void) moveSectionWithIdentifier: (id)sectionIdentifier
        beforeSectionWithIdentifier: (id)otherSectionIdentifier
 {
+  sectionIdentifier = [self _normalizedSectionIdentifier: sectionIdentifier];
+  otherSectionIdentifier = [self _normalizedSectionIdentifier: otherSectionIdentifier];
   NSUInteger fromIndex = [_sections indexOfObject: sectionIdentifier];
   NSUInteger toIndex = [_sections indexOfObject: otherSectionIdentifier];
+
+  if ([sectionIdentifier isEqual: otherSectionIdentifier])
+    {
+      return;
+    }
 
   if (fromIndex == NSNotFound || toIndex == NSNotFound)
     {
@@ -290,8 +413,15 @@ GSDiffableDefaultSectionIdentifier()
 - (void) moveSectionWithIdentifier: (id)sectionIdentifier
 	afterSectionWithIdentifier: (id)otherSectionIdentifier
 {
+  sectionIdentifier = [self _normalizedSectionIdentifier: sectionIdentifier];
+  otherSectionIdentifier = [self _normalizedSectionIdentifier: otherSectionIdentifier];
   NSUInteger fromIndex = [_sections indexOfObject: sectionIdentifier];
   NSUInteger toIndex = [_sections indexOfObject: otherSectionIdentifier];
+
+  if ([sectionIdentifier isEqual: otherSectionIdentifier])
+    {
+      return;
+    }
 
   if (fromIndex == NSNotFound || toIndex == NSNotFound)
     {
@@ -321,9 +451,11 @@ GSDiffableDefaultSectionIdentifier()
 - (void) appendItemsWithIdentifiers: (NSArray *)itemIdentifiers
 	  intoSectionWithIdentifier: (id)sectionIdentifier
 {
+  sectionIdentifier = [self _normalizedSectionIdentifier: sectionIdentifier];
   [self _ensureSection: sectionIdentifier];
 
-  NSMutableArray *items = [_itemsBySection objectForKey: (sectionIdentifier ?: GSDiffableDefaultSectionIdentifier())];
+  NSMutableArray *items = [_itemsBySection objectForKey: sectionIdentifier];
+  [self _validateNewItemIdentifiers: itemIdentifiers];
   [items addObjectsFromArray: itemIdentifiers];
 }
 
@@ -355,6 +487,23 @@ GSDiffableDefaultSectionIdentifier()
   return NO;
 }
 
+- (void) _validateNewItemIdentifiers: (NSArray *)itemIdentifiers
+{
+  NSMutableSet *seen = [NSMutableSet set];
+
+  FOR_IN(id, item, itemIdentifiers)
+    {
+      if ([seen containsObject: item]
+	  || [self _findItemIdentifier: item inSection: NULL index: NULL])
+	{
+	  [self _raiseInvalidArgument:
+	    [NSString stringWithFormat: @"Item identifier %@ already exists", item]];
+	}
+      [seen addObject: item];
+    }
+  END_FOR_IN(itemIdentifiers);
+}
+
 - (void) insertItemsWithIdentifiers: (NSArray *)itemIdentifiers
 	   beforeItemWithIdentifier: (id)beforeIdentifier
 {
@@ -370,6 +519,7 @@ GSDiffableDefaultSectionIdentifier()
     {
       NSMutableArray *items = [_itemsBySection objectForKey: section];
       NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(itemIndex, [itemIdentifiers count])];
+      [self _validateNewItemIdentifiers: itemIdentifiers];
       [items insertObjects: itemIdentifiers atIndexes: indexes];
     }
   else
@@ -394,6 +544,7 @@ GSDiffableDefaultSectionIdentifier()
       NSMutableArray *items = [_itemsBySection objectForKey: section];
       NSUInteger start = itemIndex + 1;
       NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange: NSMakeRange(start, [itemIdentifiers count])];
+      [self _validateNewItemIdentifiers: itemIdentifiers];
       [items insertObjects: itemIdentifiers atIndexes: indexes];
     }
   else
@@ -414,7 +565,97 @@ GSDiffableDefaultSectionIdentifier()
 	  if (index < [items count])
 	    {
 	      [items removeObjectAtIndex: index];
+	      [_reloadedItems removeObject: itemIdentifier];
 	    }
+	}
+    }
+  END_FOR_IN(itemIdentifiers);
+}
+
+- (void) moveItemWithIdentifier: (id)itemIdentifier
+       beforeItemWithIdentifier: (id)toIdentifier
+{
+  id fromSection = nil;
+  id toSection = nil;
+  NSUInteger fromIndex = 0;
+  NSUInteger toIndex = 0;
+
+  if ([itemIdentifier isEqual: toIdentifier])
+    {
+      return;
+    }
+
+  if ([self _findItemIdentifier: itemIdentifier inSection: &fromSection index: &fromIndex] == NO
+      || [self _findItemIdentifier: toIdentifier inSection: &toSection index: &toIndex] == NO)
+    {
+      return;
+    }
+
+  NSMutableArray *fromItems = [_itemsBySection objectForKey: fromSection];
+  NSMutableArray *toItems = [_itemsBySection objectForKey: toSection];
+
+  RETAIN(itemIdentifier);
+  [fromItems removeObjectAtIndex: fromIndex];
+  if (fromItems == toItems && fromIndex < toIndex)
+    {
+      toIndex--;
+    }
+  [toItems insertObject: itemIdentifier atIndex: toIndex];
+  RELEASE(itemIdentifier);
+}
+
+- (void) moveItemWithIdentifier: (id)itemIdentifier
+	afterItemWithIdentifier: (id)toIdentifier
+{
+  id fromSection = nil;
+  id toSection = nil;
+  NSUInteger fromIndex = 0;
+  NSUInteger toIndex = 0;
+
+  if ([itemIdentifier isEqual: toIdentifier])
+    {
+      return;
+    }
+
+  if ([self _findItemIdentifier: itemIdentifier inSection: &fromSection index: &fromIndex] == NO
+      || [self _findItemIdentifier: toIdentifier inSection: &toSection index: &toIndex] == NO)
+    {
+      return;
+    }
+
+  NSMutableArray *fromItems = [_itemsBySection objectForKey: fromSection];
+  NSMutableArray *toItems = [_itemsBySection objectForKey: toSection];
+
+  RETAIN(itemIdentifier);
+  [fromItems removeObjectAtIndex: fromIndex];
+  if (fromItems == toItems && fromIndex < toIndex)
+    {
+      toIndex--;
+    }
+  [toItems insertObject: itemIdentifier atIndex: toIndex + 1];
+  RELEASE(itemIdentifier);
+}
+
+- (void) reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers
+{
+  FOR_IN(id, section, sectionIdentifiers)
+    {
+      section = [self _normalizedSectionIdentifier: section];
+      if ([_sections containsObject: section])
+	{
+	  [_reloadedSections addObject: section];
+	}
+    }
+  END_FOR_IN(sectionIdentifiers);
+}
+
+- (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers
+{
+  FOR_IN(id, item, itemIdentifiers)
+    {
+      if ([self _findItemIdentifier: item inSection: NULL index: NULL])
+	{
+	  [_reloadedItems addObject: item];
 	}
     }
   END_FOR_IN(itemIdentifiers);
@@ -448,6 +689,7 @@ GSDiffableDefaultSectionIdentifier()
 {
   DESTROY(_snapshot);
   DESTROY(_itemProvider);
+  DESTROY(_supplementaryViewProvider);
   DESTROY(_identifierToIndexPath);
   DESTROY(_creatingIndexPaths);
   [super dealloc];
@@ -478,10 +720,29 @@ GSDiffableDefaultSectionIdentifier()
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
   animatingDifferences: (BOOL)animatingDifferences
 {
-  DESTROY(_snapshot);
-  _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
+  [self applySnapshot: snapshot
+ animatingDifferences: animatingDifferences
+     completionHandler: NULL];
+}
+
+- (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
+  animatingDifferences: (BOOL)animatingDifferences
+     completionHandler: (GSDiffableDataSourceCompletionBlock)completion
+{
+  if (snapshot == nil)
+    {
+      snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
+      AUTORELEASE(snapshot);
+    }
+
+  ASSIGNCOPY(_snapshot, snapshot);
   [self _rebuildIndexLookup];
   [_collectionView reloadData];
+
+  if (completion != NULL)
+    {
+      CALL_BLOCK(completion);
+    }
 }
 
 - (NSDiffableDataSourceSnapshot *) snapshot
@@ -614,6 +875,21 @@ GSDiffableDefaultSectionIdentifier()
   return result;
 }
 
+- (NSView *) collectionView: (NSCollectionView *)collectionView
+viewForSupplementaryElementOfKind: (NSCollectionViewSupplementaryElementKind)kind
+		atIndexPath: (NSIndexPath *)indexPath
+{
+  if (_supplementaryViewProvider == NULL)
+    {
+      return nil;
+    }
+
+  return (NSView *)CALL_NON_NULL_BLOCK(_supplementaryViewProvider,
+				      collectionView,
+				      kind,
+				      indexPath);
+}
+
 - (void) collectionView: (NSCollectionView *)collectionView
 prefetchItemsAtIndexPaths: (NSArray *)indexPaths
 {
@@ -657,6 +933,18 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
   [_collectionView reloadItemsAtIndexPaths: [NSSet setWithArray: indexPaths]];
 }
 
+- (GSCollectionViewSupplementaryViewProviderBlock) supplementaryViewProvider
+{
+  return _supplementaryViewProvider;
+}
+
+- (void) setSupplementaryViewProvider: (GSCollectionViewSupplementaryViewProviderBlock)provider
+{
+  id oldProvider = (id)_supplementaryViewProvider;
+  _supplementaryViewProvider = (void *)RETAIN((id)provider);
+  RELEASE(oldProvider);
+}
+
 @end
 
 @implementation NSTableViewDiffableDataSource
@@ -670,6 +958,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
       _tableView = tableView;
       _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
       _cellProvider = (void*)RETAIN(cellProvider);
+      _defaultRowAnimation = NSTableViewAnimationEffectFade;
       _identifierToIndexPath = [[NSMutableDictionary alloc] init];
       _creatingIndexPaths = [[NSMutableSet alloc] init];
       [_tableView setDataSource: self];
@@ -681,6 +970,8 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 {
   DESTROY(_snapshot);
   DESTROY(_cellProvider);
+  DESTROY(_rowViewProvider);
+  DESTROY(_sectionHeaderViewProvider);
   DESTROY(_identifierToIndexPath);
   DESTROY(_creatingIndexPaths);
   [super dealloc];
@@ -700,7 +991,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
       for (itemIndex = 0; itemIndex < [items count]; itemIndex++)
 	{
 	  NSIndexPath *path = [NSIndexPath indexPathForItem: itemIndex inSection: sectionIndex];
-	  [_identifierToIndexPath setObject: RETAIN(path) forKey: [items objectAtIndex: itemIndex]];
+	  [_identifierToIndexPath setObject: path forKey: [items objectAtIndex: itemIndex]];
 	}
       sectionIndex++;
     }
@@ -710,11 +1001,120 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
   animatingDifferences: (BOOL)animatingDifferences
 {
-  DESTROY(_snapshot);
+  [self applySnapshot: snapshot
+ animatingDifferences: animatingDifferences
+     completionHandler: NULL];
+}
 
-  _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
+- (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
+  animatingDifferences: (BOOL)animatingDifferences
+     completionHandler: (GSDiffableDataSourceCompletionBlock)completion
+{
+  NSDiffableDataSourceSnapshot *oldSnapshot = [_snapshot copy];
+  NSMutableIndexSet *deletedRows = [NSMutableIndexSet indexSet];
+  NSMutableIndexSet *insertedRows = [NSMutableIndexSet indexSet];
+  NSMutableIndexSet *reloadedRows = [NSMutableIndexSet indexSet];
+  NSArray *oldItems = nil;
+  NSArray *newItems = nil;
+
+  if (snapshot == nil)
+    {
+      snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
+      AUTORELEASE(snapshot);
+    }
+
+  oldItems = [oldSnapshot itemIdentifiers];
+  newItems = [snapshot itemIdentifiers];
+
+  FOR_IN(id, item, oldItems)
+    {
+      if ([newItems containsObject: item] == NO)
+	{
+	  NSInteger row = GSDiffableRowForItemInSnapshot(oldSnapshot, item);
+	  if (row != NSNotFound)
+	    {
+	      [deletedRows addIndex: row];
+	    }
+	}
+    }
+  END_FOR_IN(oldItems);
+
+  FOR_IN(id, item, newItems)
+    {
+      NSInteger newRow = GSDiffableRowForItemInSnapshot(snapshot, item);
+      NSInteger oldRow = GSDiffableRowForItemInSnapshot(oldSnapshot, item);
+
+      if (oldRow == NSNotFound)
+	{
+	  [insertedRows addIndex: newRow];
+	}
+      else if (oldRow != newRow)
+	{
+	  [reloadedRows addIndex: newRow];
+	}
+    }
+  END_FOR_IN(newItems);
+
+  FOR_IN(id, section, [snapshot _gsReloadedSections])
+    {
+      NSInteger firstRow = GSDiffableRowForSectionInSnapshot(snapshot, section);
+      NSInteger count = [[snapshot itemIdentifiersInSectionWithIdentifier: section] count];
+
+      if (firstRow != NSNotFound && count > 0)
+	{
+	  [reloadedRows addIndexesInRange: NSMakeRange(firstRow, count)];
+	}
+    }
+  END_FOR_IN([snapshot _gsReloadedSections]);
+
+  FOR_IN(id, item, [snapshot _gsReloadedItems])
+    {
+      NSInteger row = GSDiffableRowForItemInSnapshot(snapshot, item);
+      if (row != NSNotFound)
+	{
+	  [reloadedRows addIndex: row];
+	}
+    }
+  END_FOR_IN([snapshot _gsReloadedItems]);
+
+  ASSIGNCOPY(_snapshot, snapshot);
   [self _rebuildIndexLookup];
-  [_tableView reloadData];
+
+  if (animatingDifferences == NO)
+    {
+      [_tableView reloadData];
+    }
+  else
+    {
+      [_tableView beginUpdates];
+      if ([deletedRows count] > 0)
+	{
+	  [_tableView removeRowsAtIndexes: deletedRows
+			    withAnimation: _defaultRowAnimation];
+	}
+      if ([insertedRows count] > 0)
+	{
+	  [_tableView insertRowsAtIndexes: insertedRows
+			    withAnimation: _defaultRowAnimation];
+	}
+      [_tableView endUpdates];
+
+      if ([reloadedRows count] > 0)
+	{
+	  NSIndexSet *columns =
+	    [NSIndexSet indexSetWithIndexesInRange:
+	      NSMakeRange(0, [_tableView numberOfColumns])];
+	  [_tableView reloadDataForRowIndexes: reloadedRows
+				columnIndexes: columns];
+	}
+    }
+
+  if (completion != NULL)
+    {
+      CALL_BLOCK(completion);
+    }
+
+  RELEASE(oldSnapshot);
 }
 
 - (NSDiffableDataSourceSnapshot *) snapshot
@@ -759,6 +1159,11 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
   NSInteger runningTotal = 0;
   NSArray *sections = [_snapshot sectionIdentifiers];
 
+  if (row < 0)
+    {
+      return nil;
+    }
+
   FOR_IN(id, section, sections)
     {
       NSArray *items = [_snapshot itemIdentifiersInSectionWithIdentifier: section];
@@ -773,6 +1178,21 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
   END_FOR_IN(sections);
 
   return nil;
+}
+
+- (NSInteger) rowForItemIdentifier: (id)itemIdentifier
+{
+  return GSDiffableRowForItemInSnapshot(_snapshot, itemIdentifier);
+}
+
+- (id) sectionIdentifierForRow: (NSInteger)row
+{
+  return GSDiffableSectionForRowInSnapshot(_snapshot, row);
+}
+
+- (NSInteger) rowForSectionIdentifier: (id)sectionIdentifier
+{
+  return GSDiffableRowForSectionInSnapshot(_snapshot, sectionIdentifier);
 }
 
 - (NSInteger) numberOfRowsInTableView: (NSTableView *)tableView
@@ -876,6 +1296,75 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
   [textField setBackgroundColor: [NSColor clearColor]];
   [textField setStringValue: [identifier description]];
   return textField;
+}
+
+- (NSTableRowView *) tableView: (NSTableView *)tableView
+		  rowViewForRow: (NSInteger)rowIndex
+{
+  id identifier = [self itemIdentifierForRow: rowIndex];
+
+  if (_rowViewProvider == NULL)
+    {
+      return nil;
+    }
+
+  return (NSTableRowView *)CALL_NON_NULL_BLOCK(_rowViewProvider,
+					      tableView,
+					      rowIndex,
+					      identifier);
+}
+
+- (NSView *) tableView: (NSTableView *)tableView
+ viewForSectionHeaderInSection: (NSInteger)section
+{
+  NSArray *sections = [_snapshot sectionIdentifiers];
+  id sectionIdentifier = nil;
+
+  if (section < 0 || section >= (NSInteger)[sections count]
+      || _sectionHeaderViewProvider == NULL)
+    {
+      return nil;
+    }
+
+  sectionIdentifier = [sections objectAtIndex: section];
+  return (NSView *)CALL_NON_NULL_BLOCK(_sectionHeaderViewProvider,
+				      tableView,
+				      section,
+				      sectionIdentifier);
+}
+
+- (NSTableViewAnimationOptions) defaultRowAnimation
+{
+  return _defaultRowAnimation;
+}
+
+- (void) setDefaultRowAnimation: (NSTableViewAnimationOptions)animation
+{
+  _defaultRowAnimation = animation;
+}
+
+- (GSTableViewRowViewProviderBlock) rowViewProvider
+{
+  return _rowViewProvider;
+}
+
+- (void) setRowViewProvider: (GSTableViewRowViewProviderBlock)provider
+{
+  id oldProvider = (id)_rowViewProvider;
+  _rowViewProvider = (void *)RETAIN((id)provider);
+  RELEASE(oldProvider);
+}
+
+- (GSTableViewSectionHeaderViewProviderBlock) sectionHeaderViewProvider
+{
+  return _sectionHeaderViewProvider;
+}
+
+- (void) setSectionHeaderViewProvider: (GSTableViewSectionHeaderViewProviderBlock)provider
+{
+  id oldProvider = (id)_sectionHeaderViewProvider;
+  _sectionHeaderViewProvider = (void *)RETAIN((id)provider);
+  RELEASE(oldProvider);
 }
 
 @end

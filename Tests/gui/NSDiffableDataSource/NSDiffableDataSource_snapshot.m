@@ -90,6 +90,29 @@ int main()
     [snapshot moveSectionWithIdentifier: @"Section3" beforeSectionWithIdentifier: @"Section1"];
     NSArray *sectionsAfterMove = [NSArray arrayWithObjects:@"Section3", @"Section1", @"Section2", nil];
     PASS([[snapshot sectionIdentifiers] isEqualToArray: sectionsAfterMove], "Section move operation");
+
+    // Test 10: Move items
+    [snapshot moveItemWithIdentifier: @"Item5" beforeItemWithIdentifier: @"Item1"];
+    NSArray *section3ItemsAfterMove = [snapshot itemIdentifiersInSectionWithIdentifier: @"Section3"];
+    NSArray *section1ItemsAfterMove = [snapshot itemIdentifiersInSectionWithIdentifier: @"Section1"];
+    NSArray *expectedSection3ItemsAfterMove = [NSArray arrayWithObject: @"Item5"];
+    NSArray *expectedSection1ItemsAfterMove = [NSArray arrayWithObjects: @"Item1", @"InsertedItem", @"Item2", nil];
+    PASS([section3ItemsAfterMove isEqualToArray: expectedSection3ItemsAfterMove], "Item moved into destination section");
+    PASS([section1ItemsAfterMove isEqualToArray: expectedSection1ItemsAfterMove], "Item removed from original section after move");
+
+    [snapshot moveItemWithIdentifier: @"Item5" afterItemWithIdentifier: @"Item2"];
+    NSArray *section1ItemsAfterSecondMove = [snapshot itemIdentifiersInSectionWithIdentifier: @"Section1"];
+    NSArray *expectedSection1ItemsAfterSecondMove = [NSArray arrayWithObjects: @"Item1", @"InsertedItem", @"Item2", @"Item5", nil];
+    PASS([section1ItemsAfterSecondMove isEqualToArray: expectedSection1ItemsAfterSecondMove], "Item moved after destination item");
+
+    // Test 11: Duplicate identifiers are rejected
+    NS_DURING
+      [snapshot appendItemsWithIdentifiers: [NSArray arrayWithObject: @"Item1"]
+		      intoSectionWithIdentifier: @"Section1"];
+      PASS(NO, "Duplicate item identifier raises exception");
+    NS_HANDLER
+      PASS([[localException name] isEqualToString: NSInvalidArgumentException], "Duplicate item identifier raises invalid argument");
+    NS_ENDHANDLER
     
     [snapshot release];
     [copiedSnapshot release];

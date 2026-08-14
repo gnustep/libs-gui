@@ -43,6 +43,7 @@
 @class NSMutableSet;
 @class NSIndexPath;
 @class NSView;
+@class NSTableRowView;
 
 @protocol NSCollectionViewDataSource;
 @protocol NSCollectionViewPrefetching;
@@ -61,6 +62,10 @@ DEFINE_BLOCK_TYPE(GSCollectionViewItemProviderBlock, NSCollectionViewItem*, NSCo
  * and returns a configured NSView for the cell.
  */
 DEFINE_BLOCK_TYPE(GSTableViewCellProviderBlock, NSView*, NSTableView*, NSTableColumn*, NSInteger, id);
+DEFINE_BLOCK_TYPE(GSCollectionViewSupplementaryViewProviderBlock, NSView*, NSCollectionView*, NSString*, NSIndexPath*);
+DEFINE_BLOCK_TYPE(GSTableViewRowViewProviderBlock, NSTableRowView*, NSTableView*, NSInteger, id);
+DEFINE_BLOCK_TYPE(GSTableViewSectionHeaderViewProviderBlock, NSView*, NSTableView*, NSInteger, id);
+DEFINE_BLOCK_TYPE_NO_ARGS(GSDiffableDataSourceCompletionBlock, void);
 
 /**
  * <p>NSDiffableDataSourceSnapshot represents a snapshot of the current state
@@ -190,6 +195,28 @@ APPKIT_EXPORT_CLASS
  */
 - (void) deleteItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 
+/**
+ * Moves the specified item to a position before another item.
+ */
+- (void) moveItemWithIdentifier: (id)itemIdentifier
+       beforeItemWithIdentifier: (id)toIdentifier;
+
+/**
+ * Moves the specified item to a position after another item.
+ */
+- (void) moveItemWithIdentifier: (id)itemIdentifier
+	afterItemWithIdentifier: (id)toIdentifier;
+
+/**
+ * Marks the specified sections as needing reload when the snapshot is applied.
+ */
+- (void) reloadSectionsWithIdentifiers: (NSArray *)sectionIdentifiers;
+
+/**
+ * Marks the specified items as needing reload when the snapshot is applied.
+ */
+- (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
+
 @end
 
 /**
@@ -252,6 +279,7 @@ APPKIT_EXPORT_CLASS
   NSCollectionView *_collectionView;
   NSDiffableDataSourceSnapshot *_snapshot;
   GSCollectionViewItemProviderBlock _itemProvider;
+  GSCollectionViewSupplementaryViewProviderBlock _supplementaryViewProvider;
   NSMutableDictionary *_identifierToIndexPath;
   NSMutableSet *_creatingIndexPaths;
 }
@@ -274,6 +302,10 @@ APPKIT_EXPORT_CLASS
  */
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
  animatingDifferences: (BOOL)animatingDifferences;
+
+- (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
+ animatingDifferences: (BOOL)animatingDifferences
+     completionHandler: (GSDiffableDataSourceCompletionBlock)completion;
 
 /**
  * Returns the current snapshot representing the state of the data.
@@ -306,6 +338,9 @@ APPKIT_EXPORT_CLASS
  * itemIdentifiers: An array of unique identifiers for the items to reload.
  */
 - (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
+
+- (GSCollectionViewSupplementaryViewProviderBlock) supplementaryViewProvider;
+- (void) setSupplementaryViewProvider: (GSCollectionViewSupplementaryViewProviderBlock)provider;
 @end
 
 /**
@@ -329,6 +364,9 @@ APPKIT_EXPORT_CLASS
   NSTableView *_tableView;
   NSDiffableDataSourceSnapshot *_snapshot;
   GSTableViewCellProviderBlock _cellProvider;
+  GSTableViewRowViewProviderBlock _rowViewProvider;
+  GSTableViewSectionHeaderViewProviderBlock _sectionHeaderViewProvider;
+  NSTableViewAnimationOptions _defaultRowAnimation;
   NSMutableDictionary *_identifierToIndexPath;
   NSMutableSet *_creatingIndexPaths;
 }
@@ -351,6 +389,10 @@ cellProvider: (GSTableViewCellProviderBlock)cellProvider;
  */
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
 animatingDifferences: (BOOL)animatingDifferences;
+
+- (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
+ animatingDifferences: (BOOL)animatingDifferences
+     completionHandler: (GSDiffableDataSourceCompletionBlock)completion;
 
 /**
  * Returns the current snapshot representing the state of the data.
@@ -379,6 +421,12 @@ animatingDifferences: (BOOL)animatingDifferences;
  */
 - (id) itemIdentifierForRow: (NSInteger)row;
 
+- (NSInteger) rowForItemIdentifier: (id)itemIdentifier;
+
+- (id) sectionIdentifierForRow: (NSInteger)row;
+
+- (NSInteger) rowForSectionIdentifier: (id)sectionIdentifier;
+
 /**
  * Reloads the specified sections in the table view.
  * sectionIdentifiers: An array of unique identifiers for the sections to reload.
@@ -390,6 +438,15 @@ animatingDifferences: (BOOL)animatingDifferences;
  * itemIdentifiers: An array of unique identifiers for the items to reload.
  */
 - (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
+
+- (NSTableViewAnimationOptions) defaultRowAnimation;
+- (void) setDefaultRowAnimation: (NSTableViewAnimationOptions)animation;
+
+- (GSTableViewRowViewProviderBlock) rowViewProvider;
+- (void) setRowViewProvider: (GSTableViewRowViewProviderBlock)provider;
+
+- (GSTableViewSectionHeaderViewProviderBlock) sectionHeaderViewProvider;
+- (void) setSectionHeaderViewProvider: (GSTableViewSectionHeaderViewProviderBlock)provider;
 @end
 
 #endif /* end of #if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST) */
