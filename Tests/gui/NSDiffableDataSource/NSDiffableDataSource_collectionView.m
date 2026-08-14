@@ -12,32 +12,13 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSIndexPath.h>
-#include <AppKit/NSApplication.h>
 #include <AppKit/NSCollectionView.h>
-#include <AppKit/NSCollectionViewItem.h>
 #include <AppKit/NSCollectionViewLayout.h>
 #include <AppKit/NSCollectionViewGridLayout.h>
 #include <AppKit/NSDiffableDataSource.h>
-#include <AppKit/NSWindow.h>
+#include <AppKit/NSTableView.h>
+#include <AppKit/NSTableColumn.h>
 #include <AppKit/NSView.h>
-
-// Mock collection view item for testing
-@interface TestCollectionViewItem : NSCollectionViewItem
-@end
-
-@implementation TestCollectionViewItem
-- (id)initWithIdentifier: (NSString *)identifier
-{
-  self = [super init];
-  if (self) {
-    // Create a simple view for testing
-    NSView *view = [[NSView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
-    [self setView: view];
-    [view release];
-  }
-  return self;
-}
-@end
 
 int main()
 {
@@ -79,27 +60,60 @@ int main()
     // Apply snapshot (may have limited functionality without item provider)
     [dataSource applySnapshot: snapshot animatingDifferences: NO];
     
-    // Test 4:  Verify data source methods work with basic counting
-    PASS([dataSource numberOfSectionsInCollectionView: collectionView] >= 0, "Number of sections is non-negative");
+    // Test 4:  Verify data source methods reflect the applied snapshot
+    PASS([dataSource numberOfSectionsInCollectionView: collectionView] == 2, "Number of sections matches applied snapshot");
+    PASS([dataSource collectionView: collectionView numberOfItemsInSection: 0] == 2, "First section item count matches applied snapshot");
+    PASS([dataSource collectionView: collectionView numberOfItemsInSection: 1] == 3, "Second section item count matches applied snapshot");
     
     // Test 5:  Basic snapshot functionality
     NSDiffableDataSourceSnapshot *retrievedSnapshot = [dataSource snapshot];
     PASS(retrievedSnapshot != nil, "Can retrieve snapshot from data source");
-    PASS([retrievedSnapshot numberOfSections] >= 0, "Retrieved snapshot has valid section count");
+    PASS([retrievedSnapshot numberOfSections] == 2, "Retrieved snapshot preserves section count");
+    PASS([retrievedSnapshot numberOfItems] == 5, "Retrieved snapshot preserves item count");
+    NSArray *expectedItems = [NSArray arrayWithObjects: @"Item1", @"Item2", @"Item3", @"Item4", @"Item5", nil];
+    PASS([[retrievedSnapshot itemIdentifiers] isEqualToArray: expectedItems],
+	  "Retrieved snapshot preserves item order");
+    PASS([[dataSource indexPathForItemIdentifier: @"Item4"] isEqual:
+	    [NSIndexPath indexPathForItem: 1 inSection: 1]], "Identifier lookup returns index path");
+    PASS([[dataSource itemIdentifierForIndexPath:
+	    [NSIndexPath indexPathForItem: 0 inSection: 1]] isEqual: @"Item3"],
+	  "Index path lookup returns identifier");
     
     // Test 6:  Basic snapshot updates
     NSDiffableDataSourceSnapshot *updatedSnapshot = [dataSource snapshot];
     if (updatedSnapshot) {
       [updatedSnapshot appendItemsWithIdentifiers: [NSArray arrayWithObjects: @"Item6", nil] intoSectionWithIdentifier: @"Section2"];
       [dataSource applySnapshot: updatedSnapshot animatingDifferences: NO];
-      PASS(YES, "Snapshot update completed");
+      PASS([dataSource collectionView: collectionView numberOfItemsInSection: 1] == 4, "Snapshot update changes item count");
+      PASS([[dataSource itemIdentifierForIndexPath:
+	      [NSIndexPath indexPathForItem: 3 inSection: 1]] isEqual: @"Item6"],
+	    "Snapshot update preserves new item identifier");
     } else {
       PASS(NO, "Could not retrieve snapshot for update");
     }
-    
+
+    // Test 7: Table data source stores applied snapshots and maps flattened rows
+    NSTableView *tableView = [[NSTableView alloc] initWithFrame: frame];
+    NSTableColumn *column = [[NSTableColumn alloc] initWithIdentifier: @"column"];
+    [tableView addTableColumn: column];
+    [column release];
+
+    NSTableViewDiffableDataSource *tableDataSource =
+      [[NSTableViewDiffableDataSource alloc] initWithTableView: tableView
+						  cellProvider: NULL];
+    [tableDataSource applySnapshot: snapshot animatingDifferences: NO];
+
+    PASS([tableDataSource numberOfRowsInTableView: tableView] == 5, "Table row count matches applied snapshot");
+    PASS([[tableDataSource itemIdentifierForRow: 3] isEqual: @"Item4"], "Table row lookup returns identifier");
+    PASS([tableDataSource rowForItemIdentifier: @"Item5"] == 4, "Table identifier lookup returns row");
+    PASS([[tableDataSource sectionIdentifierForRow: 3] isEqual: @"Section2"], "Table row maps to section identifier");
+    PASS([tableDataSource rowForSectionIdentifier: @"Section2"] == 2, "Table section maps to first row");
+
     // Clean up
     [snapshot release];
     [dataSource release];
+    [tableDataSource release];
+    [tableView release];
     [collectionView release];
     
   END_SET("NSDiffableDataSource with NSCollectionView")
