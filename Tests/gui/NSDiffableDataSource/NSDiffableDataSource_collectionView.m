@@ -12,6 +12,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSIndexPath.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSCollectionView.h>
 #include <AppKit/NSCollectionViewLayout.h>
 #include <AppKit/NSCollectionViewGridLayout.h>
@@ -23,6 +24,16 @@
 int main()
 {
   START_SET("NSDiffableDataSource with NSCollectionView")
+
+  NS_DURING
+    [NSApplication sharedApplication];
+  NS_HANDLER
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException])
+      SKIP("It looks like GNUstep backend is not yet installed")
+  NS_ENDHANDLER
+
+  NS_DURING
+    {
     
     // Test 1: Create collection view and data source
     NSRect frame = NSMakeRect(0, 0, 400, 300);
@@ -115,6 +126,12 @@ int main()
     [tableDataSource release];
     [tableView release];
     [collectionView release];
+    }
+  NS_HANDLER
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException]
+      || [[localException name] isEqualToString: @"NSWindowServerCommunicationException"])
+      SKIP("No display available")
+  NS_ENDHANDLER
     
   END_SET("NSDiffableDataSource with NSCollectionView")
   

@@ -95,10 +95,12 @@ int main()
     [snapshot moveItemWithIdentifier: @"Item5" beforeItemWithIdentifier: @"Item1"];
     NSArray *section3ItemsAfterMove = [snapshot itemIdentifiersInSectionWithIdentifier: @"Section3"];
     NSArray *section1ItemsAfterMove = [snapshot itemIdentifiersInSectionWithIdentifier: @"Section1"];
-    NSArray *expectedSection3ItemsAfterMove = [NSArray arrayWithObject: @"Item5"];
-    NSArray *expectedSection1ItemsAfterMove = [NSArray arrayWithObjects: @"Item1", @"InsertedItem", @"Item2", nil];
-    PASS([section3ItemsAfterMove isEqualToArray: expectedSection3ItemsAfterMove], "Item moved into destination section");
-    PASS([section1ItemsAfterMove isEqualToArray: expectedSection1ItemsAfterMove], "Item removed from original section after move");
+    NSArray *section2ItemsAfterMove = [snapshot itemIdentifiersInSectionWithIdentifier: @"Section2"];
+    NSArray *expectedSection1ItemsAfterMove = [NSArray arrayWithObjects: @"Item5", @"Item1", @"InsertedItem", @"Item2", nil];
+    NSArray *expectedSection2ItemsAfterMove = [NSArray arrayWithObject: @"Item4"];
+    PASS([section3ItemsAfterMove count] == 0, "Section move does not move items between sections");
+    PASS([section1ItemsAfterMove isEqualToArray: expectedSection1ItemsAfterMove], "Item moved into destination section before item");
+    PASS([section2ItemsAfterMove isEqualToArray: expectedSection2ItemsAfterMove], "Item removed from original section after move");
 
     [snapshot moveItemWithIdentifier: @"Item5" afterItemWithIdentifier: @"Item2"];
     NSArray *section1ItemsAfterSecondMove = [snapshot itemIdentifiersInSectionWithIdentifier: @"Section1"];
