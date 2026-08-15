@@ -741,7 +741,7 @@ GSDiffableRowForSectionInSnapshot(NSDiffableDataSourceSnapshot *snapshot,
 
   if (completion != NULL)
     {
-      CALL_BLOCK(completion);
+      CALL_BLOCK_NO_ARGS(completion);
     }
 }
 
@@ -1055,7 +1055,8 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
     }
   END_FOR_IN(newItems);
 
-  FOR_IN(id, section, [snapshot _gsReloadedSections])
+  NSSet *reloadedSections = [snapshot _gsReloadedSections];
+  FOR_IN(id, section, reloadedSections)
     {
       NSInteger firstRow = GSDiffableRowForSectionInSnapshot(snapshot, section);
       NSInteger count = [[snapshot itemIdentifiersInSectionWithIdentifier: section] count];
@@ -1065,9 +1066,10 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 	  [reloadedRows addIndexesInRange: NSMakeRange(firstRow, count)];
 	}
     }
-  END_FOR_IN([snapshot _gsReloadedSections]);
+  END_FOR_IN(reloadedSections);
 
-  FOR_IN(id, item, [snapshot _gsReloadedItems])
+  NSSet *reloadedItems = [snapshot _gsReloadedItems];
+  FOR_IN(id, item, reloadedItems)
     {
       NSInteger row = GSDiffableRowForItemInSnapshot(snapshot, item);
       if (row != NSNotFound)
@@ -1075,7 +1077,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 	  [reloadedRows addIndex: row];
 	}
     }
-  END_FOR_IN([snapshot _gsReloadedItems]);
+  END_FOR_IN(reloadedItems);
 
   ASSIGNCOPY(_snapshot, snapshot);
   [self _rebuildIndexLookup];
@@ -1111,7 +1113,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 
   if (completion != NULL)
     {
-      CALL_BLOCK(completion);
+      CALL_BLOCK_NO_ARGS(completion);
     }
 
   RELEASE(oldSnapshot);
