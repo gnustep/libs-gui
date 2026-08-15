@@ -62,9 +62,31 @@ DEFINE_BLOCK_TYPE(GSCollectionViewItemProviderBlock, NSCollectionViewItem*, NSCo
  * and returns a configured NSView for the cell.
  */
 DEFINE_BLOCK_TYPE(GSTableViewCellProviderBlock, NSView*, NSTableView*, NSTableColumn*, NSInteger, id);
+
+/**
+ * Block type for providing collection view supplementary views.
+ * Takes a collection view, supplementary element kind, and index path,
+ * and returns a configured NSView for the supplementary element.
+ */
 DEFINE_BLOCK_TYPE(GSCollectionViewSupplementaryViewProviderBlock, NSView*, NSCollectionView*, NSString*, NSIndexPath*);
+
+/**
+ * Block type for providing table row views.
+ * Takes a table view, row number, and item identifier,
+ * and returns a configured NSTableRowView.
+ */
 DEFINE_BLOCK_TYPE(GSTableViewRowViewProviderBlock, NSTableRowView*, NSTableView*, NSInteger, id);
+
+/**
+ * Block type for providing table section header views.
+ * Takes a table view, section index, and section identifier,
+ * and returns a configured NSView for the section header.
+ */
 DEFINE_BLOCK_TYPE(GSTableViewSectionHeaderViewProviderBlock, NSView*, NSTableView*, NSInteger, id);
+
+/**
+ * Block type called after a diffable data source finishes applying a snapshot.
+ */
 DEFINE_BLOCK_TYPE_NO_ARGS(GSDiffableDataSourceCompletionBlock, void);
 
 /**
@@ -303,6 +325,14 @@ APPKIT_EXPORT_CLASS
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
  animatingDifferences: (BOOL)animatingDifferences;
 
+/**
+ * Applies a snapshot to the data source, updating the collection view and
+ * calling the completion block after the update finishes.
+ * snapshot: The snapshot describing the new state of the data.
+ * animatingDifferences: Whether to animate the changes between the current
+ *                       state and the new snapshot.
+ * completion: A block called after the snapshot has been applied.
+ */
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
  animatingDifferences: (BOOL)animatingDifferences
      completionHandler: (GSDiffableDataSourceCompletionBlock)completion;
@@ -339,7 +369,15 @@ APPKIT_EXPORT_CLASS
  */
 - (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 
+/**
+ * Returns the block used to provide supplementary views.
+ */
 - (GSCollectionViewSupplementaryViewProviderBlock) supplementaryViewProvider;
+
+/**
+ * Sets the block used to provide supplementary views.
+ * provider: A block that creates and configures supplementary views.
+ */
 - (void) setSupplementaryViewProvider: (GSCollectionViewSupplementaryViewProviderBlock)provider;
 @end
 
@@ -390,6 +428,14 @@ cellProvider: (GSTableViewCellProviderBlock)cellProvider;
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
 animatingDifferences: (BOOL)animatingDifferences;
 
+/**
+ * Applies a snapshot to the data source, updating the table view and calling
+ * the completion block after the update finishes.
+ * snapshot: The snapshot describing the new state of the data.
+ * animatingDifferences: Whether to animate the changes between the current
+ *                       state and the new snapshot.
+ * completion: A block called after the snapshot has been applied.
+ */
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
  animatingDifferences: (BOOL)animatingDifferences
      completionHandler: (GSDiffableDataSourceCompletionBlock)completion;
@@ -421,10 +467,25 @@ animatingDifferences: (BOOL)animatingDifferences;
  */
 - (id) itemIdentifierForRow: (NSInteger)row;
 
+/**
+ * Returns the row containing the specified item identifier.
+ * itemIdentifier: The unique identifier for the item.
+ * Returns: The row containing the item, or NSNotFound if not found.
+ */
 - (NSInteger) rowForItemIdentifier: (id)itemIdentifier;
 
+/**
+ * Returns the section identifier containing the specified row.
+ * row: The row number to locate.
+ * Returns: The section identifier for the row, or nil if not found.
+ */
 - (id) sectionIdentifierForRow: (NSInteger)row;
 
+/**
+ * Returns the first row for the specified section identifier.
+ * sectionIdentifier: The unique identifier for the section.
+ * Returns: The first row in the section, or NSNotFound if not found.
+ */
 - (NSInteger) rowForSectionIdentifier: (id)sectionIdentifier;
 
 /**
@@ -439,13 +500,37 @@ animatingDifferences: (BOOL)animatingDifferences;
  */
 - (void) reloadItemsWithIdentifiers: (NSArray *)itemIdentifiers;
 
+/**
+ * Returns the animation options used for animated row insertions and deletions.
+ */
 - (NSTableViewAnimationOptions) defaultRowAnimation;
+
+/**
+ * Sets the animation options used for animated row insertions and deletions.
+ * animation: The table view animation options to use.
+ */
 - (void) setDefaultRowAnimation: (NSTableViewAnimationOptions)animation;
 
+/**
+ * Returns the block used to provide table row views.
+ */
 - (GSTableViewRowViewProviderBlock) rowViewProvider;
+
+/**
+ * Sets the block used to provide table row views.
+ * provider: A block that creates and configures row views.
+ */
 - (void) setRowViewProvider: (GSTableViewRowViewProviderBlock)provider;
 
+/**
+ * Returns the block used to provide table section header views.
+ */
 - (GSTableViewSectionHeaderViewProviderBlock) sectionHeaderViewProvider;
+
+/**
+ * Sets the block used to provide table section header views.
+ * provider: A block that creates and configures section header views.
+ */
 - (void) setSectionHeaderViewProvider: (GSTableViewSectionHeaderViewProviderBlock)provider;
 @end
 
