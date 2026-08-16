@@ -34,6 +34,12 @@
                                                marker: (GSCSVariable **)marker
                                                errors: (NSArray **)errors;
 
+- (void) addConstraintToTableau: (GSCSConstraint *)constraint;
+
+- (void) removeConstraintFromTableau: (GSCSConstraint *)constraint;
+
+- (void) resolve;
+
 - (void) addVariable: (GSCSVariable *)variable
          coefficient: (CGFloat)coefficient
         toExpression: (GSCSLinearExpression *)expression;
@@ -93,7 +99,7 @@
   return self;
 }
 
-- (void) addConstraint: (GSCSConstraint *)constraint
+- (void) addConstraintToTableau: (GSCSConstraint *)constraint
 {
   GSCSVariable *marker = nil;
   NSArray *errors = nil;
@@ -119,19 +125,35 @@
                                    marker: marker
                                    errors: errors];
     }
+}
 
+- (void) resolve
+{
   [self optimize: [_tableau objective]];
   [self setExternalVariables];
 }
 
-- (void) addConstraints: (NSArray *)constraints
+- (void) addConstraint: (GSCSConstraint *)constraint
 {
-  FOR_IN(GSCSConstraint *, constraint, constraints)
-    [self addConstraint: constraint];
-  END_FOR_IN(constraints);
+  [self addConstraintToTableau: constraint];
+  [self resolve];
 }
 
-- (void) removeConstraint: (GSCSConstraint *)constraint
+- (void) addConstraints: (NSArray *)constraints
+{
+  if ([constraints count] == 0)
+    {
+      return;
+    }
+
+  FOR_IN(GSCSConstraint *, constraint, constraints)
+    [self addConstraintToTableau: constraint];
+  END_FOR_IN(constraints);
+
+  [self resolve];
+}
+
+- (void) removeConstraintFromTableau: (GSCSConstraint *)constraint
 {
   GSCSVariable *marker = [_markerVariables objectForKey: constraint];
   if (marker == nil)
@@ -206,16 +228,26 @@
       [_errorVariables removeObjectForKey: constraint];
     }
   RELEASE(marker);
+}
 
-  [self optimize: objective];
-  [self setExternalVariables];
+- (void) removeConstraint: (GSCSConstraint *)constraint
+{
+  [self removeConstraintFromTableau: constraint];
+  [self resolve];
 }
 
 - (void) removeConstraints: (NSArray *)constraints
 {
+  if ([constraints count] == 0)
+    {
+      return;
+    }
+
   FOR_IN(GSCSConstraint *, constraint, constraints)
-    [self removeConstraint: constraint];
+    [self removeConstraintFromTableau: constraint];
   END_FOR_IN(constraints);
+
+  [self resolve];
 }
 
 - (GSCSSolution *) solve

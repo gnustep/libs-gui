@@ -261,6 +261,9 @@ typedef NSInteger GSLayoutViewAttribute;
       ASSIGN(_constraintsByViewIndex, [NSMutableDictionary dictionary]);
 
       ASSIGN(_internalConstraintsByViewIndex, [NSMapTable strongToStrongObjectsMapTable]);
+
+      ASSIGN(_batchedSolverConstraints, [NSMutableArray array]);
+      _batchDepth = 0;
     }
   return self;
 }
@@ -273,11 +276,25 @@ typedef NSInteger GSLayoutViewAttribute;
   return self;
 }
 
+/* The solver reaches an optimal tableau once per call, and every tracked view
+   is measured against the solution afterwards, so a group of constraints is
+   handed over in one go rather than one at a time. */
 - (void) addConstraints: (NSArray *)constraints
 {
+  if ([constraints count] == 0)
+    {
+      return;
+    }
+
+  _batchDepth++;
   FOR_IN(NSLayoutConstraint *, constraint, constraints)
     [self addConstraint: constraint];
   END_FOR_IN(constraints);
+  _batchDepth--;
+
+  [_solver addConstraints: _batchedSolverConstraints];
+  [_batchedSolverConstraints removeAllObjects];
+  [self updateAlignmentRectsForTrackedViews];
 }
 
 - (void) addConstraint: (NSLayoutConstraint *)constraint
@@ -300,7 +317,10 @@ typedef NSInteger GSLayoutViewAttribute;
     }
 
   [self addSolverConstraint: solverConstraint];
-  [self updateAlignmentRectsForTrackedViews];
+  if (_batchDepth == 0)
+    {
+      [self updateAlignmentRectsForTrackedViews];
+    }
 
   [self addConstraintAgainstViewConstraintsArray: constraint];
 }
@@ -327,7 +347,10 @@ typedef NSInteger GSLayoutViewAttribute;
 
   [_supportingConstraintsByConstraint removeObjectForKey: solverConstraint];
 
-  [self updateAlignmentRectsForTrackedViews];
+  if (_batchDepth == 0)
+    {
+      [self updateAlignmentRectsForTrackedViews];
+    }
   [self removeConstraintAgainstViewConstraintsArray: constraint];
 
   /* The internal constraints of a view exist to support its own constraints,
@@ -345,9 +368,20 @@ typedef NSInteger GSLayoutViewAttribute;
 
 - (void) removeConstraints: (NSArray *)constraints
 {
+  if ([constraints count] == 0)
+    {
+      return;
+    }
+
+  _batchDepth++;
   FOR_IN(NSLayoutConstraint *, constraint, constraints)
     [self removeConstraint: constraint];
   END_FOR_IN(constraints);
+  _batchDepth--;
+
+  [_solver removeConstraints: _batchedSolverConstraints];
+  [_batchedSolverConstraints removeAllObjects];
+  [self updateAlignmentRectsForTrackedViews];
 }
 
 - (GSCSConstraint *) solverConstraintForConstraint:
@@ -1231,12 +1265,26 @@ typedef NSInteger GSLayoutViewAttribute;
 - (void) addSolverConstraint: (GSCSConstraint *)constraint
 {
   [_solverConstraints addObject: constraint];
-  [_solver addConstraint: constraint];
+  if (_batchDepth > 0)
+    {
+      [_batchedSolverConstraints addObject: constraint];
+    }
+  else
+    {
+      [_solver addConstraint: constraint];
+    }
 }
 
 - (void) removeSolverConstraint: (GSCSConstraint *)constraint
 {
-  [_solver removeConstraint: constraint];
+  if (_batchDepth > 0)
+    {
+      [_batchedSolverConstraints addObject: constraint];
+    }
+  else
+    {
+      [_solver removeConstraint: constraint];
+    }
   [_solverConstraints removeObject: constraint];
 }
 
@@ -1382,6 +1430,7 @@ typedef NSInteger GSLayoutViewAttribute;
     RELEASE(_constraintsByAutoLayoutConstaintHash);
     RELEASE(_internalConstraintsByViewIndex);
     RELEASE(_solverConstraints);
+    RELEASE(_batchedSolverConstraints);
     RELEASE(_variablesByKey);
     RELEASE(_solver);
 

@@ -47,6 +47,11 @@
    NSView *_contentView;
    NSLayoutConstraint *_contentWidthConstraint;
    NSLayoutConstraint *_contentHeightConstraint;
+   /* While _batchDepth is above zero the solver constraints produced by a
+      group of layout constraints collect here, to be added or removed in one
+      call.  A group is either all additions or all removals. */
+   NSMutableArray *_batchedSolverConstraints;
+   int _batchDepth;
 }
 
 - (instancetype) initWithSolver: (GSCassowarySolver*)solver;
