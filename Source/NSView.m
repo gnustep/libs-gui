@@ -1274,7 +1274,10 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
-      [self _autoLayoutContentViewResized];
+      if (GSAutoLayoutEngineExists)
+        {
+          [self _autoLayoutContentViewResized];
+        }
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification
@@ -1369,7 +1372,10 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
-      [self _autoLayoutContentViewResized];
+      if (GSAutoLayoutEngineExists)
+        {
+          [self _autoLayoutContentViewResized];
+        }
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification

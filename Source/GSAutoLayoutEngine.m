@@ -226,6 +226,8 @@ typedef NSInteger GSLayoutViewAttribute;
 
 @end
 
+BOOL GSAutoLayoutEngineExists = NO;
+
 @implementation GSAutoLayoutEngine
 
 - (instancetype) initWithSolver: (GSCassowarySolver *)cassowarySolver;
@@ -233,6 +235,7 @@ typedef NSInteger GSLayoutViewAttribute;
   self = [super init];
   if (self != nil)
     {
+      GSAutoLayoutEngineExists = YES;
       ASSIGN(_solver, cassowarySolver);
 
       ASSIGN(_variablesByKey, [NSMapTable strongToStrongObjectsMapTable]);
