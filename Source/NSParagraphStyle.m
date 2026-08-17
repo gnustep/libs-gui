@@ -216,9 +216,9 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   if (self == [NSParagraphStyle class])
     {
-      /* Set the class version to 2, as the writing direction is now 
-	 stored in the encoding */
-      [self setVersion: 3];
+      /* Version 3 stores the writing direction in the encoding.  Version 4
+	 numbers NSTextAlignment as AppKit does. */
+      [self setVersion: 4];
     }
 }
 
@@ -554,6 +554,19 @@ static NSParagraphStyle	*defaultStyle = nil;
         {
           [aCoder decodeValueOfObjCType: @encode(NSInteger)
 				     at: &_baseDirection];
+        }
+
+      /* Before version 4 right was 1 and centre was 2. */
+      if ([aCoder versionForClassName: @"NSParagraphStyle"] < 4)
+        {
+          if (_alignment == 1)
+            {
+              _alignment = NSRightTextAlignment;
+            }
+          else if (_alignment == 2)
+            {
+              _alignment = NSCenterTextAlignment;
+            }
         }
     }
 
