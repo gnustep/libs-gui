@@ -30,6 +30,11 @@
 #ifndef _GS_AUTO_LAYOUT_ENGINE_H
 #define _GS_AUTO_LAYOUT_ENGINE_H
 
+/* Set when the first layout engine is created.  It stays set for the life of
+   the process, so a view path that only matters once constraints are in use
+   can test it before doing any further work. */
+extern BOOL GSAutoLayoutEngineExists;
+
 @interface GSAutoLayoutEngine : NSObject
 {
    GSCassowarySolver *_solver;
@@ -44,6 +49,14 @@
    NSMapTable *_internalConstraintsByViewIndex;
    NSMapTable *_supportingConstraintsByConstraint;
    int _viewCounter;
+   NSView *_contentView;
+   NSLayoutConstraint *_contentWidthConstraint;
+   NSLayoutConstraint *_contentHeightConstraint;
+   /* While _batchDepth is above zero the solver constraints produced by a
+      group of layout constraints collect here, to be added or removed in one
+      call.  A group is either all additions or all removals. */
+   NSMutableArray *_batchedSolverConstraints;
+   int _batchDepth;
 }
 
 - (instancetype) initWithSolver: (GSCassowarySolver*)solver;
@@ -59,6 +72,10 @@
 - (NSRect) alignmentRectForView: (NSView *)view;
 
 - (NSArray *) constraintsForView: (NSView *)view;
+
+- (void) pinContentView: (NSView *)contentView;
+
+- (BOOL) updateContentViewSize;
 
 @end
 

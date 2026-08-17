@@ -747,6 +747,10 @@ PACKAGE_SCOPE
 
 - (void) addConstraints: (NSArray*)constraints;
 
+- (void) removeConstraint: (NSLayoutConstraint *)constraint;
+
+- (void) removeConstraints: (NSArray*)constraints;
+
 @end
 
 @interface NSView (NSConstraintBasedLayoutAnchors)
