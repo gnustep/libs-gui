@@ -1888,6 +1888,40 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 
 #undef GBUF_SIZE
 
+  /* Draw any truncation glyph (typically an ellipsis) recorded on the line
+     fragments overlapping the drawn range. */
+  {
+    linefrag_t *tlf;
+    int tli;
+
+    for (tli = 0, tlf = tc->linefrags; tli < tc->num_linefrags; tli++, tlf++)
+      {
+	if (tlf->truncationGlyph != 0
+	  && tlf->pos < NSMaxRange(range)
+	  && tlf->pos + tlf->length > range.location)
+	  {
+	    NSGlyph tg = tlf->truncationGlyph;
+	    NSSize tadv = NSMakeSize(0.0, 0.0);
+	    NSColor *tcolor;
+	    NSPoint tp;
+
+	    tcolor = [_textStorage attribute: NSForegroundColorAttributeName
+				     atIndex: [self characterIndexForGlyphAtIndex: tlf->pos]
+			      effectiveRange: NULL];
+	    if (tcolor == nil)
+	      tcolor = defaultTextColor;
+	    [tcolor set];
+	    [tlf->truncationFont set];
+
+	    tp.x = tlf->rect.origin.x + tlf->truncationPoint.x + containerOrigin.x;
+	    tp.y = tlf->rect.origin.y + tlf->truncationPoint.y + containerOrigin.y;
+	    DPSmoveto(ctxt, tp.x, tp.y);
+	    GSShowGlyphsWithAdvances(ctxt, &tg, &tadv, 1);
+	    DPSnewpath(ctxt);
+	  }
+      }
+  }
+
   // Draw underline where necessary
   // FIXME: Also draw strikeout
   {
