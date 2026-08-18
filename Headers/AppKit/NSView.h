@@ -200,6 +200,7 @@ PACKAGE_SCOPE
   NSShadow *_shadow;
   NSAppearance* _appearance;
   NSUserInterfaceItemIdentifier _identifier;
+  NSMutableArray *_layoutGuides;
 
 }
 
@@ -745,6 +746,10 @@ PACKAGE_SCOPE
 - (void) addConstraint: (NSLayoutConstraint *)constraint;
 
 - (void) addConstraints: (NSArray*)constraints;
+
+- (void) removeConstraint: (NSLayoutConstraint *)constraint;
+
+- (void) removeConstraints: (NSArray*)constraints;
 
 @end
 

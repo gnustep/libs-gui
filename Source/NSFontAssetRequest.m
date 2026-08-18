@@ -122,7 +122,7 @@
 
   // Use timer-based simulation instead of GCD blocks for compatibility
   [self performSelector: @selector(_performFontDownloadWithCompletionHandler:)
-             withObject: completionHandler
+             withObject: (id)completionHandler
              afterDelay: 0.0];
 }
 

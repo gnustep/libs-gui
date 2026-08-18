@@ -432,7 +432,7 @@ GSDiffableDefaultSectionIdentifier()
     {
       _collectionView = collectionView;
       _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-      _itemProvider = RETAIN( itemProvider );
+      _itemProvider = (void*)RETAIN(itemProvider);
       _identifierToIndexPath = [[NSMutableDictionary alloc] init];
       _creatingIndexPaths = [[NSMutableSet alloc] init];
       [_collectionView setDataSource: self];
@@ -585,12 +585,12 @@ GSDiffableDefaultSectionIdentifier()
 
   if (result == nil)
     {
-      if (identifier == nil || _itemProvider == nil)
+      if (identifier == nil || _itemProvider == NULL)
 	{
 	  return nil;
 	}
 
-      if (_itemProvider != nil)
+      if (_itemProvider != NULL)
 	{
 	  // Mark that we're creating an item for this index path
 	  [_creatingIndexPaths addObject: indexPath];
@@ -669,7 +669,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
     {
       _tableView = tableView;
       _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-      _cellProvider = RETAIN(cellProvider);
+      _cellProvider = (void*)RETAIN(cellProvider);
       _identifierToIndexPath = [[NSMutableDictionary alloc] init];
       _creatingIndexPaths = [[NSMutableSet alloc] init];
       [_tableView setDataSource: self];
@@ -855,7 +855,7 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
       return nil;
     }
 
-  if (_cellProvider != nil)
+  if (_cellProvider != NULL)
     {
       NSView *view =
 	(NSView *)CALL_NON_NULL_BLOCK(_cellProvider,

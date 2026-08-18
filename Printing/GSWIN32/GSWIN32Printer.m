@@ -79,8 +79,13 @@ NSMutableDictionary *EnumeratePrinters(DWORD flags)
     else
       {
 	int i = 0;
-	
+	NSString *ppdPath;
+
 	printers = [NSMutableDictionary dictionary];
+	ppdPath = [NSBundle
+		    pathForLibraryResource: @"Generic-PostScript_Printer-Postscript"
+				    ofType: @"ppd"
+			       inDirectory: @"PostScript/PPD"];
 	NSLog(@"Printers found: %d\n\n",returned);
 	for (i = 0; i < returned; i++)
 	  {
@@ -102,7 +107,13 @@ NSMutableDictionary *EnumeratePrinters(DWORD flags)
 			      forKey:@"Note"];
 		    [entry setObject:@"Generic Postscript Printer"
 			      forKey:@"Type"];
-		    
+
+		    if (ppdPath != nil)
+		      {
+			[entry setObject:ppdPath
+				  forKey:@"PPDPath"];
+		      }
+
 		    [printers setObject:entry
 				 forKey:printerName];
 		    /*
@@ -178,8 +189,20 @@ NSMutableDictionary *EnumeratePrinters(DWORD flags)
                         withHost: [printerEntry objectForKey: @"Host"]
                         withNote: [printerEntry objectForKey: @"Note"]];
 
-  // [printer parsePPDAtPath: [printerEntry objectForKey: @"PPDPath"]];
-                         
+  /* A stored printer may reference a PPD that no longer exists; an unreadable
+     PPD is a warning here and the printer is returned without it, so the caller
+     uses its defaults. */
+  NS_DURING
+    {
+      [printer parsePPDAtPath: [printerEntry objectForKey: @"PPDPath"]];
+    }
+  NS_HANDLER
+    {
+      NSLog(@"Could not read the PPD for printer %@: %@",
+            name, [localException reason]);
+    }
+  NS_ENDHANDLER
+
   return AUTORELEASE(printer);
 }
 
@@ -195,17 +218,33 @@ NSMutableDictionary *EnumeratePrinters(DWORD flags)
 + (NSDictionary*) printersDictionary
 {
   static BOOL didWarn;
-  NSDictionary *printers;
-  
+  NSUserDefaults *defaults;
+  NSDictionary *configured;
+  NSMutableDictionary *printers;
+
+  defaults = [NSUserDefaults standardUserDefaults];
+  configured = [defaults dictionaryForKey: @"GSWIN32Printers"];
+
   printers = EnumeratePrinters(PRINTER_ENUM_LOCAL);
-  if (!printers) //Not set, make a default printer because we are nice.
+  if (printers == nil) //EnumPrinters failed; it answers an empty dictionary
+    {                  //when it succeeds and the spooler holds no printer.
+      printers = [NSMutableDictionary dictionary];
+    }
+
+  // A printer named in the defaults was configured deliberately, so it wins
+  // over one of the same name that the spooler reported.
+  if ([configured count] > 0)
     {
+      [printers addEntriesFromDictionary: configured];
+    }
+
+  if ([printers count] == 0) //Nothing anywhere, make a default printer
+    {                        //because we are nice.
       NSString *ppdPath;
       NSMutableDictionary *printerEntry;
-      
-      printers = [NSMutableDictionary dictionary];
+
       printerEntry = [NSMutableDictionary dictionary];
-      
+
       ppdPath = [NSBundle
 		      pathForLibraryResource: @"Generic-PostScript_Printer-Postscript"
 				      ofType: @"ppd"

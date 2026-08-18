@@ -16,9 +16,20 @@ main(int argc, const char **argv)
   NS_DURING
     [NSApplication sharedApplication];
   NS_HANDLER
-    if ([[localException name] isEqualToString: NSInternalInconsistencyException]
+    /* SKIP raises SkipSet, so a handler around a block that skips must let it
+       through or the skip is lost and the set reports nothing at all.  */
+    if ([[localException name] isEqualToString: @"SkipSet"])
+      [localException raise];
+    else if ([[localException name] isEqualToString: NSInternalInconsistencyException]
       || [[localException name] isEqualToString: @"NSWindowServerCommunicationException"])
-      SKIP("It looks like GNUstep backend is not yet installed")
+      {
+        SKIP("It looks like GNUstep backend is not yet installed")
+      }
+    else
+      {
+        PASS(NO, "the application starts without an unexpected exception, "
+          "but %s was raised", [[localException name] UTF8String]);
+      }
   NS_ENDHANDLER
 
   NS_DURING
@@ -45,9 +56,18 @@ main(int argc, const char **argv)
         }
     }
   NS_HANDLER
-    if ([[localException name] isEqualToString: NSInternalInconsistencyException]
+    if ([[localException name] isEqualToString: @"SkipSet"])
+      [localException raise];
+    else if ([[localException name] isEqualToString: NSInternalInconsistencyException]
       || [[localException name] isEqualToString: @"NSWindowServerCommunicationException"])
-      SKIP("No display available")
+      {
+        SKIP("No display available")
+      }
+    else
+      {
+        PASS(NO, "configuring the view raises no unexpected exception, "
+          "but %s was raised", [[localException name] UTF8String]);
+      }
   NS_ENDHANDLER
 
   END_SET("NSOpenGLView config")

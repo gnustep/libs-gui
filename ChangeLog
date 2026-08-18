@@ -1,3 +1,43 @@
+2026-08-11 Todd White <todd.white@thalion.global>
+
+	* Source/NSApplication.m: Set the hidden flag, post the hide
+	notifications and swap the Hide menu item where an application
+	is hidden by miniaturizing its windows, which is the path taken
+	on Windows and the path taken anywhere when GSSuppressAppIcon is
+	set.  Deminiaturize those windows again in
+	-unhideWithoutActivation.
+
+2026-08-11 Todd White <todd.white@thalion.global>
+
+	* Printing/GSWIN32/GSWIN32Printer.m: Give an enumerated printer
+	the generic PostScript PPD and parse it, so that
+	-pageSizeForPaper: and +[NSPrintInfo sizeForPaperName:] answer a
+	size rather than 0 by 0.  An unreadable PPD is a warning and the
+	printer is still returned.
+
+2026-08-11 Todd White <todd.white@thalion.global>
+
+	* Printing/GSWIN32/GSWIN32Printer.m: Read the printers named
+	in the GSWIN32Printers user default, which the fallback message
+	already said were read, and merge them over the printers the
+	spooler reports.  Fall back on an empty dictionary rather than
+	on nil, which EnumeratePrinters answers only when EnumPrinters
+	fails.
+	* Tests/gui/NSPrinter/badPPD.m: Write the entry under the key
+	of each bundle that reads one, since which bundle is loaded is
+	a property of the platform.
+	* Source/NSTabView.m: Give each item's tooltip the area that
+	item's tab occupies, renewed after each draw, since the theme
+	settles the tab rects as it draws.
+	* Tests/gui/NSTabView/toolTips.m: Cover it.
+
+2026-08-10 Todd White <todd.white@thalion.global>
+
+	* Source/NSTabViewItem.m: Copy the string passed to
+	-setToolTip:, which AppKit declares as a copy property, and
+	release it in -dealloc.
+	* Tests/gui/NSTabViewItem/toolTipMemory.m: Cover both.
+
 2026-07-14 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTheme.m:
@@ -28,6 +68,17 @@
 	defaults, the dimension, width, colour and vertical alignment
 	accessors, the table defaults and flags, and the table block position
 	accessors.
+
+2026-07-12 Todd White <todd.white@thalion.global>
+
+	* Resources/ColorSpaces/sRGB2014.icc: The ICC sRGB v2 reference
+	profile, redistributed under the ICC licence.
+	* Resources/ColorSpaces/README: Its provenance and licence.
+	* Resources/GNUmakefile: Install the ColorSpaces resources.
+	* Source/NSColorSpace.m (-[NSColorSpace _loadICCProfileNamed:],
+	+[NSColorSpace genericRGBColorSpace]): Load the profile as a library
+	resource so the generic RGB space reports ICC profile data.
+	* Tests/gui/NSColorSpace/basic.m: Check the generic RGB profile data.
 
 2026-07-12 Todd White <todd.white@thalion.global>
 

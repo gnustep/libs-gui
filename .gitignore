@@ -67,3 +67,7 @@ DerivedData/
 compile_commands.json
 **/.cache
 **/.vscode
+*.err
+*.out
+.vscode
+*.tmp
