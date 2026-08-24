@@ -96,6 +96,7 @@
 #import "AppKit/NSWindow.h"
 
 #import "GSGuiPrivate.h"
+#import "GSBindingHelpers.h"
 #import "GSTextFinder.h"
 #import "GSToolTips.h"
 #import "GSFastEnumeration.h"
@@ -688,6 +689,7 @@ static NSMenu *textViewMenu;
       [temp release];
 
       [self exposeBinding: NSEditableBinding];
+      [self exposeBinding: NSValueBinding];
     }
 }
 
@@ -2878,11 +2880,62 @@ TextDidEndEditing notification _without_ asking the delegate
 /*
 After each user-induced change, this method should be called.
 */
+/* Cocoa's NSTextView exposes a "value" binding (the plain-text string when
+   not rich text).  It is routed onto the local "string" key; the reverse
+   direction is pushed from -didChangeText. */
+- (void) bind: (NSString *)binding
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding isEqual: NSValueBinding])
+    {
+      GSKeyValueBinding *kvb;
+
+      [self unbind: binding];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"string"
+                                              withName: NSValueBinding
+                                              toObject: anObject
+                                           withKeyPath: keyPath
+                                               options: options
+                                            fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
+    }
+  else
+    {
+      [super bind: binding
+         toObject: anObject
+      withKeyPath: keyPath
+          options: options];
+    }
+}
+
+- (void) setValue: (id)anObject forKey: (NSString *)aKey
+{
+  /* The value binding pushes model nulls through as nil; -setString: does
+     not accept nil, so map it to the empty string. */
+  if (anObject == nil && [aKey isEqualToString: @"string"])
+    {
+      anObject = @"";
+    }
+  [super setValue: anObject forKey: aKey];
+}
+
 - (void) didChangeText
 {
+  GSKeyValueBinding *theBinding;
+
   [self scrollRangeToVisible: [self selectedRange]];
   [notificationCenter postNotificationName: NSTextDidChangeNotification
     object: _notifObject];
+
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+                                   forObject: self];
+  if (theBinding != nil)
+    {
+      [theBinding reverseSetValueFor: @"string"];
+    }
 
   if ([_window firstResponder] != self)
     { /* Copied from -resignFirstResponder . See comment above. */
