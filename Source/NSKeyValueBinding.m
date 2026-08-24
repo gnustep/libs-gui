@@ -28,6 +28,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <Foundation/NSNull.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
@@ -455,7 +456,7 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
         }
       return placeholder;
     }
-  if (value == nil)
+  if (value == nil || value == [NSNull null])
     {
       placeholder = [options objectForKey:
         NSNullPlaceholderBindingOption];
