@@ -2877,12 +2877,6 @@ TextDidEndEditing notification _without_ asking the delegate
                replacementString: [strings objectAtIndex: 0]];
 }
 
-/*
-After each user-induced change, this method should be called.
-*/
-/* Cocoa's NSTextView exposes a "value" binding (the plain-text string when
-   not rich text).  It is routed onto the local "string" key; the reverse
-   direction is pushed from -didChangeText. */
 - (void) bind: (NSString *)binding
      toObject: (id)anObject
   withKeyPath: (NSString *)keyPath
@@ -2913,8 +2907,8 @@ After each user-induced change, this method should be called.
 
 - (void) setValue: (id)anObject forKey: (NSString *)aKey
 {
-  /* The value binding pushes model nulls through as nil; -setString: does
-     not accept nil, so map it to the empty string. */
+  /* The value binding pushes model nulls through as nil.
+     -setString: does not accept nil, so map it to the empty string. */
   if (anObject == nil && [aKey isEqualToString: @"string"])
     {
       anObject = @"";
@@ -2922,6 +2916,9 @@ After each user-induced change, this method should be called.
   [super setValue: anObject forKey: aKey];
 }
 
+/*
+After each user-induced change, this method should be called.
+*/
 - (void) didChangeText
 {
   GSKeyValueBinding *theBinding;
