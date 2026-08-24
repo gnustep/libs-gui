@@ -272,6 +272,7 @@ static void *viewControllerAssociationKey = &viewControllerAssociationKey;
   if ((nib != nil) && [nib instantiateNibWithOwner: self
 				    topLevelObjects: &_topLevelObjects])
     {
+      RETAIN(_topLevelObjects);
       _vcFlags.nib_is_loaded = YES;
       // FIXME: Need to resolve possible retain cycles here
       _vcFlags.view_did_load = YES;
@@ -285,7 +286,6 @@ static void *viewControllerAssociationKey = &viewControllerAssociationKey;
 		[self class], _nibName);
 	}
     }
-  RETAIN(_topLevelObjects);
   RELEASE(nib);
 }
 
