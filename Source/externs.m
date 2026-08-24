@@ -695,6 +695,7 @@ APPKIT_DECLARE NSString *NSContentArrayBinding = @"contentArray";
 APPKIT_DECLARE NSString *NSContentBinding = @"content";
 APPKIT_DECLARE NSString *NSContentDictionaryBinding = @"contentDictionary";
 APPKIT_DECLARE NSString *NSContentObjectBinding = @"contentObject";
+APPKIT_DECLARE NSString *NSContentSetBinding = @"contentSet";
 APPKIT_DECLARE NSString *NSContentValuesBinding = @"contentValues";
 APPKIT_DECLARE NSString *NSEditableBinding = @"editable";
 APPKIT_DECLARE NSString *NSEnabledBinding = @"enabled";

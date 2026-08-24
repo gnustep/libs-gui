@@ -147,6 +147,7 @@
   if (self == [NSArrayController class])
     {
       [self exposeBinding: NSContentArrayBinding];
+      [self exposeBinding: NSContentSetBinding];
       [self exposeBinding: NSSelectionIndexesBinding];
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
 	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
@@ -545,7 +546,8 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
   withKeyPath: (NSString *)keyPath
       options: (NSDictionary *)options
 {
-  if ([binding isEqual: NSContentArrayBinding])
+  if ([binding isEqual: NSContentArrayBinding]
+    || [binding isEqual: NSContentSetBinding])
     {
       GSKeyValueBinding *kvb;
 
@@ -573,6 +575,10 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
   if ([binding isEqual: NSContentArrayBinding])
     {
       return [NSArray class];
+    }
+  else if ([binding isEqual: NSContentSetBinding])
+    {
+      return [NSSet class];
     }
   else
     {

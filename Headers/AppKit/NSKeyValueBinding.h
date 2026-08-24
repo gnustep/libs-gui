@@ -109,6 +109,7 @@ APPKIT_EXPORT NSString *NSContentArrayBinding;
 APPKIT_EXPORT NSString *NSContentBinding;
 APPKIT_EXPORT NSString *NSContentDictionaryBinding;
 APPKIT_EXPORT NSString *NSContentObjectBinding;
+APPKIT_EXPORT NSString *NSContentSetBinding;
 APPKIT_EXPORT NSString *NSContentValuesBinding;
 APPKIT_EXPORT NSString *NSEditableBinding;
 APPKIT_EXPORT NSString *NSEnabledBinding;
