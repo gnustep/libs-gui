@@ -458,9 +458,6 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
     }
   if (value == nil || value == [NSNull null])
     {
-      /* KVO change dictionaries encode a nil new value as NSNull; without
-         this, the binding pushes the NSNull through to the view, which
-         renders its -description ("<null>") instead of an empty value. */
       placeholder = [options objectForKey:
         NSNullPlaceholderBindingOption];
       return placeholder;
