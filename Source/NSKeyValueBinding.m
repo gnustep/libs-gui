@@ -28,6 +28,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <Foundation/NSNull.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
@@ -455,8 +456,11 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
         }
       return placeholder;
     }
-  if (value == nil)
+  if (value == nil || value == [NSNull null])
     {
+      /* KVO change dictionaries encode a nil new value as NSNull; without
+         this, the binding pushes the NSNull through to the view, which
+         renders its -description ("<null>") instead of an empty value. */
       placeholder = [options objectForKey:
         NSNullPlaceholderBindingOption];
       return placeholder;
