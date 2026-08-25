@@ -6804,23 +6804,41 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (void) _postSelectionDidChangeNotification
 {
-  NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
   GSKeyValueBinding *theBinding;
-  
-  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
-				   forObject: tb];
 
-  // If there is a binding, send the indexes back
+  /* The table view's own selectionIndexes binding (established by
+     [tableView bind: NSSelectionIndexesBinding toObject: controller ...],
+     e.g. from a nib) is registered with the table view as the source
+     object - push the new selection back through it so the bound
+     controller's selection follows user clicks. */
+  theBinding = [GSKeyValueBinding getBinding: NSSelectionIndexesBinding
+				   forObject: self];
   if (theBinding != nil)
     {
-      id observedObject = [theBinding observedObject];
+      [theBinding reverseSetValue: _selectedRows];
+    }
+  else if ([_tableColumns count] > 0)
+    {
+      /* Fallback: a selectionIndexes binding established with the observed
+	 controller itself as source, found via the first column's value
+	 binding. */
+      NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
 
-      // Set the selection indexes on the controller...
-      theBinding = [GSKeyValueBinding getBinding: NSSelectionIndexesBinding
-				       forObject: observedObject];
+      theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+				       forObject: tb];
+
+      // If there is a binding, send the indexes back
       if (theBinding != nil)
 	{
-	  [theBinding reverseSetValue: _selectedRows];
+	  id observedObject = [theBinding observedObject];
+
+	  // Set the selection indexes on the controller...
+	  theBinding = [GSKeyValueBinding getBinding: NSSelectionIndexesBinding
+					   forObject: observedObject];
+	  if (theBinding != nil)
+	    {
+	      [theBinding reverseSetValue: _selectedRows];
+	    }
 	}
     }
 
