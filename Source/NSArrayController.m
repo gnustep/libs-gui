@@ -630,6 +630,8 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
       return nil;
     }
 
+  _selection_indexes = [[NSIndexSet alloc] init];
+
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSAvoidsEmptySelection"])
