@@ -1,3 +1,7 @@
+2026-08-25 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-initWithCoder:): Map old alignment values to new ones.
+
 2026-08-11 Todd White <todd.white@thalion.global>
 
 	* Source/NSApplication.m: Set the hidden flag, post the hide

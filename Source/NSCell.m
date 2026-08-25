@@ -105,7 +105,7 @@ static NSColor *dtxtCol;
 {
   if (self == [NSCell class])
     {
-      [self setVersion: 4];
+      [self setVersion: 5];
       colorClass = [NSColor class];
       cellClass = [NSCell class];
       fontClass = [NSFont class];
@@ -2753,6 +2753,18 @@ static NSColor *dtxtCol;
 	 we may need it to set lineBreakMode when reading old archives. */
       wraps = flag;
       decode_NSUInteger(aDecoder, &tmp_uint);
+      if (version < 5)
+        {
+          // Before these two values were swapped
+          if (tmp_uint == 1)
+            {
+              tmp_uint = NSRightTextAlignment;
+            }
+          else if (tmp_uint == 2)
+            {
+              tmp_uint = NSCenterTextAlignment;
+            }
+        }
       _cell.text_align = tmp_uint;
       decode_NSUInteger(aDecoder, &tmp_uint);
       _cell.type = tmp_uint;
