@@ -624,6 +624,13 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
       return nil;
     }
 
+  /* -initWithContent: sets this up, but nib-decoded controllers arrive
+     through this initializer and were left with a nil ivar - and
+     -selectedObjects on a nil index set loops forever in NSArray's
+     -objectsAtIndexes: ([nil firstIndex] is 0, -indexGreaterThanIndex:
+     stays 0, so the loop appends object 0 without end). */
+  _selection_indexes = [[NSIndexSet alloc] init];
+
   if ([coder allowsKeyedCoding])
     {
       if ([coder containsValueForKey: @"NSAvoidsEmptySelection"])
