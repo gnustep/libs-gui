@@ -32,11 +32,17 @@
 #include <GNUstepGUI/GSSoundSink.h>
 #include <ao/ao.h>
 
+#include "PCMGain.h"
+
 @interface AudioOutputSink : NSObject <GSSoundSink>
 {
   ao_device *_dev;
   int _driver;
   ao_sample_format _format;
+  /* Software gain applied to samples in playBytes; never a mixer */
+  float _volume;
+  void *_gainBuffer;
+  NSUInteger _gainBufferSize;
 }
 @end
 
@@ -58,6 +64,9 @@
 
 - (void)dealloc
 {
+  free(_gainBuffer);
+  _gainBuffer = NULL;
+  _gainBufferSize = 0;
   [super dealloc];
 }
 
@@ -74,6 +83,9 @@
   
   _format.channels = (int)channelCount;
   _format.rate = (int)sampleRate;
+  _volume = 1.0;
+  _gainBuffer = NULL;
+  _gainBufferSize = 0;
   
   switch (encoding)
     {
@@ -131,19 +143,68 @@
 
 - (BOOL)playBytes: (void *)bytes length: (NSUInteger)length
 {
-  int ret = ao_play(_dev, bytes, (uint_32)length);
+  void *out = bytes;
+  int ret;
+
+  /* Fade/volume is done by scaling the samples (amplitude), so it
+     stays independent of any system mixer settings. */
+  if (_volume < 1.0f)
+    {
+      BOOL be;
+      int bits = _format.bits;
+
+      switch (_format.byte_format)
+        {
+          case AO_FMT_BIG:
+            be = YES;
+            break;
+          case AO_FMT_LITTLE:
+            be = NO;
+            break;
+          default:
+            /* AO_FMT_NATIVE depends on the host byte order. */
+            be = (NSHostByteOrder() == NS_BigEndian);
+            break;
+        }
+
+      if (_gainBufferSize < length)
+        {
+          void *nb = realloc(_gainBuffer, length);
+          if (nb != NULL)
+            {
+              _gainBuffer = nb;
+              _gainBufferSize = length;
+            }
+        }
+      /* If we could not allocate a scratch buffer, play unscaled. */
+      if (_gainBuffer != NULL && _gainBufferSize >= length)
+        {
+          PCMGainApply(bytes, length, bits, be, _volume, _gainBuffer);
+          out = _gainBuffer;
+        }
+    }
+
+  ret = ao_play(_dev, out, (uint_32)length);
   return (ret == 0 ? NO : YES);
 }
 
-/* Functionality not supported by libao */
+/* Volume as software gain on the samples, not a device/mixer change */
 - (void)setVolume: (float)volume
 {
-  return;
+  if (volume < 0.0f)
+    {
+      volume = 0.0f;
+    }
+  else if (volume > 1.0f)
+    {
+      volume = 1.0f;
+    }
+  _volume = volume;
 }
 
 - (float)volume
 {
-  return 1.0;
+  return _volume;
 }
 
 - (void)setPlaybackDeviceIdentifier: (NSString *)playbackDeviceIdentifier
