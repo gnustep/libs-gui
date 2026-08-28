@@ -25,6 +25,7 @@
 */
 
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSAffineTransform.h"
 #import "AppKit/NSDockTile.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSImage.h"
@@ -39,6 +40,43 @@
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GSIconManager.h"
+
+static void
+drawViewHierarchy(NSView *view)
+{
+  NSArray *subviews;
+  NSUInteger count;
+  NSUInteger i;
+  BOOL drawSelf;
+
+  if ([view isHidden])
+    {
+      return;
+    }
+
+  drawSelf = (view != [[NSApp iconWindow] contentView]);
+  if (drawSelf)
+    {
+      [view drawRect: [view bounds]];
+    }
+
+  subviews = [view subviews];
+  count = [subviews count];
+  for (i = 0; i < count; i++)
+    {
+      NSView *subview = [subviews objectAtIndex: i];
+      NSAffineTransform *transform;
+      NSRect frame = [subview frame];
+
+      [NSGraphicsContext saveGraphicsState];
+      transform = [NSAffineTransform transform];
+      [transform translateXBy: frame.origin.x
+                          yBy: frame.origin.y];
+      [transform concat];
+      drawViewHierarchy(subview);
+      [NSGraphicsContext restoreGraphicsState];
+    }
+}
 
 @implementation NSDockTile
 
@@ -113,8 +151,6 @@
 {
   _showsApplicationBadge = flag;
   [self display];
-  GSUpdateIconManager([NSApp applicationIconImage],
-    _showsApplicationBadge ? _badgeLabel : nil);
 }
 
 - (NSString *) badgeLabel
@@ -126,18 +162,31 @@
 {
   ASSIGNCOPY(_badgeLabel, label);
   [self display];
-  GSUpdateIconManager([NSApp applicationIconImage],
-    _showsApplicationBadge ? _badgeLabel : nil);
 }
 
 - (void) display
 {
+  NSImage *image = nil;
+
   [_contentView setNeedsDisplay: YES];
+
+  image = [[NSImage alloc] initWithSize: _size];
+  [image lockFocus];
+  [self draw];
+  [image unlockFocus];
+
+  GSUpdateIconManager(image, _showsApplicationBadge ? _badgeLabel : nil);
+  RELEASE(image);
 }
 
 - (void)draw
 {
   [_appIconImage compositeToPoint: NSZeroPoint operation: NSCompositeCopy];
+
+  if (_contentView != nil)
+    {
+      drawViewHierarchy(_contentView);
+    }
 
   if (_showsApplicationBadge && _badgeLabel)
     {
