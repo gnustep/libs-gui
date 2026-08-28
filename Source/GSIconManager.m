@@ -52,8 +52,11 @@ static id <GSIconManager>gsim = nil;
 static NSConnection *gsimConnection = nil;
 static int appId = 0;
 static int iconCount = 0;
+static unsigned int iconManagerUpdateCount = 0;
+static unsigned int lastIconManagerAttemptUpdate = 0;
 
 static void GSReleaseIconManager(void);
+static void GSLostIconManager(void);
 
 @interface GSIconManagerMonitor : NSObject
 + (id) _lostIconManager: (NSNotification *)notification;
@@ -64,7 +67,7 @@ static void GSReleaseIconManager(void);
 {
   if ([notification object] == gsimConnection)
     {
-      GSReleaseIconManager();
+      GSLostIconManager();
     }
   return self;
 }
@@ -75,23 +78,44 @@ GSGetIconManager(void)
 {
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
+  lastIconManagerAttemptUpdate = iconManagerUpdateCount;
+
   if ([defaults objectForKey: @"GSUseIconManager"] == nil ||
       [defaults boolForKey: @"GSUseIconManager"])
     {
+      id <GSIconManager>proxy = nil;
+      BOOL retainedProxy = NO;
+
       appId = [[NSProcessInfo processInfo] processIdentifier];
 
-      gsim = (id <GSIconManager>)[NSConnection rootProxyForConnectionWithRegisteredName: @"GSIconManager" 
-                                                                                   host: @""];
-   
-      if (gsim != nil && RETAIN(gsim) != nil)
+      NS_DURING
 	{
-	  gsimConnection = RETAIN([(NSDistantObject *)gsim connectionForProxy]);
-	  [[NSNotificationCenter defaultCenter]
-	    addObserver: [GSIconManagerMonitor class]
-	       selector: @selector(_lostIconManager:)
-		   name: NSConnectionDidDieNotification
-		 object: gsimConnection];
+	  proxy = (id <GSIconManager>)
+	    [NSConnection rootProxyForConnectionWithRegisteredName: @"GSIconManager"
+							      host: @""];
+
+	  if (proxy != nil && RETAIN(proxy) != nil)
+	    {
+	      retainedProxy = YES;
+	      gsimConnection = RETAIN([(NSDistantObject *)proxy connectionForProxy]);
+	      gsim = proxy;
+	      [[NSNotificationCenter defaultCenter]
+		addObserver: [GSIconManagerMonitor class]
+		   selector: @selector(_lostIconManager:)
+		       name: NSConnectionDidDieNotification
+		     object: gsimConnection];
+	    }
 	}
+      NS_HANDLER
+	{
+	  if (retainedProxy == YES)
+	    {
+	      RELEASE(proxy);
+	    }
+	  DESTROY(gsimConnection);
+	  gsim = nil;
+	}
+      NS_ENDHANDLER
     }
 }
 
@@ -110,6 +134,14 @@ GSReleaseIconManager(void)
   verify = NO;
 }
 
+static void
+GSLostIconManager(void)
+{
+  GSReleaseIconManager();
+  verify = YES;
+  lastIconManagerAttemptUpdate = iconManagerUpdateCount;
+}
+
 static inline void
 checkVerify()
 {
@@ -118,6 +150,25 @@ checkVerify()
       GSGetIconManager();
       verify = YES;
    }
+}
+
+static inline BOOL
+checkVerifyForUpdate()
+{
+  iconManagerUpdateCount++;
+
+  if (gsim == nil && verify)
+    {
+      if (iconManagerUpdateCount - lastIconManagerAttemptUpdate < 5)
+	{
+	  return NO;
+	}
+
+      verify = NO;
+    }
+
+  checkVerify();
+  return gsim != nil;
 }
 
 NSSize
@@ -135,7 +186,7 @@ GSGetIconSize(void)
 	}
       NS_HANDLER
 	{
-	  GSReleaseIconManager();
+	  GSLostIconManager();
 	  iconSize = [GSCurrentServer() iconSize];
 	}
       NS_ENDHANDLER
@@ -166,7 +217,7 @@ GSRemoveIcon(NSWindow *window)
 	}
       NS_HANDLER
 	{
-	  GSReleaseIconManager();
+	  GSLostIconManager();
 	}
       NS_ENDHANDLER
 
@@ -189,9 +240,7 @@ GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
 {
   NSData *iconData = nil;
 
-  checkVerify();
-
-  if (gsim == nil)
+  if (checkVerifyForUpdate() == NO)
     {
       return;
     }
@@ -212,7 +261,7 @@ GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
     }
   NS_HANDLER
     {
-      GSReleaseIconManager();
+      GSLostIconManager();
     }
   NS_ENDHANDLER
 }
@@ -238,7 +287,7 @@ GSGetIconFrame(NSWindow *window)
 	}
       NS_HANDLER
 	{
-	  GSReleaseIconManager();
+	  GSLostIconManager();
 	  iconRect = [window frame];
 	  iconRect.size = [GSCurrentServer() iconSize];
 	}
