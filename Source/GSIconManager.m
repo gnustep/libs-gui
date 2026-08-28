@@ -73,18 +73,17 @@ static void GSReleaseIconManager(void);
 static void
 GSGetIconManager(void)
 {
-  if ([[NSUserDefaults standardUserDefaults] boolForKey: @"GSUseIconManager"])
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+  if ([defaults objectForKey: @"GSUseIconManager"] == nil ||
+      [defaults boolForKey: @"GSUseIconManager"])
     {
       appId = [[NSProcessInfo processInfo] processIdentifier];
 
       gsim = (id <GSIconManager>)[NSConnection rootProxyForConnectionWithRegisteredName: @"GSIconManager" 
                                                                                    host: @""];
    
-      if (gsim == nil)
-	{
-	  NSLog (@"Error: could not connect to server GSIconManager");
-	}
-      else if (RETAIN(gsim) != nil)
+      if (gsim != nil && RETAIN(gsim) != nil)
 	{
 	  gsimConnection = RETAIN([(NSDistantObject *)gsim connectionForProxy]);
 	  [[NSNotificationCenter defaultCenter]
