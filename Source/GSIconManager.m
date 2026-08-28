@@ -24,6 +24,9 @@
 
 #import <Foundation/NSConnection.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSDistantObject.h>
+#import <Foundation/NSException.h>
+#import <Foundation/NSNotification.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSProcessInfo.h>
 
@@ -46,8 +49,26 @@
 
 static BOOL verify = NO;
 static id <GSIconManager>gsim = nil;
+static NSConnection *gsimConnection = nil;
 static int appId = 0;
 static int iconCount = 0;
+
+static void GSReleaseIconManager(void);
+
+@interface GSIconManagerMonitor : NSObject
++ (id) _lostIconManager: (NSNotification *)notification;
+@end
+
+@implementation GSIconManagerMonitor
++ (id) _lostIconManager: (NSNotification *)notification
+{
+  if ([notification object] == gsimConnection)
+    {
+      GSReleaseIconManager();
+    }
+  return self;
+}
+@end
 
 static void
 GSGetIconManager(void)
@@ -63,9 +84,31 @@ GSGetIconManager(void)
 	{
 	  NSLog (@"Error: could not connect to server GSIconManager");
 	}
-
-      [gsim retain];
+      else if (RETAIN(gsim) != nil)
+	{
+	  gsimConnection = RETAIN([(NSDistantObject *)gsim connectionForProxy]);
+	  [[NSNotificationCenter defaultCenter]
+	    addObserver: [GSIconManagerMonitor class]
+	       selector: @selector(_lostIconManager:)
+		   name: NSConnectionDidDieNotification
+		 object: gsimConnection];
+	}
     }
+}
+
+static void
+GSReleaseIconManager(void)
+{
+  if (gsimConnection != nil)
+    {
+      [[NSNotificationCenter defaultCenter]
+	removeObserver: [GSIconManagerMonitor class]
+		  name: NSConnectionDidDieNotification
+		object: gsimConnection];
+      DESTROY(gsimConnection);
+    }
+  DESTROY(gsim);
+  verify = NO;
 }
 
 static inline void
@@ -87,7 +130,16 @@ GSGetIconSize(void)
 
   if (gsim != nil)
     {
-      iconSize = [gsim getSizeWindow];
+      NS_DURING
+	{
+	  iconSize = [gsim getSizeWindow];
+	}
+      NS_HANDLER
+	{
+	  GSReleaseIconManager();
+	  iconSize = [GSCurrentServer() iconSize];
+	}
+      NS_ENDHANDLER
     }
   else
     {
@@ -105,16 +157,30 @@ GSRemoveIcon(NSWindow *window)
   if (gsim != nil)
     {
       unsigned int winNum = 0;
+      BOOL removed = NO;
 
       NSConvertWindowNumberToGlobal([window windowNumber], &winNum);
-      [gsim removeWindow: winNum];
+      NS_DURING
+	{
+	  [gsim removeWindow: winNum];
+	  removed = YES;
+	}
+      NS_HANDLER
+	{
+	  GSReleaseIconManager();
+	}
+      NS_ENDHANDLER
+
+      if (removed == NO)
+	{
+	  return;
+	}
 
       iconCount--;
 
       if (iconCount == 0)
 	{
-	  DESTROY(gsim);
-	  verify = NO;
+	  GSReleaseIconManager();
 	}
     }
 }
@@ -131,19 +197,25 @@ GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
       return;
     }
 
-  if (![gsim respondsToSelector: @selector(setApplicationIconData:badgeText:appProcessId:)])
+  NS_DURING
     {
-      return;
-    }
+      if ([gsim respondsToSelector: @selector(setApplicationIconData:badgeText:appProcessId:)])
+	{
+	  if (image != nil)
+	    {
+	      iconData = [image TIFFRepresentation];
+	    }
 
-  if (image != nil)
+	  [gsim setApplicationIconData: iconData
+			     badgeText: badgeLabel
+			  appProcessId: appId];
+	}
+    }
+  NS_HANDLER
     {
-      iconData = [image TIFFRepresentation];
+      GSReleaseIconManager();
     }
-
-  [gsim setApplicationIconData: iconData
-                     badgeText: badgeLabel
-                  appProcessId: appId];
+  NS_ENDHANDLER
 }
 
 NSRect
@@ -156,12 +228,27 @@ GSGetIconFrame(NSWindow *window)
   if (gsim != nil)
     {
       unsigned int winNum = 0;
+      BOOL added = NO;
 
       NSConvertWindowNumberToGlobal([window windowNumber], &winNum);
-      iconRect = [gsim setWindow: winNum
-                    appProcessId: appId];
+      NS_DURING
+	{
+	  iconRect = [gsim setWindow: winNum
+			appProcessId: appId];
+	  added = YES;
+	}
+      NS_HANDLER
+	{
+	  GSReleaseIconManager();
+	  iconRect = [window frame];
+	  iconRect.size = [GSCurrentServer() iconSize];
+	}
+      NS_ENDHANDLER
 
-      iconCount++;
+      if (added == YES)
+	{
+	  iconCount++;
+	}
     }
   else
     {
