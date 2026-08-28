@@ -23,17 +23,23 @@
 */
 
 #import <Foundation/NSConnection.h>
+#import <Foundation/NSData.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSProcessInfo.h>
 
 #import <GNUstepGUI/GSDisplayServer.h>
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
 #import "GSIconManager.h"
 
 @protocol GSIconManager
  - (NSRect) setWindow: (unsigned int)aWindowNumber appProcessId: (int)aProcessId;
  - (void) removeWindow: (unsigned int)aWindowNumber;
  - (NSSize) getSizeWindow;
+ - (void) setApplicationIconData: (NSData *)data
+                       badgeText: (NSString *)badgeText
+                    appProcessId: (int)aProcessId;
+ - (BOOL) respondsToSelector: (SEL)aSelector;
  - (id) retain;
  - (void) release; 
 @end
@@ -111,6 +117,33 @@ GSRemoveIcon(NSWindow *window)
 	  verify = NO;
 	}
     }
+}
+
+void
+GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
+{
+  NSData *iconData = nil;
+
+  checkVerify();
+
+  if (gsim == nil)
+    {
+      return;
+    }
+
+  if (![gsim respondsToSelector: @selector(setApplicationIconData:badgeText:appProcessId:)])
+    {
+      return;
+    }
+
+  if (image != nil)
+    {
+      iconData = [image TIFFRepresentation];
+    }
+
+  [gsim setApplicationIconData: iconData
+                     badgeText: badgeLabel
+                  appProcessId: appId];
 }
 
 NSRect

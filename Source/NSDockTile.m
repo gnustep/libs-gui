@@ -38,6 +38,7 @@
 
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSDisplayServer.h"
+#import "GSIconManager.h"
 
 @implementation NSDockTile
 
@@ -112,6 +113,8 @@
 {
   _showsApplicationBadge = flag;
   [self display];
+  GSUpdateIconManager([NSApp applicationIconImage],
+    _showsApplicationBadge ? _badgeLabel : nil);
 }
 
 - (NSString *) badgeLabel
@@ -123,6 +126,8 @@
 {
   ASSIGNCOPY(_badgeLabel, label);
   [self display];
+  GSUpdateIconManager([NSApp applicationIconImage],
+    _showsApplicationBadge ? _badgeLabel : nil);
 }
 
 - (void) display
