@@ -27,6 +27,7 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSAffineTransform.h"
 #import "AppKit/NSDockTile.h"
+#import "AppKit/NSGraphics.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSImageRep.h"
@@ -40,6 +41,13 @@
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GSIconManager.h"
+
+static void
+clearDockTileRect(NSSize size)
+{
+  NSRectFillUsingOperation(NSMakeRect(0, 0, size.width, size.height),
+			   NSCompositeClear);
+}
 
 static void
 drawViewHierarchy(NSView *view)
@@ -88,10 +96,9 @@ drawViewHierarchy(NSView *view)
       NSImageRep *_imageRep;
       GSDisplayServer *server = GSCurrentServer();
       NSSize size = [server iconSize]; 
-      NSRect rect = NSMakeRect(0, 0, size.width, size.height);
       
       _size = size;
-      _contentView = [[NSView alloc] initWithFrame: rect];
+      _contentView = nil;
       _badgeLabel = nil;
       _owner = nil;
       _showsApplicationBadge = YES;
@@ -125,6 +132,7 @@ drawViewHierarchy(NSView *view)
 - (void) setContentView: (NSView *)contentView
 {
   ASSIGN(_contentView, contentView);
+  [self display];
 }
 
 - (NSSize) size
@@ -181,11 +189,15 @@ drawViewHierarchy(NSView *view)
 
 - (void)draw
 {
-  [_appIconImage compositeToPoint: NSZeroPoint operation: NSCompositeCopy];
+  clearDockTileRect(_size);
 
   if (_contentView != nil)
     {
       drawViewHierarchy(_contentView);
+    }
+  else
+    {
+      [_appIconImage compositeToPoint: NSZeroPoint operation: NSCompositeCopy];
     }
 
   if (_showsApplicationBadge && _badgeLabel)
