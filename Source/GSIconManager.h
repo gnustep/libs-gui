@@ -24,6 +24,8 @@
 
 #import <Foundation/NSGeometry.h>
 
+@class NSImage;
+@class NSString;
 #import "AppKit/NSWindow.h"
 
 NSSize
@@ -34,3 +36,6 @@ GSRemoveIcon(NSWindow *window);
 
 NSRect
 GSGetIconFrame(NSWindow *window); 
+
+void
+GSUpdateIconManager(NSImage *image, NSString *badgeLabel);
