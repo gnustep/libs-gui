@@ -29,10 +29,21 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <Foundation/NSDate.h>
 #import <Foundation/NSString.h>
 
 #import "AppKit/NSDatePickerCell.h"
 #import "AppKit/NSDatePicker.h"
+#import "AppKit/NSEvent.h"
+
+@interface NSDatePickerCell (Private)
+- (BOOL) _handleKeyEvent: (NSEvent *)event;
+- (BOOL) _selectFieldAtPoint: (NSPoint)point inRect: (NSRect)frame;
+- (NSInteger) _stepperDirectionAtPoint: (NSPoint)point
+                                inRect: (NSRect)frame
+                                ofView: (NSView *)view;
+- (BOOL) _stepSelectedFieldBy: (NSInteger)delta;
+@end
 
 static id usedCellClass = nil;
 
@@ -55,6 +66,76 @@ static id usedCellClass = nil;
 + (void) setCellClass: (Class)cellClass
 {
   usedCellClass = cellClass;
+}
+
+- (void) keyDown: (NSEvent *)theEvent
+{
+  NSDate *before = [_cell dateValue];
+
+  if ([(NSDatePickerCell *)_cell _handleKeyEvent: theEvent])
+    {
+      NSDate *after = [_cell dateValue];
+
+      [self setNeedsDisplay: YES];
+      if (before == nil || ![before isEqualToDate: after])
+        {
+          [self sendAction: [self action] to: [self target]];
+        }
+      return;
+    }
+
+  [super keyDown: theEvent];
+}
+
+- (void) mouseDown: (NSEvent *)theEvent
+{
+  NSDatePickerCell *cell = (NSDatePickerCell *)_cell;
+  NSPoint point;
+  NSDate *before;
+  NSInteger direction;
+
+  if (![self isEnabled])
+    {
+      [super mouseDown: theEvent];
+      return;
+    }
+
+  point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
+  before = [cell dateValue];
+  direction = [cell _stepperDirectionAtPoint: point
+                                      inRect: _bounds
+                                      ofView: self];
+  if (direction == 0 && ![cell _selectFieldAtPoint: point inRect: _bounds])
+    {
+      [super mouseDown: theEvent];
+      return;
+    }
+
+  if ([[self window] firstResponder] != self)
+    {
+      [[self window] makeFirstResponder: self];
+    }
+  if (direction != 0)
+    {
+      [cell _stepSelectedFieldBy: direction];
+    }
+  [self setNeedsDisplay: YES];
+  if (before == nil || ![before isEqualToDate: [cell dateValue]])
+    {
+      [self sendAction: [self action] to: [self target]];
+    }
+}
+
+- (BOOL) becomeFirstResponder
+{
+  [self setNeedsDisplay: YES];
+  return YES;
+}
+
+- (BOOL) resignFirstResponder
+{
+  [self setNeedsDisplay: YES];
+  return YES;
 }
 
 - (NSColor *) backgroundColor
