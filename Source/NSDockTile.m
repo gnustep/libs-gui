@@ -46,21 +46,6 @@ clearDockTileRect(NSSize size)
 			   NSCompositeClear);
 }
 
-static void
-drawDockTileContentView(NSView *view)
-{
-  if (view == nil)
-    {
-      return;
-    }
-
-  if ([view canDraw])
-    {
-      [view displayRectIgnoringOpacity: [view bounds]
-                             inContext: [NSGraphicsContext currentContext]];
-    }
-}
-
 @implementation NSDockTile
 
 - (instancetype) init
@@ -159,7 +144,11 @@ drawDockTileContentView(NSView *view)
 
   if (_contentView != nil)
     {
-      drawDockTileContentView(_contentView);
+      if ([_contentView canDraw])
+	{
+	  [_contentView displayRectIgnoringOpacity: [_contentView bounds]
+					inContext: [NSGraphicsContext currentContext]];
+	}
     }
   else
     {

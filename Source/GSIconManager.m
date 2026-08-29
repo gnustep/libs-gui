@@ -27,6 +27,7 @@
 #import <Foundation/NSDistantObject.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSNotification.h>
+#import <Foundation/NSObject.h>
 #import <Foundation/NSSet.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSValue.h>
@@ -37,16 +38,13 @@
 #import "AppKit/NSImage.h"
 #import "GSIconManager.h"
 
-@protocol GSIconManager
+@protocol GSIconManager <NSObject>
  - (NSRect) setWindow: (unsigned int)aWindowNumber appProcessId: (int)aProcessId;
  - (void) removeWindow: (unsigned int)aWindowNumber;
  - (NSSize) getSizeWindow;
  - (void) setApplicationIconData: (NSData *)data
                        badgeText: (NSString *)badgeText
                     appProcessId: (int)aProcessId;
- - (BOOL) respondsToSelector: (SEL)aSelector;
- - (id) retain;
- - (void) release; 
 @end
 
 static BOOL verify = NO;
@@ -155,25 +153,6 @@ checkVerify()
    }
 }
 
-static inline BOOL
-checkVerifyForUpdate()
-{
-  iconManagerUpdateCount++;
-
-  if (gsim == nil && verify)
-    {
-      if (iconManagerUpdateCount - lastIconManagerAttemptUpdate < 5)
-	{
-	  return NO;
-	}
-
-      verify = NO;
-    }
-
-  checkVerify();
-  return gsim != nil;
-}
-
 NSSize
 GSGetIconSize(void)
 {
@@ -251,7 +230,21 @@ GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
 {
   NSData *iconData = nil;
 
-  if (checkVerifyForUpdate() == NO)
+  iconManagerUpdateCount++;
+
+  if (gsim == nil && verify)
+    {
+      if (iconManagerUpdateCount - lastIconManagerAttemptUpdate < 5)
+	{
+	  return;
+	}
+
+      verify = NO;
+    }
+
+  checkVerify();
+
+  if (gsim == nil)
     {
       return;
     }
