@@ -29,10 +29,16 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <Foundation/NSDate.h>
 #import <Foundation/NSString.h>
 
 #import "AppKit/NSDatePickerCell.h"
 #import "AppKit/NSDatePicker.h"
+#import "AppKit/NSEvent.h"
+
+@interface NSDatePickerCell (Private)
+- (BOOL) _handleKeyEvent: (NSEvent *)event;
+@end
 
 static id usedCellClass = nil;
 
@@ -55,6 +61,37 @@ static id usedCellClass = nil;
 + (void) setCellClass: (Class)cellClass
 {
   usedCellClass = cellClass;
+}
+
+- (void) keyDown: (NSEvent *)theEvent
+{
+  NSDate *before = [_cell dateValue];
+
+  if ([(NSDatePickerCell *)_cell _handleKeyEvent: theEvent])
+    {
+      NSDate *after = [_cell dateValue];
+
+      [self setNeedsDisplay: YES];
+      if (before == nil || ![before isEqualToDate: after])
+        {
+          [self sendAction: [self action] to: [self target]];
+        }
+      return;
+    }
+
+  [super keyDown: theEvent];
+}
+
+- (BOOL) becomeFirstResponder
+{
+  [self setNeedsDisplay: YES];
+  return YES;
+}
+
+- (BOOL) resignFirstResponder
+{
+  [self setNeedsDisplay: YES];
+  return YES;
 }
 
 - (NSColor *) backgroundColor
