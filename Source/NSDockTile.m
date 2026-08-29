@@ -25,13 +25,10 @@
 */
 
 #import "AppKit/NSApplication.h"
-#import "AppKit/NSAffineTransform.h"
 #import "AppKit/NSDockTile.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSImage.h"
-#import "AppKit/NSImageRep.h"
-#import "AppKit/NSCustomImageRep.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSAttributedString.h"
@@ -50,41 +47,6 @@ clearDockTileRect(NSSize size)
 }
 
 static void
-drawViewHierarchy(NSView *view)
-{
-  NSArray *subviews;
-  NSUInteger count;
-  NSUInteger i;
-  NSRect bounds;
-
-  if ([view isHidden])
-    {
-      return;
-    }
-
-  bounds = [view bounds];
-  NSRectClip(bounds);
-  [view drawRect: bounds];
-
-  subviews = [view subviews];
-  count = [subviews count];
-  for (i = 0; i < count; i++)
-    {
-      NSView *subview = [subviews objectAtIndex: i];
-      NSAffineTransform *transform;
-      NSRect frame = [subview frame];
-
-      [NSGraphicsContext saveGraphicsState];
-      transform = [NSAffineTransform transform];
-      [transform translateXBy: frame.origin.x - bounds.origin.x
-                          yBy: frame.origin.y - bounds.origin.y];
-      [transform concat];
-      drawViewHierarchy(subview);
-      [NSGraphicsContext restoreGraphicsState];
-    }
-}
-
-static void
 drawDockTileContentView(NSView *view)
 {
   if (view == nil)
@@ -97,10 +59,6 @@ drawDockTileContentView(NSView *view)
       [view displayRectIgnoringOpacity: [view bounds]
                              inContext: [NSGraphicsContext currentContext]];
     }
-  else
-    {
-      drawViewHierarchy(view);
-    }
 }
 
 @implementation NSDockTile
@@ -110,7 +68,6 @@ drawDockTileContentView(NSView *view)
   self = [super init];
   if (self != nil)
     {
-      NSImageRep *_imageRep;
       GSDisplayServer *server = GSCurrentServer();
       NSSize size = [server iconSize]; 
       
@@ -121,13 +78,6 @@ drawDockTileContentView(NSView *view)
       _showsApplicationBadge = YES;
       _appIconImage = [NSImage imageNamed: @"NSApplicationIcon"];
       RETAIN(_appIconImage);
-      _imageRep = [[NSCustomImageRep alloc] initWithDrawSelector: @selector(draw) delegate: self];
-      [_imageRep setSize: [_appIconImage size]];
-      _dockTileImage = [[NSImage alloc] initWithSize: [_appIconImage size]];
-      [_dockTileImage setCacheMode: NSImageCacheNever]; // Only needed because NSImage caches NSCustomImageReps
-      [_dockTileImage addRepresentation: _imageRep];
-      RELEASE(_imageRep);
-      [NSApp setApplicationIconImage: _dockTileImage];
     }
   return self;
 }
@@ -137,7 +87,6 @@ drawDockTileContentView(NSView *view)
   RELEASE(_contentView);
   RELEASE(_badgeLabel);
   RELEASE(_appIconImage);
-  RELEASE(_dockTileImage);
   [super dealloc];
 }
 
