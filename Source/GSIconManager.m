@@ -27,7 +27,9 @@
 #import <Foundation/NSDistantObject.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSNotification.h>
+#import <Foundation/NSSet.h>
 #import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSValue.h>
 #import <Foundation/NSProcessInfo.h>
 
 #import <GNUstepGUI/GSDisplayServer.h>
@@ -51,7 +53,7 @@ static BOOL verify = NO;
 static id <GSIconManager>gsim = nil;
 static NSConnection *gsimConnection = nil;
 static int appId = 0;
-static int iconCount = 0;
+static NSMutableSet *registeredIcons = nil;
 static unsigned int iconManagerUpdateCount = 0;
 static unsigned int lastIconManagerAttemptUpdate = 0;
 
@@ -138,6 +140,7 @@ static void
 GSLostIconManager(void)
 {
   GSReleaseIconManager();
+  [registeredIcons removeAllObjects];
   verify = YES;
   lastIconManagerAttemptUpdate = iconManagerUpdateCount;
 }
@@ -208,8 +211,16 @@ GSRemoveIcon(NSWindow *window)
     {
       unsigned int winNum = 0;
       BOOL removed = NO;
+      NSNumber *winNumObject;
 
       NSConvertWindowNumberToGlobal([window windowNumber], &winNum);
+      winNumObject = [NSNumber numberWithUnsignedInt: winNum];
+
+      if ([registeredIcons containsObject: winNumObject] == NO)
+	{
+	  return;
+	}
+
       NS_DURING
 	{
 	  [gsim removeWindow: winNum];
@@ -226,9 +237,9 @@ GSRemoveIcon(NSWindow *window)
 	  return;
 	}
 
-      iconCount--;
+      [registeredIcons removeObject: winNumObject];
 
-      if (iconCount == 0)
+      if ([registeredIcons count] == 0)
 	{
 	  GSReleaseIconManager();
 	}
@@ -277,6 +288,7 @@ GSGetIconFrame(NSWindow *window)
     {
       unsigned int winNum = 0;
       BOOL added = NO;
+      NSNumber *winNumObject;
 
       NSConvertWindowNumberToGlobal([window windowNumber], &winNum);
       NS_DURING
@@ -295,7 +307,12 @@ GSGetIconFrame(NSWindow *window)
 
       if (added == YES)
 	{
-	  iconCount++;
+	  winNumObject = [NSNumber numberWithUnsignedInt: winNum];
+	  if (registeredIcons == nil)
+	    {
+	      registeredIcons = [[NSMutableSet alloc] initWithCapacity: 1];
+	    }
+	  [registeredIcons addObject: winNumObject];
 	}
     }
   else

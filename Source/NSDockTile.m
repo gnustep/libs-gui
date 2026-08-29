@@ -55,18 +55,16 @@ drawViewHierarchy(NSView *view)
   NSArray *subviews;
   NSUInteger count;
   NSUInteger i;
-  BOOL drawSelf;
+  NSRect bounds;
 
   if ([view isHidden])
     {
       return;
     }
 
-  drawSelf = (view != [[NSApp iconWindow] contentView]);
-  if (drawSelf)
-    {
-      [view drawRect: [view bounds]];
-    }
+  bounds = [view bounds];
+  NSRectClip(bounds);
+  [view drawRect: bounds];
 
   subviews = [view subviews];
   count = [subviews count];
@@ -78,11 +76,30 @@ drawViewHierarchy(NSView *view)
 
       [NSGraphicsContext saveGraphicsState];
       transform = [NSAffineTransform transform];
-      [transform translateXBy: frame.origin.x
-                          yBy: frame.origin.y];
+      [transform translateXBy: frame.origin.x - bounds.origin.x
+                          yBy: frame.origin.y - bounds.origin.y];
       [transform concat];
       drawViewHierarchy(subview);
       [NSGraphicsContext restoreGraphicsState];
+    }
+}
+
+static void
+drawDockTileContentView(NSView *view)
+{
+  if (view == nil)
+    {
+      return;
+    }
+
+  if ([view canDraw])
+    {
+      [view displayRectIgnoringOpacity: [view bounds]
+                             inContext: [NSGraphicsContext currentContext]];
+    }
+  else
+    {
+      drawViewHierarchy(view);
     }
 }
 
@@ -193,7 +210,7 @@ drawViewHierarchy(NSView *view)
 
   if (_contentView != nil)
     {
-      drawViewHierarchy(_contentView);
+      drawDockTileContentView(_contentView);
     }
   else
     {
