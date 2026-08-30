@@ -105,6 +105,7 @@
 // Decode stream...
 - (int) decodePacket: (AVPacket *)packet;
 - (void) submitPacket: (AVPacket *)packet;
+- (NSUInteger) queuedPacketCount;
 - (void) setPlaying: (BOOL)f;
 - (BOOL) isPlaying;
 - (void) start;
