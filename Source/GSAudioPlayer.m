@@ -484,6 +484,14 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
     }
 }
 
+- (NSUInteger) queuedPacketCount
+{
+  @synchronized (_audioPackets)
+    {
+      return [_audioPackets count];
+    }
+}
+
 - (void) setNeedsRestart: (BOOL)f
 {
   _flags.needsRestart = f;

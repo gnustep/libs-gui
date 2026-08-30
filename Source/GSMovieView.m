@@ -150,6 +150,7 @@
       // Flags...
       _flags.playing = NO;
       _started = NO;
+      _reachedEOF = NO;
     }
   return self;
 }
@@ -279,11 +280,8 @@
       _flags.playing = YES;
       _started = NO; // Reset for synchronization
 
-      // If we're restarting and at EOF, seek back to beginning
-      // We can detect this by checking if the feed thread finished but we still have a format context
-      BOOL needsRestart = (_feedThread == nil || [_feedThread isFinished]) && _formatCtx != NULL;
-      [_audioPlayer setNeedsRestart: NO]; // needsRestart];
-      if (needsRestart)
+      [_audioPlayer setNeedsRestart: NO];
+      if (_reachedEOF)
 	{
 	  NSDebugLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
 
@@ -297,6 +295,7 @@
 	  if (av_seek_frame(_formatCtx, _videoStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
 	    {
 	      NSDebugLog(@"[GSMovieView] rewind successful");
+	      _reachedEOF = NO;
 	      // Reset codec state
 	      if (_videoCodecCtx)
 		{
@@ -393,10 +392,25 @@
 	  DESTROY(_videoThread);
 	}
 
-      // Cancel feed thread but don't destroy it (might be reused)
+      // Cancel and wait for feed thread so later seeks do not race
+      // against av_read_frame() on the same format context.
       if (_feedThread)
 	{
 	  [_feedThread cancel];
+
+	  int timeout = 1000; // 1 second timeout
+	  while (![_feedThread isFinished] && timeout > 0)
+	    {
+	      usleep(1000); // 1ms
+	      timeout--;
+	    }
+
+	  if (timeout <= 0)
+	    {
+	      NSDebugLog(@"[GSMovieView] Warning: Feed thread did not finish within timeout");
+	    }
+
+	  DESTROY(_feedThread);
 	}
 
       // Clear video packet queue
@@ -439,6 +453,7 @@
       _videoStreamIndex = -1;
       _audioStreamIndex = -1;
       _stream = NULL;
+      _reachedEOF = NO;
 
       // Clear codec context
       if (_videoCodecCtx)
@@ -798,13 +813,41 @@
       AVPacket packet;
       int64_t i = 0;
       BOOL shouldStart = NO;
+      BOOL reachedEnd = NO;
 
-      while (av_read_frame(_formatCtx, &packet) >= 0)
+      while (YES)
 	{
+	  NSUInteger queuedVideoPackets = 0;
+	  NSUInteger queuedAudioPackets = 0;
+
 	  // Check if we should stop feeding
 	  if (!_flags.playing && [[NSThread currentThread] isCancelled])
 	    {
-	      av_packet_unref(&packet);
+	      break;
+	    }
+
+	  /*
+	   * Keep the demuxer close to the playback position.  Reading the
+	   * remainder of the file into packet queues makes seek operations look
+	   * sequential and leaves a large amount of stale data to discard.
+	   */
+	  @synchronized (_videoPackets)
+	    {
+	      queuedVideoPackets = [_videoPackets count];
+	    }
+	  if (_audioPlayer != nil)
+	    {
+	      queuedAudioPackets = [_audioPlayer queuedPacketCount];
+	    }
+	  if (queuedVideoPackets >= BUFFER_SIZE || queuedAudioPackets >= BUFFER_SIZE)
+	    {
+	      usleep(10000);
+	      continue;
+	    }
+
+	  if (av_read_frame(_formatCtx, &packet) < 0)
+	    {
+	      reachedEnd = YES;
 	      break;
 	    }
 
@@ -830,15 +873,17 @@
 	}
 
       // if we had a very short video... play it.
-      if (i < BUFFER_SIZE && i > 0)
+      if (reachedEnd && i < BUFFER_SIZE && i > 0)
 	{
 	  NSDebugLog(@"[GSMovieView] Starting short video... | Timestamp: %ld", av_gettime());
 	  [self start: nil];
 	}
 
-      // When we reach EOF, we can seek back to beginning if looping is desired
-      // For now, just log that we've reached the end
-      NSDebugLog(@"[GSMovieView] Reached end of stream, frames read: %ld | Timestamp: %ld", i, av_gettime());
+      if (reachedEnd)
+	{
+	  _reachedEOF = YES;
+	  NSDebugLog(@"[GSMovieView] Reached end of stream, frames read: %ld | Timestamp: %ld", i, av_gettime());
+	}
     }
 }
 
@@ -1153,11 +1198,11 @@
       [self stop: nil];
     }
 
-  // Convert timestamp to stream timebase
-  int64_t seekTarget = av_rescale_q(timestamp, (AVRational){1, 1000000}, _timeBase);
-
-  // Seek in the format context
-  int result = av_seek_frame(_formatCtx, _videoStreamIndex, seekTarget, AVSEEK_FLAG_BACKWARD);
+  // Seek in the shared demuxer using AV_TIME_BASE units.  A global seek keeps
+  // the audio and video streams aligned and lets libavformat use container
+  // indexes instead of treating the target as a video-stream-local timestamp.
+  int result = avformat_seek_file(_formatCtx, -1, INT64_MIN, timestamp,
+				  INT64_MAX, AVSEEK_FLAG_BACKWARD);
 
   if (result >= 0)
     {
@@ -1172,13 +1217,17 @@
 	{
 	  avcodec_flush_buffers(_videoCodecCtx);
 	}
+      if (_audioPlayer)
+	{
+	  [_audioPlayer seekToTime: timestamp];
+	}
 
       // Reset internal state
       _started = NO;
+      _reachedEOF = NO;
 
-      // Update _lastPts to reflect the seek position
-      // Convert back from stream timebase to get actual PTS
-      _lastPts = seekTarget;
+      // Update _lastPts to reflect the requested seek position.
+      _lastPts = av_rescale_q(timestamp, (AVRational){1, 1000000}, _timeBase);
 
       NSDebugLog(@"[GSMovieView] Seek to timestamp %ld successful\r", timestamp);
       return YES;
