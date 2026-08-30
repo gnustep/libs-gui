@@ -1790,6 +1790,7 @@
     {
       BOOL tmp;
       NSUInteger tmp2;
+      int version = [NSButtonCell version];
 
       [aCoder encodeObject: _keyEquivalent];
       [aCoder encodeObject: _keyEquivalentFont];
@@ -1807,7 +1808,10 @@
 
       [aCoder encodeObject: _sound];
       [aCoder encodeObject: _backgroundColor];
-      [aCoder encodeObject: _contentTintColor];
+      if (version >= 4)
+        {
+          [aCoder encodeObject: _contentTintColor];
+        }
       [aCoder encodeValueOfObjCType: @encode(float)
                                  at: &_delayInterval];
       [aCoder encodeValueOfObjCType: @encode(float)
