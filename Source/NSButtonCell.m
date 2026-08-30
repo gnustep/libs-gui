@@ -1790,7 +1790,6 @@
     {
       BOOL tmp;
       NSUInteger tmp2;
-      int version = [NSButtonCell version];
 
       [aCoder encodeObject: _keyEquivalent];
       [aCoder encodeObject: _keyEquivalentFont];
@@ -1808,10 +1807,7 @@
 
       [aCoder encodeObject: _sound];
       [aCoder encodeObject: _backgroundColor];
-      if (version >= 4)
-        {
-          [aCoder encodeObject: _contentTintColor];
-        }
+      
       [aCoder encodeValueOfObjCType: @encode(float)
                                  at: &_delayInterval];
       [aCoder encodeValueOfObjCType: @encode(float)
@@ -1826,6 +1822,7 @@
       tmp = _shows_border_only_while_mouse_inside;
       [aCoder encodeValueOfObjCType: @encode(BOOL)
                                  at: &tmp];
+      [aCoder encodeObject: _contentTintColor];
     }
 }
 
@@ -2024,10 +2021,6 @@
         {
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_sound];
           [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
-          if (version >= 4)
-            {
-              [aDecoder decodeValueOfObjCType: @encode(id) at: &_contentTintColor];
-            }
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_delayInterval];
           [aDecoder decodeValueOfObjCType: @encode(float) at: &_repeatInterval];
           decode_NSUInteger(aDecoder, &tmp2);
@@ -2039,6 +2032,13 @@
           [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
           _shows_border_only_while_mouse_inside = tmp;
         }
+
+      // Add tint color...
+      if (version >= 4)
+	{
+	  [aDecoder decodeValueOfObjCType: @encode(id) at: &_contentTintColor];
+	}
+
       // Not encoded in non-keyed archive
       _imageScaling = NSImageScaleNone;
     }
