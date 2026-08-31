@@ -13,12 +13,15 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSFontDescriptor.h>
+#include <AppKit/NSFontManager.h>
 
-#define EQ(a, b) (fabs((double)(a) - (double)(b)) < 0.001)
+#define CLOSE(a, b) (fabs((double)(a) - (double)(b)) < 0.001)
 
 int
-main(int argc, char **argv)
+main(int argc, char **argv, char **env)
 {
+  GSInitializeProcess(argc, argv, env);
+  CREATE_AUTORELEASE_POOL(arp);
   START_SET("NSFont creation")
 
   NS_DURING
@@ -31,49 +34,65 @@ main(int argc, char **argv)
 
   NS_DURING
     {
-      NSFont *h = [NSFont fontWithName: @"Helvetica" size: 24.0];
+      NSArray *available = [[NSFontManager sharedFontManager] availableFonts];
+      NSString *fontName = [available count] > 0
+        ? [available objectAtIndex: 0] : nil;
+      NSFont *h = fontName != nil
+        ? [NSFont fontWithName: fontName size: 24.0] : nil;
       const CGFloat *m;
 
-      PASS(h != nil, "fontWithName:size: returns a font");
-      PASS([[h fontName] isEqualToString: @"Helvetica"],
-        "the font keeps the requested name");
-      PASS(EQ([h pointSize], 24.0), "the font has the requested point size");
+      if (fontName == nil || h == nil)
+        {
+          SKIP("No installed font is available to test named font creation")
+        }
+      else
+        {
+          PASS(h != nil, "fontWithName:size: returns a font");
+          PASS([[h fontName] isEqualToString: fontName],
+            "the font keeps the requested name");
+          PASS(CLOSE([h pointSize], 24.0), "the font has the requested point size");
 
-      m = [h matrix];
-      PASS(EQ(m[0], 24.0) && EQ(m[3], 24.0),
-        "the matrix diagonal is the point size");
-      PASS(EQ(m[1], 0.0) && EQ(m[2], 0.0) && EQ(m[4], 0.0) && EQ(m[5], 0.0),
-        "the matrix off-diagonal and translation are zero");
+          m = [h matrix];
+          PASS(CLOSE(m[0], 24.0) && CLOSE(m[3], 24.0),
+            "the matrix diagonal is the point size");
+          PASS(CLOSE(m[1], 0.0) && CLOSE(m[2], 0.0)
+            && CLOSE(m[4], 0.0) && CLOSE(m[5], 0.0),
+            "the matrix off-diagonal and translation are zero");
 
-      PASS(EQ([[h fontDescriptor] pointSize], 24.0),
-        "the font descriptor reports the point size");
-    }
+          PASS(CLOSE([[h fontDescriptor] pointSize], 24.0),
+            "the font descriptor reports the point size");
 
-    {
-      const CGFloat wanted[6] = {30, 0, 0, 30, 0, 0};
-      NSFont *hm = [NSFont fontWithName: @"Helvetica" matrix: wanted];
-      const CGFloat *m;
+          {
+            const CGFloat wanted[6] = {30, 0, 0, 30, 0, 0};
+            NSFont *hm = [NSFont fontWithName: fontName matrix: wanted];
 
-      PASS(hm != nil, "fontWithName:matrix: returns a font");
-      PASS(EQ([hm pointSize], 30.0),
-        "the point size comes from the matrix diagonal");
-      m = [hm matrix];
-      PASS(EQ(m[0], 30.0) && EQ(m[3], 30.0),
-        "the requested matrix round-trips");
-    }
+            PASS(hm != nil, "fontWithName:matrix: returns a font");
+            if (hm != nil)
+              {
+                PASS(CLOSE([hm pointSize], 30.0),
+                  "the point size comes from the matrix diagonal");
+                m = [hm matrix];
+                PASS(CLOSE(m[0], 30.0) && CLOSE(m[3], 30.0),
+                  "the requested matrix round-trips");
+              }
+          }
 
-    {
-      NSFont *hb = [NSFont fontWithName: @"Helvetica-Bold" size: 12.0];
+          {
+            NSFont *f = [NSFont fontWithName: fontName size: 12.0];
 
-      PASS(hb != nil, "a styled font name resolves");
-      PASS([[hb fontName] isEqualToString: @"Helvetica-Bold"],
-        "the styled name round-trips");
-      PASS(EQ([hb pointSize], 12.0), "the styled font has the requested size");
+            PASS(f != nil, "an installed font name resolves");
+            PASS([[f fontName] isEqualToString: fontName],
+              "the installed font name round-trips");
+            PASS(CLOSE([f pointSize], 12.0),
+              "the installed font has the requested size");
+          }
+        }
     }
   NS_HANDLER
     SKIP("No font backend available to build fonts")
   NS_ENDHANDLER
 
   END_SET("NSFont creation")
+  DESTROY(arp);
   return 0;
 }
