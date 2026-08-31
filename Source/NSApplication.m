@@ -3667,7 +3667,10 @@ struct _DelegateWrapper
       
       _app_is_running = NO;
 
-      GSRemoveIcon(_app_icon_window);
+      if (_app_icon_window != nil)
+        {
+          GSRemoveIcon(_app_icon_window);
+        }
       [[self windows] makeObjectsPerformSelector: @selector(close)];
       [NSCursor setHiddenUntilMouseMoves: NO];
       
@@ -4004,20 +4007,16 @@ struct _DelegateWrapper
 
 - (void) _appIconInit
 {
+  if ([[[NSUserDefaults standardUserDefaults]
+    objectForKey: @"GSSuppressAppIcon"] isEqual: [NSNumber numberWithBool:NO]] == NO)
+    {
+      return;
+    }
+
   NSAppIconView	*iv;
   NSUInteger	mask = NSIconWindowMask;
-  BOOL  	suppress;
-  
-  suppress = [[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSSuppressAppIcon"];
-#if	MINI_ICON
-  if (suppress)
-    {
-      mask = NSMiniaturizableWindowMask;
-    }
-#endif
-  
-  _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
+
+  _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect
 				styleMask: mask
 				  backing: NSBackingStoreRetained
 				    defer: NO
@@ -4043,12 +4042,9 @@ struct _DelegateWrapper
     RELEASE(iv);
   }
 
-  if (NO == suppress)
-    {
-      /* The icon window is not suppressed ... display it.
-       */
-      [_app_icon_window orderFrontRegardless];
-    }
+  /* The icon window is not suppressed ... display it.
+   */
+  [_app_icon_window orderFrontRegardless];
 }
 
 - (NSDictionary*) _notificationUserInfo
