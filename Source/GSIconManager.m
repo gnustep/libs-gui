@@ -54,9 +54,12 @@ static int appId = 0;
 static NSMutableSet *registeredIcons = nil;
 static unsigned int iconManagerUpdateCount = 0;
 static unsigned int lastIconManagerAttemptUpdate = 0;
+static NSData *lastApplicationIconData = nil;
+static NSString *lastApplicationIconBadgeText = nil;
 
 static void GSReleaseIconManager(void);
 static void GSLostIconManager(void);
+static BOOL GSSendApplicationIconData(NSData *data, NSString *badgeText);
 
 @interface GSIconManagerMonitor : NSObject
 + (id) _lostIconManager: (NSNotification *)notification;
@@ -104,6 +107,12 @@ GSGetIconManager(void)
 		   selector: @selector(_lostIconManager:)
 		       name: NSConnectionDidDieNotification
 		     object: gsimConnection];
+	      if (lastApplicationIconData != nil
+		  || lastApplicationIconBadgeText != nil)
+		{
+		  GSSendApplicationIconData(lastApplicationIconData,
+					   lastApplicationIconBadgeText);
+		}
 	    }
 	}
       NS_HANDLER
@@ -232,6 +241,13 @@ GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
 
   iconManagerUpdateCount++;
 
+  if (image != nil)
+    {
+      iconData = [image TIFFRepresentation];
+    }
+  ASSIGN(lastApplicationIconData, iconData);
+  ASSIGNCOPY(lastApplicationIconBadgeText, badgeLabel);
+
   if (gsim == nil && verify)
     {
       if (iconManagerUpdateCount - lastIconManagerAttemptUpdate < 5)
@@ -249,18 +265,28 @@ GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
       return;
     }
 
+  GSSendApplicationIconData(lastApplicationIconData,
+			   lastApplicationIconBadgeText);
+}
+
+static BOOL
+GSSendApplicationIconData(NSData *data, NSString *badgeText)
+{
+  BOOL sent = NO;
+
+  if (gsim == nil)
+    {
+      return NO;
+    }
+
   NS_DURING
     {
       if ([gsim respondsToSelector: @selector(setApplicationIconData:badgeText:appProcessId:)])
 	{
-	  if (image != nil)
-	    {
-	      iconData = [image TIFFRepresentation];
-	    }
-
-	  [gsim setApplicationIconData: iconData
-			     badgeText: badgeLabel
+	  [gsim setApplicationIconData: data
+			     badgeText: badgeText
 			  appProcessId: appId];
+	  sent = YES;
 	}
     }
   NS_HANDLER
@@ -268,6 +294,8 @@ GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
       GSLostIconManager();
     }
   NS_ENDHANDLER
+
+  return sent;
 }
 
 NSRect
