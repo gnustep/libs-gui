@@ -26,10 +26,9 @@
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSDockTile.h"
+#import "AppKit/NSGraphics.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSImage.h"
-#import "AppKit/NSImageRep.h"
-#import "AppKit/NSCustomImageRep.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSAttributedString.h"
@@ -38,6 +37,14 @@
 
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSDisplayServer.h"
+#import "GSIconManager.h"
+
+static void
+clearDockTileRect(NSSize size)
+{
+  NSRectFillUsingOperation(NSMakeRect(0, 0, size.width, size.height),
+			   NSCompositeClear);
+}
 
 @implementation NSDockTile
 
@@ -46,25 +53,16 @@
   self = [super init];
   if (self != nil)
     {
-      NSImageRep *_imageRep;
       GSDisplayServer *server = GSCurrentServer();
       NSSize size = [server iconSize]; 
-      NSRect rect = NSMakeRect(0, 0, size.width, size.height);
       
       _size = size;
-      _contentView = [[NSView alloc] initWithFrame: rect];
+      _contentView = nil;
       _badgeLabel = nil;
       _owner = nil;
       _showsApplicationBadge = YES;
       _appIconImage = [NSImage imageNamed: @"NSApplicationIcon"];
       RETAIN(_appIconImage);
-      _imageRep = [[NSCustomImageRep alloc] initWithDrawSelector: @selector(draw) delegate: self];
-      [_imageRep setSize: [_appIconImage size]];
-      _dockTileImage = [[NSImage alloc] initWithSize: [_appIconImage size]];
-      [_dockTileImage setCacheMode: NSImageCacheNever]; // Only needed because NSImage caches NSCustomImageReps
-      [_dockTileImage addRepresentation: _imageRep];
-      RELEASE(_imageRep);
-      [NSApp setApplicationIconImage: _dockTileImage];
     }
   return self;
 }
@@ -74,7 +72,6 @@
   RELEASE(_contentView);
   RELEASE(_badgeLabel);
   RELEASE(_appIconImage);
-  RELEASE(_dockTileImage);
   [super dealloc];
 }
 
@@ -86,6 +83,7 @@
 - (void) setContentView: (NSView *)contentView
 {
   ASSIGN(_contentView, contentView);
+  [self display];
 }
 
 - (NSSize) size
@@ -127,12 +125,35 @@
 
 - (void) display
 {
+  NSImage *image = nil;
+
   [_contentView setNeedsDisplay: YES];
+
+  image = [[NSImage alloc] initWithSize: _size];
+  [image lockFocus];
+  [self draw];
+  [image unlockFocus];
+
+  GSUpdateIconManager(image, _showsApplicationBadge ? _badgeLabel : nil);
+  RELEASE(image);
 }
 
 - (void)draw
 {
-  [_appIconImage compositeToPoint: NSZeroPoint operation: NSCompositeCopy];
+  clearDockTileRect(_size);
+
+  if (_contentView != nil)
+    {
+      if ([_contentView canDraw])
+	{
+	  [_contentView displayRectIgnoringOpacity: [_contentView bounds]
+					inContext: [NSGraphicsContext currentContext]];
+	}
+    }
+  else
+    {
+      [_appIconImage compositeToPoint: NSZeroPoint operation: NSCompositeCopy];
+    }
 
   if (_showsApplicationBadge && _badgeLabel)
     {

@@ -2492,6 +2492,10 @@ image.</p><p>See Also: -applicationIconImage</p>
         [current setMiniwindowImage: _app_icon];
     }
 
+  GSUpdateIconManager(_app_icon,
+    (_dock_tile != nil && [_dock_tile showsApplicationBadge])
+      ? [_dock_tile badgeLabel] : nil);
+
   DESTROY(old_app_icon);
 }
 
@@ -3860,8 +3864,8 @@ struct _DelegateWrapper
  */
 - (NSInteger) requestUserAttention: (NSRequestUserAttentionType)requestType
 {
-  // FIXME
-  return 0;
+  GSRequestUserAttention(requestType);
+  return requestType;
 }
 
 - (NSApplicationPresentationOptions) currentPresentationOptions
@@ -4460,4 +4464,3 @@ struct _DelegateWrapper
 }
 
 @end
-

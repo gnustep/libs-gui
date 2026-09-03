@@ -59,8 +59,7 @@
 extern "C" {
 #endif
 
-@class NSView, NSString;
-@class NSImageRep;
+@class NSView, NSString, NSImage;
 
 APPKIT_EXPORT_CLASS
 @interface NSDockTile : NSObject
@@ -71,7 +70,6 @@ APPKIT_EXPORT_CLASS
   BOOL      _showsApplicationBadge;
   NSString *_badgeLabel;
   NSImage  *_appIconImage;
-  NSImage  *_dockTileImage;
 }
 
 /**
@@ -143,4 +141,3 @@ APPKIT_EXPORT_CLASS
 #endif	/* GS_API_MACOSX */
 
 #endif	/* _NSDockTile_h_GNUSTEP_GUI_INCLUDE */
-
