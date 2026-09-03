@@ -39,3 +39,6 @@ GSGetIconFrame(NSWindow *window);
 
 void
 GSUpdateIconManager(NSImage *image, NSString *badgeLabel);
+
+void
+GSRequestUserAttention(NSUInteger requestType);

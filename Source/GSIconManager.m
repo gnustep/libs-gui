@@ -45,6 +45,8 @@
  - (void) setApplicationIconData: (NSData *)data
                        badgeText: (NSString *)badgeText
                     appProcessId: (int)aProcessId;
+ - (void) requestUserAttention: (NSInteger)requestType
+		   appProcessId: (int)aProcessId;
 @end
 
 static BOOL verify = NO;
@@ -296,6 +298,31 @@ GSSendApplicationIconData(NSData *data, NSString *badgeText)
   NS_ENDHANDLER
 
   return sent;
+}
+
+void
+GSRequestUserAttention(NSUInteger requestType)
+{
+  checkVerify();
+
+  if (gsim == nil)
+    {
+      return;
+    }
+
+  NS_DURING
+    {
+      if ([gsim respondsToSelector: @selector(requestUserAttention:appProcessId:)])
+	{
+	  [gsim requestUserAttention: requestType
+			appProcessId: appId];
+	}
+    }
+  NS_HANDLER
+    {
+      GSLostIconManager();
+    }
+  NS_ENDHANDLER
 }
 
 NSRect
