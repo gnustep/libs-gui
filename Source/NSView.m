@@ -2624,6 +2624,16 @@ static void autoresize(CGFloat oldContainerSize,
                       isect = [subview convertRect: isect fromView: self];
                       [subview displayIfNeededInRectIgnoringOpacity: isect];
                     }
+                  else if (NSIsEmptyRect(subviewFrame))
+                    {
+                      /* A subview with no area has nothing to draw, and is
+                         never reached by the line above, so it would keep
+                         itself and every view over it waiting for a display
+                         that cannot happen.  Let it settle its own flag.
+                      */
+                      [subview displayIfNeededInRectIgnoringOpacity:
+                        NSZeroRect];
+                    }
 
                   if (subview->_rFlags.needs_display)
                     {
@@ -2750,6 +2760,17 @@ static void autoresize(CGFloat oldContainerSize,
                 {
                   isect = [subview convertRect: isect fromView: self];
                   [subview displayRectIgnoringOpacity: isect
+                                            inContext: context];
+                }
+              else if (NSIsEmptyRect(subviewFrame)
+                && subview->_rFlags.needs_display == YES)
+                {
+                  /* A subview with no area has nothing to draw and is never
+                     reached by the line above, so it would keep itself and
+                     every view over it waiting for a display that cannot
+                     happen.  Let it settle its own flag.
+                  */
+                  [subview displayRectIgnoringOpacity: NSZeroRect
                                             inContext: context];
                 }
               /*
