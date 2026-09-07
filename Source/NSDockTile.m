@@ -142,13 +142,10 @@ clearDockTileRect(NSSize size)
 {
   clearDockTileRect(_size);
 
-  if (_contentView != nil)
+  if (_contentView != nil && [_contentView canDraw])
     {
-      if ([_contentView canDraw])
-	{
-	  [_contentView displayRectIgnoringOpacity: [_contentView bounds]
-					inContext: [NSGraphicsContext currentContext]];
-	}
+      [_contentView displayRectIgnoringOpacity: [_contentView bounds]
+                                      inContext: [NSGraphicsContext currentContext]];
     }
   else
     {
