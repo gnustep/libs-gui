@@ -3865,7 +3865,7 @@ struct _DelegateWrapper
 - (NSInteger) requestUserAttention: (NSRequestUserAttentionType)requestType
 {
   GSRequestUserAttention(requestType);
-  return requestType;
+  return 0;
 }
 
 - (NSApplicationPresentationOptions) currentPresentationOptions
