@@ -7473,7 +7473,8 @@ For a more detailed explanation, -setSortDescriptors:. */
 {
   if (identifier == nil)
     {
-      return;
+      [NSException raise: NSInvalidArgumentException
+		  format: @"NSTableView registerNib:forIdentifier: identifier must not be nil"]; 
     }
 
   _viewBased = YES;
