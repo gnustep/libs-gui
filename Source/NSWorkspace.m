@@ -764,7 +764,7 @@ static NSDictionary		*urlPreferences = nil;
   NSArray *appDirs;
   NSArray *downloadDir;
   NSArray *desktopDir;
-  NSArray *imgDir;
+  NSArray *picDir;
   NSArray *musicDir;
   NSArray *videoDir;
   NSString *sysDir;
@@ -819,7 +819,7 @@ static NSDictionary		*urlPreferences = nil;
     NSSystemDomainMask, YES);
   appDirs = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
     NSAllDomainsMask, YES);
-  imgDir = NSSearchPathForDirectoriesInDomains(NSPicturesDirectory,
+  picDir = NSSearchPathForDirectoriesInDomains(NSPicturesDirectory,
     NSUserDomainMask, YES);
   musicDir = NSSearchPathForDirectoriesInDomains(NSMusicDirectory,
     NSUserDomainMask, YES);
@@ -869,10 +869,10 @@ static NSDictionary		*urlPreferences = nil;
       [folderPathIconDict setObject: @"Desktop"
 	forKey: [[desktopDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
-  for (i = 0; i < [imgDir count]; i++)
+  for (i = 0; i < [picDir count]; i++)
     {
       [folderPathIconDict setObject: @"ImageFolder"
-	forKey: [[imgDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
+	forKey: [[picDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
   for (i = 0; i < [musicDir count]; i++)
     {
