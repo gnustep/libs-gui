@@ -1088,19 +1088,21 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
     }
   else
     {
-      [_tableView beginUpdates];
-      if ([deletedRows count] > 0)
+      if ([deletedRows count] > 0 || [insertedRows count] > 0)
 	{
-	  [_tableView removeRowsAtIndexes: deletedRows
-			    withAnimation: _defaultRowAnimation];
+	  [_tableView beginUpdates];
+	  if ([deletedRows count] > 0)
+	    {
+	      [_tableView removeRowsAtIndexes: deletedRows
+				withAnimation: _defaultRowAnimation];
+	    }
+	  if ([insertedRows count] > 0)
+	    {
+	      [_tableView insertRowsAtIndexes: insertedRows
+				withAnimation: _defaultRowAnimation];
+	    }
+	  [_tableView endUpdates];
 	}
-      if ([insertedRows count] > 0)
-	{
-	  [_tableView insertRowsAtIndexes: insertedRows
-			    withAnimation: _defaultRowAnimation];
-	}
-      [_tableView endUpdates];
-
       if ([reloadedRows count] > 0)
 	{
 	  NSIndexSet *columns =
