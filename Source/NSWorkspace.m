@@ -832,11 +832,15 @@ static NSDictionary		*urlPreferences = nil;
     {
       sysDir = [[sysAppDir objectAtIndex: 0] stringByDeletingLastPathComponent];
       if (![[sysDir lastPathComponent] isEqualToString: @"System"])
-	sysDir = nil;
+        {
+          sysDir = nil;
+        }
     }
 
   if (sysDir != nil)
-    [folderPathIconDict setObject: @"GSFolder" forKey: [sysDir stringByResolvingSymlinksInPath]];
+    {
+      [folderPathIconDict setObject: @"GSFolder" forKey: [sysDir stringByResolvingSymlinksInPath]];
+    }
 
   [folderPathIconDict setObject: @"HomeDirectory"
 			 forKey: [NSHomeDirectory() stringByResolvingSymlinksInPath]];
