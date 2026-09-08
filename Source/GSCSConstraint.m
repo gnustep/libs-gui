@@ -42,8 +42,14 @@
   self = [super init];
   if (self)
     {
-      ASSIGN(_strength, strength != nil ? [strength copy]
-                                        : [GSCSStrength strengthRequired]);
+      if (strength != nil)
+        {
+          ASSIGNCOPY(_strength, strength);
+        }
+      else
+        {
+          ASSIGN(_strength, [GSCSStrength strengthRequired]);
+        }
       ASSIGN(_expression, expression);
       ASSIGN(_variable, variable);
       _type = type;
