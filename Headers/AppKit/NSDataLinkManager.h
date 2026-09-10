@@ -54,6 +54,13 @@ APPKIT_EXPORT_CLASS
   NSThread            *_monitorThread;
   int                  _inotifyFD;
   NSMutableDictionary *_watchDescriptors;
+  /* The source file of each watched link, by path.  Every mechanism needs it:
+     the Windows watcher to say which link a directory's change belongs to, and
+     the timer to know which files to examine. */
+  NSMutableDictionary *_watchedLinks;
+  /* How each source file was last seen: its modification date and size. */
+  NSMutableDictionary *_watchedStamps;
+  id                   _pollTimer;
 
   struct __dlmFlags {
     unsigned areLinkOutlinesVisible:1;
