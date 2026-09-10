@@ -59,7 +59,7 @@ typedef enum {
 } RTFfontFamily;
 
 
-void	lexInitContext(RTFscannerCtxt *lctxt, void *customContext, int (*getcharFunction)());
+void	lexInitContext(RTFscannerCtxt *lctxt, void *customContext, int (*getcharFunction)(void*));
 
 /*	external symbols from the grammer	*/
 /*int	GSRTFparse(void *ctxt, RTFscannerCtxt *lctxt);*/

@@ -384,11 +384,15 @@ static void _setup()
 
       a = [NSMutableArray allocWithZone: NSDefaultMallocZone()];
       a = [a initWithCapacity: 1];
-      addImp = (void (*)())[a methodForSelector: addSel];
-      cntImp = (unsigned (*)())[a methodForSelector: cntSel];
-      insImp = (void (*)())[a methodForSelector: insSel];
+      addImp = (void (*)(NSMutableArray*, SEL, NSObject*))
+	[a methodForSelector: addSel];
+      cntImp = (unsigned (*)(NSMutableArray*, SEL))
+	[a methodForSelector: cntSel];
+      insImp = (void (*)(NSMutableArray*, SEL, NSObject*, NSUInteger))
+	[a methodForSelector: insSel];
       oatImp = [a methodForSelector: oatSel];
-      remImp = (void (*)())[a methodForSelector: remSel];
+      remImp = (void (*)(NSMutableArray*, SEL, NSUInteger))
+	[a methodForSelector: remSel];
       RELEASE(a);
 
       d = [NSDictionary new];
