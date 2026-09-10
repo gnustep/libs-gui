@@ -92,6 +92,8 @@ APPKIT_EXPORT_CLASS
 
   NSMapTable *_customSpacingMap;
   NSMapTable *_visiblePriorityMap;
+
+  NSMutableArray *_internalConstraints;
 }
 
 // Properties

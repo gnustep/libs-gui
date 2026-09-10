@@ -23,6 +23,7 @@
 */
 
 #import "AppKit/NSStackView.h"
+#import "AppKit/NSLayoutConstraint.h"
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSLayoutManager.h"
@@ -164,94 +165,364 @@
 
 @implementation NSStackView
 
-- (void) _layoutViewsWithOrientation: (NSUserInterfaceLayoutOrientation)o
+- (NSArray *) _layoutArrangedSubviews
 {
-  NSRect currentFrame = [self frame];
-  NSRect newFrame = currentFrame;
-  NSArray *sv = [self subviews];
-  NSUInteger n = [sv count];
-  CGFloat sp = [self spacing];
-  CGFloat x = 0.0;
-  CGFloat y = 0.0;
-  CGFloat newHeight = 0.0;
-  NSUInteger i = 0;
-  
-  // Advance vertically or horizontally depending on orientation...
-  if (o == NSUserInterfaceLayoutOrientationVertical)
+  NSMutableArray *result = [NSMutableArray arrayWithCapacity:
+                             [_arrangedSubviews count]];
+  NSUInteger i;
+
+  for (i = 0; i < [_arrangedSubviews count]; i++)
     {
-      if (sp == 0.0)
+      NSView *v = [_arrangedSubviews objectAtIndex: i];
+
+      if (_detachesHiddenViews && [v isHidden])
         {
-          if (n > 0)
+          continue;
+        }
+      [result addObject: v];
+    }
+  return result;
+}
+
+- (void) _pin: (id)first
+    attribute: (NSLayoutAttribute)firstAttribute
+    relatedBy: (NSLayoutRelation)relation
+       toItem: (id)second
+    attribute: (NSLayoutAttribute)secondAttribute
+   multiplier: (CGFloat)multiplier
+     constant: (CGFloat)constant
+{
+  NSLayoutConstraint *c = [NSLayoutConstraint constraintWithItem: first
+                                                       attribute: firstAttribute
+                                                       relatedBy: relation
+                                                          toItem: second
+                                                       attribute: secondAttribute
+                                                      multiplier: multiplier
+                                                        constant: constant];
+
+  [_internalConstraints addObject: c];
+}
+
+- (CGFloat) _spacingAfterView: (NSView *)v
+{
+  NSNumber *custom = [_customSpacingMap objectForKey: v];
+
+  if (custom != nil && [custom floatValue] != NSStackViewSpacingUseDefault)
+    {
+      return [custom floatValue];
+    }
+  return _spacing;
+}
+
+- (CGFloat) _intrinsicExtentOfView: (NSView *)v
+{
+  NSSize size = [v intrinsicContentSize];
+
+  if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
+    {
+      return size.width;
+    }
+  return size.height;
+}
+
+/* The space along the main axis that the arranged views have to share. */
+- (CGFloat) _availableExtent
+{
+  NSSize size = [self frame].size;
+
+  if (_orientation == NSUserInterfaceLayoutOrientationHorizontal)
+    {
+      return size.width - _edgeInsets.left - _edgeInsets.right;
+    }
+  return size.height - _edgeInsets.top - _edgeInsets.bottom;
+}
+
+/* The extents that Fill and FillEqually give the arranged views, or nil where
+   the views do not fit and keep their own extent.  No view is made smaller
+   than its own extent: the ones that fit share what the others leave. */
+- (NSArray *) _filledExtentsForViews: (NSArray *)views inSpace: (CGFloat)space
+{
+  NSUInteger count = [views count];
+  NSMutableArray *extents = [NSMutableArray arrayWithCapacity: count];
+  NSMutableIndexSet *keepingOwnExtent = [NSMutableIndexSet indexSet];
+  CGFloat content = 0.0;
+  CGFloat remaining = space;
+  NSUInteger sharing = count;
+  BOOL changed = YES;
+  NSUInteger i;
+
+  for (i = 0; i < count; i++)
+    {
+      CGFloat intrinsic
+        = [self _intrinsicExtentOfView: [views objectAtIndex: i]];
+
+      if (intrinsic < 0.0)
+        {
+          intrinsic = 0.0;
+        }
+      content += intrinsic;
+      [extents addObject: [NSNumber numberWithDouble: intrinsic]];
+    }
+
+  if (space < content)
+    {
+      return nil;
+    }
+
+  if (_distribution == NSStackViewDistributionFill)
+    {
+      [extents replaceObjectAtIndex: 0
+                         withObject: [NSNumber numberWithDouble:
+        [[extents objectAtIndex: 0] doubleValue] + space - content]];
+      return extents;
+    }
+
+  while (changed && sharing > 0)
+    {
+      CGFloat share = remaining / (CGFloat)sharing;
+
+      changed = NO;
+      for (i = 0; i < count; i++)
+        {
+          if (![keepingOwnExtent containsIndex: i]
+            && [[extents objectAtIndex: i] doubleValue] > share)
             {
-              NSView *v = [sv objectAtIndex: 0];
-              sp = [v frame].size.height;
+              [keepingOwnExtent addIndex: i];
+              remaining -= [[extents objectAtIndex: i] doubleValue];
+              sharing--;
+              changed = YES;
             }
         }
-
-      newFrame.size.height += sp; // * 2; // expand height
-      newFrame.origin.y -= (sp / 2.0); // move the view down.
-      newHeight = newFrame.size.height; // start at top of view...
     }
-  else
+
+  if (sharing > 0)
     {
-      if (sp == 0.0)
+      NSNumber *share = [NSNumber numberWithDouble:
+        round(remaining / (CGFloat)sharing)];
+
+      for (i = 0; i < count; i++)
         {
-          if (n > 0)
+          if (![keepingOwnExtent containsIndex: i])
             {
-              NSView *v = [sv objectAtIndex: 0];
-              sp = [v frame].size.width;
+              [extents replaceObjectAtIndex: i withObject: share];
             }
         }
-
-      newFrame.size.width += sp;
     }
-  
-  [self setFrame: newFrame];
-  FOR_IN(NSView*,v,sv)
+  return extents;
+}
+
+- (void) _addMainAxisConstraintsForViews: (NSArray *)views
+{
+  BOOL horizontal
+    = (_orientation == NSUserInterfaceLayoutOrientationHorizontal);
+  NSLayoutAttribute head
+    = horizontal ? NSLayoutAttributeLeading : NSLayoutAttributeTop;
+  NSLayoutAttribute tail
+    = horizontal ? NSLayoutAttributeTrailing : NSLayoutAttributeBottom;
+  NSLayoutAttribute extent
+    = horizontal ? NSLayoutAttributeWidth : NSLayoutAttributeHeight;
+  CGFloat headInset = horizontal ? _edgeInsets.left : _edgeInsets.top;
+  CGFloat tailInset = horizontal ? _edgeInsets.right : _edgeInsets.bottom;
+  /* The main axis runs towards increasing x but decreasing y. */
+  CGFloat direction = horizontal ? 1.0 : -1.0;
+  NSUInteger count = [views count];
+  NSView *firstView = [views objectAtIndex: 0];
+  CGFloat available = [self _availableExtent];
+  NSArray *filled = nil;
+  CGFloat content = 0.0;
+  CGFloat gaps = 0.0;
+  CGFloat proportion = 0.0;
+  CGFloat equalGap = 0.0;
+  CGFloat centreStep = 0.0;
+  NSUInteger i;
+
+  for (i = 0; i < count; i++)
     {
-      NSRect f; 
-      NSString *str = nil;
-      NSRect sr = NSZeroRect;
-
-      if ([v respondsToSelector: @selector(title)])
+      content += [self _intrinsicExtentOfView: [views objectAtIndex: i]];
+      if (i > 0)
         {
-          str = [(NSButton *)v title];
+          gaps += [self _spacingAfterView: [views objectAtIndex: i - 1]];
         }
-                           
-      f = [v frame];
-      if (f.origin.x < 0.0)
+    }
+
+  if (count > 1)
+    {
+      equalGap = (available - content) / (CGFloat)(count - 1);
+      centreStep = (available
+        - [self _intrinsicExtentOfView: firstView] / 2.0
+        - [self _intrinsicExtentOfView: [views objectAtIndex: count - 1]] / 2.0)
+        / (CGFloat)(count - 1);
+    }
+  if (content > 0.0)
+    {
+      proportion = (available - gaps) / content;
+    }
+
+  [self _pin: firstView
+    attribute: head
+    relatedBy: NSLayoutRelationEqual
+       toItem: self
+    attribute: head
+   multiplier: 1.0
+     constant: direction * headInset];
+
+  for (i = 1; i < count; i++)
+    {
+      NSView *v = [views objectAtIndex: i];
+      NSView *previous = [views objectAtIndex: i - 1];
+      CGFloat gap = [self _spacingAfterView: previous];
+
+      if (_distribution == NSStackViewDistributionEqualSpacing)
         {
-          f.origin.x = 0.0;
+          gap = MAX(gap, equalGap);
+        }
+      else if (_distribution == NSStackViewDistributionEqualCentering)
+        {
+          gap = MAX(gap, centreStep
+            - ([self _intrinsicExtentOfView: previous]
+               + [self _intrinsicExtentOfView: v]) / 2.0);
+        }
+      [self _pin: v
+        attribute: head
+        relatedBy: NSLayoutRelationEqual
+           toItem: previous
+        attribute: tail
+       multiplier: 1.0
+         constant: direction * gap];
+    }
+
+  /* Extents are pinned to a length rather than related to another view by a
+     multiplier, which the layout engine rejects.  A distribution with no room
+     leaves every view its own extent and runs past the trailing edge. */
+  if (_distribution == NSStackViewDistributionFill
+      || _distribution == NSStackViewDistributionFillEqually)
+    {
+      filled = [self _filledExtentsForViews: views inSpace: available - gaps];
+    }
+
+  for (i = 0; i < count; i++)
+    {
+      NSView *v = [views objectAtIndex: i];
+      CGFloat wanted = 0.0;
+
+      if (filled != nil)
+        {
+          wanted = [[filled objectAtIndex: i] doubleValue];
+        }
+      else if (_distribution == NSStackViewDistributionFillProportionally
+        && proportion > 1.0)
+        {
+          wanted = round([self _intrinsicExtentOfView: v] * proportion);
         }
 
-      if (str != nil)
+      if (wanted > 0.0)
         {
-          sr = [str _rectOfString];
+          [self _pin: v
+            attribute: extent
+            relatedBy: NSLayoutRelationEqual
+               toItem: nil
+            attribute: NSLayoutAttributeNotAnAttribute
+           multiplier: 1.0
+             constant: wanted];
         }
+    }
+}
 
-      // Calculate control position...
-      if (o == NSUserInterfaceLayoutOrientationVertical)
+- (void) _addCrossAxisConstraintsForViews: (NSArray *)views
+{
+  BOOL horizontal
+    = (_orientation == NSUserInterfaceLayoutOrientationHorizontal);
+  NSLayoutAttribute head
+    = horizontal ? NSLayoutAttributeTop : NSLayoutAttributeLeading;
+  NSLayoutAttribute tail
+    = horizontal ? NSLayoutAttributeBottom : NSLayoutAttributeTrailing;
+  NSLayoutAttribute centre
+    = horizontal ? NSLayoutAttributeCenterY : NSLayoutAttributeCenterX;
+  NSLayoutAttribute fill
+    = horizontal ? NSLayoutAttributeHeight : NSLayoutAttributeWidth;
+  CGFloat headInset = horizontal ? _edgeInsets.top : _edgeInsets.left;
+  CGFloat tailInset = horizontal ? _edgeInsets.bottom : _edgeInsets.right;
+  /* The cross axis runs towards decreasing y but increasing x. */
+  CGFloat direction = horizontal ? -1.0 : 1.0;
+  NSUInteger i;
+
+  for (i = 0; i < [views count]; i++)
+    {
+      NSView *v = [views objectAtIndex: i];
+
+      if (_alignment == centre)
         {
-          y = newHeight - ((CGFloat)i * sp) - f.size.height;              
-          f.origin.y = y;
+          [self _pin: v
+            attribute: centre
+            relatedBy: NSLayoutRelationEqual
+               toItem: self
+            attribute: centre
+           multiplier: 1.0
+             constant: 0.0];
+        }
+      else if (_alignment == tail || _alignment == NSLayoutAttributeRight)
+        {
+          [self _pin: v
+            attribute: tail
+            relatedBy: NSLayoutRelationEqual
+               toItem: self
+            attribute: tail
+           multiplier: 1.0
+             constant: -direction * tailInset];
         }
       else
         {
-          x = (CGFloat)i * sp;
-          f.origin.x = x;
-        }
+          [self _pin: v
+            attribute: head
+            relatedBy: NSLayoutRelationEqual
+               toItem: self
+            attribute: head
+           multiplier: 1.0
+             constant: direction * headInset];
 
-      // expand width if control is too short for title...
-      if (f.size.width < sr.size.width)
-        {
-          f.size.width = sr.size.width + 5.0;  //+5 to accomodate border...
+          if (_alignment == fill)
+            {
+              [self _pin: v
+                attribute: tail
+                relatedBy: NSLayoutRelationEqual
+                   toItem: self
+                attribute: tail
+               multiplier: 1.0
+                 constant: -direction * tailInset];
+            }
         }
-      
-      [v setFrame: f];
-      i++;
     }
-  END_FOR_IN(sv);
-  [self setNeedsDisplay: YES];
+}
+
+- (void) updateConstraints
+{
+  NSArray *views = [self _layoutArrangedSubviews];
+
+  if (_internalConstraints == nil)
+    {
+      _internalConstraints = [[NSMutableArray alloc] initWithCapacity: 8];
+    }
+  else if ([_internalConstraints count] > 0)
+    {
+      [NSLayoutConstraint deactivateConstraints: _internalConstraints];
+      [_internalConstraints removeAllObjects];
+    }
+
+  if ([views count] > 0)
+    {
+      NSUInteger i;
+
+      for (i = 0; i < [views count]; i++)
+        {
+          [[views objectAtIndex: i]
+            setTranslatesAutoresizingMaskIntoConstraints: NO];
+        }
+      [self _addMainAxisConstraintsForViews: views];
+      [self _addCrossAxisConstraintsForViews: views];
+      [NSLayoutConstraint activateConstraints: _internalConstraints];
+    }
+
+  [super updateConstraints];
 }
 
 - (void) _refreshView
@@ -312,7 +583,7 @@
     }
   else
     {
-      [self _layoutViewsWithOrientation: _orientation];
+      [self setNeedsUpdateConstraints: YES];
     }
   [self setNeedsDisplay: YES];
 }
@@ -491,6 +762,11 @@
   DESTROY(_arrangedSubviews);
   RELEASE(_detachedViews);
   RELEASE(_views);
+  if (_internalConstraints != nil)
+    {
+      [NSLayoutConstraint deactivateConstraints: _internalConstraints];
+      RELEASE(_internalConstraints);
+    }
   RELEASE(_customSpacingMap);
   RELEASE(_visiblePriorityMap);
 
