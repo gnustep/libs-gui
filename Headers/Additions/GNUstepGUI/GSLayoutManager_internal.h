@@ -162,6 +162,15 @@ typedef struct
 
   linefrag_attachment_t *attachments;
   int num_attachments;
+
+  /* Truncation indicator (typically an ellipsis) drawn when a line break mode
+     removes glyphs to fit the fragment.  truncationGlyph is 0 when the fragment
+     is not truncated.  truncationPoint is relative to the fragment rect and
+     truncationFont is not retained (it is held by the text storage during
+     layout, like the glyph run fonts). */
+  NSGlyph truncationGlyph;
+  NSPoint truncationPoint;
+  NSFont *truncationFont;
 } linefrag_t;
 
 typedef struct GSLayoutManager_textcontainer_s

@@ -323,8 +323,20 @@ invalidation.)
 - (void) setLocation: (NSPoint)location 
 	forStartOfGlyphRange: (NSRange)glyphRange;
 
-- (void) setAttachmentSize: (NSSize)attachmentSize 
+- (void) setAttachmentSize: (NSSize)attachmentSize
 	forGlyphRange: (NSRange)glyphRange; /* not OPENSTEP */
+
+/* Set a truncation glyph (typically an ellipsis) to be drawn at the given
+   point in the line fragment that contains glyphRange, indicating that a line
+   break mode dropped glyphs to fit.  A glyph of 0 clears it.  not OPENSTEP */
+- (void) setTruncationGlyph: (NSGlyph)glyph
+		    atPoint: (NSPoint)location
+		       font: (NSFont *)font
+	      forGlyphRange: (NSRange)glyphRange;
+
+/* The truncation glyph of the line fragment that contains the given glyph, or
+   NSNullGlyph if that fragment is not truncated.  not OPENSTEP */
+- (NSGlyph) truncationGlyphForGlyphAtIndex: (NSUInteger)glyphIndex;
 
 
 - (NSTextContainer *) textContainerForGlyphAtIndex: (NSUInteger)glyphIndex
