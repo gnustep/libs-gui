@@ -62,6 +62,20 @@ APPKIT_EXPORT_CLASS
 @interface NSRuleEditor : NSControl {
   id _target;
   SEL _action;
+  id _delegate;
+  NSMutableArray *_rows;
+  NSMutableIndexSet *_selectedRows;
+  NSString *_criteriaKeyPath;
+  NSString *_displayValuesKeyPath;
+  NSString *_rowTypeKeyPath;
+  NSString *_subrowsKeyPath;
+  NSDictionary *_formattingDictionary;
+  NSString *_formattingStringsFilename;
+  Class _rowClass;
+  CGFloat _rowHeight;
+  NSRuleEditorNestingMode _nestingMode;
+  BOOL _editable;
+  BOOL _canRemoveAllRows;
 }
 
 - (void) addRow: (id)sender;
