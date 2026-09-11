@@ -76,11 +76,11 @@
 
   if (header != NULL)
     {
-      [theData getBytes: header
-                 length: 1024];
+      NSUInteger length = MIN([theData length], (NSUInteger)1024);
+      [theData getBytes: header length: length];
 
       NSString *hdr = [[NSString alloc] initWithBytes: header
-                                               length: 1024
+                                               length: length
                                              encoding: NSUTF8StringEncoding];
       AUTORELEASE(hdr);
       if ([hdr containsString: @"Cocoa.XIB"])

@@ -88,17 +88,19 @@ Class gmodel_class(void)
   if (header != NULL)
     {
       NSUInteger len = [theData length];
-      NSRange r = NSMakeRange(len - 1024, len - 1);
+      NSUInteger length = MIN(len, (NSUInteger)1024);
+      NSRange r = NSMakeRange(len - length, length);
       NSString *hdr = nil;
 
       [theData getBytes: header
                   range: r];
       hdr = [[NSString alloc] initWithBytes: header
-                                     length: 1024
+                                     length: length
                                    encoding: NSUTF8StringEncoding];
       AUTORELEASE(hdr);
       if ([hdr containsString: @"GMModel"])
         {
+          free(header);
           return YES;
         }
 

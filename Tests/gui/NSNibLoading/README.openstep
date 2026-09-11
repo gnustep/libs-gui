@@ -1,0 +1,60 @@
+OPENSTEP binary nib regression tests
+===================================
+
+Regenerate the checked-in, original fixtures:
+  python3 make-openstep-fixtures.py
+
+When linking against a newly built GUI library, build openstep.m with the
+usual GNUstep test flags and private Source/ include path.  Run:
+  ./openstep OpenStepFixtures
+  ./openstep OpenStepFixtures --gui
+
+The first run does not need a graphical backend.  The second does; windows
+are created without ordering them on screen and are closed after checking
+outlets, actions, ownership and geometry.  XML plist parsing failures from an
+installed base library are reported separately as skips, not binary failures.
+
+From the libs-gui root, a standalone build against installed GUI/base libraries
+can exercise the changed loader without rebuilding unrelated GUI files:
+
+  gcc $(gnustep-config --objc-flags) -ISource -IHeaders -IHeaders/Additions \
+    -DGSNibLoader=GSOpenStepTestNibLoader \
+    -DGSXibLoader=GSOpenStepTestXibLoader \
+    -DGSGormLoader=GSOpenStepTestGormLoader \
+    -DGSGModelLoader=GSOpenStepTestGModelLoader \
+    Tests/gui/NSNibLoading/openstep.m Source/GSOpenStepNibReader.m \
+    Source/GSNibLoader.m Source/GSXibLoader.m Source/GSGormLoader.m \
+    Source/GSGModelLoader.m Source/GSOpenStep/ts_read.c \
+    $(gnustep-config --gui-libs) -o /tmp/openstep-tests
+  /tmp/openstep-tests Tests/gui/NSNibLoading/OpenStepFixtures --gui
+
+The C decoder can be checked independently:
+  clang -std=c99 -ISource -fsanitize=address,undefined -g \
+    Tests/gui/NSNibLoading/typedstream.c Source/GSOpenStep/ts_read.c \
+    -o /tmp/typedstream-test
+  /tmp/typedstream-test Tests/gui/NSNibLoading/OpenStepFixtures/objects-v4-le.nib
+
+See Source/GSOpenStep/README for the supported versions and explicit limits.
+
+Validation on the implementation host (macOS, GNU Objective-C runtime)
+--------------------------------------------------------------------
+The standalone loader suite passed 643 checks including windows and controls.
+The C decoder passed its mutation/truncation/random-input tests under the
+Homebrew LLVM AddressSanitizer and UndefinedBehaviorSanitizer, on both the
+small fixture and an upstream-generated widget binary.  Upstream-generated
+level-2 and level-3 widget binaries also loaded successfully (buttons, fonts
+and text fields).
+
+Host limitations, independently reproduced:
+  - The full GUI build stops in existing NSViewController.m because this
+    Objective-C runtime lacks OBJC_ASSOCIATION_ASSIGN.
+  - The installed base XML plist parser raises an unrecognized-selector
+    exception.  Binary plist loading and XML format probing pass.
+  - Enumerating the host's full font collection triggers a GSTimSort assertion
+    before nib loading.  GUI tests used FONTCONFIG_FILE pointing at a temporary
+    configuration containing only Helvetica; no installed configuration changed.
+  - Creating a plain NSMatrix with initWithFrame:mode:cellClass:numberOfRows:
+    numberOfColumns: crashes in the installed library without any nib loader.
+    Matrix runtime validation could not be completed on this host.
+
+These issues were not worked around by changing GUI element classes.
