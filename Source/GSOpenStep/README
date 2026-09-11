@@ -1,0 +1,80 @@
+Binary OPENSTEP nib support
+==========================
+
+The private typedstream reader in this directory is adapted from
+NIBMAKER-FOR-OPENSTEP, commit bcc7c1a09e0be874f1df259e809517a89b765986
+(src/ts_read.c, src/ts_read.h, src/ts_types.h).  That project's LICENSE is
+the GNU Library General Public License version 2.  Preserve its original
+format documentation when updating this copy.  No XML reader, XML writer,
+typedstream writer, preview renderer, or external executable is linked.
+
+Local adaptations:
+  - Prefix external functions with GSOpenStepTS; remove file I/O and tracing.
+  - Bound recursive values/classes/type encodings, allocation and array counts.
+  - Use subtraction for input bounds checks, avoiding addition overflow.
+
+GSOpenStepNibReader.m translates the binary graph into an in-memory binary
+keyed archive.  It does not execute application initializers.  GSNibLoader
+then uses its existing NSKeyedUnarchiver / NSIBObjectData path, including
+owner substitution, connections, top-level ownership and awakeFromNib.
+Fractional button repeat intervals are applied using public NSButtonCell
+methods immediately before awakening.  No GUI element class is modified.
+
+Detection and bundles
+---------------------
+Recognize streamer versions 3 and 4, signature length 11, and either
+streamtyped (little endian) or typedstream (big endian).  Recognition is
+only a routing decision: the reader must still validate the entire input.
+Keyed binary and XML nibs retain their existing separate loading path.
+NIBMAKER's XML projection is not accepted.
+
+Directory payload preference is keyedobjects.nib, objects.nib, data.nib.
+Once a payload exists, failure to read/decode it is an error; do not silently
+fall back to an older interface in the same bundle.  Raw .nib files and
+NSNib's NSData initializer use the same format dispatch.
+
+Current semantic coverage and limits
+-----------------------------------
+This is native OPENSTEP support for the following measured class versions,
+not a claim to support every archive ever emitted by NeXT or Apple:
+
+  NSObject 0; NSString 1; NSArray/NSMutableArray/NSSet/NSMutableSet 0
+  NSIBObjectData 24; NSCustomObject/NSCustomResource 41
+  NSIBConnector 17; NSIBOutletConnector/NSIBControlConnector 0
+  NSResponder 0; NSView/NSControl/NSCustomView 41
+  NSWindowTemplate 41; NSButton 0; NSTextField 25
+  NSCell 60; NSActionCell 17; NSButtonCell 57; NSTextFieldCell 61
+  NSBox 41; NSMatrix 60; NSFont 21; NSColor 0
+
+The field layouts come from the upstream doc/WIDGETS.md, nib_parse.c and
+gen-widget-nib.py.  Group encodings, counts, inheritance versions and trailing
+groups are checked.  Unknown classes encountered anywhere in the graph fail
+before any application object is instantiated, with class/version/offset
+diagnostics.  Do not map an unknown class to NSView or silently drop its state.
+
+Known limitations are explicit in the adapter:
+  - Unprefixed NeXTSTEP AppKit (IBObjectData, View, Cell, etc.) has different
+    layouts and is not supported, even when packaged in an OPENSTEP app.
+  - Nonzero historical NSView flags, transforms/auxiliary view state, window
+    size extensions, nonzero font roles, and unknown container sections are
+    rejected pending measured mappings.  They must not be copied into modern
+    flags merely because the field names resemble each other.
+  - Menus, popups, scroll views, browsers and other unlisted classes need
+    separate adapters.  Custom view/object placeholders are supported;
+    arbitrary archived application subclass state is not.
+  - Strings use NEXTSTEP encoding.  Archives containing application-specific
+    encodings such as EUC-KR need explicit encoding support.
+
+Tests
+-----
+Tests/gui/NSNibLoading/make-openstep-fixtures.py creates original binary
+fixtures without an XML intermediate or proprietary source material.
+openstep.m exercises the real loader and NSNib lifecycle; --gui also checks
+window templates, controls, action delivery, identity, geometry and timing.
+typedstream.c exercises truncation, mutated input, random bytes and limits
+and can be built with AddressSanitizer and UndefinedBehaviorSanitizer.
+
+The upstream checkout used for this implementation does not contain the
+original OPENSTEP fixture corpus.  Validation against original application
+nibs, and expanding the measured layout coverage, remain necessary before
+claiming general OPENSTEP compatibility.

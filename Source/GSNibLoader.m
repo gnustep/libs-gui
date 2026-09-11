@@ -29,13 +29,16 @@
 #import "config.h"
 #import <Foundation/NSArchiver.h>
 #import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSArray.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSKeyedArchiver.h>
+#import <Foundation/NSPropertyList.h>
 #import <Foundation/NSString.h>
+#import "GSOpenStepNibReader.h"
 
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
@@ -51,35 +54,30 @@
 
 + (BOOL) canReadData: (NSData *)theData
 {
-  char *header = calloc(1024, sizeof(char));
-
-  if (header != NULL)
+  id plist = nil;
+  if (GSOpenStepNibIsTypedStream(theData)) return YES;
+  if ([theData length] == 0) return NO;
+  /* Preserve XML keyed archive probing without instantiating a plist parser.
+   * The keyed unarchiver validates the archive when it is actually loaded. */
+  if ([theData length] < 8 || memcmp([theData bytes], "bplist00", 8))
     {
-      [theData getBytes: header
-                 length: 1024];
-
-      if (strncmp("bplist00",header,8) == 0)
-        {
-          free(header);
-          return YES;
-        }
-      else
-        {
-          NSString *hdr = [[NSString alloc] initWithBytes: header
-                                                   length: 1024
-                                                 encoding: NSUTF8StringEncoding];
-          AUTORELEASE(hdr);
-          if ([hdr containsString: @"NSKeyedArchiver"])
-            {
-              free(header);
-              return YES;
-            }
-        }
-
-      free(header);
+      NSUInteger length = MIN([theData length], (NSUInteger)1024);
+      NSString *header = AUTORELEASE([[NSString alloc]
+        initWithBytes: [theData bytes] length: length encoding: NSUTF8StringEncoding]);
+      return header != nil && [header rangeOfString: @"<plist"].length != 0
+        && [header rangeOfString: @"NSKeyedArchiver"].length != 0;
     }
-
-  return NO;
+  /* A binary plist is not necessarily a keyed archive. */
+  @try
+    {
+      plist = [NSPropertyListSerialization propertyListWithData: theData
+        options: NSPropertyListImmutable format: NULL error: NULL];
+    }
+  @catch (NSException *exception) { return NO; }
+  return [plist isKindOfClass: [NSDictionary class]]
+    && [[plist objectForKey: @"$archiver"] isEqual: @"NSKeyedArchiver"]
+    && [[plist objectForKey: @"$objects"] isKindOfClass: [NSArray class]]
+    && [[plist objectForKey: @"$top"] isKindOfClass: [NSDictionary class]];
 }
 
 + (NSString *)type
@@ -97,13 +95,17 @@
               withZone: (NSZone *)zone;
 {
   BOOL loaded = NO;
+  BOOL typedStream = GSOpenStepNibIsTypedStream(data);
+  NSKeyedUnarchiver *unarchiver = nil;
   CREATE_AUTORELEASE_POOL(pool);
 
   NS_DURING
     {
       if (data != nil)
 	{
-	  NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] 
+	  if (typedStream)
+	    data = GSOpenStepNibKeyedData(data);
+	  unarchiver = [[NSKeyedUnarchiver alloc]
 			 initForReadingWithData: data];
 	  if (unarchiver != nil)
 	    {
@@ -117,6 +119,8 @@
 		  if ([obj isKindOfClass: [NSIBObjectData class]])
 		    {
 		      NSDebugLog(@"Calling awakeWithContext");
+		      if (typedStream)
+		        GSOpenStepNibFinishDecoding(unarchiver);
 		      [obj awakeWithContext: context];
 		      loaded = YES;
 		    }
@@ -129,7 +133,7 @@
 		{
 		  NSLog(@"IB.objectdata not found when loading nib.");
 		}
-	      RELEASE(unarchiver);
+	      [unarchiver finishDecoding];
 	    }
 	  else
 	    {
@@ -143,10 +147,11 @@
     }
   NS_HANDLER
     {
+      loaded = NO;
       NSLog(@"Exception occurred while loading model: %@",[localException reason]);
-      // TEST_RELEASE(unarchiver);
     }
   NS_ENDHANDLER
+  RELEASE(unarchiver);
 
   if (loaded == NO)
     {
@@ -167,7 +172,7 @@
     {
       NSData *data = nil;
       
-      // if the data is in a directory, then load from keyedobjects.nib in the directory
+      // Prefer the current archive when a bundle also has a legacy copy.
       if (isDir == NO)
 	{
 	  data = [NSData dataWithContentsOfFile: fileName];
@@ -175,9 +180,21 @@
 	}
       else
 	{
-	  NSString *newFileName = [fileName stringByAppendingPathComponent: @"keyedobjects.nib"];
-	  data = [NSData dataWithContentsOfFile: newFileName];
-	  NSDebugLog(@"Loaded data from %@...", newFileName);
+	  NSArray *payloads = [NSArray arrayWithObjects: @"keyedobjects.nib",
+	    @"objects.nib", @"data.nib", nil];
+	  NSEnumerator *en = [payloads objectEnumerator];
+	  NSString *payload;
+	  while ((payload = [en nextObject]) != nil)
+	    {
+	      NSString *path = [fileName stringByAppendingPathComponent: payload];
+	      if ([mgr fileExistsAtPath: path])
+	        {
+	          /* A broken preferred payload is an error, not permission to
+	           * instantiate a different, potentially obsolete interface. */
+	          data = [NSData dataWithContentsOfFile: path];
+	          break;
+	        }
+	    }
 	}
       return data;
     }
