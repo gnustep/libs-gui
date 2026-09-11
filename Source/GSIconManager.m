@@ -47,6 +47,8 @@
                     appProcessId: (int)aProcessId;
  - (void) requestUserAttention: (NSInteger)requestType
 		   appProcessId: (int)aProcessId;
+ - (void) cancelUserAttentionRequest: (NSInteger)request
+			appProcessId: (int)aProcessId;
 @end
 
 static BOOL verify = NO;
@@ -316,6 +318,31 @@ GSRequestUserAttention(NSUInteger requestType)
 	{
 	  [gsim requestUserAttention: requestType
 			appProcessId: appId];
+	}
+    }
+  NS_HANDLER
+    {
+      GSLostIconManager();
+    }
+  NS_ENDHANDLER
+}
+
+void
+GSCancelUserAttentionRequest(NSInteger request)
+{
+  checkVerify();
+
+  if (gsim == nil)
+    {
+      return;
+    }
+
+  NS_DURING
+    {
+      if ([gsim respondsToSelector: @selector(cancelUserAttentionRequest:appProcessId:)])
+	{
+	  [gsim cancelUserAttentionRequest: request
+			      appProcessId: appId];
 	}
     }
   NS_HANDLER

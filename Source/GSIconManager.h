@@ -42,3 +42,6 @@ GSUpdateIconManager(NSImage *image, NSString *badgeLabel);
 
 void
 GSRequestUserAttention(NSUInteger requestType);
+
+void
+GSCancelUserAttentionRequest(NSInteger request);

@@ -3853,7 +3853,7 @@ struct _DelegateWrapper
  */
 - (void) cancelUserAttentionRequest: (NSInteger)request
 {
-  // FIXME
+  GSCancelUserAttentionRequest(request);
 }
 
 /**
