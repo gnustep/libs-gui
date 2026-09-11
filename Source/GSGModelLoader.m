@@ -100,6 +100,7 @@ Class gmodel_class(void)
       AUTORELEASE(hdr);
       if ([hdr containsString: @"GMModel"])
         {
+          free(header);
           return YES;
         }
 
