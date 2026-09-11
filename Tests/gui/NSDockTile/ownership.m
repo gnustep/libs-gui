@@ -27,7 +27,9 @@ main(int argc, char **argv)
     NSView	*view;
 
     tile = [[NSDockTile alloc] init];
-    view = [tile contentView];
+    view = [[NSView alloc] initWithFrame: NSMakeRect(0, 0, 10, 10)];
+    [tile setContentView: view];
+    RELEASE(view);
     RETAIN(view);
 
     /* One retain and one release, leaving the tile alive throughout. */
