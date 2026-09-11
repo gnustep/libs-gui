@@ -40,7 +40,7 @@ LIBRARY_VAR = GNUSTEP_GUI
 LIBRARY_NAME = libgnustep-gui
 
 # The Objective-C source files to be compiled
-libgnustep-gui_C_FILES =
+libgnustep-gui_C_FILES = GSOpenStep/ts_read.c
 
 # The Objective-C source files to be compiled
 libgnustep-gui_OBJC_FILES = Functions.m \
@@ -361,6 +361,7 @@ GSModelLoaderFactory.m \
 GSGormLoader.m \
 GSGModelLoader.m \
 GSNibLoader.m \
+GSOpenStepNibReader.m \
 GSXibElement.m \
 GSXibLoader.m \
 GSXibLoading.m \
