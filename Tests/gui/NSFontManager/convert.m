@@ -17,8 +17,11 @@
 #define EQ(a, b) (fabs((double)(a) - (double)(b)) < 0.001)
 
 int
-main(int argc, char **argv)
+main(int argc, char **argv, char **env)
 {
+  GSInitializeProcess(argc, argv, env);
+  CREATE_AUTORELEASE_POOL(arp);
+
   START_SET("convertFont:toSize:")
 
   NS_DURING
@@ -32,7 +35,15 @@ main(int argc, char **argv)
   NS_DURING
     {
       NSFontManager *fm = [NSFontManager sharedFontManager];
-      NSFont *h24 = [NSFont fontWithName: @"Helvetica" size: 24.0];
+      NSArray *available = [fm availableFonts];
+      NSString *fontName = [available count] > 0
+        ? [available objectAtIndex: 0] : nil;
+      NSFont *h24 = fontName != nil
+        ? [NSFont fontWithName: fontName size: 24.0] : nil;
+
+      if (fontName == nil || h24 == nil)
+        SKIP("No installed font is available to test font conversion")
+
       NSFont *h12 = [fm convertFont: h24 toSize: 12.0];
       NSFont *same = [fm convertFont: h24 toSize: 24.0];
 
@@ -48,5 +59,6 @@ main(int argc, char **argv)
   NS_ENDHANDLER
 
   END_SET("convertFont:toSize:")
+  RELEASE(arp);
   return 0;
 }
