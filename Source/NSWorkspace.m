@@ -2224,7 +2224,7 @@ launchIdentifiers: (NSArray **)identifiers
 	  [names addObject: name];
 	}
     }
-  NSLog(@"mountedRemovableMedia returning names: %@", names);
+  NSDebugLog(@"mountedRemovableMedia returning names: %@", names);
   return names;
 }
 
