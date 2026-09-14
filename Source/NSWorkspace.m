@@ -1549,7 +1549,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	   * mount point.
 	   */
 	  else if ([[fm fileAttributesAtPath:
-	    [fullPath stringByDeletingLastPathComponent]
+	    [[fullPath stringByResolvingSymlinksInPath]
+	    stringByDeletingLastPathComponent]
 	    traverseLink: YES] fileSystemNumber]
 	    != [attributes fileSystemNumber])
 	    {
@@ -2223,7 +2224,7 @@ launchIdentifiers: (NSArray **)identifiers
 	  [names addObject: name];
 	}
     }
-  NSDebugLog(@"mountedRemovableMedia returning names: %@", names);
+  NSLog(@"mountedRemovableMedia returning names: %@", names);
   return names;
 }
 

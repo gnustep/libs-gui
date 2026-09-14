@@ -1,3 +1,12 @@
+2026-09-14 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Fix bug detecting filesystem mount points.
+	A mount point has a different filesystem number than its parent
+	directory, but if the name of the directory is a symbolic link
+	the apparent parent directory may not be the real one.  To correct
+	the issue we simply need to resolve symbolic links before trying
+	to check the parent directory.
+
 2026-08-25 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-initWithCoder:): Map old alignment values to new ones.
