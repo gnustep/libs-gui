@@ -67,12 +67,12 @@
  *     -cancelUserAttentionRequest:appProcessId:.
  *
  * All messages to the remote object are treated as best-effort.  If lookup
- * fails, the user disables GSUseIconManager, the connection dies, or a remote
- * message raises, the client drops the proxy and keeps running with local
- * fallback behavior.  NSConnectionDidDieNotification is observed so that a
- * disappearing manager clears all registered icon state.  Reconnect attempts
- * after repeated dock tile updates are throttled to avoid repeatedly probing a
- * missing service.
+ * fails, GSUseIconManager has not been explicitly enabled, the connection
+ * dies, or a remote message raises, the client drops the proxy and keeps
+ * running with local fallback behavior.  NSConnectionDidDieNotification is
+ * observed so that a disappearing manager clears all registered icon state.
+ * Reconnect attempts after repeated dock tile updates are throttled to avoid
+ * repeatedly probing a missing service.
  */
 @protocol GSIconManager <NSObject>
  - (NSRect) setWindow: (unsigned int)aWindowNumber appProcessId: (int)aProcessId;
@@ -123,8 +123,7 @@ GSGetIconManager(void)
 
   lastIconManagerAttemptUpdate = iconManagerUpdateCount;
 
-  if ([defaults objectForKey: @"GSUseIconManager"] == nil ||
-      [defaults boolForKey: @"GSUseIconManager"])
+  if ([defaults boolForKey: @"GSUseIconManager"])
     {
       id <GSIconManager>proxy = nil;
       BOOL retainedProxy = NO;
