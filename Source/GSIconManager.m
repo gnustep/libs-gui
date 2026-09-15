@@ -38,6 +38,42 @@
 #import "AppKit/NSImage.h"
 #import "GSIconManager.h"
 
+/*
+ * GSIconManager is the private distributed-object protocol used between
+ * gui/AppKit clients and an optional external icon manager process registered
+ * as "GSIconManager".
+ *
+ * The client side of the conversation is deliberately hidden behind the C
+ * functions declared in GSIconManager.h:
+ *
+ *   - On first use, the client lazily looks up the registered NSConnection
+ *     root proxy and records the application's process id.
+ *   - When an application icon window or a miniwindow needs placement,
+ *     GSGetIconFrame() sends -setWindow:appProcessId:.  The manager records
+ *     the global window number and returns the frame where the client should
+ *     put that icon window.
+ *   - When a registered icon/miniwindow goes away, GSRemoveIcon() sends
+ *     -removeWindow:.  The client tracks which windows it registered so it
+ *     only removes windows the manager knows about.
+ *   - When AppKit needs the icon size, GSGetIconSize() asks the manager via
+ *     -getSizeWindow.  Without a manager it falls back to the display server's
+ *     icon size.
+ *   - When the app icon or NSDockTile badge changes, GSUpdateIconManager()
+ *     converts the image to TIFF data and sends
+ *     -setApplicationIconData:badgeText:appProcessId:.  The last icon payload
+ *     is cached so a newly reconnected manager can be brought up to date.
+ *   - User-attention requests are forwarded, when supported by the manager,
+ *     with -requestUserAttention:appProcessId: and
+ *     -cancelUserAttentionRequest:appProcessId:.
+ *
+ * All messages to the remote object are treated as best-effort.  If lookup
+ * fails, the user disables GSUseIconManager, the connection dies, or a remote
+ * message raises, the client drops the proxy and keeps running with local
+ * fallback behavior.  NSConnectionDidDieNotification is observed so that a
+ * disappearing manager clears all registered icon state.  Reconnect attempts
+ * after repeated dock tile updates are throttled to avoid repeatedly probing a
+ * missing service.
+ */
 @protocol GSIconManager <NSObject>
  - (NSRect) setWindow: (unsigned int)aWindowNumber appProcessId: (int)aProcessId;
  - (void) removeWindow: (unsigned int)aWindowNumber;
