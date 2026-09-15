@@ -40,10 +40,15 @@
 #import <Foundation/NSLocale.h>
 #import <Foundation/NSTimeZone.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSDictionary.h>
+
 #import "AppKit/NSAttributedString.h"
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSDatePickerCell.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSWindow.h"
@@ -99,10 +104,6 @@
   NSMutableString *template = [NSMutableString stringWithCapacity: 8];
   NSDatePickerElementFlags elements = _datePickerElements;
 
-  if (elements & NSEraDatePickerElementFlag)
-    {
-      [template appendString: @"G"];
-    }
   if (elements & NSYearMonthDatePickerElementFlag)
     {
       [template appendString: @"yM"];
@@ -162,10 +163,6 @@
   if (elements & NSTimeZoneDatePickerElementFlag)
     {
       [format appendString: @" zzz"];
-    }
-  if (elements & NSEraDatePickerElementFlag)
-    {
-      [format appendString: @" G"];
     }
 
   return format;
@@ -408,7 +405,8 @@
 
 - (void) setDatePickerElements: (NSDatePickerElementFlags)flags
 {
-  _datePickerElements = flags;
+  /* AppKit keeps the low eight bits, which leaves the era out. */
+  _datePickerElements = flags & 0xff;
   [self _updateDateFormat];
 }
 
@@ -704,6 +702,444 @@
   return YES;
 }
 
+/* The clock and calendar style draws a month of days, a clock, or both,
+   depending on the elements it is asked for.
+*/
+- (BOOL) _showsCalendar
+{
+  return (_datePickerStyle == NSClockAndCalendarDatePickerStyle
+    && (_datePickerElements & NSYearMonthDatePickerElementFlag) != 0);
+}
+
+- (BOOL) _showsClock
+{
+  return (_datePickerStyle == NSClockAndCalendarDatePickerStyle
+    && (_datePickerElements & NSHourMinuteDatePickerElementFlag) != 0);
+}
+
+- (NSFont *) _drawingFont
+{
+  NSFont *font = [self font];
+
+  return (font == nil) ? [NSFont userFontOfSize: 0.0] : font;
+}
+
+- (NSDictionary *) _dayAttributes
+{
+  NSColor *color = [self textColor];
+
+  if (color == nil)
+    {
+      color = [NSColor controlTextColor];
+    }
+
+  return [NSDictionary dictionaryWithObjectsAndKeys:
+    [self _drawingFont], NSFontAttributeName,
+    color, NSForegroundColorAttributeName,
+    nil];
+}
+
+/* One row of the month, and one column of it.  Wide enough for two digits
+   and for the initial of a weekday.
+*/
+- (NSSize) _dayCellSize
+{
+  NSFont *font = [self _drawingFont];
+  NSSize size = [@"88" sizeWithAttributes:
+    [NSDictionary dictionaryWithObject: font forKey: NSFontAttributeName]];
+
+  size.width = ceil(size.width) + 8.0;
+  size.height = ceil([font boundingRectForFont].size.height) + 2.0;
+
+  return size;
+}
+
+/* The month takes a row for its name, a row for the initials of the
+   weekdays and six rows of days.
+*/
+- (NSSize) _calendarSize
+{
+  NSSize day = [self _dayCellSize];
+
+  return NSMakeSize(day.width * 7.0, day.height * 8.0);
+}
+
+- (NSRect) _calendarFrameForFrame: (NSRect)frame
+{
+  NSRect calendar = frame;
+
+  if ([self _showsClock])
+    {
+      calendar.size.width = [self _calendarSize].width;
+    }
+
+  return calendar;
+}
+
+- (NSRect) _clockFrameForFrame: (NSRect)frame
+{
+  NSRect clock = frame;
+
+  if ([self _showsCalendar])
+    {
+      CGFloat used = [self _calendarSize].width;
+
+      clock.origin.x += used;
+      clock.size.width -= used;
+    }
+
+  return clock;
+}
+
+/* Where a day of the month sits in the grid.  Row zero is the first week
+   under the initials of the weekdays.
+*/
+- (NSRect) _dayCellRectAtRow: (NSInteger)row
+                      column: (NSInteger)column
+                     inFrame: (NSRect)frame
+                      ofView: (NSView *)view
+{
+  NSRect calendar = [self _calendarFrameForFrame: frame];
+  NSSize day = [self _dayCellSize];
+  NSRect cell;
+
+  cell.size = day;
+  cell.origin.x = NSMinX(calendar) + column * day.width;
+  if ([view isFlipped])
+    {
+      cell.origin.y = NSMinY(calendar) + (row + 2) * day.height;
+    }
+  else
+    {
+      cell.origin.y = NSMaxY(calendar) - (row + 3) * day.height;
+    }
+
+  return cell;
+}
+
+/* The day of the month in a cell of the grid, or zero when the cell falls
+   outside the month.
+*/
+- (NSInteger) _dayAtRow: (NSInteger)row column: (NSInteger)column
+{
+  NSCalendar *calendar = [self _pickerCalendar];
+  NSDate *date = [self dateValue];
+  NSDateComponents *parts;
+  NSDate *first;
+  NSInteger lead;
+  NSInteger day;
+  NSInteger length;
+
+  if (date == nil)
+    {
+      return 0;
+    }
+
+  parts = [calendar components: NSCalendarUnitEra | NSCalendarUnitYear
+    | NSCalendarUnitMonth fromDate: date];
+  [parts setDay: 1];
+  first = [calendar dateFromComponents: parts];
+  if (first == nil)
+    {
+      return 0;
+    }
+
+  lead = [[calendar components: NSCalendarUnitWeekday fromDate: first] weekday]
+    - (NSInteger)[calendar firstWeekday];
+  while (lead < 0)
+    {
+      lead += 7;
+    }
+  length = [calendar rangeOfUnit: NSCalendarUnitDay
+                          inUnit: NSCalendarUnitMonth
+                         forDate: date].length;
+  day = row * 7 + column - lead + 1;
+  if (day < 1 || day > length)
+    {
+      return 0;
+    }
+
+  return day;
+}
+
+- (NSString *) _monthTitle
+{
+  NSDateFormatter *formatter = (NSDateFormatter *)[self formatter];
+  NSDateFormatter *scratch = AUTORELEASE([[NSDateFormatter alloc] init]);
+  NSString *pattern;
+
+  if (![formatter isKindOfClass: [NSDateFormatter class]]
+    || [self dateValue] == nil)
+    {
+      return @"";
+    }
+
+  [scratch setLocale: [formatter locale]];
+  [scratch setTimeZone: [formatter timeZone]];
+  [scratch setCalendar: [formatter calendar]];
+  pattern = [NSDateFormatter dateFormatFromTemplate: @"yMMMM"
+                                            options: 0
+                                             locale: [formatter locale]];
+  [scratch setDateFormat: (pattern == nil) ? (NSString *)@"MMMM y" : pattern];
+
+  return [scratch stringFromDate: [self dateValue]];
+}
+
+- (NSArray *) _weekdayInitials
+{
+  NSDateFormatter *formatter = (NSDateFormatter *)[self formatter];
+  NSArray *symbols = nil;
+
+  if ([formatter isKindOfClass: [NSDateFormatter class]])
+    {
+      symbols = [formatter veryShortWeekdaySymbols];
+      if ([symbols count] != 7)
+        {
+          symbols = [formatter shortWeekdaySymbols];
+        }
+    }
+  if ([symbols count] != 7)
+    {
+      symbols = [NSArray arrayWithObjects: @"S", @"M", @"T", @"W", @"T",
+        @"F", @"S", nil];
+    }
+
+  return symbols;
+}
+
+/* Whether a day of the month on show is part of what the picker holds: the
+   one day it is set to, or, in the mode that picks a range, any day the
+   range covers.
+*/
+- (BOOL) _dayIsPicked: (NSInteger)day
+{
+  NSCalendar *calendar = [self _pickerCalendar];
+  NSDate *start = [self dateValue];
+  NSDateComponents *parts;
+  NSDate *dayStart;
+  NSDate *dayEnd;
+  NSDate *end;
+
+  if (start == nil)
+    {
+      return NO;
+    }
+
+  parts = [calendar components: NSCalendarUnitEra | NSCalendarUnitYear
+    | NSCalendarUnitMonth | NSCalendarUnitDay fromDate: start];
+  if (_datePickerMode != NSRangeDateMode || _timeInterval <= 0.0)
+    {
+      return (day == [parts day]);
+    }
+
+  [parts setDay: day];
+  dayStart = [calendar dateFromComponents: parts];
+  if (dayStart == nil)
+    {
+      return NO;
+    }
+  [parts setDay: day + 1];
+  dayEnd = [calendar dateFromComponents: parts];
+  end = [start dateByAddingTimeInterval: _timeInterval];
+
+  return ([dayStart compare: end] != NSOrderedDescending
+    && (dayEnd == nil || [dayEnd compare: start] == NSOrderedDescending));
+}
+
+static void
+drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
+{
+  NSSize size = [text sizeWithAttributes: attributes];
+  NSPoint at;
+
+  at.x = NSMinX(rect) + (NSWidth(rect) - size.width) / 2.0;
+  at.y = NSMinY(rect) + (NSHeight(rect) - size.height) / 2.0;
+  [text drawAtPoint: at withAttributes: attributes];
+}
+
+- (void) _drawCalendarInFrame: (NSRect)frame ofView: (NSView *)view
+{
+  NSDictionary *attributes = [self _dayAttributes];
+  NSRect calendar = [self _calendarFrameForFrame: frame];
+  NSSize day = [self _dayCellSize];
+  NSArray *initials = [self _weekdayInitials];
+  NSCalendar *cal = [self _pickerCalendar];
+  NSInteger first = (NSInteger)[cal firstWeekday];
+  NSRect row;
+  NSInteger index;
+
+  row = NSMakeRect(NSMinX(calendar), 0.0, NSWidth(calendar), day.height);
+  row.origin.y = [view isFlipped] ? NSMinY(calendar)
+    : NSMaxY(calendar) - day.height;
+  drawCentred([self _monthTitle], row, attributes);
+
+  for (index = 0; index < 7; index++)
+    {
+      NSRect cell = [self _dayCellRectAtRow: -1 column: index
+                                    inFrame: frame ofView: view];
+
+      drawCentred([initials objectAtIndex: (first - 1 + index) % 7],
+                  cell, attributes);
+    }
+
+  for (index = 0; index < 42; index++)
+    {
+      NSInteger number = [self _dayAtRow: index / 7 column: index % 7];
+      NSRect cell;
+
+      if (number == 0)
+        {
+          continue;
+        }
+      cell = [self _dayCellRectAtRow: index / 7 column: index % 7
+                             inFrame: frame ofView: view];
+      if ([self _dayIsPicked: number])
+        {
+          NSMutableDictionary *marked = AUTORELEASE([attributes mutableCopy]);
+
+          [[NSColor selectedTextBackgroundColor] set];
+          NSRectFill(cell);
+          [marked setObject: [NSColor selectedTextColor]
+                     forKey: NSForegroundColorAttributeName];
+          drawCentred([NSString stringWithFormat: @"%ld", (long)number],
+                      cell, marked);
+        }
+      else
+        {
+          drawCentred([NSString stringWithFormat: @"%ld", (long)number],
+                      cell, attributes);
+        }
+    }
+}
+
+- (void) _drawClockInFrame: (NSRect)frame
+{
+  NSRect clock = [self _clockFrameForFrame: frame];
+  CGFloat size = MIN(NSWidth(clock), NSHeight(clock)) - 4.0;
+  NSPoint centre = NSMakePoint(NSMidX(clock), NSMidY(clock));
+  NSCalendar *calendar = [self _pickerCalendar];
+  NSDateComponents *parts;
+  NSBezierPath *face;
+  CGFloat hour;
+  CGFloat minute;
+  NSInteger index;
+
+  if (size <= 0.0 || [self dateValue] == nil)
+    {
+      return;
+    }
+
+  face = [NSBezierPath bezierPathWithOvalInRect:
+    NSMakeRect(centre.x - size / 2.0, centre.y - size / 2.0, size, size)];
+  [[NSColor controlBackgroundColor] set];
+  [face fill];
+  [[NSColor controlDarkShadowColor] set];
+  [face stroke];
+
+  for (index = 0; index < 12; index++)
+    {
+      CGFloat angle = index * M_PI / 6.0;
+      NSPoint from = NSMakePoint(centre.x + sin(angle) * size * 0.45,
+                                 centre.y + cos(angle) * size * 0.45);
+      NSPoint to = NSMakePoint(centre.x + sin(angle) * size * 0.40,
+                               centre.y + cos(angle) * size * 0.40);
+
+      [NSBezierPath strokeLineFromPoint: from toPoint: to];
+    }
+
+  parts = [calendar components: NSCalendarUnitHour | NSCalendarUnitMinute
+                      fromDate: [self dateValue]];
+  minute = [parts minute] * M_PI / 30.0;
+  hour = ([parts hour] % 12) * M_PI / 6.0 + minute / 12.0;
+  [NSBezierPath strokeLineFromPoint: centre
+                            toPoint: NSMakePoint(
+                              centre.x + sin(hour) * size * 0.25,
+                              centre.y + cos(hour) * size * 0.25)];
+  [NSBezierPath strokeLineFromPoint: centre
+                            toPoint: NSMakePoint(
+                              centre.x + sin(minute) * size * 0.38,
+                              centre.y + cos(minute) * size * 0.38)];
+}
+
+/* The day of the month the point falls on, keeping the time of day the
+   picker holds, or nil for a point that is not on a day of this month.
+*/
+- (NSDate *) _dayAtPoint: (NSPoint)point
+                  inRect: (NSRect)frame
+                  ofView: (NSView *)view
+{
+  NSCalendar *calendar = [self _pickerCalendar];
+  NSDateComponents *parts;
+  NSInteger index;
+
+  if ([self dateValue] == nil)
+    {
+      return nil;
+    }
+
+  for (index = 0; index < 42; index++)
+    {
+      NSRect cell = [self _dayCellRectAtRow: index / 7 column: index % 7
+                                    inFrame: frame ofView: view];
+      NSInteger number = [self _dayAtRow: index / 7 column: index % 7];
+
+      if (number == 0 || !NSMouseInRect(point, cell, [view isFlipped]))
+        {
+          continue;
+        }
+      parts = [calendar components: NSCalendarUnitEra | NSCalendarUnitYear
+        | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour
+        | NSCalendarUnitMinute | NSCalendarUnitSecond
+                          fromDate: [self dateValue]];
+      [parts setDay: number];
+
+      return [calendar dateFromComponents: parts];
+    }
+
+  return nil;
+}
+
+- (BOOL) _selectDayAtPoint: (NSPoint)point
+                   inRect: (NSRect)frame
+                   ofView: (NSView *)view
+{
+  NSDate *picked = [self _dayAtPoint: point inRect: frame ofView: view];
+
+  if (picked == nil)
+    {
+      return NO;
+    }
+  [self setDateValue: picked];
+
+  return YES;
+}
+
+/* In the calendar the arrow keys walk the grid, a day across and a week up
+   or down.
+*/
+- (BOOL) _stepDaysBy: (NSInteger)days
+{
+  NSCalendar *calendar = [self _pickerCalendar];
+  NSDateComponents *step = AUTORELEASE([[NSDateComponents alloc] init]);
+  NSDate *stepped;
+
+  if ([self dateValue] == nil)
+    {
+      return NO;
+    }
+  [step setDay: days];
+  stepped = [calendar dateByAddingComponents: step
+                                      toDate: [self dateValue]
+                                     options: 0];
+  if (stepped == nil)
+    {
+      return NO;
+    }
+  [self setDateValue: stepped];
+
+  return YES;
+}
+
 /* The style with a stepper keeps room for it at the trailing edge, and the
    text is drawn in what is left.
 */
@@ -739,10 +1175,34 @@
   return frame;
 }
 
+/* Which of the two stepper buttons is drawn pressed: one for the upper,
+   minus one for the lower, zero for neither.
+*/
+- (void) _setHighlightedStepper: (NSInteger)direction
+{
+  _highlightedStepper = direction;
+}
+
 - (NSSize) cellSize
 {
-  NSSize size = [super cellSize];
+  NSSize size;
 
+  if ([self _showsCalendar] || [self _showsClock])
+    {
+      size = NSMakeSize(0.0, [self _calendarSize].height);
+      if ([self _showsCalendar])
+        {
+          size.width += [self _calendarSize].width;
+        }
+      if ([self _showsClock])
+        {
+          size.width += size.height;
+        }
+
+      return size;
+    }
+
+  size = [super cellSize];
   if ([self _hasStepper])
     {
       size.width += [self _stepperWidth];
@@ -753,13 +1213,33 @@
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
+  if (_drawsBackground && _backgroundColor != nil)
+    {
+      [_backgroundColor set];
+      NSRectFill([self drawingRectForBounds: cellFrame]);
+    }
+
+  if ([self _showsCalendar] || [self _showsClock])
+    {
+      if ([self _showsCalendar])
+        {
+          [self _drawCalendarInFrame: cellFrame ofView: controlView];
+        }
+      if ([self _showsClock])
+        {
+          [self _drawClockInFrame: cellFrame];
+        }
+
+      return;
+    }
+
   if ([self _hasStepper] && NSWidth(cellFrame) > [self _stepperWidth])
     {
       [[GSTheme theme] drawStepperCell: self
                              withFrame: [self _stepperFrameForFrame: cellFrame]
                                 inView: controlView
-                           highlightUp: NO
-                         highlightDown: NO];
+                           highlightUp: (_highlightedStepper > 0)
+                         highlightDown: (_highlightedStepper < 0)];
     }
 
   [super drawInteriorWithFrame: [self _textFrameForFrame: cellFrame]
@@ -874,20 +1354,34 @@
     }
 
   c = [characters characterAtIndex: 0];
-  switch (c)
+  if ([self _showsCalendar])
     {
-      case NSUpArrowFunctionKey:
-        return [self _stepSelectedFieldBy: 1];
-      case NSDownArrowFunctionKey:
-        return [self _stepSelectedFieldBy: -1];
-      case NSLeftArrowFunctionKey:
-        [self _setSelectedFieldIndex: [self _selectedFieldIndex] - 1];
-        return YES;
-      case NSRightArrowFunctionKey:
-        [self _setSelectedFieldIndex: [self _selectedFieldIndex] + 1];
-        return YES;
-      default:
-        break;
+      switch (c)
+        {
+          case NSUpArrowFunctionKey:    return [self _stepDaysBy: -7];
+          case NSDownArrowFunctionKey:  return [self _stepDaysBy: 7];
+          case NSLeftArrowFunctionKey:  return [self _stepDaysBy: -1];
+          case NSRightArrowFunctionKey: return [self _stepDaysBy: 1];
+          default: break;
+        }
+    }
+  else
+    {
+      switch (c)
+        {
+          case NSUpArrowFunctionKey:
+            return [self _stepSelectedFieldBy: 1];
+          case NSDownArrowFunctionKey:
+            return [self _stepSelectedFieldBy: -1];
+          case NSLeftArrowFunctionKey:
+            [self _setSelectedFieldIndex: [self _selectedFieldIndex] - 1];
+            return YES;
+          case NSRightArrowFunctionKey:
+            [self _setSelectedFieldIndex: [self _selectedFieldIndex] + 1];
+            return YES;
+          default:
+            break;
+        }
     }
 
   if (c >= '0' && c <= '9')
@@ -1045,17 +1539,74 @@
   [[self formatter] setTimeZone: zone];
 }
 
+/* A date picker is edited in place and it tracks the mouse, in every style
+   it draws, so it is all three kinds of area at once.
+*/
+- (NSUInteger) hitTestForEvent: (NSEvent *)event
+                        inRect: (NSRect)cellFrame
+                        ofView: (NSView *)controlView
+{
+  if (![self isEnabled])
+    {
+      return NSCellHitContentArea;
+    }
+
+  return NSCellHitContentArea | NSCellHitEditableTextArea
+    | NSCellHitTrackableArea;
+}
+
+/* NSCell copies its own object ivars as bare pointers and then retains them,
+   leaving the ones added here held by two cells but retained by one.
+*/
+- (id) copyWithZone: (NSZone *)zone
+{
+  NSDatePickerCell *copy = [super copyWithZone: zone];
+
+  copy->_backgroundColor = TEST_RETAIN(_backgroundColor);
+  copy->_textColor = TEST_RETAIN(_textColor);
+  copy->_minDate = TEST_RETAIN(_minDate);
+  copy->_maxDate = TEST_RETAIN(_maxDate);
+
+  return copy;
+}
+
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
+  [super encodeWithCoder: aCoder];
   if ([aCoder allowsKeyedCoding])
     {
       [aCoder encodeDouble: [self timeInterval] forKey: @"NSTimeInterval"];
       [aCoder encodeInt: [self datePickerElements] forKey: @"NSDatePickerElements"];
       [aCoder encodeInt: [self datePickerStyle] forKey: @"NSDatePickerType"];
+      [aCoder encodeInt: [self datePickerMode] forKey: @"NSDatePickerMode"];
       [aCoder encodeObject: [self backgroundColor] forKey: @"NSBackgroundColor"];
+      [aCoder encodeObject: [self textColor] forKey: @"NSTextColor"];
+      [aCoder encodeBool: [self drawsBackground] forKey: @"NSDrawsBackground"];
+      [aCoder encodeObject: [self minDate] forKey: @"NSMinDate"];
+      [aCoder encodeObject: [self maxDate] forKey: @"NSMaxDate"];
+      /* NSCell writes the text of its value, not the value, and the text of
+         a date does not read back as one. */
+      [aCoder encodeObject: [self dateValue] forKey: @"NSDateValue"];
     }
   else
     {
+      int elements = (int)_datePickerElements;
+      int mode = (int)_datePickerMode;
+      int style = (int)_datePickerStyle;
+      BOOL draws = _drawsBackground;
+      NSDate *value = [self dateValue];
+
+      [aCoder encodeValueOfObjCType: @encode(NSTimeInterval)
+                                 at: &_timeInterval];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &elements];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &mode];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &style];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &draws];
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeObject: _textColor];
+      [aCoder encodeObject: _minDate];
+      [aCoder encodeObject: _maxDate];
+      [aCoder encodeObject: value];
     }
 }
 
@@ -1075,10 +1626,53 @@
           [self setTimeInterval: [aDecoder decodeDoubleForKey: @"NSTimeInterval"]];
           [self setDatePickerElements: [aDecoder decodeIntForKey: @"NSDatePickerElements"]];
           [self setDatePickerStyle: [aDecoder decodeIntForKey: @"NSDatePickerType"]];
+          if ([aDecoder containsValueForKey: @"NSDatePickerMode"])
+            {
+              [self setDatePickerMode:
+                [aDecoder decodeIntForKey: @"NSDatePickerMode"]];
+            }
           [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
+          if ([aDecoder containsValueForKey: @"NSTextColor"])
+            {
+              [self setTextColor: [aDecoder decodeObjectForKey: @"NSTextColor"]];
+            }
+          if ([aDecoder containsValueForKey: @"NSDrawsBackground"])
+            {
+              [self setDrawsBackground:
+                [aDecoder decodeBoolForKey: @"NSDrawsBackground"]];
+            }
+          [self setMinDate: [aDecoder decodeObjectForKey: @"NSMinDate"]];
+          [self setMaxDate: [aDecoder decodeObjectForKey: @"NSMaxDate"]];
+          if ([aDecoder containsValueForKey: @"NSDateValue"])
+            {
+              [self setDateValue:
+                [aDecoder decodeObjectForKey: @"NSDateValue"]];
+            }
         }
       else
         {
+          int elements;
+          int mode;
+          int style;
+          BOOL draws;
+          NSTimeInterval interval;
+
+          [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval)
+                                       at: &interval];
+          [aDecoder decodeValueOfObjCType: @encode(int) at: &elements];
+          [aDecoder decodeValueOfObjCType: @encode(int) at: &mode];
+          [aDecoder decodeValueOfObjCType: @encode(int) at: &style];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &draws];
+          [self setTimeInterval: interval];
+          [self setDatePickerElements: elements];
+          [self setDatePickerMode: mode];
+          [self setDatePickerStyle: style];
+          [self setDrawsBackground: draws];
+          [self setBackgroundColor: [aDecoder decodeObject]];
+          [self setTextColor: [aDecoder decodeObject]];
+          [self setMinDate: [aDecoder decodeObject]];
+          [self setMaxDate: [aDecoder decodeObject]];
+          [self setDateValue: [aDecoder decodeObject]];
         }
     }
 
