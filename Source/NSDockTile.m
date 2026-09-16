@@ -37,13 +37,112 @@
 
 #import "GNUstepGUI/GSTheme.h"
 #import "GNUstepGUI/GSDisplayServer.h"
+#import "GSDockTileBadge.h"
 #import "GSIconManager.h"
+
+@interface NSView (GSDockTileAppIcon)
+- (void) setImage: (NSImage *)image;
+@end
 
 static void
 clearDockTileRect(NSSize size)
 {
   NSRectFillUsingOperation(NSMakeRect(0, 0, size.width, size.height),
 			   NSCompositeClear);
+}
+
+void
+GSDrawDockTileBadge(NSString *badgeLabel, NSRect tileRect)
+{
+  NSMutableDictionary *attrs;
+  NSPoint textLocation;
+  NSRect discRect;
+  NSSize discSize;
+  NSSize textSize;
+  int pad;
+  NSBezierPath *p;
+  NSPoint point;
+  CGFloat radius;
+  NSColor *badgeBackColor;
+  NSColor *badgeDecorationColor;
+  NSColor *badgeTextColor;
+  NSString *displayString;
+  CGFloat badgeScale;
+
+  if (badgeLabel == nil)
+    {
+      return;
+    }
+
+  badgeBackColor = [[GSTheme theme] badgeBackgroundColor];
+  badgeDecorationColor = [[GSTheme theme] badgeDecorationColor];
+  badgeTextColor = [[GSTheme theme] badgeTextColor];
+  badgeScale = MIN(tileRect.size.width, tileRect.size.height);
+
+  displayString = badgeLabel;
+  if ([badgeLabel length] > 5)
+    {
+      displayString = [NSString stringWithFormat: @"%@\u2026%@",
+	[badgeLabel substringToIndex: 2],
+	[badgeLabel substringFromIndex: [badgeLabel length] - 2]];
+    }
+
+  attrs = [[NSMutableDictionary alloc] init];
+  [attrs setObject: [NSFont boldSystemFontOfSize: badgeScale / 5]
+	    forKey: NSFontAttributeName];
+  [attrs setObject: badgeTextColor
+	    forKey: NSForegroundColorAttributeName];
+
+  textSize = [displayString sizeWithAttributes: attrs];
+
+  pad = badgeScale / 10;
+  discSize = textSize;
+  if (discSize.width < 12)
+    {
+      discSize.width = 12;
+    }
+  discSize.height += pad;
+  discSize.width += pad;
+
+  discRect = NSMakeRect(NSMaxX(tileRect) - discSize.width,
+			NSMaxY(tileRect) - discSize.height,
+			discSize.width,
+			discSize.height);
+
+  textLocation = NSMakePoint(NSMinX(discRect)
+    + (discSize.width - textSize.width) / 2,
+    NSMinY(discRect) + (discSize.height - textSize.height) / 2);
+
+  radius = discRect.size.height / 2.0;
+  point = discRect.origin;
+  point.x += radius;
+  point.y += radius - 0.5;
+
+  // left half-circle
+  p = [NSBezierPath bezierPath];
+  [p appendBezierPathWithArcWithCenter: point
+				radius: radius
+			    startAngle: 90.0
+			      endAngle: 270.0];
+
+  // line to first point and right halfcircle
+  point.x += discRect.size.width - discRect.size.height;
+  [p appendBezierPathWithArcWithCenter: point
+				radius: radius
+			    startAngle: 270.0
+			      endAngle: 90.0];
+  [p closePath];
+
+  [badgeBackColor set];
+  [p fill];
+
+  [p setLineWidth: 1.5];
+  [badgeDecorationColor set];
+  [p stroke];
+
+  [displayString drawAtPoint: textLocation withAttributes: attrs];
+
+  RELEASE(attrs);
 }
 
 @implementation NSDockTile
@@ -126,13 +225,31 @@ clearDockTileRect(NSSize size)
 - (void) display
 {
   NSImage *image = nil;
+  NSEnumerator *iterator;
+  NSWindow *window;
+  NSView *appIconView;
 
   [_contentView setNeedsDisplay: YES];
+  iterator = [[NSApp windows] objectEnumerator];
+  while ((window = [iterator nextObject]) != nil)
+    {
+      if ([window styleMask] & NSMiniWindowMask)
+	{
+	  [[window contentView] setNeedsDisplay: YES];
+	}
+    }
 
   image = [[NSImage alloc] initWithSize: _size];
   [image lockFocus];
   [self draw];
   [image unlockFocus];
+
+  /* Keep the application's local icon window in sync with the dock tile. */
+  appIconView = [[NSApp iconWindow] contentView];
+  if (appIconView != nil && [appIconView respondsToSelector: @selector(setImage:)])
+    {
+      [appIconView setImage: image];
+    }
 
   GSUpdateIconManager(image, _showsApplicationBadge ? _badgeLabel : nil);
   RELEASE(image);
@@ -142,98 +259,30 @@ clearDockTileRect(NSSize size)
 {
   clearDockTileRect(_size);
 
-  if (_contentView != nil && [_contentView canDraw])
+  if (_contentView != nil
+      && _contentView != [[NSApp iconWindow] contentView]
+      && [_contentView canDraw])
     {
       [_contentView displayRectIgnoringOpacity: [_contentView bounds]
                                       inContext: [NSGraphicsContext currentContext]];
     }
   else
     {
-      [_appIconImage compositeToPoint: NSZeroPoint operation: NSCompositeCopy];
+      NSImage *appIcon = [NSApp applicationIconImage];
+
+      if (appIcon == nil)
+	{
+	  appIcon = _appIconImage;
+	}
+      [appIcon drawInRect: NSMakeRect(0, 0, _size.width, _size.height)
+	       fromRect: NSZeroRect
+	      operation: NSCompositeSourceOver
+	       fraction: 1.0];
     }
 
   if (_showsApplicationBadge && _badgeLabel)
     {
-      NSMutableDictionary *attrs;
-      NSPoint textLocation;
-      NSRect discRect;
-      NSSize discSize;
-      NSSize textSize;
-      int pad;
-      NSBezierPath *p;
-      NSPoint point;
-      CGFloat radius;
-      NSSize imageSize;
-      NSColor *badgeBackColor;
-      NSColor *badgeDecorationColor;
-      NSColor *badgeTextColor;
-      NSString *displayString;
-
-      badgeBackColor = [[GSTheme theme] badgeBackgroundColor];
-      badgeDecorationColor = [[GSTheme theme] badgeDecorationColor];
-      badgeTextColor = [[GSTheme theme] badgeTextColor];
-
-      imageSize = [_appIconImage size];
-
-      displayString = _badgeLabel;
-      if ([_badgeLabel length] > 5)
-	{
-	  displayString = [NSString stringWithFormat: @"%@\u2026%@", [_badgeLabel substringToIndex: 2], [_badgeLabel substringFromIndex: [_badgeLabel  length]-2]];
-	}
-
-      attrs = [[NSMutableDictionary alloc] init];
-      [attrs setObject: [NSFont boldSystemFontOfSize: imageSize.width/5]  forKey: NSFontAttributeName];
-      [attrs setObject: badgeTextColor  forKey: NSForegroundColorAttributeName];
-
-      textSize = [displayString sizeWithAttributes: attrs];
-
-      pad = imageSize.width / 10;
-      discSize = textSize;
-      if (discSize.width < 12)
-	{
-	  discSize.width = 12;
-	}
-      discSize.height += pad;
-      discSize.width += pad;
-
-      discRect = NSMakeRect(imageSize.width - discSize.width,
-			     imageSize.height - discSize.height,
-			     discSize.width,
-			     discSize.height);
-
-      textLocation = NSMakePoint(imageSize.width -  discSize.width + (discSize.width - textSize.width)/2,
-				 imageSize.height - discSize.height + (discSize.height - textSize.height)/2);
-
-      radius = discRect.size.height / 2.0;
-      point = discRect.origin;
-      point.x += radius;
-      point.y += radius - 0.5;
-
-      // left half-circle
-      p = [NSBezierPath bezierPath];
-      [p appendBezierPathWithArcWithCenter: point
-				    radius: radius
-				startAngle: 90.0
-				  endAngle: 270.0];
-
-      // line to first point and right halfcircle
-      point.x += discRect.size.width - discRect.size.height;
-      [p appendBezierPathWithArcWithCenter: point
-				    radius: radius
-				startAngle: 270.0
-				  endAngle: 90.0];
-      [p closePath];
-
-      [badgeBackColor set];
-      [p fill];
-
-      [p setLineWidth: 1.5];
-      [badgeDecorationColor set];
-      [p stroke];
-
-      [displayString drawAtPoint: textLocation  withAttributes: attrs];
-
-      RELEASE(attrs);
+      GSDrawDockTileBadge(_badgeLabel, NSMakeRect(0, 0, _size.width, _size.height));
     }
 }
 
