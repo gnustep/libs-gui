@@ -126,6 +126,10 @@
 
 #pragma clang diagnostic pop
 
+@interface GSMovieView (Private)
+- (BOOL) _seekPlaybackToTimeAfterStop: (int64_t)timestamp;
+@end
+
 // NSMovieView subclass that does all of the actual work of decoding...
 @implementation GSMovieView
 
@@ -367,6 +371,8 @@
 
 - (IBAction) stop: (id)sender
 {
+  int64_t stopTime = 0;
+
   [_stateLock lock];
   if (!_flags.playing)
     {
@@ -377,6 +383,15 @@
 
   NSDebugLog(@"[GSMovieView] Stopping video playback | Timestamp: %ld, lastPts = %ld",
 	av_gettime(), _lastPts);
+
+  if (_audioPlayer && [_audioPlayer isAudioStarted])
+    {
+      stopTime = [_audioPlayer currentPlaybackTime];
+    }
+  else
+    {
+      stopTime = [self getCurrentTimestamp];
+    }
 
   _flags.playing = NO;
 
@@ -432,6 +447,8 @@
   [_videoPacketsLock lock];
   [_videoPackets removeAllObjects];
   [_videoPacketsLock unlock];
+
+  [self _seekPlaybackToTimeAfterStop: stopTime];
 
   NSDebugLog(@"[GSMovieView] Video playback stopped successfully | Timestamp: %ld", av_gettime());
   [_stateLock unlock];
@@ -1280,6 +1297,53 @@
   int64_t timestamp = (int64_t)((double)frameNumber / _fps * 1000000.0);
 
   return [self seekToTime: timestamp];
+}
+
+- (BOOL) _seekPlaybackToTimeAfterStop: (int64_t)timestamp
+{
+  int result;
+
+  if (!_formatCtx || !_stream)
+    {
+      return NO;
+    }
+
+  if (timestamp < 0)
+    {
+      timestamp = 0;
+    }
+
+  result = avformat_seek_file(_formatCtx, -1, INT64_MIN, timestamp,
+			      INT64_MAX, AVSEEK_FLAG_BACKWARD);
+  if (result < 0)
+    {
+      NSDebugLog(@"[GSMovieView] Stop seek to timestamp %ld failed", timestamp);
+      return NO;
+    }
+
+  [_videoPacketsLock lock];
+  [_videoPackets removeAllObjects];
+  [_videoPacketsLock unlock];
+
+  if (_videoCodecCtx)
+    {
+      avcodec_flush_buffers(_videoCodecCtx);
+    }
+  if (_audioPlayer)
+    {
+      [_audioPlayer seekToTime: timestamp];
+      [_audioPlayer setNeedsRestart: NO];
+    }
+
+  _started = NO;
+  _reachedEOF = NO;
+  _videoClockStartTime = 0;
+  _videoClockStartPTS = timestamp;
+  _frameCount = 0;
+  _lastPts = av_rescale_q(timestamp, (AVRational){1, 1000000}, _timeBase);
+
+  NSDebugLog(@"[GSMovieView] Stop seek to timestamp %ld successful", timestamp);
+  return YES;
 }
 
 - (int64_t) getCurrentTimestamp
