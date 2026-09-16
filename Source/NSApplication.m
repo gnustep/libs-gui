@@ -82,6 +82,7 @@
 #import "AppKit/NSScreen.h"
 #import "AppKit/PSOperators.h"
 
+#import "GSDockTileBadge.h"
 #import "GSIconManager.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/GSServicesManager.h"
@@ -394,6 +395,10 @@ struct _NSModalSession {
 - (void) setAttachedSheet: (id) sheet;
 @end
 
+@interface NSApplication (DockTilePrivate)
+- (NSDockTile *) _dockTileIfExists;
+@end
+
 @implementation NSWindow (ApplicationPrivate)
 /**
  * Associate sheet with the window it's attached to.  The window is not retained.
@@ -570,11 +575,17 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void) drawRect: (NSRect)rect
 {
   NSSize iconSize = GSGetIconSize();
+  NSDockTile *dockTile = [NSApp _dockTileIfExists];
   
   [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
   		   inView: self];
   [dragCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
 		   inView: self];
+  if ([dockTile showsApplicationBadge])
+    {
+      GSDrawDockTileBadge([dockTile badgeLabel],
+	NSMakeRect(0, 0, iconSize.width, iconSize.height));
+    }
   
   if ([NSApp isHidden])
     {
@@ -2519,6 +2530,11 @@ image.</p><p>See Also: -applicationIconImage</p>
 - (NSWindow*) iconWindow
 {
   return _app_icon_window;
+}
+
+- (NSDockTile *) _dockTileIfExists
+{
+  return _dock_tile;
 }
 
 - (NSDockTile *) dockTile
