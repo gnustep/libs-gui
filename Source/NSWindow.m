@@ -64,6 +64,7 @@
 #import "AppKit/NSDrawer.h"
 #import "AppKit/NSDocumentController.h"
 #import "AppKit/NSDocument.h"
+#import "AppKit/NSDockTile.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSFont.h"
@@ -87,6 +88,7 @@
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/GSWindowDecorationView.h"
 #import "GSBindingHelpers.h"
+#import "GSDockTileBadge.h"
 #import "GSGuiPrivate.h"
 #import "GSToolTips.h"
 #import "GSIconManager.h"
@@ -120,6 +122,10 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
             source: (id)sourceObject
          slideBack: (BOOL)slideFlag;
 - (void) postDragEvent: (NSEvent*)event;
+@end
+
+@interface NSApplication (DockTilePrivate)
+- (NSDockTile *) _dockTileIfExists;
 @end
 
 @interface NSView (MoveToWindow)
@@ -559,6 +565,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void) drawRect: (NSRect)rect
 {
   NSSize iconSize = GSGetIconSize();
+  NSDockTile *dockTile = [NSApp _dockTileIfExists];
 
   [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
                    inView: self];
@@ -571,6 +578,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [titleCell drawWithFrame: NSMakeRect(3, iconSize.height - 13,
                                        iconSize.width - 6, 10)
                     inView: self];
+  if ([dockTile showsApplicationBadge])
+    {
+      GSDrawDockTileBadge([dockTile badgeLabel],
+	NSMakeRect(0, 0, iconSize.width, iconSize.height));
+    }
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
