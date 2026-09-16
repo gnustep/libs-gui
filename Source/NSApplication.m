@@ -82,7 +82,6 @@
 #import "AppKit/NSScreen.h"
 #import "AppKit/PSOperators.h"
 
-#import "GSDockTileBadge.h"
 #import "GSIconManager.h"
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/GSServicesManager.h"
@@ -395,10 +394,6 @@ struct _NSModalSession {
 - (void) setAttachedSheet: (id) sheet;
 @end
 
-@interface NSApplication (DockTilePrivate)
-- (NSDockTile *) _dockTileIfExists;
-@end
-
 @implementation NSWindow (ApplicationPrivate)
 /**
  * Associate sheet with the window it's attached to.  The window is not retained.
@@ -575,17 +570,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void) drawRect: (NSRect)rect
 {
   NSSize iconSize = GSGetIconSize();
-  NSDockTile *dockTile = [NSApp _dockTileIfExists];
   
   [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
   		   inView: self];
   [dragCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
 		   inView: self];
-  if ([dockTile showsApplicationBadge])
-    {
-      GSDrawDockTileBadge([dockTile badgeLabel],
-	NSMakeRect(0, 0, iconSize.width, iconSize.height));
-    }
   
   if ([NSApp isHidden])
     {
@@ -728,6 +717,15 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void) setImage: (NSImage *)anImage
 {
   NSImage *imgCopy = [anImage copy];
+
+  /* A focus-locked image can have only a cached representation, which
+   * NSImage's copyWithZone: does not preserve.  Materialize its pixels. */
+  if (anImage != nil && [[imgCopy representations] count] == 0)
+    {
+      NSData *data = [anImage TIFFRepresentation];
+      RELEASE(imgCopy);
+      imgCopy = [[NSImage alloc] initWithData: data];
+    }
 
   if (imgCopy)
     {
@@ -2503,9 +2501,14 @@ image.</p><p>See Also: -applicationIconImage</p>
         [current setMiniwindowImage: _app_icon];
     }
 
-  GSUpdateIconManager(_app_icon,
-    (_dock_tile != nil && [_dock_tile showsApplicationBadge])
-      ? [_dock_tile badgeLabel] : nil);
+  if (_dock_tile != nil)
+    {
+      [_dock_tile display];
+    }
+  else
+    {
+      GSUpdateIconManager(_app_icon, nil);
+    }
 
   DESTROY(old_app_icon);
 }
@@ -2530,11 +2533,6 @@ image.</p><p>See Also: -applicationIconImage</p>
 - (NSWindow*) iconWindow
 {
   return _app_icon_window;
-}
-
-- (NSDockTile *) _dockTileIfExists
-{
-  return _dock_tile;
 }
 
 - (NSDockTile *) dockTile

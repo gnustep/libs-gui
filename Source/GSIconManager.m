@@ -29,6 +29,7 @@
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSObject.h>
 #import <Foundation/NSSet.h>
+#import <Foundation/NSTimer.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSProcessInfo.h>
@@ -49,14 +50,14 @@
  *   - On first use, the client lazily looks up the registered NSConnection
  *     root proxy and records the application's process id.
  *   - When an application icon window or a miniwindow needs placement,
- *     GSGetIconFrame() sends -setWindow:appProcessId:.  The manager records
- *     the global window number and returns the frame where the client should
- *     put that icon window.
+ *     GSGetIconFrame() sends -setWindow:appProcessId: if supported.  The
+ *     manager records the global window number and returns the frame where
+ *     the client should put that icon window.
  *   - When a registered icon/miniwindow goes away, GSRemoveIcon() sends
  *     -removeWindow:.  The client tracks which windows it registered so it
  *     only removes windows the manager knows about.
  *   - When AppKit needs the icon size, GSGetIconSize() asks the manager via
- *     -getSizeWindow.  Without a manager it falls back to the display server's
+ *     -getSizeWindow if supported.  Otherwise it uses the display server's
  *     icon size.
  *   - When the app icon or NSDockTile badge changes, GSUpdateIconManager()
  *     converts the image to TIFF data and sends
@@ -67,7 +68,7 @@
  *     -cancelUserAttentionRequest:appProcessId:.
  *
  * All messages to the remote object are treated as best-effort.  If lookup
- * fails, GSUseIconManager has not been explicitly enabled, the connection
+ * fails, GSUseIconManager has been explicitly disabled, the connection
  * dies, or a remote message raises, the client drops the proxy and keeps
  * running with local fallback behavior.  NSConnectionDidDieNotification is
  * observed so that a disappearing manager clears all registered icon state.
@@ -96,13 +97,26 @@ static unsigned int iconManagerUpdateCount = 0;
 static unsigned int lastIconManagerAttemptUpdate = 0;
 static NSData *lastApplicationIconData = nil;
 static NSString *lastApplicationIconBadgeText = nil;
+static NSTimer *badgeRetryTimer = nil;
 
 static void GSReleaseIconManager(void);
 static void GSLostIconManager(void);
 static BOOL GSSendApplicationIconData(NSData *data, NSString *badgeText);
+static void GSScheduleBadgeRetry(NSTimeInterval delay);
+static inline void checkVerify(void);
+
+static BOOL
+GSIconManagerEnabled(void)
+{
+  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+  return ([defaults objectForKey: @"GSUseIconManager"] == nil
+    || [defaults boolForKey: @"GSUseIconManager"]);
+}
 
 @interface GSIconManagerMonitor : NSObject
 + (id) _lostIconManager: (NSNotification *)notification;
++ (void) _retryBadge: (NSTimer *)timer;
 @end
 
 @implementation GSIconManagerMonitor
@@ -114,16 +128,50 @@ static BOOL GSSendApplicationIconData(NSData *data, NSString *badgeText);
     }
   return self;
 }
+
++ (void) _retryBadge: (NSTimer *)timer
+{
+  if (timer != badgeRetryTimer)
+    {
+      return;
+    }
+  DESTROY(badgeRetryTimer);
+
+  if (GSIconManagerEnabled()
+      && lastApplicationIconBadgeText != nil
+      && lastApplicationIconData != nil)
+    {
+      if (gsim == nil)
+	{
+	  verify = NO;
+	  checkVerify();
+	}
+      if (gsim != nil)
+	{
+	  GSSendApplicationIconData(lastApplicationIconData,
+				 lastApplicationIconBadgeText);
+	}
+      GSScheduleBadgeRetry(gsim != nil ? 10.0 : 60.0);
+    }
+}
 @end
+
+static void
+GSScheduleBadgeRetry(NSTimeInterval delay)
+{
+  badgeRetryTimer = RETAIN([NSTimer scheduledTimerWithTimeInterval: delay
+						      target: [GSIconManagerMonitor class]
+						    selector: @selector(_retryBadge:)
+						    userInfo: nil
+						     repeats: NO]);
+}
 
 static void
 GSGetIconManager(void)
 {
-  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
   lastIconManagerAttemptUpdate = iconManagerUpdateCount;
 
-  if ([defaults boolForKey: @"GSUseIconManager"])
+  if (GSIconManagerEnabled())
     {
       id <GSIconManager>proxy = nil;
       BOOL retainedProxy = NO;
@@ -192,7 +240,7 @@ GSLostIconManager(void)
 }
 
 static inline void
-checkVerify()
+checkVerify(void)
 {
   if (!verify)
    {
@@ -212,7 +260,14 @@ GSGetIconSize(void)
     {
       NS_DURING
 	{
-	  iconSize = [gsim getSizeWindow];
+	  if ([gsim respondsToSelector: @selector(getSizeWindow)])
+	    {
+	      iconSize = [gsim getSizeWindow];
+	    }
+	  else
+	    {
+	      iconSize = [GSCurrentServer() iconSize];
+	    }
 	}
       NS_HANDLER
 	{
@@ -250,7 +305,10 @@ GSRemoveIcon(NSWindow *window)
 
       NS_DURING
 	{
-	  [gsim removeWindow: winNum];
+	  if ([gsim respondsToSelector: @selector(removeWindow:)])
+	    {
+	      [gsim removeWindow: winNum];
+	    }
 	  removed = YES;
 	}
       NS_HANDLER
@@ -277,6 +335,8 @@ void
 GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
 {
   NSData *iconData = nil;
+  BOOL badgeChanged = (badgeLabel != lastApplicationIconBadgeText
+    && ![badgeLabel isEqualToString: lastApplicationIconBadgeText]);
 
   iconManagerUpdateCount++;
 
@@ -287,9 +347,22 @@ GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
   ASSIGN(lastApplicationIconData, iconData);
   ASSIGNCOPY(lastApplicationIconBadgeText, badgeLabel);
 
+  if (badgeChanged)
+    {
+      [badgeRetryTimer invalidate];
+      DESTROY(badgeRetryTimer);
+      if (badgeLabel != nil && GSIconManagerEnabled())
+	{
+	  /* A dock can receive the first update before it knows our process
+	   * id.  Retry after launch and periodically for dock restarts. */
+	  GSScheduleBadgeRetry(1.0);
+	}
+    }
+
   if (gsim == nil && verify)
     {
-      if (iconManagerUpdateCount - lastIconManagerAttemptUpdate < 5)
+      if (!badgeChanged
+          && iconManagerUpdateCount - lastIconManagerAttemptUpdate < 5)
 	{
 	  return;
 	}
@@ -403,9 +476,17 @@ GSGetIconFrame(NSWindow *window)
       NSConvertWindowNumberToGlobal([window windowNumber], &winNum);
       NS_DURING
 	{
-	  iconRect = [gsim setWindow: winNum
-			appProcessId: appId];
-	  added = YES;
+	  if ([gsim respondsToSelector: @selector(setWindow:appProcessId:)])
+	    {
+	      iconRect = [gsim setWindow: winNum
+			    appProcessId: appId];
+	      added = YES;
+	    }
+	  else
+	    {
+	      iconRect = [window frame];
+	      iconRect.size = [GSCurrentServer() iconSize];
+	    }
 	}
       NS_HANDLER
 	{

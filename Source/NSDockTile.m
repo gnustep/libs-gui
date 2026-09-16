@@ -40,6 +40,10 @@
 #import "GSDockTileBadge.h"
 #import "GSIconManager.h"
 
+@interface NSView (GSDockTileAppIcon)
+- (void) setImage: (NSImage *)image;
+@end
+
 static void
 clearDockTileRect(NSSize size)
 {
@@ -223,6 +227,7 @@ GSDrawDockTileBadge(NSString *badgeLabel, NSRect tileRect)
   NSImage *image = nil;
   NSEnumerator *iterator;
   NSWindow *window;
+  NSView *appIconView;
 
   [_contentView setNeedsDisplay: YES];
   iterator = [[NSApp windows] objectEnumerator];
@@ -239,6 +244,13 @@ GSDrawDockTileBadge(NSString *badgeLabel, NSRect tileRect)
   [self draw];
   [image unlockFocus];
 
+  /* Keep the application's local icon window in sync with the dock tile. */
+  appIconView = [[NSApp iconWindow] contentView];
+  if (appIconView != nil && [appIconView respondsToSelector: @selector(setImage:)])
+    {
+      [appIconView setImage: image];
+    }
+
   GSUpdateIconManager(image, _showsApplicationBadge ? _badgeLabel : nil);
   RELEASE(image);
 }
@@ -247,14 +259,25 @@ GSDrawDockTileBadge(NSString *badgeLabel, NSRect tileRect)
 {
   clearDockTileRect(_size);
 
-  if (_contentView != nil && [_contentView canDraw])
+  if (_contentView != nil
+      && _contentView != [[NSApp iconWindow] contentView]
+      && [_contentView canDraw])
     {
       [_contentView displayRectIgnoringOpacity: [_contentView bounds]
                                       inContext: [NSGraphicsContext currentContext]];
     }
   else
     {
-      [_appIconImage compositeToPoint: NSZeroPoint operation: NSCompositeCopy];
+      NSImage *appIcon = [NSApp applicationIconImage];
+
+      if (appIcon == nil)
+	{
+	  appIcon = _appIconImage;
+	}
+      [appIcon drawInRect: NSMakeRect(0, 0, _size.width, _size.height)
+	       fromRect: NSZeroRect
+	      operation: NSCompositeSourceOver
+	       fraction: 1.0];
     }
 
   if (_showsApplicationBadge && _badgeLabel)
