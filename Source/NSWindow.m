@@ -3423,21 +3423,25 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
    */
   if (_counterpart == 0 && [srv appOwnsMiniwindow])
     {
-      NSWindow *mini;
-      NSMiniWindowView *v;
-      NSRect rect = NSMakeRect(0, 0, iconSize.height, iconSize.width);
+      if ([[[NSUserDefaults standardUserDefaults]
+        objectForKey: @"GSSuppressAppIcon"] isEqual: [NSNumber numberWithBool:NO]])
+        {
+          NSWindow *mini;
+          NSMiniWindowView *v;
+          NSRect rect = NSMakeRect(0, 0, iconSize.height, iconSize.width);
 
-      mini = [[NSMiniWindow alloc] initWithContentRect: rect
-                                             styleMask: NSMiniWindowMask
-                                               backing: NSBackingStoreBuffered
-                                                 defer: NO];
-      mini->_counterpart = [self windowNumber];
-      _counterpart = [mini windowNumber];
-      v = [[NSMiniWindowView alloc] initWithFrame: rect];
-      [v setImage: [self miniwindowImage]];
-      [v setTitle: [self miniwindowTitle]];
-      [mini setContentView: v];
-      RELEASE(v);
+          mini = [[NSMiniWindow alloc] initWithContentRect: rect
+                                                 styleMask: NSMiniWindowMask
+                                                   backing: NSBackingStoreBuffered
+                                                     defer: NO];
+          mini->_counterpart = [self windowNumber];
+          _counterpart = [mini windowNumber];
+          v = [[NSMiniWindowView alloc] initWithFrame: rect];
+          [v setImage: [self miniwindowImage]];
+          [v setTitle: [self miniwindowTitle]];
+          [mini setContentView: v];
+          RELEASE(v);
+        }
     }
   [self _lossOfKeyOrMainWindow];
   [srv miniwindow: _windowNum];
