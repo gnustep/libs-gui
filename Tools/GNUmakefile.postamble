@@ -22,9 +22,12 @@
 # Things to do after installing
 # GSspell is built for the target, so it cannot be run here when cross
 # compiling.  GNUmakefile guards make_services the same way.
+# Also, the environment may not be set up, so we need to use GNUstep.sh
+# to ensure that before running the spell service.
 after-install::
 ifneq ($(CROSS_COMPILING),yes)
-	GSspell.service/GSspell -RegisterOnly YES
+	sh -c ". $(GNUSTEP_MAKEFILES)/GNUstep.sh; \
+	GSspell.service/GSspell -RegisterOnly YES"
 endif
 
 # Things to do before uninstalling
