@@ -32,6 +32,7 @@
 #import <Foundation/NSDate.h>
 #import <Foundation/NSString.h>
 
+#import "AppKit/NSApplication.h"
 #import "AppKit/NSDatePickerCell.h"
 #import "AppKit/NSDatePicker.h"
 #import "AppKit/NSEvent.h"
@@ -43,6 +44,11 @@
                                 inRect: (NSRect)frame
                                 ofView: (NSView *)view;
 - (BOOL) _stepSelectedFieldBy: (NSInteger)delta;
+- (void) _setHighlightedStepper: (NSInteger)direction;
+- (BOOL) _showsCalendar;
+- (BOOL) _selectDayAtPoint: (NSPoint)point
+                    inRect: (NSRect)frame
+                    ofView: (NSView *)view;
 @end
 
 static id usedCellClass = nil;
@@ -102,6 +108,22 @@ static id usedCellClass = nil;
 
   point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   before = [cell dateValue];
+  if ([cell _showsCalendar])
+    {
+      if (![cell _selectDayAtPoint: point inRect: _bounds ofView: self])
+        {
+          [super mouseDown: theEvent];
+          return;
+        }
+      [[self window] makeFirstResponder: self];
+      [self setNeedsDisplay: YES];
+      if (before == nil || ![before isEqualToDate: [cell dateValue]])
+        {
+          [self sendAction: [self action] to: [self target]];
+        }
+      return;
+    }
+
   direction = [cell _stepperDirectionAtPoint: point
                                       inRect: _bounds
                                       ofView: self];
@@ -117,9 +139,57 @@ static id usedCellClass = nil;
     }
   if (direction != 0)
     {
-      [cell _stepSelectedFieldBy: direction];
+      [self _trackStepperInDirection: direction];
+      return;
     }
   [self setNeedsDisplay: YES];
+  if (before == nil || ![before isEqualToDate: [cell dateValue]])
+    {
+      [self sendAction: [self action] to: [self target]];
+    }
+}
+
+/* Steps once for the click and then goes on stepping while the button is
+   held.  Periodic events pace the repeat; the wait has an end so that the
+   picker stops rather than running on if the mouse up never arrives.
+*/
+- (void) _trackStepperInDirection: (NSInteger)direction
+{
+  NSDatePickerCell *cell = (NSDatePickerCell *)_cell;
+
+  [self _stepOnceInDirection: direction];
+  [NSEvent startPeriodicEventsAfterDelay: 0.5 withPeriod: 0.075];
+  while (YES)
+    {
+      NSEvent *event = [NSApp
+        nextEventMatchingMask: NSLeftMouseUpMask | NSPeriodicMask
+                    untilDate: [NSDate dateWithTimeIntervalSinceNow: 1.0]
+                       inMode: NSEventTrackingRunLoopMode
+                      dequeue: YES];
+
+      if (event == nil || [event type] == NSLeftMouseUp)
+        {
+          break;
+        }
+      [self _stepOnceInDirection: direction];
+    }
+  [NSEvent stopPeriodicEvents];
+  [cell _setHighlightedStepper: 0];
+  [self setNeedsDisplay: YES];
+}
+
+- (void) _stepOnceInDirection: (NSInteger)direction
+{
+  NSDatePickerCell *cell = (NSDatePickerCell *)_cell;
+  NSDate *before = [cell dateValue];
+
+  [cell _setHighlightedStepper: direction];
+  if (![cell _stepSelectedFieldBy: direction])
+    {
+      return;
+    }
+  [self setNeedsDisplay: YES];
+  [self displayIfNeeded];
   if (before == nil || ![before isEqualToDate: [cell dateValue]])
     {
       [self sendAction: [self action] to: [self target]];
