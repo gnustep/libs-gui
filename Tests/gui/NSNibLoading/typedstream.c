@@ -1,9 +1,9 @@
 /* Standalone binary decoder regression test; also run with ASan/UBSan.
  * cc -ISource -fsanitize=address,undefined Tests/gui/NSNibLoading/typedstream.c
- *    Source/GSOpenStep/ts_read.c -o /tmp/typedstream-test
+ *    Source/GSOpenStepTypedStream.m -lgnustep-base -lobjc -o /tmp/typedstream-test
  * /tmp/typedstream-test Tests/gui/NSNibLoading/OpenStepFixtures/objects-v4-le.nib
  */
-#include "GSOpenStep/ts_read.h"
+#include "GSOpenStepTypedStream.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
