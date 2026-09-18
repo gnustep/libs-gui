@@ -45,6 +45,11 @@ not a claim to support every archive ever emitted by NeXT or Apple:
   NSWindowTemplate 41; NSButton 0; NSTextField 25
   NSCell 60; NSActionCell 17; NSButtonCell 57; NSTextFieldCell 61
   NSBox 41; NSMatrix 60; NSFont 21; NSColor 0
+  NSScrollView 42/226; NSClipView 58; NSScroller 17/211
+  NSTableView 60; NSTableColumn 41; NSTableHeaderView/Cell 28
+  NSText/NSCStringText 1; NSViewTemplate/NSTextTemplate 46
+  NSMenuTemplate 41; NSMenuCell 17; NSMenuItem 1; NSPopUpButton 24
+  NSClassSwapper 42; NSSlider 0; NSSliderCell 41; NSCursor 17
 
 The field layouts come from the upstream doc/WIDGETS.md, nib_parse.c and
 gen-widget-nib.py.  Group encodings, counts, inheritance versions and trailing
@@ -55,13 +60,15 @@ diagnostics.  Do not map an unknown class to NSView or silently drop its state.
 Known limitations are explicit in the adapter:
   - Unprefixed NeXTSTEP AppKit (IBObjectData, View, Cell, etc.) has different
     layouts and is not supported, even when packaged in an OPENSTEP app.
-  - Nonzero historical NSView flags, transforms/auxiliary view state, window
-    size extensions, nonzero font roles, and unknown container sections are
-    rejected pending measured mappings.  They must not be copied into modern
-    flags merely because the field names resemble each other.
-  - Menus, popups, scroll views, browsers and other unlisted classes need
-    separate adapters.  Custom view/object placeholders are supported;
-    arbitrary archived application subclass state is not.
+  - Unknown NSView flag bits, transforms/auxiliary view state, window size
+    extensions, and unknown container sections are rejected.  The measured
+    view flag subset is mapped to modern autoresizing and hidden flags.
+  - Historical menu matrices are converted to NSMenu items and omitted from
+    the object maps.  Popup button cells are translated to NSPopUpButtonCell.
+  - Browsers and other unlisted classes need separate adapters.  Custom
+    view/object placeholders are supported; arbitrary archived application
+    subclass state is not.  Historical font roles are accepted for the
+    observed 0, 1, 3 and 6 values, but exact system font selection can vary.
   - Strings use NEXTSTEP encoding.  Archives containing application-specific
     encodings such as EUC-KR need explicit encoding support.
 
@@ -70,11 +77,12 @@ Tests
 Tests/gui/NSNibLoading/make-openstep-fixtures.py creates original binary
 fixtures without an XML intermediate or proprietary source material.
 openstep.m exercises the real loader and NSNib lifecycle; --gui also checks
-window templates, controls, action delivery, identity, geometry and timing.
+window templates, controls, action delivery, identity, geometry, timing, and
+NSScrollView version 42 with its clip view and scrollers.
 typedstream.c exercises truncation, mutated input, random bytes and limits
 and can be built with AddressSanitizer and UndefinedBehaviorSanitizer.
 
-The upstream checkout used for this implementation does not contain the
-original OPENSTEP fixture corpus.  Validation against original application
-nibs, and expanding the measured layout coverage, remain necessary before
+The NeXTGo OPENSTEP nib has been translated, decoded in Gorm editor mode,
+and opened in Gorm with its original windows.  This is one real application
+archive; expanding measured layout coverage remains necessary before
 claiming general OPENSTEP compatibility.
