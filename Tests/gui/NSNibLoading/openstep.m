@@ -80,7 +80,8 @@ static void Instantiate(NSData *data, BOOL gui)
               @"periodic timing preserves historical milliseconds");
       }
       Check([owner->button target] == owner, @"action target is real owner");
-      Check([owner->button action] == @selector(run:), @"action selector restored");
+      Check([NSStringFromSelector([owner->button action]) isEqual: @"run:"],
+            @"action selector restored");
       [owner->button sendAction: [owner->button action] to: [owner->button target]];
       Check(owner->actions == 1, @"action reaches owner");
       [owner->window close];
@@ -127,6 +128,8 @@ int main(int argc, char **argv, char **envp)
       @"window-v4-le.nib", @"window-v4-be.nib", nil])
     Check(GSOpenStepNibKeyedData(Fixture(dir, name)) != nil,
           @"window/control graph translates without a backend");
+  Check(GSOpenStepNibKeyedData(Fixture(dir, @"scroll-v4-le.nib")) != nil,
+        @"OPENSTEP NSScrollView version 42 translates");
   /* Conversion validates a complete graph before running any initializers. */
   for (i = 13; i < [sample length]; i++)
     {
@@ -179,6 +182,24 @@ int main(int argc, char **argv, char **envp)
   if (gui)
     {
       [NSApplication sharedApplication];
+      {
+        NSNib *nib = [[NSNib alloc] initWithNibData:
+          Fixture(dir, @"scroll-v4-le.nib") bundle: nil];
+        OpenStepTestOwner *owner = [OpenStepTestOwner new];
+        NSArray *top = nil;
+        BOOL loaded = [nib instantiateWithOwner: owner topLevelObjects: &top];
+        NSScrollView *scroll = nil;
+        if (loaded)
+          for (NSView *view in [[owner->window contentView] subviews])
+            if ([view isKindOfClass: [NSScrollView class]]) scroll = (id)view;
+        Check(loaded && scroll != nil, @"version 42 scroll view instantiates");
+        Check(scroll && [[scroll contentView] documentView] != nil,
+              @"scroll view retains clip and document view");
+        Check(scroll && [scroll hasVerticalScroller] && [scroll hasHorizontalScroller],
+              @"scroll view retains both scrollers");
+        for (id object in top) [object release];
+        [nib release]; [owner release];
+      }
       for (NSString *name in [NSArray arrayWithObjects: @"window-v3-le.nib", @"window-v3-be.nib",
           @"window-v4-le.nib", @"window-v4-be.nib", nil])
         Instantiate(Fixture(dir, name), YES);

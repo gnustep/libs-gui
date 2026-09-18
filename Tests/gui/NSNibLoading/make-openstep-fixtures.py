@@ -141,6 +141,52 @@ def document(views=False, bad_version=False):
                + [("@i", pair) for pair in ids] + [("i", [100]), ("i", [0])])
 
 
+def scroll_document():
+    root = document(views=True)
+    view = root.groups[4][1][0]
+    clip = Obj([("NSClipView", 58), ("NSView", 41), ("NSResponder", 0)])
+    doc = Obj([("NSView", 41), ("NSResponder", 0)])
+    scroll = Obj([("NSScrollView", 42), ("NSView", 41), ("NSResponder", 0)])
+    vertical = Obj([("NSScroller", 17), ("NSControl", 41),
+                    ("NSView", 41), ("NSResponder", 0)])
+    horizontal = Obj([("NSScroller", 17), ("NSControl", 41),
+                      ("NSView", 41), ("NSResponder", 0)])
+
+    def base(parent, children, x, y, width, height):
+        return [("@", [parent]), ("i", [0x800000]),
+                ("@@@@ffffffff", [array(children), None, None, None,
+                                   x, y, width, height, 0, 0, width, height]),
+                ("@", [parent]), ("@", [None]), ("@", [None]), ("@", [None])]
+
+    doc.groups = base(clip, [], 0, 0, 180, 80)
+    clip.groups = base(scroll, [doc], 0, 0, 180, 80) + [
+        ("@", [doc]), ("@@ccc", [None, None, 0, 0, 1])]
+    clip.groups[5] = ("@", [doc])
+    for scroller, frame, orientation in [
+        (vertical, (180, 0, 15, 80), 0),
+        (horizontal, (0, 80, 180, 15), 1)]:
+        x, y, width, height = frame
+        scroller.groups = base(scroll, [], x, y, width, height) + [
+            ("icc@", [0, 0, 0, None]), ("@", [scroll]),
+            ("ff:", [0.5, 0.5, "_doScroller:"]),
+            ("c", [orientation]), ("c", [0])]
+    scroll.groups = base(view, [clip, vertical, horizontal], 0, 0, 200, 100) + [
+        ("@", [vertical]), ("@", [horizontal]), ("@", [clip]),
+        ("@", [None]), ("@", [None]), ("ffi", [10, 18, -1006632960])]
+    scroll.groups[5] = ("@", [clip])
+    view.groups[2][1][0].groups[1] = ("@", [scroll])
+    additions = [(scroll, view), (clip, scroll), (doc, clip),
+                 (vertical, scroll), (horizontal, scroll)]
+    root.groups[1] = ("i", [4 + len(additions)])
+    root.groups[6:6] = [("@@", list(pair)) for pair in additions]
+    index = next(i for i, group in enumerate(root.groups)
+                 if group[0] == "i" and group[1] == [5])
+    root.groups[index] = ("i", [5 + len(additions)])
+    root.groups[-2:-2] = [("@i", [obj, 20 + i])
+                         for i, (obj, _) in enumerate(additions)]
+    return root
+
+
 if __name__ == "__main__":
     out = Path(__file__).parent / "OpenStepFixtures"
     out.mkdir(exist_ok=True)
@@ -154,3 +200,6 @@ if __name__ == "__main__":
     writer = Writer("<", 4)
     writer.group("@", [document(bad_version=True)])
     (out / "unsupported-version.nib").write_bytes(writer.data)
+    writer = Writer("<", 4)
+    writer.group("@", [scroll_document()])
+    (out / "scroll-v4-le.nib").write_bytes(writer.data)
