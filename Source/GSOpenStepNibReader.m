@@ -16,6 +16,7 @@
 #import "AppKit/NSButtonCell.h"
 #import "GSOpenStepNibReader.h"
 #import "AppKit/NSTextView.h"
+#import "AppKit/NSTextStorage.h"
 #import "AppKit/NSAttributedString.h"
 #include "GSOpenStep/ts_read.h"
 #include <math.h>
@@ -95,8 +96,9 @@ IsPopUpButtonCell(const ts_object *o)
 static BOOL
 IsMenuMatrix(const ts_object *o)
 {
+  NSUInteger i;
   if (!o || strcmp(o->cls->name.text, "NSMatrix")) return NO;
-  for (NSUInteger i = 0; i < o->ngroups; i++)
+  for (i = 0; i < o->ngroups; i++)
     {
       const ts_group *g = &o->groups[i];
       if (!strcmp(g->encoding.text, "#iiii:::ffffi@@@@@") &&
@@ -370,7 +372,7 @@ static NSDictionary *UID(NSUInteger n)
     NSMutableArray *a = [NSMutableArray array], *b = [NSMutableArray array];
     if (count < 0 || (unsigned long long)count > o->ngroups - i)
       Bad(o, @"invalid class map count");
-    for (NSUInteger k = 0; k < (NSUInteger)count; k++)
+    for (k = 0; k < (NSUInteger)count; k++)
       {
         g = Group(o, &i, "@@");
         if (!Object(g->vals) || !Object(g->vals + 1))
@@ -628,6 +630,7 @@ static NSDictionary *UID(NSUInteger n)
     { GET("@"); /* archived view class name */ }
   else if (IS("NSTextTemplate", 46))
     {
+      NSUInteger n;
       GET("@"); if (Object(v)) OBJ(0, @"NSDelegate");
       GET("@"); /* insertion point colour */
       GET("@"); /* font */
@@ -638,7 +641,7 @@ static NSDictionary *UID(NSUInteger n)
       GET("ff");
       [d setObject: [self literal: [NSString stringWithFormat: @"{%.17g, %.17g}", Real(v), Real(v + 1)]] forKey: @"NSMaxSize"];
       GET("@"); if (Object(v)) Bad(o, @"unsupported text template auxiliary");
-      for (NSUInteger n = 0; n < 10; n++) { GET("c"); }
+      for (n = 0; n < 10; n++) { GET("c"); }
     }
   else if (IS("NSSlider", 0))
     return;
