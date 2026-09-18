@@ -15,6 +15,8 @@
 #import <Foundation/Foundation.h>
 #import "AppKit/NSButtonCell.h"
 #import "GSOpenStepNibReader.h"
+#import "AppKit/NSTextView.h"
+#import "AppKit/NSAttributedString.h"
 #include "GSOpenStep/ts_read.h"
 #include <math.h>
 #include <string.h>
@@ -79,6 +81,33 @@ Object(const ts_value *v)
   return v->u.obj.o;
 }
 
+static BOOL
+IsPopUpButtonCell(const ts_object *o)
+{
+  const ts_object *control;
+  if (strcmp(o->cls->name.text, "NSButtonCell") || o->ngroups < 5 ||
+      strcmp(o->groups[4].encoding.text, "@"))
+    return NO;
+  control = Object(o->groups[4].vals);
+  return control && !strcmp(control->cls->name.text, "NSPopUpButton");
+}
+
+static BOOL
+IsMenuMatrix(const ts_object *o)
+{
+  if (!o || strcmp(o->cls->name.text, "NSMatrix")) return NO;
+  for (NSUInteger i = 0; i < o->ngroups; i++)
+    {
+      const ts_group *g = &o->groups[i];
+      if (!strcmp(g->encoding.text, "#iiii:::ffffi@@@@@") &&
+          g->nvals && g->vals[0].kind == TS_V_CLASS &&
+          g->vals[0].u.cls.c &&
+          !strcmp(g->vals[0].u.cls.c->name.text, "NSMenuItem"))
+        return YES;
+    }
+  return NO;
+}
+
 static NSString *
 Text(const ts_value *v)
 {
@@ -126,6 +155,21 @@ ValidateClass(const ts_class *c, const ts_object *o, unsigned depth)
     {"NSIBOutletConnector", 0, "NSIBConnector"}, {"NSIBControlConnector", 0, "NSIBConnector"},
     {"NSResponder", 0, "NSObject"}, {"NSView", 41, "NSResponder"},
     {"NSControl", 41, "NSView"}, {"NSCustomView", 41, "NSView"},
+    {"NSScrollView", 42, "NSView"}, {"NSScrollView", 226, "NSView"},
+    {"NSClipView", 58, "NSView"},
+    {"NSScroller", 17, "NSControl"}, {"NSScroller", 211, "NSControl"},
+    {"NSTableView", 60, "NSControl"}, {"NSTableColumn", 41, "NSObject"},
+    {"NSTableHeaderView", 28, "NSView"},
+    {"NSTableHeaderCell", 28, "NSTextFieldCell"},
+    {"_NSCornerView", 0, "NSView"},
+    {"NSText", 1, "NSView"}, {"NSCStringText", 1, "NSText"},
+    {"NSCursor", 17, "NSObject"},
+    {"NSMenuTemplate", 41, "NSObject"},
+    {"NSMenuCell", 17, "NSButtonCell"}, {"NSMenuItem", 1, "NSMenuCell"},
+    {"NSPopUpButton", 24, "NSButton"},
+    {"NSClassSwapper", 42, "NSObject"},
+    {"NSViewTemplate", 46, "NSView"}, {"NSTextTemplate", 46, "NSViewTemplate"},
+    {"NSSlider", 0, "NSControl"}, {"NSSliderCell", 41, "NSActionCell"},
     {"NSButton", 0, "NSControl"}, {"NSTextField", 25, "NSControl"},
     {"NSMatrix", 60, "NSControl"}, {"NSBox", 41, "NSView"},
     {"NSCell", 60, "NSObject"}, {"NSActionCell", 17, "NSCell"},
@@ -167,6 +211,7 @@ static NSDictionary *UID(NSUInteger n)
   NSMutableDictionary *_classes;
   NSMutableArray *_visible;
   NSMutableArray *_periodic;
+  NSMutableArray *_rtf;
   const ts_object *_owner;
   unsigned _depth;
 }
@@ -185,13 +230,14 @@ static NSDictionary *UID(NSUInteger n)
       _classes = [NSMutableDictionary new];
       _visible = [NSMutableArray new];
       _periodic = [NSMutableArray new];
+      _rtf = [NSMutableArray new];
     }
   return self;
 }
 - (void) dealloc
 {
   RELEASE(_objects); RELEASE(_references); RELEASE(_classes); RELEASE(_visible);
-  RELEASE(_periodic);
+  RELEASE(_periodic); RELEASE(_rtf);
   [super dealloc];
 }
 - (NSDictionary *) literal: (id)value
@@ -294,6 +340,11 @@ static NSDictionary *UID(NSUInteger n)
           g = Group(o, &i, encodings[section]);
           key = Object(g->vals);
           if (key == NULL) Bad(o, @"nil map key");
+          if (IsMenuMatrix(key) ||
+              (section == 0 && IsMenuMatrix(Object(g->vals + 1))))
+            continue; /* Legacy menu matrices are represented as NSMenu. */
+          if (section != 2 && Object(g->vals + 1) == NULL)
+            continue; /* A nil parent or name is an absent map entry. */
           [a addObject: [self reference: key]];
           if (section == 2)
             {
@@ -314,8 +365,24 @@ static NSDictionary *UID(NSUInteger n)
   g = Group(o, &i, "i");
   [d setObject: Number(Integer(g->vals)) forKey: @"NSNextOid"];
   g = Group(o, &i, "i");
-  if (Integer(g->vals) != 0 || i != o->ngroups)
-    Bad(o, @"unsupported trailing container section");
+  {
+    long long count = Integer(g->vals);
+    NSMutableArray *a = [NSMutableArray array], *b = [NSMutableArray array];
+    if (count < 0 || (unsigned long long)count > o->ngroups - i)
+      Bad(o, @"invalid class map count");
+    for (NSUInteger k = 0; k < (NSUInteger)count; k++)
+      {
+        g = Group(o, &i, "@@");
+        if (!Object(g->vals) || !Object(g->vals + 1))
+          Bad(o, @"nil class map entry");
+        [a addObject: [self reference: Object(g->vals)]];
+        [b addObject: [self reference: Object(g->vals + 1)]];
+      }
+    [d setObject: [self array: a] forKey: @"NSClassesKeys"];
+    [d setObject: [self array: b] forKey: @"NSClassesValues"];
+    if (i != o->ngroups)
+      Bad(o, @"unsupported trailing container section");
+  }
   [d setObject: [self array: _visible] forKey: @"NSVisibleWindows"];
 }
 
@@ -362,8 +429,11 @@ static NSDictionary *UID(NSUInteger n)
     {
       unsigned long flags;
       GET("i"); flags = (unsigned long)Integer(v);
-      if (flags != 0) Bad(o, @"unsupported OPENSTEP view flags");
-      [d setObject: Number(0x100) forKey: @"NSvFlags"];
+      if (flags & ~0x3fc00000UL)
+        Bad(o, @"unsupported OPENSTEP view flags");
+      [d setObject: Number(((flags >> 24) & 0x3f) |
+                           ((flags == 0 || (flags & 0x800000UL)) ? 0x100 : 0))
+            forKey: @"NSvFlags"];
       GET("@@@@ffffffff"); OBJ(0, @"NSSubviews");
       if (Object(v + 1) || Object(v + 2) || Object(v + 3))
         Bad(o, @"unsupported view transform or auxiliary state");
@@ -378,6 +448,208 @@ static NSDictionary *UID(NSUInteger n)
     { GET("@@"); OBJ(0, @"NSClassName"); OBJ(1, @"NSExtension"); }
   else if (IS("NSControl", 41))
     { GET("icc@"); INT(0, @"NSTag"); OBJ(3, @"NSCell"); }
+  else if (IS("NSScrollView", 42) || IS("NSScrollView", 226))
+    {
+      const ts_object *vertical, *horizontal;
+      long long flags = 0;
+      GET("@"); vertical = Object(v); OBJ(0, @"NSVScroller");
+      GET("@"); horizontal = Object(v); OBJ(0, @"NSHScroller");
+      GET("@"); OBJ(0, @"NSContentView");
+      GET("@"); if (Object(v)) OBJ(0, @"NSHeaderClipView");
+      GET("@"); /* corner view is generated by the keyed decoder */
+      if (IS("NSScrollView", 42))
+        {
+          GET("ffi");
+          [d setObject: Number((long long)Real(v)) forKey: @"horizontalLineScroll"];
+          [d setObject: Number((long long)Real(v + 1)) forKey: @"horizontalPageScroll"];
+          [d setObject: Number((long long)Real(v)) forKey: @"verticalLineScroll"];
+          [d setObject: Number((long long)Real(v + 1)) forKey: @"verticalPageScroll"];
+          flags = Integer(v + 2);
+        }
+      else
+        {
+          GET("ffffi");
+          [d setObject: Number((long long)Real(v)) forKey: @"horizontalLineScroll"];
+          [d setObject: Number((long long)Real(v + 1)) forKey: @"horizontalPageScroll"];
+          [d setObject: Number((long long)Real(v + 2)) forKey: @"verticalLineScroll"];
+          [d setObject: Number((long long)Real(v + 3)) forKey: @"verticalPageScroll"];
+          flags = Integer(v + 4);
+        }
+      if (((unsigned long long)flags & 0x80000000ULL) == 0 && vertical)
+        Bad(o, @"unexpected vertical scroller");
+      [d setObject: Number((vertical ? 16 : 0) | (horizontal ? 32 : 0))
+            forKey: @"NSsFlags"];
+    }
+  else if (IS("NSClipView", 58))
+    {
+      GET("@"); OBJ(0, @"NSDocView");
+      GET("@@ccc");
+      OBJ(0, @"NSBGColor"); OBJ(1, @"NSCursor");
+      [d setObject: Number((Integer(v + 4) ? 4 : 0) |
+                           (Integer(v + 2) ? 0 : 2)) forKey: @"NScvFlags"];
+    }
+  else if (IS("NSScroller", 17) || IS("NSScroller", 211))
+    {
+      GET("@"); OBJ(0, @"NSTarget");
+      GET("ff:");
+      [d setObject: [NSNumber numberWithDouble: Real(v)] forKey: @"NSCurValue"];
+      [d setObject: [NSNumber numberWithDouble: Real(v + 1) * 100.0] forKey: @"NSPercent"];
+      if (Text(v + 2)) [d setObject: [self literal: Text(v + 2)] forKey: @"NSAction"];
+      GET("c");
+      GET("c");
+    }
+  else if (IS("NSTableView", 60))
+    {
+      GET("@@@ff@@f::i");
+      OBJ(0, @"NSHeaderView"); OBJ(1, @"NSCornerView");
+      OBJ(2, @"NSTableColumns");
+      [d setObject: [NSNumber numberWithDouble: Real(v + 3)] forKey: @"NSRowHeight"];
+      [d setObject: [NSNumber numberWithDouble: Real(v + 4)] forKey: @"NSIntercellSpacingWidth"];
+      OBJ(5, @"NSGridColor"); OBJ(6, @"NSBackgroundColor");
+      if (Text(v + 8)) [d setObject: [self literal: Text(v + 8)] forKey: @"NSDoubleAction"];
+      GET("@"); if (Object(v)) Bad(o, @"unsupported table auxiliary field");
+      GET("@"); if (Object(v)) Bad(o, @"unsupported table auxiliary field");
+      GET("@"); if (Object(v)) Bad(o, @"unsupported table auxiliary field");
+    }
+  else if (IS("NSTableColumn", 41))
+    {
+      GET("@fff@@cc");
+      OBJ(0, @"NSIdentifier");
+      [d setObject: [NSNumber numberWithDouble: Real(v + 1)] forKey: @"NSWidth"];
+      [d setObject: [NSNumber numberWithDouble: Real(v + 2)] forKey: @"NSMinWidth"];
+      [d setObject: [NSNumber numberWithDouble: Real(v + 3)] forKey: @"NSMaxWidth"];
+      OBJ(4, @"NSHeaderCell"); OBJ(5, @"NSDataCell");
+      [d setObject: Number(Integer(v + 7)) forKey: @"NSIsEditable"];
+      GET("@"); /* table view back reference */
+    }
+  else if (IS("NSTableHeaderView", 28))
+    { GET("@"); /* table view back reference */ }
+  else if (IS("NSTableHeaderCell", 28) || IS("_NSCornerView", 0))
+    return;
+  else if (IS("NSText", 1))
+    {
+      GET("@"); if (Object(v)) OBJ(0, @"NSDelegate");
+      GET("ffff"); /* selection and text rectangle */
+      GET("ciifffc@@s"); /* historical text flags and colours */
+      GET("ff");
+      [d setObject: [self literal: [NSString stringWithFormat: @"{%.17g, %.17g}", Real(v), Real(v + 1)]] forKey: @"NSMaxSize"];
+      GET("ff");
+      [d setObject: [self literal: [NSString stringWithFormat: @"{%.17g, %.17g}", Real(v), Real(v + 1)]] forKey: @"NSMinSize"];
+      GET("i");
+      GET("i");
+    }
+  else if (IS("NSCStringText", 1))
+    {
+      long long length;
+      const ts_group *bytes;
+      GET("i"); length = Integer(v);
+      if (length < 0 || *i >= o->ngroups) Bad(o, @"invalid RTF length");
+      bytes = &o->groups[(*i)++];
+      if (bytes->nvals != 1 || bytes->vals[0].kind != TS_V_STRING ||
+          bytes->vals[0].u.str.n != (size_t)length)
+        Bad(o, @"invalid RTF bytes");
+      [_rtf addObject: [self array: [NSArray arrayWithObjects:
+        [_references objectForKey: Number(o->id)],
+        [self literal: [NSData dataWithBytes: bytes->vals[0].u.str.p length: length]], nil]]];
+      GET("c"); if (Integer(v)) Bad(o, @"unsupported text trailing flag");
+    }
+  else if (IS("NSCursor", 17))
+    {
+      const ts_object *resource;
+      NSString *name;
+      GET("ff"); /* hotspot of historical image */
+      GET("@"); resource = Object(v);
+      if (!resource || strcmp(resource->cls->name.text, "NSCustomResource") ||
+          resource->ngroups != 1 ||
+          strcmp(resource->groups[0].encoding.text, "@@"))
+        Bad(o, @"unsupported cursor resource");
+      name = StringObject(Object(resource->groups[0].vals + 1));
+      if (![name isEqual: @"NSIBeamCursor"])
+        Bad(o, @"unsupported cursor image");
+      [d setObject: Number(1) forKey: @"NSCursorType"];
+      GET("c"); if (Integer(v)) Bad(o, @"unsupported cursor flag");
+      GET("c"); if (Integer(v)) Bad(o, @"unsupported cursor flag");
+    }
+  else if (IS("NSMenuTemplate", 41))
+    {
+      const ts_object *matrix, *items;
+      NSUInteger k;
+      GET("ffccc@@@@");
+      OBJ(5, @"NSTitle");
+      matrix = Object(v + 7);
+      if (!matrix || strcmp(matrix->cls->name.text, "NSMatrix"))
+        Bad(o, @"missing menu item matrix");
+      for (k = 0; k < matrix->ngroups; k++)
+        if (!strcmp(matrix->groups[k].encoding.text, "#iiii:::ffffi@@@@@"))
+          break;
+      if (k == matrix->ngroups)
+        Bad(o, @"invalid menu item matrix");
+      items = Object(matrix->groups[k].vals + 13);
+      [d setObject: [self array: [self elements: items]] forKey: @"NSMenuItems"];
+      GET("@"); /* parent menu */
+    }
+  else if (IS("NSMenuCell", 17))
+    { GET("@"); if (Object(v)) OBJ(0, @"NSSubmenu"); }
+  else if (IS("NSMenuItem", 1))
+    return;
+  else if (IS("NSPopUpButton", 24))
+    {
+      GET(":"); if (Text(v)) Bad(o, @"unsupported popup selector");
+      GET("@"); if (Object(v)) OBJ(0, @"NSMenu");
+      GET("c"); if (Integer(v)) Bad(o, @"unsupported popup flag");
+    }
+  else if (IS("NSClassSwapper", 42))
+    {
+      const ts_class *base;
+      unsigned long flags;
+      GET("@#");
+      OBJ(0, @"NSClassName");
+      base = (v + 1)->u.cls.c;
+      if (!base || strcmp(base->name.text, "NSTextField"))
+        Bad(o, @"unsupported swapped base class");
+      [d setObject: [self literal: @"NSTextField"] forKey: @"NSOriginalClassName"];
+      GET("@"); /* next responder */
+      GET("i"); flags = (unsigned long)Integer(v);
+      if (flags & ~0x3fc00000UL)
+        Bad(o, @"unsupported swapped view flags");
+      [d setObject: Number(((flags >> 24) & 0x3f) | 0x100) forKey: @"NSvFlags"];
+      GET("@@@@ffffffff"); OBJ(0, @"NSSubviews");
+      [self rect: v + 4 key: @"NSFrame" into: d];
+      [self rect: v + 8 key: @"NSBounds" into: d];
+      GET("@"); /* superview */
+      GET("@"); if (Object(v)) Bad(o, @"unsupported swapped view auxiliary");
+      GET("@"); OBJ(0, @"NSNextKeyView");
+      GET("@"); OBJ(0, @"NSPreviousKeyView");
+      GET("icc@"); INT(0, @"NSTag"); OBJ(3, @"NSCell");
+      GET("@"); OBJ(0, @"NSDelegate");
+      GET(":"); if (Text(v)) Bad(o, @"unsupported swapped text selector");
+    }
+  else if (IS("NSViewTemplate", 46))
+    { GET("@"); /* archived view class name */ }
+  else if (IS("NSTextTemplate", 46))
+    {
+      GET("@"); if (Object(v)) OBJ(0, @"NSDelegate");
+      GET("@"); /* insertion point colour */
+      GET("@"); /* font */
+      GET("i"); /* historical text flags */
+      GET("@"); /* background colour */
+      GET("ff");
+      [d setObject: [self literal: [NSString stringWithFormat: @"{%.17g, %.17g}", Real(v), Real(v + 1)]] forKey: @"NSMinSize"];
+      GET("ff");
+      [d setObject: [self literal: [NSString stringWithFormat: @"{%.17g, %.17g}", Real(v), Real(v + 1)]] forKey: @"NSMaxSize"];
+      GET("@"); if (Object(v)) Bad(o, @"unsupported text template auxiliary");
+      for (NSUInteger n = 0; n < 10; n++) { GET("c"); }
+    }
+  else if (IS("NSSlider", 0))
+    return;
+  else if (IS("NSSliderCell", 41))
+    {
+      GET("dddfd@@");
+      [d setObject: [NSNumber numberWithDouble: Real(v)] forKey: @"NSMaxValue"];
+      [d setObject: [NSNumber numberWithDouble: Real(v + 1)] forKey: @"NSMinValue"];
+      [d setObject: [NSNumber numberWithDouble: Real(v + 2)] forKey: @"NSValue"];
+      [d setObject: [NSNumber numberWithDouble: Real(v + 3)] forKey: @"NSAltIncValue"];
+    }
   else if (IS("NSTextField", 25))
     { GET("@"); OBJ(0, @"NSDelegate"); GET(":");
       if (Text(v)) Bad(o, @"unsupported text-field validation selector"); }
@@ -390,13 +662,17 @@ static NSDictionary *UID(NSUInteger n)
       [d setObject: Number(Integer(v) & ~0x1fe00LL) forKey: @"NSCellFlags"];
       INT(1, @"NSCellFlags2");
       GET("@@@@"); OBJ(0, @"NSContents"); OBJ(1, @"NSSupport");
+      if (!strcmp(o->cls->name.text, "NSMenuItem"))
+        OBJ(0, @"NSTitle");
       if (Object(v + 2) || Object(v + 3)) Bad(o, @"unsupported cell auxiliary state");
     }
   else if (IS("NSActionCell", 17))
     {
       GET("i:"); INT(0, @"NSTag");
       [d setObject: [self literal: Text(v + 1)] forKey: @"NSAction"];
-      GET("@"); OBJ(0, @"NSTarget");
+      GET("@");
+      if (IsPopUpButtonCell(o)) OBJ(0, @"NSMenu");
+      else if (strcmp(o->cls->name.text, "NSMenuItem")) OBJ(0, @"NSTarget");
       GET("@"); /* control view is assigned when the control adopts the cell */
     }
   else if (IS("NSButtonCell", 57))
@@ -404,16 +680,20 @@ static NSDictionary *UID(NSUInteger n)
       GET("ssIi@@@@@");
       if (Integer(v) < 0 || Integer(v + 1) < 0)
         Bad(o, @"negative periodic interval");
-      INT(3, @"NSButtonFlags"); OBJ(4, @"NSAlternateContents");
+      INT(3, @"NSButtonFlags");
+      if (strcmp(o->cls->name.text, "NSMenuItem")) OBJ(4, @"NSAlternateContents");
       OBJ(5, @"NSKeyEquivalent"); OBJ(6, @"NSNormalImage"); OBJ(7, @"NSAlternateImage");
+      if (!strcmp(o->cls->name.text, "NSMenuItem"))
+        OBJ(5, @"NSKeyEquiv");
       if (Object(v + 8)) Bad(o, @"unsupported button auxiliary object");
       /* The existing keyed decoder reads integral seconds.  Preserve the
        * historical millisecond values in loader metadata and apply them
        * through NSButtonCell's public API before awakening the nib. */
-      [_periodic addObject: [self array: [NSArray arrayWithObjects:
-        [_references objectForKey: Number(o->id)],
-        [self literal: [NSNumber numberWithDouble: Real(v) / 1000.0]],
-        [self literal: [NSNumber numberWithDouble: Real(v + 1) / 1000.0]], nil]]];
+      if (strcmp(o->cls->name.text, "NSMenuItem"))
+        [_periodic addObject: [self array: [NSArray arrayWithObjects:
+          [_references objectForKey: Number(o->id)],
+          [self literal: [NSNumber numberWithDouble: Real(v) / 1000.0]],
+          [self literal: [NSNumber numberWithDouble: Real(v + 1) / 1000.0]], nil]]];
     }
   else if (IS("NSTextFieldCell", 61))
     { GET("c@@"); INT(0, @"NSDrawsBackground"); OBJ(1, @"NSBackgroundColor"); OBJ(2, @"NSTextColor"); }
@@ -498,7 +778,8 @@ static NSDictionary *UID(NSUInteger n)
       [d setObject: [self literal: fontName] forKey: @"NSName"];
       GET("f"); [d setObject: [NSNumber numberWithDouble: Real(v)] forKey: @"NSSize"];
       GET("c"); GET("c"); GET("c"); GET("c");
-      if (Integer(v)) Bad(o, @"unsupported system font role");
+      if (Integer(v) < 0 || (Integer(v) > 3 && Integer(v) != 6))
+        Bad(o, @"unsupported system font role");
     }
   else if (IS("NSColor", 0))
     {
@@ -551,6 +832,10 @@ static NSDictionary *UID(NSUInteger n)
   d = [NSMutableDictionary dictionary];
   ref = [self literal: d];
   [_references setObject: ref forKey: key]; /* before following references */
+  if ([name isEqual: @"NSCStringText"]) name = @"NSTextView";
+  if ([name isEqual: @"NSTextTemplate"]) name = @"NSTextView";
+  if ([name isEqual: @"NSMenuTemplate"]) name = @"NSMenu";
+  if (IsPopUpButtonCell(o)) name = @"NSPopUpButtonCell";
   if ([name isEqual: @"NSIBOutletConnector"]) name = @"NSNibOutletConnector";
   if ([name isEqual: @"NSIBControlConnector"]) name = @"NSNibControlConnector";
   [d setObject: [self classReference: name] forKey: @"$class"];
@@ -597,7 +882,8 @@ static NSDictionary *UID(NSUInteger n)
      * Do this before executing any application initializers or awake methods. */
     [self visit: archive->root[0].vals seen: [NSMutableSet set] depth: 0];
     top = [NSDictionary dictionaryWithObjectsAndKeys: rootRef, @"IB.objectdata",
-      [self array: _periodic], @"GSOpenStepPeriodicIntervals", nil];
+      [self array: _periodic], @"GSOpenStepPeriodicIntervals",
+      [self array: _rtf], @"GSOpenStepRTF", nil];
   }
   plist = [NSDictionary dictionaryWithObjectsAndKeys:
     @"NSKeyedArchiver", @"$archiver", Number(100000), @"$version",
@@ -641,5 +927,15 @@ GSOpenStepNibFinishDecoding(NSKeyedUnarchiver *coder)
       NSButtonCell *cell = [entry objectAtIndex: 0];
       [cell setPeriodicDelay: [[entry objectAtIndex: 1] doubleValue]
                    interval: [[entry objectAtIndex: 2] doubleValue]];
+    }
+  for (NSArray *entry in [coder decodeObjectForKey: @"GSOpenStepRTF"])
+    {
+      NSTextView *view = [entry objectAtIndex: 0];
+      NSData *data = [entry objectAtIndex: 1];
+      NSAttributedString *content = [[NSAttributedString alloc]
+          initWithRTF: data documentAttributes: NULL];
+      if (content != nil)
+        [[view textStorage] setAttributedString: content];
+      RELEASE(content);
     }
 }
