@@ -5,7 +5,7 @@
  * This file is part of GNUstep GUI, licensed under the GNU Lesser General
  * Public License, version 2 or later.  See COPYING.LIB.
  *
- * Historical layouts are from NIBMAKER-FOR-OPENSTEP (see GSOpenStep/README).
+ * Historical layout references are documented in README.openstep.
  * A typed stream is NOT a GNUstep NSArchiver archive.  Translate the measured
  * layouts to the keyed fields already understood by GSNibLoading/AppKit.
  * The object table is built before unarchiving, so cycles, replacements and
@@ -18,7 +18,7 @@
 #import "AppKit/NSTextView.h"
 #import "AppKit/NSTextStorage.h"
 #import "AppKit/NSAttributedString.h"
-#include "GSOpenStep/ts_read.h"
+#include "GSOpenStepTypedStream.h"
 #include <math.h>
 #include <string.h>
 
