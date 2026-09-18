@@ -1,0 +1,19 @@
+Binary OPENSTEP nib support
+===========================
+
+GSOpenStepTypedStream.m is an Objective-C 1.0 compatible typed stream reader
+written for GNUstep GUI.  It keeps its parsed graph in private C structures
+declared in GSOpenStepTypedStream.h.  No NIBMAKER parser source is included.
+The historical class layouts used by GSOpenStepNibReader.m were researched
+with NIBMAKER-FOR-OPENSTEP's format documentation and examples (commit
+bcc7c1a09e0be874f1df259e809517a89b765986).  Thank you to u/These_Magician_3789 on Reddit for his work on the original idea.
+
+The reader accepts streamer versions 3 and 4, both typedstream byte orders,
+and checks bounds, references, nesting, array counts, and total allocations.
+GSOpenStepNibReader.m converts supported historical objects to an in-memory
+binary keyed archive for the existing GSNibLoader path.  Unknown classes and
+unsupported layouts fail before application objects are instantiated.
+
+The supported class versions and explicit semantic limitations are encoded
+in GSOpenStepNibReader.m.  Tests/gui/NSNibLoading/README.openstep describes
+the regression tests and fixture generation.
