@@ -1,3 +1,12 @@
+2026-09-19 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSWindow.m (-invalidateCursorRectsForView:): Do not
+	discard the view's cursor rectangles here; leave that to
+	-resetCursorRects, which discards and rebuilds them in one step
+	before the next event.  Discarding them early popped the cursor to
+	the arrow until the rebuild pushed it again, so the I-beam
+	flickered on every keystroke in a text view.
+
 2026-09-14 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Fix bug detecting filesystem mount points.
