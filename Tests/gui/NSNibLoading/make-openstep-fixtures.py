@@ -92,7 +92,7 @@ class Writer:
                 raise ValueError(typ)
 
 
-def document(views=False, bad_version=False):
+def document(views=False, bad_version=False, window_min_size=False):
     owner = Obj([("NSCustomObject", 41)], [("@@", [string("NSObject"), None])])
     custom = Obj([("NSCustomObject", 41)],
                  [("@@", [string("OpenStepTestObject"), None])])
@@ -119,11 +119,14 @@ def document(views=False, bad_version=False):
                        ("@@@@ffffffff", [array([button]), None, None, None,
                         0, 0, 240, 100, 0, 0, 240, 100]),
                        ("@", [None]), ("@", [None]), ("@", [None]), ("@", [None])]
-        window = Obj([("NSWindowTemplate", 41)],
-                     [("iiffffi@@@@@c", [3, 2, 100, 100, 240, 100, 0x40000000,
-                       string("OPENSTEP fixture"), string("NSWindow"),
-                       string("View"), view, None, 1]),
-                      ("ffff", [0, 0, 1024, 768]), ("c", [0])])
+        window_groups = [("iiffffi@@@@@c", [3, 2, 100, 100, 240, 100, 0x40000000,
+                          string("OPENSTEP fixture"), string("NSWindow"),
+                          string("View"), view, None, 1]),
+                         ("ffff", [0, 0, 1024, 768]),
+                         ("c", [1 if window_min_size else 0])]
+        if window_min_size:
+            window_groups.append(("ff", [23, 24]))
+        window = Obj([("NSWindowTemplate", 41)], window_groups)
         objects += [(window, owner), (view, window), (button, view)]
         for target, label in [(window, "window"), (button, "button"), (button, "alias")]:
             connections.append(Obj([("NSIBOutletConnector", 0), ("NSIBConnector", 17)],
@@ -203,3 +206,6 @@ if __name__ == "__main__":
     writer = Writer("<", 4)
     writer.group("@", [scroll_document()])
     (out / "scroll-v4-le.nib").write_bytes(writer.data)
+    writer = Writer("<", 4)
+    writer.group("@", [document(views=True, window_min_size=True)])
+    (out / "window-min-size-v4-le.nib").write_bytes(writer.data)

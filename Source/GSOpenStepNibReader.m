@@ -746,6 +746,7 @@ static NSDictionary *UID(NSUInteger n)
   else if (IS("NSWindowTemplate", 41))
     {
       unsigned long flags;
+      long long hasMinSize;
       GET("iiffffi@@@@@c");
       INT(0, @"NSWindowStyleMask"); INT(1, @"NSWindowBacking");
       [self rect: v + 2 key: @"NSWindowRect" into: d];
@@ -754,9 +755,15 @@ static NSDictionary *UID(NSUInteger n)
       OBJ(10, @"NSWindowView"); OBJ(11, @"NSFrameAutosaveName");
       if (flags & 0x08000000UL) [_visible addObject: [_references objectForKey: Number(o->id)]];
       GET("ffff"); /* archived screen geometry */
-      GET("c"); if (Integer(v)) Bad(o, @"unsupported window trailing flag");
-      if (*i < o->ngroups)
-        { GET("ff"); Bad(o, @"unsupported window size extension"); }
+      GET("c"); hasMinSize = Integer(v);
+      if (hasMinSize < 0 || hasMinSize > 1)
+        Bad(o, @"invalid window minimum-size flag");
+      if (hasMinSize)
+        {
+          GET("ff");
+          [d setObject: [self literal: [NSString stringWithFormat: @"{%.17g, %.17g}",
+            Real(v), Real(v + 1)]] forKey: @"NSWindowContentMinSize"];
+        }
     }
   else if (IS("NSFont", 21))
     {
