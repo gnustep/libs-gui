@@ -1896,6 +1896,15 @@ static float menuBarHeight = 0.0;
    */
   indexOfActionToExecute = _highlightedItemIndex;
 
+  if (indexOfActionToExecute >= 0
+    && [self indexOfItemAtPoint:
+               [self convertPoint: [_window mouseLocationOutsideOfEventStream]
+                         fromView: nil]] == -1)
+    {
+      [self setHighlightedItemIndex: -1];
+      indexOfActionToExecute = -1;
+    }
+
   // remove transient menus. --------------------------------------------
   {
     NSMenu *currentMenu = _attachedMenu;

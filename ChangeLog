@@ -1,3 +1,12 @@
+2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
+	out no item when the mouse is released away from the menu.  The
+	highlight of an item whose submenu has just been attached is kept
+	while the pointer is off the menu, so a release elsewhere used to
+	carry out an item the user never chose.
+	* Tests/gui/NSMenuView/clickOutside.m: New test.
+
 2026-09-14 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Fix bug detecting filesystem mount points.
