@@ -1,3 +1,14 @@
+2026-11-14  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSTextFieldCell.m (-drawInteriorWithFrame:inView:): Shorten
+	text that does not fit with an ellipsis when the line break mode is
+	one of the truncating modes, using the same NSCell helpers as
+	-_drawAttributedText:inFrame:.  That method is not called directly,
+	as it centers the text vertically in a rectangle one line high,
+	which would move the text of a taller field away from the field
+	editor and cut a wrapping field to one line.
+	* Tests/gui/NSTextFieldCell/truncation.m: New test.
+
 2026-11-06 Daniel Boyd <danieljboyd@icloud.com>
 
 	* Source/NSControl.m (-setEnabled:): Do nothing when the state is

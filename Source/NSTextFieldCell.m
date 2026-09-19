@@ -44,6 +44,14 @@
 
 #import "GSBindingHelpers.h"
 
+@interface NSCell (Truncation)
+- (BOOL) _shouldShortenStringForRect: (NSRect)titleRect
+				size: (NSSize)titleSize
+			      length: (NSUInteger)length;
+- (NSAttributedString*) _resizeAttributedString: (NSAttributedString*)attrstring
+					 forRect: (NSRect)titleRect;
+@end
+
 @implementation NSTextFieldCell
 
 + (void) initialize
@@ -235,6 +243,7 @@
   else
     {
       NSRect titleRect;
+      NSAttributedString *text;
 
       /* Make sure we are a text cell; titleRect might return an incorrect
 	 rectangle otherwise. Note that the type could be different if the
@@ -242,7 +251,14 @@
 	 well). */
       _cell.type = NSTextCellType;
       titleRect = [self titleRectForBounds: cellFrame];
-      [[self _drawAttributedString] drawInRect: titleRect];
+      text = [self _drawAttributedString];
+      if ([self _shouldShortenStringForRect: titleRect
+				       size: [text size]
+				     length: [text length]])
+	{
+	  text = [self _resizeAttributedString: text forRect: titleRect];
+	}
+      [text drawInRect: titleRect];
     }
 }
 
