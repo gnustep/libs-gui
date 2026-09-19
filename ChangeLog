@@ -1,3 +1,16 @@
+2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSMenuView.m (-_isMouseInAttachedSubmenus:): New private
+	method reporting whether a visible attached submenu contains the
+	point.
+	(-_trackWithEvent:startingMenuView:): Do not claim the pointer for
+	this menu or for an ancestor menu when an attached submenu covers
+	them at the pointer; check the attached submenus before the
+	ancestor menus.  A submenu opened on the left for lack of room
+	could not be used with the mouse, because tracking was handed to
+	the menu it covered.
+	* Tests/gui/NSMenuView/submenuPrecedence.m: New test.
+
 2026-09-14 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Fix bug detecting filesystem mount points.

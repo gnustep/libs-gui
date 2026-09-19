@@ -1507,6 +1507,24 @@ static float menuBarHeight = 0.0;
 #define MOVE_THRESHOLD_DELTA 2.0
 #define DELAY_MULTIPLIER     10
 
+- (BOOL) _isMouseInAttachedSubmenus: (NSPoint)locationInScreenCoordinates
+{
+  NSMenu *submenu = [_attachedMenu attachedMenu];
+
+  while (submenu != nil)
+    {
+      NSWindow *window = [submenu window];
+
+      if ([window isVisible]
+        && NSMouseInRect (locationInScreenCoordinates, [window frame], NO))
+        {
+          return YES;
+        }
+      submenu = [submenu attachedMenu];
+    }
+  return NO;
+}
+
 - (BOOL) _executeItemAtIndex: (int)indexOfActionToExecute
 	       removeSubmenu: (BOOL)subMenusNeedRemoving
 {
@@ -1658,6 +1676,11 @@ static float menuBarHeight = 0.0;
           location = [_window mouseLocationOutsideOfEventStream];
           index = [self indexOfItemAtPoint: 
             [self convertPoint: location fromView: nil]];
+          if (index != -1 && [self _isMouseInAttachedSubmenus:
+                                     [_window convertBaseToScreen: location]])
+            {
+              index = -1;
+            }
 
           if (event == original)
             {
@@ -1713,7 +1736,6 @@ static float menuBarHeight = 0.0;
           if (index == -1)
             {
               NSPoint locationInScreenCoordinates;
-              NSWindow *windowUnderMouse;
               NSMenu *candidateMenu;
 
               subMenusNeedRemoving = NO;
@@ -1721,8 +1743,25 @@ static float menuBarHeight = 0.0;
               locationInScreenCoordinates
                 = [_window convertBaseToScreen: location];
 
+              // 3a - Check if we enter the attached submenu
+              if ([self _isMouseInAttachedSubmenus: locationInScreenCoordinates])
+                {
+                  BOOL wasTransient = [_attachedMenu isTransient];
+                  BOOL subMenuResult;
+
+                  subMenuResult
+                    = [[self attachedMenuView] _trackWithEvent: original
+                                              startingMenuView: mainWindowMenuView];
+                  if (subMenuResult
+                    && wasTransient == [_attachedMenu isTransient])
+                    {
+                      [self detachSubmenu];
+                    }
+                  return subMenuResult;
+                }
+
               /*
-               * 3a - Check if moved into one of the ancestor menus.
+               * 3b - Check if moved into one of the ancestor menus.
                *      This is tricky, there are a few possibilities:
                *          We are a transient attached menu of a
                *          non-transient menu
@@ -1763,26 +1802,6 @@ static float menuBarHeight = 0.0;
                   return candidateMenuResult;
                 }
 
-              // 3b - Check if we enter the attached submenu
-              windowUnderMouse = [[_attachedMenu attachedMenu] window];
-              if (windowUnderMouse != nil
-                && NSMouseInRect (locationInScreenCoordinates,
-                  [windowUnderMouse frame], NO))
-                {
-                  BOOL wasTransient = [_attachedMenu isTransient];
-                  BOOL subMenuResult;
-
-                  subMenuResult
-                    = [[self attachedMenuView] _trackWithEvent: original
-                                              startingMenuView: mainWindowMenuView];
-                  if (subMenuResult
-                    && wasTransient == [_attachedMenu isTransient])
-                    {
-                      [self detachSubmenu];
-                    }
-                  return subMenuResult;
-                }
-	      
 	      /* We track the menu correctly when this is located
 		in a window */
 	      if (mainWindowMenuView != nil)
