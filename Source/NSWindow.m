@@ -3032,8 +3032,6 @@ discardCursorRectsForView(NSView *theView)
 {
   if (aView->_rFlags.valid_rects)
     {
-      [aView discardCursorRects];
-
       if (_f.cursor_rects_valid)
         {
           if (_f.is_key && _f.cursor_rects_enabled)
