@@ -361,6 +361,8 @@ GSModelLoaderFactory.m \
 GSGormLoader.m \
 GSGModelLoader.m \
 GSNibLoader.m \
+GSOpenStepNibReader.m \
+GSOpenStepTypedStream.m \
 GSXibElement.m \
 GSXibLoader.m \
 GSXibLoading.m \
