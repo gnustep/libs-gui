@@ -3032,8 +3032,12 @@ discardCursorRectsForView(NSView *theView)
 {
   if (aView->_rFlags.valid_rects)
     {
-      [aView discardCursorRects];
-
+      /* Leave the stale rects in place until -resetCursorRects discards
+       * and rebuilds them in one go.  Discarding them here pops the
+       * cursor (usually to the arrow) and the server shows that until
+       * the rebuild pushes it again, so a text view that invalidates
+       * its rects on every keystroke made the I-beam flicker.
+       */
       if (_f.cursor_rects_valid)
         {
           if (_f.is_key && _f.cursor_rects_enabled)
