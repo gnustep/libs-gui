@@ -130,6 +130,8 @@ int main(int argc, char **argv, char **envp)
           @"window/control graph translates without a backend");
   Check(GSOpenStepNibKeyedData(Fixture(dir, @"scroll-v4-le.nib")) != nil,
         @"OPENSTEP NSScrollView version 42 translates");
+  Check(GSOpenStepNibKeyedData(Fixture(dir, @"window-min-size-v4-le.nib")) != nil,
+        @"OPENSTEP window minimum-size extension translates");
   /* Conversion validates a complete graph before running any initializers. */
   for (i = 13; i < [sample length]; i++)
     {
