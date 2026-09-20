@@ -1,3 +1,13 @@
+2026-09-21 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Headers/AppKit/NSTableColumn.h: Hold the width, the minimum and
+	the maximum width as CGFloat rather than float, so that a column
+	keeps the width -setWidth: was given on a 64 bit system.
+	* Source/NSTableColumn.m (-encodeWithCoder:, -initWithCoder:):
+	Encode and decode those three through a float, so that the archive
+	format stays as it was.
+	* Tests/gui/NSTableColumn/width.m: New test.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry

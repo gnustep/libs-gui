@@ -63,9 +63,9 @@ APPKIT_EXPORT_CLASS
 {
   id _identifier;
   NSTableView *_tableView;
-  float _width;
-  float _min_width;
-  float _max_width;
+  CGFloat _width;
+  CGFloat _min_width;
+  CGFloat _max_width;
   NSUInteger _resizing_mask;
   BOOL _is_resizable;
   BOOL _is_editable;
