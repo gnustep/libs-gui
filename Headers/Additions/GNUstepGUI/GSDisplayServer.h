@@ -101,6 +101,7 @@ APPKIT_EXPORT_CLASS
 /* Screen information */
 - (NSSize) resolutionForScreen: (int)screen;
 - (NSRect) boundsForScreen: (int)screen;
+- (NSRect) workAreaForScreen: (int)screen;
 - (NSWindowDepth) windowDepthForScreen: (int)screen;
 
 /** Returns the available screen depths in a nul terminated array.

@@ -430,6 +430,11 @@ GSCurrentServer(void)
   return NSZeroRect;
 }
 
+- (NSRect) workAreaForScreen: (int)screen
+{
+  return NSZeroRect;
+}
+
 /** Returns the default depth of windows that are created on screen. */
 - (NSWindowDepth) windowDepthForScreen: (int)screen
 {
