@@ -335,6 +335,7 @@ PACKAGE_SCOPE
     unsigned autorecalculates_keyview_loop: 1;
     unsigned ignores_mouse_events: 1;
     unsigned preserves_content_during_live_resize: 1;
+    unsigned shows_resize_indicator: 1;
   } _f;
 @protected 
   NSToolbar     *_toolbar;
