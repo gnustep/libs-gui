@@ -1,3 +1,14 @@
+2026-09-21 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSClipView.m (-constrainScrollPoint:): Give back the current
+	origin when the proposed point is the origin the clip view already
+	has.  The result is rounded to whole pixels in window coordinates, so
+	for a clip view that does not sit on a whole point the rounding was
+	not a fixed point: every call moved the content a little further, and
+	a scroll view laid out repeatedly scrolled its document away.
+	* Tests/gui/NSClipView/constrain.m: Check that constraining the
+	current origin does not move it.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry

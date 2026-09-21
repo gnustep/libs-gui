@@ -421,6 +421,12 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       new.y = NSMaxY(documentFrame) - _bounds.size.height;
     }
 
+  if (fabs(new.x - _bounds.origin.x) < 0.001
+      && fabs(new.y - _bounds.origin.y) < 0.001)
+    {
+      return _bounds.origin;
+    }
+
   /* Make it an integer coordinate in device space - this is to make
      sure that when the coordinates are changed and we need to copy to
      do the scrolling, the difference is an integer and so we can copy
