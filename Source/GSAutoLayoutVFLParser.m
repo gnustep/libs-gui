@@ -556,11 +556,15 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
 - (void) parseObjectOfPredicate: (GSObjectOfPredicate *)predicate
 {
-  NSLayoutRelation relation = [self parseRelation];
-
+  NSLayoutRelation relation;
   CGFloat parsedConstant;
   NSView *predicatedView = nil;
-  BOOL scanConstantResult = [_scanner scanDouble: &parsedConstant];
+  BOOL scanConstantResult;
+  double tempDouble;
+
+  relation = [self parseRelation];
+  scanConstantResult= [_scanner scanDouble: &tempDouble];
+  parsedConstant = (CGFloat)tempDouble;
   if (!scanConstantResult)
     {
       NSString *identiferName = [self parseIdentifier];
