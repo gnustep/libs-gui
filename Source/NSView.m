@@ -197,6 +197,32 @@ GSGetDragTypes(NSView *obj)
   return t;
 }
 
+/*
+ * Whether outer covers inner, allowing for floating point error.  The rects
+ * compared during display have been converted through the view hierarchy,
+ * and under a user space scale factor (GSScaleFactor) through fractional
+ * coordinates, so a rect that covers another exactly on screen can miss it
+ * by something like 1e-14.  Treating that as not covered leaves the view
+ * marked as needing display for good: every later display pass draws it
+ * again on its own, over what it drew before and without its background,
+ * so anti-aliased edges and translucent fills darken with every redraw.
+ * The slack is far below one device pixel at any usable scale factor.
+ */
+static BOOL
+GSRectCoversRect(NSRect outer, NSRect inner)
+{
+  const CGFloat slack = 0.01;
+
+  if (NSIsEmptyRect(inner))
+    {
+      return YES;
+    }
+  return (NSMinX(inner) >= NSMinX(outer) - slack
+    && NSMinY(inner) >= NSMinY(outer) - slack
+    && NSMaxX(inner) <= NSMaxX(outer) + slack
+    && NSMaxY(inner) <= NSMaxY(outer) + slack);
+}
+
 static void
 GSRemoveDragTypes(NSView* obj)
 {
@@ -2703,7 +2729,7 @@ static void autoresize(CGFloat oldContainerSize,
        * FIXME: If the drawn rectangle cuts of a complete part of the
        * _invalidRect, we should try to reduce this.
        */
-      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
+      if (GSRectCoversRect(aRect, neededRect))
         {
           _invalidRect = NSZeroRect;
           _rFlags.needs_display = NO;
