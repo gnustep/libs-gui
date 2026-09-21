@@ -282,6 +282,40 @@ APPKIT_EXPORT_CLASS
 @end
 
 /**
+ * Portable provider API for a collection view diffable data source.
+ * The delegate is not retained and must outlive the data source, or be cleared
+ * with setDelegate: before it is destroyed. Optional view methods return nil when
+ * omitted. Block initializers use the data source itself as the delegate.
+ */
+@protocol NSCollectionViewDiffableDataSourceDelegate <NSObject, NSCollectionViewDiffableItemProvider>
+@optional
+- (NSView *) collectionView: (NSCollectionView *)collectionView
+ viewForSupplementaryElementOfKind: (NSCollectionViewSupplementaryElementKind)kind
+               atIndexPath: (NSIndexPath *)indexPath;
+/** Called synchronously after the view and identifier lookup are updated. */
+- (void) diffableDataSource: (id)dataSource
+          didApplySnapshot: (NSDiffableDataSourceSnapshot *)snapshot;
+@end
+
+/**
+ * Portable provider API for a table view diffable data source.
+ * The delegate is not retained. Optional view methods return nil when omitted.
+ * Block initializers use the data source itself as the delegate.
+ */
+@protocol NSTableViewDiffableDataSourceDelegate <NSObject, NSTableViewDiffableCellProvider>
+@optional
+- (NSTableRowView *) tableView: (NSTableView *)tableView
+         rowViewForIdentifier: (id)itemIdentifier
+                          row: (NSInteger)row;
+- (NSView *) tableView: (NSTableView *)tableView
+ viewForSectionIdentifier: (id)sectionIdentifier
+              inSection: (NSInteger)section;
+/** Called synchronously after the view and identifier lookup are updated. */
+- (void) diffableDataSource: (id)dataSource
+          didApplySnapshot: (NSDiffableDataSourceSnapshot *)snapshot;
+@end
+
+/**
  * <p>NSCollectionViewDiffableDataSource is a data source for NSCollectionView
  * that manages data using snapshots and unique identifiers. It automatically
  * calculates and applies the differences between snapshots, enabling smooth
@@ -296,15 +330,29 @@ APPKIT_EXPORT_CLASS
  * data source errors related to index path management.</p>
  */
 APPKIT_EXPORT_CLASS
-@interface NSCollectionViewDiffableDataSource : NSObject <NSCollectionViewDataSource, NSCollectionViewPrefetching>
+@interface NSCollectionViewDiffableDataSource : NSObject <NSCollectionViewDataSource, NSCollectionViewPrefetching, NSCollectionViewDiffableDataSourceDelegate>
 {
   NSCollectionView *_collectionView;
+  id<NSCollectionViewDiffableDataSourceDelegate> _delegate;
   NSDiffableDataSourceSnapshot *_snapshot;
   GSCollectionViewItemProviderBlock _itemProvider;
   GSCollectionViewSupplementaryViewProviderBlock _supplementaryViewProvider;
   NSMutableDictionary *_identifierToIndexPath;
   NSMutableSet *_creatingIndexPaths;
 }
+
+/**
+ * Initializes the data source with a portable, non-retained delegate.
+ * This is the designated initializer; no blocks are required.
+ */
+- (id) initWithCollectionView: (NSCollectionView *)collectionView
+                   delegate: (id<NSCollectionViewDiffableDataSourceDelegate>)delegate;
+- (id<NSCollectionViewDiffableDataSourceDelegate>) delegate;
+/**
+ * Sets the non-retained provider delegate. Provider blocks are used only while
+ * the data source is its own delegate. Set nil before destroying the delegate.
+ */
+- (void) setDelegate: (id<NSCollectionViewDiffableDataSourceDelegate>)delegate;
 
 /**
  * Initializes a diffable data source for the specified collection view.
@@ -397,9 +445,10 @@ APPKIT_EXPORT_CLASS
  * the likelihood of crashes due to inconsistent updates.</p>
  */
 APPKIT_EXPORT_CLASS
-@interface NSTableViewDiffableDataSource : NSObject <NSTableViewDataSource>
+@interface NSTableViewDiffableDataSource : NSObject <NSTableViewDataSource, NSTableViewDiffableDataSourceDelegate>
 {
   NSTableView *_tableView;
+  id<NSTableViewDiffableDataSourceDelegate> _delegate;
   NSDiffableDataSourceSnapshot *_snapshot;
   GSTableViewCellProviderBlock _cellProvider;
   GSTableViewRowViewProviderBlock _rowViewProvider;
@@ -408,6 +457,19 @@ APPKIT_EXPORT_CLASS
   NSMutableDictionary *_identifierToIndexPath;
   NSMutableSet *_creatingIndexPaths;
 }
+
+/**
+ * Initializes the data source with a portable, non-retained delegate.
+ * This is the designated initializer; no blocks are required.
+ */
+- (id) initWithTableView: (NSTableView *)tableView
+                   delegate: (id<NSTableViewDiffableDataSourceDelegate>)delegate;
+- (id<NSTableViewDiffableDataSourceDelegate>) delegate;
+/**
+ * Sets the non-retained provider delegate. Provider blocks are used only while
+ * the data source is its own delegate. Set nil before destroying the delegate.
+ */
+- (void) setDelegate: (id<NSTableViewDiffableDataSourceDelegate>)delegate;
 
 /**
  * Initializes a diffable data source for the specified table view.

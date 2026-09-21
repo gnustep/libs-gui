@@ -58,6 +58,7 @@ GSDiffableDefaultSectionIdentifier()
 }
 
 @interface NSDiffableDataSourceSnapshot (GSDiffablePrivate)
+- (void) _validateNewItemIdentifiers: (NSArray *)itemIdentifiers;
 - (NSSet *) _gsReloadedSections;
 - (NSSet *) _gsReloadedItems;
 @end
@@ -666,14 +667,14 @@ GSDiffableRowForSectionInSnapshot(NSDiffableDataSourceSnapshot *snapshot,
 @implementation NSCollectionViewDiffableDataSource
 
 - (id) initWithCollectionView: (NSCollectionView *)collectionView
-		 itemProvider: (GSCollectionViewItemProviderBlock)itemProvider
+                   delegate: (id<NSCollectionViewDiffableDataSourceDelegate>)delegate
 {
   self = [super init];
   if (self != nil)
     {
       _collectionView = collectionView;
       _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-      _itemProvider = (void*)RETAIN(itemProvider);
+      _delegate = delegate;
       _identifierToIndexPath = [[NSMutableDictionary alloc] init];
       _creatingIndexPaths = [[NSMutableSet alloc] init];
       [_collectionView setDataSource: self];
@@ -685,11 +686,38 @@ GSDiffableRowForSectionInSnapshot(NSDiffableDataSourceSnapshot *snapshot,
   return self;
 }
 
+- (id) initWithCollectionView: (NSCollectionView *)collectionView
+                 itemProvider: (GSCollectionViewItemProviderBlock)itemProvider
+{
+  self = [self initWithCollectionView: collectionView delegate: self];
+  if (self != nil && itemProvider != NULL)
+    {
+      _itemProvider = Block_copy(itemProvider);
+    }
+  return self;
+}
+
+- (id<NSCollectionViewDiffableDataSourceDelegate>) delegate
+{
+  return _delegate;
+}
+
+- (void) setDelegate: (id<NSCollectionViewDiffableDataSourceDelegate>)delegate
+{
+  _delegate = delegate;
+}
+
 - (void) dealloc
 {
   DESTROY(_snapshot);
-  DESTROY(_itemProvider);
-  DESTROY(_supplementaryViewProvider);
+  if (_itemProvider != NULL)
+    {
+      Block_release(_itemProvider);
+    }
+  if (_supplementaryViewProvider != NULL)
+    {
+      Block_release(_supplementaryViewProvider);
+    }
   DESTROY(_identifierToIndexPath);
   DESTROY(_creatingIndexPaths);
   [super dealloc];
@@ -720,15 +748,6 @@ GSDiffableRowForSectionInSnapshot(NSDiffableDataSourceSnapshot *snapshot,
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
   animatingDifferences: (BOOL)animatingDifferences
 {
-  [self applySnapshot: snapshot
- animatingDifferences: animatingDifferences
-     completionHandler: NULL];
-}
-
-- (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
-  animatingDifferences: (BOOL)animatingDifferences
-     completionHandler: (GSDiffableDataSourceCompletionBlock)completion
-{
   if (snapshot == nil)
     {
       snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
@@ -739,6 +758,18 @@ GSDiffableRowForSectionInSnapshot(NSDiffableDataSourceSnapshot *snapshot,
   [self _rebuildIndexLookup];
   [_collectionView reloadData];
 
+  if ([_delegate respondsToSelector:
+        @selector(diffableDataSource:didApplySnapshot:)])
+    {
+      [_delegate diffableDataSource: self didApplySnapshot: [self snapshot]];
+    }
+}
+
+- (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
+  animatingDifferences: (BOOL)animatingDifferences
+     completionHandler: (GSDiffableDataSourceCompletionBlock)completion
+{
+  [self applySnapshot: snapshot animatingDifferences: animatingDifferences];
   if (completion != NULL)
     {
       CALL_BLOCK_NO_ARGS(completion);
@@ -846,21 +877,19 @@ GSDiffableRowForSectionInSnapshot(NSDiffableDataSourceSnapshot *snapshot,
 
   if (result == nil)
     {
-      if (identifier == nil || _itemProvider == NULL)
+      if (identifier == nil || _delegate == nil)
 	{
 	  return nil;
 	}
 
-      if (_itemProvider != NULL)
+      if (_delegate != nil)
 	{
 	  // Mark that we're creating an item for this index path
 	  [_creatingIndexPaths addObject: indexPath];
 
-	  result = (NSCollectionViewItem *)
-	    CALL_NON_NULL_BLOCK(_itemProvider,
-				collectionView,
-				indexPath,
-				identifier);
+          result = [_delegate collectionView: collectionView
+                           itemForIdentifier: identifier
+                                 atIndexPath: indexPath];
 
 	  if ([result respondsToSelector: @selector(setRepresentedObject:)])
 	    {
@@ -879,6 +908,16 @@ GSDiffableRowForSectionInSnapshot(NSDiffableDataSourceSnapshot *snapshot,
 viewForSupplementaryElementOfKind: (NSCollectionViewSupplementaryElementKind)kind
 		atIndexPath: (NSIndexPath *)indexPath
 {
+  if (_delegate != self)
+    {
+      if ([_delegate respondsToSelector: _cmd])
+        {
+          return [_delegate collectionView: collectionView
+            viewForSupplementaryElementOfKind: kind atIndexPath: indexPath];
+        }
+      return nil;
+    }
+
   if (_supplementaryViewProvider == NULL)
     {
       return nil;
@@ -888,6 +927,18 @@ viewForSupplementaryElementOfKind: (NSCollectionViewSupplementaryElementKind)kin
 				      collectionView,
 				      kind,
 				      indexPath);
+}
+
+/* Adapter used by the block initializer's self delegate. */
+- (NSCollectionViewItem *) collectionView: (NSCollectionView *)collectionView
+                      itemForIdentifier: (id)identifier
+                            atIndexPath: (NSIndexPath *)indexPath
+{
+  if (_itemProvider == NULL)
+    {
+      return nil;
+    }
+  return CALL_NON_NULL_BLOCK(_itemProvider, collectionView, indexPath, identifier);
 }
 
 - (void) collectionView: (NSCollectionView *)collectionView
@@ -940,9 +991,12 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 
 - (void) setSupplementaryViewProvider: (GSCollectionViewSupplementaryViewProviderBlock)provider
 {
-  id oldProvider = (id)_supplementaryViewProvider;
-  _supplementaryViewProvider = (void *)RETAIN((id)provider);
-  RELEASE(oldProvider);
+  __typeof__(_supplementaryViewProvider) oldProvider = _supplementaryViewProvider;
+  _supplementaryViewProvider = provider != NULL ? Block_copy(provider) : NULL;
+  if (oldProvider != NULL)
+    {
+      Block_release(oldProvider);
+    }
 }
 
 @end
@@ -950,14 +1004,14 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 @implementation NSTableViewDiffableDataSource
 
 - (id) initWithTableView: (NSTableView *)tableView
-	    cellProvider: (GSTableViewCellProviderBlock)cellProvider
+                   delegate: (id<NSTableViewDiffableDataSourceDelegate>)delegate
 {
   self = [super init];
   if (self != nil)
     {
       _tableView = tableView;
       _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-      _cellProvider = (void*)RETAIN(cellProvider);
+      _delegate = delegate;
       _defaultRowAnimation = NSTableViewAnimationEffectFade;
       _identifierToIndexPath = [[NSMutableDictionary alloc] init];
       _creatingIndexPaths = [[NSMutableSet alloc] init];
@@ -966,12 +1020,42 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
   return self;
 }
 
+- (id) initWithTableView: (NSTableView *)tableView
+                 cellProvider: (GSTableViewCellProviderBlock)cellProvider
+{
+  self = [self initWithTableView: tableView delegate: self];
+  if (self != nil && cellProvider != NULL)
+    {
+      _cellProvider = Block_copy(cellProvider);
+    }
+  return self;
+}
+
+- (id<NSTableViewDiffableDataSourceDelegate>) delegate
+{
+  return _delegate;
+}
+
+- (void) setDelegate: (id<NSTableViewDiffableDataSourceDelegate>)delegate
+{
+  _delegate = delegate;
+}
+
 - (void) dealloc
 {
   DESTROY(_snapshot);
-  DESTROY(_cellProvider);
-  DESTROY(_rowViewProvider);
-  DESTROY(_sectionHeaderViewProvider);
+  if (_cellProvider != NULL)
+    {
+      Block_release(_cellProvider);
+    }
+  if (_rowViewProvider != NULL)
+    {
+      Block_release(_rowViewProvider);
+    }
+  if (_sectionHeaderViewProvider != NULL)
+    {
+      Block_release(_sectionHeaderViewProvider);
+    }
   DESTROY(_identifierToIndexPath);
   DESTROY(_creatingIndexPaths);
   [super dealloc];
@@ -1000,15 +1084,6 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 
 - (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
   animatingDifferences: (BOOL)animatingDifferences
-{
-  [self applySnapshot: snapshot
- animatingDifferences: animatingDifferences
-     completionHandler: NULL];
-}
-
-- (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
-  animatingDifferences: (BOOL)animatingDifferences
-     completionHandler: (GSDiffableDataSourceCompletionBlock)completion
 {
   NSDiffableDataSourceSnapshot *oldSnapshot = [_snapshot copy];
   NSMutableIndexSet *deletedRows = [NSMutableIndexSet indexSet];
@@ -1113,12 +1188,24 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 	}
     }
 
+  if ([_delegate respondsToSelector:
+        @selector(diffableDataSource:didApplySnapshot:)])
+    {
+      [_delegate diffableDataSource: self didApplySnapshot: [self snapshot]];
+    }
+
+  RELEASE(oldSnapshot);
+}
+
+- (void) applySnapshot: (NSDiffableDataSourceSnapshot *)snapshot
+  animatingDifferences: (BOOL)animatingDifferences
+     completionHandler: (GSDiffableDataSourceCompletionBlock)completion
+{
+  [self applySnapshot: snapshot animatingDifferences: animatingDifferences];
   if (completion != NULL)
     {
       CALL_BLOCK_NO_ARGS(completion);
     }
-
-  RELEASE(oldSnapshot);
 }
 
 - (NSDiffableDataSourceSnapshot *) snapshot
@@ -1279,18 +1366,12 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
       return nil;
     }
 
-  if (_cellProvider != NULL)
+  NSView *view = [_delegate tableView: tableView
+                          viewForIdentifier: identifier
+                                tableColumn: tableColumn row: rowIndex];
+  if (view != nil)
     {
-      NSView *view =
-	(NSView *)CALL_NON_NULL_BLOCK(_cellProvider,
-				      tableView,
-				      tableColumn,
-				      rowIndex,
-				      identifier);
-      if (view != nil)
-	{
-	  return view;
-	}
+      return view;
     }
 
   // Fallback to a simple text field if no provider is supplied.
@@ -1302,11 +1383,37 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
   return textField;
 }
 
+/* Adapter used by the block initializer's self delegate. */
+- (NSView *) tableView: (NSTableView *)tableView
+    viewForIdentifier: (id)identifier
+          tableColumn: (NSTableColumn *)tableColumn
+                  row: (NSInteger)row
+{
+  if (_cellProvider == NULL)
+    {
+      return nil;
+    }
+  return CALL_NON_NULL_BLOCK(_cellProvider, tableView, tableColumn, row, identifier);
+}
+
 - (NSTableRowView *) tableView: (NSTableView *)tableView
 		  rowViewForRow: (NSInteger)rowIndex
 {
   id identifier = [self itemIdentifierForRow: rowIndex];
 
+  if ([_delegate respondsToSelector:
+        @selector(tableView:rowViewForIdentifier:row:)])
+    {
+      return [_delegate tableView: tableView rowViewForIdentifier: identifier
+                             row: rowIndex];
+    }
+  return nil;
+}
+
+- (NSTableRowView *) tableView: (NSTableView *)tableView
+         rowViewForIdentifier: (id)identifier
+                          row: (NSInteger)rowIndex
+{
   if (_rowViewProvider == NULL)
     {
       return nil;
@@ -1325,12 +1432,25 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
   id sectionIdentifier = nil;
 
   if (section < 0 || section >= (NSInteger)[sections count]
-      || _sectionHeaderViewProvider == NULL)
+      || ![_delegate respondsToSelector:
+        @selector(tableView:viewForSectionIdentifier:inSection:)])
     {
       return nil;
     }
 
   sectionIdentifier = [sections objectAtIndex: section];
+  return [_delegate tableView: tableView viewForSectionIdentifier: sectionIdentifier
+                   inSection: section];
+}
+
+- (NSView *) tableView: (NSTableView *)tableView
+ viewForSectionIdentifier: (id)sectionIdentifier
+              inSection: (NSInteger)section
+{
+  if (_sectionHeaderViewProvider == NULL)
+    {
+      return nil;
+    }
   return (NSView *)CALL_NON_NULL_BLOCK(_sectionHeaderViewProvider,
 				      tableView,
 				      section,
@@ -1354,9 +1474,12 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
 
 - (void) setRowViewProvider: (GSTableViewRowViewProviderBlock)provider
 {
-  id oldProvider = (id)_rowViewProvider;
-  _rowViewProvider = (void *)RETAIN((id)provider);
-  RELEASE(oldProvider);
+  __typeof__(_rowViewProvider) oldProvider = _rowViewProvider;
+  _rowViewProvider = provider != NULL ? Block_copy(provider) : NULL;
+  if (oldProvider != NULL)
+    {
+      Block_release(oldProvider);
+    }
 }
 
 - (GSTableViewSectionHeaderViewProviderBlock) sectionHeaderViewProvider
@@ -1366,9 +1489,12 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
 
 - (void) setSectionHeaderViewProvider: (GSTableViewSectionHeaderViewProviderBlock)provider
 {
-  id oldProvider = (id)_sectionHeaderViewProvider;
-  _sectionHeaderViewProvider = (void *)RETAIN((id)provider);
-  RELEASE(oldProvider);
+  __typeof__(_sectionHeaderViewProvider) oldProvider = _sectionHeaderViewProvider;
+  _sectionHeaderViewProvider = provider != NULL ? Block_copy(provider) : NULL;
+  if (oldProvider != NULL)
+    {
+      Block_release(oldProvider);
+    }
 }
 
 @end
