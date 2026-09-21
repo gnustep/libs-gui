@@ -661,11 +661,11 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
 - (NSNumber *) parseConstant
 {
-  CGFloat constant;
+  double constant;
   BOOL scanConstantResult = [_scanner scanDouble: &constant];
   if (scanConstantResult)
     {
-      return [NSNumber numberWithFloat: constant];
+      return [NSNumber numberWithDouble: constant];
     }
 
   NSString *metricName = [self parseIdentifier];
