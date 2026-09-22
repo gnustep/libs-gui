@@ -196,7 +196,7 @@ newKeyForFont(NSString *name, const CGFloat *matrix, BOOL screenFont, int role)
 
 /* Class variables*/
 
-static NSLock		*classLock = nil;
+static NSRecursiveLock	*classLock = nil;
 static NSLock		*roleLock = nil;
 
 /* See comments in +initialize. */
@@ -477,7 +477,7 @@ static void setNSFont(NSString *key, NSFont *font)
 
       ASSIGN(_preferredFonts, [defaults objectForKey: @"NSPreferredFonts"]);
       [self setVersion: currentVersion];
-      classLock = [NSLock new];
+      classLock = [NSRecursiveLock new];
       roleLock = [NSLock new];
     }
 }
