@@ -107,3 +107,11 @@ the window/view hierarchy in the XML. Class mappings apply to subclasses when
 there is no more-specific entry. Connection endpoints must already occur in
 the encoded graph; use the strings `owner` and `application` for the reserved
 external endpoints.
+
+NIF output is canonical for source-control use. Schema keys have a fixed
+order, other dictionary keys and archived property names are sorted, and
+connections are sorted by source, kind, label, and destination. Arrays retain
+their input order because they normally express semantic UI order (for example,
+the order of subviews or top-level objects). Equivalent graphs therefore do
+not acquire noisy XML changes merely because a dictionary or connection list
+was assembled in a different order.

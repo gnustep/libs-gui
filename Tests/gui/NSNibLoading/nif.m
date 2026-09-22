@@ -70,6 +70,8 @@ int main(void)
   NifTestNode *root;
   NifTestNode *child;
   NSData *encoded;
+  NSData *canonicalA;
+  NSData *canonicalB;
   NSString *encodedString;
   NSString *error = nil;
 
@@ -105,6 +107,33 @@ int main(void)
                                           encoding: NSUTF8StringEncoding] autorelease];
   PASS([encodedString rangeOfString: @"<string>NIF</string>"].location != NSNotFound,
        "produced data is readable XML and identifies itself as NIF")
+
+  {
+    NSDictionary *firstConnection = [NSDictionary dictionaryWithObjectsAndKeys:
+      @"outlet", @"kind", @"owner", @"source", root, @"destination",
+      @"zOutlet", @"label", nil];
+    NSMutableDictionary *secondConnection = [NSMutableDictionary dictionary];
+    [secondConnection setObject: @"aOutlet" forKey: @"label"];
+    [secondConnection setObject: root forKey: @"destination"];
+    [secondConnection setObject: @"owner" forKey: @"source"];
+    [secondConnection setObject: @"outlet" forKey: @"kind"];
+    canonicalA = [GSNifSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: root]
+      propertyKeys: [NSDictionary dictionaryWithObject:
+        [NSArray arrayWithObjects: @"peer", @"name", @"child", nil]
+        forKey: @"NifTestNode"]
+      connections: [NSArray arrayWithObjects: firstConnection, secondConnection, nil]
+      errorDescription: NULL];
+    canonicalB = [GSNifSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: root]
+      propertyKeys: [NSDictionary dictionaryWithObject:
+        [NSArray arrayWithObjects: @"child", @"name", @"peer", nil]
+        forKey: @"NifTestNode"]
+      connections: [NSArray arrayWithObjects: secondConnection, firstConnection, nil]
+      errorDescription: NULL];
+    PASS([canonicalA isEqual: canonicalB],
+         "property, dictionary, and connection insertion order does not change NIF output")
+  }
 
   if (encoded != nil)
     {
