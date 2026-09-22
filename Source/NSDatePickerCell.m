@@ -1061,12 +1061,12 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
                               centre.y + cos(minute) * size * 0.38)];
 }
 
-/* Picks the day the point falls on.  Returns NO for a point that is not on
-   a day of this month.
+/* The day of the month the point falls on, keeping the time of day the
+   picker holds, or nil for a point that is not on a day of this month.
 */
-- (BOOL) _selectDayAtPoint: (NSPoint)point
-                   inRect: (NSRect)frame
-                   ofView: (NSView *)view
+- (NSDate *) _dayAtPoint: (NSPoint)point
+                  inRect: (NSRect)frame
+                  ofView: (NSView *)view
 {
   NSCalendar *calendar = [self _pickerCalendar];
   NSDateComponents *parts;
@@ -1074,7 +1074,7 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
 
   if ([self dateValue] == nil)
     {
-      return NO;
+      return nil;
     }
 
   for (index = 0; index < 42; index++)
@@ -1082,7 +1082,6 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
       NSRect cell = [self _dayCellRectAtRow: index / 7 column: index % 7
                                     inFrame: frame ofView: view];
       NSInteger number = [self _dayAtRow: index / 7 column: index % 7];
-      NSDate *picked;
 
       if (number == 0 || !NSMouseInRect(point, cell, [view isFlipped]))
         {
@@ -1093,16 +1092,26 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
         | NSCalendarUnitMinute | NSCalendarUnitSecond
                           fromDate: [self dateValue]];
       [parts setDay: number];
-      picked = [calendar dateFromComponents: parts];
-      if (picked == nil)
-        {
-          return NO;
-        }
-      [self setDateValue: picked];
-      return YES;
+
+      return [calendar dateFromComponents: parts];
     }
 
-  return NO;
+  return nil;
+}
+
+- (BOOL) _selectDayAtPoint: (NSPoint)point
+                   inRect: (NSRect)frame
+                   ofView: (NSView *)view
+{
+  NSDate *picked = [self _dayAtPoint: point inRect: frame ofView: view];
+
+  if (picked == nil)
+    {
+      return NO;
+    }
+  [self setDateValue: picked];
+
+  return YES;
 }
 
 /* In the calendar the arrow keys walk the grid, a day across and a week up
@@ -1530,6 +1539,22 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
   [[self formatter] setTimeZone: zone];
 }
 
+/* A date picker is edited in place and it tracks the mouse, in every style
+   it draws, so it is all three kinds of area at once.
+*/
+- (NSUInteger) hitTestForEvent: (NSEvent *)event
+                        inRect: (NSRect)cellFrame
+                        ofView: (NSView *)controlView
+{
+  if (![self isEnabled])
+    {
+      return NSCellHitContentArea;
+    }
+
+  return NSCellHitContentArea | NSCellHitEditableTextArea
+    | NSCellHitTrackableArea;
+}
+
 /* NSCell copies its own object ivars as bare pointers and then retains them,
    leaving the ones added here held by two cells but retained by one.
 */
@@ -1565,6 +1590,23 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
     }
   else
     {
+      int elements = (int)_datePickerElements;
+      int mode = (int)_datePickerMode;
+      int style = (int)_datePickerStyle;
+      BOOL draws = _drawsBackground;
+      NSDate *value = [self dateValue];
+
+      [aCoder encodeValueOfObjCType: @encode(NSTimeInterval)
+                                 at: &_timeInterval];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &elements];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &mode];
+      [aCoder encodeValueOfObjCType: @encode(int) at: &style];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &draws];
+      [aCoder encodeObject: _backgroundColor];
+      [aCoder encodeObject: _textColor];
+      [aCoder encodeObject: _minDate];
+      [aCoder encodeObject: _maxDate];
+      [aCoder encodeObject: value];
     }
 }
 
@@ -1609,6 +1651,28 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
         }
       else
         {
+          int elements;
+          int mode;
+          int style;
+          BOOL draws;
+          NSTimeInterval interval;
+
+          [aDecoder decodeValueOfObjCType: @encode(NSTimeInterval)
+                                       at: &interval];
+          [aDecoder decodeValueOfObjCType: @encode(int) at: &elements];
+          [aDecoder decodeValueOfObjCType: @encode(int) at: &mode];
+          [aDecoder decodeValueOfObjCType: @encode(int) at: &style];
+          [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &draws];
+          [self setTimeInterval: interval];
+          [self setDatePickerElements: elements];
+          [self setDatePickerMode: mode];
+          [self setDatePickerStyle: style];
+          [self setDrawsBackground: draws];
+          [self setBackgroundColor: [aDecoder decodeObject]];
+          [self setTextColor: [aDecoder decodeObject]];
+          [self setMinDate: [aDecoder decodeObject]];
+          [self setMaxDate: [aDecoder decodeObject]];
+          [self setDateValue: [aDecoder decodeObject]];
         }
     }
 

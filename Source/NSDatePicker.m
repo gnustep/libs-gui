@@ -49,6 +49,9 @@
 - (BOOL) _selectDayAtPoint: (NSPoint)point
                     inRect: (NSRect)frame
                     ofView: (NSView *)view;
+- (NSDate *) _dayAtPoint: (NSPoint)point
+                  inRect: (NSRect)frame
+                  ofView: (NSView *)view;
 @end
 
 static id usedCellClass = nil;
@@ -117,6 +120,10 @@ static id usedCellClass = nil;
         }
       [[self window] makeFirstResponder: self];
       [self setNeedsDisplay: YES];
+      if ([cell datePickerMode] == NSRangeDateMode)
+        {
+          [self _trackRangeFrom: [cell dateValue]];
+        }
       if (before == nil || ![before isEqualToDate: [cell dateValue]])
         {
           [self sendAction: [self action] to: [self target]];
@@ -146,6 +153,41 @@ static id usedCellClass = nil;
   if (before == nil || ![before isEqualToDate: [cell dateValue]])
     {
       [self sendAction: [self action] to: [self target]];
+    }
+}
+
+/* Dragging across the month sets how long the range is.  The day the drag
+   started at stays the day the range starts at, and a drag back before it
+   leaves the range empty.
+*/
+- (void) _trackRangeFrom: (NSDate *)start
+{
+  NSDatePickerCell *cell = (NSDatePickerCell *)_cell;
+
+  while (YES)
+    {
+      NSEvent *event = [NSApp
+        nextEventMatchingMask: NSLeftMouseUpMask | NSLeftMouseDraggedMask
+                    untilDate: [NSDate dateWithTimeIntervalSinceNow: 1.0]
+                       inMode: NSEventTrackingRunLoopMode
+                      dequeue: YES];
+      NSPoint point;
+      NSDate *over;
+
+      if (event == nil || [event type] == NSLeftMouseUp)
+        {
+          break;
+        }
+      point = [self convertPoint: [event locationInWindow] fromView: nil];
+      over = [cell _dayAtPoint: point inRect: _bounds ofView: self];
+      if (over != nil)
+        {
+          NSTimeInterval span = [over timeIntervalSinceDate: start];
+
+          [cell setTimeInterval: (span > 0.0) ? span : 0.0];
+          [self setNeedsDisplay: YES];
+          [self displayIfNeeded];
+        }
     }
 }
 
@@ -194,6 +236,14 @@ static id usedCellClass = nil;
     {
       [self sendAction: [self action] to: [self target]];
     }
+}
+
+/* A picker is as wide and as tall as what it draws, which the cell works
+   out from its style and the elements it shows.
+*/
+- (NSSize) intrinsicContentSize
+{
+  return [_cell cellSize];
 }
 
 - (BOOL) becomeFirstResponder
