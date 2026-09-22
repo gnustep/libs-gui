@@ -43,6 +43,10 @@
                                 inRect: (NSRect)frame
                                 ofView: (NSView *)view;
 - (BOOL) _stepSelectedFieldBy: (NSInteger)delta;
+- (BOOL) _showsCalendar;
+- (BOOL) _selectDayAtPoint: (NSPoint)point
+                    inRect: (NSRect)frame
+                    ofView: (NSView *)view;
 @end
 
 static id usedCellClass = nil;
@@ -102,6 +106,22 @@ static id usedCellClass = nil;
 
   point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   before = [cell dateValue];
+  if ([cell _showsCalendar])
+    {
+      if (![cell _selectDayAtPoint: point inRect: _bounds ofView: self])
+        {
+          [super mouseDown: theEvent];
+          return;
+        }
+      [[self window] makeFirstResponder: self];
+      [self setNeedsDisplay: YES];
+      if (before == nil || ![before isEqualToDate: [cell dateValue]])
+        {
+          [self sendAction: [self action] to: [self target]];
+        }
+      return;
+    }
+
   direction = [cell _stepperDirectionAtPoint: point
                                       inRect: _bounds
                                       ofView: self];
