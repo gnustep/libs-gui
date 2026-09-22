@@ -1,0 +1,211 @@
+#!/usr/bin/env python3
+"""Generate small, original binary typedstream fixtures; no XML dependency.
+
+The writer intentionally emits literal classes and type strings.  Object
+back-references still share the class/object numbering space, including cycles.
+Run from this directory to regenerate the checked-in fixtures.
+"""
+from pathlib import Path
+import struct
+
+
+class Obj:
+    def __init__(self, classes, groups=()):
+        self.classes = classes + [("NSObject", 0)]
+        self.groups = list(groups)
+
+
+def string(s):
+    return Obj([("NSString", 1)], [("+", [s.encode("ascii")])])
+
+
+def array(items):
+    return Obj([("NSMutableArray", 0), ("NSArray", 0)],
+               [("i", [len(items)])] + [("@", [o]) for o in items])
+
+
+class Writer:
+    def __init__(self, endian, version):
+        self.order = endian
+        self.data = bytearray([version, 11])
+        self.data += b"streamtyped" if endian == "<" else b"typedstream"
+        self.slots = 0
+        self.objects = {}
+        self.integer(1000)
+
+    def integer(self, n):
+        if -110 <= n <= 127:
+            self.data.append(n & 255)
+        elif -32768 <= n <= 32767:
+            self.data += b"\x81" + struct.pack(self.order + "h", n)
+        else:
+            self.data += b"\x82" + struct.pack(self.order + "I", n & 0xffffffff)
+
+    def text(self, b):
+        self.integer(len(b))
+        self.data += b
+
+    def shared(self, s):
+        if s is None:
+            self.data.append(0x85)
+        else:
+            self.data.append(0x84)
+            self.text(s.encode("ascii"))
+
+    def object(self, o):
+        if o is None:
+            self.data.append(0x85)
+            return
+        if id(o) in self.objects:
+            self.integer(self.objects[id(o)] - 110)
+            return
+        self.objects[id(o)] = self.slots
+        self.slots += 1
+        self.data.append(0x84)
+        for name, version in o.classes:
+            self.data.append(0x84)
+            self.slots += 1
+            self.shared(name)
+            self.integer(version)
+        self.data.append(0x85)
+        for encoding, values in o.groups:
+            self.group(encoding, values)
+        self.data.append(0x86)
+
+    def group(self, encoding, values):
+        self.shared(encoding)
+        assert len(encoding) == len(values)
+        for typ, value in zip(encoding, values):
+            if typ == "@":
+                self.object(value)
+            elif typ == "+":
+                self.text(value)
+            elif typ == ":":
+                self.shared(value)
+            elif typ in "cC":
+                self.data.append(value & 255)
+            elif typ in "iIsS":
+                self.integer(value)
+            elif typ == "f":
+                self.data += b"\x83" + struct.pack(self.order + "f", value)
+            else:
+                raise ValueError(typ)
+
+
+def document(views=False, bad_version=False, window_min_size=False):
+    owner = Obj([("NSCustomObject", 41)], [("@@", [string("NSObject"), None])])
+    custom = Obj([("NSCustomObject", 41)],
+                 [("@@", [string("OpenStepTestObject"), None])])
+    objects = [(custom, owner)]
+    connections = [Obj([("NSIBOutletConnector", 0), ("NSIBConnector", 17)],
+                       [("@@@", [owner, custom, string("object")])])]
+    if views:
+        cell = Obj([("NSButtonCell", 57), ("NSActionCell", 17), ("NSCell", 60)],
+                   [("ii", [0x0401fe00, 0x08000000]),
+                    ("@@@@", [string("Run"), None, None, None]),
+                    ("i:", [17, None]), ("@", [None]), ("@", [None]),
+                    ("ssIi@@@@@", [200, 25, 0, 0x86824000,
+                                    string(""), string(""), None, None, None])])
+        button = Obj([("NSButton", 0), ("NSControl", 41), ("NSView", 41),
+                      ("NSResponder", 0)])
+        view = Obj([("NSView", 41), ("NSResponder", 0)])
+        button.groups = [("@", [view]), ("i", [0]),
+                         ("@@@@ffffffff", [array([]), None, None, None,
+                          12.5, 18.25, 90, 24, 0, 0, 90, 24]),
+                         ("@", [view]), ("@", [None]), ("@", [None]),
+                         ("@", [None]), ("icc@", [23, 0, 0, cell])]
+        cell.groups[4] = ("@", [button])  # cyclic control-view reference
+        view.groups = [("@", [None]), ("i", [0]),
+                       ("@@@@ffffffff", [array([button]), None, None, None,
+                        0, 0, 240, 100, 0, 0, 240, 100]),
+                       ("@", [None]), ("@", [None]), ("@", [None]), ("@", [None])]
+        window_groups = [("iiffffi@@@@@c", [3, 2, 100, 100, 240, 100, 0x40000000,
+                          string("OPENSTEP fixture"), string("NSWindow"),
+                          string("View"), view, None, 1]),
+                         ("ffff", [0, 0, 1024, 768]),
+                         ("c", [1 if window_min_size else 0])]
+        if window_min_size:
+            window_groups.append(("ff", [23, 24]))
+        window = Obj([("NSWindowTemplate", 41)], window_groups)
+        objects += [(window, owner), (view, window), (button, view)]
+        for target, label in [(window, "window"), (button, "button"), (button, "alias")]:
+            connections.append(Obj([("NSIBOutletConnector", 0), ("NSIBConnector", 17)],
+                                   [("@@@", [owner, target, string(label)])]))
+        connections.append(Obj([("NSIBControlConnector", 0), ("NSIBConnector", 17)],
+                               [("@@@", [cell, owner, string("run:")])]))
+    names = [(owner, string("File's Owner"))]
+    ids = [(owner, 1)] + [(obj, i + 2) for i, (obj, _) in enumerate(objects)]
+    return Obj([("NSIBObjectData", 999 if bad_version else 24)],
+               [("@", [owner]), ("i", [len(objects)])]
+               + [("@@", pair) for pair in objects]
+               + [("i", [len(names)])] + [("@@", pair) for pair in names]
+               + [("@", [Obj([("NSMutableSet", 0), ("NSSet", 0)], [("I", [0])])]),
+                  ("@", [array(connections)]), ("@", [None]), ("i", [len(ids)])]
+               + [("@i", pair) for pair in ids] + [("i", [100]), ("i", [0])])
+
+
+def scroll_document():
+    root = document(views=True)
+    view = root.groups[4][1][0]
+    clip = Obj([("NSClipView", 58), ("NSView", 41), ("NSResponder", 0)])
+    doc = Obj([("NSView", 41), ("NSResponder", 0)])
+    scroll = Obj([("NSScrollView", 42), ("NSView", 41), ("NSResponder", 0)])
+    vertical = Obj([("NSScroller", 17), ("NSControl", 41),
+                    ("NSView", 41), ("NSResponder", 0)])
+    horizontal = Obj([("NSScroller", 17), ("NSControl", 41),
+                      ("NSView", 41), ("NSResponder", 0)])
+
+    def base(parent, children, x, y, width, height):
+        return [("@", [parent]), ("i", [0x800000]),
+                ("@@@@ffffffff", [array(children), None, None, None,
+                                   x, y, width, height, 0, 0, width, height]),
+                ("@", [parent]), ("@", [None]), ("@", [None]), ("@", [None])]
+
+    doc.groups = base(clip, [], 0, 0, 180, 80)
+    clip.groups = base(scroll, [doc], 0, 0, 180, 80) + [
+        ("@", [doc]), ("@@ccc", [None, None, 0, 0, 1])]
+    clip.groups[5] = ("@", [doc])
+    for scroller, frame, orientation in [
+        (vertical, (180, 0, 15, 80), 0),
+        (horizontal, (0, 80, 180, 15), 1)]:
+        x, y, width, height = frame
+        scroller.groups = base(scroll, [], x, y, width, height) + [
+            ("icc@", [0, 0, 0, None]), ("@", [scroll]),
+            ("ff:", [0.5, 0.5, "_doScroller:"]),
+            ("c", [orientation]), ("c", [0])]
+    scroll.groups = base(view, [clip, vertical, horizontal], 0, 0, 200, 100) + [
+        ("@", [vertical]), ("@", [horizontal]), ("@", [clip]),
+        ("@", [None]), ("@", [None]), ("ffi", [10, 18, -1006632960])]
+    scroll.groups[5] = ("@", [clip])
+    view.groups[2][1][0].groups[1] = ("@", [scroll])
+    additions = [(scroll, view), (clip, scroll), (doc, clip),
+                 (vertical, scroll), (horizontal, scroll)]
+    root.groups[1] = ("i", [4 + len(additions)])
+    root.groups[6:6] = [("@@", list(pair)) for pair in additions]
+    index = next(i for i, group in enumerate(root.groups)
+                 if group[0] == "i" and group[1] == [5])
+    root.groups[index] = ("i", [5 + len(additions)])
+    root.groups[-2:-2] = [("@i", [obj, 20 + i])
+                         for i, (obj, _) in enumerate(additions)]
+    return root
+
+
+if __name__ == "__main__":
+    out = Path(__file__).parent / "OpenStepFixtures"
+    out.mkdir(exist_ok=True)
+    for version in (3, 4):
+        for order, suffix in (("<", "le"), (">", "be")):
+            for views in (False, True):
+                writer = Writer(order, version)
+                writer.group("@", [document(views)])
+                name = f"{'window' if views else 'objects'}-v{version}-{suffix}.nib"
+                (out / name).write_bytes(writer.data)
+    writer = Writer("<", 4)
+    writer.group("@", [document(bad_version=True)])
+    (out / "unsupported-version.nib").write_bytes(writer.data)
+    writer = Writer("<", 4)
+    writer.group("@", [scroll_document()])
+    (out / "scroll-v4-le.nib").write_bytes(writer.data)
+    writer = Writer("<", 4)
+    writer.group("@", [document(views=True, window_min_size=True)])
+    (out / "window-min-size-v4-le.nib").write_bytes(writer.data)
