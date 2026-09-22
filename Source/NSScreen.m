@@ -349,7 +349,19 @@ static NSMutableArray *screenArray = nil;
 - (NSRect) visibleFrame
 {
   NSRect visFrame = _frame;
+  NSRect workArea = [GSCurrentServer() workAreaForScreen: _screenNumber];
+  float reservedAtTop = 0.0;
   float menuHeight;
+
+  if (!NSIsEmptyRect(workArea))
+    {
+      reservedAtTop = NSMaxY(_frame) - NSMaxY(workArea);
+      if (reservedAtTop < 0.0)
+        {
+          reservedAtTop = 0.0;
+        }
+      visFrame = workArea;
+    }
 
   switch (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil))
     {
@@ -363,8 +375,12 @@ static NSMutableArray *screenArray = nil;
           {
             menuHeight = [[[NSApp mainMenu] window] frame].size.height;
           }
-        
-        visFrame.size.height -= menuHeight;
+
+        menuHeight -= reservedAtTop;
+        if (menuHeight > 0.0)
+          {
+            visFrame.size.height -= menuHeight;
+          }
         break;
 
       case GSWindowMakerInterfaceStyle:

@@ -1,3 +1,16 @@
+2026-09-21 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h,
+	* Source/GSDisplayServer.m (-workAreaForScreen:): New method,
+	answering the area of a screen the display server leaves to
+	application windows; an empty rect when it knows of none.
+	* Source/NSScreen.m (-visibleFrame): Start from that area, so that
+	the visible frame keeps out of the space panels and docks reserve,
+	and take off only as much of the menu bar as the area has not
+	already been reduced by, so that a menu bar reserving its own
+	strip is not counted twice.
+	* Tests/gui/NSScreen/visibleFrame.m: New test.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
