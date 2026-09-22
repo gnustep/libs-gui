@@ -104,10 +104,6 @@
   NSMutableString *template = [NSMutableString stringWithCapacity: 8];
   NSDatePickerElementFlags elements = _datePickerElements;
 
-  if (elements & NSEraDatePickerElementFlag)
-    {
-      [template appendString: @"G"];
-    }
   if (elements & NSYearMonthDatePickerElementFlag)
     {
       [template appendString: @"yM"];
@@ -167,10 +163,6 @@
   if (elements & NSTimeZoneDatePickerElementFlag)
     {
       [format appendString: @" zzz"];
-    }
-  if (elements & NSEraDatePickerElementFlag)
-    {
-      [format appendString: @" G"];
     }
 
   return format;
@@ -413,7 +405,8 @@
 
 - (void) setDatePickerElements: (NSDatePickerElementFlags)flags
 {
-  _datePickerElements = flags;
+  /* AppKit keeps the low eight bits, which leaves the era out. */
+  _datePickerElements = flags & 0xff;
   [self _updateDateFormat];
 }
 
@@ -1166,6 +1159,12 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
+  if (_drawsBackground && _backgroundColor != nil)
+    {
+      [_backgroundColor set];
+      NSRectFill([self drawingRectForBounds: cellFrame]);
+    }
+
   if ([self _showsCalendar] || [self _showsClock])
     {
       if ([self _showsCalendar])
