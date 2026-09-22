@@ -1,3 +1,19 @@
+2026-09-22 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSApplication.m (-_appIconInit): Create the application
+	icon window only when the new GSEnableAppIcon default is YES, and
+	drop the code that kept a hidden icon window around.  The icon
+	window was created unconditionally before and GSSuppressAppIcon
+	only kept it from being shown, which left an invisible extra
+	window in every application running outside a desktop that
+	displays application icons.
+	* Source/NSWindow.m (-miniaturize:): Create a miniwindow only when
+	GSEnableAppIcon is YES.
+	* Documentation/GuiUser/DefaultsSummary.gsdoc: Replace
+	GSSuppressAppIcon with GSEnableAppIcon.
+	* Tests/gui/NSApplication/iconWindow.m,
+	* Tests/gui/NSApplication/iconWindowEnabled.m: New tests.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
