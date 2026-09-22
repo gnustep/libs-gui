@@ -30,6 +30,7 @@
 #include "config.h"
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
 #import <Foundation/NSSet.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
@@ -124,11 +125,18 @@ static Class         fontPanelClass = Nil;
   _fontEnumerator = RETAIN([GSFontEnumerator sharedEnumerator]);
   _collections = [[NSMutableDictionary alloc] initWithCapacity: 3];
 
+  [[NSDistributedNotificationCenter defaultCenter]
+    addObserver: self
+       selector: @selector(_distributedFontCacheDidChange:)
+           name: GSFontManagerAvailableFontsDidChangeNotification
+         object: nil];
+
   return self;
 }
 
 - (void) dealloc
 {
+  [[NSDistributedNotificationCenter defaultCenter] removeObserver: self];
   TEST_RELEASE(_selectedFont);
   TEST_RELEASE(_selectedAttributes);
   TEST_RELEASE(_fontMenu);
@@ -156,6 +164,11 @@ static Class         fontPanelClass = Nil;
   // Post notification that available fonts have changed
   [[NSNotificationCenter defaultCenter] postNotificationName: GSFontManagerAvailableFontsDidChangeNotification
 						       object: self];
+}
+
+- (void) _distributedFontCacheDidChange: (NSNotification *)notification
+{
+  [self refreshAvailableFonts];
 }
 
 - (NSArray*) availableFontNamesWithTraits: (NSFontTraitMask)fontTraitMask

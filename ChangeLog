@@ -1,3 +1,13 @@
+2026-09-22 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSFontManager.m (-init, -dealloc): Observe
+	GSFontManagerAvailableFontsDidChangeNotification on the distributed
+	notification center and refresh the available fonts when it arrives.
+	A font installed while an application was running only showed up
+	after a restart, because -refreshAvailableFonts could only be called
+	from within that application.
+	* Tests/gui/NSFontManager/distributedRefresh.m: New test.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
