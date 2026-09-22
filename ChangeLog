@@ -1,3 +1,19 @@
+2026-09-22 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSBitmapImageRep+JPEG.m (gs_init_destination,
+	gs_empty_output_buffer, gs_term_destination): Grow the JPEG
+	encoder's output accumulator as libjpeg actually fills it, and
+	only append the bytes really produced on termination.  The
+	accumulator was allocated with exactly one buffer's worth of
+	bytes, the same size as the scratch buffer libjpeg fills between
+	flushes; a small image's compressed stream (header tables plus
+	scan data) commonly needs more than one flush before compression
+	finishes, and gs_term_destination then unconditionally appended
+	another full buffer's worth on top, so both wrote past the end of
+	the accumulator.
+	* Tests/gui/NSBitmapImageRep/jpegEncodeDestinationOverflow.m: New
+	test.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
