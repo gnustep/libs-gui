@@ -1,5 +1,14 @@
 2026-09-22 Simon Peter <probonopd@users.noreply.github.com>
 
+	* Source/NSFont.m (init_font_roles, -_replacementFontName): Fill
+	the font role table before looking up a replacement font.  A
+	request for Helvetica on a system without it returned nil when
+	it was the first font the application asked for, because the
+	system font it is replaced with was not known yet.  The app icon
+	window used to hide this by asking for the system font first.
+
+2026-09-22 Simon Peter <probonopd@users.noreply.github.com>
+
 	* Source/NSApplication.m (-_appIconInit): Create the application
 	icon window only when the new GSEnableAppIcon default is YES, and
 	drop the code that kept a hidden icon window around.  The icon
