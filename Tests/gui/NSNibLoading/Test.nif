@@ -23,18 +23,18 @@
           </dict>
         </dict>
       </dict>
+      <key>connections</key>
+      <array>
+        <dict>
+          <key>kind</key><string>outlet</string>
+          <key>source</key><dict><key>$ref</key><string>owner</string></dict>
+          <key>destination</key><dict><key>$ref</key><string>root</string></dict>
+          <key>label</key><string>node</string>
+        </dict>
+      </array>
     </dict>
   </array>
   <key>topLevelObjects</key>
   <array><dict><key>$ref</key><string>root</string></dict></array>
-  <key>connections</key>
-  <array>
-    <dict>
-      <key>kind</key><string>outlet</string>
-      <key>source</key><dict><key>$ref</key><string>owner</string></dict>
-      <key>destination</key><dict><key>$ref</key><string>root</string></dict>
-      <key>label</key><string>node</string>
-    </dict>
-  </array>
 </dict>
 </plist>

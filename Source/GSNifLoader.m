@@ -221,9 +221,9 @@
     }
 }
 
-- (void) establishConnections
+- (void) establishConnectionsInArray: (NSArray *)connections
 {
-  NSEnumerator *enumerator = [[_document objectForKey: @"connections"] objectEnumerator];
+  NSEnumerator *enumerator = [connections objectEnumerator];
   NSDictionary *connection;
 
   while ((connection = [enumerator nextObject]) != nil)
@@ -245,6 +245,20 @@
       [connector establishConnection];
       [connector release];
     }
+}
+
+- (void) establishConnections
+{
+  NSEnumerator *enumerator;
+  NSDictionary *definition;
+
+  /* Accept version 1 files written before connections became object-local. */
+  [self establishConnectionsInArray: [_document objectForKey: @"connections"]];
+
+  enumerator = [_definitions objectEnumerator];
+  while ((definition = [enumerator nextObject]) != nil)
+    [self establishConnectionsInArray:
+      [definition objectForKey: @"connections"]];
 }
 
 - (BOOL) decode

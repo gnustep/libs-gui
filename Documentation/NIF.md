@@ -13,7 +13,10 @@ The root dictionary contains:
 - `version`: currently the integer `1`.
 - `objects`: object definitions. Definitions may be nested in property values.
 - `topLevelObjects`: references identifying the objects returned to the caller.
-- `connections`: optional outlet and action connection dictionaries.
+
+Object definitions may contain a `connections` array immediately after their
+properties. A connection is stored with its source object. If its source is an
+external object (`owner` or `application`), it is stored with its destination.
 
 An object definition has `$id`, `$class`, and an optional `properties`
 dictionary. The loader creates every object first and applies properties in a
@@ -49,19 +52,19 @@ to the nib owner and `NSApp`.
           </dict>
         </dict>
       </dict>
+      <key>connections</key>
+      <array>
+        <dict>
+          <key>kind</key><string>outlet</string>
+          <key>source</key><dict><key>$ref</key><string>owner</string></dict>
+          <key>destination</key><dict><key>$ref</key><string>window</string></dict>
+          <key>label</key><string>window</string>
+        </dict>
+      </array>
     </dict>
   </array>
   <key>topLevelObjects</key>
   <array><dict><key>$ref</key><string>window</string></dict></array>
-  <key>connections</key>
-  <array>
-    <dict>
-      <key>kind</key><string>outlet</string>
-      <key>source</key><dict><key>$ref</key><string>owner</string></dict>
-      <key>destination</key><dict><key>$ref</key><string>window</string></dict>
-      <key>label</key><string>window</string>
-    </dict>
-  </array>
 </dict>
 </plist>
 ```
@@ -73,8 +76,11 @@ and `selector`. Properties are applied with key-value coding, so their names
 are the object's normal Cocoa property names.
 
 Connections have `kind` (`outlet` or `action`), `source`, `destination`, and
-`label`. After properties and connections are established, the loader sends
-`awakeFromNib` to each defined object in document order.
+`label`. Keeping them beside the participating object makes changes to a view
+and its wiring appear in the same area of a diff. After all properties and
+connections are established, the loader sends `awakeFromNib` to each defined
+object in document order. The loader also accepts the earlier document-level
+`connections` array for compatibility, but the writer never produces it.
 
 NIF files use the `.nif` extension and load through `NSBundle` and `NSNib` in
 the same way as `.gorm`, `.nib`, and `.xib` resources.

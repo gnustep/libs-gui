@@ -31,6 +31,7 @@
 {
   NSDictionary *_propertyKeys;
   NSMapTable *_identifiers;
+  NSMutableDictionary *_definitionsByIdentifier;
   NSUInteger _nextIdentifier;
 }
 - (id) initWithPropertyKeys: (NSDictionary *)propertyKeys;
@@ -46,8 +47,9 @@ GSNifKeyRank(NSString *key)
 
   if (keys == nil)
     keys = [[NSArray alloc] initWithObjects:
-      @"format", @"version", @"objects", @"topLevelObjects", @"connections",
-      @"$id", @"$class", @"properties", @"$ref", @"$type", @"$value",
+      @"format", @"version", @"objects", @"topLevelObjects",
+      @"$id", @"$class", @"properties", @"connections",
+      @"$ref", @"$type", @"$value",
       @"kind", @"source", @"destination", @"label", nil];
   index = [keys indexOfObject: key];
   return index == NSNotFound ? 1000 : (NSInteger)index;
@@ -214,6 +216,7 @@ GSNifCompareConnections(id left, id right, void *context)
       _propertyKeys = [propertyKeys copy];
       _identifiers = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
                                       NSObjectMapValueCallBacks, 0);
+      _definitionsByIdentifier = [[NSMutableDictionary alloc] init];
       _nextIdentifier = 1;
     }
   return self;
@@ -222,6 +225,7 @@ GSNifCompareConnections(id left, id right, void *context)
 - (void) dealloc
 {
   [_propertyKeys release];
+  [_definitionsByIdentifier release];
   NSFreeMapTable(_identifiers);
   [super dealloc];
 }
@@ -351,6 +355,7 @@ GSNifCompareConnections(id left, id right, void *context)
     identifier = [self newIdentifierForObject: value];
     definition = [NSMutableDictionary dictionaryWithObjectsAndKeys:
       identifier, @"$id", NSStringFromClass([value class]), @"$class", nil];
+    [_definitionsByIdentifier setObject: definition forKey: identifier];
     properties = [NSMutableDictionary dictionary];
     /* Register before descending so cycles become references. */
     [definition setObject: properties forKey: @"properties"];
@@ -390,7 +395,6 @@ GSNifCompareConnections(id left, id right, void *context)
 {
   NSMutableArray *objects = [NSMutableArray array];
   NSMutableArray *topLevel = [NSMutableArray array];
-  NSMutableArray *encodedConnections = [NSMutableArray array];
   NSEnumerator *enumerator = [topLevelObjects objectEnumerator];
   id object;
 
@@ -409,25 +413,55 @@ GSNifCompareConnections(id left, id right, void *context)
     {
       NSString *kind = [object objectForKey: @"kind"];
       NSString *label = [object objectForKey: @"label"];
+      NSDictionary *source;
+      NSDictionary *destination;
+      NSString *anchorIdentifier;
+      NSMutableDictionary *anchor;
+      NSMutableArray *objectConnections;
+      NSDictionary *encodedConnection;
+
       if ((!([kind isEqualToString: @"outlet"]
              || [kind isEqualToString: @"action"])) || label == nil)
         [NSException raise: NSInvalidArgumentException
                     format: @"Invalid NIF connection %@", object];
-      [encodedConnections addObject: [NSDictionary dictionaryWithObjectsAndKeys:
+      source = [self referenceForEndpoint: [object objectForKey: @"source"]];
+      destination = [self referenceForEndpoint: [object objectForKey: @"destination"]];
+      encodedConnection = [NSDictionary dictionaryWithObjectsAndKeys:
         kind, @"kind",
-        [self referenceForEndpoint: [object objectForKey: @"source"]], @"source",
-        [self referenceForEndpoint: [object objectForKey: @"destination"]], @"destination",
-        label, @"label", nil]];
+        source, @"source", destination, @"destination",
+        label, @"label", nil];
+
+      anchorIdentifier = [source objectForKey: @"$ref"];
+      anchor = [_definitionsByIdentifier objectForKey: anchorIdentifier];
+      if (anchor == nil)
+        {
+          anchorIdentifier = [destination objectForKey: @"$ref"];
+          anchor = [_definitionsByIdentifier objectForKey: anchorIdentifier];
+        }
+      if (anchor == nil)
+        [NSException raise: NSInvalidArgumentException
+                    format: @"NIF connection %@ has no archivable object endpoint",
+                            object];
+
+      objectConnections = [anchor objectForKey: @"connections"];
+      if (objectConnections == nil)
+        {
+          objectConnections = [NSMutableArray array];
+          [anchor setObject: objectConnections forKey: @"connections"];
+        }
+      [objectConnections addObject: encodedConnection];
     }
 
-  [encodedConnections sortUsingFunction: GSNifCompareConnections context: NULL];
+  enumerator = [_definitionsByIdentifier objectEnumerator];
+  while ((object = [enumerator nextObject]) != nil)
+    [[object objectForKey: @"connections"]
+      sortUsingFunction: GSNifCompareConnections context: NULL];
 
   return [NSDictionary dictionaryWithObjectsAndKeys:
     @"NIF", @"format",
     [NSNumber numberWithInteger: 1], @"version",
     objects, @"objects",
-    topLevel, @"topLevelObjects",
-    encodedConnections, @"connections", nil];
+    topLevel, @"topLevelObjects", nil];
 }
 
 @end

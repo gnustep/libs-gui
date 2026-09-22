@@ -107,6 +107,19 @@ int main(void)
                                           encoding: NSUTF8StringEncoding] autorelease];
   PASS([encodedString rangeOfString: @"<string>NIF</string>"].location != NSNotFound,
        "produced data is readable XML and identifies itself as NIF")
+  {
+    NSPropertyListFormat plistFormat;
+    NSDictionary *writtenDocument = [NSPropertyListSerialization
+      propertyListFromData: encoded
+          mutabilityOption: NSPropertyListImmutable
+                    format: &plistFormat
+          errorDescription: NULL];
+    NSDictionary *writtenRoot = [[writtenDocument objectForKey: @"objects"]
+      objectAtIndex: 0];
+    PASS([writtenDocument objectForKey: @"connections"] == nil
+         && [[writtenRoot objectForKey: @"connections"] count] == 1,
+         "connections are written beside their participating object")
+  }
 
   {
     NSDictionary *firstConnection = [NSDictionary dictionaryWithObjectsAndKeys:
