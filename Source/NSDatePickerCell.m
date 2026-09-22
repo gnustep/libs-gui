@@ -907,6 +907,45 @@
   return symbols;
 }
 
+/* Whether a day of the month on show is part of what the picker holds: the
+   one day it is set to, or, in the mode that picks a range, any day the
+   range covers.
+*/
+- (BOOL) _dayIsPicked: (NSInteger)day
+{
+  NSCalendar *calendar = [self _pickerCalendar];
+  NSDate *start = [self dateValue];
+  NSDateComponents *parts;
+  NSDate *dayStart;
+  NSDate *dayEnd;
+  NSDate *end;
+
+  if (start == nil)
+    {
+      return NO;
+    }
+
+  parts = [calendar components: NSCalendarUnitEra | NSCalendarUnitYear
+    | NSCalendarUnitMonth | NSCalendarUnitDay fromDate: start];
+  if (_datePickerMode != NSRangeDateMode || _timeInterval <= 0.0)
+    {
+      return (day == [parts day]);
+    }
+
+  [parts setDay: day];
+  dayStart = [calendar dateFromComponents: parts];
+  if (dayStart == nil)
+    {
+      return NO;
+    }
+  [parts setDay: day + 1];
+  dayEnd = [calendar dateFromComponents: parts];
+  end = [start dateByAddingTimeInterval: _timeInterval];
+
+  return ([dayStart compare: end] != NSOrderedDescending
+    && (dayEnd == nil || [dayEnd compare: start] == NSOrderedDescending));
+}
+
 static void
 drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
 {
@@ -925,8 +964,6 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
   NSSize day = [self _dayCellSize];
   NSArray *initials = [self _weekdayInitials];
   NSCalendar *cal = [self _pickerCalendar];
-  NSInteger today = [[cal components: NSCalendarUnitDay
-                            fromDate: [self dateValue]] day];
   NSInteger first = (NSInteger)[cal firstWeekday];
   NSRect row;
   NSInteger index;
@@ -956,7 +993,7 @@ drawCentred(NSString *text, NSRect rect, NSDictionary *attributes)
         }
       cell = [self _dayCellRectAtRow: index / 7 column: index % 7
                              inFrame: frame ofView: view];
-      if (number == today)
+      if ([self _dayIsPicked: number])
         {
           NSMutableDictionary *marked = AUTORELEASE([attributes mutableCopy]);
 
