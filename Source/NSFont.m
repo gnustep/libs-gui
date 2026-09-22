@@ -38,6 +38,7 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSLock.h>
 
 #import "AppKit/NSGraphicsContext.h"
 #import "AppKit/NSFont.h"
@@ -118,11 +119,10 @@ globalFontMap.
 @end
 
 static GSFontMapKey *
-keyForFont(NSString *name, const CGFloat *matrix, 
-           BOOL screenFont, int role)
+newKeyForFont(NSString *name, const CGFloat *matrix, BOOL screenFont, int role)
 {
   GSFontMapKey *d;
-  d=[GSFontMapKey alloc];
+  d = [GSFontMapKey alloc];
   d->name = [name copy];
   d->screenFont = screenFont;
   d->role = role;
@@ -196,19 +196,22 @@ keyForFont(NSString *name, const CGFloat *matrix,
 
 /* Class variables*/
 
+static NSLock		*classLock = nil;
+static NSLock		*roleLock = nil;
+
 /* See comments in +initialize. */
-static NSFont *placeHolder = nil;
+static NSFont 		*placeHolder = nil;
 
 /* Fonts that are preferred by the application */
-static NSArray *_preferredFonts;
+static NSArray		*_preferredFonts;
 
 /* Class for fonts */
-static Class NSFontClass = 0;
+static Class 		NSFontClass = 0;
 
 /* Cache all created fonts for reuse. */
-static NSMapTable* globalFontMap = 0;
+static NSMapTable	*globalFontMap = 0;
 
-static NSUserDefaults *defaults = nil;
+static NSUserDefaults	*defaults = nil;
 
 
 /*
@@ -290,7 +293,7 @@ static void init_font_roles(void)
   GSFontEnumerator *e = [GSFontEnumerator sharedEnumerator];
 
   /* Retain the returned names: they are kept for the lifetime of the process
-     and used again later (e.g. in keyForFont).  A backend that returns an
+     and used again later (e.g. in newKeyForFont).  A backend that returns an
      autoreleased name rather than a string constant would otherwise leave
      these as dangling pointers once the current autorelease pool drains. */
   ASSIGN(font_roles[RoleSystemFont].defaultFont, [e defaultSystemFontName]);
@@ -334,18 +337,23 @@ static NSString *fontNameForRole(int role, int *actual_entry)
 
 static NSFont *getNSFont(CGFloat fontSize, int role)
 {
-  NSString *fontName;
-  NSFont *font;
-  BOOL defaultSize;
-  int i;
-  int font_role;
+  NSString	*fontName;
+  NSFont	*font;
+  BOOL		defaultSize;
+  int 		i;
+  int 		font_role;
 
   NSCAssert(role > RoleExplicit && role < RoleMax, @"Invalid font role.");
 
   if (!did_init_font_roles)
     {
-      init_font_roles();
-      did_init_font_roles = YES;
+      [roleLock lock];
+      if (!did_init_font_roles)
+	{
+	  init_font_roles();
+	  did_init_font_roles = YES;
+	}
+      [roleLock unlock];
     }
 
   font_role = role * 2;
@@ -460,15 +468,17 @@ static void setNSFont(NSString *key, NSFont *font)
        */
       placeHolder = [self alloc];
       globalFontMap = NSCreateMapTable(NSObjectMapKeyCallBacks,
-                                       NSNonRetainedObjectMapValueCallBacks, 64);
+	 NSNonRetainedObjectMapValueCallBacks, 64);
 
       if (defaults == nil)
         {
           defaults = RETAIN([NSUserDefaults standardUserDefaults]);
         }
 
-      _preferredFonts = [defaults objectForKey: @"NSPreferredFonts"];
+      ASSIGN(_preferredFonts, [defaults objectForKey: @"NSPreferredFonts"]);
       [self setVersion: currentVersion];
+      classLock = [NSLock new];
+      roleLock = [NSLock new];
     }
 }
 
@@ -585,7 +595,12 @@ static void setNSFont(NSString *key, NSFont *font)
  */
 + (NSArray*) preferredFontNames
 {
-  return _preferredFonts;
+  NSArray	*a;
+
+  [classLock lock];
+  a = RETAIN(_preferredFonts);
+  [classLock unlock];
+  return AUTORELEASE(a);
 }
 
 /* Setting the preferred user fonts*/
@@ -605,7 +620,9 @@ static void setNSFont(NSString *key, NSFont *font)
  */
 + (void) setPreferredFontNames: (NSArray*)fontNames
 {
+  [classLock lock];
   ASSIGN(_preferredFonts, fontNames);
+  [classLock unlock];
   // FIXME: Should this store back the preferred fonts in the user defaults?
 }
 
@@ -842,8 +859,8 @@ static void setNSFont(NSString *key, NSFont *font)
   NSAssert(fontName == nil, NSInternalInconsistencyException);
 
   /* Check whether the font is cached */
-  key = keyForFont(name, fontMatrix,
-                   screen, aRole);
+  key = newKeyForFont(name, fontMatrix, screen, aRole);
+  [classLock lock];
   font = (id)NSMapGet(globalFontMap, (void *)key);
   if (font == nil)
     {
@@ -879,6 +896,7 @@ static void setNSFont(NSString *key, NSFont *font)
           DESTROY(fontName);
           DESTROY(key);
           RELEASE(self);
+	  [classLock unlock];
           return nil;
         }
       
@@ -894,22 +912,42 @@ static void setNSFont(NSString *key, NSFont *font)
       self = RETAIN(font);
     }
   RELEASE(key);
+  [classLock unlock];
 
   return self;
 }
 
+- (oneway void) release
+{
+  /* Removal fronm the map table in -dealloc is too late because a second
+   * thread could get the instance from the map before this thread removes
+   * it (and a deallocating instance can't be resurected when using the
+   * new objc2 runtime).  So we have to perform the removal in the release
+   * before the dealloc starts, and ensure the release completes in the
+   * same lock-protected region.
+   */
+  [classLock lock];
+  if (1 == [self retainCount])
+    {
+      if (fontName != nil)
+	{
+	  GSFontMapKey *key;
+
+	  key = newKeyForFont(fontName, matrix, screenFont, role);
+	  if (NSMapGet(globalFontMap, (void *)key) == self)
+	    {
+	      NSMapRemove(globalFontMap, (void *)key);
+	    }
+	  RELEASE(key);
+	  RELEASE(fontName);
+	}
+    }
+  [super release];
+  [classLock unlock];
+}
+
 - (void) dealloc
 {
-  if (fontName != nil)
-    {
-      GSFontMapKey *key;
-
-      key = keyForFont(fontName, matrix,
-                       screenFont, role);
-      NSMapRemove(globalFontMap, (void *)key);
-      RELEASE(key);
-      RELEASE(fontName);
-    }
   TEST_RELEASE(fontInfo);
   DESTROY(cachedFlippedFont);
   DESTROY(cachedScreenFont);
