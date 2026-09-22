@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>format</key><string>NIF</string>
+  <key>version</key><integer>1</integer>
+  <key>objects</key>
+  <array>
+    <dict>
+      <key>$id</key><string>root</string>
+      <key>$class</key><string>NifTestNode</string>
+      <key>properties</key>
+      <dict>
+        <key>name</key><string>root</string>
+        <key>child</key>
+        <dict>
+          <key>$id</key><string>child</string>
+          <key>$class</key><string>NifTestNode</string>
+          <key>properties</key>
+          <dict>
+            <key>name</key><string>child</string>
+            <key>peer</key><dict><key>$ref</key><string>root</string></dict>
+          </dict>
+        </dict>
+      </dict>
+    </dict>
+  </array>
+  <key>topLevelObjects</key>
+  <array><dict><key>$ref</key><string>root</string></dict></array>
+  <key>connections</key>
+  <array>
+    <dict>
+      <key>kind</key><string>outlet</string>
+      <key>source</key><dict><key>$ref</key><string>owner</string></dict>
+      <key>destination</key><dict><key>$ref</key><string>root</string></dict>
+      <key>label</key><string>node</string>
+    </dict>
+  </array>
+</dict>
+</plist>

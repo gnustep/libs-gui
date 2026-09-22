@@ -360,6 +360,8 @@ GSPDFPrintOperation.m \
 GSModelLoaderFactory.m \
 GSGormLoader.m \
 GSGModelLoader.m \
+GSNifLoader.m \
+GSNifSerialization.m \
 GSNibLoader.m \
 GSXibElement.m \
 GSXibLoader.m \
@@ -700,6 +702,7 @@ GSPrintOperation.h \
 GSEPSPrintOperation.h \
 GSPDFPrintOperation.h \
 GSModelLoaderFactory.h \
+GSNifSerialization.h \
 GSImageMagickImageRep.h \
 GSInstantiator.h \
 GSSoundSink.h \
