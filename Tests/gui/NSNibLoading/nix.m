@@ -101,6 +101,9 @@ int main(void)
   PASS([child peer] == root, "references preserve identity and allow cycles")
   PASS([owner node] == root, "outlet connections to the owner are established")
   PASS([root awakened] && [child awakened], "awakeFromNib is sent after connections")
+  PASS([[GSNixSerialization identifierForObject: root] isEqual: @"root"]
+       && [[GSNixSerialization identifierForObject: child] isEqual: @"child"],
+       "the loader preserves archive identifiers on instantiated objects")
 
   encoded = [GSNixSerialization
     dataWithTopLevelObjects: [NSArray arrayWithObject: root]
@@ -149,6 +152,49 @@ int main(void)
                                 encoding: NSUTF8StringEncoding] autorelease]
           rangeOfString: @"<key>needsDisplay</key>"].location != NSNotFound,
        "explicit metadata can opt a normally transient key back in")
+
+  {
+    NixTestNode *inserted = [[NixTestNode alloc] init];
+    NSMapTable *identifiers = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
+                                               NSObjectMapValueCallBacks, 1);
+    NSDictionary *pairs = [NSDictionary dictionaryWithObject:
+      [NSDictionary dictionaryWithObjectsAndKeys:
+        @"name", @"name", @"child", @"child", @"peer", @"peer", nil]
+      forKey: @"NixTestNode"];
+    NSData *withInsertion;
+    NSData *afterReorder;
+    NSString *withInsertionXML;
+    NSString *afterReorderXML;
+
+    [inserted setName: @"inserted"];
+    NSMapInsert(identifiers, inserted, @"inserted-node");
+    withInsertion = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObjects: inserted, root, nil]
+      keyValuePairs: pairs
+      excludedKeys: nil
+      identifiers: identifiers
+      connections: nil
+      errorDescription: &error];
+    afterReorder = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObjects: root, inserted, nil]
+      keyValuePairs: pairs
+      connections: nil
+      errorDescription: &error];
+    withInsertionXML = [[[NSString alloc] initWithData: withInsertion
+                                               encoding: NSUTF8StringEncoding] autorelease];
+    afterReorderXML = [[[NSString alloc] initWithData: afterReorder
+                                              encoding: NSUTF8StringEncoding] autorelease];
+    PASS([withInsertionXML rangeOfString: @"<string>root</string>"].location != NSNotFound
+         && [withInsertionXML rangeOfString: @"<string>child</string>"].location != NSNotFound
+         && [withInsertionXML rangeOfString: @"<string>inserted-node</string>"].location != NSNotFound,
+         "inserting an earlier object preserves all existing IDs")
+    PASS([afterReorderXML rangeOfString: @"<string>inserted-node</string>"].location != NSNotFound
+         && [[GSNixSerialization identifierForObject: inserted]
+              isEqual: @"inserted-node"],
+         "caller-supplied IDs persist when objects are later reordered")
+    NSFreeMapTable(identifiers);
+    [inserted release];
+  }
   if (inferred != nil)
     {
       NSMutableArray *inferredObjects = [NSMutableArray array];

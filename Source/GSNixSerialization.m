@@ -24,6 +24,7 @@
 #import <Foundation/NSSet.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSTimeZone.h>
+#import <Foundation/NSUUID.h>
 
 #include <string.h>
 #include <objc/runtime.h>
@@ -34,15 +35,18 @@
 {
   NSDictionary *_keyValuePairs;
   NSDictionary *_excludedKeys;
+  NSMapTable *_explicitIdentifiers;
   NSMapTable *_identifiers;
   NSMutableDictionary *_definitionsByIdentifier;
-  NSUInteger _nextIdentifier;
 }
 - (id) initWithKeyValuePairs: (NSDictionary *)keyValuePairs
-                excludedKeys: (NSDictionary *)excludedKeys;
+                excludedKeys: (NSDictionary *)excludedKeys
+                 identifiers: (NSMapTable *)identifiers;
 - (NSDictionary *) documentWithTopLevelObjects: (NSArray *)topLevelObjects
                                       connections: (NSArray *)connections;
 @end
+
+static char GSNixIdentifierAssociationKey;
 
 static NSInteger
 GSNixKeyRank(NSString *key)
@@ -232,16 +236,17 @@ GSNixIsBuiltInTransientKey(NSString *key)
 
 - (id) initWithKeyValuePairs: (NSDictionary *)keyValuePairs
                 excludedKeys: (NSDictionary *)excludedKeys
+                 identifiers: (NSMapTable *)identifiers
 {
   self = [super init];
   if (self != nil)
     {
       _keyValuePairs = [keyValuePairs copy];
       _excludedKeys = [excludedKeys copy];
+      _explicitIdentifiers = [identifiers retain];
       _identifiers = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
                                       NSObjectMapValueCallBacks, 0);
       _definitionsByIdentifier = [[NSMutableDictionary alloc] init];
-      _nextIdentifier = 1;
     }
   return self;
 }
@@ -250,6 +255,7 @@ GSNixIsBuiltInTransientKey(NSString *key)
 {
   [_keyValuePairs release];
   [_excludedKeys release];
+  [_explicitIdentifiers release];
   [_definitionsByIdentifier release];
   NSFreeMapTable(_identifiers);
   [super dealloc];
@@ -350,8 +356,27 @@ GSNixIsBuiltInTransientKey(NSString *key)
 
 - (NSString *) newIdentifierForObject: (id)object
 {
-  NSString *identifier = [NSString stringWithFormat: @"object-%lu",
-    (unsigned long)_nextIdentifier++];
+  NSString *identifier = _explicitIdentifiers != NULL
+    ? NSMapGet(_explicitIdentifiers, object) : nil;
+
+  if (identifier == nil)
+    identifier = [GSNixSerialization identifierForObject: object];
+  if (identifier == nil)
+    {
+      identifier = [NSString stringWithFormat: @"nix-%@",
+        [[[NSUUID UUID] UUIDString] lowercaseString]];
+    }
+  if (![identifier isKindOfClass: [NSString class]]
+      || [identifier length] == 0
+      || [identifier isEqualToString: @"owner"]
+      || [identifier isEqualToString: @"application"])
+    [NSException raise: NSInvalidArgumentException
+                format: @"Invalid NIX object identifier '%@'", identifier];
+  if ([_definitionsByIdentifier objectForKey: identifier] != nil)
+    [NSException raise: NSInvalidArgumentException
+                format: @"Duplicate NIX object identifier '%@'", identifier];
+
+  [GSNixSerialization setIdentifier: identifier forObject: object];
   NSMapInsert(_identifiers, object, identifier);
   return identifier;
 }
@@ -583,6 +608,18 @@ GSNixIsBuiltInTransientKey(NSString *key)
 
 @implementation GSNixSerialization
 
++ (NSString *) identifierForObject: (id)object
+{
+  return objc_getAssociatedObject(object, &GSNixIdentifierAssociationKey);
+}
+
++ (void) setIdentifier: (NSString *)identifier forObject: (id)object
+{
+  if (object != nil)
+    objc_setAssociatedObject(object, &GSNixIdentifierAssociationKey, identifier,
+                             OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
 + (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
                        keyValuePairs: (NSDictionary *)keyValuePairs
                          connections: (NSArray *)connections
@@ -591,6 +628,7 @@ GSNixIsBuiltInTransientKey(NSString *key)
   return [self dataWithTopLevelObjects: topLevelObjects
                         keyValuePairs: keyValuePairs
                          excludedKeys: nil
+                          identifiers: nil
                            connections: connections
                       errorDescription: errorDescription];
 }
@@ -598,6 +636,21 @@ GSNixIsBuiltInTransientKey(NSString *key)
 + (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
                        keyValuePairs: (NSDictionary *)keyValuePairs
                         excludedKeys: (NSDictionary *)excludedKeys
+                         connections: (NSArray *)connections
+                    errorDescription: (NSString **)errorDescription
+{
+  return [self dataWithTopLevelObjects: topLevelObjects
+                        keyValuePairs: keyValuePairs
+                         excludedKeys: excludedKeys
+                          identifiers: nil
+                           connections: connections
+                      errorDescription: errorDescription];
+}
+
++ (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
+                       keyValuePairs: (NSDictionary *)keyValuePairs
+                        excludedKeys: (NSDictionary *)excludedKeys
+                         identifiers: (NSMapTable *)identifiers
                          connections: (NSArray *)connections
                     errorDescription: (NSString **)errorDescription
 {
@@ -609,7 +662,8 @@ GSNixIsBuiltInTransientKey(NSString *key)
     {
       GSNixEncoder *encoder = [[[GSNixEncoder alloc]
         initWithKeyValuePairs: keyValuePairs
-                excludedKeys: excludedKeys] autorelease];
+                excludedKeys: excludedKeys
+                 identifiers: identifiers] autorelease];
       NSDictionary *document = [encoder
         documentWithTopLevelObjects: topLevelObjects
                         connections: connections != nil ? connections : [NSArray array]];

@@ -145,3 +145,18 @@ their input order because they normally express semantic UI order (for example,
 the order of subviews or top-level objects). Equivalent graphs therefore do
 not acquire noisy XML changes merely because a dictionary or connection list
 was assembled in a different order.
+
+## Persistent object identity
+
+Object IDs are independent of traversal and hierarchy position. The loader
+associates each archived ID with its instantiated object, and later writes of
+that object preserve the same ID. A design tool may assign a meaningful ID
+with `+[GSNixSerialization setIdentifier:forObject:]` or pass an identity-keyed
+`NSMapTable` to the full serialization method. Caller-supplied IDs take
+precedence over loader-preserved IDs. Objects without either receive a UUID
+once, which is then retained as their serialization identity.
+
+The reserved IDs `owner` and `application`, empty IDs, and duplicate IDs are
+rejected. IDs are never derived from array position or object contents, so
+inserting, deleting, or reordering a view does not rename unaffected objects
+or rewrite their connections.

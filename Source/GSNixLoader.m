@@ -27,6 +27,7 @@
 #import "AppKit/NSNibControlConnector.h"
 #import "AppKit/NSNibOutletConnector.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
+#import "GNUstepGUI/GSNixSerialization.h"
 
 @interface NSObject (GSNixAwaking)
 - (void) awakeFromNib;
@@ -114,6 +115,7 @@
                         format: @"Could not initialize NIX object '%@' as %@",
                                identifier, className];
           [_objects setObject: object forKey: identifier];
+          [GSNixSerialization setIdentifier: identifier forObject: object];
           [object release];
           [_definitions addObject: value];
         }

@@ -11,10 +11,14 @@
 @class NSArray;
 @class NSData;
 @class NSDictionary;
+@class NSMapTable;
 @class NSString;
 
 APPKIT_EXPORT_CLASS
 @interface GSNixSerialization : NSObject
+
++ (NSString *) identifierForObject: (id)object;
++ (void) setIdentifier: (NSString *)identifier forObject: (id)object;
 
 /**
  * Encode an interface object graph as an XML NIX property list.
@@ -48,6 +52,14 @@ APPKIT_EXPORT_CLASS
 + (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
                        keyValuePairs: (NSDictionary *)keyValuePairs
                         excludedKeys: (NSDictionary *)excludedKeys
+                         connections: (NSArray *)connections
+                    errorDescription: (NSString **)errorDescription;
+
+/** Full form with an optional identity-keyed object-to-string ID map. */
++ (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
+                       keyValuePairs: (NSDictionary *)keyValuePairs
+                        excludedKeys: (NSDictionary *)excludedKeys
+                         identifiers: (NSMapTable *)identifiers
                          connections: (NSArray *)connections
                     errorDescription: (NSString **)errorDescription;
 
