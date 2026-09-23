@@ -1,3 +1,10 @@
+2026-09-21 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSWorkspace.m (-openURL:): Do not put up an alert panel
+	before trying -_openUnknown:, which is the step that opens the URL
+	where no application and no service accept it, so that the user is
+	not stopped by an error about something that then succeeds.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
