@@ -87,25 +87,43 @@ the same way as `.gorm`, `.nib`, and `.xib` resources.
 
 ## Writing NIF
 
-`GSNifSerialization` produces NIF XML from a live object graph. The caller
-supplies the KVC properties that constitute the archive representation of each
-class. Requiring an explicit property list avoids accidentally serializing
-private framework state and keeps generated files stable as implementations
-change.
+`GSNifSerialization` produces NIF XML from a live object graph. By default it
+examines the methods declared by every class in the inheritance chain and
+matches `setFoo:` with a `foo` or `isFoo` getter. These pre-`@property` KVC
+pairs make ordinary GNUstep widgets and application-specific classes
+self-describing without relying on Objective-C property metadata.
+
+The optional key/value metadata is for classes with special persistence
+semantics. Each mapping key is the property name written to NIF and its value
+is the KVC key used to read the live object. An explicit mapping replaces
+inference for the methods declared by that class, while inherited classes are
+handled independently. Unsupported values cause serialization to fail rather
+than silently dropping state.
 
 ```objc
 NSDictionary *properties = [NSDictionary dictionaryWithObjectsAndKeys:
-  [NSArray arrayWithObjects: @"title", @"contentView", nil], @"NSWindow",
-  [NSArray arrayWithObjects: @"frame", @"subviews", nil], @"NSView",
-  [NSArray arrayWithObjects: @"frame", @"title", nil], @"NSButton",
+  [NSDictionary dictionaryWithObjectsAndKeys:
+    @"title", @"title", @"contentView", @"contentView", nil], @"NSWindow",
+  [NSDictionary dictionaryWithObjectsAndKeys:
+    @"frame", @"frame", @"subviews", @"subviews", nil], @"NSView",
+  [NSDictionary dictionaryWithObjectsAndKeys:
+    @"frame", @"frame", @"title", @"title", nil], @"NSButton",
   nil];
 NSString *error = nil;
 NSData *data = [GSNifSerialization
   dataWithTopLevelObjects: [NSArray arrayWithObject: window]
-  propertyKeys: properties
+  keyValuePairs: properties
   connections: connections
   errorDescription: &error];
 ```
+
+Passing an empty metadata dictionary enables inference for every class. The
+full API also accepts an `excludedKeys` dictionary mapping class names to
+arrays of transient inferred keys. Exclusions accumulate through inheritance.
+NIF always excludes common graph back-references and runtime collaborators:
+`superview`, `window`, `nextResponder`, `undoManager`, `delegate`,
+`dataSource`, and `target`. A class with unusual transient state should list
+it explicitly rather than allowing it into the archive.
 
 The writer embeds an object definition at its first occurrence and emits a
 reference thereafter. This preserves shared objects and cycles while retaining

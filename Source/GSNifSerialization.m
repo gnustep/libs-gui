@@ -10,6 +10,7 @@
 #import "config.h"
 
 #import <Foundation/NSArray.h>
+#import <Foundation/NSCharacterSet.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSDate.h>
 #import <Foundation/NSDictionary.h>
@@ -20,21 +21,25 @@
 #import <Foundation/NSNull.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSPropertyList.h>
+#import <Foundation/NSSet.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSTimeZone.h>
 
 #include <string.h>
+#include <objc/runtime.h>
 
 #import "GNUstepGUI/GSNifSerialization.h"
 
 @interface GSNifEncoder : NSObject
 {
-  NSDictionary *_propertyKeys;
+  NSDictionary *_keyValuePairs;
+  NSDictionary *_excludedKeys;
   NSMapTable *_identifiers;
   NSMutableDictionary *_definitionsByIdentifier;
   NSUInteger _nextIdentifier;
 }
-- (id) initWithPropertyKeys: (NSDictionary *)propertyKeys;
+- (id) initWithKeyValuePairs: (NSDictionary *)keyValuePairs
+                excludedKeys: (NSDictionary *)excludedKeys;
 - (NSDictionary *) documentWithTopLevelObjects: (NSArray *)topLevelObjects
                                       connections: (NSArray *)connections;
 @end
@@ -208,12 +213,14 @@ GSNifCompareConnections(id left, id right, void *context)
 
 @implementation GSNifEncoder
 
-- (id) initWithPropertyKeys: (NSDictionary *)propertyKeys
+- (id) initWithKeyValuePairs: (NSDictionary *)keyValuePairs
+                excludedKeys: (NSDictionary *)excludedKeys
 {
   self = [super init];
   if (self != nil)
     {
-      _propertyKeys = [propertyKeys copy];
+      _keyValuePairs = [keyValuePairs copy];
+      _excludedKeys = [excludedKeys copy];
       _identifiers = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
                                       NSObjectMapValueCallBacks, 0);
       _definitionsByIdentifier = [[NSMutableDictionary alloc] init];
@@ -224,23 +231,94 @@ GSNifCompareConnections(id left, id right, void *context)
 
 - (void) dealloc
 {
-  [_propertyKeys release];
+  [_keyValuePairs release];
+  [_excludedKeys release];
   [_definitionsByIdentifier release];
   NSFreeMapTable(_identifiers);
   [super dealloc];
 }
 
-- (NSArray *) propertyKeysForObject: (id)object
+- (NSDictionary *) inferredPairsDeclaredByClass: (Class)objectClass
 {
-  Class currentClass = [object class];
-  NSArray *keys = nil;
+  NSMutableDictionary *pairs = [NSMutableDictionary dictionary];
+  Method *methods;
+  unsigned int count = 0;
+  unsigned int index;
 
-  while (currentClass != Nil && keys == nil)
+  methods = class_copyMethodList(objectClass, &count);
+  for (index = 0; index < count; index++)
     {
-      keys = [_propertyKeys objectForKey: NSStringFromClass(currentClass)];
+      SEL selector = method_getName(methods[index]);
+      const char *selectorName = sel_getName(selector);
+      size_t length = strlen(selectorName);
+
+      if (length > 4
+          && strncmp(selectorName, "set", 3) == 0
+          && selectorName[length - 1] == ':'
+          && strchr(selectorName, ':') == selectorName + length - 1
+          && method_getNumberOfArguments(methods[index]) == 3)
+        {
+          NSString *stem = [NSString stringWithUTF8String: selectorName + 3];
+          NSString *first;
+          NSString *key;
+          SEL getter;
+
+          stem = [stem substringToIndex: [stem length] - 1];
+          if ([stem length] > 1
+              && [[NSCharacterSet uppercaseLetterCharacterSet]
+                   characterIsMember: [stem characterAtIndex: 0]]
+              && [[NSCharacterSet uppercaseLetterCharacterSet]
+                   characterIsMember: [stem characterAtIndex: 1]])
+            key = stem;
+          else
+            {
+              first = [[stem substringToIndex: 1] lowercaseString];
+              key = [first stringByAppendingString: [stem substringFromIndex: 1]];
+            }
+          getter = NSSelectorFromString(key);
+          if (![objectClass instancesRespondToSelector: getter])
+            getter = NSSelectorFromString([@"is" stringByAppendingString: stem]);
+          if ([objectClass instancesRespondToSelector: getter])
+            [pairs setObject: key forKey: key];
+        }
+    }
+  free(methods);
+  return pairs;
+}
+
+- (NSDictionary *) keyValuePairsForObject: (id)object
+{
+  NSMutableArray *classes = [NSMutableArray array];
+  NSMutableDictionary *pairs = [NSMutableDictionary dictionary];
+  NSMutableSet *excluded = [NSMutableSet setWithObjects:
+    @"superview", @"window", @"nextResponder", @"undoManager",
+    @"delegate", @"dataSource", @"target", nil];
+  Class currentClass = [object class];
+  NSEnumerator *enumerator;
+
+  while (currentClass != Nil && currentClass != [NSObject class])
+    {
+      [classes insertObject: currentClass atIndex: 0];
       currentClass = [currentClass superclass];
     }
-  return keys != nil ? keys : [NSArray array];
+
+  enumerator = [classes objectEnumerator];
+  while ((currentClass = [enumerator nextObject]) != Nil)
+    {
+      NSString *className = NSStringFromClass(currentClass);
+      NSDictionary *explicitPairs = [_keyValuePairs objectForKey: className];
+      NSArray *classExclusions = [_excludedKeys objectForKey: className];
+
+      if (classExclusions != nil)
+        [excluded addObjectsFromArray: classExclusions];
+      if (explicitPairs != nil)
+        [pairs addEntriesFromDictionary: explicitPairs];
+      else
+        [pairs addEntriesFromDictionary:
+          [self inferredPairsDeclaredByClass: currentClass]];
+    }
+  [pairs removeObjectsForKeys: [excluded allObjects]];
+  return pairs;
 }
 
 - (NSString *) newIdentifierForObject: (id)object
@@ -360,14 +438,24 @@ GSNifCompareConnections(id left, id right, void *context)
     /* Register before descending so cycles become references. */
     [definition setObject: properties forKey: @"properties"];
 
-    enumerator = [[[self propertyKeysForObject: value]
-      sortedArrayUsingSelector: @selector(compare:)] objectEnumerator];
-    while ((key = [enumerator nextObject]) != nil)
-      {
-        id encoded = [self encodedValue: [value valueForKey: key]];
-        if (encoded != nil)
-          [properties setObject: encoded forKey: key];
-      }
+    {
+      NSDictionary *pairs = [self keyValuePairsForObject: value];
+      enumerator = [[[pairs allKeys]
+        sortedArrayUsingSelector: @selector(compare:)] objectEnumerator];
+      while ((key = [enumerator nextObject]) != nil)
+        {
+          NSString *kvcKey = [pairs objectForKey: key];
+          id encoded;
+
+          if (![key isKindOfClass: [NSString class]]
+              || ![kvcKey isKindOfClass: [NSString class]])
+            [NSException raise: NSInvalidArgumentException
+                        format: @"NIF key/value mappings must contain strings"];
+          encoded = [self encodedValue: [value valueForKey: kvcKey]];
+          if (encoded != nil)
+            [properties setObject: encoded forKey: key];
+        }
+    }
     return definition;
   }
 }
@@ -469,7 +557,20 @@ GSNifCompareConnections(id left, id right, void *context)
 @implementation GSNifSerialization
 
 + (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
-                        propertyKeys: (NSDictionary *)propertyKeys
+                       keyValuePairs: (NSDictionary *)keyValuePairs
+                         connections: (NSArray *)connections
+                    errorDescription: (NSString **)errorDescription
+{
+  return [self dataWithTopLevelObjects: topLevelObjects
+                        keyValuePairs: keyValuePairs
+                         excludedKeys: nil
+                           connections: connections
+                      errorDescription: errorDescription];
+}
+
++ (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
+                       keyValuePairs: (NSDictionary *)keyValuePairs
+                        excludedKeys: (NSDictionary *)excludedKeys
                          connections: (NSArray *)connections
                     errorDescription: (NSString **)errorDescription
 {
@@ -480,7 +581,8 @@ GSNifCompareConnections(id left, id right, void *context)
   NS_DURING
     {
       GSNifEncoder *encoder = [[[GSNifEncoder alloc]
-        initWithPropertyKeys: propertyKeys] autorelease];
+        initWithKeyValuePairs: keyValuePairs
+                excludedKeys: excludedKeys] autorelease];
       NSDictionary *document = [encoder
         documentWithTopLevelObjects: topLevelObjects
                         connections: connections != nil ? connections : [NSArray array]];
@@ -495,6 +597,31 @@ GSNifCompareConnections(id left, id right, void *context)
     }
   NS_ENDHANDLER
   return data;
+}
+
++ (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
+                        propertyKeys: (NSDictionary *)propertyKeys
+                         connections: (NSArray *)connections
+                    errorDescription: (NSString **)errorDescription
+{
+  NSMutableDictionary *pairsByClass = [NSMutableDictionary dictionary];
+  NSEnumerator *classes = [propertyKeys keyEnumerator];
+  NSString *className;
+
+  while ((className = [classes nextObject]) != nil)
+    {
+      NSArray *keys = [propertyKeys objectForKey: className];
+      NSMutableDictionary *pairs = [NSMutableDictionary dictionary];
+      NSEnumerator *enumerator = [keys objectEnumerator];
+      NSString *key;
+      while ((key = [enumerator nextObject]) != nil)
+        [pairs setObject: key forKey: key];
+      [pairsByClass setObject: pairs forKey: className];
+    }
+  return [self dataWithTopLevelObjects: topLevelObjects
+                        keyValuePairs: pairsByClass
+                           connections: connections
+                      errorDescription: errorDescription];
 }
 
 @end

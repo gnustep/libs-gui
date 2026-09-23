@@ -19,6 +19,7 @@ static NSString *NifTestLinkerString __attribute__((used)) = @"NIF loader test f
 }
 - (NSString *) name;
 - (void) setName: (NSString *)value;
+- (NSString *) displayName;
 - (NifTestNode *) child;
 - (void) setChild: (NifTestNode *)value;
 - (NifTestNode *) peer;
@@ -36,6 +37,7 @@ static NSString *NifTestLinkerString __attribute__((used)) = @"NIF loader test f
 }
 - (NSString *) name { return _name; }
 - (void) setName: (NSString *)value { ASSIGN(_name, value); }
+- (NSString *) displayName { return _name; }
 - (NifTestNode *) child { return _child; }
 - (void) setChild: (NifTestNode *)value { ASSIGN(_child, value); }
 - (NifTestNode *) peer { return _peer; }
@@ -72,6 +74,7 @@ int main(void)
   NSData *encoded;
   NSData *canonicalA;
   NSData *canonicalB;
+  NSData *inferred;
   NSString *encodedString;
   NSString *error = nil;
 
@@ -94,8 +97,9 @@ int main(void)
 
   encoded = [GSNifSerialization
     dataWithTopLevelObjects: [NSArray arrayWithObject: root]
-    propertyKeys: [NSDictionary dictionaryWithObject:
-      [NSArray arrayWithObjects: @"name", @"child", @"peer", nil]
+    keyValuePairs: [NSDictionary dictionaryWithObject:
+      [NSDictionary dictionaryWithObjectsAndKeys:
+        @"displayName", @"name", @"child", @"child", @"peer", @"peer", nil]
       forKey: @"NifTestNode"]
     connections: [NSArray arrayWithObject:
       [NSDictionary dictionaryWithObjectsAndKeys:
@@ -107,6 +111,37 @@ int main(void)
                                           encoding: NSUTF8StringEncoding] autorelease];
   PASS([encodedString rangeOfString: @"<string>NIF</string>"].location != NSNotFound,
        "produced data is readable XML and identifies itself as NIF")
+
+  inferred = [GSNifSerialization
+    dataWithTopLevelObjects: [NSArray arrayWithObject: root]
+    keyValuePairs: [NSDictionary dictionary]
+    connections: nil
+    errorDescription: &error];
+  PASS(inferred != nil
+       && [[[[NSString alloc] initWithData: inferred
+                                  encoding: NSUTF8StringEncoding] autorelease]
+             rangeOfString: @"<key>child</key>"].location != NSNotFound
+       && [[[[NSString alloc] initWithData: inferred
+                                  encoding: NSUTF8StringEncoding] autorelease]
+             rangeOfString: @"<key>name</key>"].location != NSNotFound,
+       "matching KVC accessor pairs serialize custom classes without metadata")
+  if (inferred != nil)
+    {
+      NSMutableArray *inferredObjects = [NSMutableArray array];
+      NSDictionary *inferredContext = [NSDictionary dictionaryWithObjectsAndKeys:
+        owner, NSNibOwner, inferredObjects, NSNibTopLevelObjects, nil];
+      GSModelLoader *inferredLoader =
+        [GSModelLoaderFactory modelLoaderForData: inferred];
+      BOOL inferredLoaded = [inferredLoader loadModelData: inferred
+                                        externalNameTable: inferredContext
+                                                 withZone: NULL];
+      NifTestNode *inferredRoot = [inferredObjects count] != 0
+        ? [inferredObjects objectAtIndex: 0] : nil;
+      PASS(inferredLoaded
+           && [[inferredRoot name] isEqual: @"root"]
+           && [[inferredRoot child] peer] == inferredRoot,
+           "inferred custom-class state survives a NIF round trip")
+    }
   {
     NSPropertyListFormat plistFormat;
     NSDictionary *writtenDocument = [NSPropertyListSerialization
@@ -130,18 +165,24 @@ int main(void)
     [secondConnection setObject: root forKey: @"destination"];
     [secondConnection setObject: @"owner" forKey: @"source"];
     [secondConnection setObject: @"outlet" forKey: @"kind"];
+    NSMutableDictionary *pairsA = [NSMutableDictionary dictionary];
+    NSMutableDictionary *pairsB = [NSMutableDictionary dictionary];
+    [pairsA setObject: @"peer" forKey: @"peer"];
+    [pairsA setObject: @"displayName" forKey: @"name"];
+    [pairsA setObject: @"child" forKey: @"child"];
+    [pairsB setObject: @"child" forKey: @"child"];
+    [pairsB setObject: @"displayName" forKey: @"name"];
+    [pairsB setObject: @"peer" forKey: @"peer"];
     canonicalA = [GSNifSerialization
       dataWithTopLevelObjects: [NSArray arrayWithObject: root]
-      propertyKeys: [NSDictionary dictionaryWithObject:
-        [NSArray arrayWithObjects: @"peer", @"name", @"child", nil]
-        forKey: @"NifTestNode"]
+      keyValuePairs: [NSDictionary dictionaryWithObject: pairsA
+                                                  forKey: @"NifTestNode"]
       connections: [NSArray arrayWithObjects: firstConnection, secondConnection, nil]
       errorDescription: NULL];
     canonicalB = [GSNifSerialization
       dataWithTopLevelObjects: [NSArray arrayWithObject: root]
-      propertyKeys: [NSDictionary dictionaryWithObject:
-        [NSArray arrayWithObjects: @"child", @"name", @"peer", nil]
-        forKey: @"NifTestNode"]
+      keyValuePairs: [NSDictionary dictionaryWithObject: pairsB
+                                                  forKey: @"NifTestNode"]
       connections: [NSArray arrayWithObjects: secondConnection, firstConnection, nil]
       errorDescription: NULL];
     PASS([canonicalA isEqual: canonicalB],
