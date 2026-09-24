@@ -397,6 +397,51 @@
   return [[self arrangedObjects] objectsAtIndexes: _selection_indexes];
 }
 
++ (NSSet*) keyPathsForValuesAffectingSelection
+{
+  return [NSSet setWithObjects: NSSelectionIndexesBinding,
+    NSContentBinding, nil];
+}
+
++ (NSSet*) keyPathsForValuesAffectingSelectedObjects
+{
+  return [NSSet setWithObjects: NSSelectionIndexesBinding,
+    NSContentBinding, nil];
+}
+
++ (NSSet*) keyPathsForValuesAffectingSelectionIndex
+{
+  return [NSSet setWithObject: NSSelectionIndexesBinding];
+}
+
++ (NSSet*) keyPathsForValuesAffectingCanRemove
+{
+  return [NSSet setWithObject: NSSelectionIndexesBinding];
+}
+
++ (NSSet*) keyPathsForValuesAffectingCanSelectNext
+{
+  return [NSSet setWithObjects: NSSelectionIndexesBinding,
+    NSContentBinding, nil];
+}
+
++ (NSSet*) keyPathsForValuesAffectingCanSelectPrevious
+{
+  return [NSSet setWithObjects: NSSelectionIndexesBinding,
+    NSContentBinding, nil];
+}
+
+- (id) selection
+{
+  NSArray *selected = [self selectedObjects];
+
+  if ([selected count] == 1)
+    {
+      return [selected objectAtIndex: 0];
+    }
+  return nil;
+}
+
 - (NSUInteger) selectionIndex
 {
   return [_selection_indexes firstIndex];
