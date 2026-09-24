@@ -679,6 +679,9 @@ static Class textFieldCellClass;
   id textMovement;
   int movement;
 
+  /* The action may release the sender; hold it across the send.  */
+  IF_NO_ARC(AUTORELEASE(RETAIN(self));)
+
   [super textDidEndEditing: aNotification];
 
   textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];

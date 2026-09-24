@@ -1190,6 +1190,9 @@ static BOOL menuBarVisible = YES;
   if (![item isEnabled])
     return;
 
+  /* The action may release the sender; hold it across the send.  */
+  IF_NO_ARC(AUTORELEASE(RETAIN(self));)
+
   // Send the actual action and the stipulated notifications.
   d = [NSDictionary dictionaryWithObject: item forKey: @"MenuItem"];
   [nc postNotificationName: NSMenuWillSendActionNotification
