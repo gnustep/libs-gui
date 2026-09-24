@@ -1,0 +1,21 @@
+Test: NSTableView
+
+Version: 1.0
+
+Description:
+Tests for NSTableView behavior, including column management, selection,
+notifications, rendering, state, and prototype view registration.
+
+Tests:
+  click - Tests row clicking behavior
+  columnNotification - Tests column notification behavior
+  columnSelectionDefault - Tests default column selection behavior
+  columns - Tests column management and prototype view registration
+  gridStyle - Tests grid style behavior
+  indicatorImage - Tests indicator image behavior
+  rendering - Tests table rendering behavior
+  selection - Tests row selection behavior
+  selectionNotification - Tests selection notification behavior
+  state - Tests NSTableView scalar state
+
+Author: GNUstep

@@ -8,6 +8,7 @@ This includes basic snapshot operations (create, append, insert, delete, move)
 as well as integration with NSCollectionView.
 
 Tests:
+  NSDiffableDataSource_delegate - Portable delegates and optional block adapters
   NSDiffableDataSource_snapshot - Tests snapshot functionality
   NSDiffableDataSource_collectionView - Tests integration with NSCollectionView
 
