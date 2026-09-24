@@ -2014,6 +2014,7 @@ static void computeNewSelection
 @end
 
 @interface NSTableView (TableViewInternalPrivate)
+- (void) _resizeColumnsToFitWidth: (CGFloat)width;
 - (void) _setSelectingColumns: (BOOL)flag;
 - (BOOL) _editNextEditableCellAfterRow: (NSInteger)row
 				column: (NSInteger)column;
@@ -2059,6 +2060,7 @@ static void computeNewSelection
   _allowsColumnResizing = YES;
   _allowsColumnReordering = YES;
   _autoresizesAllColumnsToFit = NO;
+  _columnAutoresizingStyle = NSTableViewNoColumnAutoresizing;
   _selectingColumns = NO;
   _verticalMotionDrag = NO;
   _editedColumn = -1;
@@ -4624,13 +4626,104 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (NSTableViewColumnAutoresizingStyle) columnAutoresizingStyle
 {
-  // FIXME
-  return NSTableViewNoColumnAutoresizing;
+  return (NSTableViewColumnAutoresizingStyle)_columnAutoresizingStyle;
 }
 
 - (void) setColumnAutoresizingStyle: (NSTableViewColumnAutoresizingStyle)style
 {
-  // FIXME
+  _columnAutoresizingStyle = style;
+  if (style != NSTableViewNoColumnAutoresizing && _super_view != nil)
+    {
+      [self _resizeColumnsToFitWidth:
+        [self convertRect: [_super_view bounds] fromView: _super_view].size.width];
+    }
+}
+
+- (void) _resizeColumnsToFitWidth: (CGFloat)width
+{
+  NSTableViewColumnAutoresizingStyle style = [self columnAutoresizingStyle];
+  NSMutableArray *columns;
+  NSUInteger i;
+  CGFloat delta;
+
+  if (style == NSTableViewNoColumnAutoresizing || _numberOfColumns == 0)
+    return;
+
+  delta = width - (_columnOrigins[_numberOfColumns - 1]
+                   + [[_tableColumns objectAtIndex: _numberOfColumns - 1] width]);
+  if (delta > -0.5 && delta < 0.5)
+    return;
+
+  columns = [NSMutableArray array];
+  for (i = 0; i < _numberOfColumns; i++)
+    {
+      NSTableColumn *column = [_tableColumns objectAtIndex: i];
+
+      if (![column isHidden]
+          && ([column resizingMask] & NSTableColumnAutoresizingMask))
+        [columns addObject: column];
+    }
+  if ([columns count] == 0)
+    return;
+
+  switch (style)
+    {
+      case NSTableViewFirstColumnOnlyAutoresizingStyle:
+        [columns setArray: [NSArray arrayWithObject: [columns objectAtIndex: 0]]];
+        break;
+      case NSTableViewLastColumnOnlyAutoresizingStyle:
+        [columns setArray: [NSArray arrayWithObject: [columns lastObject]]];
+        break;
+      case NSTableViewSequentialColumnAutoresizingStyle:
+        /* from the last column backwards */
+        [columns setArray: [[columns reverseObjectEnumerator] allObjects]];
+        break;
+      default:
+        break;
+    }
+
+  _tilingDisabled = YES;
+  if (style == NSTableViewUniformColumnAutoresizingStyle)
+    {
+      NSMutableArray *open = [NSMutableArray arrayWithArray: columns];
+
+      while ([open count] > 0 && (delta <= -0.5 || delta >= 0.5))
+        {
+          CGFloat share = delta / [open count];
+          NSEnumerator *en = [[NSArray arrayWithArray: open] objectEnumerator];
+          NSTableColumn *column;
+
+          while ((column = [en nextObject]) != nil)
+            {
+              CGFloat old = [column width];
+              CGFloat new = MIN(MAX(old + share, [column minWidth]),
+                                [column maxWidth]);
+
+              [column setWidth: new];
+              delta -= new - old;
+              if (new != old + share)
+                [open removeObject: column];
+            }
+        }
+    }
+  else
+    {
+      NSEnumerator *en = [columns objectEnumerator];
+      NSTableColumn *column;
+
+      while ((column = [en nextObject]) != nil
+             && (delta <= -0.5 || delta >= 0.5))
+        {
+          CGFloat old = [column width];
+          CGFloat new = MIN(MAX(old + delta, [column minWidth]),
+                            [column maxWidth]);
+
+          [column setWidth: new];
+          delta -= new - old;
+        }
+    }
+  _tilingDisabled = NO;
+  [self tile];
 }
 
 - (void) sizeLastColumnToFit
@@ -5712,6 +5805,8 @@ This method is deprecated, use -columnIndexesInRect:. */
 
       // Encode that the table is view based...
       [aCoder encodeBool: _viewBased forKey: @"NSViewBased"];
+      [aCoder encodeInt: (int)_columnAutoresizingStyle
+                 forKey: @"NSColumnAutoresizingStyle"];
     }
   else
     {
@@ -5902,6 +5997,12 @@ This method is deprecated, use -columnIndexesInRect:. */
       if ([aDecoder containsValueForKey: @"NSViewBased"])
 	{
 	  _viewBased = [aDecoder decodeBoolForKey: @"NSViewBased"];
+	}
+
+      if ([aDecoder containsValueForKey: @"NSColumnAutoresizingStyle"])
+	{
+	  _columnAutoresizingStyle =
+	    [aDecoder decodeIntForKey: @"NSColumnAutoresizingStyle"];
 	}
 
       // get the table columns...
@@ -6329,7 +6430,15 @@ This method is deprecated, use -columnIndexesInRect:. */
 
 - (void) superviewFrameChanged: (NSNotification*)aNotification
 {
-  if (_autoresizesAllColumnsToFit == YES)
+  if (_columnAutoresizingStyle != NSTableViewNoColumnAutoresizing)
+    {
+      CGFloat visible_width = [self convertRect: [_super_view bounds]
+                                       fromView: _super_view].size.width;
+
+      [self _resizeColumnsToFitWidth: visible_width];
+      _superview_width = visible_width;
+    }
+  else if (_autoresizesAllColumnsToFit == YES)
     {
       CGFloat visible_width = [self convertRect: [_super_view bounds]
 				  fromView: _super_view].size.width;
