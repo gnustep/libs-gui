@@ -3961,6 +3961,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 	  lastPoint = [theView convertPoint: lastPoint fromView: nil];
 	  loc = [theView convertPoint: loc fromView: nil];
           [tr getObjects: rects];
+          for (i = 0; i < count; ++i)
+            {
+              RETAIN(rects[i]);
+            }
 
           for (i = 0; i < count; ++i)
             {
@@ -4044,6 +4048,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                     }
                 }
             }
+          for (i = 0; i < count; ++i)
+            {
+              RELEASE(rects[i]);
+            }
         }
     }
 
@@ -4063,10 +4071,18 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
           [sb getObjects: subs];
           for (i = 0; i < count; ++i)
             {
+              RETAIN(subs[i]);
+            }
+          for (i = 0; i < count; ++i)
+            {
               if (![subs[i] isHidden])
                 {
                   (*ctImp)(self, ctSel, subs[i], theEvent);
                 }
+            }
+          for (i = 0; i < count; ++i)
+            {
+              RELEASE(subs[i]);
             }
         }
     }
