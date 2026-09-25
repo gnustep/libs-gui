@@ -47,6 +47,10 @@
 @end
 
 static char GSNixIdentifierAssociationKey;
+static char GSNixIntendedClassAssociationKey;
+static char GSNixDesignSuperclassAssociationKey;
+static char GSNixPreservedPropertiesAssociationKey;
+static char GSNixPreservedConnectionsAssociationKey;
 
 static NSInteger
 GSNixKeyRank(NSString *key)
@@ -57,7 +61,7 @@ GSNixKeyRank(NSString *key)
   if (keys == nil)
     keys = [[NSArray alloc] initWithObjects:
       @"format", @"version", @"objects", @"topLevelObjects",
-      @"$id", @"$class", @"properties", @"connections",
+      @"$id", @"$class", @"$superclass", @"properties", @"connections",
       @"$ref", @"$type", @"$value",
       @"kind", @"source", @"destination", @"label", nil];
   index = [keys indexOfObject: key];
@@ -483,12 +487,28 @@ GSNixIsBuiltInTransientKey(NSString *key)
       return [NSDictionary dictionaryWithObject: identifier forKey: @"$ref"];
 
     identifier = [self newIdentifierForObject: value];
+    {
+      NSString *className = [GSNixSerialization intendedClassNameForObject: value];
+      NSString *superclassName = [GSNixSerialization designSuperclassNameForObject: value];
+
+      if (className == nil)
+        className = NSStringFromClass([value class]);
+      if (superclassName == nil && [value class] != [NSObject class])
+        superclassName = NSStringFromClass([[value class] superclass]);
     definition = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-      identifier, @"$id", NSStringFromClass([value class]), @"$class", nil];
+      identifier, @"$id", className, @"$class",
+      superclassName, @"$superclass", nil];
+    }
     [_definitionsByIdentifier setObject: definition forKey: identifier];
-    properties = [NSMutableDictionary dictionary];
+    properties = [NSMutableDictionary dictionaryWithDictionary:
+      [GSNixSerialization preservedPropertiesForObject: value]
+        ?: [NSDictionary dictionary]];
     /* Register before descending so cycles become references. */
     [definition setObject: properties forKey: @"properties"];
+    if ([[GSNixSerialization preservedConnectionsForObject: value] count] != 0)
+      [definition setObject: [NSMutableArray arrayWithArray:
+        [GSNixSerialization preservedConnectionsForObject: value]]
+                   forKey: @"connections"];
 
     {
       NSDictionary *pairs = [self keyValuePairsForObject: value];
@@ -589,7 +609,8 @@ GSNixIsBuiltInTransientKey(NSString *key)
           objectConnections = [NSMutableArray array];
           [anchor setObject: objectConnections forKey: @"connections"];
         }
-      [objectConnections addObject: encodedConnection];
+      if (![objectConnections containsObject: encodedConnection])
+        [objectConnections addObject: encodedConnection];
     }
 
   enumerator = [_definitionsByIdentifier objectEnumerator];
@@ -618,6 +639,53 @@ GSNixIsBuiltInTransientKey(NSString *key)
   if (object != nil)
     objc_setAssociatedObject(object, &GSNixIdentifierAssociationKey, identifier,
                              OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
++ (NSString *) intendedClassNameForObject: (id)object
+{
+  return objc_getAssociatedObject(object, &GSNixIntendedClassAssociationKey);
+}
+
++ (NSString *) designSuperclassNameForObject: (id)object
+{
+  return objc_getAssociatedObject(object, &GSNixDesignSuperclassAssociationKey);
+}
+
++ (void) setIntendedClassName: (NSString *)className
+         designSuperclassName: (NSString *)superclassName
+                    forObject: (id)object
+{
+  if (object != nil)
+    {
+      objc_setAssociatedObject(object, &GSNixIntendedClassAssociationKey,
+                               className, OBJC_ASSOCIATION_COPY_NONATOMIC);
+      objc_setAssociatedObject(object, &GSNixDesignSuperclassAssociationKey,
+                               superclassName, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    }
+}
+
++ (NSDictionary *) preservedPropertiesForObject: (id)object
+{
+  return objc_getAssociatedObject(object, &GSNixPreservedPropertiesAssociationKey);
+}
+
++ (void) setPreservedProperties: (NSDictionary *)properties forObject: (id)object
+{
+  if (object != nil)
+    objc_setAssociatedObject(object, &GSNixPreservedPropertiesAssociationKey,
+                             properties, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
++ (NSArray *) preservedConnectionsForObject: (id)object
+{
+  return objc_getAssociatedObject(object, &GSNixPreservedConnectionsAssociationKey);
+}
+
++ (void) setPreservedConnections: (NSArray *)connections forObject: (id)object
+{
+  if (object != nil)
+    objc_setAssociatedObject(object, &GSNixPreservedConnectionsAssociationKey,
+                             connections, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
 + (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects

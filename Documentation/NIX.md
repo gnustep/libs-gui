@@ -19,7 +19,9 @@ properties. A connection is stored with its source object. If its source is an
 external object (`owner` or `application`), it is stored with its destination.
 
 An object definition has `$id`, `$class`, and an optional `properties`
-dictionary. The loader creates every object first and applies properties in a
+dictionary. `$superclass` records the concrete design-time superclass used
+when an application-specific class is unavailable to an interface editor. The
+loader creates every object first and applies properties in a
 second pass, so forward references and cycles are valid. A reference is a
 dictionary containing `$ref`; the reserved ids `owner` and `application` refer
 to the nib owner and `NSApp`.
@@ -160,3 +162,16 @@ The reserved IDs `owner` and `application`, empty IDs, and duplicate IDs are
 rejected. IDs are never derived from array position or object contents, so
 inserting, deleting, or reordering a view does not rename unaffected objects
 or rewrite their connections.
+
+## Editing custom classes in Gorm
+
+When `+[NSClassSwapper isInInterfaceBuilder]` is true, an unavailable `$class`
+is represented by an instance of its recorded `$superclass`. The placeholder
+retains the intended class name, persistent ID, properties it cannot apply,
+and object-local connections. Writing the document restores that metadata
+rather than substituting the placeholder's runtime class.
+
+Editor mode does not establish outlets or actions and does not send
+`awakeFromNib`; those operations remain application-runtime behavior. Outside
+editor mode, a missing custom class is still an error so applications cannot
+silently run with an unintended superclass.

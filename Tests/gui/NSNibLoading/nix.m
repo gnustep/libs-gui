@@ -3,6 +3,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSNib.h>
 #import <GNUstepGUI/GSModelLoaderFactory.h>
+#import "../../../Headers/Additions/GNUstepGUI/GSNibLoading.h"
 #import "../../../Headers/Additions/GNUstepGUI/GSNixSerialization.h"
 
 /* Keep a non-tagged constant-string section with older ELF Objective-C
@@ -104,6 +105,47 @@ int main(void)
   PASS([[GSNixSerialization identifierForObject: root] isEqual: @"root"]
        && [[GSNixSerialization identifierForObject: child] isEqual: @"child"],
        "the loader preserves archive identifiers on instantiated objects")
+
+  {
+    NSData *customData = [NSData dataWithContentsOfFile: @"Test-Custom.nix"];
+    NSMutableArray *customObjects = [NSMutableArray array];
+    NixTestOwner *customOwner = [[NixTestOwner alloc] init];
+    NSDictionary *customContext = [NSDictionary dictionaryWithObjectsAndKeys:
+      customOwner, NSNibOwner, customObjects, NSNibTopLevelObjects, nil];
+    GSModelLoader *customLoader;
+    NixTestNode *placeholder;
+    NSData *rewritten;
+    NSString *rewrittenXML;
+
+    [NSClassSwapper setIsInInterfaceBuilder: YES];
+    customLoader = [GSModelLoaderFactory modelLoaderForData: customData];
+    loaded = [customLoader loadModelData: customData
+                       externalNameTable: customContext
+                                withZone: NULL];
+    placeholder = [customObjects count] != 0 ? [customObjects objectAtIndex: 0] : nil;
+    PASS(loaded && [placeholder isKindOfClass: [NixTestNode class]]
+         && [[GSNixSerialization intendedClassNameForObject: placeholder]
+              isEqual: @"UnlinkedApplicationView"],
+         "Gorm mode substitutes the design superclass and retains the custom class")
+    PASS([customOwner node] == nil && ![placeholder awakened],
+         "Gorm mode suppresses runtime connections and awakeFromNib")
+    rewritten = [GSNixSerialization
+      dataWithTopLevelObjects: customObjects
+      keyValuePairs: [NSDictionary dictionaryWithObject:
+        [NSDictionary dictionaryWithObject: @"name" forKey: @"name"]
+        forKey: @"NixTestNode"]
+      connections: nil
+      errorDescription: &error];
+    rewrittenXML = [[[NSString alloc] initWithData: rewritten
+                                           encoding: NSUTF8StringEncoding] autorelease];
+    PASS([rewrittenXML rangeOfString: @"UnlinkedApplicationView"].location != NSNotFound
+         && [rewrittenXML rangeOfString: @"applicationState"].location != NSNotFound
+         && [rewrittenXML rangeOfString: @"preserve me"].location != NSNotFound
+         && [rewrittenXML rangeOfString: @"<string>node</string>"].location != NSNotFound,
+         "Gorm rewrites unresolved custom class metadata, properties, and connections losslessly")
+    [NSClassSwapper setIsInInterfaceBuilder: NO];
+    [customOwner release];
+  }
 
   encoded = [GSNixSerialization
     dataWithTopLevelObjects: [NSArray arrayWithObject: root]

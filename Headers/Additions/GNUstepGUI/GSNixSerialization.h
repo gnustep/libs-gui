@@ -20,6 +20,19 @@ APPKIT_EXPORT_CLASS
 + (NSString *) identifierForObject: (id)object;
 + (void) setIdentifier: (NSString *)identifier forObject: (id)object;
 
+/** Metadata used when a design tool substitutes a custom class's superclass. */
++ (NSString *) intendedClassNameForObject: (id)object;
++ (NSString *) designSuperclassNameForObject: (id)object;
++ (void) setIntendedClassName: (NSString *)className
+         designSuperclassName: (NSString *)superclassName
+                    forObject: (id)object;
++ (NSDictionary *) preservedPropertiesForObject: (id)object;
++ (void) setPreservedProperties: (NSDictionary *)properties
+                       forObject: (id)object;
++ (NSArray *) preservedConnectionsForObject: (id)object;
++ (void) setPreservedConnections: (NSArray *)connections
+                        forObject: (id)object;
+
 /**
  * Encode an interface object graph as an XML NIX property list.
  *

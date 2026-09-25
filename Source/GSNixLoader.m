@@ -27,6 +27,7 @@
 #import "AppKit/NSNibControlConnector.h"
 #import "AppKit/NSNibOutletConnector.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
+#import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSNixSerialization.h"
 
 @interface NSObject (GSNixAwaking)
@@ -95,6 +96,7 @@
       if (className != nil)
         {
           NSString *identifier = [value objectForKey: @"$id"];
+          NSString *superclassName = [value objectForKey: @"$superclass"];
           Class objectClass;
           id object;
 
@@ -106,8 +108,13 @@
                         format: @"Duplicate NIX object id '%@'", identifier];
           objectClass = NSClassFromString(className);
           if (objectClass == Nil)
-            [NSException raise: NSInvalidArgumentException
-                        format: @"Unknown NIX class '%@'", className];
+            {
+              if ([NSClassSwapper isInInterfaceBuilder] && superclassName != nil)
+                objectClass = NSClassFromString(superclassName);
+              if (objectClass == Nil)
+                [NSException raise: NSInvalidArgumentException
+                            format: @"Unknown NIX class '%@'", className];
+            }
 
           object = [[objectClass allocWithZone: _zone] init];
           if (object == nil)
@@ -116,6 +123,11 @@
                                identifier, className];
           [_objects setObject: object forKey: identifier];
           [GSNixSerialization setIdentifier: identifier forObject: object];
+          [GSNixSerialization setIntendedClassName: className
+                               designSuperclassName: superclassName
+                                          forObject: object];
+          [GSNixSerialization setPreservedConnections:
+            [value objectForKey: @"connections"] forObject: object];
           [object release];
           [_definitions addObject: value];
         }
@@ -217,9 +229,25 @@
       NSEnumerator *keys = [properties keyEnumerator];
       NSString *key;
 
+      if ([NSClassSwapper isInInterfaceBuilder]
+          && ![NSStringFromClass([object class])
+                isEqualToString: [definition objectForKey: @"$class"]])
+        [GSNixSerialization setPreservedProperties: properties forObject: object];
+
       while ((key = [keys nextObject]) != nil)
-        [object setValue: [self decodedValue: [properties objectForKey: key]]
-                 forKey: key];
+        {
+          NS_DURING
+            {
+              [object setValue: [self decodedValue: [properties objectForKey: key]]
+                       forKey: key];
+            }
+          NS_HANDLER
+            {
+              if (![NSClassSwapper isInInterfaceBuilder])
+                [localException raise];
+            }
+          NS_ENDHANDLER
+        }
     }
 }
 
@@ -254,6 +282,9 @@
   NSEnumerator *enumerator;
   NSDictionary *definition;
 
+  if ([NSClassSwapper isInInterfaceBuilder])
+    return;
+
   /* Accept version 1 files written before connections became object-local. */
   [self establishConnectionsInArray: [_document objectForKey: @"connections"]];
 
@@ -275,12 +306,15 @@
   [self configureObjects];
   [self establishConnections];
 
-  enumerator = [_definitions objectEnumerator];
-  while ((value = [enumerator nextObject]) != nil)
+  if (![NSClassSwapper isInInterfaceBuilder])
     {
-      id object = [_objects objectForKey: [value objectForKey: @"$id"]];
-      if ([object respondsToSelector: @selector(awakeFromNib)])
-        [object awakeFromNib];
+      enumerator = [_definitions objectEnumerator];
+      while ((value = [enumerator nextObject]) != nil)
+        {
+          id object = [_objects objectForKey: [value objectForKey: @"$id"]];
+          if ([object respondsToSelector: @selector(awakeFromNib)])
+            [object awakeFromNib];
+        }
     }
 
   enumerator = [topLevel objectEnumerator];
