@@ -120,6 +120,12 @@ Mappings accumulate through the inheritance chain. A non-coding object without
 an explicit mapping is rejected rather than having arbitrary accessors guessed
 or silently omitted.
 
+The full writer also accepts `classNameMappings`, mapping live Objective-C
+class names to archive class names. It applies to every object reached through
+keyed coding, including nested cells and menu objects, and to class-version
+metadata. This is the NIX equivalent of `setClassName:forClass:`; interface
+editors keep their substitute-to-runtime mappings in their own plugins.
+
 ```objc
 NSDictionary *properties = [NSDictionary dictionaryWithObjectsAndKeys:
   [NSDictionary dictionaryWithObjectsAndKeys:

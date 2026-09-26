@@ -268,6 +268,23 @@ int main(void)
        "keyed coding persists values that have no KVC property")
 
   {
+    NSData *mapped = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: root]
+      keyValuePairs: nil
+      excludedKeys: nil
+      identifiers: nil
+      classNameMappings: [NSDictionary dictionaryWithObject: @"ArchivedNode"
+                                                       forKey: @"NixTestNode"]
+      connections: nil
+      errorDescription: &error];
+    NSString *mappedXML = [[[NSString alloc] initWithData: mapped
+      encoding: NSUTF8StringEncoding] autorelease];
+    PASS([mappedXML rangeOfString: @"ArchivedNode"].location != NSNotFound
+         && [mappedXML rangeOfString: @"NixTestNode"].location == NSNotFound,
+         "archive class mappings cover definitions and class versions")
+  }
+
+  {
     NSObject *nonCoding = [[[NSObject alloc] init] autorelease];
     NSString *nonCodingError = nil;
     NSData *nonCodingData = [GSNixSerialization

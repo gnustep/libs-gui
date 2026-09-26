@@ -86,6 +86,20 @@ APPKIT_EXPORT_CLASS
                     errorDescription: (NSString **)errorDescription;
 
 /**
+ * Adds archive class-name mappings. Keys are live Objective-C class names and
+ * values are the runtime class names written to NIX. This is the NIX analogue
+ * of NSKeyedArchiver's setClassName:forClass: and applies to every object
+ * reached while traversing the graph.
+ */
++ (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
+                       keyValuePairs: (NSDictionary *)keyValuePairs
+                        excludedKeys: (NSDictionary *)excludedKeys
+                         identifiers: (NSMapTable *)identifiers
+                  classNameMappings: (NSDictionary *)classNameMappings
+                         connections: (NSArray *)connections
+                    errorDescription: (NSString **)errorDescription;
+
+/**
  * Compatibility convenience method. Each name in a class's propertyKeys
  * array is used as both the NIX property name and the KVC key.
  */

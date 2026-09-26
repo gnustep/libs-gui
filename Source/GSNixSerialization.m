@@ -42,6 +42,7 @@
 {
   NSDictionary *_keyValuePairs;
   NSDictionary *_excludedKeys;
+  NSDictionary *_classNameMappings;
   NSMapTable *_explicitIdentifiers;
   NSMapTable *_identifiers;
   NSMutableDictionary *_definitionsByIdentifier;
@@ -49,6 +50,7 @@
 }
 - (id) initWithKeyValuePairs: (NSDictionary *)keyValuePairs
                 excludedKeys: (NSDictionary *)excludedKeys
+           classNameMappings: (NSDictionary *)classNameMappings
                  identifiers: (NSMapTable *)identifiers;
 - (NSDictionary *) documentWithTopLevelObjects: (NSArray *)topLevelObjects
                                       connections: (NSArray *)connections;
@@ -371,6 +373,7 @@ GSNixIsBuiltInTransientKey(NSString *key, Class objectClass)
 
 - (id) initWithKeyValuePairs: (NSDictionary *)keyValuePairs
                 excludedKeys: (NSDictionary *)excludedKeys
+           classNameMappings: (NSDictionary *)classNameMappings
                  identifiers: (NSMapTable *)identifiers
 {
   self = [super init];
@@ -378,6 +381,7 @@ GSNixIsBuiltInTransientKey(NSString *key, Class objectClass)
     {
       _keyValuePairs = [keyValuePairs copy];
       _excludedKeys = [excludedKeys copy];
+      _classNameMappings = [classNameMappings copy];
       _explicitIdentifiers = [identifiers retain];
       _identifiers = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
                                       NSObjectMapValueCallBacks, 0);
@@ -391,6 +395,7 @@ GSNixIsBuiltInTransientKey(NSString *key, Class objectClass)
 {
   [_keyValuePairs release];
   [_excludedKeys release];
+  [_classNameMappings release];
   [_explicitIdentifiers release];
   [_definitionsByIdentifier release];
   [_conditionalValues release];
@@ -676,7 +681,14 @@ GSNixIsBuiltInTransientKey(NSString *key, Class objectClass)
     {
       NSString *className = [GSNixSerialization intendedClassNameForObject: value];
       NSString *superclassName = [GSNixSerialization designSuperclassNameForObject: value];
+      NSString *mappedClassName = [_classNameMappings objectForKey:
+        NSStringFromClass([value class])];
 
+      /* Object-specific custom-class metadata wins when it has a recorded
+       * design superclass. Otherwise archive mappings normalize editor-only
+       * substitute names, including files produced by older NIX writers. */
+      if (superclassName == nil && mappedClassName != nil)
+        className = mappedClassName;
       if (className == nil)
         className = NSStringFromClass([value class]);
     definition = [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -727,8 +739,13 @@ GSNixIsBuiltInTransientKey(NSString *key, Class objectClass)
         [definition setObject: @"keyed" forKey: @"$coding"];
         while (versionClass != Nil && versionClass != [NSObject class])
           {
+            NSString *versionClassName = NSStringFromClass(versionClass);
+            NSString *mappedVersionName =
+              [_classNameMappings objectForKey: versionClassName];
             [versions setObject: [NSNumber numberWithInteger:
-              [versionClass version]] forKey: NSStringFromClass(versionClass)];
+              [versionClass version]]
+                         forKey: mappedVersionName != nil
+                           ? mappedVersionName : versionClassName];
             versionClass = [versionClass superclass];
           }
         if ([versions count] != 0)
@@ -968,6 +985,7 @@ GSNixIsBuiltInTransientKey(NSString *key, Class objectClass)
                         keyValuePairs: keyValuePairs
                          excludedKeys: excludedKeys
                           identifiers: nil
+                   classNameMappings: nil
                            connections: connections
                       errorDescription: errorDescription];
 }
@@ -976,6 +994,23 @@ GSNixIsBuiltInTransientKey(NSString *key, Class objectClass)
                        keyValuePairs: (NSDictionary *)keyValuePairs
                         excludedKeys: (NSDictionary *)excludedKeys
                          identifiers: (NSMapTable *)identifiers
+                         connections: (NSArray *)connections
+                    errorDescription: (NSString **)errorDescription
+{
+  return [self dataWithTopLevelObjects: topLevelObjects
+                        keyValuePairs: keyValuePairs
+                         excludedKeys: excludedKeys
+                          identifiers: identifiers
+                   classNameMappings: nil
+                           connections: connections
+                      errorDescription: errorDescription];
+}
+
++ (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
+                       keyValuePairs: (NSDictionary *)keyValuePairs
+                        excludedKeys: (NSDictionary *)excludedKeys
+                         identifiers: (NSMapTable *)identifiers
+                  classNameMappings: (NSDictionary *)classNameMappings
                          connections: (NSArray *)connections
                     errorDescription: (NSString **)errorDescription
 {
@@ -988,6 +1023,7 @@ GSNixIsBuiltInTransientKey(NSString *key, Class objectClass)
       GSNixEncoder *encoder = [[[GSNixEncoder alloc]
         initWithKeyValuePairs: keyValuePairs
                 excludedKeys: excludedKeys
+           classNameMappings: classNameMappings
                  identifiers: identifiers] autorelease];
       NSDictionary *document = [encoder
         documentWithTopLevelObjects: topLevelObjects
