@@ -203,6 +203,30 @@ int main(void)
          "the writer supports the reserved first-responder connection endpoint")
   }
 
+  {
+    NixTestNode *detached = [[[NixTestNode alloc] init] autorelease];
+    NSData *detachedData = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: root]
+      keyValuePairs: [NSDictionary dictionaryWithObject:
+        [NSDictionary dictionaryWithObjectsAndKeys:
+          @"displayName", @"name", @"child", @"child", @"peer", @"peer", nil]
+        forKey: @"NixTestNode"]
+      connections: [NSArray arrayWithObject:
+        [NSDictionary dictionaryWithObjectsAndKeys:
+          @"outlet", @"kind", root, @"source", detached, @"destination",
+          @"detachedNode", @"label", nil]]
+      errorDescription: &error];
+    NSDictionary *detachedDocument = [NSPropertyListSerialization
+      propertyListFromData: detachedData
+          mutabilityOption: NSPropertyListImmutable
+                    format: NULL
+          errorDescription: NULL];
+    PASS(detachedData != nil
+         && [[detachedDocument objectForKey: @"objects"] count] == 2
+         && [[detachedDocument objectForKey: @"topLevelObjects"] count] == 1,
+         "connection-only endpoints are preserved without becoming top-level objects")
+  }
+
   inferred = [GSNixSerialization
     dataWithTopLevelObjects: [NSArray arrayWithObject: root]
     keyValuePairs: [NSDictionary dictionary]

@@ -75,7 +75,8 @@ dictionary containing `$ref`; the reserved ids `owner`, `application`, and
 Property values can be strings, numbers, booleans, data, dates, arrays, literal
 dictionaries, references, nested definitions, or typed values. Typed values
 use `$type` and `$value`; version 1 supports `rect`, `point`, `size`, `range`,
-and `selector`. Properties are applied with key-value coding, so their names
+`selector`, and `color`. Colors preserve named catalog colors or calibrated
+RGBA components. Properties are applied with key-value coding, so their names
 are the object's normal Cocoa property names.
 
 Connections have `kind` (`outlet` or `action`), `source`, `destination`, and

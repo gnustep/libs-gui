@@ -30,6 +30,9 @@
 #include <objc/runtime.h>
 
 #import "GNUstepGUI/GSNixSerialization.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
 
 @interface GSNixEncoder : NSObject
 {
@@ -240,6 +243,37 @@ GSNixIsBuiltInTransientKey(NSString *key)
 
 @implementation GSNixEncoder
 
+static const char *
+GSNixUnqualifiedType(const char *type)
+{
+  while (*type == 'r' || *type == 'n' || *type == 'N' || *type == 'o'
+         || *type == 'O' || *type == 'R' || *type == 'V')
+    type++;
+  return type;
+}
+
+static BOOL
+GSNixKVCTypeIsSupported(const char *type)
+{
+  type = GSNixUnqualifiedType(type);
+  switch (*type)
+    {
+      case '@': case 'c': case 'C': case 's': case 'S':
+      case 'i': case 'I': case 'l': case 'L': case 'q': case 'Q':
+      case 'f': case 'd': case 'B':
+        return YES;
+      case '{':
+        return (strcmp(type, @encode(NSRect)) == 0
+                || strcmp(type, @encode(NSPoint)) == 0
+                || strcmp(type, @encode(NSSize)) == 0
+                || strcmp(type, @encode(NSRange)) == 0);
+      default:
+        /* SEL, Class, pointers, arrays, unions, and C strings are not values
+         * that Foundation KVC can safely box and restore generically. */
+        return NO;
+    }
+}
+
 - (id) initWithKeyValuePairs: (NSDictionary *)keyValuePairs
                 excludedKeys: (NSDictionary *)excludedKeys
                  identifiers: (NSMapTable *)identifiers
@@ -291,6 +325,9 @@ GSNixIsBuiltInTransientKey(NSString *key)
           NSString *first;
           NSString *key;
           SEL getter;
+          Method getterMethod;
+          char getterType[256];
+          char setterType[256];
 
           stem = [stem substringToIndex: [stem length] - 1];
           if ([stem length] > 1
@@ -307,8 +344,17 @@ GSNixIsBuiltInTransientKey(NSString *key)
           getter = NSSelectorFromString(key);
           if (![objectClass instancesRespondToSelector: getter])
             getter = NSSelectorFromString([@"is" stringByAppendingString: stem]);
-          if ([objectClass instancesRespondToSelector: getter])
-            [pairs setObject: key forKey: key];
+          getterMethod = class_getInstanceMethod(objectClass, getter);
+          if (getterMethod != NULL)
+            {
+              method_getReturnType(getterMethod, getterType, sizeof(getterType));
+              method_getArgumentType(methods[index], 2,
+                                     setterType, sizeof(setterType));
+              if (GSNixKVCTypeIsSupported(getterType)
+                  && strcmp(GSNixUnqualifiedType(getterType),
+                            GSNixUnqualifiedType(setterType)) == 0)
+                [pairs setObject: key forKey: key];
+            }
         }
     }
   free(methods);
@@ -445,6 +491,37 @@ GSNixIsBuiltInTransientKey(NSString *key)
                 format: @"NIX does not support NSNull property values"];
   if ([value isKindOfClass: [NSValue class]])
     return [self typedValue: value];
+  if ([value isKindOfClass: [NSColor class]])
+    {
+      NSColor *color = (NSColor *)value;
+      if ([[color colorSpaceName] isEqualToString: NSNamedColorSpace])
+        return [NSDictionary dictionaryWithObjectsAndKeys:
+          @"color", @"$type",
+          [color catalogNameComponent], @"$catalog",
+          [color colorNameComponent], @"$name", nil];
+      else
+        {
+          NSColor *rgb = [color colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
+          CGFloat red, green, blue, alpha;
+          [rgb getRed: &red green: &green blue: &blue alpha: &alpha];
+          return [NSDictionary dictionaryWithObjectsAndKeys:
+            @"color", @"$type",
+            [NSArray arrayWithObjects:
+              [NSNumber numberWithDouble: red],
+              [NSNumber numberWithDouble: green],
+              [NSNumber numberWithDouble: blue],
+              [NSNumber numberWithDouble: alpha], nil], @"$components",
+            nil];
+        }
+    }
+  if ([value isKindOfClass: [NSFont class]])
+    {
+      NSFont *font = (NSFont *)value;
+      return [NSDictionary dictionaryWithObjectsAndKeys:
+        @"font", @"$type",
+        [font fontName], @"$name",
+        [NSNumber numberWithDouble: [font pointSize]], @"$size", nil];
+    }
   if ([value isKindOfClass: [NSArray class]])
     {
       NSMutableArray *result = [NSMutableArray arrayWithCapacity: [value count]];
@@ -576,6 +653,8 @@ GSNixIsBuiltInTransientKey(NSString *key)
     {
       NSString *kind = [object objectForKey: @"kind"];
       NSString *label = [object objectForKey: @"label"];
+      id sourceEndpoint = [object objectForKey: @"source"];
+      id destinationEndpoint = [object objectForKey: @"destination"];
       NSDictionary *source;
       NSDictionary *destination;
       NSString *anchorIdentifier;
@@ -587,8 +666,28 @@ GSNixIsBuiltInTransientKey(NSString *key)
              || [kind isEqualToString: @"action"])) || label == nil)
         [NSException raise: NSInvalidArgumentException
                     format: @"Invalid NIX connection %@", object];
-      source = [self referenceForEndpoint: [object objectForKey: @"source"]];
-      destination = [self referenceForEndpoint: [object objectForKey: @"destination"]];
+
+      /* A connector may be the only path to an otherwise detached design
+       * object (for example a menu item retained by Gorm's connection
+       * table).  Preserve such endpoints as ordinary, non-top-level graph
+       * objects instead of rejecting an otherwise valid document. */
+      if (![sourceEndpoint isKindOfClass: [NSString class]]
+          && NSMapGet(_identifiers, sourceEndpoint) == nil)
+        {
+          id encoded = [self encodedValue: sourceEndpoint];
+          if ([encoded objectForKey: @"$class"] != nil)
+            [objects addObject: encoded];
+        }
+      if (![destinationEndpoint isKindOfClass: [NSString class]]
+          && NSMapGet(_identifiers, destinationEndpoint) == nil)
+        {
+          id encoded = [self encodedValue: destinationEndpoint];
+          if ([encoded objectForKey: @"$class"] != nil)
+            [objects addObject: encoded];
+        }
+
+      source = [self referenceForEndpoint: sourceEndpoint];
+      destination = [self referenceForEndpoint: destinationEndpoint];
       encodedConnection = [NSDictionary dictionaryWithObjectsAndKeys:
         kind, @"kind",
         source, @"source", destination, @"destination",

@@ -22,6 +22,9 @@
 #import <Foundation/NSValue.h>
 
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSGraphics.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSNibConnector.h"
@@ -130,7 +133,11 @@
                             format: @"Unknown NIX class '%@'", className];
             }
 
-          if ([NSClassSwapper isInInterfaceBuilder]
+          /* Early NIX writers emitted NSFont as an empty object definition.
+           * NSFont is a factory class and rejects -init. */
+          if ([className isEqualToString: @"NSFont"])
+            object = [[NSFont systemFontOfSize: [NSFont systemFontSize]] retain];
+          else if ([NSClassSwapper isInInterfaceBuilder]
               && [objectClass respondsToSelector: @selector(allocSubstitute)])
             object = [[objectClass allocSubstitute] init];
           else
@@ -216,6 +223,34 @@
             {
               SEL selector = NSSelectorFromString(string);
               return [NSValue value: &selector withObjCType: @encode(SEL)];
+            }
+          if ([type isEqualToString: @"color"])
+            {
+              NSString *catalog = [value objectForKey: @"$catalog"];
+              NSString *name = [value objectForKey: @"$name"];
+              NSArray *components = [value objectForKey: @"$components"];
+              if (catalog != nil && name != nil)
+                return [NSColor colorWithCatalogName: catalog colorName: name];
+              if ([components count] == 4)
+                return [NSColor colorWithCalibratedRed:
+                  [[components objectAtIndex: 0] doubleValue]
+                  green: [[components objectAtIndex: 1] doubleValue]
+                  blue: [[components objectAtIndex: 2] doubleValue]
+                  alpha: [[components objectAtIndex: 3] doubleValue]];
+              [NSException raise: NSInvalidArgumentException
+                          format: @"Invalid NIX color value %@", value];
+            }
+          if ([type isEqualToString: @"font"])
+            {
+              NSString *name = [value objectForKey: @"$name"];
+              NSNumber *size = [value objectForKey: @"$size"];
+              NSFont *font = nil;
+              if (name != nil && size != nil)
+                font = [NSFont fontWithName: name size: [size doubleValue]];
+              if (font == nil)
+                [NSException raise: NSInvalidArgumentException
+                            format: @"Invalid NIX font value %@", value];
+              return font;
             }
           [NSException raise: NSInvalidArgumentException
                       format: @"Unknown NIX value type '%@'", type];
