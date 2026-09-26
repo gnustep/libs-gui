@@ -7,6 +7,10 @@
 #import <AppKit/NSImage.h>
 #import <AppKit/NSMatrix.h>
 #import <AppKit/NSButtonCell.h>
+#import <AppKit/NSLayoutManager.h>
+#import <AppKit/NSTextStorage.h>
+#import <AppKit/NSToolbar.h>
+#import <AppKit/NSWindow.h>
 #import <GNUstepGUI/GSModelLoaderFactory.h>
 #import "../../../Headers/Additions/GNUstepGUI/GSNibLoading.h"
 #import "../../../Headers/Additions/GNUstepGUI/GSNixSerialization.h"
@@ -390,6 +394,65 @@ int main(void)
          "a radio-button NSMatrix preserves its on and off images in NIX")
     if ([matrices count] != 0)
       [[matrices objectAtIndex: 0] release];
+  }
+
+  {
+    NSTextStorage *storage = [[[NSTextStorage alloc] initWithString: @"Text"] autorelease];
+    NSLayoutManager *layout = [[[NSLayoutManager alloc] init] autorelease];
+    NSData *textData;
+    NSMutableArray *textObjects = [NSMutableArray array];
+    NSDictionary *textContext;
+    GSModelLoader *textLoader;
+    BOOL textLoaded;
+
+    [storage addLayoutManager: layout];
+    textData = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: layout]
+      keyValuePairs: nil connections: nil errorDescription: &error];
+    textContext = [NSDictionary dictionaryWithObjectsAndKeys:
+      owner, NSNibOwner, textObjects, NSNibTopLevelObjects, nil];
+    textLoader = [GSModelLoaderFactory modelLoaderForData: textData];
+    textLoaded = [textLoader loadModelData: textData
+                         externalNameTable: textContext
+                                  withZone: NULL];
+    PASS(textData != nil && textLoaded && [textObjects count] == 1
+         && [[[textObjects objectAtIndex: 0] textStorage]
+              isKindOfClass: [NSTextStorage class]],
+         "NIX preserves NSTextStorage in a keyed text-system graph")
+    if ([textObjects count] != 0)
+      [[textObjects objectAtIndex: 0] release];
+  }
+
+  {
+    NSWindow *window = [[[NSWindow alloc]
+      initWithContentRect: NSMakeRect(40, 40, 320, 240)
+                styleMask: NSTitledWindowMask
+                  backing: NSBackingStoreBuffered
+                    defer: NO] autorelease];
+    NSToolbar *toolbar = [[[NSToolbar alloc]
+      initWithIdentifier: @"NixTestToolbar"] autorelease];
+    NSData *windowData;
+    NSMutableArray *windows = [NSMutableArray array];
+    NSDictionary *windowContext;
+    GSModelLoader *windowLoader;
+    BOOL windowLoaded;
+
+    [window setToolbar: toolbar];
+    windowData = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: window]
+      keyValuePairs: nil connections: nil errorDescription: &error];
+    windowContext = [NSDictionary dictionaryWithObjectsAndKeys:
+      owner, NSNibOwner, windows, NSNibTopLevelObjects, nil];
+    windowLoader = [GSModelLoaderFactory modelLoaderForData: windowData];
+    windowLoaded = [windowLoader loadModelData: windowData
+                             externalNameTable: windowContext
+                                      withZone: NULL];
+    PASS(windowData != nil && windowLoaded && [windows count] == 1
+         && [[[(NSWindow *)[windows objectAtIndex: 0] toolbar] identifier]
+              isEqualToString: @"NixTestToolbar"],
+         "NIX preserves a window toolbar through its keyed template")
+    if ([windows count] != 0)
+      [[windows objectAtIndex: 0] release];
   }
 
   transientOptIn = [GSNixSerialization

@@ -35,6 +35,7 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSTextStorage.h"
 #import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSNibLoading.h"
 
@@ -611,7 +612,11 @@ GSNixIsBuiltInTransientKey(NSString *key, Class objectClass)
         [font fontName], @"$name",
         [NSNumber numberWithDouble: [font pointSize]], @"$size", nil];
     }
-  if ([value isKindOfClass: [NSAttributedString class]])
+  /* NSTextStorage is an attributed string, but also owns layout managers and
+   * has an identity within the text-system graph.  It must follow keyed
+   * NSCoding rather than being flattened to an inline string value. */
+  if ([value isKindOfClass: [NSAttributedString class]]
+      && ![value isKindOfClass: [NSTextStorage class]])
     {
       NSAttributedString *string = (NSAttributedString *)value;
       NSMutableArray *runs = [NSMutableArray array];

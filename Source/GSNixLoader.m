@@ -27,8 +27,10 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSImage.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSNib.h"
+#import "AppKit/NSTextStorage.h"
 #import "AppKit/NSNibConnector.h"
 #import "AppKit/NSNibControlConnector.h"
 #import "AppKit/NSNibOutletConnector.h"
@@ -118,7 +120,16 @@
 }
 - (id) decodeObjectForKey: (NSString *)key
 {
-  return [_decoder decodedValue: [_properties objectForKey: key]];
+  id value = [_decoder decodedValue: [_properties objectForKey: key]];
+
+  /* Early keyed NIX output flattened NSTextStorage through its
+   * NSAttributedString superclass.  Restore the text-system object expected
+   * by NSLayoutManager and NSTextView when reading those files. */
+  if ([key isEqualToString: @"NSTextStorage"]
+      && [value isKindOfClass: [NSAttributedString class]]
+      && ![value isKindOfClass: [NSTextStorage class]])
+    value = [[[NSTextStorage alloc] initWithAttributedString: value] autorelease];
+  return value;
 }
 - (id) decodeObjectOfClass: (Class)class forKey: (NSString *)key
 {
@@ -249,8 +260,7 @@
           NSDictionary *properties = [value objectForKey: @"properties"];
           NSDictionary *substitutions =
             [_context objectForKey: GSNixClassSubstitutions];
-          NSString *substituteName =
-            [substitutions objectForKey: allocationClassName];
+          NSString *substituteName;
           Class objectClass;
           id object;
 
@@ -261,8 +271,14 @@
            * payload they actually contain. */
           if ([className isEqualToString: @"NSButtonImageSource"]
               && [properties objectForKey: @"NSImageName"] == nil
-              && [properties objectForKey: @"NSName"] != nil)
+              && ([properties objectForKey: @"NSName"] != nil
+                  || [[value objectForKey: @"$classVersions"]
+                       objectForKey: @"NSImage"] != nil))
             allocationClassName = @"NSImage";
+
+          /* Resolve the Interface Builder substitute only after legacy
+           * payload normalization has selected the effective coding class. */
+          substituteName = [substitutions objectForKey: allocationClassName];
 
           if (identifier == nil || [identifier length] == 0)
             [NSException raise: NSInvalidArgumentException
@@ -524,8 +540,25 @@
          properties: [definition objectForKey: @"properties"]
      classVersions: [definition objectForKey: @"$classVersions"]
                zone: _zone];
-  [object retain];
-  initialized = [object initWithCoder: coder];
+  if ([[definition objectForKey: @"$class"]
+        isEqualToString: @"NSButtonImageSource"]
+      && [[definition objectForKey: @"properties"]
+           objectForKey: @"NSImageName"] == nil
+      && [[definition objectForKey: @"properties"]
+           objectForKey: @"NSName"] == nil
+      && [[[definition objectForKey: @"$classVersions"]
+            objectForKey: @"NSImage"] integerValue] != 0)
+    {
+      /* Some already-written hybrid entries lost even the shared image name.
+       * No pixels can be recovered, but a valid empty NSImage preserves graph
+       * identity and lets the owning cell apply its remaining keyed state. */
+      initialized = [[NSImage alloc] initWithSize: NSMakeSize(1.0, 1.0)];
+    }
+  else
+    {
+      [object retain];
+      initialized = [object initWithCoder: coder];
+    }
   [coder release];
   if (initialized == nil)
     [NSException raise: NSInvalidArgumentException
