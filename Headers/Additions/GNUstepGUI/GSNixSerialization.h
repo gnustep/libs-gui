@@ -42,13 +42,15 @@ APPKIT_EXPORT_CLASS
 /**
  * Encode an interface object graph as an XML NIX property list.
  *
- * By default the writer discovers persistent keys by matching setFoo: methods
- * with foo or isFoo getters. It does not use Objective-C property metadata.
- * keyValuePairs optionally maps a class name to a dictionary whose keys are
- * NIX property names and whose values are KVC keys on the object. An explicit
- * class entry replaces inference for methods declared by that class; inherited
- * classes are still handled independently. First occurrences are
- * emitted as nested definitions and subsequent occurrences as references.
+ * By default objects implementing keyed NSCoding are serialized through their
+ * encodeWithCoder: implementation.  The keyed archive values are stored in
+ * the existing NIX properties dictionary, so object definitions and references
+ * retain the version-1 NIX representation.  keyValuePairs optionally maps a
+ * class name to a dictionary whose keys are NIX property names and whose values
+ * are KVC keys on the object.  Explicit mappings provide a compatibility path
+ * for custom objects that do not implement keyed NSCoding; the writer never
+ * guesses persistence from accessor names.  First occurrences are emitted as
+ * nested definitions and subsequent occurrences as references.
  *
  * Each optional connection dictionary contains kind, source, destination and
  * label. Source and destination are objects in the encoded graph; the strings
@@ -65,10 +67,9 @@ APPKIT_EXPORT_CLASS
                     errorDescription: (NSString **)errorDescription;
 
 /**
- * Full form with class-specific exclusions. excludedKeys maps class names to
- * arrays of inferred NIX keys that must not be persisted. Exclusions are
- * cumulative through the inheritance chain. Unsupported inferred values make
- * serialization fail rather than being silently omitted.
+ * Full form with class-specific exclusions. excludedKeys applies only to keys
+ * supplied through explicit keyValuePairs and is cumulative through the
+ * inheritance chain.  Keyed NSCoding decides its own persistent keys.
  */
 + (NSData *) dataWithTopLevelObjects: (NSArray *)topLevelObjects
                        keyValuePairs: (NSDictionary *)keyValuePairs

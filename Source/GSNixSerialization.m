@@ -17,12 +17,14 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSKeyValueCoding.h>
+#import <Foundation/NSCoder.h>
 #import <Foundation/NSMapTable.h>
 #import <Foundation/NSNull.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSPropertyList.h>
 #import <Foundation/NSSet.h>
 #import <Foundation/NSString.h>
+#import <Foundation/NSAttributedString.h>
 #import <Foundation/NSTimeZone.h>
 #import <Foundation/NSUUID.h>
 
@@ -33,6 +35,8 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSWindow.h"
+#import "GNUstepGUI/GSNibLoading.h"
 
 @interface GSNixEncoder : NSObject
 {
@@ -41,12 +45,29 @@
   NSMapTable *_explicitIdentifiers;
   NSMapTable *_identifiers;
   NSMutableDictionary *_definitionsByIdentifier;
+  NSMutableArray *_conditionalValues;
 }
 - (id) initWithKeyValuePairs: (NSDictionary *)keyValuePairs
                 excludedKeys: (NSDictionary *)excludedKeys
                  identifiers: (NSMapTable *)identifiers;
 - (NSDictionary *) documentWithTopLevelObjects: (NSArray *)topLevelObjects
                                       connections: (NSArray *)connections;
+@end
+
+@interface GSNixKeyedEncodingCoder : NSCoder
+{
+  GSNixEncoder *_encoder;
+  NSMutableDictionary *_properties;
+}
+- (id) initWithEncoder: (GSNixEncoder *)encoder
+             properties: (NSMutableDictionary *)properties;
+@end
+
+@interface GSNixEncoder (KeyedCoding)
+- (id) encodedValue: (id)value;
+- (void) addConditionalObject: (id)object
+                       forKey: (NSString *)key
+                 properties: (NSMutableDictionary *)properties;
 @end
 
 static char GSNixIdentifierAssociationKey;
@@ -103,7 +124,7 @@ GSNixCompareConnections(id left, id right, void *context)
 }
 
 static BOOL
-GSNixIsBuiltInTransientKey(NSString *key)
+GSNixIsBuiltInTransientKey(NSString *key, Class objectClass)
 {
   static NSSet *transientKeys = nil;
 
@@ -113,6 +134,14 @@ GSNixIsBuiltInTransientKey(NSString *key)
       @"delegate", @"dataSource", @"target",
       @"currentEditor", @"firstResponder", @"fieldEditor",
       @"graphicsContext", @"inLiveResize", nil];
+
+  /* NSMenuItemCell uses these as presentation back-references.  The menu view
+   * is deliberately non-retained and may already have been replaced; the menu
+   * item is derived from the owning NSMenu/NSPopUpButtonCell relationship. */
+  if (([key isEqualToString: @"menuView"]
+       || [key isEqualToString: @"menuItem"])
+      && [objectClass isSubclassOfClass: NSClassFromString(@"NSMenuItemCell")])
+    return YES;
 
   /* Invalidation flags describe pending work, never model state. */
   return ([transientKeys containsObject: key]
@@ -241,38 +270,104 @@ GSNixIsBuiltInTransientKey(NSString *key)
 
 @end
 
-@implementation GSNixEncoder
+@implementation GSNixKeyedEncodingCoder
 
-static const char *
-GSNixUnqualifiedType(const char *type)
+- (id) initWithEncoder: (GSNixEncoder *)encoder
+             properties: (NSMutableDictionary *)properties
 {
-  while (*type == 'r' || *type == 'n' || *type == 'N' || *type == 'o'
-         || *type == 'O' || *type == 'R' || *type == 'V')
-    type++;
-  return type;
-}
-
-static BOOL
-GSNixKVCTypeIsSupported(const char *type)
-{
-  type = GSNixUnqualifiedType(type);
-  switch (*type)
+  self = [super init];
+  if (self != nil)
     {
-      case '@': case 'c': case 'C': case 's': case 'S':
-      case 'i': case 'I': case 'l': case 'L': case 'q': case 'Q':
-      case 'f': case 'd': case 'B':
-        return YES;
-      case '{':
-        return (strcmp(type, @encode(NSRect)) == 0
-                || strcmp(type, @encode(NSPoint)) == 0
-                || strcmp(type, @encode(NSSize)) == 0
-                || strcmp(type, @encode(NSRange)) == 0);
-      default:
-        /* SEL, Class, pointers, arrays, unions, and C strings are not values
-         * that Foundation KVC can safely box and restore generically. */
-        return NO;
+      _encoder = encoder;
+      _properties = properties;
     }
+  return self;
 }
+
+- (BOOL) allowsKeyedCoding { return YES; }
+- (BOOL) requiresSecureCoding { return NO; }
+
+- (void) setEncodedValue: (id)value forKey: (NSString *)key
+{
+  id encoded;
+  if (key == nil)
+    [NSException raise: NSInvalidArgumentException
+                format: @"NIX keyed coding requires a key"];
+  encoded = [_encoder encodedValue: value];
+  if (encoded != nil)
+    [_properties setObject: encoded forKey: key];
+}
+
+- (void) encodeObject: (id)object forKey: (NSString *)key
+{
+  [self setEncodedValue: object forKey: key];
+}
+
+- (void) encodeConditionalObject: (id)object forKey: (NSString *)key
+{
+  [_encoder addConditionalObject: object forKey: key properties: _properties];
+}
+
+- (void) encodeBool: (BOOL)value forKey: (NSString *)key
+{
+  [_properties setObject: [NSNumber numberWithBool: value] forKey: key];
+}
+
+- (void) encodeInt: (int)value forKey: (NSString *)key
+{
+  [_properties setObject: [NSNumber numberWithInt: value] forKey: key];
+}
+
+- (void) encodeInt32: (int32_t)value forKey: (NSString *)key
+{
+  [_properties setObject: [NSNumber numberWithInt: value] forKey: key];
+}
+
+- (void) encodeInt64: (int64_t)value forKey: (NSString *)key
+{
+  [_properties setObject: [NSNumber numberWithLongLong: value] forKey: key];
+}
+
+- (void) encodeInteger: (NSInteger)value forKey: (NSString *)key
+{
+  [_properties setObject: [NSNumber numberWithInteger: value] forKey: key];
+}
+
+- (void) encodeFloat: (float)value forKey: (NSString *)key
+{
+  [_properties setObject: [NSNumber numberWithFloat: value] forKey: key];
+}
+
+- (void) encodeDouble: (double)value forKey: (NSString *)key
+{
+  [_properties setObject: [NSNumber numberWithDouble: value] forKey: key];
+}
+
+- (void) encodeBytes: (const uint8_t *)bytes
+              length: (NSUInteger)length
+              forKey: (NSString *)key
+{
+  [_properties setObject: [NSData dataWithBytes: bytes length: length] forKey: key];
+}
+
+- (void) encodePoint: (NSPoint)value forKey: (NSString *)key
+{
+  [self setEncodedValue: [NSValue valueWithPoint: value] forKey: key];
+}
+
+- (void) encodeSize: (NSSize)value forKey: (NSString *)key
+{
+  [self setEncodedValue: [NSValue valueWithSize: value] forKey: key];
+}
+
+- (void) encodeRect: (NSRect)value forKey: (NSString *)key
+{
+  [self setEncodedValue: [NSValue valueWithRect: value] forKey: key];
+}
+
+@end
+
+@implementation GSNixEncoder
 
 - (id) initWithKeyValuePairs: (NSDictionary *)keyValuePairs
                 excludedKeys: (NSDictionary *)excludedKeys
@@ -287,6 +382,7 @@ GSNixKVCTypeIsSupported(const char *type)
       _identifiers = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
                                       NSObjectMapValueCallBacks, 0);
       _definitionsByIdentifier = [[NSMutableDictionary alloc] init];
+      _conditionalValues = [[NSMutableArray alloc] init];
     }
   return self;
 }
@@ -297,68 +393,44 @@ GSNixKVCTypeIsSupported(const char *type)
   [_excludedKeys release];
   [_explicitIdentifiers release];
   [_definitionsByIdentifier release];
+  [_conditionalValues release];
   NSFreeMapTable(_identifiers);
   [super dealloc];
 }
 
-- (NSDictionary *) inferredPairsDeclaredByClass: (Class)objectClass
+- (BOOL) hasExplicitKeyValuePairsForObject: (id)object
 {
-  NSMutableDictionary *pairs = [NSMutableDictionary dictionary];
-  Method *methods;
-  unsigned int count = 0;
-  unsigned int index;
-
-  methods = class_copyMethodList(objectClass, &count);
-  for (index = 0; index < count; index++)
+  Class currentClass = [object class];
+  while (currentClass != Nil && currentClass != [NSObject class])
     {
-      SEL selector = method_getName(methods[index]);
-      const char *selectorName = sel_getName(selector);
-      size_t length = strlen(selectorName);
-
-      if (length > 4
-          && strncmp(selectorName, "set", 3) == 0
-          && selectorName[length - 1] == ':'
-          && strchr(selectorName, ':') == selectorName + length - 1
-          && method_getNumberOfArguments(methods[index]) == 3)
-        {
-          NSString *stem = [NSString stringWithUTF8String: selectorName + 3];
-          NSString *first;
-          NSString *key;
-          SEL getter;
-          Method getterMethod;
-          char getterType[256];
-          char setterType[256];
-
-          stem = [stem substringToIndex: [stem length] - 1];
-          if ([stem length] > 1
-              && [[NSCharacterSet uppercaseLetterCharacterSet]
-                   characterIsMember: [stem characterAtIndex: 0]]
-              && [[NSCharacterSet uppercaseLetterCharacterSet]
-                   characterIsMember: [stem characterAtIndex: 1]])
-            key = stem;
-          else
-            {
-              first = [[stem substringToIndex: 1] lowercaseString];
-              key = [first stringByAppendingString: [stem substringFromIndex: 1]];
-            }
-          getter = NSSelectorFromString(key);
-          if (![objectClass instancesRespondToSelector: getter])
-            getter = NSSelectorFromString([@"is" stringByAppendingString: stem]);
-          getterMethod = class_getInstanceMethod(objectClass, getter);
-          if (getterMethod != NULL)
-            {
-              method_getReturnType(getterMethod, getterType, sizeof(getterType));
-              method_getArgumentType(methods[index], 2,
-                                     setterType, sizeof(setterType));
-              if (GSNixKVCTypeIsSupported(getterType)
-                  && strcmp(GSNixUnqualifiedType(getterType),
-                            GSNixUnqualifiedType(setterType)) == 0)
-                [pairs setObject: key forKey: key];
-            }
-        }
+      if ([_keyValuePairs objectForKey: NSStringFromClass(currentClass)] != nil)
+        return YES;
+      currentClass = [currentClass superclass];
     }
-  free(methods);
-  return pairs;
+  return NO;
+}
+
+- (void) addConditionalObject: (id)object
+                       forKey: (NSString *)key
+                 properties: (NSMutableDictionary *)properties
+{
+  if (object != nil)
+    [_conditionalValues addObject: [NSDictionary dictionaryWithObjectsAndKeys:
+      object, @"object", key, @"key", properties, @"properties", nil]];
+}
+
+- (void) resolveConditionalValues
+{
+  NSEnumerator *enumerator = [_conditionalValues objectEnumerator];
+  NSDictionary *entry;
+  while ((entry = [enumerator nextObject]) != nil)
+    {
+      NSString *identifier = NSMapGet(_identifiers, [entry objectForKey: @"object"]);
+      if (identifier != nil)
+        [[entry objectForKey: @"properties"] setObject:
+          [NSDictionary dictionaryWithObject: identifier forKey: @"$ref"]
+                                           forKey: [entry objectForKey: @"key"]];
+    }
 }
 
 - (NSDictionary *) keyValuePairsForObject: (id)object
@@ -390,16 +462,14 @@ GSNixKVCTypeIsSupported(const char *type)
           [pairs addEntriesFromDictionary: explicitPairs];
           [explicitKeys addObjectsFromArray: [explicitPairs allKeys]];
         }
-      else
-        [pairs addEntriesFromDictionary:
-          [self inferredPairsDeclaredByClass: currentClass]];
     }
 
   {
     NSEnumerator *keys = [[[[pairs allKeys] copy] autorelease] objectEnumerator];
     NSString *key;
     while ((key = [keys nextObject]) != nil)
-      if (GSNixIsBuiltInTransientKey(key) && ![explicitKeys containsObject: key])
+      if (GSNixIsBuiltInTransientKey(key, [object class])
+          && ![explicitKeys containsObject: key])
         [pairs removeObjectForKey: key];
   }
   [pairs removeObjectsForKeys: [excluded allObjects]];
@@ -410,6 +480,7 @@ GSNixKVCTypeIsSupported(const char *type)
 {
   NSString *identifier = _explicitIdentifiers != NULL
     ? NSMapGet(_explicitIdentifiers, object) : nil;
+  BOOL isExplicit = identifier != nil;
 
   if (identifier == nil)
     identifier = [GSNixSerialization identifierForObject: object];
@@ -426,8 +497,21 @@ GSNixKVCTypeIsSupported(const char *type)
     [NSException raise: NSInvalidArgumentException
                 format: @"Invalid NIX object identifier '%@'", identifier];
   if ([_definitionsByIdentifier objectForKey: identifier] != nil)
-    [NSException raise: NSInvalidArgumentException
-                format: @"Duplicate NIX object identifier '%@'", identifier];
+    {
+      if (isExplicit)
+        [NSException raise: NSInvalidArgumentException
+                    format: @"Duplicate NIX object identifier '%@'", identifier];
+
+      /* A copied design object may retain the archive identifier associated
+       * with its source.  Keep the first object's stable ID and assign the
+       * copy a fresh one.  Caller-supplied identifier maps remain strict. */
+      do
+        {
+          identifier = [NSString stringWithFormat: @"nix-%@",
+            [[[NSUUID UUID] UUIDString] lowercaseString]];
+        }
+      while ([_definitionsByIdentifier objectForKey: identifier] != nil);
+    }
 
   [GSNixSerialization setIdentifier: identifier forObject: object];
   NSMapInsert(_identifiers, object, identifier);
@@ -522,6 +606,26 @@ GSNixKVCTypeIsSupported(const char *type)
         [font fontName], @"$name",
         [NSNumber numberWithDouble: [font pointSize]], @"$size", nil];
     }
+  if ([value isKindOfClass: [NSAttributedString class]])
+    {
+      NSAttributedString *string = (NSAttributedString *)value;
+      NSMutableArray *runs = [NSMutableArray array];
+      NSUInteger index = 0;
+      while (index < [string length])
+        {
+          NSRange range;
+          NSDictionary *attributes = [string attributesAtIndex: index
+                                                 effectiveRange: &range];
+          [runs addObject: [NSDictionary dictionaryWithObjectsAndKeys:
+            [NSNumber numberWithUnsignedInteger: range.location], @"location",
+            [NSNumber numberWithUnsignedInteger: range.length], @"length",
+            [self encodedValue: attributes], @"attributes", nil]];
+          index = NSMaxRange(range);
+        }
+      return [NSDictionary dictionaryWithObjectsAndKeys:
+        @"attributedString", @"$type", [string string], @"$string",
+        runs, @"$runs", nil];
+    }
   if ([value isKindOfClass: [NSArray class]])
     {
       NSMutableArray *result = [NSMutableArray arrayWithCapacity: [value count]];
@@ -562,6 +666,8 @@ GSNixKVCTypeIsSupported(const char *type)
     NSMutableDictionary *properties;
     NSEnumerator *enumerator;
     NSString *key;
+    BOOL useKeyedCoding;
+    id codingObject = value;
 
     if (identifier != nil)
       return [NSDictionary dictionaryWithObject: identifier forKey: @"$ref"];
@@ -589,7 +695,50 @@ GSNixKVCTypeIsSupported(const char *type)
         [GSNixSerialization preservedConnectionsForObject: value]]
                    forKey: @"connections"];
 
-    {
+    useKeyedCoding = (![self hasExplicitKeyValuePairsForObject: value]
+      && [value respondsToSelector: @selector(encodeWithCoder:)]);
+    if (useKeyedCoding)
+      {
+        id template = nil;
+        GSNixKeyedEncodingCoder *coder = [[GSNixKeyedEncodingCoder alloc]
+          initWithEncoder: self properties: properties];
+        NSMutableDictionary *versions = [NSMutableDictionary dictionary];
+        Class versionClass;
+
+        /* NSWindow's keyed archive contract is NSWindowTemplate, not direct
+         * -encodeWithCoder:.  Preserve the real object's NIX identity while
+         * recording the template's keyed fields in its properties dictionary. */
+        if ([value isKindOfClass: [NSWindow class]])
+          {
+            NSString *windowClass = [definition objectForKey: @"$class"];
+            template = [[NSWindowTemplate alloc]
+              initWithWindow: value
+                   className: windowClass
+                  isDeferred: NO
+                   isOneShot: [(NSWindow *)value isOneShot]
+                   isVisible: [(NSWindow *)value isVisible]
+              wantsToBeColor: YES
+            autoPositionMask: 0];
+            codingObject = template;
+            [definition setObject: @"NSWindowTemplate" forKey: @"$codingClass"];
+          }
+        versionClass = [codingObject class];
+
+        [definition setObject: @"keyed" forKey: @"$coding"];
+        while (versionClass != Nil && versionClass != [NSObject class])
+          {
+            [versions setObject: [NSNumber numberWithInteger:
+              [versionClass version]] forKey: NSStringFromClass(versionClass)];
+            versionClass = [versionClass superclass];
+          }
+        if ([versions count] != 0)
+          [definition setObject: versions forKey: @"$classVersions"];
+        [codingObject encodeWithCoder: coder];
+        [coder release];
+        [template release];
+      }
+    else if ([self hasExplicitKeyValuePairsForObject: value])
+      {
       NSDictionary *pairs = [self keyValuePairsForObject: value];
       enumerator = [[[pairs allKeys]
         sortedArrayUsingSelector: @selector(compare:)] objectEnumerator];
@@ -606,7 +755,11 @@ GSNixKVCTypeIsSupported(const char *type)
           if (encoded != nil)
             [properties setObject: encoded forKey: key];
         }
-    }
+      }
+    else if ([properties count] == 0)
+      [NSException raise: NSInvalidArgumentException
+                  format: @"NIX object %@ does not implement keyed NSCoding; "
+                          @"provide explicit key/value mappings", value];
     return definition;
   }
 }
@@ -714,6 +867,8 @@ GSNixKVCTypeIsSupported(const char *type)
       if (![objectConnections containsObject: encodedConnection])
         [objectConnections addObject: encodedConnection];
     }
+
+  [self resolveConditionalValues];
 
   enumerator = [_definitionsByIdentifier objectEnumerator];
   while ((object = [enumerator nextObject]) != nil)

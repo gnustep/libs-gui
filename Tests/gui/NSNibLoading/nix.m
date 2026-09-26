@@ -11,7 +11,7 @@
  * tagged strings while the runtime module still references section bounds. */
 static NSString *NixTestLinkerString __attribute__((used)) = @"NIX loader test fixture";
 
-@interface NixTestNode : NSObject
+@interface NixTestNode : NSObject <NSCoding>
 {
   NSString *_name;
   NixTestNode *_child;
@@ -32,6 +32,25 @@ static NSString *NixTestLinkerString __attribute__((used)) = @"NIX loader test f
 @end
 
 @implementation NixTestNode
+- (void) encodeWithCoder: (NSCoder *)coder
+{
+  [coder encodeObject: _name forKey: @"name"];
+  [coder encodeObject: _child forKey: @"child"];
+  [coder encodeObject: _peer forKey: @"peer"];
+  /* This deliberately has no KVC accessor. */
+  [coder encodeObject: @"coded" forKey: @"NIXNonKVCMarker"];
+}
+- (id) initWithCoder: (NSCoder *)coder
+{
+  self = [super init];
+  if (self != nil)
+    {
+      ASSIGN(_name, [coder decodeObjectForKey: @"name"]);
+      ASSIGN(_child, [coder decodeObjectForKey: @"child"]);
+      ASSIGN(_peer, [coder decodeObjectForKey: @"peer"]);
+    }
+  return self;
+}
 - (void) dealloc
 {
   [_name release];
@@ -128,13 +147,13 @@ int main(void)
     NSMutableArray *customObjects = [NSMutableArray array];
     NixTestOwner *customOwner = [[NixTestOwner alloc] init];
     NSDictionary *customContext = [NSDictionary dictionaryWithObjectsAndKeys:
-      customOwner, NSNibOwner, customObjects, NSNibTopLevelObjects, nil];
+      customOwner, NSNibOwner, customObjects, NSNibTopLevelObjects,
+      [NSDictionary dictionary], GSNixClassSubstitutions, nil];
     GSModelLoader *customLoader;
     NixTestNode *placeholder;
     NSData *rewritten;
     NSString *rewrittenXML;
 
-    [NSClassSwapper setIsInInterfaceBuilder: YES];
     customLoader = [GSModelLoaderFactory modelLoaderForData: customData];
     loaded = [customLoader loadModelData: customData
                        externalNameTable: customContext
@@ -162,7 +181,6 @@ int main(void)
          && [rewrittenXML rangeOfString: @"preserve me"].location != NSNotFound
          && [rewrittenXML rangeOfString: @"<string>node</string>"].location != NSNotFound,
          "Gorm rewrites unresolved custom class metadata, properties, and connections losslessly")
-    [NSClassSwapper setIsInInterfaceBuilder: NO];
     [customOwner release];
   }
 
@@ -239,11 +257,30 @@ int main(void)
        && [[[[NSString alloc] initWithData: inferred
                                   encoding: NSUTF8StringEncoding] autorelease]
              rangeOfString: @"<key>name</key>"].location != NSNotFound,
-       "matching KVC accessor pairs serialize custom classes without metadata")
+       "keyed NSCoding serializes custom classes without metadata")
   PASS([[[[NSString alloc] initWithData: inferred
                                 encoding: NSUTF8StringEncoding] autorelease]
           rangeOfString: @"<key>needsDisplay</key>"].location == NSNotFound,
-       "transient needs... flags are excluded from inferred state")
+       "properties omitted by encodeWithCoder: are not persisted")
+  PASS([[[[NSString alloc] initWithData: inferred
+                                encoding: NSUTF8StringEncoding] autorelease]
+          rangeOfString: @"<key>NIXNonKVCMarker</key>"].location != NSNotFound,
+       "keyed coding persists values that have no KVC property")
+
+  {
+    NSObject *nonCoding = [[[NSObject alloc] init] autorelease];
+    NSString *nonCodingError = nil;
+    NSData *nonCodingData = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: nonCoding]
+      keyValuePairs: nil
+      connections: nil
+      errorDescription: &nonCodingError];
+    PASS(nonCodingData == nil
+         && [nonCodingError rangeOfString: @"explicit key/value mappings"].location
+              != NSNotFound,
+         "non-coding objects require an explicit persistence schema")
+    [nonCodingError release];
+  }
 
   transientOptIn = [GSNixSerialization
     dataWithTopLevelObjects: [NSArray arrayWithObject: root]
@@ -300,6 +337,25 @@ int main(void)
     NSFreeMapTable(identifiers);
     [inserted release];
   }
+  {
+    NixTestNode *original = [[NixTestNode alloc] init];
+    NixTestNode *copy = [[NixTestNode alloc] init];
+    NSData *copiedData;
+
+    [GSNixSerialization setIdentifier: @"copied-node" forObject: original];
+    [GSNixSerialization setIdentifier: @"copied-node" forObject: copy];
+    copiedData = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObjects: original, copy, nil]
+      keyValuePairs: [NSDictionary dictionary]
+      connections: nil
+      errorDescription: &error];
+    PASS(copiedData != nil
+         && ![[GSNixSerialization identifierForObject: original]
+               isEqual: [GSNixSerialization identifierForObject: copy]],
+         "copied objects with inherited archive IDs receive distinct IDs")
+    [original release];
+    [copy release];
+  }
   if (inferred != nil)
     {
       NSMutableArray *inferredObjects = [NSMutableArray array];
@@ -315,7 +371,7 @@ int main(void)
       PASS(inferredLoaded
            && [[inferredRoot name] isEqual: @"root"]
            && [[inferredRoot child] peer] == inferredRoot,
-           "inferred custom-class state survives a NIX round trip")
+           "keyed custom-class state survives a NIX round trip")
     }
   {
     NSPropertyListFormat plistFormat;

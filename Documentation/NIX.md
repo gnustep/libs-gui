@@ -20,7 +20,12 @@ external object (`owner`, `application`, or `firstResponder`), it is stored
 with its destination.
 
 An object definition has `$id`, `$class`, and an optional `properties`
-dictionary. `$superclass` records the concrete design-time superclass used
+dictionary. New definitions normally have `$coding` set to `keyed`; their
+properties are the values emitted by the class's `encodeWithCoder:` method.
+`$classVersions` records the keyed-coding versions used during decoding.
+`$codingClass` records an archive replacement class, such as
+`NSWindowTemplate`, without changing the object's public `$class` or identity.
+`$superclass` records the concrete design-time superclass used
 when an application-specific class is unavailable to an interface editor. The
 loader creates every object first and applies properties in a
 second pass, so forward references and cycles are valid. A reference is a
@@ -76,8 +81,10 @@ Property values can be strings, numbers, booleans, data, dates, arrays, literal
 dictionaries, references, nested definitions, or typed values. Typed values
 use `$type` and `$value`; version 1 supports `rect`, `point`, `size`, `range`,
 `selector`, and `color`. Colors preserve named catalog colors or calibrated
-RGBA components. Properties are applied with key-value coding, so their names
-are the object's normal Cocoa property names.
+RGBA components. Keyed definitions are reconstructed with `initWithCoder:`;
+their property names are archive keys and need not be KVC-compliant. Definitions
+without `$coding` are version-1 legacy objects and continue to apply their
+properties with key-value coding.
 
 Connections have `kind` (`outlet` or `action`), `source`, `destination`, and
 `label`. Keeping them beside the participating object makes changes to a view
@@ -92,17 +99,26 @@ the same way as `.gorm`, `.nib`, and `.xib` resources.
 ## Writing NIX
 
 `GSNixSerialization` produces NIX XML from a live object graph. By default it
-examines the methods declared by every class in the inheritance chain and
-matches `setFoo:` with a `foo` or `isFoo` getter. These pre-`@property` KVC
-pairs make ordinary GNUstep widgets and application-specific classes
-self-describing without relying on Objective-C property metadata.
+uses each object's keyed `NSCoding` implementation. A NIX-specific `NSCoder`
+records `encodeObject:forKey:`, keyed scalar and geometry calls, conditional
+objects, and class versions into the normal NIX properties dictionary. The
+inverse coder presents those values to `initWithCoder:`. Consequently AppKit's
+existing archive contract decides which state is persistent; NIX does not
+guess from accessor names or require archive keys to be KVC properties.
 
-The optional key/value metadata is for classes with special persistence
-semantics. Each mapping key is the property name written to NIX and its value
-is the KVC key used to read the live object. An explicit mapping replaces
-inference for the methods declared by that class, while inherited classes are
-handled independently. Unsupported values cause serialization to fail rather
-than silently dropping state.
+The surrounding version-1 representation is unchanged: first occurrences are
+nested definitions, later occurrences are `$ref` dictionaries, and connections
+remain object-local. Existing NIX files without a `$coding` marker retain their
+legacy KVC decoding behavior. `NSWindow` follows AppKit's normal keyed archive
+replacement rule and records `NSWindowTemplate` as its `$codingClass` while
+remaining an `NSWindow` definition.
+
+The optional key/value metadata is a compatibility path for custom classes
+that do not implement keyed `NSCoding`. Each mapping key is the property name
+written to NIX and its value is the KVC key used to read the live object.
+Mappings accumulate through the inheritance chain. A non-coding object without
+an explicit mapping is rejected rather than having arbitrary accessors guessed
+or silently omitted.
 
 ```objc
 NSDictionary *properties = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -121,19 +137,11 @@ NSData *data = [GSNixSerialization
   errorDescription: &error];
 ```
 
-Passing an empty metadata dictionary enables inference for every class. The
-full API also accepts an `excludedKeys` dictionary mapping class names to
-arrays of transient inferred keys. Exclusions accumulate through inheritance.
-NIX always excludes common graph back-references and runtime collaborators:
-`superview`, `window`, `nextResponder`, `undoManager`, `delegate`,
-`dataSource`, `target`, editors, first-responder state, graphics contexts, and
-live-resize state. Keys beginning with `needs` are also excluded because they
-represent pending display, layout, or constraint work rather than persistent
-model state. An explicit key/value mapping can opt a built-in exclusion back
-in when that name has persistent meaning for a particular class. Entries in
-`excludedKeys` remain authoritative and cannot be opted back in accidentally.
-A class with other transient state should list it explicitly rather than
-allowing it into the archive.
+Passing an empty metadata dictionary selects keyed coding for objects that
+support it. The full API also accepts an `excludedKeys` dictionary for the
+explicit KVC compatibility path; exclusions accumulate through inheritance.
+Keyed definitions are not filtered because their class's `encodeWithCoder:`
+implementation is authoritative.
 
 The writer embeds an object definition at its first occurrence and emits a
 reference thereafter. This preserves shared objects and cycles while retaining

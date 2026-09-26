@@ -15,10 +15,12 @@
 #import <Foundation/NSException.h>
 #import <Foundation/NSGeometry.h>
 #import <Foundation/NSKeyValueCoding.h>
+#import <Foundation/NSCoder.h>
 #import <Foundation/NSNull.h>
 #import <Foundation/NSPropertyList.h>
 #import <Foundation/NSSet.h>
 #import <Foundation/NSString.h>
+#import <Foundation/NSAttributedString.h>
 #import <Foundation/NSValue.h>
 
 #import "AppKit/NSApplication.h"
@@ -56,11 +58,133 @@
   NSZone *_zone;
   NSMutableDictionary *_objects;
   NSMutableArray *_definitions;
+  BOOL _isInterfaceBuilder;
 }
 - (id) initWithDocument: (NSDictionary *)document
                 context: (NSDictionary *)context
                    zone: (NSZone *)zone;
 - (BOOL) decode;
+- (id) decodedValue: (id)value;
+@end
+
+@interface GSNixKeyedDecodingCoder : NSCoder
+{
+  GSNixDecoder *_decoder;
+  NSDictionary *_properties;
+  NSDictionary *_classVersions;
+  NSZone *_zone;
+}
+- (id) initWithDecoder: (GSNixDecoder *)decoder
+             properties: (NSDictionary *)properties
+         classVersions: (NSDictionary *)classVersions
+                   zone: (NSZone *)zone;
+@end
+
+@implementation GSNixKeyedDecodingCoder
+
+- (id) initWithDecoder: (GSNixDecoder *)decoder
+             properties: (NSDictionary *)properties
+         classVersions: (NSDictionary *)classVersions
+                   zone: (NSZone *)zone
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _decoder = decoder;
+      _properties = [properties retain];
+      _classVersions = [classVersions retain];
+      _zone = zone;
+    }
+  return self;
+}
+
+- (void) dealloc
+{
+  [_properties release];
+  [_classVersions release];
+  [super dealloc];
+}
+
+- (BOOL) allowsKeyedCoding { return YES; }
+- (BOOL) requiresSecureCoding { return NO; }
+- (NSZone *) objectZone { return _zone; }
+- (BOOL) containsValueForKey: (NSString *)key
+{
+  return [_properties objectForKey: key] != nil;
+}
+- (id) decodeObjectForKey: (NSString *)key
+{
+  return [_decoder decodedValue: [_properties objectForKey: key]];
+}
+- (id) decodeObjectOfClass: (Class)class forKey: (NSString *)key
+{
+  id value = [self decodeObjectForKey: key];
+  return value == nil || [value isKindOfClass: class] ? value : nil;
+}
+- (id) decodeObjectOfClasses: (NSSet *)classes forKey: (NSString *)key
+{
+  id value = [self decodeObjectForKey: key];
+  NSEnumerator *enumerator = [classes objectEnumerator];
+  Class class;
+  while ((class = [enumerator nextObject]) != Nil)
+    if ([value isKindOfClass: class])
+      return value;
+  return nil;
+}
+- (BOOL) decodeBoolForKey: (NSString *)key
+{
+  return [[self decodeObjectForKey: key] boolValue];
+}
+- (int) decodeIntForKey: (NSString *)key
+{
+  return [[self decodeObjectForKey: key] intValue];
+}
+- (int32_t) decodeInt32ForKey: (NSString *)key
+{
+  return [[self decodeObjectForKey: key] intValue];
+}
+- (int64_t) decodeInt64ForKey: (NSString *)key
+{
+  return [[self decodeObjectForKey: key] longLongValue];
+}
+- (NSInteger) decodeIntegerForKey: (NSString *)key
+{
+  return [[self decodeObjectForKey: key] integerValue];
+}
+- (float) decodeFloatForKey: (NSString *)key
+{
+  return [[self decodeObjectForKey: key] floatValue];
+}
+- (double) decodeDoubleForKey: (NSString *)key
+{
+  return [[self decodeObjectForKey: key] doubleValue];
+}
+- (const uint8_t *) decodeBytesForKey: (NSString *)key
+                        returnedLength: (NSUInteger *)length
+{
+  NSData *data = [self decodeObjectForKey: key];
+  if (length != NULL)
+    *length = [data length];
+  return [data bytes];
+}
+- (NSPoint) decodePointForKey: (NSString *)key
+{
+  return [[self decodeObjectForKey: key] pointValue];
+}
+- (NSSize) decodeSizeForKey: (NSString *)key
+{
+  return [[self decodeObjectForKey: key] sizeValue];
+}
+- (NSRect) decodeRectForKey: (NSString *)key
+{
+  return [[self decodeObjectForKey: key] rectValue];
+}
+- (NSInteger) versionForClassName: (NSString *)className
+{
+  NSNumber *version = [_classVersions objectForKey: className];
+  return version != nil ? [version integerValue] : 0;
+}
+
 @end
 
 @implementation GSNixDecoder
@@ -77,6 +201,8 @@
       _zone = zone;
       _objects = [[NSMutableDictionary alloc] init];
       _definitions = [[NSMutableArray alloc] init];
+      _isInterfaceBuilder = ([context objectForKey: GSNixClassSubstitutions] != nil
+        || [NSClassSwapper isInInterfaceBuilder]);
     }
   return self;
 }
@@ -106,9 +232,14 @@
         {
           NSString *identifier = [value objectForKey: @"$id"];
           NSString *superclassName = [value objectForKey: @"$superclass"];
+          NSString *codingClassName = [value objectForKey: @"$codingClass"];
+          NSString *allocationClassName = codingClassName != nil
+            ? codingClassName : className;
+          BOOL isKeyed = [[value objectForKey: @"$coding"] isEqual: @"keyed"];
           NSDictionary *substitutions =
             [_context objectForKey: GSNixClassSubstitutions];
-          NSString *substituteName = [substitutions objectForKey: className];
+          NSString *substituteName =
+            [substitutions objectForKey: allocationClassName];
           Class objectClass;
           id object;
 
@@ -119,10 +250,12 @@
             [NSException raise: NSInvalidArgumentException
                         format: @"Duplicate NIX object id '%@'", identifier];
           objectClass = substituteName != nil
-            ? NSClassFromString(substituteName) : NSClassFromString(className);
+            ? NSClassFromString(substituteName)
+            : NSClassFromString(allocationClassName);
           if (objectClass == Nil)
             {
-              if ([NSClassSwapper isInInterfaceBuilder] && superclassName != nil)
+              if (codingClassName == nil
+                  && _isInterfaceBuilder && superclassName != nil)
                 {
                   substituteName = [substitutions objectForKey: superclassName];
                   objectClass = NSClassFromString(substituteName != nil
@@ -133,11 +266,25 @@
                             format: @"Unknown NIX class '%@'", className];
             }
 
+          /* Keyed objects must receive initWithCoder: after every placeholder
+           * has been registered, so references and cycles can resolve.
+           * Existing version-1 objects retain their legacy init-plus-KVC path. */
+          if (isKeyed)
+            {
+              if (_isInterfaceBuilder
+                  && [objectClass respondsToSelector: @selector(allocSubstitute)])
+                object = [objectClass allocSubstitute];
+              else
+                object = [objectClass allocWithZone: _zone];
+            }
           /* Early NIX writers emitted NSFont as an empty object definition.
            * NSFont is a factory class and rejects -init. */
-          if ([className isEqualToString: @"NSFont"])
+          else if ([className isEqualToString: @"NSFont"])
             object = [[NSFont systemFontOfSize: [NSFont systemFontSize]] retain];
-          else if ([NSClassSwapper isInInterfaceBuilder]
+          else if ([className isEqualToString: @"NSAttributedString"]
+                   || [className isEqualToString: @"GSAttributedString"])
+            object = [[NSAttributedString alloc] initWithString: @""];
+          else if (_isInterfaceBuilder
               && [objectClass respondsToSelector: @selector(allocSubstitute)])
             object = [[objectClass allocSubstitute] init];
           else
@@ -252,6 +399,33 @@
                             format: @"Invalid NIX font value %@", value];
               return font;
             }
+          if ([type isEqualToString: @"attributedString"])
+            {
+              NSString *plainString = [value objectForKey: @"$string"];
+              NSArray *runs = [value objectForKey: @"$runs"];
+              NSMutableAttributedString *result;
+              NSEnumerator *enumerator;
+              NSDictionary *run;
+              if (plainString == nil || runs == nil)
+                [NSException raise: NSInvalidArgumentException
+                            format: @"Invalid NIX attributed string %@", value];
+              result = [[[NSMutableAttributedString alloc]
+                initWithString: plainString] autorelease];
+              enumerator = [runs objectEnumerator];
+              while ((run = [enumerator nextObject]) != nil)
+                {
+                  NSRange range = NSMakeRange(
+                    [[run objectForKey: @"location"] unsignedIntegerValue],
+                    [[run objectForKey: @"length"] unsignedIntegerValue]);
+                  NSDictionary *attributes = [self decodedValue:
+                    [run objectForKey: @"attributes"]];
+                  if (NSMaxRange(range) > [result length])
+                    [NSException raise: NSInvalidArgumentException
+                                format: @"Invalid NIX attributed string run %@", run];
+                  [result setAttributes: attributes range: range];
+                }
+              return result;
+            }
           [NSException raise: NSInvalidArgumentException
                       format: @"Unknown NIX value type '%@'", type];
         }
@@ -274,9 +448,45 @@
 
 - (void) configureObjects
 {
-  NSEnumerator *enumerator = [_definitions objectEnumerator];
+  NSEnumerator *enumerator;
   NSDictionary *definition;
 
+  /* Definitions are collected parent-first.  Initialize keyed children first
+   * so their parents normally receive fully initialized referenced objects.
+   * All allocated placeholders are already registered, preserving cycles. */
+  enumerator = [_definitions reverseObjectEnumerator];
+  while ((definition = [enumerator nextObject]) != nil)
+    {
+      if ([[definition objectForKey: @"$coding"] isEqual: @"keyed"])
+        {
+          NSString *identifier = [definition objectForKey: @"$id"];
+          id object = [_objects objectForKey: identifier];
+          GSNixKeyedDecodingCoder *coder = [[GSNixKeyedDecodingCoder alloc]
+            initWithDecoder: self
+                 properties: [definition objectForKey: @"properties"]
+             classVersions: [definition objectForKey: @"$classVersions"]
+                       zone: _zone];
+          id initialized = [object initWithCoder: coder];
+          [coder release];
+          if (initialized == nil)
+            [NSException raise: NSInvalidArgumentException
+                        format: @"Could not decode keyed NIX object '%@'", identifier];
+          if ([initialized respondsToSelector: @selector(nibInstantiate)])
+            initialized = [initialized nibInstantiate];
+          if (initialized != object)
+            {
+              [GSNixSerialization setIdentifier: identifier forObject: initialized];
+              [GSNixSerialization setIntendedClassName:
+                [definition objectForKey: @"$class"]
+                               designSuperclassName:
+                [definition objectForKey: @"$superclass"]
+                                          forObject: initialized];
+              [_objects setObject: initialized forKey: identifier];
+            }
+        }
+    }
+
+  enumerator = [_definitions objectEnumerator];
   while ((definition = [enumerator nextObject]) != nil)
     {
       id object = [_objects objectForKey: [definition objectForKey: @"$id"]];
@@ -287,7 +497,10 @@
       id visibilityValue = nil;
       id menuItems = nil;
 
-      if ([NSClassSwapper isInInterfaceBuilder]
+      if ([[definition objectForKey: @"$coding"] isEqual: @"keyed"])
+        continue;
+
+      if (_isInterfaceBuilder
           && ![NSStringFromClass([object class])
                 isEqualToString: [definition objectForKey: @"$class"]])
         [GSNixSerialization setPreservedProperties: properties forObject: object];
@@ -318,12 +531,26 @@
             continue;
           NS_DURING
             {
-              [object setValue: [self decodedValue: [properties objectForKey: key]]
-                       forKey: key];
+              id decoded = [self decodedValue: [properties objectForKey: key]];
+
+              /* Early Gorm NIX output could write character-backed control
+               * values as plist data.  Passing that NSData to setTitle: or
+               * setStringValue: corrupts controls and later crashes menu
+               * layout.  Limit this repair to Interface Builder loading. */
+              if ([decoded isKindOfClass: [NSData class]]
+                  && ([key isEqualToString: @"title"]
+                      || [key isEqualToString: @"alternateTitle"]
+                      || [key isEqualToString: @"stringValue"]
+                      || [key isEqualToString: @"placeholderString"]
+                      || [key isEqualToString: @"keyEquivalent"]
+                      || [key isEqualToString: @"toolTip"]))
+                decoded = [[[NSString alloc] initWithData: decoded
+                  encoding: NSUTF8StringEncoding] autorelease];
+              [object setValue: decoded forKey: key];
             }
           NS_HANDLER
             {
-              if (![NSClassSwapper isInInterfaceBuilder])
+              if (!_isInterfaceBuilder)
                 [localException raise];
             }
           NS_ENDHANDLER
@@ -380,7 +607,7 @@
   NSEnumerator *enumerator;
   NSDictionary *definition;
 
-  if ([NSClassSwapper isInInterfaceBuilder])
+  if (_isInterfaceBuilder)
     return;
 
   /* Accept version 1 files written before connections became object-local. */
@@ -404,7 +631,7 @@
   [self configureObjects];
   [self establishConnections];
 
-  if (![NSClassSwapper isInInterfaceBuilder])
+  if (!_isInterfaceBuilder)
     {
       enumerator = [_definitions objectEnumerator];
       while ((value = [enumerator nextObject]) != nil)
