@@ -14,6 +14,12 @@
 @class NSMapTable;
 @class NSString;
 
+/**
+ * Optional external-name-table key. Its value is a dictionary mapping NIX
+ * runtime class names to design-tool substitute class names.
+ */
+APPKIT_EXPORT NSString * const GSNixClassSubstitutions;
+
 APPKIT_EXPORT_CLASS
 @interface GSNixSerialization : NSObject
 
@@ -46,7 +52,9 @@ APPKIT_EXPORT_CLASS
  *
  * Each optional connection dictionary contains kind, source, destination and
  * label. Source and destination are objects in the encoded graph; the strings
- * "owner" and "application" select the two reserved external objects.
+ * "owner", "application", and "firstResponder" select reserved external
+ * objects. The first-responder endpoint loads as nil so actions follow the
+ * responder chain.
  *
  * On failure nil is returned. If errorDescription is non-NULL, the caller
  * owns the returned error string and must release it.

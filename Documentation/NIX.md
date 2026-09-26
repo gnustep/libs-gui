@@ -16,15 +16,16 @@ The root dictionary contains:
 
 Object definitions may contain a `connections` array immediately after their
 properties. A connection is stored with its source object. If its source is an
-external object (`owner` or `application`), it is stored with its destination.
+external object (`owner`, `application`, or `firstResponder`), it is stored
+with its destination.
 
 An object definition has `$id`, `$class`, and an optional `properties`
 dictionary. `$superclass` records the concrete design-time superclass used
 when an application-specific class is unavailable to an interface editor. The
 loader creates every object first and applies properties in a
 second pass, so forward references and cycles are valid. A reference is a
-dictionary containing `$ref`; the reserved ids `owner` and `application` refer
-to the nib owner and `NSApp`.
+dictionary containing `$ref`; the reserved ids `owner`, `application`, and
+`firstResponder` refer to the nib owner, `NSApp`, and a nil action target.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -137,8 +138,8 @@ The writer embeds an object definition at its first occurrence and emits a
 reference thereafter. This preserves shared objects and cycles while retaining
 the window/view hierarchy in the XML. Class mappings apply to subclasses when
 there is no more-specific entry. Connection endpoints must already occur in
-the encoded graph; use the strings `owner` and `application` for the reserved
-external endpoints.
+the encoded graph; use the strings `owner`, `application`, and
+`firstResponder` for the reserved external endpoints.
 
 NIX output is canonical for source-control use. Schema keys have a fixed
 order, other dictionary keys and archived property names are sorted, and
@@ -158,8 +159,8 @@ with `+[GSNixSerialization setIdentifier:forObject:]` or pass an identity-keyed
 precedence over loader-preserved IDs. Objects without either receive a UUID
 once, which is then retained as their serialization identity.
 
-The reserved IDs `owner` and `application`, empty IDs, and duplicate IDs are
-rejected. IDs are never derived from array position or object contents, so
+The reserved IDs `owner`, `application`, and `firstResponder`, empty IDs, and
+duplicate IDs are rejected. IDs are never derived from array position or object contents, so
 inserting, deleting, or reordering a view does not rename unaffected objects
 or rewrite their connections.
 
@@ -170,6 +171,16 @@ is represented by an instance of its recorded `$superclass`. The placeholder
 retains the intended class name, persistent ID, properties it cannot apply,
 and object-local connections. Writing the document restores that metadata
 rather than substituting the placeholder's runtime class.
+
+For known classes, editor mode honors the existing `+allocSubstitute` design
+tool hook. This lets interface editors instantiate their editable window,
+menu, and control subclasses while the NIX document continues to name the
+runtime AppKit classes.
+
+An editor may also pass a runtime-class-name to substitute-class-name
+dictionary under `GSNixClassSubstitutions` in the loader's external name
+table. This is the authoritative mechanism for palette-provided replacement
+classes; `+allocSubstitute` remains the fallback for classes not in the map.
 
 Editor mode does not establish outlets or actions and does not send
 `awakeFromNib`; those operations remain application-runtime behavior. Outside

@@ -52,6 +52,8 @@ static char GSNixDesignSuperclassAssociationKey;
 static char GSNixPreservedPropertiesAssociationKey;
 static char GSNixPreservedConnectionsAssociationKey;
 
+NSString * const GSNixClassSubstitutions = @"GSNixClassSubstitutions";
+
 static NSInteger
 GSNixKeyRank(NSString *key)
 {
@@ -373,7 +375,8 @@ GSNixIsBuiltInTransientKey(NSString *key)
   if (![identifier isKindOfClass: [NSString class]]
       || [identifier length] == 0
       || [identifier isEqualToString: @"owner"]
-      || [identifier isEqualToString: @"application"])
+      || [identifier isEqualToString: @"application"]
+      || [identifier isEqualToString: @"firstResponder"])
     [NSException raise: NSInvalidArgumentException
                 format: @"Invalid NIX object identifier '%@'", identifier];
   if ([_definitionsByIdentifier objectForKey: identifier] != nil)
@@ -493,11 +496,10 @@ GSNixIsBuiltInTransientKey(NSString *key)
 
       if (className == nil)
         className = NSStringFromClass([value class]);
-      if (superclassName == nil && [value class] != [NSObject class])
-        superclassName = NSStringFromClass([[value class] superclass]);
     definition = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-      identifier, @"$id", className, @"$class",
-      superclassName, @"$superclass", nil];
+      identifier, @"$id", className, @"$class", nil];
+    if (superclassName != nil)
+      [definition setObject: superclassName forKey: @"$superclass"];
     }
     [_definitionsByIdentifier setObject: definition forKey: identifier];
     properties = [NSMutableDictionary dictionaryWithDictionary:
@@ -538,7 +540,8 @@ GSNixIsBuiltInTransientKey(NSString *key)
 
   if ([endpoint isKindOfClass: [NSString class]]
       && ([endpoint isEqualToString: @"owner"]
-          || [endpoint isEqualToString: @"application"]))
+          || [endpoint isEqualToString: @"application"]
+          || [endpoint isEqualToString: @"firstResponder"]))
     identifier = endpoint;
   else
     identifier = NSMapGet(_identifiers, endpoint);

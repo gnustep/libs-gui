@@ -52,6 +52,23 @@ static NSString *NixTestLinkerString __attribute__((used)) = @"NIX loader test f
 - (void) setNeedsDisplay: (BOOL)value { _needsDisplay = value; }
 @end
 
+@interface NixTestDesignNode : NixTestNode
+@end
+
+@implementation NixTestDesignNode
+@end
+
+@interface NixTestNode (NixTestSubstitution)
++ (id) allocSubstitute;
+@end
+
+@implementation NixTestNode (NixTestSubstitution)
++ (id) allocSubstitute
+{
+  return [NixTestDesignNode alloc];
+}
+@end
+
 @interface NixTestOwner : NSObject
 {
   NixTestNode *_node;
@@ -127,6 +144,8 @@ int main(void)
          && [[GSNixSerialization intendedClassNameForObject: placeholder]
               isEqual: @"UnlinkedApplicationView"],
          "Gorm mode substitutes the design superclass and retains the custom class")
+    PASS([placeholder isKindOfClass: [NixTestDesignNode class]],
+         "Gorm mode honors allocSubstitute for editable design-time objects")
     PASS([customOwner node] == nil && ![placeholder awakened],
          "Gorm mode suppresses runtime connections and awakeFromNib")
     rewritten = [GSNixSerialization
@@ -163,6 +182,26 @@ int main(void)
                                           encoding: NSUTF8StringEncoding] autorelease];
   PASS([encodedString rangeOfString: @"<string>NIX</string>"].location != NSNotFound,
        "produced data is readable XML and identifies itself as NIX")
+
+  {
+    NSData *firstResponderData = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: root]
+      keyValuePairs: [NSDictionary dictionaryWithObject:
+        [NSDictionary dictionaryWithObjectsAndKeys:
+          @"displayName", @"name", @"child", @"child", @"peer", @"peer", nil]
+        forKey: @"NixTestNode"]
+      connections: [NSArray arrayWithObject:
+        [NSDictionary dictionaryWithObjectsAndKeys:
+          @"action", @"kind", root, @"source", @"firstResponder", @"destination",
+          @"performAction:", @"label", nil]]
+      errorDescription: &error];
+    NSString *firstResponderXML = [[[NSString alloc]
+      initWithData: firstResponderData encoding: NSUTF8StringEncoding] autorelease];
+    PASS(firstResponderData != nil
+         && [firstResponderXML rangeOfString: @"<string>firstResponder</string>"].location
+              != NSNotFound,
+         "the writer supports the reserved first-responder connection endpoint")
+  }
 
   inferred = [GSNixSerialization
     dataWithTopLevelObjects: [NSArray arrayWithObject: root]

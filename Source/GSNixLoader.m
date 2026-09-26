@@ -22,16 +22,22 @@
 #import <Foundation/NSValue.h>
 
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSMenu.h"
 #import "AppKit/NSNib.h"
 #import "AppKit/NSNibConnector.h"
 #import "AppKit/NSNibControlConnector.h"
 #import "AppKit/NSNibOutletConnector.h"
+#import "AppKit/NSWindow.h"
 #import "GNUstepGUI/GSModelLoaderFactory.h"
 #import "GNUstepGUI/GSNibLoading.h"
 #import "GNUstepGUI/GSNixSerialization.h"
 
 @interface NSObject (GSNixAwaking)
 - (void) awakeFromNib;
+@end
+
+@interface NSObject (GSNixInterfaceBuilderSubstitution)
++ (id) allocSubstitute;
 @end
 
 /*
@@ -97,6 +103,9 @@
         {
           NSString *identifier = [value objectForKey: @"$id"];
           NSString *superclassName = [value objectForKey: @"$superclass"];
+          NSDictionary *substitutions =
+            [_context objectForKey: GSNixClassSubstitutions];
+          NSString *substituteName = [substitutions objectForKey: className];
           Class objectClass;
           id object;
 
@@ -106,17 +115,26 @@
           if ([_objects objectForKey: identifier] != nil)
             [NSException raise: NSInvalidArgumentException
                         format: @"Duplicate NIX object id '%@'", identifier];
-          objectClass = NSClassFromString(className);
+          objectClass = substituteName != nil
+            ? NSClassFromString(substituteName) : NSClassFromString(className);
           if (objectClass == Nil)
             {
               if ([NSClassSwapper isInInterfaceBuilder] && superclassName != nil)
-                objectClass = NSClassFromString(superclassName);
+                {
+                  substituteName = [substitutions objectForKey: superclassName];
+                  objectClass = NSClassFromString(substituteName != nil
+                    ? substituteName : superclassName);
+                }
               if (objectClass == Nil)
                 [NSException raise: NSInvalidArgumentException
                             format: @"Unknown NIX class '%@'", className];
             }
 
-          object = [[objectClass allocWithZone: _zone] init];
+          if ([NSClassSwapper isInInterfaceBuilder]
+              && [objectClass respondsToSelector: @selector(allocSubstitute)])
+            object = [[objectClass allocSubstitute] init];
+          else
+            object = [[objectClass allocWithZone: _zone] init];
           if (object == nil)
             [NSException raise: NSInvalidArgumentException
                         format: @"Could not initialize NIX object '%@' as %@",
@@ -149,6 +167,8 @@
     return [_context objectForKey: NSNibOwner];
   if ([identifier isEqualToString: @"application"])
     return NSApp;
+  if ([identifier isEqualToString: @"firstResponder"])
+    return nil;
 
   object = [_objects objectForKey: identifier];
   if (object == nil)
@@ -228,14 +248,39 @@
       NSDictionary *properties = [definition objectForKey: @"properties"];
       NSEnumerator *keys = [properties keyEnumerator];
       NSString *key;
+      id frameValue = nil;
+      id visibilityValue = nil;
+      id menuItems = nil;
 
       if ([NSClassSwapper isInInterfaceBuilder]
           && ![NSStringFromClass([object class])
                 isEqualToString: [definition objectForKey: @"$class"]])
         [GSNixSerialization setPreservedProperties: properties forObject: object];
 
+      /* A window must own its decoded content view before its final frame is
+       * restored. Dictionary enumeration order is otherwise unspecified. */
+      if ([object isKindOfClass: [NSWindow class]])
+        {
+          id contentDefinition = [properties objectForKey: @"contentView"];
+          if (contentDefinition != nil)
+            [object setValue: [self decodedValue: contentDefinition]
+                     forKey: @"contentView"];
+          frameValue = [properties objectForKey: @"frame"];
+          visibilityValue = [properties objectForKey: @"isVisible"];
+        }
+
+      if ([object isKindOfClass: [NSMenu class]])
+        menuItems = [properties objectForKey: @"items"];
+
       while ((key = [keys nextObject]) != nil)
         {
+          if (([object isKindOfClass: [NSWindow class]]
+               && ([key isEqualToString: @"contentView"]
+                   || [key isEqualToString: @"frame"]
+                   || [key isEqualToString: @"isVisible"]))
+              || ([object isKindOfClass: [NSMenu class]]
+                  && [key isEqualToString: @"items"]))
+            continue;
           NS_DURING
             {
               [object setValue: [self decodedValue: [properties objectForKey: key]]
@@ -248,6 +293,24 @@
             }
           NS_ENDHANDLER
         }
+
+      /* Direct KVC assignment to NSMenu's _items ivar bypasses menu-item
+       * ownership, sizing, notifications, and its menu representation. */
+      if (menuItems != nil)
+        {
+          NSEnumerator *items = [[self decodedValue: menuItems] objectEnumerator];
+          NSMenuItem *item;
+          [(NSMenu *)object removeAllItems];
+          while ((item = [items nextObject]) != nil)
+            [(NSMenu *)object addItem: item];
+        }
+
+      if (frameValue != nil)
+        [(NSWindow *)object setFrame: [[self decodedValue: frameValue] rectValue]
+                             display: NO];
+      if (visibilityValue != nil)
+        [(NSWindow *)object setIsVisible:
+          [[self decodedValue: visibilityValue] boolValue]];
     }
 }
 
