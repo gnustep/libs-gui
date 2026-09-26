@@ -45,13 +45,13 @@
   return self;
 }
 
-- (void) setState: (NSControlStateValue)s
+- (void) setState: (NSInteger)s
 {
   _state = s;
   [self setNeedsDisplay];
 }
 
-- (NSControlStateValue) state
+- (NSInteger) state
 {
   return _state;
 }
@@ -309,4 +309,3 @@
 }
 
 @end
-

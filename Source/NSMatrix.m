@@ -2798,6 +2798,11 @@ static SEL getSel;
   if (!self)
     return nil;
 
+  /* Matrix storage is allocated while decoding the row and column counts.
+   * The designated initializers normally establish this zone, but keyed
+   * unarchiving enters directly through -initWithCoder:. */
+  _myZone = [self zone];
+
   if ([aDecoder allowsKeyedCoding])
     {
       if ([aDecoder containsValueForKey: @"NSBackgroundColor"])
@@ -2867,7 +2872,6 @@ static SEL getSel;
         }
 
       array = [aDecoder decodeObjectForKey: @"NSCells"];
-      [self renewRows: rows columns: columns];
       count = [array count];
       if (count != rows * columns)
         {
@@ -2876,6 +2880,20 @@ static SEL getSel;
           if (count > rows * columns)
             {
               count = rows * columns;
+            }
+          [self renewRows: rows columns: columns];
+        }
+      else
+        {
+          /* Populate complete archived rows directly.  Growing the matrix
+           * first manufactures prototype cells which are immediately
+           * replaced, and some cell subclasses cannot safely survive that
+           * unnecessary copy/release cycle while being unarchived. */
+          [self renewRows: 0 columns: columns];
+          for (i = 0; i < rows; i++)
+            {
+              NSRange range = NSMakeRange(i * columns, columns);
+              [self addRowWithCells: [array subarrayWithRange: range]];
             }
         }
 
@@ -2889,8 +2907,11 @@ static SEL getSel;
           row = i / columns;
           column = i % columns;
           
-          [self putCell: cell atRow: row column: column];
-          if ([cell state])
+          if (count != rows * columns)
+            [self putCell: cell atRow: row column: column];
+          /* Avoid the historically conflicting runtime signature of the
+           * shared state selector while reconstructing keyed archives. */
+          if ([cell intValue] != 0)
             {
               [self selectCellAtRow: row column: column];
             }

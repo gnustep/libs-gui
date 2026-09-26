@@ -2493,7 +2493,11 @@ static NSColor *dtxtCol;
       cFlags |= [self isEditable] ? 0x10000000 : 0;
       cFlags |= ([self isEnabled] == NO) ? 0x20000000 : 0;
       cFlags |= [self isHighlighted] ? 0x40000000 : 0;
-      cFlags |= ([self state] == NSOnState) ? 0x80000000 : 0;
+      /* Use the stored value directly while archiving.  Some applications
+       * built against older headers register the shared state selector with
+       * an unsigned return type; dispatching it here can select an
+       * ABI-incompatible forwarding path even though NSCell state is signed. */
+      cFlags |= (_cell.state == NSOnState) ? 0x80000000 : 0;
       [aCoder encodeInt: cFlags forKey: @"NSCellFlags"];
 
       // flags part 2

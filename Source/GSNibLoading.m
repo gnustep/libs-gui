@@ -312,6 +312,7 @@ static BOOL _isInInterfaceBuilder = NO;
 	  ASSIGN(_windowClass, windowClass);
 	  ASSIGN(_view, [window contentView]);
 	  ASSIGN(_autosaveName, [window frameAutosaveName]);
+	  ASSIGN(_toolbar, [window toolbar]);
 
 	  // style & size
 	  _windowStyle = [window styleMask];
@@ -428,7 +429,7 @@ static BOOL _isInInterfaceBuilder = NO;
 
       if ([coder containsValueForKey: @"NSToolbar"])
 	{
-	  _toolbar = [coder decodeObjectForKey: @"NSToolbar"];
+	  ASSIGN(_toolbar, [coder decodeObjectForKey: @"NSToolbar"]);
 	}
 
       _baseWindowClass = [NSWindow class];
