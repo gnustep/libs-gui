@@ -236,12 +236,23 @@
           NSString *allocationClassName = codingClassName != nil
             ? codingClassName : className;
           BOOL isKeyed = [[value objectForKey: @"$coding"] isEqual: @"keyed"];
+          NSDictionary *properties = [value objectForKey: @"properties"];
           NSDictionary *substitutions =
             [_context objectForKey: GSNixClassSubstitutions];
           NSString *substituteName =
             [substitutions objectForKey: allocationClassName];
           Class objectClass;
           id object;
+
+          /* NIX writers predating the replacement-object fix could attach
+           * NSButtonImageSource metadata to the shared NSImage returned by
+           * -initWithCoder:, then save that image's keyed fields under the
+           * wrong class name.  Decode those existing files as the NSImage
+           * payload they actually contain. */
+          if ([className isEqualToString: @"NSButtonImageSource"]
+              && [properties objectForKey: @"NSImageName"] == nil
+              && [properties objectForKey: @"NSName"] != nil)
+            allocationClassName = @"NSImage";
 
           if (identifier == nil || [identifier length] == 0)
             [NSException raise: NSInvalidArgumentException
@@ -476,17 +487,31 @@
           [coder release];
           if (initialized == nil)
             [NSException raise: NSInvalidArgumentException
-                        format: @"Could not decode keyed NIX object '%@'", identifier];
+                        format: @"Could not decode keyed NIX object '%@' (%@)",
+                               identifier, [definition objectForKey: @"$class"]];
           if ([initialized respondsToSelector: @selector(nibInstantiate)])
             initialized = [initialized nibInstantiate];
           if (initialized != object)
             {
-              [GSNixSerialization setIdentifier: identifier forObject: initialized];
-              [GSNixSerialization setIntendedClassName:
-                [definition objectForKey: @"$class"]
-                               designSuperclassName:
-                [definition objectForKey: @"$superclass"]
-                                          forObject: initialized];
+              NSString *declaredClass = [definition objectForKey: @"$class"];
+              NSString *designSuperclass =
+                [definition objectForKey: @"$superclass"];
+
+              /* Factory and class-cluster decoders may return shared objects.
+               * Do not stamp the placeholder's identity and class metadata on
+               * an unrelated shared replacement; doing so contaminates later
+               * archives.  Custom design classes retain their substitution
+               * metadata across nibInstantiate replacements. */
+              if (designSuperclass != nil
+                  || [NSStringFromClass([initialized class])
+                       isEqualToString: declaredClass])
+                {
+                  [GSNixSerialization setIdentifier: identifier
+                                           forObject: initialized];
+                  [GSNixSerialization setIntendedClassName: declaredClass
+                                     designSuperclassName: designSuperclass
+                                                forObject: initialized];
+                }
               [_objects setObject: initialized forKey: identifier];
             }
           [initialized release];

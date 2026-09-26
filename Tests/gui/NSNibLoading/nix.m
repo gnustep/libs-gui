@@ -5,6 +5,8 @@
 #import <AppKit/NSNib.h>
 #import <AppKit/NSForm.h>
 #import <AppKit/NSImage.h>
+#import <AppKit/NSMatrix.h>
+#import <AppKit/NSButtonCell.h>
 #import <GNUstepGUI/GSModelLoaderFactory.h>
 #import "../../../Headers/Additions/GNUstepGUI/GSNibLoading.h"
 #import "../../../Headers/Additions/GNUstepGUI/GSNixSerialization.h"
@@ -337,6 +339,43 @@ int main(void)
          "keyed replacement objects remain owned and can be resaved")
     if ([images count] != 0)
       [[images objectAtIndex: 0] release];
+  }
+
+  {
+    NSButtonCell *prototype = [[[NSButtonCell alloc] initTextCell: @""] autorelease];
+    NSMatrix *matrix;
+    NSData *matrixData;
+    NSMutableArray *matrices = [NSMutableArray array];
+    NSDictionary *matrixContext;
+    GSModelLoader *matrixLoader;
+    BOOL matrixLoaded;
+    NSData *resavedMatrix;
+
+    [prototype setButtonType: NSRadioButton];
+    matrix = [[[NSMatrix alloc] initWithFrame: NSMakeRect(10, 10, 180, 60)
+                                        mode: NSRadioModeMatrix
+                                   prototype: prototype
+                                numberOfRows: 2
+                             numberOfColumns: 1] autorelease];
+    [[matrix cellAtRow: 0 column: 0] setTitle: @"First"];
+    [[matrix cellAtRow: 1 column: 0] setTitle: @"Second"];
+    [matrix selectCellAtRow: 0 column: 0];
+    matrixData = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: matrix]
+      keyValuePairs: nil connections: nil errorDescription: &error];
+    matrixContext = [NSDictionary dictionaryWithObjectsAndKeys:
+      owner, NSNibOwner, matrices, NSNibTopLevelObjects, nil];
+    matrixLoader = [GSModelLoaderFactory modelLoaderForData: matrixData];
+    matrixLoaded = [matrixLoader loadModelData: matrixData
+                             externalNameTable: matrixContext
+                                      withZone: NULL];
+    resavedMatrix = matrixLoaded ? [GSNixSerialization
+      dataWithTopLevelObjects: matrices keyValuePairs: nil
+      connections: nil errorDescription: &error] : nil;
+    PASS(matrixData != nil && matrixLoaded && resavedMatrix != nil,
+         "a radio-button NSMatrix survives a keyed NIX round trip")
+    if ([matrices count] != 0)
+      [[matrices objectAtIndex: 0] release];
   }
 
   transientOptIn = [GSNixSerialization
