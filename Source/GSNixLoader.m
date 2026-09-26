@@ -461,12 +461,18 @@
         {
           NSString *identifier = [definition objectForKey: @"$id"];
           id object = [_objects objectForKey: identifier];
+          id initialized;
           GSNixKeyedDecodingCoder *coder = [[GSNixKeyedDecodingCoder alloc]
             initWithDecoder: self
                  properties: [definition objectForKey: @"properties"]
              classVersions: [definition objectForKey: @"$classVersions"]
                        zone: _zone];
-          id initialized = [object initWithCoder: coder];
+          /* Supply initWithCoder: its own ownership.  Class clusters such as
+           * NSImage may release the allocated receiver and return a retained
+           * shared replacement.  The object table must keep its separate
+          * retain until it can atomically replace the placeholder. */
+          [object retain];
+          initialized = [object initWithCoder: coder];
           [coder release];
           if (initialized == nil)
             [NSException raise: NSInvalidArgumentException
@@ -483,6 +489,7 @@
                                           forObject: initialized];
               [_objects setObject: initialized forKey: identifier];
             }
+          [initialized release];
         }
     }
 

@@ -1,7 +1,10 @@
 #import "ObjectTesting.h"
 
 #import <Foundation/Foundation.h>
+#import <AppKit/NSApplication.h>
 #import <AppKit/NSNib.h>
+#import <AppKit/NSForm.h>
+#import <AppKit/NSImage.h>
 #import <GNUstepGUI/GSModelLoaderFactory.h>
 #import "../../../Headers/Additions/GNUstepGUI/GSNibLoading.h"
 #import "../../../Headers/Additions/GNUstepGUI/GSNixSerialization.h"
@@ -297,6 +300,43 @@ int main(void)
               != NSNotFound,
          "non-coding objects require an explicit persistence schema")
     [nonCodingError release];
+  }
+
+  {
+    [NSApplication sharedApplication];
+    NSForm *form = [[[NSForm alloc] initWithFrame:
+      NSMakeRect(10, 10, 240, 80)] autorelease];
+    NSData *formData;
+    [form addEntry: @"Name:"];
+    [[form cellAtIndex: 0] setStringValue: @"Example"];
+    formData = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: form]
+      keyValuePairs: nil
+      connections: nil
+      errorDescription: &error];
+    PASS(formData != nil, "an NSForm graph is safely encoded with keyed coding")
+  }
+
+  {
+    NSImage *namedImage = [NSImage imageNamed: @"GSMenuSelected"];
+    NSData *imageData = [GSNixSerialization
+      dataWithTopLevelObjects: [NSArray arrayWithObject: namedImage]
+      keyValuePairs: nil connections: nil errorDescription: &error];
+    NSMutableArray *images = [NSMutableArray array];
+    NSDictionary *imageContext = [NSDictionary dictionaryWithObjectsAndKeys:
+      owner, NSNibOwner, images, NSNibTopLevelObjects, nil];
+    GSModelLoader *imageLoader =
+      [GSModelLoaderFactory modelLoaderForData: imageData];
+    BOOL imageLoaded = [imageLoader loadModelData: imageData
+                                externalNameTable: imageContext
+                                         withZone: NULL];
+    NSData *resavedImage = imageLoaded ? [GSNixSerialization
+      dataWithTopLevelObjects: images keyValuePairs: nil
+      connections: nil errorDescription: &error] : nil;
+    PASS(imageLoaded && resavedImage != nil,
+         "keyed replacement objects remain owned and can be resaved")
+    if ([images count] != 0)
+      [[images objectAtIndex: 0] release];
   }
 
   transientOptIn = [GSNixSerialization
