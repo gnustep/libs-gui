@@ -132,7 +132,7 @@ enum {
   NSControlStateValueOff   =  0,
   NSControlStateValueOn    =  1
 };
-typedef NSInteger NSControlStateValue;
+typedef NSUInteger NSControlStateValue;
 #endif
 
 /**
@@ -919,3 +919,4 @@ APPKIT_EXPORT_CLASS
 @end
 
 #endif // _GNUstep_H_NSCell
+
