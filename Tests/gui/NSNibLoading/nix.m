@@ -349,6 +349,7 @@ int main(void)
     NSDictionary *matrixContext;
     GSModelLoader *matrixLoader;
     BOOL matrixLoaded;
+    BOOL radioImagesLoaded = NO;
     NSData *resavedMatrix;
 
     [prototype setButtonType: NSRadioButton];
@@ -369,11 +370,24 @@ int main(void)
     matrixLoaded = [matrixLoader loadModelData: matrixData
                              externalNameTable: matrixContext
                                       withZone: NULL];
+    if (matrixLoaded && [matrices count] == 1)
+      {
+        NSMatrix *loadedMatrix = [matrices objectAtIndex: 0];
+        NSButtonCell *onCell = [loadedMatrix cellAtRow: 0 column: 0];
+        NSButtonCell *offCell = [loadedMatrix cellAtRow: 1 column: 0];
+        radioImagesLoaded = ([onCell image] != nil
+          && [onCell alternateImage] != nil
+          && [offCell image] != nil
+          && [offCell alternateImage] != nil
+          && [onCell intValue] != 0
+          && [offCell intValue] == 0);
+      }
     resavedMatrix = matrixLoaded ? [GSNixSerialization
       dataWithTopLevelObjects: matrices keyValuePairs: nil
       connections: nil errorDescription: &error] : nil;
-    PASS(matrixData != nil && matrixLoaded && resavedMatrix != nil,
-         "a radio-button NSMatrix survives a keyed NIX round trip")
+    PASS(matrixData != nil && matrixLoaded && radioImagesLoaded
+         && resavedMatrix != nil,
+         "a radio-button NSMatrix preserves its on and off images in NIX")
     if ([matrices count] != 0)
       [[matrices objectAtIndex: 0] release];
   }

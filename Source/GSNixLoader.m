@@ -58,6 +58,9 @@
   NSZone *_zone;
   NSMutableDictionary *_objects;
   NSMutableArray *_definitions;
+  NSMutableDictionary *_definitionsByIdentifier;
+  NSMutableSet *_initializingIdentifiers;
+  NSMutableSet *_initializedIdentifiers;
   BOOL _isInterfaceBuilder;
 }
 - (id) initWithDocument: (NSDictionary *)document
@@ -65,6 +68,7 @@
                    zone: (NSZone *)zone;
 - (BOOL) decode;
 - (id) decodedValue: (id)value;
+- (void) initializeDefinition: (NSDictionary *)definition;
 @end
 
 @interface GSNixKeyedDecodingCoder : NSCoder
@@ -201,6 +205,9 @@
       _zone = zone;
       _objects = [[NSMutableDictionary alloc] init];
       _definitions = [[NSMutableArray alloc] init];
+      _definitionsByIdentifier = [[NSMutableDictionary alloc] init];
+      _initializingIdentifiers = [[NSMutableSet alloc] init];
+      _initializedIdentifiers = [[NSMutableSet alloc] init];
       _isInterfaceBuilder = ([context objectForKey: GSNixClassSubstitutions] != nil
         || [NSClassSwapper isInInterfaceBuilder]);
     }
@@ -213,6 +220,9 @@
   [_context release];
   [_objects release];
   [_definitions release];
+  [_definitionsByIdentifier release];
+  [_initializingIdentifiers release];
+  [_initializedIdentifiers release];
   [super dealloc];
 }
 
@@ -313,6 +323,7 @@
             [value objectForKey: @"connections"] forObject: object];
           [object release];
           [_definitions addObject: value];
+          [_definitionsByIdentifier setObject: value forKey: identifier];
         }
 
       {
@@ -457,66 +468,102 @@
   return value;
 }
 
+- (void) initializeReferencesInValue: (id)value
+{
+  if ([value isKindOfClass: [NSArray class]])
+    {
+      NSEnumerator *enumerator = [value objectEnumerator];
+      id child;
+      while ((child = [enumerator nextObject]) != nil)
+        [self initializeReferencesInValue: child];
+    }
+  else if ([value isKindOfClass: [NSDictionary class]])
+    {
+      NSString *identifier = [value objectForKey: @"$ref"];
+      if (identifier == nil && [value objectForKey: @"$class"] != nil)
+        identifier = [value objectForKey: @"$id"];
+      if (identifier != nil)
+        {
+          NSDictionary *definition =
+            [_definitionsByIdentifier objectForKey: identifier];
+          if (definition != nil)
+            [self initializeDefinition: definition];
+        }
+      else
+        {
+          NSEnumerator *enumerator = [value objectEnumerator];
+          id child;
+          while ((child = [enumerator nextObject]) != nil)
+            [self initializeReferencesInValue: child];
+        }
+    }
+}
+
+- (void) initializeDefinition: (NSDictionary *)definition
+{
+  NSString *identifier = [definition objectForKey: @"$id"];
+  id object;
+  id initialized;
+  GSNixKeyedDecodingCoder *coder;
+
+  if (![[definition objectForKey: @"$coding"] isEqual: @"keyed"]
+      || [_initializedIdentifiers containsObject: identifier])
+    return;
+  /* A reference back to an object currently being initialized is a genuine
+   * archive cycle.  Its registered placeholder is the only possible value
+   * until the outer initializer completes. */
+  if ([_initializingIdentifiers containsObject: identifier])
+    return;
+
+  [_initializingIdentifiers addObject: identifier];
+  [self initializeReferencesInValue: [definition objectForKey: @"properties"]];
+
+  object = [_objects objectForKey: identifier];
+  coder = [[GSNixKeyedDecodingCoder alloc]
+    initWithDecoder: self
+         properties: [definition objectForKey: @"properties"]
+     classVersions: [definition objectForKey: @"$classVersions"]
+               zone: _zone];
+  [object retain];
+  initialized = [object initWithCoder: coder];
+  [coder release];
+  if (initialized == nil)
+    [NSException raise: NSInvalidArgumentException
+                format: @"Could not decode keyed NIX object '%@' (%@)",
+                       identifier, [definition objectForKey: @"$class"]];
+  if ([initialized respondsToSelector: @selector(nibInstantiate)])
+    initialized = [initialized nibInstantiate];
+  if (initialized != object)
+    {
+      NSString *declaredClass = [definition objectForKey: @"$class"];
+      NSString *designSuperclass = [definition objectForKey: @"$superclass"];
+      if (designSuperclass != nil
+          || [NSStringFromClass([initialized class])
+               isEqualToString: declaredClass])
+        {
+          [GSNixSerialization setIdentifier: identifier forObject: initialized];
+          [GSNixSerialization setIntendedClassName: declaredClass
+                             designSuperclassName: designSuperclass
+                                        forObject: initialized];
+        }
+      [_objects setObject: initialized forKey: identifier];
+    }
+  [initialized release];
+  [_initializingIdentifiers removeObject: identifier];
+  [_initializedIdentifiers addObject: identifier];
+}
+
 - (void) configureObjects
 {
   NSEnumerator *enumerator;
   NSDictionary *definition;
 
-  /* Definitions are collected parent-first.  Initialize keyed children first
-   * so their parents normally receive fully initialized referenced objects.
-   * All allocated placeholders are already registered, preserving cycles. */
-  enumerator = [_definitions reverseObjectEnumerator];
+  /* Initialize dependencies before their owners.  Definition nesting alone
+   * is insufficient because keyed archives freely share and forward-reference
+   * objects; cycles continue to resolve through registered placeholders. */
+  enumerator = [_definitions objectEnumerator];
   while ((definition = [enumerator nextObject]) != nil)
-    {
-      if ([[definition objectForKey: @"$coding"] isEqual: @"keyed"])
-        {
-          NSString *identifier = [definition objectForKey: @"$id"];
-          id object = [_objects objectForKey: identifier];
-          id initialized;
-          GSNixKeyedDecodingCoder *coder = [[GSNixKeyedDecodingCoder alloc]
-            initWithDecoder: self
-                 properties: [definition objectForKey: @"properties"]
-             classVersions: [definition objectForKey: @"$classVersions"]
-                       zone: _zone];
-          /* Supply initWithCoder: its own ownership.  Class clusters such as
-           * NSImage may release the allocated receiver and return a retained
-           * shared replacement.  The object table must keep its separate
-          * retain until it can atomically replace the placeholder. */
-          [object retain];
-          initialized = [object initWithCoder: coder];
-          [coder release];
-          if (initialized == nil)
-            [NSException raise: NSInvalidArgumentException
-                        format: @"Could not decode keyed NIX object '%@' (%@)",
-                               identifier, [definition objectForKey: @"$class"]];
-          if ([initialized respondsToSelector: @selector(nibInstantiate)])
-            initialized = [initialized nibInstantiate];
-          if (initialized != object)
-            {
-              NSString *declaredClass = [definition objectForKey: @"$class"];
-              NSString *designSuperclass =
-                [definition objectForKey: @"$superclass"];
-
-              /* Factory and class-cluster decoders may return shared objects.
-               * Do not stamp the placeholder's identity and class metadata on
-               * an unrelated shared replacement; doing so contaminates later
-               * archives.  Custom design classes retain their substitution
-               * metadata across nibInstantiate replacements. */
-              if (designSuperclass != nil
-                  || [NSStringFromClass([initialized class])
-                       isEqualToString: declaredClass])
-                {
-                  [GSNixSerialization setIdentifier: identifier
-                                           forObject: initialized];
-                  [GSNixSerialization setIntendedClassName: declaredClass
-                                     designSuperclassName: designSuperclass
-                                                forObject: initialized];
-                }
-              [_objects setObject: initialized forKey: identifier];
-            }
-          [initialized release];
-        }
-    }
+    [self initializeDefinition: definition];
 
   enumerator = [_definitions objectEnumerator];
   while ((definition = [enumerator nextObject]) != nil)
