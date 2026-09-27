@@ -23,6 +23,8 @@ main(int argc, char **argv)
   NSDate *value;
   NSDate *low;
   NSDate *high;
+  NSColor *textColor;
+  NSColor *backgroundColor;
 
   START_SET("NSDatePickerCell coding")
 
@@ -42,13 +44,21 @@ main(int argc, char **argv)
       value = [NSDate dateWithTimeIntervalSinceReferenceDate: 700000000.0];
       low = [NSDate dateWithTimeIntervalSinceReferenceDate: 600000000.0];
       high = [NSDate dateWithTimeIntervalSinceReferenceDate: 800000000.0];
+      textColor = [NSColor colorWithCalibratedRed: 0.0
+                                            green: 0.0
+                                             blue: 1.0
+                                            alpha: 1.0];
+      backgroundColor = [NSColor colorWithCalibratedRed: 1.0
+                                                  green: 0.0
+                                                   blue: 0.0
+                                                  alpha: 1.0];
 
       cell = AUTORELEASE([[NSDatePickerCell alloc] initTextCell: @""]);
       [cell setDateValue: value];
       [cell setMinDate: low];
       [cell setMaxDate: high];
-      [cell setTextColor: [NSColor blueColor]];
-      [cell setBackgroundColor: [NSColor redColor]];
+      [cell setTextColor: textColor];
+      [cell setBackgroundColor: backgroundColor];
       [cell setDrawsBackground: YES];
       [cell setDatePickerMode: NSRangeDateMode];
       [cell setDatePickerStyle: NSClockAndCalendarDatePickerStyle];
@@ -75,9 +85,9 @@ main(int argc, char **argv)
                  "the minimum date survives the archive");
       PASS_EQUAL([decoded maxDate], high,
                  "the maximum date survives the archive");
-      PASS_EQUAL([decoded textColor], [NSColor blueColor],
+      PASS_EQUAL([decoded textColor], textColor,
                  "the text colour survives the archive");
-      PASS_EQUAL([decoded backgroundColor], [NSColor redColor],
+      PASS_EQUAL([decoded backgroundColor], backgroundColor,
                  "the background colour survives the archive");
       PASS([decoded isBezeled] == [cell isBezeled],
            "the state NSCell holds survives the archive");
@@ -100,7 +110,7 @@ main(int argc, char **argv)
                  "the minimum date survives an archive without keys");
       PASS_EQUAL([decoded maxDate], high,
                  "the maximum date survives an archive without keys");
-      PASS_EQUAL([decoded textColor], [NSColor blueColor],
+      PASS_EQUAL([decoded textColor], textColor,
                  "the text colour survives an archive without keys");
     }
   NS_HANDLER
