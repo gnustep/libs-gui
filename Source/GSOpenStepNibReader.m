@@ -236,12 +236,14 @@ static NSDictionary *UID(NSUInteger n)
     }
   return self;
 }
+
 - (void) dealloc
 {
   RELEASE(_objects); RELEASE(_references); RELEASE(_classes); RELEASE(_visible);
   RELEASE(_periodic); RELEASE(_rtf);
   [super dealloc];
 }
+
 - (NSDictionary *) literal: (id)value
 {
   NSUInteger index;
@@ -250,6 +252,7 @@ static NSDictionary *UID(NSUInteger n)
   [_objects addObject: value];
   return UID(index);
 }
+
 - (NSDictionary *) classReference: (NSString *)name
 {
   NSDictionary *ref = [_classes objectForKey: name];
@@ -262,16 +265,19 @@ static NSDictionary *UID(NSUInteger n)
     }
   return ref;
 }
+
 - (NSDictionary *) array: (NSArray *)refs
 {
   return [self literal: [NSDictionary dictionaryWithObjectsAndKeys:
     [self classReference: @"NSMutableArray"], @"$class", refs, @"NS.objects", nil]];
 }
+
 - (void) object: (const ts_value *)v key: (NSString *)key
            into: (NSMutableDictionary *)d
 {
   [d setObject: [self reference: Object(v)] forKey: key];
 }
+
 - (void) rect: (const ts_value *)v key: (NSString *)key
          into: (NSMutableDictionary *)d
 {
@@ -280,6 +286,7 @@ static NSDictionary *UID(NSUInteger n)
   [d setObject: [self literal: [NSString stringWithFormat: @"{{%.17g, %.17g}, {%.17g, %.17g}}", Real(v), Real(v + 1), w, h]]
         forKey: key];
 }
+
 - (NSArray *) elements: (const ts_object *)o
 {
   NSUInteger i = 0, n, k;
@@ -307,6 +314,7 @@ static NSDictionary *UID(NSUInteger n)
     }
   return refs;
 }
+
 - (void) container: (const ts_object *)o into: (NSMutableDictionary *)d
 {
   NSUInteger i = 0, section, k;
@@ -855,6 +863,7 @@ static NSDictionary *UID(NSUInteger n)
   if (index != o->ngroups) Bad(o, @"unconsumed typed groups");
   return ref;
 }
+
 - (void) visit: (const ts_value *)v seen: (NSMutableSet *)seen depth: (unsigned)depth
 {
   NSUInteger i, j;
@@ -874,6 +883,7 @@ static NSDictionary *UID(NSUInteger n)
     for (i = 0; i < v->u.list.n; i++)
       [self visit: &v->u.list.v[i] seen: seen depth: depth + 1];
 }
+
 - (NSData *) translate: (const ts_archive *)archive
 {
   const ts_object *root;
