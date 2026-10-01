@@ -55,8 +55,11 @@
 + (BOOL) canReadData: (NSData *)theData
 {
   id plist = nil;
+
+  /* Check if it's an OPENSTEP nib. */
   if (GSOpenStepNibIsTypedStream(theData)) return YES;
   if ([theData length] == 0) return NO;
+
   /* Preserve XML keyed archive probing without instantiating a plist parser.
    * The keyed unarchiver validates the archive when it is actually loaded. */
   if ([theData length] < 8 || memcmp([theData bytes], "bplist00", 8))
@@ -67,13 +70,20 @@
       return header != nil && [header rangeOfString: @"<plist"].length != 0
         && [header rangeOfString: @"NSKeyedArchiver"].length != 0;
     }
+
   /* A binary plist is not necessarily a keyed archive. */
-  @try
+  NS_DURING
     {
       plist = [NSPropertyListSerialization propertyListWithData: theData
         options: NSPropertyListImmutable format: NULL error: NULL];
     }
-  @catch (NSException *exception) { return NO; }
+  NS_HANDLER
+    {
+      return NO;
+    }
+  NS_ENDHANDLER;
+
+  /* Return YES if it's properly formed. */
   return [plist isKindOfClass: [NSDictionary class]]
     && [[plist objectForKey: @"$archiver"] isEqual: @"NSKeyedArchiver"]
     && [[plist objectForKey: @"$objects"] isKindOfClass: [NSArray class]]
