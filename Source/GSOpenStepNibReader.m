@@ -933,8 +933,23 @@ GSOpenStepNibKeyedData(NSData *data)
                 format: @"OPENSTEP typed stream at byte %lu: %s",
                   (unsigned long)error.off, error.msg];
   translator = [GSOpenStepNibTranslator new];
-  @try { result = [translator translate: archive]; }
-  @finally { RELEASE(translator); GSOpenStepTSFree(archive); }
+
+  NS_DURING
+    {
+      result = [translator translate: archive];
+    }
+  NS_HANDLER
+    {
+      RELEASE(translator);
+      GSOpenStepTSFree(archive);
+
+      [localException raise];
+    }
+  NS_ENDHANDLER;
+  
+  RELEASE(translator);
+  GSOpenStepTSFree(archive);  
+
   return result;
 }
 
@@ -942,12 +957,14 @@ void
 GSOpenStepNibFinishDecoding(NSKeyedUnarchiver *coder)
 {
   NSArray *entries = [coder decodeObjectForKey: @"GSOpenStepPeriodicIntervals"];
+
   for (NSArray *entry in entries)
     {
       NSButtonCell *cell = [entry objectAtIndex: 0];
       [cell setPeriodicDelay: [[entry objectAtIndex: 1] doubleValue]
                    interval: [[entry objectAtIndex: 2] doubleValue]];
     }
+
   for (NSArray *entry in [coder decodeObjectForKey: @"GSOpenStepRTF"])
     {
       NSTextView *view = [entry objectAtIndex: 0];
