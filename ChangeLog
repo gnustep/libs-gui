@@ -1,3 +1,11 @@
+2026-09-21 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSToolbarItem.m (-_layout): Leave the image alone for an
+	item that has a custom view and no image of its own, instead of
+	setting nil on the view and so wiping the image the view was
+	configured with.
+	* Tests/gui/NSToolbarItem/customViewImage.m: New test.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
