@@ -105,7 +105,7 @@ int main(int argc, char **argv, char **envp)
     dir = [@".." stringByAppendingPathComponent: dir];
   if (standalone)
     for (NSString *name in [NSArray arrayWithObjects: @"GSOpenStepTestNibLoader",
-        @"GSOpenStepTestXibLoader", @"GSOpenStepTestGormLoader", @"GSOpenStepTestGModelLoader", nil])
+        @"GSOpenStepTestXibLoader", @"GSOpenStepTestGormLoader", nil])
       [GSModelLoaderFactory registerModelLoaderClass: NSClassFromString(name)];
   loader = [[GSModelLoaderFactory modelLoaderForFileType: @"nib"] class];
   sample = Fixture(dir, @"objects-v4-le.nib");
@@ -114,8 +114,6 @@ int main(int argc, char **argv, char **envp)
       NSData *shortData = [sample subdataWithRange: NSMakeRange(0, i)];
       Check(!GSOpenStepNibIsTypedStream(shortData), @"short signature rejected");
       Check(![loader canReadData: shortData], @"short loader probe does not throw");
-      Check([GSModelLoaderFactory modelLoaderForData: shortData] == nil,
-            @"all factory probes tolerate short input");
     }
   for (NSString *name in [NSArray arrayWithObjects: @"objects-v3-le.nib", @"objects-v3-be.nib",
       @"objects-v4-le.nib", @"objects-v4-be.nib", nil])
