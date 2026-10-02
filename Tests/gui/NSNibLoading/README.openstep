@@ -21,11 +21,9 @@ can exercise the changed loader without rebuilding unrelated GUI files:
     -DGSNibLoader=GSOpenStepTestNibLoader \
     -DGSXibLoader=GSOpenStepTestXibLoader \
     -DGSGormLoader=GSOpenStepTestGormLoader \
-    -DGSGModelLoader=GSOpenStepTestGModelLoader \
     Tests/gui/NSNibLoading/openstep.m Source/GSOpenStepNibReader.m \
     Source/GSOpenStepTypedStream.m \
     Source/GSNibLoader.m Source/GSXibLoader.m Source/GSGormLoader.m \
-    Source/GSGModelLoader.m \
     $(gnustep-config --gui-libs) -o /tmp/openstep-tests
   /tmp/openstep-tests Tests/gui/NSNibLoading/OpenStepFixtures --gui
 
