@@ -23,8 +23,6 @@ main(int argc, char **argv)
   NSDate *value;
   NSDate *low;
   NSDate *high;
-  NSColor *blue;
-  NSColor *red;
 
   START_SET("NSDatePickerCell coding")
 
@@ -44,15 +42,13 @@ main(int argc, char **argv)
       value = [NSDate dateWithTimeIntervalSinceReferenceDate: 700000000.0];
       low = [NSDate dateWithTimeIntervalSinceReferenceDate: 600000000.0];
       high = [NSDate dateWithTimeIntervalSinceReferenceDate: 800000000.0];
-      blue = [[NSColor blueColor] colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
-      red = [[NSColor redColor] colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
 
       cell = AUTORELEASE([[NSDatePickerCell alloc] initTextCell: @""]);
       [cell setDateValue: value];
       [cell setMinDate: low];
       [cell setMaxDate: high];
-      [cell setTextColor: blue];
-      [cell setBackgroundColor: red];
+      [cell setTextColor: [NSColor blueColor]];
+      [cell setBackgroundColor: [NSColor redColor]];
       [cell setDrawsBackground: YES];
       [cell setDatePickerMode: NSRangeDateMode];
       [cell setDatePickerStyle: NSClockAndCalendarDatePickerStyle];
@@ -79,9 +75,9 @@ main(int argc, char **argv)
                  "the minimum date survives the archive");
       PASS_EQUAL([decoded maxDate], high,
                  "the maximum date survives the archive");
-      PASS_EQUAL([decoded textColor], blue,
+      PASS_EQUAL([decoded textColor], [NSColor blueColor],
                  "the text colour survives the archive");
-      PASS_EQUAL([decoded backgroundColor], red,
+      PASS_EQUAL([decoded backgroundColor], [NSColor redColor],
                  "the background colour survives the archive");
       PASS([decoded isBezeled] == [cell isBezeled],
            "the state NSCell holds survives the archive");
@@ -104,7 +100,7 @@ main(int argc, char **argv)
                  "the minimum date survives an archive without keys");
       PASS_EQUAL([decoded maxDate], high,
                  "the maximum date survives an archive without keys");
-      PASS_EQUAL([decoded textColor], blue,
+      PASS_EQUAL([decoded textColor], [NSColor blueColor],
                  "the text colour survives an archive without keys");
     }
   NS_HANDLER
