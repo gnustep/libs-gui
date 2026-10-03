@@ -448,8 +448,8 @@ NSApplication	*NSApp = nil;
 
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (NSInteger)otherWin
 {     
-  if ([[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"] == NO)
+  if (YES == [[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSEnableAppIcon"])
     {
       [super orderWindow: place relativeTo: otherWin];
     }
@@ -470,9 +470,10 @@ NSApplication	*NSApp = nil;
    * it's at the standard level.  If the app icon is suppressed, we
    * may still want a miniaturised version while the app is hidden.
    */
-  if (YES == [[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSSuppressAppIcon"])
+  if (NO == [[NSUserDefaults standardUserDefaults]
+    boolForKey: @"GSEnableAppIcon"])
     {
+      NSLog(@"Disable AppIcon");
       return;
     }
 #endif
@@ -1335,8 +1336,8 @@ static BOOL _isAutolaunchChecked = NO;
 
       _app_is_active = YES;
 
-      if ([[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"])
+      if (NO == [[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSEnableAppIcon"])
 	{
 	  [_app_icon_window orderOut: self];
 	}
@@ -1470,8 +1471,8 @@ static BOOL _isAutolaunchChecked = NO;
             }
         }
       
-      if (YES == [[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"])
+      if (NO == [[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSEnableAppIcon"])
 	{
 #if	MINI_ICON
 	  NSRect	f = [[[self mainMenu] window] frame];
@@ -2556,8 +2557,8 @@ image.</p><p>See Also: -applicationIconImage</p>
       /*Minimize all windows if there isn't an AppIcon. This isn't the
 	most elegant solution, but avoids to loss the app if the user
 	hide it. */
-      miniaturize = [[NSUserDefaults standardUserDefaults]
-		      boolForKey: @"GSSuppressAppIcon"];
+      miniaturize = ![[NSUserDefaults standardUserDefaults]
+		      boolForKey: @"GSEnableAppIcon"];
 #endif
 
       [nc postNotificationName: NSApplicationWillHideNotification
@@ -2629,8 +2630,8 @@ image.</p><p>See Also: -applicationIconImage</p>
                 }
 	    }
 
-	  if (YES == [[NSUserDefaults standardUserDefaults]
-		       boolForKey: @"GSSuppressAppIcon"])
+	  if (NO == [[NSUserDefaults standardUserDefaults]
+		       boolForKey: @"GSEnableAppIcon"])
 	    {
 #if	MINI_ICON
 	      NSRect	f = [[[self mainMenu] window] frame];
@@ -4012,8 +4013,8 @@ struct _DelegateWrapper
   NSUInteger	mask = NSIconWindowMask;
   BOOL  	suppress;
   
-  suppress = [[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSSuppressAppIcon"];
+  suppress = ![[NSUserDefaults standardUserDefaults]
+    boolForKey: @"GSEnableAppIcon"];
 #if	MINI_ICON
   if (suppress)
     {
