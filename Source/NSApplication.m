@@ -464,6 +464,23 @@ NSApplication	*NSApp = nil;
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
 
+  // check and convert old GSSuppressAppIcon in the global domain
+  NSUserDefaults *uDefs = [NSUserDefaults standardUserDefaults];
+  NSDictionary *gDom = [uDefs persistentDomainForName:NSGlobalDomain];
+
+  if (nil != [gDom objectForKey:@"GSSuppressAppIcon"])
+    {
+      BOOL bv;
+      NSMutableDictionary *newPrefs;
+
+      newPrefs = [NSMutableDictionary dictionaryWithDictionary:gDom];
+      bv = [(NSString *)[gDom objectForKey:@"GSSuppressAppIcon"] boolValue];
+      bv = !bv; // new value is in Enable logic, old one is in Suppress logic
+      [newPrefs setObject:[NSNumber numberWithBool:bv] forKey:@"GSEnableAppIcon"];
+      [newPrefs removeObjectForKey:@"GSSuppressAppIcon"];
+      [uDefs setPersistentDomain:newPrefs forName:NSGlobalDomain];
+    }
+
 #if	MINI_ICON
   /* Hack ... 
    * At least one window manager won't miniaturize a window unless
