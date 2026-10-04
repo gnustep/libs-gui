@@ -91,8 +91,6 @@ static id buttonCellClass = nil;
   [button setTitle: title];
   [button setTarget: target];
   [button setAction: action];
-  [button setBezelStyle: NSRoundedBezelStyle];
-  [button setButtonType: NSMomentaryPushInButton];
   [button sizeToFit];
   return button;
 }
@@ -107,8 +105,6 @@ static id buttonCellClass = nil;
   [button setImagePosition: NSImageOnly];
   [button setTarget: target];
   [button setAction: action];
-  [button setBezelStyle: NSRoundedBezelStyle];
-  [button setButtonType: NSMomentaryPushInButton];
   [button sizeToFit];
   return button;
 }
@@ -125,8 +121,6 @@ static id buttonCellClass = nil;
   [button setImagePosition: NSImageLeft];
   [button setTarget: target];
   [button setAction: action];
-  [button setBezelStyle: NSRoundedBezelStyle];
-  [button setButtonType: NSMomentaryPushInButton];
   [button sizeToFit];
   return button;
 }
