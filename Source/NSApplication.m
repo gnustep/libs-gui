@@ -91,8 +91,6 @@
 #import "NSDocumentFrameworkPrivate.h"
 #import "NSToolbarFrameworkPrivate.h"
 
-// minimize icon when suppressed?
-#define	MINI_ICON	0
 
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;
@@ -448,8 +446,8 @@ NSApplication	*NSApp = nil;
 
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (NSInteger)otherWin
 {     
-  if ([[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"] == NO)
+  if (YES == [[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSEnableAppIcon"])
     {
       [super orderWindow: place relativeTo: otherWin];
     }
@@ -464,18 +462,6 @@ NSApplication	*NSApp = nil;
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
 
-#if	MINI_ICON
-  /* Hack ... 
-   * At least one window manager won't miniaturize a window unless
-   * it's at the standard level.  If the app icon is suppressed, we
-   * may still want a miniaturised version while the app is hidden.
-   */
-  if (YES == [[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSSuppressAppIcon"])
-    {
-      return;
-    }
-#endif
   /* App icons and mini windows are displayed at dock level by default. Yet,
      with the current window level mapping in -back, some window managers
      will order pop up and context menus behind app icons and mini windows.
@@ -1335,8 +1321,8 @@ static BOOL _isAutolaunchChecked = NO;
 
       _app_is_active = YES;
 
-      if ([[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"])
+      if (NO == [[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSEnableAppIcon"])
 	{
 	  [_app_icon_window orderOut: self];
 	}
@@ -1470,20 +1456,10 @@ static BOOL _isAutolaunchChecked = NO;
             }
         }
       
-      if (YES == [[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"])
+      if (NO == [[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSEnableAppIcon"])
 	{
-#if	MINI_ICON
-	  NSRect	f = [[[self mainMenu] window] frame];
-	  NSPoint	p = f.origin;
-
-	  p.y += f.size.height;
-          [_app_icon_window setFrameTopLeftPoint: p];
 	  [_app_icon_window orderFrontRegardless];
-          [_app_icon_window miniaturize: self];
-#else
-	  [_app_icon_window orderFrontRegardless];
-#endif
 	}
 
       info = [self _notificationUserInfo];
@@ -2556,8 +2532,8 @@ image.</p><p>See Also: -applicationIconImage</p>
       /*Minimize all windows if there isn't an AppIcon. This isn't the
 	most elegant solution, but avoids to loss the app if the user
 	hide it. */
-      miniaturize = [[NSUserDefaults standardUserDefaults]
-		      boolForKey: @"GSSuppressAppIcon"];
+      miniaturize = ![[NSUserDefaults standardUserDefaults]
+		      boolForKey: @"GSEnableAppIcon"];
 #endif
 
       [nc postNotificationName: NSApplicationWillHideNotification
@@ -2629,20 +2605,10 @@ image.</p><p>See Also: -applicationIconImage</p>
                 }
 	    }
 
-	  if (YES == [[NSUserDefaults standardUserDefaults]
-		       boolForKey: @"GSSuppressAppIcon"])
+	  if (NO == [[NSUserDefaults standardUserDefaults]
+		       boolForKey: @"GSEnableAppIcon"])
 	    {
-#if	MINI_ICON
-	      NSRect	f = [[[self mainMenu] window] frame];
-	      NSPoint	p = f.origin;
-	      
-	      p.y += f.size.height;
-	      [_app_icon_window setFrameTopLeftPoint: p];
 	      [_app_icon_window orderFrontRegardless];
-	      [_app_icon_window miniaturize: self];
-#else
-	      [_app_icon_window orderFrontRegardless];
-#endif
 	    }
 	  else
 	    {
@@ -4011,23 +3977,44 @@ struct _DelegateWrapper
   NSAppIconView	*iv;
   NSUInteger	mask = NSIconWindowMask;
   BOOL  	suppress;
-  
-  suppress = [[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSSuppressAppIcon"];
-#if	MINI_ICON
-  if (suppress)
+
+  /* check and convert old GSSuppressAppIcon in the global domain
+     This code could eventually be removed once we get tired of conversion
+     RM - 5 Oct 2026
+   */
+  NSUserDefaults *uDefs = [NSUserDefaults standardUserDefaults];
+  NSDictionary *gDom = [uDefs persistentDomainForName: NSGlobalDomain];
+
+  if (nil != [gDom objectForKey:@"GSSuppressAppIcon"])
     {
-      mask = NSMiniaturizableWindowMask;
+      BOOL boolValue;
+      NSMutableDictionary *newPrefs;
+      NSString *strValue;
+
+      newPrefs = [NSMutableDictionary dictionaryWithDictionary: gDom];
+      boolValue = [(NSString *)[gDom objectForKey: @"GSSuppressAppIcon"] boolValue];
+      boolValue = !boolValue; // new value is in Enable logic, old one is in Suppress logic
+      strValue = boolValue ? @"YES" : @"NO";
+      [newPrefs setObject: strValue forKey: @"GSEnableAppIcon"];
+      [newPrefs removeObjectForKey: @"GSSuppressAppIcon"];
+      [uDefs setPersistentDomain: newPrefs forName: NSGlobalDomain];
     }
-#endif
-  
+
+  /* set up default in the volative domain if none is set */
+  if (nil == [uDefs objectForKey: @"GSEnableAppIcon"])
+    {
+      NSMutableDictionary *newPrefs;
+
+      newPrefs = [NSMutableDictionary dictionaryWithDictionary: [uDefs volatileDomainForName: GSConfigDomain]];
+      [newPrefs setObject: @"YES" forKey: @"GSEnableAppIcon"];
+      [uDefs setVolatileDomain: newPrefs forName: GSConfigDomain];
+    }
+
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
 				styleMask: mask
 				  backing: NSBackingStoreRetained
 				    defer: NO
 				   screen: nil];
-
-
 
   {
     NSRect iconContentRect;
@@ -4046,6 +4033,9 @@ struct _DelegateWrapper
     [_app_icon_window setContentView: iv];
     RELEASE(iv);
   }
+
+  suppress = ![[NSUserDefaults standardUserDefaults]
+    boolForKey: @"GSEnableAppIcon"];
 
   if (NO == suppress)
     {
