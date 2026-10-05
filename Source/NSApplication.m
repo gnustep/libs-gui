@@ -470,13 +470,15 @@ NSApplication	*NSApp = nil;
 
   if (nil != [gDom objectForKey:@"GSSuppressAppIcon"])
     {
-      BOOL bv;
+      BOOL boolValue;
       NSMutableDictionary *newPrefs;
+      NSString *strValue;
 
       newPrefs = [NSMutableDictionary dictionaryWithDictionary: gDom];
-      bv = [(NSString *)[gDom objectForKey: @"GSSuppressAppIcon"] boolValue];
-      bv = !bv; // new value is in Enable logic, old one is in Suppress logic
-      [newPrefs setObject: [NSNumber numberWithBool: bv] forKey: @"GSEnableAppIcon"];
+      boolValue = [(NSString *)[gDom objectForKey: @"GSSuppressAppIcon"] boolValue];
+      boolValue = !boolValue; // new value is in Enable logic, old one is in Suppress logic
+      strValue = boolValue ? @"YES" : @"NO";
+      [newPrefs setObject: strValue forKey: @"GSEnableAppIcon"];
       [newPrefs removeObjectForKey: @"GSSuppressAppIcon"];
       [uDefs setPersistentDomain: newPrefs forName: NSGlobalDomain];
     }
