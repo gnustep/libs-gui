@@ -462,38 +462,6 @@ NSApplication	*NSApp = nil;
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
 
-  /* check and convert old GSSuppressAppIcon in the global domain
-     This code could eventually be removed once we get tired of conversion
-     RM - 5 Oct 2026
-   */
-  NSUserDefaults *uDefs = [NSUserDefaults standardUserDefaults];
-  NSDictionary *gDom = [uDefs persistentDomainForName: NSGlobalDomain];
-
-  if (nil != [gDom objectForKey:@"GSSuppressAppIcon"])
-    {
-      BOOL boolValue;
-      NSMutableDictionary *newPrefs;
-      NSString *strValue;
-
-      newPrefs = [NSMutableDictionary dictionaryWithDictionary: gDom];
-      boolValue = [(NSString *)[gDom objectForKey: @"GSSuppressAppIcon"] boolValue];
-      boolValue = !boolValue; // new value is in Enable logic, old one is in Suppress logic
-      strValue = boolValue ? @"YES" : @"NO";
-      [newPrefs setObject: strValue forKey: @"GSEnableAppIcon"];
-      [newPrefs removeObjectForKey: @"GSSuppressAppIcon"];
-      [uDefs setPersistentDomain: newPrefs forName: NSGlobalDomain];
-    }
-
-  /* set up default in the volative domain if none is set */
-  if (nil == [uDefs objectForKey: @"GSEnableAppIcon"])
-    {
-      NSMutableDictionary *newPrefs;
-
-      newPrefs = [NSMutableDictionary dictionaryWithDictionary: [uDefs volatileDomainForName: GSConfigDomain]];
-      [newPrefs setObject: @"YES" forKey: @"GSEnableAppIcon"];
-      [uDefs setVolatileDomain: newPrefs forName: GSConfigDomain];
-    }
-
   /* App icons and mini windows are displayed at dock level by default. Yet,
      with the current window level mapping in -back, some window managers
      will order pop up and context menus behind app icons and mini windows.
@@ -4009,6 +3977,38 @@ struct _DelegateWrapper
   NSAppIconView	*iv;
   NSUInteger	mask = NSIconWindowMask;
   BOOL  	suppress;
+
+  /* check and convert old GSSuppressAppIcon in the global domain
+     This code could eventually be removed once we get tired of conversion
+     RM - 5 Oct 2026
+   */
+  NSUserDefaults *uDefs = [NSUserDefaults standardUserDefaults];
+  NSDictionary *gDom = [uDefs persistentDomainForName: NSGlobalDomain];
+
+  if (nil != [gDom objectForKey:@"GSSuppressAppIcon"])
+    {
+      BOOL boolValue;
+      NSMutableDictionary *newPrefs;
+      NSString *strValue;
+
+      newPrefs = [NSMutableDictionary dictionaryWithDictionary: gDom];
+      boolValue = [(NSString *)[gDom objectForKey: @"GSSuppressAppIcon"] boolValue];
+      boolValue = !boolValue; // new value is in Enable logic, old one is in Suppress logic
+      strValue = boolValue ? @"YES" : @"NO";
+      [newPrefs setObject: strValue forKey: @"GSEnableAppIcon"];
+      [newPrefs removeObjectForKey: @"GSSuppressAppIcon"];
+      [uDefs setPersistentDomain: newPrefs forName: NSGlobalDomain];
+    }
+
+  /* set up default in the volative domain if none is set */
+  if (nil == [uDefs objectForKey: @"GSEnableAppIcon"])
+    {
+      NSMutableDictionary *newPrefs;
+
+      newPrefs = [NSMutableDictionary dictionaryWithDictionary: [uDefs volatileDomainForName: GSConfigDomain]];
+      [newPrefs setObject: @"YES" forKey: @"GSEnableAppIcon"];
+      [uDefs setVolatileDomain: newPrefs forName: GSConfigDomain];
+    }
 
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
 				styleMask: mask
