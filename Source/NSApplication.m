@@ -91,8 +91,6 @@
 #import "NSDocumentFrameworkPrivate.h"
 #import "NSToolbarFrameworkPrivate.h"
 
-// minimize icon when suppressed?
-#define	MINI_ICON	0
 
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;
@@ -483,19 +481,6 @@ NSApplication	*NSApp = nil;
       [uDefs setPersistentDomain: newPrefs forName: NSGlobalDomain];
     }
 
-#if	MINI_ICON
-  /* Hack ... 
-   * At least one window manager won't miniaturize a window unless
-   * it's at the standard level.  If the app icon is suppressed, we
-   * may still want a miniaturised version while the app is hidden.
-   */
-  if (NO == [[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSEnableAppIcon"])
-    {
-      NSLog(@"Disable AppIcon");
-      return;
-    }
-#endif
   /* App icons and mini windows are displayed at dock level by default. Yet,
      with the current window level mapping in -back, some window managers
      will order pop up and context menus behind app icons and mini windows.
@@ -1493,17 +1478,7 @@ static BOOL _isAutolaunchChecked = NO;
       if (NO == [[NSUserDefaults standardUserDefaults]
 	boolForKey: @"GSEnableAppIcon"])
 	{
-#if	MINI_ICON
-	  NSRect	f = [[[self mainMenu] window] frame];
-	  NSPoint	p = f.origin;
-
-	  p.y += f.size.height;
-          [_app_icon_window setFrameTopLeftPoint: p];
 	  [_app_icon_window orderFrontRegardless];
-          [_app_icon_window miniaturize: self];
-#else
-	  [_app_icon_window orderFrontRegardless];
-#endif
 	}
 
       info = [self _notificationUserInfo];
@@ -2652,17 +2627,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 	  if (NO == [[NSUserDefaults standardUserDefaults]
 		       boolForKey: @"GSEnableAppIcon"])
 	    {
-#if	MINI_ICON
-	      NSRect	f = [[[self mainMenu] window] frame];
-	      NSPoint	p = f.origin;
-	      
-	      p.y += f.size.height;
-	      [_app_icon_window setFrameTopLeftPoint: p];
 	      [_app_icon_window orderFrontRegardless];
-	      [_app_icon_window miniaturize: self];
-#else
-	      [_app_icon_window orderFrontRegardless];
-#endif
 	    }
 	  else
 	    {
@@ -4034,12 +3999,6 @@ struct _DelegateWrapper
   
   suppress = ![[NSUserDefaults standardUserDefaults]
     boolForKey: @"GSEnableAppIcon"];
-#if	MINI_ICON
-  if (suppress)
-    {
-      mask = NSMiniaturizableWindowMask;
-    }
-#endif
   
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
 				styleMask: mask
