@@ -462,7 +462,10 @@ NSApplication	*NSApp = nil;
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
 
-  // check and convert old GSSuppressAppIcon in the global domain
+  /* check and convert old GSSuppressAppIcon in the global domain
+     This code could eventually be removed once we get tired of conversion
+     RM - 5 Oct 2026
+   */
   NSUserDefaults *uDefs = [NSUserDefaults standardUserDefaults];
   NSDictionary *gDom = [uDefs persistentDomainForName: NSGlobalDomain];
 
@@ -479,6 +482,16 @@ NSApplication	*NSApp = nil;
       [newPrefs setObject: strValue forKey: @"GSEnableAppIcon"];
       [newPrefs removeObjectForKey: @"GSSuppressAppIcon"];
       [uDefs setPersistentDomain: newPrefs forName: NSGlobalDomain];
+    }
+
+  /* set up default in the volative domain if none is set */
+  if (nil == [uDefs objectForKey: @"GSEnableAppIcon"])
+    {
+      NSMutableDictionary *newPrefs;
+
+      newPrefs = [NSMutableDictionary dictionaryWithDictionary: [uDefs volatileDomainForName: GSConfigDomain]];
+      [newPrefs setObject: @"YES" forKey: @"GSEnableAppIcon"];
+      [uDefs setVolatileDomain: newPrefs forName: GSConfigDomain];
     }
 
   /* App icons and mini windows are displayed at dock level by default. Yet,
@@ -3996,17 +4009,12 @@ struct _DelegateWrapper
   NSAppIconView	*iv;
   NSUInteger	mask = NSIconWindowMask;
   BOOL  	suppress;
-  
-  suppress = ![[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSEnableAppIcon"];
-  
+
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
 				styleMask: mask
 				  backing: NSBackingStoreRetained
 				    defer: NO
 				   screen: nil];
-
-
 
   {
     NSRect iconContentRect;
@@ -4025,6 +4033,9 @@ struct _DelegateWrapper
     [_app_icon_window setContentView: iv];
     RELEASE(iv);
   }
+
+  suppress = ![[NSUserDefaults standardUserDefaults]
+    boolForKey: @"GSEnableAppIcon"];
 
   if (NO == suppress)
     {
