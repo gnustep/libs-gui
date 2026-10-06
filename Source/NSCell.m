@@ -2872,8 +2872,10 @@ static NSColor *dtxtCol;
       _action_mask |= NSLeftMouseUpMask;
       [aDecoder decodeValueOfObjCType: @encode(id) at: &formatter];
       [self setFormatter: formatter];
+      RELEASE(formatter);
       [aDecoder decodeValueOfObjCType: @encode(id) at: &menu];
       [self setMenu: menu];
+      RELEASE(menu);
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_represented_object];
 
       if (_formatter != nil)
