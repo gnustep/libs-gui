@@ -43,6 +43,10 @@
 
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSColor.h"
+#import "AppKit/NSFont.h"
+#import "AppKit/NSParagraphStyle.h"
+#import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSAttributedString.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSImageRep.h"
@@ -169,6 +173,8 @@
 
 - (void)dealloc
 {
+  [_subtitleTimer invalidate];
+  DESTROY(_subtitleTimer);
   // Stop all playback and clean up
   [self stop: nil];
   [self _stopFeed];
@@ -312,6 +318,7 @@
       NSDebugLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
 
       [self _clearVideoPackets];
+      [_audioPlayer flushSubtitles];
 
       // Seek back to the beginning
       if (av_seek_frame(_formatCtx, _videoStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
@@ -363,6 +370,9 @@
       [_videoThread start];
     }
 
+  [self performSelectorOnMainThread: @selector(_startSubtitleTimer)
+                         withObject: nil waitUntilDone: NO];
+
   // Start audio playback
   if (_audioPlayer && _audioStreamIndex >= 0)
     {
@@ -398,6 +408,9 @@
     }
 
   _flags.playing = NO;
+  [_subtitleTimer invalidate];
+  DESTROY(_subtitleTimer);
+  [self setNeedsDisplay: YES];
 
   // Stop audio playback first
   if (_audioPlayer)
@@ -462,6 +475,8 @@
   // Stop current playback
   [self stop: nil];
 
+  [_audioPlayer reset];
+
   // Clean up existing format context
   if (_formatCtx)
     {
@@ -499,6 +514,8 @@
 
   // Set the new movie
   [super setMovie: movie];
+
+  [self setNeedsDisplay: YES];
 
   // Setup the new movie if provided
   if (movie != nil)
@@ -763,6 +780,31 @@
     {
       [_currentFrame drawInRect: [self bounds]];
     }
+  NSString *subtitle = [self currentSubtitleText];
+  if ([subtitle length])
+    {
+      NSRect bounds = [self bounds];
+      CGFloat inset = 12;
+      NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+      [style setAlignment: NSCenterTextAlignment];
+      NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+        [NSFont boldSystemFontOfSize: 20], NSFontAttributeName,
+        [NSColor whiteColor], NSForegroundColorAttributeName,
+        style, NSParagraphStyleAttributeName, nil];
+      NSRect measured = [subtitle boundingRectWithSize:
+        NSMakeSize(MAX(1, NSWidth(bounds) - 4 * inset), NSHeight(bounds))
+        options: NSStringDrawingUsesLineFragmentOrigin attributes: attributes];
+      CGFloat height = MIN(NSHeight(bounds), ceil(NSHeight(measured)) + inset);
+      NSRect caption = NSMakeRect(NSMinX(bounds) + inset,
+        [self isFlipped] ? NSMaxY(bounds) - height - inset : NSMinY(bounds) + inset,
+        MAX(1, NSWidth(bounds) - 2 * inset), height);
+      [[NSColor colorWithCalibratedWhite: 0 alpha: 0.75] set];
+      NSRectFillUsingOperation(caption, NSCompositeSourceOver);
+      [subtitle drawWithRect: NSInsetRect(caption, inset, inset / 2)
+                    options: NSStringDrawingUsesLineFragmentOrigin
+                 attributes: attributes];
+      RELEASE(style);
+    }
 }
 
 - (BOOL) setup
@@ -832,6 +874,11 @@
 	    }
 	  else
 	    {
+              if (_videoStreamIndex < 0)
+                {
+                  _stream = _formatCtx->streams[_audioStreamIndex];
+                  _timeBase = _stream->time_base;
+                }
 	      [_audioPlayer prepareWithFormatContext: _formatCtx
 					 streamIndex: _audioStreamIndex];
 	    }
@@ -843,6 +890,7 @@
 	      avformat_close_input(&_formatCtx);
 	      return NO;
 	    }
+          [_audioPlayer prepareSubtitlesWithFormatContext: _formatCtx];
 	}
     }
 
@@ -909,6 +957,8 @@
 	      [_audioPlayer submitPacket: &packet];
 	    }
 
+	  [_audioPlayer submitSubtitlePacket: &packet];
+
 	  av_packet_unref(&packet);
 	  i++;
 	}
@@ -923,6 +973,7 @@
 
 - (void) close
 {
+  [_audioPlayer prepareSubtitlesWithFormatContext: NULL];
   if (_formatCtx != NULL)
     {
       avformat_close_input(&_formatCtx);
@@ -931,7 +982,7 @@
 
 - (void) feed
 {
-  if (_stream != NULL)
+  if (_formatCtx != NULL)
     {
       [self loop];
       // DON'T close the format context here - keep it open for restart capability
@@ -1284,6 +1335,8 @@
 	  [_audioPlayer seekToTime: timestamp];
 	}
 
+      [self setNeedsDisplay: YES];
+
       // Reset internal state
       _started = NO;
       _reachedEOF = NO;
@@ -1362,6 +1415,8 @@
 
 - (int64_t) getCurrentTimestamp
 {
+  if (_videoStreamIndex < 0 && [_audioPlayer isAudioStarted])
+    return [_audioPlayer currentPlaybackTime];
   if (_lastPts != AV_NOPTS_VALUE)
     {
       return av_rescale_q(_lastPts, _timeBase, (AVRational){1, 1000000});
@@ -1400,6 +1455,7 @@
   AVPacket packet;
   while (av_read_frame(_formatCtx, &packet) >= 0)
     {
+      [_audioPlayer submitSubtitlePacket: &packet];
       if (packet.stream_index == _videoStreamIndex)
 	{
 	  [self decodePacket: &packet];
@@ -1408,6 +1464,57 @@
 	}
       av_packet_unref(&packet);
     }
+}
+
+
+- (void) _subtitleTimerFired: (NSTimer *)timer
+{
+  if (!_flags.playing)
+    {
+      [timer invalidate];
+      DESTROY(_subtitleTimer);
+    }
+  [self setNeedsDisplay: YES];
+}
+
+- (void) _startSubtitleTimer
+{
+  if (_flags.playing && !_subtitleTimer
+      && [_audioPlayer subtitleStreamIndex] >= 0)
+    _subtitleTimer = RETAIN([NSTimer scheduledTimerWithTimeInterval: 0.05
+      target: self selector: @selector(_subtitleTimerFired:) userInfo: nil repeats: YES]);
+}
+
+- (NSArray *) subtitleStreams
+{
+  return [_audioPlayer subtitleStreams];
+}
+
+- (int) subtitleStreamIndex
+{
+  return [_audioPlayer subtitleStreamIndex];
+}
+
+- (BOOL) setSubtitleStreamIndex: (int)index
+{
+  BOOL wasPlaying = [self isPlaying];
+  int64_t position = [self getCurrentTimestamp];
+  if (wasPlaying) [self stop: nil];
+  BOOL selected = [_audioPlayer setSubtitleStreamIndex: index];
+  /* Refill the demuxer queues so a newly selected track is not skipped by
+   * packets already read ahead. */
+  if (selected && _formatCtx) [self seekToTime: position];
+  [self setNeedsDisplay: YES];
+  if (wasPlaying) [self start: nil];
+  return selected;
+}
+
+- (NSString *) currentSubtitleText
+{
+  if ([_audioPlayer subtitleStreamIndex] < 0) return @"";
+  int64_t timestamp = [self isUsingSynchronizedAudio]
+    ? [_audioPlayer currentPlaybackTime] : [self getCurrentTimestamp];
+  return [_audioPlayer subtitleTextAtTime: timestamp];
 }
 
 // Playback status
@@ -1444,6 +1551,10 @@
 {
   [self stop: nil];
   [self _stopFeed];
+  [_subtitleTimer invalidate];
+  DESTROY(_subtitleTimer);
+  [_audioPlayer flushSubtitles];
+  [self setNeedsDisplay: YES];
 }
 
 // Time stretching support
