@@ -66,8 +66,8 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   self = [super init];
   if (self != nil)
     {
-      _audioPacketsLock = [NSLock new];
-      _stateLock = [NSRecursiveLock new];
+      _audioPacketsLock = [[NSLock alloc] init];
+      _stateLock = [[NSRecursiveLock alloc] init];
       [self reset];
     }
   return self;
