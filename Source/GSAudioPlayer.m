@@ -520,6 +520,14 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   _flags.needsRestart = f;
 }
 
+- (void) _clearAudioPackets
+{
+  // Clear existing audio packets
+  [_audioPacketsLock lock];
+  [_audioPackets removeAllObjects];
+  [_audioPacketsLock unlock];
+}
+
 - (void) start
 {
   [_stateLock lock];
@@ -546,10 +554,7 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
       NSDebugLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
       _flags.reachedEOF = NO;
 
-      // Clear existing audio packets
-      [_audioPacketsLock lock];
-      [_audioPackets removeAllObjects];
-      [_audioPacketsLock unlock];
+      [self _clearAudioPackets];
 
       // Seek back to the beginning only for EOF
       if (av_seek_frame(_formatCtx, _audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
@@ -574,10 +579,7 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
       NSDebugLog(@"[GSAudioPlayer] Resuming from position %ld | Timestamp: %ld", _lastPosition, av_gettime());
       _flags.needsRestart = NO;
 
-      // Clear existing packets but don't seek
-      [_audioPacketsLock lock];
-      [_audioPackets removeAllObjects];
-      [_audioPacketsLock unlock];
+      [self _clearAudioPackets];
 
       // Reset codec state but maintain position
       if (_audioCodecCtx)
@@ -693,9 +695,7 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 - (BOOL) seekToTime: (int64_t)timestamp
 {
   // Clear existing audio packets
-  [_audioPacketsLock lock];
-  [_audioPackets removeAllObjects];
-  [_audioPacketsLock unlock];
+  [self _clearAudioPackets];
 
   // Reset codec state
   if (_audioCodecCtx)
