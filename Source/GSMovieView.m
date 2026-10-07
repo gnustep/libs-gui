@@ -303,10 +303,10 @@
 	av_gettime(), _lastPts);
 
   _flags.playing = YES;
-      _started = NO; // Reset for synchronization
-      _videoClockStartTime = 0;
-      _videoClockStartPTS = 0;
-      _frameCount = 0;
+  _started = NO; // Reset for synchronization
+  _videoClockStartTime = 0;
+  _videoClockStartPTS = 0;
+  _frameCount = 0;
 
   [_audioPlayer setNeedsRestart: NO];
   if (_reachedEOF)
