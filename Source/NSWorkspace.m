@@ -1166,10 +1166,6 @@ static NSDictionary		*urlPreferences = nil;
         }
       else
         {
-	  NSRunAlertPanel(nil,
-	    @"Unable to use Application or Service to open URL",
-	    @"Continue", nil, nil);
-
           if ([self _openUnknown: [url absoluteString]])
 	    {
 	      [NSApp deactivate];
