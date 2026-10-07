@@ -274,6 +274,14 @@
   return playing;
 }
 
+- (void) _clearVideoPackets
+{
+  // Clear existing video packets
+  [_videoPacketsLock lock];
+  [_videoPackets removeAllObjects];
+  [_videoPacketsLock unlock];  
+}
+
 - (IBAction) start: (id)sender
 {
   [_stateLock lock];
@@ -305,27 +313,24 @@
     {
       NSDebugLog(@"[GSMovieView] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
 
-      // Clear existing video packets
-      [_videoPacketsLock lock];
-      [_videoPackets removeAllObjects];
-      [_videoPacketsLock unlock];
+      [self _clearVideoPackets];
 
-	  // Seek back to the beginning
-	  if (av_seek_frame(_formatCtx, _videoStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
+      // Seek back to the beginning
+      if (av_seek_frame(_formatCtx, _videoStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
+	{
+	  NSDebugLog(@"[GSMovieView] rewind successful");
+	  _reachedEOF = NO;
+	  // Reset codec state
+	  if (_videoCodecCtx)
 	    {
-	      NSDebugLog(@"[GSMovieView] rewind successful");
-	      _reachedEOF = NO;
-	      // Reset codec state
-	      if (_videoCodecCtx)
-		{
-		  avcodec_flush_buffers(_videoCodecCtx);
-		}
-	    }
-	  else
-	    {
-	      NSDebugLog(@"[GSMovieView] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
+	      avcodec_flush_buffers(_videoCodecCtx);
 	    }
 	}
+      else
+	{
+	  NSDebugLog(@"[GSMovieView] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
+	}
+    }
 
   // Start feed thread if not already started or if it finished
   if (_feedThread == nil || [_feedThread isFinished])
@@ -444,10 +449,7 @@
     }
 
   // Clear video packet queue
-  [_videoPacketsLock lock];
-  [_videoPackets removeAllObjects];
-  [_videoPacketsLock unlock];
-
+  [self _clearVideoPackets];
   [self _seekPlaybackToTimeAfterStop: stopTime];
 
   NSDebugLog(@"[GSMovieView] Video playback stopped successfully | Timestamp: %ld", av_gettime());
@@ -1254,9 +1256,7 @@
   if (result >= 0)
     {
       // Clear existing video packets
-      [_videoPacketsLock lock];
-      [_videoPackets removeAllObjects];
-      [_videoPacketsLock unlock];
+      [self _clearVideoPackets];
 
       // Reset codec state
       if (_videoCodecCtx)
@@ -1321,9 +1321,7 @@
       return NO;
     }
 
-  [_videoPacketsLock lock];
-  [_videoPackets removeAllObjects];
-  [_videoPacketsLock unlock];
+  [self _clearVideoPackets];
 
   if (_videoCodecCtx)
     {
@@ -1450,9 +1448,7 @@
     }
 
   // Clear packet queue
-  [_videoPacketsLock lock];
-  [_videoPackets removeAllObjects];
-  [_videoPacketsLock unlock];
+  [self _clearVideoPackets];
 
   NSDebugLog(@"[GSMovieView] Force stop completed | Timestamp: %ld", av_gettime());
 }
