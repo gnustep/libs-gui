@@ -290,7 +290,7 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   int64_t audioStartTime = 0;
   int64_t totalSamplesPlayed = 0;
 
-  while (_flags.playing)
+  while (_flags.playing && ![[NSThread currentThread] isCancelled])
     {
       // create pool...
       CREATE_AUTORELEASE_POOL(pool);
@@ -339,7 +339,12 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 	    int64_t timingError = expectedTime - currentTime;
 	    if (timingError > 5000) // 5ms threshold
 	      {
-		usleep((useconds_t)timingError);
+		while (timingError > 0 && ![[NSThread currentThread] isCancelled])
+                  {
+                    useconds_t interval = (useconds_t)MIN(timingError, 10000);
+                    usleep(interval);
+                    timingError -= interval;
+                  }
 	      }
 
 	    // Update audio clock for video synchronization
@@ -354,7 +359,8 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 	      }
 
 	    // Decode and play the packet
-	    int samplesDecoded = [self decodePacket: &packet];
+	    int samplesDecoded = [[NSThread currentThread] isCancelled]
+              ? 0 : [self decodePacket: &packet];
 	    totalSamplesPlayed += samplesDecoded;
 
 	    RELEASE(dict);
@@ -610,7 +616,7 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 - (void) stop
 {
   [_stateLock lock];
-  if (!_flags.playing)
+  if (!_flags.playing && _audioThread == nil)
     {
       NSDebugLog(@"[GSAudioPlayer] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
       [_stateLock unlock];
@@ -631,18 +637,11 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
     {
       [_audioThread cancel];
 
-      // Wait for video thread to finish with timeout
-      int timeout = 1000; // 1 second timeout
-      while (![_audioThread isFinished] && timeout > 0)
-	{
-	  usleep(1000); // 1ms
-	  timeout--;
-	}
-
-      if (timeout <= 0)
-	{
-	  NSDebugLog(@"[GSAudioPlayer] Warning: Audio thread did not finish within timeout");
-	}
+      // The codec and device remain owned by this worker until it exits.
+      while (![_audioThread isFinished])
+        {
+          usleep(1000);
+        }
 
       DESTROY(_audioThread);
     }
