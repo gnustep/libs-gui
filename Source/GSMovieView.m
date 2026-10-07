@@ -1153,21 +1153,37 @@
 
 - (void) renderFrame: (AVFrame *)videoFrame
 {
-  uint8_t *rgbData[1];
-  int rgbLineSize[1];
+  AVFrame *rgbFrame;
   int width = _videoCodecCtx->width;
   int height = _videoCodecCtx->height;
+  int row;
 
-  rgbLineSize[0] = width * 3;
-  rgbData[0] = (uint8_t *)malloc(height * rgbLineSize[0]);
+  // libswscale's SIMD converters need aligned, padded output rows.
+  // A tightly packed width * height * 3 allocation can be overrun for
+  // widths such as 632. Let libavutil provide the required padding.
+  rgbFrame = av_frame_alloc();
+  if (rgbFrame == NULL)
+    return;
+  rgbFrame->format = AV_PIX_FMT_RGB24;
+  rgbFrame->width = width;
+  rgbFrame->height = height;
+  if (av_frame_get_buffer(rgbFrame, 32) < 0)
+    {
+      av_frame_free(&rgbFrame);
+      return;
+    }
 
-  sws_scale(_swsCtx,
+  if (sws_scale(_swsCtx,
 	    (const uint8_t * const *)videoFrame->data,
 	    videoFrame->linesize,
 	    0,
 	    height,
-	    rgbData,
-	    rgbLineSize);
+	    rgbFrame->data,
+	    rgbFrame->linesize) != height)
+    {
+      av_frame_free(&rgbFrame);
+      return;
+    }
 
   // Create bitmap with NULL planes so it allocates its own memory
   NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
@@ -1179,12 +1195,20 @@
 						   hasAlpha: NO
 						   isPlanar: NO
 					     colorSpaceName: NSCalibratedRGBColorSpace
-						bytesPerRow: rgbLineSize[0]
+						bytesPerRow: width * 3
 					       bitsPerPixel: 24];
 
   // Copy our data into the bitmap's own memory
   unsigned char *bitmapData = [bitmap bitmapData];
-  memcpy(bitmapData, rgbData[0], height * rgbLineSize[0]);
+  if (bitmapData == NULL)
+    {
+      RELEASE(bitmap);
+      av_frame_free(&rgbFrame);
+      return;
+    }
+  for (row = 0; row < height; row++)
+    memcpy(bitmapData + row * [bitmap bytesPerRow],
+           rgbFrame->data[0] + row * rgbFrame->linesize[0], width * 3);
 
   NSImage *image = [[NSImage alloc] initWithSize: NSMakeSize(width, height)];
   NSDictionary *frameInfo;
@@ -1199,7 +1223,7 @@
 
   RELEASE(image);
   RELEASE(bitmap);
-  free(rgbData[0]);
+  av_frame_free(&rgbFrame);
 }
 
 - (void) decodePacket: (AVPacket *)packet
