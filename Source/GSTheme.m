@@ -537,24 +537,11 @@ typedef	struct {
     }
   if (theme != theTheme)
     {
-      /*
-       * Remove any previous observers...
-       */
-      [[NSNotificationCenter defaultCenter]
-	removeObserver: self];
-
       [theTheme deactivate];
+      [[NSNotificationCenter defaultCenter]
+		removeObserver: theTheme];
       ASSIGN (theTheme, theme);
       [theTheme activate];
-
-      /*
-       * Listen to notifications...
-       */ 
-      [[NSNotificationCenter defaultCenter]
-	addObserver: self
-	   selector: @selector(defaultsDidChange:)
-	       name: NSUserDefaultsDidChangeNotification
-	     object: nil];
     }
 }
 
