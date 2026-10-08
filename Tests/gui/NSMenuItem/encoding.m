@@ -31,7 +31,7 @@ int main()
 
   archive = [NSPropertyListSerialization propertyListWithData: data
     options: NSPropertyListImmutable
-    format: nil
+    format: NULL
     error: &error];
 
   topLevelObjects = [archive objectForKey: @"$objects"];
