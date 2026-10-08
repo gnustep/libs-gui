@@ -538,8 +538,6 @@ typedef	struct {
   if (theme != theTheme)
     {
       [theTheme deactivate];
-      [[NSNotificationCenter defaultCenter]
-		removeObserver: theTheme];
       ASSIGN (theTheme, theme);
       [theTheme activate];
     }
