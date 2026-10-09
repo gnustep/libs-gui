@@ -220,6 +220,9 @@
 	  NSWindow *w = [NSWindow windowWithContentViewController: _destinationController];
 	  [w setTitle: [_destinationController title]];
 	  [w center];
+          // The presentation owns this autoreleased window until close.
+          // Closing must not consume that ownership a second time.
+          [w setReleasedWhenClosed: NO];
           [[GSStoryboardWindowPresentation alloc]
             initWithController: _destinationController presentation: w
             closeNotification: NSWindowWillCloseNotification];
