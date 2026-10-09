@@ -115,27 +115,6 @@
   return _context;
 }
 
-- (void) _print
-{
-  // TODO: Copied-and-pasted from GSEPSPrintOperation. Factor out.
-
-  /* Save this for the view to look at. Seems like there should
-     be a better way to pass it to beginDocument */
-  [[[self printInfo] dictionary] setObject: [NSValue valueWithRect: _rect]
-                                 forKey: @"NSPrintSheetBounds"];
-
-  [_view beginDocument];
-  [_view beginPageInRect: _rect
-             atPlacement: NSMakePoint(0,0)];
-
-  [_view displayRectIgnoringOpacity: _rect inContext: [self context]];
-
-  [_view endPage];
-  [_view endDocument];
-
-  // FIXME: Output comes out up-side-down
-}
-
 - (BOOL)deliverResult
 {
   if (_data != nil && _path != nil)
