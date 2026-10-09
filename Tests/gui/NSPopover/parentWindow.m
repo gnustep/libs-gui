@@ -12,7 +12,13 @@ main(int argc, const char **argv)
   NSPopover *popover;
   NSViewController *controller;
 
-  [NSApplication sharedApplication];
+  NS_DURING
+    [NSApplication sharedApplication];
+  NS_HANDLER
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException])
+      SKIP("It looks like GNUstep backend is not yet installed")
+  NS_ENDHANDLER;
+
   first = [[NSWindow alloc] initWithContentRect: NSMakeRect(0, 0, 300, 200)
                                     styleMask: NSTitledWindowMask
                                       backing: NSBackingStoreBuffered
