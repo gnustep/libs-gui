@@ -24,7 +24,6 @@ static NSUInteger windowControllerDeaths;
 }
 @end
 @implementation StructureViewController
-
 - (id) initWithCoder: (NSCoder *)coder
 {
   if ((self = [super initWithCoder: coder]) != nil)
@@ -35,6 +34,7 @@ static NSUInteger windowControllerDeaths;
 - (void) awakeFromNib { awakes++; }
 
 - (void) dealloc { controllerDeaths++; [super dealloc]; }
+
 @end
 @interface StructureNamedController : StructureViewController
 @end
@@ -48,7 +48,6 @@ static NSUInteger windowControllerDeaths;
 }
 @end
 @implementation StructureWindowController
-
 - (void) showWindow: (id)sender { shows++; }
 
 - (void) dealloc { windowControllerDeaths++; [super dealloc]; }
@@ -59,12 +58,13 @@ static NSUInteger windowControllerDeaths;
     && [[self window] delegate] == self
     && [self valueForKey: @"storyboard"] != nil;
 }
+
 @end
 @interface StructureDelegate : NSObject
 @end
 @implementation StructureDelegate
-
 - (void) awakeFromNib { delegateAwakes++; }
+
 @end
 
 int main(void)

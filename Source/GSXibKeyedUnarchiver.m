@@ -492,7 +492,6 @@ didStartElement: (NSString*)elementName
 
 /* Override at the initialization boundary, while currentElement and the
  * reference cache are set up, for storyboard creator blocks. */
-
 - (id) initializeObject: (id)object forXib: (GSXibElement *)element
 {
   return [object initWithCoder: self];
