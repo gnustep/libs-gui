@@ -88,10 +88,11 @@
   if (header != NULL)
     {
       [theData getBytes: header
-                 length: 16];
+                 length: MIN([theData length], (NSUInteger)16)];
 
       if (strncmp("GNUstep archive",header,15) == 0)
         {
+          free(header);
           return YES;
         }
 
