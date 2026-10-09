@@ -55,7 +55,6 @@
 @end
 
 @implementation GSStoryboardWindowPresentation
-
 - (id) initWithController: (id)controller presentation: (id)presentation
        closeNotification: (NSString *)notification
 {
@@ -88,10 +87,10 @@
   RELEASE(_presentation);
   [super dealloc];
 }
+
 @end
 
 @implementation NSStoryboardSegue
-
 - (id) sourceController
 {
   return _sourceController;
@@ -270,7 +269,6 @@
 @end
 
 @implementation NSStoryboardSegue (GSStoryboardPrivate)
-
 - (void) _setKind: (NSString *)k
 {
   ASSIGN(_kind, k);
@@ -320,4 +318,5 @@
 {
   return _preferredEdge;
 }
+
 @end

@@ -11,14 +11,23 @@ static NSUInteger destroyedControllers;
   destroyedControllers++;
   [super dealloc];
 }
+
 @end
 
 int main(void)
 {
   NSAutoreleasePool *outer = [NSAutoreleasePool new];
-  [NSApplication sharedApplication];
-  START_SET("NSStoryboard show presentation lifetime")
   NSUInteger i;
+
+  START_SET("NSStoryboard show presentation lifetime")
+
+  NS_DURING
+    [NSApplication sharedApplication];
+  NS_HANDLER
+    if ([[localException name] isEqualToString: NSInternalInconsistencyException])
+      SKIP("It looks like GNUstep backend is not yet installed")
+  NS_ENDHANDLER;
+
   for (i = 0; i < 3; i++)
     {
       NSAutoreleasePool *creation = [NSAutoreleasePool new];

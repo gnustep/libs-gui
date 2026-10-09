@@ -76,10 +76,10 @@ static NSStoryboard *__mainStoryboard = nil;
 {
   ASSIGN(_storyboard, storyboard);
 }
+
 @end
 
 @implementation NSViewController (__StoryboardPrivate__)
-
 - (void) _setTopLevelObjects: (NSArray *)array
 {
   // Match the nib ownership convention used by the controller's dealloc.
@@ -98,11 +98,11 @@ static NSStoryboard *__mainStoryboard = nil;
 {
   ASSIGN(_storyboard, storyboard);
 }
+
 @end
 // end private methods...
 
 @implementation NSStoryboard
-
 - (id) initWithName: (NSStoryboardName)name bundle: (NSBundle *)bundle
 {
   if ((self = [super init]) != nil)
@@ -181,4 +181,5 @@ static NSStoryboard *__mainStoryboard = nil;
 {
   return [_transform instantiateIdentifier: identifier storyboard: self creator: creator];
 }
+
 @end

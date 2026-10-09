@@ -91,7 +91,6 @@ GSIsController(GSXibElement *element)
 @end
 
 @implementation GSStoryboardSceneUnarchiver
-
 - (id) initWithScene: (GSXibElement *)scene document: (GSXibElement *)document
        controllerID: (NSString *)identifier bundle: (NSBundle *)bundle
             creator: (NSStoryboardControllerCreator)creator
@@ -261,10 +260,10 @@ GSIsController(GSXibElement *element)
     }
   return [super decodeObjectForXib: element forClassName: className withID: identifier];
 }
+
 @end
 
 @implementation GSStoryboardSegueAction
-
 - (id) initWithDefinition: (NSDictionary *)definition
               storyboard: (NSStoryboard *)storyboard source: (id)source
                   anchor: (id)anchor
@@ -334,10 +333,10 @@ GSIsController(GSXibElement *element)
     [_source prepareForSegue: segue sender: sender];
   [segue perform];
 }
+
 @end
 
 @implementation GSStoryboardArchive
-
 - (id) initWithData: (NSData *)data bundle: (NSBundle *)bundle
 {
   if ((self = [super init]) != nil)
@@ -576,4 +575,5 @@ GSIsController(GSXibElement *element)
     }
   return AUTORELEASE(result);
 }
+
 @end

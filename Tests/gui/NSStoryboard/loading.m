@@ -17,12 +17,12 @@ static id checkedSender;
 - (void) fire;
 @end
 @implementation StoryboardTrigger
-
 - (void) setTarget: (id)target { _target = target; }
 
 - (void) setAction: (SEL)action { _action = action; }
 
 - (void) fire { [_target performSelector: _action withObject: self]; }
+
 @end
 
 @interface StoryboardProbe : NSViewController
@@ -36,7 +36,6 @@ static id checkedSender;
 }
 @end
 @implementation StoryboardProbe
-
 - (void) awakeFromNib
 {
   awakeCount++;
@@ -59,20 +58,20 @@ static id checkedSender;
   destroyedControllers++;
   [super dealloc];
 }
+
 @end
 
 @interface StoryboardTestSegue : NSStoryboardSegue
 @end
 @implementation StoryboardTestSegue
-
 - (void) perform { ASSIGN(performedSegue, self); }
+
 @end
 
 @interface MemoryStoryboard : NSStoryboard
 - (id) initWithXML: (NSString *)xml;
 @end
 @implementation MemoryStoryboard
-
 - (id) initWithXML: (NSString *)xml
 {
   if ((self = [super init]) != nil)
@@ -81,6 +80,7 @@ static id checkedSender;
       bundle: [NSBundle mainBundle]];
   return self;
 }
+
 @end
 
 static NSString *xml =
