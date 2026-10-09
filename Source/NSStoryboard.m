@@ -25,25 +25,16 @@
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSData.h>
-#import <Foundation/NSXMLDocument.h>
-#import <Foundation/NSXMLElement.h>
-#import <Foundation/NSXMLNode.h>
-#import <Foundation/NSDictionary.h>
 #import <Foundation/NSArray.h>
-#import <Foundation/NSUUID.h>
 #import <Foundation/NSException.h>
 
 #import "AppKit/NSApplication.h"
-#import "AppKit/NSNib.h"
 #import "AppKit/NSStoryboard.h"
 #import "AppKit/NSWindowController.h"
 #import "AppKit/NSViewController.h"
 #import "AppKit/NSWindow.h"
-#import "AppKit/NSNibDeclarations.h"
 
-#import "GNUstepGUI/GSModelLoaderFactory.h"
-#import "GSStoryboardTransform.h"
-#import "GSFastEnumeration.h"
+#import "GSStoryboardArchive.h"
 
 static NSStoryboard *__mainStoryboard = nil;
 
@@ -69,7 +60,11 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (void) _setTopLevelObjects: (NSArray *)array
 {
-  _top_level_objects = array;
+  // Match the nib ownership convention used by the controller's dealloc.
+  // The scene's primary controller is deliberately excluded from this array.
+  [array makeObjectsPerformSelector: @selector(retain)];
+  [_top_level_objects makeObjectsPerformSelector: @selector(release)];
+  ASSIGN(_top_level_objects, array);
 }
 
 - (void) _setSegueMap: (NSMapTable *)map
@@ -79,14 +74,18 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (void) _setStoryboard: (NSStoryboard *)storyboard
 {
-  _storyboard = storyboard;
+  ASSIGN(_storyboard, storyboard);
 }
 @end
 
 @implementation NSViewController (__StoryboardPrivate__)
 - (void) _setTopLevelObjects: (NSArray *)array
 {
-  _topLevelObjects = array;
+  // Match the nib ownership convention used by the controller's dealloc.
+  // The scene's primary controller is deliberately excluded from this array.
+  [array makeObjectsPerformSelector: @selector(retain)];
+  [_topLevelObjects makeObjectsPerformSelector: @selector(release)];
+  ASSIGN(_topLevelObjects, array);
 }
 
 - (void) _setSegueMap: (NSMapTable *)map
@@ -96,175 +95,80 @@ static NSStoryboard *__mainStoryboard = nil;
 
 - (void) _setStoryboard: (NSStoryboard *)storyboard
 {
-  _storyboard = storyboard;
+  ASSIGN(_storyboard, storyboard);
 }
 @end
 // end private methods...
 
 @implementation NSStoryboard
 
-// Private instance methods...
-- (id) initWithName: (NSStoryboardName)name
-	     bundle: (NSBundle *)bundle
+- (id) initWithName: (NSStoryboardName)name bundle: (NSBundle *)bundle
 {
-  self = [super init];
-  if (self != nil)
+  if ((self = [super init]) != nil)
     {
-      NSString *path = [bundle pathForResource: name
-					ofType: @"storyboard"];
-      NSData *data = [NSData dataWithContentsOfFile: path];
-      _transform = [[GSStoryboardTransform alloc] initWithData: data];
+      NSString *path;
+      bundle = bundle ?: [NSBundle mainBundle];
+      @try
+        {
+          path = name ? [bundle pathForResource: name ofType: @"storyboard"] : nil;
+          if (path == nil)
+            [NSException raise: NSInvalidArgumentException
+                        format: @"Cannot find storyboard %@ in %@", name, bundle];
+          _transform = [[GSStoryboardArchive alloc]
+            initWithData: [NSData dataWithContentsOfFile: path] bundle: bundle];
+        }
+      @catch (id exception)
+        {
+          RELEASE(self);
+          @throw;
+        }
     }
   return self;
 }
 
-// Class methods...
-+ (void) _setMainStoryboard: (NSStoryboard *)storyboard  // private, only called from NSApplicationMain()
++ (void) _setMainStoryboard: (NSStoryboard *)storyboard
 {
   if (__mainStoryboard == nil)
-    {
-      ASSIGN(__mainStoryboard, storyboard);
-    }
+    ASSIGN(__mainStoryboard, storyboard);
 }
-
-+ (NSStoryboard *) mainStoryboard
++ (NSStoryboard *) mainStoryboard { return __mainStoryboard; }
++ (instancetype) storyboardWithName: (NSStoryboardName)name bundle: (NSBundle *)bundle
 {
-  return __mainStoryboard;
+  return AUTORELEASE([[self alloc] initWithName: name bundle: bundle]);
 }
-
-+ (instancetype) storyboardWithName: (NSStoryboardName)name
-			     bundle: (NSBundle *)bundle
-{
-  return AUTORELEASE([[NSStoryboard alloc] initWithName: name
-						 bundle: bundle]);
-}
-
-// Instance methods...
 - (void) dealloc
 {
   RELEASE(_transform);
   [super dealloc];
 }
-
 - (void) _instantiateApplicationScene
 {
-  [self instantiateControllerWithIdentifier: @"application"];
+  NSString *identifier = [_transform applicationControllerID];
+  if (identifier != nil)
+    [self _instantiateControllerWithID: identifier];
 }
-
+- (id) _instantiateControllerWithID: (NSString *)identifier
+{
+  return [_transform instantiateControllerID: identifier storyboard: self creator: NULL];
+}
 - (id) instantiateInitialController
 {
   return [self instantiateInitialControllerWithCreator: NULL];
 }
-
-- (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)block
+- (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)creator
 {
-  return [self instantiateControllerWithIdentifier: [_transform initialViewControllerId]
-					   creator: block];
+  NSString *identifier = [_transform initialControllerID];
+  if (identifier == nil)
+    return nil;
+  return [_transform instantiateControllerID: identifier storyboard: self creator: creator];
 }
-
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
 {
-  return [self instantiateControllerWithIdentifier: identifier
-					       creator: NULL];
+  return [self instantiateControllerWithIdentifier: identifier creator: NULL];
 }
-
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
-				   creator: (NSStoryboardControllerCreator)block
+                                   creator: (NSStoryboardControllerCreator)creator
 {
-  id result = nil;
-
-  if (identifier != nil)
-    {
-      NSMutableArray *topLevelObjects = [NSMutableArray arrayWithCapacity: 5];
-      NSDictionary *table = [NSDictionary dictionaryWithObjectsAndKeys: topLevelObjects,
-					  NSNibTopLevelObjects,
-					  NSApp,
-					  NSNibOwner,
-					  nil];
-      GSModelLoader *loader = [GSModelLoaderFactory modelLoaderForFileType: @"xib"];
-      BOOL  success = [loader loadModelData: [_transform dataForIdentifier: identifier]
-			  externalNameTable: table
-				   withZone: [self zone]];
-
-      if (success)
-	{
-	  NSMutableArray *seguesToPerform = [NSMutableArray array];
-	  NSMapTable *segueMap = [_transform segueMapForIdentifier: identifier];
-	  NSWindowController *wc = nil;
-	  NSViewController *vc = nil;
-	  NSWindow *w = nil;
-
-	  FOR_IN(id, o, topLevelObjects)
-	    if ([o isKindOfClass: [NSWindowController class]])
-	      {
-		wc = (NSWindowController *)o;
-		[wc _setSegueMap: segueMap];
-		[wc _setTopLevelObjects: topLevelObjects];
-		[wc _setStoryboard: self];
-		[wc _setOwner: NSApp];
-		result = o;
-	      }
-	    else if ([o isKindOfClass: [NSViewController class]])
-	      {
-		vc = (NSViewController *)o;
-		[vc _setSegueMap: segueMap];
-		[vc _setTopLevelObjects: topLevelObjects];
-		[vc _setStoryboard: self];
-		result = o;
-	      }
-	    else if ([o isKindOfClass: [NSWindow class]])
-	      {
-		w = (NSWindow *)o;
-	      }
-	    else if ([o isKindOfClass: [NSControllerPlaceholder class]])
-	      {
-		NSControllerPlaceholder *ph = (NSControllerPlaceholder *)o;
-		result = [ph instantiate];
-	      }
-	  END_FOR_IN(topLevelObjects);
-
-	  // Process action proxies after so we know we have the windowController...
-	  FOR_IN(id, o, topLevelObjects)
-	    if ([o isKindOfClass: [NSStoryboardSeguePerformAction class]])
-	      {
-		NSStoryboardSeguePerformAction *ssa = (NSStoryboardSeguePerformAction *)o;
-		NSMapTable *mapTable = [_transform segueMapForIdentifier: identifier];
-		NSStoryboardSegue *ss = [mapTable objectForKey: [ssa identifier]];
-
-		[ssa setSender: result]; // resolve controller here...
-		[ssa setStoryboardSegue: ss];
-		[ssa setStoryboard: self];
-		if ([[ssa kind] isEqualToString: @"relationship"]) // if it is a relationship, perform immediately
-		  {
-		    [seguesToPerform addObject: ssa];
-		  }
-	      }
-	  END_FOR_IN(topLevelObjects);
-
-	  // Depending on which kind of controller we have, do the correct thing....
-	  if (w != nil && wc != nil)
-	    {
-	      [wc setWindow: w];
-	    }
-
-	  // perform segues after all is initialized.
-	  FOR_IN(NSStoryboardSeguePerformAction*, ssa, seguesToPerform)
-	    [ssa doAction: result];  // this will, as far as I know, only happen with window controllers, to set content.
-	  END_FOR_IN(seguesToPerform);
-	}
-      else
-	{
-	  [NSException raise: NSInternalInconsistencyException
-		      format: @"Couldn't load controller scene identifier = %@", identifier];
-	}
-
-	// Execute the block if it's set...
-      if (block != NULL)
-	{
-	  CALL_BLOCK(block, self);
-	}
-    }
-
-  return result;
+  return [_transform instantiateIdentifier: identifier storyboard: self creator: creator];
 }
 @end

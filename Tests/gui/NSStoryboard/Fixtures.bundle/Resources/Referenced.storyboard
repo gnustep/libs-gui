@@ -1,0 +1,4 @@
+<document initialViewController="initial"><scenes>
+ <scene sceneID="initial-scene"><objects><viewController id="initial" storyboardIdentifier="Initial" customClass="StructureViewController"><view key="view" id="initial-view"/></viewController></objects></scene>
+ <scene sceneID="named-scene"><objects><viewController id="named" storyboardIdentifier="Named" customClass="StructureNamedController"><view key="view" id="named-view"/></viewController></objects></scene>
+</scenes></document>

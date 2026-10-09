@@ -716,6 +716,34 @@ static NSArray      *XmlBoolDefaultYes  = nil;
   return self;
 }
 
+- (id) initForReadingWithElement: (GSXibElement *)element
+{
+  [self _initCommon];
+  NS_DURING
+    {
+      [self readElement: element];
+      _resources = RETAIN([self decodeObjectForKey: @"resources"]);
+    }
+  NS_HANDLER
+    {
+      RELEASE(self);
+      [localException raise];
+    }
+  NS_ENDHANDLER
+  return self;
+}
+
+- (void) readElement: (GSXibElement *)element
+{
+  GSXibElement *child;
+  [self beginElement: [element type] attributes: [element attributes]];
+  if ([element value] != nil)
+    [currentElement setValue: [element value]];
+  for (child in [element values])
+    [self readElement: child];
+  [self endElement: [element type]];
+}
+
 - (void) _initCommon
 {
   [super _initCommon];
@@ -782,6 +810,12 @@ didStartElement: (NSString*)elementName
    namespaceURI: (NSString*)namespaceURI
   qualifiedName: (NSString*)qualifiedName
      attributes: (NSDictionary*)attributeDict
+{
+  [self beginElement: elementName attributes: attributeDict];
+}
+
+- (void) beginElement: (NSString *)elementName
+          attributes: (NSDictionary *)attributeDict
 {
   // Skip certain element names - for now...
   if ([XmlTagsToSkip containsObject: elementName] == NO)
@@ -927,6 +961,11 @@ didStartElement: (NSString*)elementName
   didEndElement: (NSString*)elementName
    namespaceURI: (NSString*)namespaceURI
   qualifiedName: (NSString*)qName
+{
+  [self endElement: elementName];
+}
+
+- (void) endElement: (NSString *)elementName
 {
   // Skip certain element names - for now...
   if ([XmlTagsToSkip containsObject: elementName] == NO)
