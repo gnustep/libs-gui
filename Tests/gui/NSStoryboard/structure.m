@@ -24,13 +24,16 @@ static NSUInteger windowControllerDeaths;
 }
 @end
 @implementation StructureViewController
+
 - (id) initWithCoder: (NSCoder *)coder
 {
   if ((self = [super initWithCoder: coder]) != nil)
     resourceFound = [coder findResourceWithName: @"StoryboardTestResource"] != nil;
   return self;
 }
+
 - (void) awakeFromNib { awakes++; }
+
 - (void) dealloc { controllerDeaths++; [super dealloc]; }
 @end
 @interface StructureNamedController : StructureViewController
@@ -45,8 +48,11 @@ static NSUInteger windowControllerDeaths;
 }
 @end
 @implementation StructureWindowController
+
 - (void) showWindow: (id)sender { shows++; }
+
 - (void) dealloc { windowControllerDeaths++; [super dealloc]; }
+
 - (void) awakeFromNib
 {
   ready = [[[self window] contentView] isKindOfClass: [StructureView class]]
@@ -57,6 +63,7 @@ static NSUInteger windowControllerDeaths;
 @interface StructureDelegate : NSObject
 @end
 @implementation StructureDelegate
+
 - (void) awakeFromNib { delegateAwakes++; }
 @end
 

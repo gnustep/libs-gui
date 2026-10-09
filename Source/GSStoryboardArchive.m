@@ -91,6 +91,7 @@ GSIsController(GSXibElement *element)
 @end
 
 @implementation GSStoryboardSceneUnarchiver
+
 - (id) initWithScene: (GSXibElement *)scene document: (GSXibElement *)document
        controllerID: (NSString *)identifier bundle: (NSBundle *)bundle
             creator: (NSStoryboardControllerCreator)creator
@@ -112,14 +113,17 @@ GSIsController(GSXibElement *element)
   RELEASE(_bundle);
   [super dealloc];
 }
+
 - (NSArray *) segueDefinitions
 {
   return _segueDefinitions;
 }
+
 - (id) objectWithID: (NSString *)identifier
 {
   return identifier ? [self objectForXib: [objects objectForKey: identifier]] : nil;
 }
+
 - (void) readElement: (GSXibElement *)element
 {
   NSString *tag = [element type];
@@ -187,6 +191,7 @@ GSIsController(GSXibElement *element)
   [super readElement: element];
   [_inputStack removeLastObject];
 }
+
 - (id) initializeObject: (id)object forXib: (GSXibElement *)element
 {
   if (_creator != NULL
@@ -205,6 +210,7 @@ GSIsController(GSXibElement *element)
     }
   return [super initializeObject: object forXib: element];
 }
+
 - (id) decodeObjectForXib: (GSXibElement *)element
             forClassName: (NSString *)className withID: (NSString *)identifier
 {
@@ -258,6 +264,7 @@ GSIsController(GSXibElement *element)
 @end
 
 @implementation GSStoryboardSegueAction
+
 - (id) initWithDefinition: (NSDictionary *)definition
               storyboard: (NSStoryboard *)storyboard source: (id)source
                   anchor: (id)anchor
@@ -271,6 +278,7 @@ GSIsController(GSXibElement *element)
     }
   return self;
 }
+
 - (void) dealloc
 {
   RELEASE(_definition);
@@ -278,10 +286,12 @@ GSIsController(GSXibElement *element)
   RELEASE(_relationshipDestination);
   [super dealloc];
 }
+
 - (NSString *) identifier
 {
   return [_definition objectForKey: @"identifier"];
 }
+
 - (void) doAction: (id)sender
 {
   NSString *identifier = [self identifier];
@@ -293,6 +303,7 @@ GSIsController(GSXibElement *element)
   else
     [self performWithSender: sender];
 }
+
 - (void) performWithSender: (id)sender
 {
   NSString *className = [_definition objectForKey: @"customClass"];
@@ -326,6 +337,7 @@ GSIsController(GSXibElement *element)
 @end
 
 @implementation GSStoryboardArchive
+
 - (id) initWithData: (NSData *)data bundle: (NSBundle *)bundle
 {
   if ((self = [super init]) != nil)
@@ -391,6 +403,7 @@ GSIsController(GSXibElement *element)
     }
   return self;
 }
+
 - (void) dealloc
 {
   RELEASE(_document);
@@ -405,6 +418,7 @@ GSIsController(GSXibElement *element)
   RELEASE(_applicationSegues);
   [super dealloc];
 }
+
 - (void) parser: (NSXMLParser *)parser didStartElement: (NSString *)name
   namespaceURI: (NSString *)uri qualifiedName: (NSString *)qualifiedName
      attributes: (NSDictionary *)attributes
@@ -417,19 +431,24 @@ GSIsController(GSXibElement *element)
   [_parseStack addObject: node];
   RELEASE(node);
 }
+
 - (void) parser: (NSXMLParser *)parser foundCharacters: (NSString *)characters
 {
   GSXibElement *node = [_parseStack lastObject];
   NSString *previous = [node value];
   [node setValue: previous ? [previous stringByAppendingString: characters] : characters];
 }
+
 - (void) parser: (NSXMLParser *)parser didEndElement: (NSString *)name
   namespaceURI: (NSString *)uri qualifiedName: (NSString *)qualifiedName
 {
   [_parseStack removeLastObject];
 }
+
 - (NSString *) initialControllerID { return _initialID; }
+
 - (NSString *) applicationControllerID { return _applicationID; }
+
 - (id) instantiateIdentifier: (NSString *)identifier
                  storyboard: (NSStoryboard *)storyboard
                     creator: (NSStoryboardControllerCreator)creator
@@ -439,6 +458,7 @@ GSIsController(GSXibElement *element)
   return [self instantiateControllerID: controllerID ?: identifier
                             storyboard: storyboard creator: creator];
 }
+
 - (id) instantiateControllerID: (NSString *)identifier
                    storyboard: (NSStoryboard *)storyboard
                       creator: (NSStoryboardControllerCreator)creator

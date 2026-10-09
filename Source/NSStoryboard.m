@@ -79,6 +79,7 @@ static NSStoryboard *__mainStoryboard = nil;
 @end
 
 @implementation NSViewController (__StoryboardPrivate__)
+
 - (void) _setTopLevelObjects: (NSArray *)array
 {
   // Match the nib ownership convention used by the controller's dealloc.
@@ -131,30 +132,37 @@ static NSStoryboard *__mainStoryboard = nil;
   if (__mainStoryboard == nil)
     ASSIGN(__mainStoryboard, storyboard);
 }
+
 + (NSStoryboard *) mainStoryboard { return __mainStoryboard; }
+
 + (instancetype) storyboardWithName: (NSStoryboardName)name bundle: (NSBundle *)bundle
 {
   return AUTORELEASE([[self alloc] initWithName: name bundle: bundle]);
 }
+
 - (void) dealloc
 {
   RELEASE(_transform);
   [super dealloc];
 }
+
 - (void) _instantiateApplicationScene
 {
   NSString *identifier = [_transform applicationControllerID];
   if (identifier != nil)
     [self _instantiateControllerWithID: identifier];
 }
+
 - (id) _instantiateControllerWithID: (NSString *)identifier
 {
   return [_transform instantiateControllerID: identifier storyboard: self creator: NULL];
 }
+
 - (id) instantiateInitialController
 {
   return [self instantiateInitialControllerWithCreator: NULL];
 }
+
 - (id) instantiateInitialControllerWithCreator: (NSStoryboardControllerCreator)creator
 {
   NSString *identifier = [_transform initialControllerID];
@@ -162,10 +170,12 @@ static NSStoryboard *__mainStoryboard = nil;
     return nil;
   return [_transform instantiateControllerID: identifier storyboard: self creator: creator];
 }
+
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
 {
   return [self instantiateControllerWithIdentifier: identifier creator: NULL];
 }
+
 - (id) instantiateControllerWithIdentifier: (NSStoryboardSceneIdentifier)identifier
                                    creator: (NSStoryboardControllerCreator)creator
 {
