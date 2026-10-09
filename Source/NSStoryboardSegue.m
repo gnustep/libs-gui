@@ -55,6 +55,7 @@
 @end
 
 @implementation GSStoryboardWindowPresentation
+
 - (id) initWithController: (id)controller presentation: (id)presentation
        closeNotification: (NSString *)notification
 {
@@ -73,11 +74,13 @@
     }
   return self;
 }
+
 - (void) presentationDidClose: (NSNotification *)notification
 {
   [[NSNotificationCenter defaultCenter] removeObserver: self];
   AUTORELEASE(self); // Keep the controller alive until close dispatch finishes.
 }
+
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver: self];
@@ -264,6 +267,7 @@
 @end
 
 @implementation NSStoryboardSegue (GSStoryboardPrivate)
+
 - (void) _setKind: (NSString *)k
 {
   ASSIGN(_kind, k);

@@ -314,6 +314,7 @@ static void *viewControllerAssociationKey = &viewControllerAssociationKey;
 }
 
 // NSSeguePerforming methods...
+
 - (void) performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier
 			     sender: (id)sender
 {

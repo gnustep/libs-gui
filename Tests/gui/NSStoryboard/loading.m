@@ -17,8 +17,11 @@ static id checkedSender;
 - (void) fire;
 @end
 @implementation StoryboardTrigger
+
 - (void) setTarget: (id)target { _target = target; }
+
 - (void) setAction: (SEL)action { _action = action; }
+
 - (void) fire { [_target performSelector: _action withObject: self]; }
 @end
 
@@ -33,20 +36,24 @@ static id checkedSender;
 }
 @end
 @implementation StoryboardProbe
+
 - (void) awakeFromNib
 {
   awakeCount++;
   ready = [self valueForKey: @"storyboard"] != nil && [self valueForKey: @"segueMap"] != nil && trigger != nil;
 }
+
 - (BOOL) shouldPerformSegueWithIdentifier: (NSString *)identifier sender: (id)sender
 {
   checkedSender = sender;
   return !veto;
 }
+
 - (void) prepareForSegue: (NSStoryboardSegue *)segue sender: (id)sender
 {
   preparedSender = sender;
 }
+
 - (void) dealloc
 {
   destroyedControllers++;
@@ -57,6 +64,7 @@ static id checkedSender;
 @interface StoryboardTestSegue : NSStoryboardSegue
 @end
 @implementation StoryboardTestSegue
+
 - (void) perform { ASSIGN(performedSegue, self); }
 @end
 
@@ -64,6 +72,7 @@ static id checkedSender;
 - (id) initWithXML: (NSString *)xml;
 @end
 @implementation MemoryStoryboard
+
 - (id) initWithXML: (NSString *)xml
 {
   if ((self = [super init]) != nil)
