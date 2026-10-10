@@ -55,11 +55,18 @@
 #endif /* HAVE_LIBAVCODEC_AVCODEC_H */
 
 @class NSMutableArray;
+@class NSLock;
+@class NSRecursiveLock;
 @class NSThread;
 
 // Audio player for NSMovieView...
 @interface GSAudioPlayer : NSObject
 {
+  AVCodecContext *_subtitleCodecCtx;
+  AVFormatContext *_subtitleFormatCtx; /* Borrowed from the demuxer. */
+  NSLock *_subtitleLock;
+  NSMutableArray *_subtitleCues;
+  int _subtitleStreamIndex;
   AVCodecContext *_audioCodecCtx;
   AVFrame *_audioFrame;
   SwrContext *_swrCtx;
@@ -83,6 +90,8 @@
   AVStream *_stream;
 
   NSMutableArray *_audioPackets;
+  NSLock *_audioPacketsLock;
+  NSRecursiveLock *_stateLock;
   NSThread *_audioThread;
 
   struct GSAudioPlayerFlags {
@@ -95,7 +104,24 @@
   } _flags;
 
   int64_t _lastPosition;
+  int64_t _audioStartPTS;
 }
+
+/* Embedded text subtitles. Stream dictionaries contain index, language and
+ * title. Unsupported (including bitmap) tracks are omitted. Selection defaults
+ * to -1 (off). The caller owns the format context and submits demuxed packets.
+ * All subtitle timestamps use microseconds on the media timeline.
+ * Text lookup discards expired cues; flush and resubmit after seeking backward.
+ * ASS styling is flattened to plain text.
+ */
+- (void) prepareSubtitlesWithFormatContext: (AVFormatContext *)formatCtx;
+- (NSArray *) subtitleStreams;
+- (int) subtitleStreamIndex;
+- (BOOL) setSubtitleStreamIndex: (int)index;
+- (void) submitSubtitlePacket: (AVPacket *)packet;
+- (void) flushSubtitles;
+- (NSString *) subtitleTextAtTime: (int64_t)timestamp;
+- (NSString *) currentSubtitleText;
 
 // Initialize...
 - (void) prepareWithFormatContext: (AVFormatContext *)formatCtx
@@ -105,6 +131,7 @@
 // Decode stream...
 - (int) decodePacket: (AVPacket *)packet;
 - (void) submitPacket: (AVPacket *)packet;
+- (NSUInteger) queuedPacketCount;
 - (void) setPlaying: (BOOL)f;
 - (BOOL) isPlaying;
 - (void) start;
