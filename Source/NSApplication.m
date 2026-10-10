@@ -718,6 +718,15 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSImage *imgCopy = [anImage copy];
 
+  /* A focus-locked image can have only a cached representation, which
+   * NSImage's copyWithZone: does not preserve.  Materialize its pixels. */
+  if (anImage != nil && [[imgCopy representations] count] == 0)
+    {
+      NSData *data = [anImage TIFFRepresentation];
+      RELEASE(imgCopy);
+      imgCopy = [[NSImage alloc] initWithData: data];
+    }
+
   if (imgCopy)
     {
       NSSize imageSize = [imgCopy size];
@@ -2492,9 +2501,14 @@ image.</p><p>See Also: -applicationIconImage</p>
         [current setMiniwindowImage: _app_icon];
     }
 
-  GSUpdateIconManager(_app_icon,
-    (_dock_tile != nil && [_dock_tile showsApplicationBadge])
-      ? [_dock_tile badgeLabel] : nil);
+  if (_dock_tile != nil)
+    {
+      [_dock_tile display];
+    }
+  else
+    {
+      GSUpdateIconManager(_app_icon, nil);
+    }
 
   DESTROY(old_app_icon);
 }
