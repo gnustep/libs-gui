@@ -42,6 +42,7 @@
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
 #import "AppKit/NSButtonCell.h"
+#import "AppKit/NSDatePickerCell.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSClipView.h"
 #import "AppKit/NSFormCell.h"
@@ -357,6 +358,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                     @"NSCellPrototype", @"NSBrFlags", @"NSNumberOfVisibleColumns",
                                     @"NSWhite", @"NSRGB", @"NSCYMK",
                                     @"NSCellFlags", @"NSCellFlags2",
+                                    @"NSDatePickerMode", @"NSDateValue",
                                     @"NSButtonFlags", @"NSButtonFlags2",
                                     @"NSUsesItemFromMenu",
                                     @"NSNormalImage", @"NSAlternateImage",
@@ -456,6 +458,12 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeTransitionStyle:", @"NSTransitionStyle",
 	       @"decodeShadowOffsetHoriz:", @"NSShadowHoriz",
 	       @"decodeShadowOffsetVert:", @"NSShadowVert",
+               @"decodeDatePickerElementsForElement:", @"NSDatePickerElements",
+               @"decodeDatePickerStyleForElement:", @"NSDatePickerType",
+               @"decodeDatePickerModeForElement:", @"NSDatePickerMode",
+               @"decodeDatePickerDateValueForElement:", @"NSDateValue",
+               @"decodeDatePickerMinDateForElement:", @"NSMinDate",
+               @"decodeDatePickerMaxDateForElement:", @"NSMaxDate",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -2564,6 +2572,84 @@ didStartElement: (NSString*)elementName
     }
 
   return object;
+}
+
+- (NSDate *) _dateForElement: (GSXibElement*)element key: (NSString*)key
+{
+  GSXibElement *date = [element elementForKey: key];
+  NSString *interval = [date attributeForKey: @"timeIntervalSinceReferenceDate"];
+
+  if (interval == nil)
+    return nil;
+  return [NSDate dateWithTimeIntervalSinceReferenceDate: [interval doubleValue]];
+}
+
+- (id) decodeDatePickerElementsForElement: (GSXibElement*)element
+{
+  GSXibElement *elements = [element elementForKey: @"datePickerElements"];
+  NSUInteger flags = 0;
+
+  if (elements == nil)
+    {
+      /* The Cocoa default: the date and the time, to the second. */
+      flags = NSYearMonthDayDatePickerElementFlag
+        | NSHourMinuteSecondDatePickerElementFlag;
+    }
+  else
+    {
+      if ([[elements attributeForKey: @"day"] boolValue])
+        flags |= NSYearMonthDayDatePickerElementFlag;
+      else if ([[elements attributeForKey: @"month"] boolValue]
+               || [[elements attributeForKey: @"year"] boolValue])
+        flags |= NSYearMonthDatePickerElementFlag;
+      if ([[elements attributeForKey: @"second"] boolValue])
+        flags |= NSHourMinuteSecondDatePickerElementFlag;
+      else if ([[elements attributeForKey: @"hour"] boolValue]
+               || [[elements attributeForKey: @"minute"] boolValue])
+        flags |= NSHourMinuteDatePickerElementFlag;
+      if ([[elements attributeForKey: @"timeZone"] boolValue])
+        flags |= NSTimeZoneDatePickerElementFlag;
+      if ([[elements attributeForKey: @"era"] boolValue])
+        flags |= NSEraDatePickerElementFlag;
+    }
+  return [NSNumber numberWithUnsignedInteger: flags];
+}
+
+- (id) decodeDatePickerStyleForElement: (GSXibElement*)element
+{
+  NSString *style = [element attributeForKey: @"datePickerStyle"];
+  NSUInteger value = NSTextFieldAndStepperDatePickerStyle;
+
+  if ([@"clockAndCalendar" isEqualToString: style])
+    value = NSClockAndCalendarDatePickerStyle;
+  else if ([@"textField" isEqualToString: style])
+    value = NSTextFieldDatePickerStyle;
+  return [NSNumber numberWithUnsignedInteger: value];
+}
+
+- (id) decodeDatePickerModeForElement: (GSXibElement*)element
+{
+  NSString *mode = [element attributeForKey: @"datePickerMode"];
+
+  return [NSNumber numberWithUnsignedInteger:
+    [@"range" isEqualToString: mode] ? NSRangeDateMode : NSSingleDateMode];
+}
+
+- (id) decodeDatePickerDateValueForElement: (GSXibElement*)element
+{
+  if ([[element attributeForKey: @"useCurrentDate"] boolValue])
+    return [NSDate date];
+  return [self _dateForElement: element key: @"date"];
+}
+
+- (id) decodeDatePickerMinDateForElement: (GSXibElement*)element
+{
+  return [self _dateForElement: element key: @"minDate"];
+}
+
+- (id) decodeDatePickerMaxDateForElement: (GSXibElement*)element
+{
+  return [self _dateForElement: element key: @"maxDate"];
 }
 
 - (id) decodeButtonFlags1ForElement: (GSXibElement*)element
