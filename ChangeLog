@@ -1,3 +1,12 @@
+2026-09-20  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSTheme.m (+initialize): Observe
+	NSUserDefaultsDidChangeNotification from the start.  +setTheme:
+	registers that observer only when the theme really changes, so an
+	application that started with the default theme never followed the
+	GSTheme default and kept its theme until it was restarted.
+	* Tests/gui/GSTheme/followsDefault.m: New test.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
