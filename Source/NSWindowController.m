@@ -45,6 +45,8 @@
 
 #import "NSDocumentFrameworkPrivate.h"
 
+#import "GSStoryboardArchive.h"
+
 @implementation NSWindowController
 
 + (void) initialize
@@ -143,6 +145,7 @@
   RELEASE(_window_frame_autosave_name);
   RELEASE(_top_level_objects);
   RELEASE(_segueMap);
+  RELEASE(_storyboard);
   [super dealloc];
 }
 
@@ -565,10 +568,11 @@
 - (void)performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier 
                             sender: (id)sender
 {
-  NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
-  [self prepareForSegue: segue
-                 sender: sender];  
-  [segue perform];
+  GSStoryboardSegueAction *action = [_segueMap objectForKey: identifier];
+  if (action == nil)
+    [NSException raise: NSInvalidArgumentException
+                format: @"No storyboard segue with identifier %@", identifier];
+  [action performWithSender: sender];
 }
 
 - (void)prepareForSegue: (NSStoryboardSegue *)segue 

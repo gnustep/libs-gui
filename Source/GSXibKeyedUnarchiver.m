@@ -490,6 +490,13 @@ didStartElement: (NSString*)elementName
   return found;
 }
 
+/* Override at the initialization boundary, while currentElement and the
+ * reference cache are set up, for storyboard creator blocks. */
+- (id) initializeObject: (id)object forXib: (GSXibElement *)element
+{
+  return [object initWithCoder: self];
+}
+
 - (id) decodeObjectForXib: (GSXibElement*)element
              forClassName: (NSString*)classname
                    withID: (NSString*)objID
@@ -509,7 +516,7 @@ didStartElement: (NSString*)elementName
   last = currentElement;
   currentElement = element;
 
-  r = [o initWithCoder: self];
+  r = [self initializeObject: o forXib: element];
 
   // pop
   currentElement = last;

@@ -50,7 +50,7 @@ APPKIT_EXPORT_CLASS
     NSArray             *_top_level_objects;
     id                  _owner;
     NSMapTable          *_segueMap;
-    NSStoryboard        *_storyboard; // a weak reference to the origin storyboard
+    NSStoryboard        *_storyboard; // the originating storyboard
     struct ___wcFlags 
     {
       unsigned int should_close_document:1;

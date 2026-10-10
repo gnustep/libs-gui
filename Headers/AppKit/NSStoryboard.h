@@ -26,6 +26,7 @@
 #define _NSStoryboard_h_GNUSTEP_GUI_INCLUDE
 
 #import <Foundation/NSObject.h>
+#import <AppKit/AppKitDefines.h>
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 
@@ -38,12 +39,12 @@ extern "C" {
 typedef NSString *NSStoryboardName;
 typedef NSString *NSStoryboardSceneIdentifier;
 
-DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, NSCoder*, id);
+DEFINE_BLOCK_TYPE(NSStoryboardControllerCreator, id, NSCoder*);
 
 APPKIT_EXPORT_CLASS
 @interface NSStoryboard : NSObject
 {
-  id _transform;
+  id _transform; // Private archive; preserve the existing instance layout.
 }
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_13, GS_API_LATEST)
