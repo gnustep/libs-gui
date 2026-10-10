@@ -279,15 +279,21 @@ static font_role_info_t font_roles[RoleMax]={
 static BOOL did_init_font_roles;
 
 /*
-Called by getNSFont, since font_roles is only accessed from that function
-(or fontNameForRole, which is only called by getNSFont). This assures that the
-function is called before the table is used, and that it's called _after_ the
-backend has been loaded (or, if it isn't, the _fontWithName:... calls will
-fail anyway).
+Called by getNSFont and -_replacementFontName, the only places that use
+font_roles. This assures that the function is called before the table is
+used, and that it's called _after_ the backend has been loaded (or, if it
+isn't, the _fontWithName:... calls will fail anyway).
 */
 static void init_font_roles(void)
 {
-  GSFontEnumerator *e = [GSFontEnumerator sharedEnumerator];
+  GSFontEnumerator *e;
+
+  if (did_init_font_roles)
+    {
+      return;
+    }
+  did_init_font_roles = YES;
+  e = [GSFontEnumerator sharedEnumerator];
 
   /* Retain the returned names: they are kept for the lifetime of the process
      and used again later (e.g. in keyForFont).  A backend that returns an
@@ -342,11 +348,7 @@ static NSFont *getNSFont(CGFloat fontSize, int role)
 
   NSCAssert(role > RoleExplicit && role < RoleMax, @"Invalid font role.");
 
-  if (!did_init_font_roles)
-    {
-      init_font_roles();
-      did_init_font_roles = YES;
-    }
+  init_font_roles();
 
   font_role = role * 2;
 
@@ -795,6 +797,7 @@ static void setNSFont(NSString *key, NSFont *font)
 */
 - (NSString*) _replacementFontName
 {
+  init_font_roles();
   if (([fontName isEqualToString: @"Helvetica"] &&
        ![font_roles[RoleSystemFont].defaultFont isEqualToString: @"Helvetica"])
       || ([fontName isEqualToString: @"LucidaGrande"]))

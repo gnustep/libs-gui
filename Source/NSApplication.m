@@ -91,9 +91,6 @@
 #import "NSDocumentFrameworkPrivate.h"
 #import "NSToolbarFrameworkPrivate.h"
 
-// minimize icon when suppressed?
-#define	MINI_ICON	0
-
 /* The -gui thread. See the comment in initialize_gnustep_backend. */
 NSThread *GSAppKitThread;
 
@@ -446,15 +443,6 @@ NSApplication	*NSApp = nil;
   return YES;
 }
 
-- (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (NSInteger)otherWin
-{     
-  if ([[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"] == NO)
-    {
-      [super orderWindow: place relativeTo: otherWin];
-    }
-}
-
 - (void) _initDefaults
 {
   [super _initDefaults];
@@ -464,18 +452,6 @@ NSApplication	*NSApp = nil;
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
 
-#if	MINI_ICON
-  /* Hack ... 
-   * At least one window manager won't miniaturize a window unless
-   * it's at the standard level.  If the app icon is suppressed, we
-   * may still want a miniaturised version while the app is hidden.
-   */
-  if (YES == [[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSSuppressAppIcon"])
-    {
-      return;
-    }
-#endif
   /* App icons and mini windows are displayed at dock level by default. Yet,
      with the current window level mapping in -back, some window managers
      will order pop up and context menus behind app icons and mini windows.
@@ -1335,12 +1311,6 @@ static BOOL _isAutolaunchChecked = NO;
 
       _app_is_active = YES;
 
-      if ([[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"])
-	{
-	  [_app_icon_window orderOut: self];
-	}
-
       /* Make sure to calculate count after the notification, since
          inactive status might be changed by a notifiee.  */
       count = [_inactive count];
@@ -1469,22 +1439,6 @@ static BOOL _isAutolaunchChecked = NO;
               [_inactive addObject: win];
             }
         }
-      
-      if (YES == [[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"])
-	{
-#if	MINI_ICON
-	  NSRect	f = [[[self mainMenu] window] frame];
-	  NSPoint	p = f.origin;
-
-	  p.y += f.size.height;
-          [_app_icon_window setFrameTopLeftPoint: p];
-	  [_app_icon_window orderFrontRegardless];
-          [_app_icon_window miniaturize: self];
-#else
-	  [_app_icon_window orderFrontRegardless];
-#endif
-	}
 
       info = [self _notificationUserInfo];
       [nc postNotificationName: NSApplicationDidResignActiveNotification
@@ -2556,8 +2510,7 @@ image.</p><p>See Also: -applicationIconImage</p>
       /*Minimize all windows if there isn't an AppIcon. This isn't the
 	most elegant solution, but avoids to loss the app if the user
 	hide it. */
-      miniaturize = [[NSUserDefaults standardUserDefaults]
-		      boolForKey: @"GSSuppressAppIcon"];
+      miniaturize = (_app_icon_window == nil);
 #endif
 
       [nc postNotificationName: NSApplicationWillHideNotification
@@ -2629,25 +2582,7 @@ image.</p><p>See Also: -applicationIconImage</p>
                 }
 	    }
 
-	  if (YES == [[NSUserDefaults standardUserDefaults]
-		       boolForKey: @"GSSuppressAppIcon"])
-	    {
-#if	MINI_ICON
-	      NSRect	f = [[[self mainMenu] window] frame];
-	      NSPoint	p = f.origin;
-	      
-	      p.y += f.size.height;
-	      [_app_icon_window setFrameTopLeftPoint: p];
-	      [_app_icon_window orderFrontRegardless];
-	      [_app_icon_window miniaturize: self];
-#else
-	      [_app_icon_window orderFrontRegardless];
-#endif
-	    }
-	  else
-	    {
-	      [[_app_icon_window contentView] setNeedsDisplay: YES];
-	    }
+	  [[_app_icon_window contentView] setNeedsDisplay: YES];
 	  
 	  /*
 	   * On hiding we also deactivate the application which will make the menus
@@ -4009,20 +3944,15 @@ struct _DelegateWrapper
 - (void) _appIconInit
 {
   NSAppIconView	*iv;
-  NSUInteger	mask = NSIconWindowMask;
-  BOOL  	suppress;
-  
-  suppress = [[NSUserDefaults standardUserDefaults]
-    boolForKey: @"GSSuppressAppIcon"];
-#if	MINI_ICON
-  if (suppress)
+
+  if (NO == [[NSUserDefaults standardUserDefaults]
+    boolForKey: @"GSEnableAppIcon"])
     {
-      mask = NSMiniaturizableWindowMask;
+      return;
     }
-#endif
-  
+
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: NSZeroRect 
-				styleMask: mask
+				styleMask: NSIconWindowMask
 				  backing: NSBackingStoreRetained
 				    defer: NO
 				   screen: nil];
@@ -4047,12 +3977,7 @@ struct _DelegateWrapper
     RELEASE(iv);
   }
 
-  if (NO == suppress)
-    {
-      /* The icon window is not suppressed ... display it.
-       */
-      [_app_icon_window orderFrontRegardless];
-    }
+  [_app_icon_window orderFrontRegardless];
 }
 
 - (NSDictionary*) _notificationUserInfo

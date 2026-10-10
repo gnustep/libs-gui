@@ -3394,15 +3394,8 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
       return;
     }
 
-  if (self == [NSApp iconWindow])
-    {
-      if (NO == [[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"])
-	{
-	  return;
-	}
-    }
-  else if ((!(_styleMask & (NSIconWindowMask | NSMiniaturizableWindowMask)))
+  if (self == [NSApp iconWindow]
+    || (!(_styleMask & (NSIconWindowMask | NSMiniaturizableWindowMask)))
     || (_styleMask & NSMiniWindowMask)
     || (![self isVisible]))
     {
@@ -3421,7 +3414,8 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
   /*
    * Ensure that we have a miniwindow counterpart.
    */
-  if (_counterpart == 0 && [srv appOwnsMiniwindow])
+  if (_counterpart == 0 && [srv appOwnsMiniwindow]
+    && [[NSUserDefaults standardUserDefaults] boolForKey: @"GSEnableAppIcon"])
     {
       NSWindow *mini;
       NSMiniWindowView *v;
