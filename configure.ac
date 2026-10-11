@@ -242,6 +242,18 @@ if test $enable_jpeg = yes; then
     with_jpeg_include="-I$with_jpeg_include"
   fi
 
+  # Fall back to pkg-config unless the paths were given explicitly.
+  if test -z "$with_jpeg_library" && test -z "$with_jpeg_include"; then
+    PKG_CHECK_MODULES(
+      [JPEG],
+      [libjpeg],
+      [
+        with_jpeg_include="$JPEG_CFLAGS"
+        with_jpeg_library="$JPEG_LIBS"
+      ],
+      [:])
+  fi
+
   CPPFLAGS="$with_jpeg_include ${CPPFLAGS}"
   LDFLAGS="$with_jpeg_library ${LDFLAGS}"
   AC_CHECK_HEADERS(jpeglib.h, have_jpeg=yes, have_jpeg=no)
