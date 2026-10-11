@@ -281,6 +281,22 @@ if test -n "$with_tiff_include"; then
   with_tiff_include="-I$with_tiff_include"
 fi
 
+have_tiff=no
+# Prefer pkg-config unless the paths were given explicitly.
+if test -z "$with_tiff_library" && test -z "$with_tiff_include"; then
+  PKG_CHECK_MODULES(
+    [TIFF],
+    [libtiff-4],
+    [
+      have_tiff=yes
+      GRAPHIC_LFLAGS="$TIFF_LIBS $GRAPHIC_LFLAGS"
+      GRAPHIC_CFLAGS="$TIFF_CFLAGS $GRAPHIC_CFLAGS"
+      CPPFLAGS="$TIFF_CFLAGS ${CPPFLAGS}"
+    ],
+    [:])
+fi
+
+if test "$have_tiff" != yes; then
 CPPFLAGS="$with_tiff_include ${CPPFLAGS}"
 LDFLAGS="$with_tiff_library ${LDFLAGS}"
 AC_CHECK_LIB(z, main)
@@ -302,6 +318,7 @@ if test "$have_tiff" = yes; then
         have_tiff=no
       ])
   fi
+fi
 fi
 
 if test "$have_tiff" = no; then
