@@ -678,6 +678,8 @@ MAGICKCORE_CFLAGS
 IMAGEMAGICK_LIBS
 IMAGEMAGICK_CFLAGS
 HAVE_LIBPNG_CONFIG
+PNG_LIBS
+PNG_CFLAGS
 TIFF_LIBS
 TIFF_CFLAGS
 XMKMF
@@ -783,6 +785,8 @@ PKG_CONFIG_LIBDIR
 XMKMF
 TIFF_CFLAGS
 TIFF_LIBS
+PNG_CFLAGS
+PNG_LIBS
 IMAGEMAGICK_CFLAGS
 IMAGEMAGICK_LIBS
 MAGICKCORE_CFLAGS
@@ -1459,6 +1463,8 @@ Some influential environment variables:
   XMKMF       Path to xmkmf, Makefile generator for X Window System
   TIFF_CFLAGS C compiler flags for TIFF, overriding pkg-config
   TIFF_LIBS   linker flags for TIFF, overriding pkg-config
+  PNG_CFLAGS  C compiler flags for PNG, overriding pkg-config
+  PNG_LIBS    linker flags for PNG, overriding pkg-config
   IMAGEMAGICK_CFLAGS
               C compiler flags for IMAGEMAGICK, overriding pkg-config
   IMAGEMAGICK_LIBS
@@ -5254,6 +5260,86 @@ fi
 
 
 if test $enable_png = yes; then
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libpng" >&5
+$as_echo_n "checking for libpng... " >&6; }
+
+if test -n "$PNG_CFLAGS"; then
+    pkg_cv_PNG_CFLAGS="$PNG_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libpng\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libpng") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_PNG_CFLAGS=`$PKG_CONFIG --cflags "libpng" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$PNG_LIBS"; then
+    pkg_cv_PNG_LIBS="$PNG_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libpng\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libpng") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_PNG_LIBS=`$PKG_CONFIG --libs "libpng" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        PNG_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libpng" 2>&1`
+        else
+	        PNG_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libpng" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$PNG_PKG_ERRORS" >&5
+
+	have_png_pc=no
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	have_png_pc=no
+else
+	PNG_CFLAGS=$pkg_cv_PNG_CFLAGS
+	PNG_LIBS=$pkg_cv_PNG_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+      have_png_pc=yes
+      CPPFLAGS="${CPPFLAGS} $PNG_CFLAGS"
+      GRAPHIC_CFLAGS="$PNG_CFLAGS $GRAPHIC_CFLAGS"
+      GRAPHIC_LFLAGS="$PNG_LIBS $GRAPHIC_LFLAGS"
+      $as_echo "#define HAVE_LIBPNG 1" >>confdefs.h
+
+
+fi
+
+if test "$have_png_pc" != yes; then
   # use libpng-config if available
   # Extract the first word of "libpng-config", so it can be a program name with args.
 set dummy libpng-config; ac_word=$2
@@ -5429,10 +5515,9 @@ then :
 fi
 
   fi
+fi
 
-
-
-  if test "$ac_cv_lib_png_png_sig_cmp" = no && test "$ac_cv_search_png_sig_cmp" = no; then
+  if test "$have_png_pc" != yes && test "$ac_cv_lib_png_png_sig_cmp" = no && test "$ac_cv_search_png_sig_cmp" = no; then
     echo "GNUstep requires libpng to support PNG images, but this library"
     echo "can't be found. If you really want to compile GNUstep without"
     echo "PNG support, pass the --disable-png option to ./configure."
