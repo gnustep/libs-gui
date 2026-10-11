@@ -1,3 +1,7 @@
+2026-10-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* configure: Regenerate with autoconfig 2.73 as the rest of the core libraries.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
@@ -623,7 +627,7 @@
 	* Documentation/GNUmakefile.postamble:
 	Use new xxx_AGSDOC_INSTALL_BUNDLE to for relative links between
 	projects.
-	
+
 2025-05-29 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* config.make.in: Add HAVE_* variables.
