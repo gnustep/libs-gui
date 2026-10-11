@@ -1749,8 +1749,6 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
 - (NSRect) centerScanRect: (NSRect)aRect
 {
   NSAffineTransform	*matrix;
-  CGFloat x_org;
-  CGFloat y_org;
 
   /*
    *	Hmm - we assume that the windows coordinate system is centered on the
@@ -1765,8 +1763,6 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
       aRect.size.height = -aRect.size.height;
     }
 
-  x_org = aRect.origin.x;
-  y_org = aRect.origin.y;
   aRect.origin.x = GSRoundTowardsInfinity(aRect.origin.x);
   aRect.origin.y = [self isFlipped] ? GSRoundTowardsNegativeInfinity(aRect.origin.y) : GSRoundTowardsInfinity(aRect.origin.y);
   aRect.size.width = GSRoundTowardsInfinity(aRect.size.width);

@@ -424,22 +424,6 @@
 
 // Drawing.
 
-- (void) drawRect: (NSRect)rect
-{
-  // Make sure some tab is selected
-  if ((_selected == nil) && ([_items count] > 0))
-    {
-      [self selectFirstTabViewItem: nil];
-    }
-
-  [[GSTheme theme] drawTabViewRect: rect
-		   inView: self
-		   withItems: _items
-		   selectedItem: _selected];
-
-  [self _updateToolTips];
-}
-
 /* An item's tooltip belongs to the area its tab occupies, and that area is
  * known only once the theme has drawn: -[NSTabViewItem drawLabel:inRect:] is
  * what records it.  The tooltips are therefore renewed after each draw, from
@@ -461,6 +445,22 @@
 	  [self addToolTipRect: rect owner: tip userData: NULL];
 	}
     }
+}
+
+- (void) drawRect: (NSRect)rect
+{
+  // Make sure some tab is selected
+  if ((_selected == nil) && ([_items count] > 0))
+    {
+      [self selectFirstTabViewItem: nil];
+    }
+
+  [[GSTheme theme] drawTabViewRect: rect
+		   inView: self
+		   withItems: _items
+		   selectedItem: _selected];
+
+  [self _updateToolTips];
 }
 
 - (BOOL) isOpaque

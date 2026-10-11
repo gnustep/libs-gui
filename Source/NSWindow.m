@@ -220,7 +220,7 @@ static GSWindowAnimationDelegate *animationDelegate;
   // Iterate over all child windows.
   NSEnumerator *en = [_children objectEnumerator];
   NSWindow *child = nil;
-  while (child = [en nextObject])
+  while ((child = [en nextObject]))
     {
       NSRect childFrame = [child frame];
 
