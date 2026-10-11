@@ -322,6 +322,19 @@ AC_ARG_ENABLE(png,
   enable_png=yes)
 
 if test $enable_png = yes; then
+  PKG_CHECK_MODULES(
+    [PNG],
+    [libpng],
+    [
+      have_png_pc=yes
+      CPPFLAGS="${CPPFLAGS} $PNG_CFLAGS"
+      GRAPHIC_CFLAGS="$PNG_CFLAGS $GRAPHIC_CFLAGS"
+      GRAPHIC_LFLAGS="$PNG_LIBS $GRAPHIC_LFLAGS"
+      AC_DEFINE([HAVE_LIBPNG], [1])
+    ],
+    [have_png_pc=no])
+
+if test "$have_png_pc" != yes; then
   # use libpng-config if available
   AC_CHECK_PROG(HAVE_LIBPNG_CONFIG, [libpng-config], yes)
   if test "$HAVE_LIBPNG_CONFIG" = "yes"; then
@@ -341,10 +354,9 @@ if test $enable_png = yes; then
     AC_CHECK_HEADERS(png.h)
     AC_CHECK_LIB(png, png_sig_cmp)
   fi
+fi
 
-
-
-  if test "$ac_cv_lib_png_png_sig_cmp" = no && test "$ac_cv_search_png_sig_cmp" = no; then
+  if test "$have_png_pc" != yes && test "$ac_cv_lib_png_png_sig_cmp" = no && test "$ac_cv_search_png_sig_cmp" = no; then
     echo "GNUstep requires libpng to support PNG images, but this library"
     echo "can't be found. If you really want to compile GNUstep without"
     echo "PNG support, pass the --disable-png option to ./configure."
