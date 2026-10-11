@@ -608,6 +608,7 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
 - (void) _timedOut: (NSTimer *)aTimer
 {
   CGFloat               size;
+  CGFloat               scale;
   NSString		*toolTipString;
   NSAttributedString	*toolTipText = nil;
   NSSize		textSize;
@@ -683,6 +684,13 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
   // Need to fudge the result just a bit due to occasionally cutoff characters...
   textSize.width += 1;
   textSize.height += 1;
+  scale = [window userSpaceScaleFactor];
+  if (scale <= 0.0)
+    {
+      scale = 1.0;
+    }
+  textSize.width *= scale;
+  textSize.height *= scale;
   
   /* Create window just off the current mouse position
    * Constrain it to be on screen, shrinking if necessary.

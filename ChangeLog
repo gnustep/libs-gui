@@ -1,3 +1,11 @@
+2026-09-30  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSToolTips.m (-_timedOut:): Multiply the measured text size
+	by the window's user space scale factor before sizing the tooltip
+	window.  The window frame is in screen units and the text was
+	measured in points, so at a scale factor other than 1 the tooltip
+	came out too small and its text was cut off.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
