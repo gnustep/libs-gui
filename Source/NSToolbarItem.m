@@ -1524,7 +1524,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   // from one NSToolbarDisplayMode to another, and it is
   // possible setImage: would have been called on the
   // NSToolbarItem while we were in NSToolbarDisplayModeLabelOnly
-  if ([[self toolbar] displayMode] != NSToolbarDisplayModeLabelOnly)
+  if ([[self toolbar] displayMode] != NSToolbarDisplayModeLabelOnly
+    && (_view == nil || _image != nil))
     {
       [(GSToolbarButton*)_backView setImage: _image];
     }
