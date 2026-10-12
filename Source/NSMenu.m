@@ -434,7 +434,7 @@ static BOOL menuBarVisible = YES;
  */
 - (id) init
 {
-  return [self initWithTitle: [[NSProcessInfo processInfo] processName]];
+  return [self initWithTitle: @""];
 }
 
 - (void) dealloc

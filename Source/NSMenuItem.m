@@ -238,8 +238,8 @@ static Class imageClass;
   if (submenu != nil)
     {
       [submenu setSupermenu: _menu];
-      // NSMenu gets init'd to the process name, so equivalent to nil state
-      if ([submenu title] == nil || [[submenu title] isEqualToString:[[NSProcessInfo processInfo] processName]])
+
+      if ([[submenu title] length] == 0)
         {
           [submenu setTitle: _title];
         }
