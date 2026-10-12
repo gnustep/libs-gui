@@ -4864,6 +4864,11 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
        * _previousKeyView = 0;
        */
       
+      if ([aDecoder containsValueForKey: @"NSIdentifier"])
+        {
+          [self setIdentifier: [aDecoder decodeObjectForKey: @"NSIdentifier"]];
+        }
+
       // previous and next key views...
       prevKeyView = [aDecoder decodeObjectForKey: @"NSPreviousKeyView"];
       nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
