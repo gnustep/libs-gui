@@ -1608,8 +1608,12 @@ static NSMutableDictionary *cachedCSets = nil;
       NSCharacterSet *newSet = [descriptor objectForKey: NSFontCharacterSetAttribute];
       if ([newSet characterIsMember: uchar])
         {
-          NSString *fName = [descriptor objectForKey: NSFontFamilyAttribute];
- 
+          NSString *fName = [descriptor objectForKey: NSFontNameAttribute];
+
+          if (fName == nil)
+            {
+              fName = [descriptor objectForKey: NSFontFamilyAttribute];
+            }
           ASSIGN(lastFont, fName);
           ASSIGN(lastSet, newSet);
           return [self _substituteFontWithName: fName font: baseFont];
