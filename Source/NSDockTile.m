@@ -123,21 +123,6 @@ clearDockTileRect(NSSize size)
   [self display];
 }
 
-- (void) display
-{
-  NSImage *image = nil;
-
-  [_contentView setNeedsDisplay: YES];
-
-  image = [[NSImage alloc] initWithSize: _size];
-  [image lockFocus];
-  [self draw];
-  [image unlockFocus];
-
-  GSUpdateIconManager(image, _showsApplicationBadge ? _badgeLabel : nil);
-  RELEASE(image);
-}
-
 - (void)draw
 {
   clearDockTileRect(_size);
@@ -235,6 +220,21 @@ clearDockTileRect(NSSize size)
 
       RELEASE(attrs);
     }
+}
+
+- (void) display
+{
+  NSImage *image = nil;
+
+  [_contentView setNeedsDisplay: YES];
+
+  image = [[NSImage alloc] initWithSize: _size];
+  [image lockFocus];
+  [self draw];
+  [image unlockFocus];
+
+  GSUpdateIconManager(image, _showsApplicationBadge ? _badgeLabel : nil);
+  RELEASE(image);
 }
 
 @end
