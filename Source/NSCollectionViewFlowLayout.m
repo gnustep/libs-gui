@@ -82,6 +82,7 @@
 
 - (void) dealloc
 {
+  RELEASE(_itemFrames);
   RELEASE(_collapsedSections);
   [super dealloc];
 }
@@ -358,92 +359,132 @@
 }
 
 // Methods to override for specific layouts...
+- (NSSize) _sizeForItemAtIndexPath: (NSIndexPath *)indexPath
+{
+  id <NSCollectionViewDelegateFlowLayout> delegate = (id <NSCollectionViewDelegateFlowLayout>)[_collectionView delegate];
+
+  if ([delegate respondsToSelector: @selector(collectionView:layout:sizeForItemAtIndexPath:)])
+    {
+      return [delegate collectionView: _collectionView
+			       layout: self
+	       sizeForItemAtIndexPath: indexPath];
+    }
+  return [self itemSize];
+}
+
+- (NSEdgeInsets) _insetForSection: (NSInteger)section
+{
+  id <NSCollectionViewDelegateFlowLayout> delegate = (id <NSCollectionViewDelegateFlowLayout>)[_collectionView delegate];
+
+  if ([delegate respondsToSelector: @selector(collectionView:layout:insetForSectionAtIndex:)])
+    {
+      return [delegate collectionView: _collectionView
+			       layout: self
+	       insetForSectionAtIndex: section];
+    }
+  return [self sectionInset];
+}
+
+- (CGFloat) _lineSpacingForSection: (NSInteger)section
+{
+  id <NSCollectionViewDelegateFlowLayout> delegate = (id <NSCollectionViewDelegateFlowLayout>)[_collectionView delegate];
+
+  if ([delegate respondsToSelector: @selector(collectionView:layout:minimumLineSpacingForSectionAtIndex:)])
+    {
+      return [delegate collectionView: _collectionView
+			       layout: self
+		    minimumLineSpacingForSectionAtIndex: section];
+    }
+  return [self minimumLineSpacing];
+}
+
+- (CGFloat) _interitemSpacingForSection: (NSInteger)section
+{
+  id <NSCollectionViewDelegateFlowLayout> delegate = (id <NSCollectionViewDelegateFlowLayout>)[_collectionView delegate];
+
+  if ([delegate respondsToSelector: @selector(collectionView:layout:minimumInteritemSpacingForSectionAtIndex:)])
+    {
+      return [delegate collectionView: _collectionView
+			       layout: self
+	       minimumInteritemSpacingForSectionAtIndex: section];
+    }
+  return [self minimumInteritemSpacing];
+}
+
 - (void) prepareLayout
 {
+  BOOL across = (_scrollDirection == NSCollectionViewScrollDirectionHorizontal);
+  NSScrollView *sv = [_collectionView enclosingScrollView];
+  NSSize visible = sv != nil ? [sv contentSize] : [_collectionView frame].size;
+  CGFloat room = across ? visible.height : visible.width;
+  NSInteger sections = [_collectionView numberOfSections];
+  NSInteger section;
+  CGFloat along = 0.0; // where the next section begins, in the scrolling direction
+
   [super prepareLayout];
-  _ds = 0;
-  _dr = 0;
+  DESTROY(_itemFrames);
+  _itemFrames = [[NSMutableArray alloc] initWithCapacity: sections];
+
+  for (section = 0; section < sections; section++)
+    {
+      NSInteger items = [_collectionView numberOfItemsInSection: section];
+      NSMutableArray *frames = [NSMutableArray arrayWithCapacity: items];
+      NSEdgeInsets in = [self _insetForSection: section];
+      CGFloat mls = [self _lineSpacingForSection: section];
+      CGFloat mis = [self _interitemSpacingForSection: section];
+      CGFloat start = across ? in.top : in.left;
+      CGFloat end = room - (across ? in.bottom : in.right);
+      CGFloat line = along + (across ? in.left : in.top); // the line's top (left, across)
+      CGFloat thickness = 0.0; // the line's height (width, across)
+      CGFloat at = start;
+      NSInteger item;
+
+      for (item = 0; item < items; item++)
+	{
+	  NSSize sz = [self _sizeForItemAtIndexPath:
+	    [NSIndexPath indexPathForItem: item inSection: section]];
+	  CGFloat length = across ? sz.height : sz.width;
+	  CGFloat depth = across ? sz.width : sz.height;
+
+	  if (at > start && at + length > end)
+	    {
+	      line += thickness + mls;
+	      thickness = 0.0;
+	      at = start;
+	    }
+	  [frames addObject: [NSValue valueWithRect: across
+	    ? NSMakeRect(line, at, sz.width, sz.height)
+	    : NSMakeRect(at, line, sz.width, sz.height)]];
+	  at += length + mis;
+	  thickness = MAX(thickness, depth);
+	}
+      [_itemFrames addObject: frames];
+      along = line + thickness + (across ? in.right : in.bottom);
+    }
+
+  _contentSize = across ? NSMakeSize(along, visible.height)
+    : NSMakeSize(visible.width, along);
 }
 
 - (NSCollectionViewLayoutAttributes *) layoutAttributesForItemAtIndexPath: (NSIndexPath *)indexPath
 {
-  NSCollectionViewLayoutAttributes *attrs = AUTORELEASE([[NSCollectionViewLayoutAttributes alloc] init]);
-  NSSize sz = NSZeroSize;
-  id <NSCollectionViewDelegateFlowLayout> delegate = (id <NSCollectionViewDelegateFlowLayout>)[_collectionView delegate];
+  NSCollectionViewLayoutAttributes *attrs;
   NSInteger section = [indexPath section];
-  NSInteger row = [indexPath item];
-  NSEdgeInsets insets;
-  CGFloat mls = 0.0;
-  CGFloat mis = 0.0;
-  CGFloat h = 0.0, w = 0.0, x = 0.0, y = 0.0;
-  NSRect f = NSZeroRect;
-  NSRect vf = [_collectionView frame];  // needed for reflow...
-  
-  // Item size...
-  if ([delegate respondsToSelector: @selector(collectionView:layout:sizeForItemAtIndexPath:)])
-    {
-      sz = [delegate collectionView: _collectionView
-			     layout: self
-	     sizeForItemAtIndexPath: indexPath];
-    }
-  else
-    {
-      sz = [self itemSize];
-    }
-  
-  // Inset
-  if ([delegate respondsToSelector: @selector(collectionView:layout:insetForSectionAtIndex:)])
-    {
-      insets = [delegate collectionView: _collectionView
-				 layout: self
-		 insetForSectionAtIndex: section];
-    }
-  else
-    {
-      insets = [self sectionInset];
-    }
-  
-  // minimum line spacing
-  if ([delegate respondsToSelector: @selector(collectionView:layout:minimimLineSpacingForSectionAtIndex:)])
-    {
-      mls = [delegate collectionView: _collectionView
-			      layout: self
-		      minimumLineSpacingForSectionAtIndex: section];
-    }
-  else
-    {
-      mls = [self minimumLineSpacing];
-    }
-  
-  // minimum interitem spacing
-  if ([delegate respondsToSelector: @selector(collectionView:layout:minimimInteritemSpacingForSectionAtIndex:)])
-    {
-      mis = [delegate collectionView: _collectionView
-			      layout: self
-		      minimumInteritemSpacingForSectionAtIndex: section];
-    }
-  else
-    {
-      mis = [self minimumInteritemSpacing];
-    }
+  NSInteger item = [indexPath item];
+  NSRect f;
 
-  // Calculations...
-  h = sz.height;
-  w = sz.width;
-  x = (row * w) + insets.left + mis;
-  y = (section * h) + insets.top + mls;
-  f = NSMakeRect(x, y, w, h);
-
-  // Determine if it is needed to reflow the given element...
-  if ((x + w) > vf.size.width)
+  if (_itemFrames == nil)
     {
-      _ds += 1;
-      x = insets.left + mis;
-      y = ((section + _ds) * h) + insets.top + mls;
-      f = NSMakeRect(x, y, w, h);
+      [self prepareLayout];
     }
+  if (section >= (NSInteger)[_itemFrames count]
+      || item >= (NSInteger)[[_itemFrames objectAtIndex: section] count])
+    {
+      return nil;
+    }
+  f = [[[_itemFrames objectAtIndex: section] objectAtIndex: item] rectValue];
 
-  // Build attrs object...
+  attrs = [NSCollectionViewLayoutAttributes layoutAttributesForItemWithIndexPath: indexPath];
   [attrs setFrame: f];
   [attrs setZIndex: 0];
   [attrs setSize: f.size];
@@ -513,7 +554,11 @@
 
 - (NSSize) collectionViewContentSize
 {
-  return [_collectionView frame].size;
+  if (_itemFrames == nil)
+    {
+      [self prepareLayout];
+    }
+  return _contentSize;
 }
 // end subclassing hooks...
 
