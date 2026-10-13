@@ -5701,8 +5701,14 @@ other than copy/paste or dragging. */
       /* We manage clicks on attachments and links only on the first
 	 click, so that if you double-click on them, only the first
 	 click gets sent to them; the other clicks select by
-	 word/paragraph as usual.  */
-      if (granularity == NSSelectByCharacter)
+	 word/paragraph as usual.  A double click on an attachment goes
+	 to its cell too when the delegate takes it.  */
+      if (granularity == NSSelectByCharacter
+	|| (granularity == NSSelectByWord
+	  && ([_delegate respondsToSelector:
+	    @selector(textView:doubleClickedOnCell:inRect:atIndex:)]
+	    || [_delegate respondsToSelector:
+	      @selector(textView:doubleClickedOnCell:inRect:)])))
 	{
 	  NSTextAttachment *attachment;
 	  NSInteger startIndexNoFraction;
@@ -5776,7 +5782,8 @@ other than copy/paste or dragging. */
 	    id link = [_textStorage attribute: NSLinkAttributeName
 				    atIndex: startIndex
 				    effectiveRange: NULL];
-	    if (link != nil  &&  _delegate != nil)
+	    if (link != nil  &&  _delegate != nil
+	      && granularity == NSSelectByCharacter)
 	      {
 		SEL selector = @selector(textView:clickedOnLink:atIndex:);
 		
