@@ -44,6 +44,15 @@
 
 #import "GSBindingHelpers.h"
 
+/* Implemented in NSCell.m */
+@interface NSCell (Truncation)
+- (BOOL) _shouldShortenStringForRect: (NSRect)titleRect
+				size: (NSSize)titleSize
+			      length: (NSUInteger)length;
+- (NSAttributedString*) _resizeAttributedString: (NSAttributedString*)attrstring
+					 forRect: (NSRect)titleRect;
+@end
+
 @implementation NSTextFieldCell
 
 + (void) initialize
@@ -240,9 +249,21 @@
 	 rectangle otherwise. Note that the type could be different if the
 	 user has set an image on us, which we just ignore (OS X does so as
 	 well). */
+      NSAttributedString *text;
+
       _cell.type = NSTextCellType;
       titleRect = [self titleRectForBounds: cellFrame];
-      [[self _drawAttributedString] drawInRect: titleRect];
+      text = [self _drawAttributedString];
+      /* Honour the truncating line break modes like NSCell does: text
+	 too long for the field is shortened with an ellipsis at the head,
+	 in the middle or at the tail, instead of being clipped. */
+      if ([self _shouldShortenStringForRect: titleRect
+				       size: [text size]
+				     length: [text length]])
+	{
+	  text = [self _resizeAttributedString: text forRect: titleRect];
+	}
+      [text drawInRect: titleRect];
     }
 }
 
