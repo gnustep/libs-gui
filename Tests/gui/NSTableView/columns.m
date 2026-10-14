@@ -10,6 +10,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSTableView.h>
 #include <AppKit/NSTableColumn.h>
+#include <AppKit/NSView.h>
 
 static NSTableColumn *
 mkcol(NSString *ident)
@@ -60,6 +61,17 @@ int main()
       PASS([tv numberOfColumns] == 1, "removeTableColumn: lowers the count");
       PASS([[tv tableColumns] objectAtIndex: 0] == c2,
            "the remaining column is the one not removed");
+
+      {
+        NSView *prototype = AUTORELEASE([[NSView alloc]
+          initWithFrame: NSMakeRect(0, 0, 100, 20)]);
+
+        PASS([prototype identifier] == nil,
+             "a plain prototype view has no identifier");
+        PASS_RUNS([tv performSelector: @selector(_registerPrototypeViews:)
+			   withObject: [NSArray arrayWithObject: prototype]],
+          "registering a prototype view with no identifier does not raise");
+      }
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]
