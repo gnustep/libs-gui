@@ -33,6 +33,9 @@
 #import "GSAudioPlayer.h"
 #import "GSAVUtils.h"
 
+#import <Foundation/NSLock.h>
+#include <libavcodec/codec_desc.h>
+
 #define BUFFER_SIZE 2048
 
 #include <libavutil/version.h>
@@ -64,6 +67,10 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   self = [super init];
   if (self != nil)
     {
+      _audioPacketsLock = [[NSLock alloc] init];
+      _stateLock = [[NSRecursiveLock alloc] init];
+      _subtitleLock = [[NSLock alloc] init];
+      _subtitleCues = [[NSMutableArray alloc] init];
       [self reset];
     }
   return self;
@@ -72,12 +79,17 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 - (void)dealloc
 {
   [self reset];
+  DESTROY(_subtitleLock);
+  DESTROY(_subtitleCues);
+  DESTROY(_audioPacketsLock);
+  DESTROY(_stateLock);
   [super dealloc];
 }
 
 - (void) reset
 {
   [self stop];
+  [self prepareSubtitlesWithFormatContext: NULL];
   [self cleanupTimeStretching];
 
   if (_audioFrame)
@@ -105,6 +117,7 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   if (_aoDev)
     {
       ao_close(_aoDev);
+      _aoDev = NULL;
     }
 
   RELEASE(_audioPackets);
@@ -115,10 +128,13 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   _audioPackets = [[NSMutableArray alloc] initWithCapacity: BUFFER_SIZE];
   _audioThread = nil;
 
+  _formatCtx = NULL;
+  _stream = NULL;
   _audioCodecCtx = NULL;
   _audioFrame = NULL;
   _swrCtx = NULL;
   _audioClock = 0;
+  _audioStartPTS = 0;
   _flags.playing = NO;
   _volume = 1.0;
   _playbackRate = 1.0;
@@ -268,7 +284,8 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 
   ao_free_options(options);
   _timeBase = formatCtx->streams[_audioStreamIndex]->time_base;
-  _audioClock = av_gettime();
+  _audioClock = 0;
+  _audioStartPTS = 0;
 
   // Initialize time stretching for sample rate changes
   if (![self initializeTimeStretching])
@@ -282,33 +299,46 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   int64_t audioStartTime = 0;
   int64_t totalSamplesPlayed = 0;
 
-  while (_flags.playing)
+  while (_flags.playing && ![[NSThread currentThread] isCancelled])
     {
       // create pool...
       CREATE_AUTORELEASE_POOL(pool);
       {
 	NSDictionary *dict = nil;
 
-	@synchronized (_audioPackets)
+	[_audioPacketsLock lock];
+	if ([_audioPackets count] > 0)
 	  {
-	    if ([_audioPackets count] > 0)
-	      {
-		dict = RETAIN([_audioPackets objectAtIndex: 0]);
-		[_audioPackets removeObjectAtIndex: 0];
-	      }
+	    dict = RETAIN([_audioPackets objectAtIndex: 0]);
+	    [_audioPackets removeObjectAtIndex: 0];
 	  }
-
-	if (!_flags.started && dict)
-	  {
-	    audioStartTime = av_gettime();
-	    totalSamplesPlayed = 0;
-	    _flags.started = YES;
-	    NSDebugLog(@"[GSAudioPlayer] Audio playback started | Timestamp: %ld", audioStartTime);
-	  }
+	[_audioPacketsLock unlock];
 
 	if (dict)
 	  {
 	    AVPacket packet = AVPacketFromNSDictionary(dict);
+	    int64_t packetTime;
+
+	    if (packet.pts != AV_NOPTS_VALUE)
+	      {
+		packetTime = av_rescale_q(packet.pts,
+					  _timeBase,
+					  (AVRational){1, 1000000});
+	      }
+	    else
+	      {
+		packetTime = _lastPosition;
+	      }
+
+	    if (!_flags.started)
+	      {
+		audioStartTime = av_gettime();
+		totalSamplesPlayed = 0;
+		_audioStartPTS = packetTime;
+		_audioClock = _audioStartPTS;
+		_flags.started = YES;
+		NSDebugLog(@"[GSAudioPlayer] Audio playback started | Timestamp: %ld", audioStartTime);
+	      }
 
 	    // Calculate expected playback time based on samples played
 	    int64_t expectedTime = audioStartTime + (totalSamplesPlayed * 1000000LL / _audioCodecCtx->sample_rate);
@@ -318,12 +348,17 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 	    int64_t timingError = expectedTime - currentTime;
 	    if (timingError > 5000) // 5ms threshold
 	      {
-		usleep((useconds_t)timingError);
+		while (timingError > 0 && ![[NSThread currentThread] isCancelled])
+                  {
+                    useconds_t interval = (useconds_t)MIN(timingError, 10000);
+                    usleep(interval);
+                    timingError -= interval;
+                  }
 	      }
 
 	    // Update audio clock for video synchronization
 	    // The audio clock represents the actual time of the audio currently being played
-	    _audioClock = audioStartTime + (totalSamplesPlayed * 1000000LL / _audioCodecCtx->sample_rate);
+	    _audioClock = _audioStartPTS + (totalSamplesPlayed * 1000000LL / _audioCodecCtx->sample_rate);
 
 	    // Debug logging for audio clock updates (reduced frequency)
 	    if (totalSamplesPlayed % (_audioCodecCtx->sample_rate / 4) == 0) // Log 4 times per second
@@ -333,7 +368,8 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 	      }
 
 	    // Decode and play the packet
-	    int samplesDecoded = [self decodePacket: &packet];
+	    int samplesDecoded = [[NSThread currentThread] isCancelled]
+              ? 0 : [self decodePacket: &packet];
 	    totalSamplesPlayed += samplesDecoded;
 
 	    RELEASE(dict);
@@ -478,10 +514,20 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 - (void) submitPacket: (AVPacket *)packet
 {
   NSDictionary *dict = NSDictionaryFromAVPacket(packet);
-  @synchronized (_audioPackets)
-    {
-      [_audioPackets addObject: dict];
-    }
+  [_audioPacketsLock lock];
+  [_audioPackets addObject: dict];
+  [_audioPacketsLock unlock];
+}
+
+- (NSUInteger) queuedPacketCount
+{
+  NSUInteger count;
+
+  [_audioPacketsLock lock];
+  count = [_audioPackets count];
+  [_audioPacketsLock unlock];
+
+  return count;
 }
 
 - (void) setNeedsRestart: (BOOL)f
@@ -489,134 +535,128 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   _flags.needsRestart = f;
 }
 
+- (void) _clearAudioPackets
+{
+  // Clear existing audio packets
+  [_audioPacketsLock lock];
+  [_audioPackets removeAllObjects];
+  [_audioPacketsLock unlock];
+}
+
 - (void) start
 {
-  @synchronized(self)
+  [_stateLock lock];
+  if (_flags.playing)
     {
-      if (_flags.playing)
+      NSDebugLog(@"[GSAudioPlayer] Already running, ignoring start request | Timestamp: %ld", av_gettime());
+      [_stateLock unlock];
+      return;
+    }
+
+  if (!_formatCtx || !_stream)
+    {
+      NSDebugLog(@"[GSAudioPlayer] Cannot start - no media loaded | Timestamp: %ld", av_gettime());
+      [_stateLock unlock];
+      return;
+    }
+
+  _flags.playing = YES;
+  _flags.started = NO; // Reset for synchronization
+
+  // Only restart from beginning if we reached EOF, not for pause/resume
+  if (_flags.reachedEOF)
+    {
+      NSDebugLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
+      _flags.reachedEOF = NO;
+
+      [self _clearAudioPackets];
+
+      // Seek back to the beginning only for EOF
+      if (av_seek_frame(_formatCtx, _audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
 	{
-	  NSDebugLog(@"[GSAudioPlayer] Already running, ignoring start request | Timestamp: %ld", av_gettime());
-	  return;
-	}
+	  NSDebugLog(@"[GSAudioPlayer] rewind successful");
 
-      if (!_formatCtx || !_stream)
-	{
-	  NSDebugLog(@"[GSAudioPlayer] Cannot start - no media loaded | Timestamp: %ld", av_gettime());
-	  return;
-	}
-
-      _flags.playing = YES;
-      _flags.started = NO; // Reset for synchronization
-
-      // Only restart from beginning if we reached EOF, not for pause/resume
-      if (_flags.reachedEOF)
-	{
-	  NSDebugLog(@"[GSAudioPlayer] Restarting from EOF, seeking to beginning | Timestamp: %ld", av_gettime());
-	  _flags.reachedEOF = NO;
-
-	  // Clear existing audio packets
-	  @synchronized (_audioPackets)
-	    {
-	      [_audioPackets removeAllObjects];
-	    }
-
-	  // Seek back to the beginning only for EOF
-	  if (av_seek_frame(_formatCtx, _audioStreamIndex, 0, AVSEEK_FLAG_BACKWARD) >= 0)
-	    {
-	      NSDebugLog(@"[GSAudioPlayer] rewind successful");
-
-	      // Reset codec state
-	      if (_audioCodecCtx)
-		{
-		  avcodec_flush_buffers(_audioCodecCtx);
-		}
-	      _lastPosition = 0;
-	    }
-	  else
-	    {
-	      NSDebugLog(@"[GSAudioPlayer] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
-	    }
-	}
-      else if (_flags.needsRestart)
-	{
-	  // This is a regular pause/resume - don't seek, just clear buffers
-	  NSDebugLog(@"[GSAudioPlayer] Resuming from position %ld | Timestamp: %ld", _lastPosition, av_gettime());
-	  _flags.needsRestart = NO;
-
-	  // Clear existing packets but don't seek
-	  @synchronized (_audioPackets)
-	    {
-	      [_audioPackets removeAllObjects];
-	    }
-
-	  // Reset codec state but maintain position
+	  // Reset codec state
 	  if (_audioCodecCtx)
 	    {
 	      avcodec_flush_buffers(_audioCodecCtx);
 	    }
+	  _lastPosition = 0;
 	}
-
-      // Start video processing thread
-      if (_audioThread == nil || [_audioThread isFinished])
+      else
 	{
-	  // Clean up old thread reference if it finished
-	  if (_audioThread && [_audioThread isFinished])
-	    {
-	      DESTROY(_audioThread);
-	    }
+	  NSDebugLog(@"[GSAudioPlayer] Failed to seek back to beginning for restart | Timestamp: %ld", av_gettime());
+	}
+    }
+  else if (_flags.needsRestart)
+    {
+      // This is a regular pause/resume - don't seek, just clear buffers
+      NSDebugLog(@"[GSAudioPlayer] Resuming from position %ld | Timestamp: %ld", _lastPosition, av_gettime());
+      _flags.needsRestart = NO;
 
-	  _audioThread = [[NSThread alloc] initWithTarget: self
-						 selector: @selector(audioThreadEntry)
-						   object: nil];
-	  [_audioThread start];
+      [self _clearAudioPackets];
+
+      // Reset codec state but maintain position
+      if (_audioCodecCtx)
+	{
+	  avcodec_flush_buffers(_audioCodecCtx);
+	}
+    }
+
+  // Start video processing thread
+  if (_audioThread == nil || [_audioThread isFinished])
+    {
+      // Clean up old thread reference if it finished
+      if (_audioThread && [_audioThread isFinished])
+	{
+	  DESTROY(_audioThread);
 	}
 
-      NSDebugLog(@"[GSAudioPlayer] Audio playback started successfully | Timestamp: %ld", av_gettime());
+      _audioThread = [[NSThread alloc] initWithTarget: self
+					     selector: @selector(audioThreadEntry)
+					       object: nil];
+      [_audioThread start];
     }
+
+  NSDebugLog(@"[GSAudioPlayer] Audio playback started successfully | Timestamp: %ld", av_gettime());
+  [_stateLock unlock];
 }
 
 - (void) stop
 {
-  @synchronized(self)
+  [_stateLock lock];
+  if (!_flags.playing && _audioThread == nil)
     {
-      if (!_flags.playing)
-	{
-	  NSDebugLog(@"[GSAudioPlayer] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
-	  return;
-	}
-
-      // Save current position for potential resume
-      if (!_flags.reachedEOF)
-	{
-	  _lastPosition = _audioClock;
-	  _flags.needsRestart = YES; // Mark for resume, not EOF restart
-	}
-
-      _flags.playing = NO;
-
-      // Cancel and wait for video thread
-      if (_audioThread)
-	{
-	  [_audioThread cancel];
-
-	  // Wait for video thread to finish with timeout
-	  int timeout = 1000; // 1 second timeout
-	  while (![_audioThread isFinished] && timeout > 0)
-	    {
-	      usleep(1000); // 1ms
-	      timeout--;
-	    }
-
-	  if (timeout <= 0)
-	    {
-	      NSDebugLog(@"[GSAudioPlayer] Warning: Audio thread did not finish within timeout");
-	    }
-
-	  DESTROY(_audioThread);
-	}
-
-      NSDebugLog(@"[GSAudioPlayer] Audio playback stopped successfully | Timestamp: %ld", av_gettime());
+      NSDebugLog(@"[GSAudioPlayer] Already stopped, ignoring stop request | Timestamp: %ld", av_gettime());
+      [_stateLock unlock];
+      return;
     }
+
+  // Save current position for potential resume
+  if (!_flags.reachedEOF)
+    {
+      _lastPosition = _audioClock;
+      _flags.needsRestart = YES; // Mark for resume, not EOF restart
+    }
+
+  _flags.playing = NO;
+
+  // Cancel and wait for video thread
+  if (_audioThread)
+    {
+      [_audioThread cancel];
+
+      // The codec and device remain owned by this worker until it exits.
+      while (![_audioThread isFinished])
+        {
+          usleep(1000);
+        }
+
+      DESTROY(_audioThread);
+    }
+
+  NSDebugLog(@"[GSAudioPlayer] Audio playback stopped successfully | Timestamp: %ld", av_gettime());
+  [_stateLock unlock];
 }
 
 - (void) setVolume: (float)volume
@@ -662,11 +702,9 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 // Seeking methods
 - (BOOL) seekToTime: (int64_t)timestamp
 {
+  [self flushSubtitles];
   // Clear existing audio packets
-  @synchronized (_audioPackets)
-    {
-      [_audioPackets removeAllObjects];
-    }
+  [self _clearAudioPackets];
 
   // Reset codec state
   if (_audioCodecCtx)
@@ -677,6 +715,8 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   // Reset the audio clock and synchronization state
   // The clock will be properly initialized when the next packet is processed
   _audioClock = timestamp;
+  _audioStartPTS = timestamp;
+  _lastPosition = timestamp;
   _flags.started = NO; // Will be reset when first packet after seek is processed
 
   NSDebugLog(@"[GSAudioPlayer] Audio seek to timestamp %ld", timestamp);
@@ -806,6 +846,191 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   _flags.reachedEOF = YES;
   _lastPosition = _audioClock; // Save current position
   [self stop];
+}
+
+/* FFmpeg returns ASS events as ReadOrder,Layer,Style,Name,MarginL,MarginR,
+ * MarginV,Effect,Text. Preserve commas in Text and discard override styling.
+ */
+static NSString *
+GSSubtitleText(AVSubtitleRect *rect)
+{
+  NSString *text;
+  if (rect->text != NULL)
+    return [NSString stringWithUTF8String: rect->text];
+  if (rect->ass == NULL)
+    return nil;
+  text = [NSString stringWithUTF8String: rect->ass];
+  NSUInteger pos = 0, i;
+  for (i = 0; i < 8; i++)
+    {
+      NSRange comma = [text rangeOfString: @"," options: 0
+                                   range: NSMakeRange(pos, [text length] - pos)];
+      if (comma.location == NSNotFound)
+        return nil;
+      pos = NSMaxRange(comma);
+    }
+  text = [text substringFromIndex: pos];
+  NSMutableString *plain = [NSMutableString string];
+  BOOL override = NO;
+  for (i = 0; i < [text length]; i++)
+    {
+      unichar c = [text characterAtIndex: i];
+      if (c == '{') override = YES;
+      else if (c == '}') override = NO;
+      else if (!override) [plain appendFormat: @"%C", c];
+    }
+  [plain replaceOccurrencesOfString: @"\\N" withString: @"\n"
+                           options: 0 range: NSMakeRange(0, [plain length])];
+  [plain replaceOccurrencesOfString: @"\\n" withString: @"\n"
+                           options: 0 range: NSMakeRange(0, [plain length])];
+  [plain replaceOccurrencesOfString: @"\\h" withString: @" "
+                           options: 0 range: NSMakeRange(0, [plain length])];
+  return plain;
+}
+
+- (void) prepareSubtitlesWithFormatContext: (AVFormatContext *)formatCtx
+{
+  [_subtitleLock lock];
+  avcodec_free_context(&_subtitleCodecCtx);
+  [_subtitleCues removeAllObjects];
+  _subtitleFormatCtx = formatCtx;
+  _subtitleStreamIndex = -1;
+  [_subtitleLock unlock];
+}
+
+- (NSArray *) subtitleStreams
+{
+  NSMutableArray *tracks = [NSMutableArray array];
+  [_subtitleLock lock];
+  unsigned int i;
+  for (i = 0; _subtitleFormatCtx && i < _subtitleFormatCtx->nb_streams; i++)
+    {
+      AVStream *stream = _subtitleFormatCtx->streams[i];
+      const AVCodecDescriptor *desc = avcodec_descriptor_get(stream->codecpar->codec_id);
+      if (stream->codecpar->codec_type == AVMEDIA_TYPE_SUBTITLE && desc
+          && (desc->props & AV_CODEC_PROP_TEXT_SUB)
+          && avcodec_find_decoder(stream->codecpar->codec_id))
+        {
+          AVDictionaryEntry *language = av_dict_get(stream->metadata, "language", NULL, 0);
+          AVDictionaryEntry *title = av_dict_get(stream->metadata, "title", NULL, 0);
+          [tracks addObject: [NSDictionary dictionaryWithObjectsAndKeys:
+            [NSNumber numberWithInt: i], @"index",
+            language ? [NSString stringWithUTF8String: language->value] : @"", @"language",
+            title ? [NSString stringWithUTF8String: title->value] : @"", @"title", nil]];
+        }
+    }
+  [_subtitleLock unlock];
+  return tracks;
+}
+
+- (int) subtitleStreamIndex
+{
+  [_subtitleLock lock];
+  int index = _subtitleStreamIndex;
+  [_subtitleLock unlock];
+  return index;
+}
+
+- (BOOL) setSubtitleStreamIndex: (int)index
+{
+  AVCodecContext *context = NULL;
+  [_subtitleLock lock];
+  if (index != -1)
+    {
+      if (!_subtitleFormatCtx || index < 0 || index >= _subtitleFormatCtx->nb_streams)
+        goto failure;
+      AVStream *stream = _subtitleFormatCtx->streams[index];
+      const AVCodecDescriptor *desc = avcodec_descriptor_get(stream->codecpar->codec_id);
+      const AVCodec *codec = avcodec_find_decoder(stream->codecpar->codec_id);
+      if (stream->codecpar->codec_type != AVMEDIA_TYPE_SUBTITLE || !desc
+          || !(desc->props & AV_CODEC_PROP_TEXT_SUB) || !codec)
+        goto failure;
+      context = avcodec_alloc_context3(codec);
+      if (!context || avcodec_parameters_to_context(context, stream->codecpar) < 0)
+        goto failure;
+      context->pkt_timebase = stream->time_base;
+      if (avcodec_open2(context, codec, NULL) < 0)
+        goto failure;
+    }
+  avcodec_free_context(&_subtitleCodecCtx);
+  _subtitleCodecCtx = context;
+  _subtitleStreamIndex = index;
+  [_subtitleCues removeAllObjects];
+  [_subtitleLock unlock];
+  return YES;
+failure:
+  avcodec_free_context(&context);
+  [_subtitleLock unlock];
+  return NO;
+}
+
+- (void) flushSubtitles
+{
+  [_subtitleLock lock];
+  if (_subtitleCodecCtx) avcodec_flush_buffers(_subtitleCodecCtx);
+  [_subtitleCues removeAllObjects];
+  [_subtitleLock unlock];
+}
+
+- (void) submitSubtitlePacket: (AVPacket *)packet
+{
+  [_subtitleLock lock];
+  if (_subtitleCodecCtx && packet && packet->stream_index == _subtitleStreamIndex)
+    {
+      AVSubtitle subtitle = {0};
+      int gotSubtitle = 0;
+      AVPacket copy = *packet;
+      int result = avcodec_decode_subtitle2(_subtitleCodecCtx, &subtitle, &gotSubtitle, &copy);
+      if (result >= 0 && gotSubtitle)
+        {
+          AVRational timeBase = _subtitleFormatCtx->streams[_subtitleStreamIndex]->time_base;
+          int64_t pts = subtitle.pts;
+          if (pts == AV_NOPTS_VALUE && packet->pts != AV_NOPTS_VALUE)
+            pts = av_rescale_q(packet->pts, timeBase, AV_TIME_BASE_Q);
+          int64_t start = pts + (int64_t)subtitle.start_display_time * 1000;
+          int64_t end = pts + (int64_t)subtitle.end_display_time * 1000;
+          if (end <= start && packet->duration > 0)
+            end = pts + av_rescale_q(packet->duration, timeBase, AV_TIME_BASE_Q);
+          NSMutableArray *lines = [NSMutableArray array];
+          unsigned int i;
+          for (i = 0; i < subtitle.num_rects; i++)
+            {
+              NSString *text = GSSubtitleText(subtitle.rects[i]);
+              if ([text length]) [lines addObject: text];
+            }
+          if (pts != AV_NOPTS_VALUE && end > start && [lines count])
+            [_subtitleCues addObject: [NSDictionary dictionaryWithObjectsAndKeys:
+              [NSNumber numberWithLongLong: start], @"start",
+              [NSNumber numberWithLongLong: end], @"end",
+              [lines componentsJoinedByString: @"\n"], @"text", nil]];
+        }
+      avsubtitle_free(&subtitle);
+    }
+  [_subtitleLock unlock];
+}
+
+- (NSString *) subtitleTextAtTime: (int64_t)timestamp
+{
+  NSMutableArray *lines = [NSMutableArray array];
+  [_subtitleLock lock];
+  NSUInteger i = 0;
+  while (i < [_subtitleCues count])
+    {
+      NSDictionary *cue = [_subtitleCues objectAtIndex: i];
+      if ([[cue objectForKey: @"end"] longLongValue] <= timestamp)
+        { [_subtitleCues removeObjectAtIndex: i]; continue; }
+      if ([[cue objectForKey: @"start"] longLongValue] <= timestamp)
+        [lines addObject: [cue objectForKey: @"text"]];
+      i++;
+    }
+  NSString *text = [lines componentsJoinedByString: @"\n"];
+  [_subtitleLock unlock];
+  return text;
+}
+
+- (NSString *) currentSubtitleText
+{
+  return [self subtitleTextAtTime: [self currentPlaybackTime]];
 }
 
 @end

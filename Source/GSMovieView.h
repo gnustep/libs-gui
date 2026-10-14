@@ -51,6 +51,8 @@
 #endif /* HAVE_LIBAVCODEC_AVCODEC_H */
 
 @class NSImage;
+@class NSLock;
+@class NSRecursiveLock;
 @class NSTimer;
 @class NSTextField;
 @class GSAudioPlayer;
@@ -59,6 +61,8 @@ APPKIT_EXPORT_CLASS
 @interface GSMovieView : NSMovieView
 {
   NSMutableArray *_videoPackets;
+  NSLock *_videoPacketsLock;
+  NSRecursiveLock *_stateLock;
   NSThread *_videoThread;
   NSThread *_feedThread;
   NSImage *_currentFrame;
@@ -74,10 +78,16 @@ APPKIT_EXPORT_CLASS
 
   BOOL _running; // is the loop currently running...
   BOOL _started; // has the video started...
+  BOOL _reachedEOF; // has the demuxer reached end-of-file...
   int _videoStreamIndex;
   int _audioStreamIndex;
   int64_t _lastPts;
+  int64_t _videoClockStartTime;
+  int64_t _videoClockStartPTS;
+  int _frameCount;
+  NSUInteger _frameGeneration;
   CGFloat _fps;
+  NSTimer *_subtitleTimer;
 }
 
 // Initialization...
@@ -101,6 +111,13 @@ APPKIT_EXPORT_CLASS
 - (int64_t) getCurrentTimestamp;
 - (int64_t) getDuration;
 - (void) displayCurrentFrame;
+
+/* Embedded text subtitles; indices are demuxer stream indices, -1 disables.
+ * See GSAudioPlayer for the stream dictionary keys. */
+- (NSArray *) subtitleStreams;
+- (int) subtitleStreamIndex;
+- (BOOL) setSubtitleStreamIndex: (int)index;
+- (NSString *) currentSubtitleText;
 
 // Playback status
 - (NSString *) playbackStatus;
