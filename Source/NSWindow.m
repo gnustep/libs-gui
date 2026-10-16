@@ -2892,7 +2892,6 @@ titleWithRepresentedFilename(NSString *representedFilename)
   NSRect       oldScreenFrame = [_screen frame];
   int          screenNumber = [_screen screenNumber];
   NSRect       newScreenFrame;
-  NSRect       newFrame;
   NSEnumerator *e;
   NSScreen     *scr;
   NSScreen     *newScreen = nil;
@@ -2928,18 +2927,24 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 
   newScreenFrame = [_screen frame];
-  newFrame = _frame;
-  // Screen Y origin change.
-  newFrame.origin.y += newScreenFrame.origin.y - oldScreenFrame.origin.y;
-  // Screen height change.
-  newFrame.origin.y += newScreenFrame.size.height - oldScreenFrame.size.height;
-  // Screen X origin change. Screen width change shouldn't affect our frame.
-  newFrame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
+  /* Skip the remap when the frame already fits the new screen:
+     it has already been realigned against it. */
+  if (NSContainsRect(newScreenFrame, _frame) == NO)
+    {
+      NSRect newFrame = _frame;
 
-  /* Call backend's `placewindow::` directly because our origin in OpenStep
-     coordinates might be unchanged and `setFrame:display:` has check
-     for it. */
-  [self _applyFrame: newFrame];
+      // Screen Y origin change.
+      newFrame.origin.y += newScreenFrame.origin.y - oldScreenFrame.origin.y;
+      // Screen height change.
+      newFrame.origin.y += newScreenFrame.size.height - oldScreenFrame.size.height;
+      // Screen X origin change. Screen width change shouldn't affect our frame.
+      newFrame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
+
+      /* Call backend's `placewindow::` directly because our origin in OpenStep
+         coordinates might be unchanged and `setFrame:display:` has check
+         for it. */
+      [self _applyFrame: newFrame];
+    }
   [self display];
 
   if (_autosaveName != nil)
