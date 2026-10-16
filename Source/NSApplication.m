@@ -372,6 +372,7 @@ struct _NSModalSession {
 @interface NSApplication (Private)
 - (void) _appIconInit;
 - (void) _loadAppIconImage;
+- (void) _setDockTileImage: (NSImage *)image;
 - (NSDictionary*) _notificationUserInfo;
 - (void) _openDocument: (NSString*)name;
 - (id) _targetForAction: (SEL)aSelector
@@ -3985,6 +3986,17 @@ struct _DelegateWrapper
 
 
 @implementation	NSApplication (Private)
+
+- (void) _setDockTileImage: (NSImage *)image
+{
+  NSAppIconView *appIconView;
+
+  appIconView = (NSAppIconView *)[[self iconWindow] contentView];
+  if ([appIconView respondsToSelector: @selector(setImage:)])
+    {
+      [appIconView setImage: image];
+    }
+}
 
 - (void) _loadAppIconImage
 {

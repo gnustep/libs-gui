@@ -40,8 +40,8 @@
 #import "GSDockTileBadge.h"
 #import "GSIconManager.h"
 
-@interface NSView (GSDockTileAppIcon)
-- (void) setImage: (NSImage *)image;
+@interface NSApplication (GSDockTileAppIcon)
+- (void) _setDockTileImage: (NSImage *)image;
 @end
 
 static void
@@ -227,7 +227,6 @@ GSDrawDockTileBadge(NSString *badgeLabel, NSRect tileRect)
   NSImage *image = nil;
   NSEnumerator *iterator;
   NSWindow *window;
-  NSView *appIconView;
 
   [_contentView setNeedsDisplay: YES];
   iterator = [[NSApp windows] objectEnumerator];
@@ -245,11 +244,7 @@ GSDrawDockTileBadge(NSString *badgeLabel, NSRect tileRect)
   [image unlockFocus];
 
   /* Keep the application's local icon window in sync with the dock tile. */
-  appIconView = [[NSApp iconWindow] contentView];
-  if (appIconView != nil && [appIconView respondsToSelector: @selector(setImage:)])
-    {
-      [appIconView setImage: image];
-    }
+  [NSApp _setDockTileImage: image];
 
   GSUpdateIconManager(image, _showsApplicationBadge ? _badgeLabel : nil);
   RELEASE(image);
