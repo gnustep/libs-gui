@@ -2892,7 +2892,6 @@ titleWithRepresentedFilename(NSString *representedFilename)
   NSRect       oldScreenFrame = [_screen frame];
   int          screenNumber = [_screen screenNumber];
   NSRect       newScreenFrame;
-  NSRect       newFrame;
   NSEnumerator *e;
   NSScreen     *scr;
   NSScreen     *newScreen = nil;
@@ -2928,11 +2927,12 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 
   newScreenFrame = [_screen frame];
-  newFrame = _frame;
   /* Skip the remap when the frame already fits the new screen:
      it has already been realigned against it. */
-  if (NSContainsRect(newScreenFrame, newFrame) == NO)
+  if (NSContainsRect(newScreenFrame, _frame) == NO)
     {
+      NSRect newFrame = _frame;
+
       // Screen Y origin change.
       newFrame.origin.y += newScreenFrame.origin.y - oldScreenFrame.origin.y;
       // Screen height change.
