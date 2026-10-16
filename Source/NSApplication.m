@@ -3992,10 +3992,7 @@ struct _DelegateWrapper
   NSAppIconView *appIconView;
 
   appIconView = (NSAppIconView *)[[self iconWindow] contentView];
-  if ([appIconView respondsToSelector: @selector(setImage:)])
-    {
-      [appIconView setImage: image];
-    }
+  [appIconView setImage: image];
 }
 
 - (void) _loadAppIconImage

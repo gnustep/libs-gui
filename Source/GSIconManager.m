@@ -68,7 +68,7 @@
  *     -cancelUserAttentionRequest:appProcessId:.
  *
  * All messages to the remote object are treated as best-effort.  If lookup
- * fails, GSUseIconManager has been explicitly disabled, the connection
+ * fails, GSUseIconManager has not been explicitly enabled, the connection
  * dies, or a remote message raises, the client drops the proxy and keeps
  * running with local fallback behavior.  NSConnectionDidDieNotification is
  * observed so that a disappearing manager clears all registered icon state.
@@ -110,8 +110,7 @@ GSIconManagerEnabled(void)
 {
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
-  return ([defaults objectForKey: @"GSUseIconManager"] == nil
-    || [defaults boolForKey: @"GSUseIconManager"]);
+  return [defaults boolForKey: @"GSUseIconManager"];
 }
 
 @interface GSIconManagerMonitor : NSObject
