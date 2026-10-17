@@ -373,6 +373,7 @@ struct _NSModalSession {
 - (void) _appIconInit;
 - (void) _loadAppIconImage;
 - (void) _setDockTileImage: (NSImage *)image;
+- (NSDockTile *) _dockTileIfExists;
 - (NSDictionary*) _notificationUserInfo;
 - (void) _openDocument: (NSString*)name;
 - (id) _targetForAction: (SEL)aSelector
@@ -3986,6 +3987,13 @@ struct _DelegateWrapper
 
 
 @implementation	NSApplication (Private)
+
+/* Miniwindow drawing must not create a dock tile while rendering one. */
+- (NSDockTile *) _dockTileIfExists
+{
+  return _dock_tile;
+}
+
 
 - (void) _setDockTileImage: (NSImage *)image
 {
