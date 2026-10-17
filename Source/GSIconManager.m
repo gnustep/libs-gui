@@ -251,8 +251,6 @@ checkVerify(void)
 NSSize
 GSGetIconSize(void)
 {
-  NSSize iconSize;
-
   checkVerify();
 
   if (gsim != nil)
@@ -261,26 +259,19 @@ GSGetIconSize(void)
 	{
 	  if ([gsim respondsToSelector: @selector(getSizeWindow)])
 	    {
-	      iconSize = [gsim getSizeWindow];
+	      NS_VALRETURN([gsim getSizeWindow]);
 	    }
-	  else
-	    {
-	      iconSize = [GSCurrentServer() iconSize];
-	    }
+
+          NS_VALRETURN([GSCurrentServer() iconSize]);
 	}
       NS_HANDLER
 	{
 	  GSLostIconManager();
-	  iconSize = [GSCurrentServer() iconSize];
 	}
       NS_ENDHANDLER
     }
-  else
-    {
-      iconSize = [GSCurrentServer() iconSize];
-    }
 
-  return iconSize;
+  return [GSCurrentServer() iconSize];
 }
 
 void
