@@ -334,8 +334,10 @@ void
 GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
 {
   NSData *iconData = nil;
-  BOOL badgeChanged = ![badgeLabel isEqualToString: lastApplicationIconBadgeText];
-
+  BOOL badgeChanged =
+    badgeLabel != lastApplicationIconBadgeText
+    && ![badgeLabel isEqualToString: lastApplicationIconBadgeText];
+  
   iconManagerUpdateCount++;
 
   if (image != nil)
