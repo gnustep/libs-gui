@@ -51,6 +51,7 @@
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSPrintInfo.h"
 #import "AppKit/NSPrintOperation.h"
+#import "AppKit/NSShadow.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSView.h"
 #import "AppKit/DPSOperators.h"
@@ -304,8 +305,15 @@ NSGraphicsContext	*GSCurrentContext(void)
 {
   if (self == [NSGraphicsContext class])
     {
-      NSAssert(defaultNSGraphicsContextClass, 
-	       @"Internal Error: No default NSGraphicsContext set\n");
+      /* +initialize leaves this class here until a backend replaces it;
+	 forwarding to it would recur for ever.  */
+      if (defaultNSGraphicsContextClass == Nil
+	  || defaultNSGraphicsContextClass == [NSGraphicsContext class])
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		      format: @"No backend NSGraphicsContext class is set:"
+	                      @" the GUI backend has not been loaded"];
+	}
       return [defaultNSGraphicsContextClass allocWithZone: z];
     }
   else

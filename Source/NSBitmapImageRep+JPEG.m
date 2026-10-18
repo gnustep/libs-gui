@@ -237,8 +237,24 @@ typedef struct
   unsigned char* data;
   NSData** finalData;
   int length;
+  int capacity;
 } gs_jpeg_destination_mgr;
 typedef gs_jpeg_destination_mgr * gs_jpeg_dest_ptr;
+
+static void gs_jpeg_dest_grow (gs_jpeg_dest_ptr dest, int neededLength)
+{
+  if (neededLength > dest->capacity)
+    {
+      int newCapacity = dest->capacity * 2;
+
+      if (newCapacity < neededLength)
+        {
+          newCapacity = neededLength;
+        }
+      dest->data = (unsigned char*) realloc (dest->data, newCapacity);
+      dest->capacity = newCapacity;
+    }
+}
 
 /*
         Initialize destination.  This is called by jpeg_start_compress()
@@ -259,8 +275,8 @@ static void gs_init_destination (j_compress_ptr cinfo)
   dest->buffer = (void*) calloc ((imageSize * cinfo->input_components),
                                 sizeof(unsigned char));
 
-  dest->data = (void*) calloc ((imageSize * cinfo->input_components),
-                                sizeof(unsigned char));
+  dest->capacity = imageSize * cinfo->input_components;
+  dest->data = (void*) calloc (dest->capacity, sizeof(unsigned char));
 
   dest->pub.next_output_byte = dest->buffer;
   dest->pub.free_in_buffer = imageSize * cinfo->input_components;
@@ -289,6 +305,8 @@ static boolean gs_empty_output_buffer (j_compress_ptr cinfo)
   int bufSize = imageSize * cinfo->input_components;
   int i;
 
+  gs_jpeg_dest_grow (dest, dest->length + bufSize);
+
   for (i = 0; i < bufSize; i++)
     {
       dest->data [dest->length + i] = dest->buffer [i];
@@ -314,16 +332,19 @@ static void gs_term_destination (j_compress_ptr cinfo)
   gs_jpeg_dest_ptr dest = (gs_jpeg_dest_ptr) cinfo->dest;
   int imageSize = cinfo->image_width * cinfo->image_height;
   int bufSize = imageSize * cinfo->input_components;
+  int remaining = bufSize - (int) dest->pub.free_in_buffer;
   int i;
 
-  for (i = 0; i < bufSize; i++)
+  gs_jpeg_dest_grow (dest, dest->length + remaining);
+
+  for (i = 0; i < remaining; i++)
     {
       dest->data [dest->length + i] = dest->buffer [i];
     }
-  dest->length = dest->length + bufSize;
+  dest->length = dest->length + remaining;
 
   *dest->finalData = [[NSData alloc] initWithBytes: dest->data
-    length: (dest->length) - dest->pub.free_in_buffer];
+    length: dest->length];
 }
 
 static void gs_jpeg_memory_dest_create (j_compress_ptr cinfo, NSData** data)

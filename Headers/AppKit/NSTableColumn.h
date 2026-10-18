@@ -33,6 +33,7 @@
 #import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
 @class NSSortDescriptor;
 @class NSCell;

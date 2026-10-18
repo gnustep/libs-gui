@@ -64,6 +64,7 @@
 #import "AppKit/NSDrawer.h"
 #import "AppKit/NSDocumentController.h"
 #import "AppKit/NSDocument.h"
+#import "AppKit/NSDockTile.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSFont.h"
@@ -87,6 +88,7 @@
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/GSWindowDecorationView.h"
 #import "GSBindingHelpers.h"
+#import "GSDockTileBadge.h"
 #import "GSGuiPrivate.h"
 #import "GSToolTips.h"
 #import "GSIconManager.h"
@@ -120,6 +122,10 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
             source: (id)sourceObject
          slideBack: (BOOL)slideFlag;
 - (void) postDragEvent: (NSEvent*)event;
+@end
+
+@interface NSApplication (DockTilePrivate)
+- (NSDockTile *) _dockTileIfExists;
 @end
 
 @interface NSView (MoveToWindow)
@@ -220,7 +226,7 @@ static GSWindowAnimationDelegate *animationDelegate;
   // Iterate over all child windows.
   NSEnumerator *en = [_children objectEnumerator];
   NSWindow *child = nil;
-  while (child = [en nextObject])
+  while ((child = [en nextObject]))
     {
       NSRect childFrame = [child frame];
 
@@ -559,6 +565,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void) drawRect: (NSRect)rect
 {
   NSSize iconSize = GSGetIconSize();
+  NSDockTile *dockTile = [NSApp _dockTileIfExists];
 
   [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
                    inView: self];
@@ -571,6 +578,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [titleCell drawWithFrame: NSMakeRect(3, iconSize.height - 13,
                                        iconSize.width - 6, 10)
                     inView: self];
+  if ([dockTile showsApplicationBadge])
+    {
+      GSDrawDockTileBadge([dockTile badgeLabel],
+	NSMakeRect(0, 0, iconSize.width, iconSize.height));
+    }
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
@@ -2892,7 +2904,6 @@ titleWithRepresentedFilename(NSString *representedFilename)
   NSRect       oldScreenFrame = [_screen frame];
   int          screenNumber = [_screen screenNumber];
   NSRect       newScreenFrame;
-  NSRect       newFrame;
   NSEnumerator *e;
   NSScreen     *scr;
   NSScreen     *newScreen = nil;
@@ -2928,18 +2939,24 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 
   newScreenFrame = [_screen frame];
-  newFrame = _frame;
-  // Screen Y origin change.
-  newFrame.origin.y += newScreenFrame.origin.y - oldScreenFrame.origin.y;
-  // Screen height change.
-  newFrame.origin.y += newScreenFrame.size.height - oldScreenFrame.size.height;
-  // Screen X origin change. Screen width change shouldn't affect our frame.
-  newFrame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
+  /* Skip the remap when the frame already fits the new screen:
+     it has already been realigned against it. */
+  if (NSContainsRect(newScreenFrame, _frame) == NO)
+    {
+      NSRect newFrame = _frame;
 
-  /* Call backend's `placewindow::` directly because our origin in OpenStep
-     coordinates might be unchanged and `setFrame:display:` has check
-     for it. */
-  [self _applyFrame: newFrame];
+      // Screen Y origin change.
+      newFrame.origin.y += newScreenFrame.origin.y - oldScreenFrame.origin.y;
+      // Screen height change.
+      newFrame.origin.y += newScreenFrame.size.height - oldScreenFrame.size.height;
+      // Screen X origin change. Screen width change shouldn't affect our frame.
+      newFrame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
+
+      /* Call backend's `placewindow::` directly because our origin in OpenStep
+         coordinates might be unchanged and `setFrame:display:` has check
+         for it. */
+      [self _applyFrame: newFrame];
+    }
   [self display];
 
   if (_autosaveName != nil)
@@ -3961,6 +3978,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 	  lastPoint = [theView convertPoint: lastPoint fromView: nil];
 	  loc = [theView convertPoint: loc fromView: nil];
           [tr getObjects: rects];
+          for (i = 0; i < count; ++i)
+            {
+              RETAIN(rects[i]);
+            }
 
           for (i = 0; i < count; ++i)
             {
@@ -4044,6 +4065,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                     }
                 }
             }
+          for (i = 0; i < count; ++i)
+            {
+              RELEASE(rects[i]);
+            }
         }
     }
 
@@ -4063,10 +4088,18 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
           [sb getObjects: subs];
           for (i = 0; i < count; ++i)
             {
+              RETAIN(subs[i]);
+            }
+          for (i = 0; i < count; ++i)
+            {
               if (![subs[i] isHidden])
                 {
                   (*ctImp)(self, ctSel, subs[i], theEvent);
                 }
+            }
+          for (i = 0; i < count; ++i)
+            {
+              RELEASE(subs[i]);
             }
         }
     }
