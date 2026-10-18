@@ -160,8 +160,6 @@ GSDrawDockTileBadge(NSString *badgeLabel, NSRect tileRect)
       _badgeLabel = nil;
       _owner = nil;
       _showsApplicationBadge = YES;
-      _appIconImage = [NSImage imageNamed: @"NSApplicationIcon"];
-      RETAIN(_appIconImage);
     }
   return self;
 }
@@ -170,7 +168,6 @@ GSDrawDockTileBadge(NSString *badgeLabel, NSRect tileRect)
 {
   RELEASE(_contentView);
   RELEASE(_badgeLabel);
-  RELEASE(_appIconImage);
   [super dealloc];
 }
 
@@ -265,10 +262,6 @@ GSDrawDockTileBadge(NSString *badgeLabel, NSRect tileRect)
     {
       NSImage *appIcon = [NSApp applicationIconImage];
 
-      if (appIcon == nil)
-	{
-	  appIcon = _appIconImage;
-	}
       [appIcon drawInRect: NSMakeRect(0, 0, _size.width, _size.height)
 	       fromRect: NSZeroRect
 	      operation: NSCompositeSourceOver
