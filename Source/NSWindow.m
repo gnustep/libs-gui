@@ -1174,6 +1174,7 @@ many times.
 
   _f.cursor_rects_enabled = YES;
   _f.cursor_rects_valid = NO;
+  _f.shows_resize_indicator = YES;
 
   /* Create the window view */
   cframe.origin = NSZeroPoint;
@@ -2158,14 +2159,21 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (BOOL) showsResizeIndicator
 {
-  return ([self styleMask] & NSResizableWindowMask) ? YES : NO;
+  if (([self styleMask] & NSResizableWindowMask) == 0)
+    {
+      return NO;
+    }
+  return _f.shows_resize_indicator;
 }
 
 - (void) setShowsResizeIndicator: (BOOL)show
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-        "setShowsResizeIndicator:", "NSWindow");
+  if (_f.shows_resize_indicator == show)
+    {
+      return;
+    }
+  _f.shows_resize_indicator = show;
+  [_wv setNeedsDisplay: YES];
 }
 
 - (BOOL) preservesContentDuringLiveResize
@@ -6282,6 +6290,7 @@ current key view.<br />
 //  _f.is_main = NO;
 //  _f.is_edited = NO;
   _f.is_released_when_closed = YES;
+  _f.shows_resize_indicator = YES;
 //  _f.is_miniaturized = NO;
 //  _f.menu_exclude = NO;
 //  _f.hides_on_deactivate = NO;
