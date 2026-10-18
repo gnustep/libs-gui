@@ -72,8 +72,9 @@
  * dies, or a remote message raises, the client drops the proxy and keeps
  * running with local fallback behavior.  NSConnectionDidDieNotification is
  * observed so that a disappearing manager clears all registered icon state.
- * Reconnect attempts after repeated dock tile updates are throttled to avoid
- * repeatedly probing a missing service.
+ * Cached state is sent once per connection or update.  A timer retries only
+ * disconnected clients; managers must retain updates received before window
+ * registration.  Successful delivery does not start a periodic resend loop.
  */
 @protocol GSIconManager <NSObject>
  - (NSRect) setWindow: (unsigned int)aWindowNumber appProcessId: (int)aProcessId;
@@ -93,17 +94,17 @@ static id <GSIconManager>gsim = nil;
 static NSConnection *gsimConnection = nil;
 static int appId = 0;
 static NSMutableSet *registeredIcons = nil;
-static unsigned int iconManagerUpdateCount = 0;
-static unsigned int lastIconManagerAttemptUpdate = 0;
+static BOOL hasApplicationIconState = NO;
+static BOOL applicationIconStatePending = NO;
 static NSData *lastApplicationIconData = nil;
 static NSString *lastApplicationIconBadgeText = nil;
-static NSTimer *badgeRetryTimer = nil;
+static NSTimer *iconManagerRetryTimer = nil;
 
 static void GSReleaseIconManager(void);
 static void GSLostIconManager(void);
 static BOOL GSSendApplicationIconData(NSData *data, NSString *badgeText);
-static void GSScheduleBadgeRetry(NSTimeInterval delay);
-static inline void checkVerify(void);
+static void GSScheduleIconManagerRetry(NSTimeInterval delay);
+static inline void GSEnsureIconManager(void);
 
 static BOOL
 GSIconManagerEnabled(void)
@@ -115,7 +116,7 @@ GSIconManagerEnabled(void)
 
 @interface GSIconManagerMonitor : NSObject
 + (id) _lostIconManager: (NSNotification *)notification;
-+ (void) _retryBadge: (NSTimer *)timer;
++ (void) _retryIconManager: (NSTimer *)timer;
 @end
 
 @implementation GSIconManagerMonitor
@@ -128,39 +129,34 @@ GSIconManagerEnabled(void)
   return self;
 }
 
-+ (void) _retryBadge: (NSTimer *)timer
++ (void) _retryIconManager: (NSTimer *)timer
 {
-  if (timer != badgeRetryTimer)
+  if (timer != iconManagerRetryTimer)
     {
       return;
     }
-  DESTROY(badgeRetryTimer);
+  DESTROY(iconManagerRetryTimer);
 
-  if (GSIconManagerEnabled()
-      && lastApplicationIconBadgeText != nil
-      && lastApplicationIconData != nil)
+  if (gsim == nil)
     {
-      if (gsim == nil)
-	{
-	  verify = NO;
-	  checkVerify();
-	}
-      if (gsim != nil)
-	{
-	  GSSendApplicationIconData(lastApplicationIconData,
-				 lastApplicationIconBadgeText);
-	}
-      GSScheduleBadgeRetry(gsim != nil ? 10.0 : 60.0);
+      verify = NO;
+      GSEnsureIconManager();
     }
 }
 @end
 
 static void
-GSScheduleBadgeRetry(NSTimeInterval delay)
+GSScheduleIconManagerRetry(NSTimeInterval delay)
 {
-  badgeRetryTimer = RETAIN([NSTimer scheduledTimerWithTimeInterval: delay
+  if (iconManagerRetryTimer != nil || gsim != nil
+      || !hasApplicationIconState)
+    {
+      return;
+    }
+
+  iconManagerRetryTimer = RETAIN([NSTimer scheduledTimerWithTimeInterval: delay
 						      target: [GSIconManagerMonitor class]
-						    selector: @selector(_retryBadge:)
+						    selector: @selector(_retryIconManager:)
 						    userInfo: nil
 						     repeats: NO]);
 }
@@ -168,50 +164,39 @@ GSScheduleBadgeRetry(NSTimeInterval delay)
 static void
 GSGetIconManager(void)
 {
-  lastIconManagerAttemptUpdate = iconManagerUpdateCount;
+  id <GSIconManager>proxy = nil;
+  BOOL retainedProxy = NO;
 
-  if (GSIconManagerEnabled())
+  appId = [[NSProcessInfo processInfo] processIdentifier];
+
+  NS_DURING
     {
-      id <GSIconManager>proxy = nil;
-      BOOL retainedProxy = NO;
+      proxy = (id <GSIconManager>)
+        [NSConnection rootProxyForConnectionWithRegisteredName: @"GSIconManager"
+                                                        host: @""];
 
-      appId = [[NSProcessInfo processInfo] processIdentifier];
-
-      NS_DURING
-	{
-	  proxy = (id <GSIconManager>)
-	    [NSConnection rootProxyForConnectionWithRegisteredName: @"GSIconManager"
-							      host: @""];
-
-	  if (proxy != nil && RETAIN(proxy) != nil)
-	    {
-	      retainedProxy = YES;
-	      gsimConnection = RETAIN([(NSDistantObject *)proxy connectionForProxy]);
-	      gsim = proxy;
-	      [[NSNotificationCenter defaultCenter]
-		addObserver: [GSIconManagerMonitor class]
-		   selector: @selector(_lostIconManager:)
-		       name: NSConnectionDidDieNotification
-		     object: gsimConnection];
-	      if (lastApplicationIconData != nil
-		  || lastApplicationIconBadgeText != nil)
-		{
-		  GSSendApplicationIconData(lastApplicationIconData,
-					   lastApplicationIconBadgeText);
-		}
-	    }
-	}
-      NS_HANDLER
-	{
-	  if (retainedProxy == YES)
-	    {
-	      RELEASE(proxy);
-	    }
-	  DESTROY(gsimConnection);
-	  gsim = nil;
-	}
-      NS_ENDHANDLER
+      if (proxy != nil && RETAIN(proxy) != nil)
+        {
+          retainedProxy = YES;
+          gsimConnection = RETAIN([(NSDistantObject *)proxy connectionForProxy]);
+          gsim = proxy;
+          [[NSNotificationCenter defaultCenter]
+            addObserver: [GSIconManagerMonitor class]
+               selector: @selector(_lostIconManager:)
+                   name: NSConnectionDidDieNotification
+                 object: gsimConnection];
+        }
     }
+  NS_HANDLER
+    {
+      if (retainedProxy == YES)
+        {
+          RELEASE(proxy);
+        }
+      DESTROY(gsimConnection);
+      gsim = nil;
+    }
+  NS_ENDHANDLER
 }
 
 static void
@@ -235,23 +220,48 @@ GSLostIconManager(void)
   GSReleaseIconManager();
   [registeredIcons removeAllObjects];
   verify = YES;
-  lastIconManagerAttemptUpdate = iconManagerUpdateCount;
+  applicationIconStatePending = hasApplicationIconState;
+  GSScheduleIconManagerRetry(1.0);
 }
 
 static inline void
-checkVerify(void)
+GSEnsureIconManager(void)
 {
-  if (!verify)
-   {
+  /* This is the common entry point for lookup and cached state delivery. */
+  if (!GSIconManagerEnabled())
+    {
+      [iconManagerRetryTimer invalidate];
+      DESTROY(iconManagerRetryTimer);
+      GSReleaseIconManager();
+      [registeredIcons removeAllObjects];
+      applicationIconStatePending = hasApplicationIconState;
+      return;
+    }
+
+  if (!verify && iconManagerRetryTimer == nil)
+    {
       GSGetIconManager();
       verify = YES;
-   }
+      applicationIconStatePending = hasApplicationIconState;
+    }
+
+  if (gsim != nil && applicationIconStatePending)
+    {
+      applicationIconStatePending = NO;
+      GSSendApplicationIconData(lastApplicationIconData,
+                               lastApplicationIconBadgeText);
+    }
+
+  if (gsim == nil)
+    {
+      GSScheduleIconManagerRetry(60.0);
+    }
 }
 
 NSSize
 GSGetIconSize(void)
 {
-  checkVerify();
+  GSEnsureIconManager();
 
   if (gsim != nil)
     {
@@ -277,7 +287,7 @@ GSGetIconSize(void)
 void
 GSRemoveIcon(NSWindow *window)
 {
-  checkVerify();
+  GSEnsureIconManager();
 
   if (gsim && window)
     {
@@ -314,7 +324,8 @@ GSRemoveIcon(NSWindow *window)
 
       [registeredIcons removeObject: winNumObject];
 
-      if ([registeredIcons count] == 0)
+      /* Keep observing connection loss while cached application state exists. */
+      if ([registeredIcons count] == 0 && !hasApplicationIconState)
 	{
 	  GSReleaseIconManager();
 	}
@@ -325,11 +336,6 @@ void
 GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
 {
   NSData *iconData = nil;
-  BOOL badgeChanged =
-    badgeLabel != lastApplicationIconBadgeText
-    && ![badgeLabel isEqualToString: lastApplicationIconBadgeText];
-  
-  iconManagerUpdateCount++;
 
   if (image != nil)
     {
@@ -338,38 +344,14 @@ GSUpdateIconManager(NSImage *image, NSString *badgeLabel)
   ASSIGN(lastApplicationIconData, iconData);
   ASSIGNCOPY(lastApplicationIconBadgeText, badgeLabel);
 
-  if (badgeChanged)
-    {
-      [badgeRetryTimer invalidate];
-      DESTROY(badgeRetryTimer);
-      if (badgeLabel != nil && GSIconManagerEnabled())
-	{
-	  /* A dock can receive the first update before it knows our process
-	   * id.  Retry after launch and periodically for dock restarts. */
-	  GSScheduleBadgeRetry(1.0);
-	}
-    }
+  hasApplicationIconState = YES;
+  applicationIconStatePending = YES;
 
-  if (gsim == nil && verify)
+  if (gsim == nil && iconManagerRetryTimer == nil)
     {
-      if (!badgeChanged
-          && iconManagerUpdateCount - lastIconManagerAttemptUpdate < 5)
-	{
-	  return;
-	}
-
       verify = NO;
     }
-
-  checkVerify();
-
-  if (gsim == nil)
-    {
-      return;
-    }
-
-  GSSendApplicationIconData(lastApplicationIconData,
-			   lastApplicationIconBadgeText);
+  GSEnsureIconManager();
 }
 
 static BOOL
@@ -404,7 +386,7 @@ GSSendApplicationIconData(NSData *data, NSString *badgeText)
 void
 GSRequestUserAttention(NSUInteger requestType)
 {
-  checkVerify();
+  GSEnsureIconManager();
 
   if (gsim == nil)
     {
@@ -429,7 +411,7 @@ GSRequestUserAttention(NSUInteger requestType)
 void
 GSCancelUserAttentionRequest(NSInteger request)
 {
-  checkVerify();
+  GSEnsureIconManager();
 
   if (gsim == nil)
     {
@@ -456,7 +438,7 @@ GSGetIconFrame(NSWindow *window)
 {
   NSRect iconRect;
 
-  checkVerify();
+  GSEnsureIconManager();
 
   if (gsim != nil)
     {

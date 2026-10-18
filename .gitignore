@@ -71,3 +71,4 @@ compile_commands.json
 *.out
 .vscode
 *.tmp
+*.log
