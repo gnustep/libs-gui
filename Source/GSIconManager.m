@@ -234,7 +234,7 @@ GSRemoveIcon(NSWindow *window)
 {
   checkVerify();
 
-  if (gsim != nil)
+  if (gsim && window)
     {
       unsigned int winNum = 0;
       BOOL removed = NO;

@@ -7,6 +7,37 @@
 	GSTheme default and kept its theme until it was restarted.
 	* Tests/gui/GSTheme/followsDefault.m: New test.
 
+2026-09-22 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSBitmapImageRep+JPEG.m (gs_init_destination,
+	gs_empty_output_buffer, gs_term_destination): Grow the JPEG
+	encoder's output accumulator as libjpeg actually fills it, and
+	only append the bytes really produced on termination.  The
+	accumulator was allocated with exactly one buffer's worth of
+	bytes, the same size as the scratch buffer libjpeg fills between
+	flushes; a small image's compressed stream (header tables plus
+	scan data) commonly needs more than one flush before compression
+	finishes, and gs_term_destination then unconditionally appended
+	another full buffer's worth on top, so both wrote past the end of
+	the accumulator.
+	* Tests/gui/NSBitmapImageRep/jpegEncodeDestinationOverflow.m: New
+	test.
+
+2026-10-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* configure: Regenerate with autoconfig 2.73 as the rest of the core libraries.
+	* Source/NSAppearance.m,
+	* Source/NSDataLink.m,
+	* Source/NSDataLinkManager.m,
+	* Source/NSDockTile.m:
+	* Source/NSGraphicsContext.m:
+	* Source/NSScrollView.m,
+	* Source/NSTabView.m,
+	* Source/NSTableColumn.h,
+	* Source/NSTableView.m,
+	* Source/NSWindow.m,
+	* Source/NSView.m: Fix some compiler warnings.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
@@ -632,7 +663,7 @@
 	* Documentation/GNUmakefile.postamble:
 	Use new xxx_AGSDOC_INSTALL_BUNDLE to for relative links between
 	projects.
-	
+
 2025-05-29 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* config.make.in: Add HAVE_* variables.

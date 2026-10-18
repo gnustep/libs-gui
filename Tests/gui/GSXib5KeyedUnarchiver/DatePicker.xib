@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="NSApplication"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+
+        <!-- Interface Builder writes the default style (text field and
+             stepper) by leaving datePickerStyle out.  Year, month and day. -->
+        <datePicker id="ymd">
+            <rect key="frame" x="20" y="10" width="160" height="28"/>
+            <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="ymd-cell">
+                <font key="font" metaFont="system"/>
+                <date key="date" timeIntervalSinceReferenceDate="-595929600">
+                    <!--1982-02-12 16:00:00 +0000-->
+                </date>
+                <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES"/>
+            </datePickerCell>
+        </datePicker>
+
+        <!-- Year and month, without the day. -->
+        <datePicker id="ym">
+            <rect key="frame" x="20" y="50" width="160" height="28"/>
+            <datePickerCell key="cell" borderStyle="bezel" alignment="left" id="ym-cell">
+                <font key="font" metaFont="system"/>
+                <date key="date" timeIntervalSinceReferenceDate="-595929600">
+                    <!--1982-02-12 16:00:00 +0000-->
+                </date>
+                <datePickerElements key="datePickerElements" year="YES" month="YES"/>
+            </datePickerCell>
+        </datePicker>
+
+        <!-- Text field style; hour and minute, without seconds. -->
+        <datePicker id="hm">
+            <rect key="frame" x="20" y="90" width="160" height="28"/>
+            <datePickerCell key="cell" borderStyle="bezel" alignment="left" datePickerStyle="textField" id="hm-cell">
+                <font key="font" metaFont="system"/>
+                <date key="date" timeIntervalSinceReferenceDate="-595929600">
+                    <!--1982-02-12 16:00:00 +0000-->
+                </date>
+                <datePickerElements key="datePickerElements" hour="YES" minute="YES"/>
+            </datePickerCell>
+        </datePicker>
+
+        <!-- Clock and calendar style, limited to a range of dates. -->
+        <datePicker id="bounded">
+            <rect key="frame" x="20" y="130" width="278" height="148"/>
+            <datePickerCell key="cell" alignment="left" datePickerStyle="clockAndCalendar" id="bounded-cell">
+                <font key="font" metaFont="system"/>
+                <date key="date" timeIntervalSinceReferenceDate="-595929600">
+                    <!--1982-02-12 16:00:00 +0000-->
+                </date>
+                <date key="minDate" timeIntervalSinceReferenceDate="-631152000">
+                    <!--1981-01-01 00:00:00 +0000-->
+                </date>
+                <date key="maxDate" timeIntervalSinceReferenceDate="-568080000">
+                    <!--1983-01-01 00:00:00 +0000-->
+                </date>
+                <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES"/>
+            </datePickerCell>
+        </datePicker>
+
+        <!-- Date, time with seconds and time zone; range selection; the
+             current date, which wins over the saved <date>. -->
+        <datePicker id="range">
+            <rect key="frame" x="20" y="290" width="278" height="148"/>
+            <datePickerCell key="cell" alignment="left" useCurrentDate="YES" datePickerStyle="clockAndCalendar" datePickerMode="range" id="range-cell">
+                <font key="font" metaFont="system"/>
+                <date key="date" timeIntervalSinceReferenceDate="809700481">
+                    <!--2026-08-29 12:48:01 +0000-->
+                </date>
+                <datePickerElements key="datePickerElements" year="YES" month="YES" day="YES" hour="YES" minute="YES" second="YES" timeZone="YES"/>
+            </datePickerCell>
+        </datePicker>
+    </objects>
+</document>

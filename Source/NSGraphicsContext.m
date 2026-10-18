@@ -51,6 +51,7 @@
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSPrintInfo.h"
 #import "AppKit/NSPrintOperation.h"
+#import "AppKit/NSShadow.h"
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSView.h"
 #import "AppKit/DPSOperators.h"

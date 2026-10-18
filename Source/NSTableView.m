@@ -175,6 +175,7 @@ typedef struct _tableViewFlags
 - (NSView*)  _renderedViewForPath: (NSIndexPath*)path;
 - (void) _setRenderedView: (NSView*)view forPath: (NSIndexPath*)path;
 - (void) _layoutViewBasedRows;
+- (void) _registerPrototypeViews: (NSArray *)prototypeViews;
 @end
 
 @interface NSTableView (SelectionHelper)

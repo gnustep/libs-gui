@@ -3095,6 +3095,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 
   if (_main_menu != nil)
     {
+      if ([[_main_menu title] length] == 0)
+        {
+          [_main_menu setTitle: [[NSProcessInfo processInfo] processName]];
+        }
       [_main_menu setMain: YES];
     }
 }
