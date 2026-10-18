@@ -4,7 +4,7 @@
    By: Gregory John Casamento <greg.casamento@gmail.com>
        Riccardo Mottola <rm@gnu.org>
 
-   Date: Sat Nov 16 21:11:06 EST 2019
+   Date: September 15, 2026
 
    This file is part of the GNUstep Library.
 
