@@ -405,6 +405,11 @@ typedef	struct {
 	       selector: @selector(preferenceDidChange:)
 		   name: @"GSThemePreferenceDidChangeNotification"
 		 object: nil];
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	   selector: @selector(defaultsDidChange:)
+	       name: NSUserDefaultsDidChangeNotification
+	     object: nil];
       /* Establish the theme specified by the user defaults (if any);
        */
       [self defaultsDidChange: nil];
@@ -532,24 +537,9 @@ typedef	struct {
     }
   if (theme != theTheme)
     {
-      /*
-       * Remove any previous observers...
-       */
-      [[NSNotificationCenter defaultCenter]
-	removeObserver: self];
-
       [theTheme deactivate];
       ASSIGN (theTheme, theme);
       [theTheme activate];
-
-      /*
-       * Listen to notifications...
-       */ 
-      [[NSNotificationCenter defaultCenter]
-	addObserver: self
-	   selector: @selector(defaultsDidChange:)
-	       name: NSUserDefaultsDidChangeNotification
-	     object: nil];
     }
 }
 
