@@ -2162,7 +2162,6 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
   _f.shows_resize_indicator = show;
   [_wv setNeedsDisplay: YES];
-  [[self contentView] setNeedsDisplay: YES];
 }
 
 - (BOOL) preservesContentDuringLiveResize
