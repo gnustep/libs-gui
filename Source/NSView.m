@@ -206,17 +206,29 @@ GSGetDragTypes(NSView *obj)
  * marked as needing display for good: every later display pass draws it
  * again on its own, over what it drew before and without its background,
  * so anti-aliased edges and translucent fills darken with every redraw.
- * The slack is far below one device pixel at any usable scale factor.
+ * Rounding error grows with the magnitude of the values, not with the
+ * coordinate system, so the slack is relative to the largest coordinate
+ * involved and stays independent of any scaling of the view's bounds.
  */
 static BOOL
 GSRectCoversRect(NSRect outer, NSRect inner)
 {
-  const CGFloat slack = 0.01;
+  CGFloat magnitude = 1.0;
+  CGFloat slack;
 
   if (NSIsEmptyRect(inner))
     {
       return YES;
     }
+  magnitude = MAX(magnitude, fabs(NSMinX(outer)));
+  magnitude = MAX(magnitude, fabs(NSMinY(outer)));
+  magnitude = MAX(magnitude, fabs(NSMaxX(outer)));
+  magnitude = MAX(magnitude, fabs(NSMaxY(outer)));
+  magnitude = MAX(magnitude, fabs(NSMinX(inner)));
+  magnitude = MAX(magnitude, fabs(NSMinY(inner)));
+  magnitude = MAX(magnitude, fabs(NSMaxX(inner)));
+  magnitude = MAX(magnitude, fabs(NSMaxY(inner)));
+  slack = magnitude * 1e-9;
   return (NSMinX(inner) >= NSMinX(outer) - slack
     && NSMinY(inner) >= NSMinY(outer) - slack
     && NSMaxX(inner) <= NSMaxX(outer) + slack
