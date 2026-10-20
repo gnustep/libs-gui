@@ -80,7 +80,7 @@ enum {
   NSNormalWindowLevel = 0, // 3
   NSFloatingWindowLevel = 2, // 4
   NSSubmenuWindowLevel = 3, // 5
-  NSTornOffMenuWindowLevel = 3, // 5
+  NSTornOffMenuWindowLevel = 4, // 5
   NSMainMenuWindowLevel = 20, // 7
   NSDockWindowLevel = 21,	/* Deprecated - use NSStatusWindowLevel */ // 6
   NSStatusWindowLevel = 21, // 8
