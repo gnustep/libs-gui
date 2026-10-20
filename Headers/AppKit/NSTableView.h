@@ -146,6 +146,7 @@ APPKIT_EXPORT_CLASS
   BOOL               _allowsColumnResizing;
   BOOL               _allowsColumnReordering;
   BOOL               _autoresizesAllColumnsToFit;
+  NSUInteger         _columnAutoresizingStyle; /* NSTableViewColumnAutoresizingStyle */
   BOOL               _selectingColumns;
   BOOL               _usesAlternatingRowBackgroundColors;
   NSText            *_textObject;
