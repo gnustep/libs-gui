@@ -7015,6 +7015,8 @@ For a more detailed explanation, -setSortDescriptors:. */
     {
       result = [(NSArray *)[theBinding destinationValue]
 		    objectAtIndex: index];
+      result = [theBinding transformValue: result
+			      withOptions: [theBinding->info objectForKey: NSOptionsKey]];
     }
   else if ([_dataSource respondsToSelector:
 		       @selector(tableView:objectValueForTableColumn:row:)])
