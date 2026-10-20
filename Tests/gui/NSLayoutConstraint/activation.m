@@ -69,6 +69,9 @@ main(int argc, const char **argv)
       [width setActive: NO];
       PASS([width isActive] == NO,
         "setActive: NO marks a constraint inactive");
+      [height setActive: NO];
+      [left setActive: NO];
+      [bottom setActive: NO];
     }
   NS_HANDLER
     if ([[localException name] isEqualToString: NSInternalInconsistencyException]
