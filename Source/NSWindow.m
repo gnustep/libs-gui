@@ -3421,8 +3421,8 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 
   if (self == [NSApp iconWindow])
     {
-      if (NO == [[NSUserDefaults standardUserDefaults]
-	boolForKey: @"GSSuppressAppIcon"])
+      if (YES == [[NSUserDefaults standardUserDefaults]
+	boolForKey: @"GSEnableAppIcon"])
 	{
 	  return;
 	}
