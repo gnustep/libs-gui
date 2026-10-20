@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" initialViewController="window-controller">
+ <scenes>
+  <scene sceneID="application-scene"><objects>
+   <application id="application">
+    <menu key="mainMenu" title="Main Menu" systemMenu="main" id="main-menu">
+     <items><menuItem title="Test" id="menu-item"><connections>
+      <action selector="testAction:" target="app-responder" id="menu-action"/>
+     </connections></menuItem></items>
+    </menu>
+    <connections><outlet property="delegate" destination="delegate" id="app-delegate"/></connections>
+   </application>
+   <customObject id="delegate" customClass="StructureDelegate"/>
+   <customObject id="app-responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+  </objects></scene>
+  <scene sceneID="window-scene"><objects>
+   <windowController id="window-controller" storyboardIdentifier="Window" customClass="StructureWindowController" sceneMemberID="viewController">
+    <window key="window" title="Test Window" releasedWhenClosed="NO" visibleAtLaunch="NO" id="window">
+     <windowStyleMask key="styleMask" titled="YES" closable="YES"/>
+     <rect key="contentRect" x="0" y="0" width="200" height="100"/>
+     <connections><outlet property="delegate" destination="window-controller" id="window-delegate"/></connections>
+    </window>
+    <connections><segue destination="content" kind="relationship" relationship="window.shadowedContentViewController" id="content-relationship"/></connections>
+   </windowController>
+   <customObject id="window-responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+  </objects></scene>
+  <scene sceneID="content-scene"><objects>
+   <viewController id="content" storyboardIdentifier="Content" customClass="StructureViewController" sceneMemberID="viewController">
+    <view key="view" id="content-view" customClass="StructureView"><rect key="frame" x="0" y="0" width="200" height="100"/></view>
+   </viewController>
+   <menu title="Actions" id="content-menu"><items><menuItem title="Test" id="content-item"><connections>
+    <action selector="testAction:" target="content-responder" id="content-action"/>
+   </connections></menuItem></items></menu>
+   <customObject id="content-responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+  </objects></scene>
+  <scene sceneID="reference-scene"><objects>
+   <controllerPlaceholder storyboardName="Referenced" referencedIdentifier="Named" id="reference" storyboardIdentifier="Reference" sceneMemberID="viewController"/>
+  </objects></scene>
+  <scene sceneID="initial-reference-scene"><objects>
+   <controllerPlaceholder storyboardName="Referenced" id="initial-reference" storyboardIdentifier="InitialReference" sceneMemberID="viewController"/>
+  </objects></scene>
+  <scene sceneID="split-scene"><objects>
+   <splitViewController id="split" storyboardIdentifier="Split" sceneMemberID="viewController">
+    <splitView key="view" id="split-view"><rect key="frame" x="0" y="0" width="400" height="100"/></splitView>
+    <connections>
+     <segue destination="content" kind="relationship" relationship="splitItems" id="split-first"/>
+     <segue destination="content" kind="relationship" relationship="splitItems" id="split-second"/>
+    </connections>
+   </splitViewController>
+  </objects></scene>
+  <scene sceneID="tab-scene"><objects>
+   <tabViewController id="tabs" storyboardIdentifier="Tabs" sceneMemberID="viewController">
+    <tabView key="view" id="tab-view"><rect key="frame" x="0" y="0" width="400" height="100"/></tabView>
+    <connections>
+     <segue destination="content" kind="relationship" relationship="tabItems" id="tab-first"/>
+     <segue destination="content" kind="relationship" relationship="tabItems" id="tab-second"/>
+    </connections>
+   </tabViewController>
+  </objects></scene>
+ </scenes>
+ <resources><image name="StoryboardTestResource" width="12" height="12"/></resources>
+</document>

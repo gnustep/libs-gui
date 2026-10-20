@@ -916,6 +916,11 @@
 
 @end
 
+@interface IBObjectContainer (GSInstantiationPhases)
+- (void) establishConnections;
+- (void) awakeObjects;
+@end
+
 @implementation IBObjectContainer
 
 - (id) initWithCoder: (NSCoder*)coder
@@ -1063,6 +1068,15 @@
       return self;
     }
 
+  [self establishConnections];
+  [self awakeObjects];
+  return self;
+}
+
+- (void) establishConnections
+{
+  NSEnumerator *en;
+  id obj;
   // iterate over connections, instantiate, and then establish them.
   en = [connectionRecords objectEnumerator];
   while ((obj = [en nextObject]) != nil)
@@ -1070,7 +1084,12 @@
       [obj nibInstantiate];
       [obj establishConnection];
     }
+}
 
+- (void) awakeObjects
+{
+  NSEnumerator *en;
+  id obj;
   // awaken all objects.
   en = [[objectRecords orderedObjects] objectEnumerator];
   while ((obj = [en nextObject]) != nil)
@@ -1137,8 +1156,6 @@
 
       [realObj awakeFromNib];
     }
-
-  return self;
 }
 
 @end
