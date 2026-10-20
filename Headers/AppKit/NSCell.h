@@ -132,7 +132,7 @@ enum {
   NSControlStateValueOff   =  0,
   NSControlStateValueOn    =  1
 };
-typedef NSUInteger NSControlStateValue;
+typedef NSInteger NSControlStateValue;
 #endif
 
 /**
