@@ -45,6 +45,7 @@
 
 /* Notification names */
 NSString * const GSFontManagerAvailableFontsDidChangeNotification = @"GSFontManagerAvailableFontsDidChangeNotification";
+NSString * const NSFontSetChangedNotification = @"NSFontSetChangedNotification";
 
 /*
  * Class variables
@@ -155,6 +156,8 @@ static Class         fontPanelClass = Nil;
 
   // Post notification that available fonts have changed
   [[NSNotificationCenter defaultCenter] postNotificationName: GSFontManagerAvailableFontsDidChangeNotification
+						       object: self];
+  [[NSNotificationCenter defaultCenter] postNotificationName: NSFontSetChangedNotification
 						       object: self];
 }
 

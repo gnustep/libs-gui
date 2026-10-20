@@ -1,3 +1,12 @@
+2026-10-18  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Headers/AppKit/NSFontManager.h: Declare NSFontSetChangedNotification.
+	* Source/NSFontManager.m (-refreshAvailableFonts): Post
+	NSFontSetChangedNotification as well as
+	GSFontManagerAvailableFontsDidChangeNotification, so code written for
+	Cocoa learns that the set of available fonts has changed.
+	* Tests/gui/NSFontManager/fontSetChanged.m: New test.
+
 2026-09-30  Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/GSToolTips.m (-_timedOut:): Multiply the measured text size

@@ -234,4 +234,6 @@ APPKIT_EXPORT_CLASS
 // Notifications
 APPKIT_EXPORT NSString * const GSFontManagerAvailableFontsDidChangeNotification;
 
+APPKIT_EXPORT NSString * const NSFontSetChangedNotification;
+
 #endif // _GNUstep_H_NSFontManager
