@@ -99,6 +99,7 @@ APPKIT_EXPORT_CLASS
 @end
 
 @protocol NSCollectionViewDelegateFlowLayout <NSCollectionViewDelegate>
+@optional
 
 - (NSSize) collectionView: (NSCollectionView *)collectionView
                    layout: (NSCollectionViewLayout*)collectionViewLayout
@@ -151,8 +152,8 @@ APPKIT_EXPORT_CLASS
   BOOL _sectionFootersPinToVisibleBounds;
   NSMutableIndexSet *_collapsedSections;
 
-  NSInteger _ds; // deltas for when overflow happens...
-  NSInteger _dr;
+  NSMutableArray *_itemFrames; // per section, the items' frames
+  NSSize _contentSize;
 
 }
 
