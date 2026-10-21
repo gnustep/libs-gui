@@ -44,29 +44,33 @@ static int	foundOriginal = 0;
 
 int main(int argc, const char *argv[])
 {
-  ENTER_POOL
-    NSActionCell	*base;
-    MyCell 		*sub;
-    GSTheme		*theme;
+  START_SET("theme overrides")
+  NSActionCell	*base;
+  MyCell 	*sub;
+  GSTheme	*theme;
 
-fprintf(stderr, "about to call sharedApplication\n");    
+  NS_DURING
     [NSApplication sharedApplication];
-fprintf(stderr, "about to create theme\n");    
-    theme = [[ReproTheme alloc] initWithBundle: nil];
-fprintf(stderr, "about to install theme\n");    
-    [GSTheme setTheme: theme];
+  NS_HANDLER
+    if ([[localException name]
+      isEqualToString: NSInternalInconsistencyException])
+      SKIP("It looks like GNUstep backend is not yet installed")
+  NS_ENDHANDLER
 
-fprintf(stderr, "about to test overrides\n");    
-    base = AUTORELEASE([NSActionCell new]);
-    [base setTag: 1];
-    PASS([base tag] == 1, "base class returns the tag we set")
-    PASS(foundOriginal == 1, "base class executed override method")
+  theme = [[ReproTheme alloc] initWithBundle: nil];
+  [GSTheme setTheme: theme];
+
+  base = AUTORELEASE([NSActionCell new]);
+  [base setTag: 1];
+  PASS([base tag] == 1, "base class returns the tag we set")
+  PASS(foundOriginal == 1, "base class executed override method")
   
-    sub = AUTORELEASE([MyCell new]);
-    [sub setTag: 2];
-    PASS([sub tag] == 2, "sub class returns the tag we set")
-    PASS(foundOriginal == 2, "subclass executed override method")
+  sub = AUTORELEASE([MyCell new]);
+  [sub setTag: 2];
+  PASS([sub tag] == 2, "sub class returns the tag we set")
+  PASS(foundOriginal == 2, "subclass executed override method")
 
-  LEAVE_POOL
+  END_SET("theme overrides")
+
   return 0;
 }
