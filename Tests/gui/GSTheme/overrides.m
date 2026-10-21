@@ -47,10 +47,16 @@ int main(int argc, const char *argv[])
   ENTER_POOL
     NSActionCell	*base;
     MyCell 		*sub;
+    GSTheme		*theme;
 
+fprintf(stderr, "about to call sharedApplication\n");    
     [NSApplication sharedApplication];
-    [GSTheme setTheme: [[ReproTheme alloc] initWithBundle: nil]];
+fprintf(stderr, "about to create theme\n");    
+    theme = [[ReproTheme alloc] initWithBundle: nil];
+fprintf(stderr, "about to install theme\n");    
+    [GSTheme setTheme: theme];
 
+fprintf(stderr, "about to test overrides\n");    
     base = AUTORELEASE([NSActionCell new]);
     [base setTag: 1];
     PASS([base tag] == 1, "base class returns the tag we set")
