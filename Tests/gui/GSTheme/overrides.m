@@ -20,6 +20,7 @@ static int	foundOriginal = 0;
     {
       foundOriginal++;
     }
+  // Use the original implementation if we have it, otherwise return -1
   return original ? original(self, _cmd) : -1;
 }
 @end
@@ -40,11 +41,14 @@ int main(int argc, const char *argv[])
     [GSTheme setTheme: [[ReproTheme alloc] initWithBundle: nil]];
 
     base = AUTORELEASE([NSActionCell new]);
-    [base tag];
+    [base setTag: 1];
+    PASS([base tag] == 1, "base class returns the tag we set")
+    PASS(foundOriginal == 1, "base class executed override method")
+  
     sub = AUTORELEASE([MyCell new]);
-    [sub tag];
-
-    PASS(foundOriginal == 2, "subclass found original of overridden method")
+    [sub setTag: 2];
+    PASS([sub tag] == 2, "sub class returns the tag we set")
+    PASS(foundOriginal == 2, "subclass executed override method")
 
   LEAVE_POOL
   return 0;
