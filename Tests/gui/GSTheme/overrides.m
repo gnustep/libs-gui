@@ -11,6 +11,17 @@
 static int	foundOriginal = 0;
 
 @implementation ReproTheme
+
+/* GSTheme applies introspection to its methods and, when the theme is
+ * activated it recognises that this method should be used to override
+ * the -[NSActionCell tage] method.
+ *
+ * When this method is invoked it asks the theme what the original imp
+ * was for 'self' (the object on which the method was invoked).
+ *
+ * This operation should work whether 'self' belongs to the class whose
+ * method was overridden, *or* to a subclass of that class. 
+ */
 - (NSInteger) _overrideNSActionCellMethod_tag
 {
   typedef NSInteger (*TagIMP)(id, SEL);
