@@ -1,3 +1,15 @@
+2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSTextFieldCell.m (-titleRectForBounds:): Center the text
+	vertically when the cell does not wrap and its control view is a
+	table view.  A row taller than one line of text, as a theme or an
+	application that shows icons sets it, showed the text at the top of
+	the row; the field editor uses the same rectangle, so it stays on
+	top of the drawn text.
+	* Source/NSTableView.m (-editColumn:row:withEvent:select:): Set the
+	table view as the edited cell's control view.
+	* Tests/gui/NSTextFieldCell/tableTitleRect.m: New test.
+
 2026-09-30  Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/GSToolTips.m (-_timedOut:): Multiply the measured text size
