@@ -1,3 +1,14 @@
+2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSThemeDrawing.m
+	(-drawTableViewBackgroundInClipRect:inView:withBackgroundColor:):
+	Count the alternating rows from the position of the clip rect
+	instead of looking up the row under it.  Below the last row
+	-rowAtPoint: returns -1, so the stripes were painted from row 0 at
+	the top of the table and a redrawn area below the last row was
+	left in the plain background colour.
+	* Tests/gui/NSTableView/stripesBelowLastRow.m: New test.
+
 2026-09-30  Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/GSToolTips.m (-_timedOut:): Multiply the measured text size

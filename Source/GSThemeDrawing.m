@@ -3229,7 +3229,7 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   if ([tableView usesAlternatingRowBackgroundColors])
     {
       const CGFloat rowHeight = [tableView rowHeight];
-      NSInteger startingRow = [tableView rowAtPoint: NSMakePoint(0, NSMinY(aRect))];
+      NSInteger startingRow;
       NSInteger endingRow;
       NSInteger i;
       
@@ -3243,16 +3243,15 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	  || aRect.size.height <= 0)
 	return;
 
-      if (startingRow <= 0)
+      startingRow = floor(NSMinY(aRect) / rowHeight);
+      endingRow = ceil(NSMaxY(aRect) / rowHeight);
+      if (startingRow < 0)
 	startingRow = 0;
-      
-      rowRect = [tableView rectOfRow: startingRow];
-      rowRect.origin.x = aRect.origin.x;
-      rowRect.size.width = aRect.size.width;
-      
-      endingRow = startingRow + ceil(aRect.size.height / rowHeight);
-      
-      for (i = startingRow; i <= endingRow; i++)
+
+      rowRect = NSMakeRect(NSMinX(aRect), startingRow * rowHeight,
+			   NSWidth(aRect), rowHeight);
+
+      for (i = startingRow; i < endingRow; i++)
 	{
 	  NSColor *color = [rowColors objectAtIndex: (i % rowColorCount)];
 	  
