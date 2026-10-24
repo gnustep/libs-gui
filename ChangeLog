@@ -1,5 +1,19 @@
 2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
 
+	* Source/GSToolbarCustomizationPalette.h,
+	* Source/GSToolbarCustomizationPalette.m (GSToolbarDefaultSetView):
+	New view showing the toolbar's default items in one row, which is
+	dragged as a whole with the new GSDefaultToolbarSetPboardType.
+	(-awakeFromNib): Put it with a caption where the nib has its place
+	for the default set, instead of removing that place.
+	(-showForToolbar:): Fill it and make the window large enough for it.
+	* Source/GSToolbarView.m: Accept GSDefaultToolbarSetPboardType while
+	the customization palette runs and replace all items with the
+	default ones when it is dropped, then save the configuration.
+	* Tests/gui/NSToolbar/paletteDefaultSet.m: New test.
+
+2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
+
 	* Source/GSToolbarCustomizationPalette.m
 	(-[GSToolbarCustomizationView paletteItemsWithToolbarItems:]):
 	Replace an item's label with its palette label only when the
