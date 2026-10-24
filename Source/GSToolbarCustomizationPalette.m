@@ -77,7 +77,7 @@
     {
       NSToolbarItem *newItem = [item copy];
 
-      if ([newItem paletteLabel] != nil)
+      if ([[newItem paletteLabel] length] > 0)
         [newItem setLabel: [newItem paletteLabel]];
       [newItem setEnabled: YES];
       [newItem _layout];
