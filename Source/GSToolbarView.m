@@ -51,6 +51,7 @@
 #import "GNUstepGUI/GSToolbarView.h"
 
 #import "NSToolbarFrameworkPrivate.h"
+#import "GSToolbarCustomizationPalette.h"
 
 typedef enum {
   ToolbarViewDefaultHeight = 62,
@@ -229,7 +230,8 @@ static NSUInteger draggedItemIndex = NSNotFound;
   _clippedItemsMark = [[GSToolbarClippedItemsButton alloc] init];
   
   [self registerForDraggedTypes: 
-            [NSArray arrayWithObject: GSMovableToolbarItemPboardType]];
+            [NSArray arrayWithObjects: GSMovableToolbarItemPboardType,
+                     GSDefaultToolbarSetPboardType, nil]];
   
   return self;
 }
@@ -387,13 +389,25 @@ static NSUInteger draggedItemIndex = NSNotFound;
   return NSDragOperationGeneric;
 }
 
+- (BOOL) _isDefaultSetDrag: (id <NSDraggingInfo>)info
+{
+  return [[[info draggingPasteboard] types]
+           containsObject: GSDefaultToolbarSetPboardType];
+}
+
 - (NSDragOperation) draggingEntered: (id <NSDraggingInfo>)info
 {
+  if ([self _isDefaultSetDrag: info])
+    return [[self toolbar] customizationPaletteIsRunning]
+      ? NSDragOperationCopy : NSDragOperationNone;
   return [self updateItemWhileDragging: info exited: NO];
 }
 
 - (NSDragOperation) draggingUpdated: (id <NSDraggingInfo>)info
 {
+  if ([self _isDefaultSetDrag: info])
+    return [[self toolbar] customizationPaletteIsRunning]
+      ? NSDragOperationCopy : NSDragOperationNone;
   return [self updateItemWhileDragging: info exited: NO];
 }
 
@@ -404,6 +418,8 @@ static NSUInteger draggedItemIndex = NSNotFound;
 
 - (void) draggingExited: (id <NSDraggingInfo>)info
 {
+  if ([self _isDefaultSetDrag: info])
+    return;
   [self updateItemWhileDragging: info exited: YES];
 }
 
@@ -415,6 +431,24 @@ static NSUInteger draggedItemIndex = NSNotFound;
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)info
 {
   NSToolbar *toolbar = [self toolbar];
+
+  if ([self _isDefaultSetDrag: info])
+    {
+      NSArray *identifiers = [toolbar _defaultItemIdentifiers];
+      NSUInteger i;
+
+      if (![toolbar customizationPaletteIsRunning])
+        return NO;
+      while ([[toolbar items] count] > 0)
+        [toolbar _removeItemAtIndex: 0 broadcast: YES];
+      for (i = 0; i < [identifiers count]; i++)
+        [toolbar _insertItemWithItemIdentifier: [identifiers objectAtIndex: i]
+                                       atIndex: i
+                                     broadcast: YES];
+      draggedItemIndex = NSNotFound;
+      [toolbar _saveConfig];
+      return YES;
+    }
 
   [self updateItemWhileDragging: info exited: NO];
   
