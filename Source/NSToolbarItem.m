@@ -702,6 +702,10 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       case NSToolbarDisplayModeIconOnly:
         _showLabel = NO;
         layoutedHeight -= labelSize.height + InsetItemTextY;
+        if ([view superview] != nil)
+          {
+            layoutedWidth = [view frame].size.width + 2 * InsetItemViewX;
+          }
         break;
       case NSToolbarDisplayModeLabelOnly:
         _enabled = NO;
