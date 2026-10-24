@@ -3229,37 +3229,77 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
   if ([tableView usesAlternatingRowBackgroundColors])
     {
       const CGFloat rowHeight = [tableView rowHeight];
-      NSInteger startingRow = [tableView rowAtPoint: NSMakePoint(0, NSMinY(aRect))];
-      NSInteger endingRow;
-      NSInteger i;
-      
+      const NSInteger numberOfRows = [tableView numberOfRows];
       NSArray *rowColors = [NSColor controlAlternatingRowBackgroundColors];
       const NSUInteger rowColorCount = [rowColors count];
-      
+      CGFloat rowsEnd = 0.0;
+      NSInteger startingRow;
+      NSInteger endingRow;
+      NSInteger i;
       NSRect rowRect;
-      
+      NSColor *color;
+
       if (rowHeight <= 0
 	  || rowColorCount == 0
 	  || aRect.size.height <= 0)
 	return;
 
-      if (startingRow <= 0)
-	startingRow = 0;
-      
-      rowRect = [tableView rectOfRow: startingRow];
-      rowRect.origin.x = aRect.origin.x;
-      rowRect.size.width = aRect.size.width;
-      
-      endingRow = startingRow + ceil(aRect.size.height / rowHeight);
-      
-      for (i = startingRow; i <= endingRow; i++)
+      if (numberOfRows > 0)
 	{
-	  NSColor *color = [rowColors objectAtIndex: (i % rowColorCount)];
-	  
-	  [color set];
-	  NSRectFill(rowRect);
-	  
-	  rowRect.origin.y += rowHeight;
+	  rowsEnd = NSMaxY([tableView rectOfRow: numberOfRows - 1]);
+	}
+
+      if (NSMinY(aRect) < rowsEnd)
+	{
+	  startingRow = [tableView rowAtPoint:
+				     NSMakePoint(NSMinX([tableView bounds]), NSMinY(aRect))];
+	  if (startingRow < 0)
+	    {
+	      startingRow = 0;
+	    }
+	  if (NSMaxY(aRect) < rowsEnd)
+	    {
+	      endingRow = [tableView rowAtPoint:
+				       NSMakePoint(NSMinX([tableView bounds]), NSMaxY(aRect))];
+	    }
+	  else
+	    {
+	      endingRow = numberOfRows - 1;
+	    }
+	  if (endingRow < startingRow)
+	    {
+	      endingRow = numberOfRows - 1;
+	    }
+
+	  for (i = startingRow; i <= endingRow; i++)
+	    {
+	      rowRect = [tableView rectOfRow: i];
+	      rowRect.origin.x = NSMinX(aRect);
+	      rowRect.size.width = NSWidth(aRect);
+	      color = [rowColors objectAtIndex: (i % rowColorCount)];
+	      [color set];
+	      NSRectFill(rowRect);
+	    }
+	}
+
+      if (NSMaxY(aRect) > rowsEnd)
+	{
+	  startingRow = 0;
+	  if (NSMinY(aRect) > rowsEnd)
+	    {
+	      startingRow = floor((NSMinY(aRect) - rowsEnd) / rowHeight);
+	    }
+	  endingRow = ceil((NSMaxY(aRect) - rowsEnd) / rowHeight);
+
+	  rowRect = NSMakeRect(NSMinX(aRect), rowsEnd + startingRow * rowHeight,
+			       NSWidth(aRect), rowHeight);
+	  for (i = startingRow; i < endingRow; i++)
+	    {
+	      color = [rowColors objectAtIndex: ((numberOfRows + i) % rowColorCount)];
+	      [color set];
+	      NSRectFill(rowRect);
+	      rowRect.origin.y += rowHeight;
+	    }
 	}
     }
 }
