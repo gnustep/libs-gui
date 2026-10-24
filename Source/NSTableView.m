@@ -3520,6 +3520,7 @@ byExtendingSelection: (BOOL)flag
   // Prepare the cell
   // NB: need to be released when no longer used
   _editedCell = [[self preparedCellAtColumn: columnIndex row: rowIndex] copy];
+  [_editedCell setControlView: self];
 
   tb = [_tableColumns objectAtIndex: columnIndex];
   [_editedCell setObjectValue: [self _objectValueForTableColumn: tb

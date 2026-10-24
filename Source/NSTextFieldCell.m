@@ -38,6 +38,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSStringDrawing.h"
+#import "AppKit/NSTableView.h"
 #import "AppKit/NSTextField.h"
 #import "AppKit/NSTextFieldCell.h"
 #import "AppKit/NSText.h"
@@ -226,6 +227,34 @@
   // FIXME: Should use the bezel style if set.
   [super _drawBorderAndBackgroundWithFrame: cellFrame inView: controlView];
   [self _drawBackgroundWithFrame: cellFrame inView: controlView];
+}
+
+- (NSRect) titleRectForBounds: (NSRect)theRect
+{
+  NSRect titleRect = [super titleRectForBounds: theRect];
+  NSView *controlView = [self controlView];
+
+  if (![self wraps] && [controlView isKindOfClass: [NSTableView class]])
+    {
+      NSAttributedString *text = [self _drawAttributedString];
+      CGFloat textHeight = 0.0;
+
+      if (text != nil)
+	{
+	  textHeight = [text size].height;
+	}
+      if (textHeight <= 0.0)
+	{
+	  textHeight = [[self font] defaultLineHeightForFont];
+	}
+      if (textHeight < NSHeight(titleRect))
+	{
+	  titleRect.origin.y += (NSHeight(titleRect) - textHeight) / 2.0;
+	  titleRect.size.height = textHeight;
+	  titleRect = [controlView centerScanRect: titleRect];
+	}
+    }
+  return titleRect;
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
