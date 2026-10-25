@@ -64,6 +64,7 @@
 }
 
 static NSMutableArray *screenArray = nil;
+static BOOL mixedResolutions = NO;
 
 /**
  * Resets the cached list of screens.
@@ -98,6 +99,7 @@ static NSMutableArray *screenArray = nil;
     }
 
   screenArray = [NSMutableArray new];
+  mixedResolutions = NO;
 
   // Iterate over the list
   for (index = 0; index < count; index++)
@@ -107,6 +109,13 @@ static NSMutableArray *screenArray = nil;
       screen = [[NSScreen alloc] _initWithScreenNumber: 
                                      [[screens objectAtIndex: index] intValue]];
       [screenArray addObject: screen];
+      if (index > 0
+        && !NSEqualSizes([srv resolutionForScreen: [screen screenNumber]],
+          [srv resolutionForScreen:
+            [[screenArray objectAtIndex: 0] screenNumber]]))
+        {
+          mixedResolutions = YES;
+        }
       RELEASE(screen);
     }
 
@@ -418,7 +427,13 @@ static NSMutableArray *screenArray = nil;
   NSNumber *factor = [[NSUserDefaults standardUserDefaults]
 		       objectForKey: @"GSScaleFactor"];
 
-  if (factor != nil)
+  if (mixedResolutions && GSCurrentServer() != nil)
+    {
+      NSSize dpi = [GSCurrentServer() resolutionForScreen: _screenNumber];
+
+      return (dpi.width + dpi.height) / 144.0;
+    }
+  else if (factor != nil)
     {
       return [factor floatValue];
     }

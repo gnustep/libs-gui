@@ -51,6 +51,15 @@
 + (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
     forStyleMask: (NSUInteger)style
 {
+  [self offsets: l : r : t : b
+   forStyleMask: style
+    scaleFactor: [[NSScreen mainScreen] userSpaceScaleFactor]];
+}
+
++ (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
+    forStyleMask: (NSUInteger)style
+     scaleFactor: (CGFloat)factor
+{
   GSTheme *theme = [GSTheme theme];
 
   if (style
@@ -67,7 +76,7 @@
   if (style
     & (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask))
     {
-      *t = [[NSScreen mainScreen] userSpaceScaleFactor] * [theme titlebarHeight];
+      *t = factor * [theme titlebarHeight];
     }
   if (style & NSResizableWindowMask)
     {

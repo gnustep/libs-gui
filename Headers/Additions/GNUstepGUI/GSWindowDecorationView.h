@@ -72,6 +72,19 @@ APPKIT_EXPORT_CLASS
 
 - (id) initWithFrame: (NSRect)frame window: (NSWindow *)w;
 
++ (NSRect) contentRectForFrameRect: (NSRect)aRect
+			 styleMask: (NSUInteger)aStyle
+		       scaleFactor: (CGFloat)factor;
++ (NSRect) frameRectForContentRect: (NSRect)aRect
+			 styleMask: (NSUInteger)aStyle
+		       scaleFactor: (CGFloat)factor;
+- (NSRect) contentRectForFrameRect: (NSRect)aRect
+			 styleMask: (NSUInteger)aStyle
+		       scaleFactor: (CGFloat)factor;
+- (NSRect) frameRectForContentRect: (NSRect)aRect
+			 styleMask: (NSUInteger)aStyle
+		       scaleFactor: (CGFloat)factor;
+
 - (NSRect) contentRectForFrameRect: (NSRect)aRect
 			 styleMask: (NSUInteger)aStyle;
 - (NSRect) frameRectForContentRect: (NSRect)aRect
