@@ -1,3 +1,14 @@
+2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSToolbarCustomizationPalette.m
+	(-[GSToolbarCustomizationView paletteItemsWithToolbarItems:]):
+	Replace an item's label with its palette label only when the
+	palette label is not empty.  -paletteLabel returns @"" rather than
+	nil when none was set, so every such item, the standard Customize,
+	Print, Colors and Fonts items among them, was shown in the palette
+	without a label.
+	* Tests/gui/NSToolbarItem/paletteItemLabel.m: New test.
+
 2026-09-30  Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/GSToolTips.m (-_timedOut:): Multiply the measured text size
