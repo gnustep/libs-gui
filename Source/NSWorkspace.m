@@ -1,9 +1,3 @@
-/* Workspace provider additions: Copyright (C) 2026 Free Software Foundation, Inc.
- * These additions are free software under the GNU General Public License,
- * version 3 or (at your option) any later version, without any warranty.
- * See <https://www.gnu.org/licenses/> for the license text.
- */
-
 /** <title>NSWorkspace</title>
 
    <abstract>Workspace class</abstract>
