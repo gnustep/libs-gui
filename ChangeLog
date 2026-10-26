@@ -1,3 +1,62 @@
+2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSToolbarCustomizationPalette.m
+	(-[GSToolbarCustomizationView paletteItemsWithToolbarItems:]):
+	Replace an item's label with its palette label only when the
+	palette label is not empty.  -paletteLabel returns @"" rather than
+	nil when none was set, so every such item, the standard Customize,
+	Print, Colors and Fonts items among them, was shown in the palette
+	without a label.
+	* Tests/gui/NSToolbarItem/paletteItemLabel.m: New test.
+
+2026-09-30  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSToolTips.m (-_timedOut:): Multiply the measured text size
+	by the window's user space scale factor before sizing the tooltip
+	window.  The window frame is in screen units and the text was
+	measured in points, so at a scale factor other than 1 the tooltip
+	came out too small and its text was cut off.
+
+2026-09-20  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSTheme.m (+initialize): Observe
+	NSUserDefaultsDidChangeNotification from the start.  +setTheme:
+	registers that observer only when the theme really changes, so an
+	application that started with the default theme never followed the
+	GSTheme default and kept its theme until it was restarted.
+	* Tests/gui/GSTheme/followsDefault.m: New test.
+
+2026-09-22 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSBitmapImageRep+JPEG.m (gs_init_destination,
+	gs_empty_output_buffer, gs_term_destination): Grow the JPEG
+	encoder's output accumulator as libjpeg actually fills it, and
+	only append the bytes really produced on termination.  The
+	accumulator was allocated with exactly one buffer's worth of
+	bytes, the same size as the scratch buffer libjpeg fills between
+	flushes; a small image's compressed stream (header tables plus
+	scan data) commonly needs more than one flush before compression
+	finishes, and gs_term_destination then unconditionally appended
+	another full buffer's worth on top, so both wrote past the end of
+	the accumulator.
+	* Tests/gui/NSBitmapImageRep/jpegEncodeDestinationOverflow.m: New
+	test.
+
+2026-10-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* configure: Regenerate with autoconfig 2.73 as the rest of the core libraries.
+	* Source/NSAppearance.m,
+	* Source/NSDataLink.m,
+	* Source/NSDataLinkManager.m,
+	* Source/NSDockTile.m:
+	* Source/NSGraphicsContext.m:
+	* Source/NSScrollView.m,
+	* Source/NSTabView.m,
+	* Source/NSTableColumn.h,
+	* Source/NSTableView.m,
+	* Source/NSWindow.m,
+	* Source/NSView.m: Fix some compiler warnings.
+
 2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
@@ -623,7 +682,7 @@
 	* Documentation/GNUmakefile.postamble:
 	Use new xxx_AGSDOC_INSTALL_BUNDLE to for relative links between
 	projects.
-	
+
 2025-05-29 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* config.make.in: Add HAVE_* variables.

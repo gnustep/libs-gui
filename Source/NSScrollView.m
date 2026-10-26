@@ -323,30 +323,6 @@ static CGFloat scrollerWidth;
   [self _setHasHorizScroller: flag];
 }
 
-- (void) _setHasHorizScroller: (BOOL)flag
-{
-  if (_hasHorizScroller == flag)
-    return;
-
-  _hasHorizScroller = flag;
-
-  if (_hasHorizScroller)
-    {
-      if (!_horizScroller)
-        {
-          NSScroller *scroller = [NSScroller new];
-
-          [self setHorizontalScroller: scroller];
-          RELEASE(scroller);
-        }
-      [self addSubview: _horizScroller];
-    }
-  else
-    [_horizScroller removeFromSuperview];
-
-  [self tile];
-}
-
 - (void) setVerticalScroller: (NSScroller*)aScroller
 {
   [_vertScroller removeFromSuperview];
@@ -368,32 +344,6 @@ static CGFloat scrollerWidth;
 {
   _hasVertScrollerRequested = flag;
   [self _setHasVertScroller: flag];
-}
-
-- (void) _setHasVertScroller: (BOOL)flag
-{
-  if (_hasVertScroller == flag)
-    return;
-
-  _hasVertScroller = flag;
-
-  if (_hasVertScroller)
-    {
-      if (!_vertScroller)
-        {
-          NSScroller *scroller = [NSScroller new];
-
-          [self setVerticalScroller: scroller];
-          RELEASE(scroller);
-          if (_contentView && ![_contentView isFlipped])
-            [_vertScroller setFloatValue: 1];
-        }
-      [self addSubview: _vertScroller];
-    }
-  else
-    [_vertScroller removeFromSuperview];
-
-  [self tile];
 }
 
 /**
@@ -839,71 +789,6 @@ static CGFloat scrollerWidth;
 - (void) _doScroller: (NSScroller *)scroller
 {
   [self _doScroll: scroller];
-}
-
-/* Show or hide the scrollers for -autohidesScrollers.  The two axes are
- * coupled: a vertical scroller takes away width, which can make a horizontal
- * scroller necessary, and a horizontal scroller takes away height, which can
- * make a vertical scroller necessary.  They must therefore be decided
- * together rather than one axis at a time.  Reconstruct the area the clip
- * view would have with no scrollers (its current bounds plus the footprint of
- * whatever scrollers are currently shown) and evaluate each axis against it,
- * allowing for the space the other scroller takes.  The evaluation only ever
- * turns scrollers on, so it settles on a single configuration.  Because the
- * reconstructed area does not depend on which scrollers are currently shown,
- * -setHas...Scroller: below re-tiles and re-enters this method with the same
- * result, where it changes nothing further.
- */
-- (void) _autohideScrollers
-{
-  NSView *documentView = [_contentView documentView];
-  NSSize documentSize;
-  NSSize clipSize;
-  CGFloat innerBorderWidth;
-  CGFloat footprint;
-  CGFloat availWidth;
-  CGFloat availHeight;
-  BOOL needsVert;
-  BOOL needsHoriz;
-
-  if (documentView == nil)
-    {
-      return;
-    }
-
-  documentSize = [documentView frame].size;
-  clipSize = [_contentView bounds].size;
-  innerBorderWidth = [[NSUserDefaults standardUserDefaults]
-                       boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
-  footprint = scrollerWidth + innerBorderWidth;
-
-  availWidth = clipSize.width + (_hasVertScroller ? footprint : 0.0);
-  availHeight = clipSize.height + (_hasHorizScroller ? footprint : 0.0);
-
-  /* Only an axis that the client asked to scroll may get a scroller. Gating
-     each axis by its requested flag also keeps a disabled axis out of the
-     coupling below, so it does not reserve space for a scroller that will not
-     appear. */
-  needsVert = _hasVertScrollerRequested && (documentSize.height > availHeight);
-  needsHoriz = _hasHorizScrollerRequested && (documentSize.width > availWidth);
-  if (needsVert)
-    {
-      needsHoriz = _hasHorizScrollerRequested
-        && (documentSize.width > (availWidth - footprint));
-    }
-  if (needsHoriz)
-    {
-      needsVert = _hasVertScrollerRequested
-        && (documentSize.height > (availHeight - footprint));
-    }
-  if (needsVert)
-    {
-      needsHoriz = _hasHorizScrollerRequested
-        && (documentSize.width > (availWidth - footprint));
-    }
-
-  [self _setHasVertScroller: needsVert];
-  [self _setHasHorizScroller: needsHoriz];
 }
 
 - (void) reflectScrolledClipView: (NSClipView *)aClipView
@@ -1990,6 +1875,121 @@ GSOppositeEdge(NSRectEdge edge)
   // Since scrollerWidth is a static, it will get overwritten
   // several times; doesn't matter though.
   scrollerWidth = [NSScroller scrollerWidth];
+
+  [self tile];
+}
+
+/* Show or hide the scrollers for -autohidesScrollers.  The two axes are
+ * coupled: a vertical scroller takes away width, which can make a horizontal
+ * scroller necessary, and a horizontal scroller takes away height, which can
+ * make a vertical scroller necessary.  They must therefore be decided
+ * together rather than one axis at a time.  Reconstruct the area the clip
+ * view would have with no scrollers (its current bounds plus the footprint of
+ * whatever scrollers are currently shown) and evaluate each axis against it,
+ * allowing for the space the other scroller takes.  The evaluation only ever
+ * turns scrollers on, so it settles on a single configuration.  Because the
+ * reconstructed area does not depend on which scrollers are currently shown,
+ * -setHas...Scroller: below re-tiles and re-enters this method with the same
+ * result, where it changes nothing further.
+ */
+- (void) _autohideScrollers
+{
+  NSView *documentView = [_contentView documentView];
+  NSSize documentSize;
+  NSSize clipSize;
+  CGFloat innerBorderWidth;
+  CGFloat footprint;
+  CGFloat availWidth;
+  CGFloat availHeight;
+  BOOL needsVert;
+  BOOL needsHoriz;
+
+  if (documentView == nil)
+    {
+      return;
+    }
+
+  documentSize = [documentView frame].size;
+  clipSize = [_contentView bounds].size;
+  innerBorderWidth = [[NSUserDefaults standardUserDefaults]
+                       boolForKey: @"GSScrollViewNoInnerBorder"] ? 0.0 : 1.0;
+  footprint = scrollerWidth + innerBorderWidth;
+
+  availWidth = clipSize.width + (_hasVertScroller ? footprint : 0.0);
+  availHeight = clipSize.height + (_hasHorizScroller ? footprint : 0.0);
+
+  /* Only an axis that the client asked to scroll may get a scroller. Gating
+     each axis by its requested flag also keeps a disabled axis out of the
+     coupling below, so it does not reserve space for a scroller that will not
+     appear. */
+  needsVert = _hasVertScrollerRequested && (documentSize.height > availHeight);
+  needsHoriz = _hasHorizScrollerRequested && (documentSize.width > availWidth);
+  if (needsVert)
+    {
+      needsHoriz = _hasHorizScrollerRequested
+        && (documentSize.width > (availWidth - footprint));
+    }
+  if (needsHoriz)
+    {
+      needsVert = _hasVertScrollerRequested
+        && (documentSize.height > (availHeight - footprint));
+    }
+  if (needsVert)
+    {
+      needsHoriz = _hasHorizScrollerRequested
+        && (documentSize.width > (availWidth - footprint));
+    }
+
+  [self _setHasVertScroller: needsVert];
+  [self _setHasHorizScroller: needsHoriz];
+}
+
+- (void) _setHasHorizScroller: (BOOL)flag
+{
+  if (_hasHorizScroller == flag)
+    return;
+
+  _hasHorizScroller = flag;
+
+  if (_hasHorizScroller)
+    {
+      if (!_horizScroller)
+        {
+          NSScroller *scroller = [NSScroller new];
+
+          [self setHorizontalScroller: scroller];
+          RELEASE(scroller);
+        }
+      [self addSubview: _horizScroller];
+    }
+  else
+    [_horizScroller removeFromSuperview];
+
+  [self tile];
+}
+
+- (void) _setHasVertScroller: (BOOL)flag
+{
+  if (_hasVertScroller == flag)
+    return;
+
+  _hasVertScroller = flag;
+
+  if (_hasVertScroller)
+    {
+      if (!_vertScroller)
+        {
+          NSScroller *scroller = [NSScroller new];
+
+          [self setVerticalScroller: scroller];
+          RELEASE(scroller);
+          if (_contentView && ![_contentView isFlipped])
+            [_vertScroller setFloatValue: 1];
+        }
+      [self addSubview: _vertScroller];
+    }
+  else
+    [_vertScroller removeFromSuperview];
 
   [self tile];
 }
