@@ -1,3 +1,9 @@
+/* Workspace provider additions: Copyright (C) 2026 Free Software Foundation, Inc.
+ * These additions are free software under the GNU General Public License,
+ * version 3 or (at your option) any later version, without any warranty.
+ * See <https://www.gnu.org/licenses/> for the license text.
+ */
+
 /* 
    NSWorkspace.h
 
@@ -242,7 +248,60 @@ conformsToType: (NSString *)secondTypeName;
 
 @class NSBundle;
 
-@interface	NSWorkspace (GNUstep)
+/**
+ * Distributed workspace operations.  Each operation has the same meaning as
+ * its NSWorkspace counterpart.  Arguments and results must be DO-compatible;
+ * the file-operation tag is an output parameter, transported as inout for
+ * compatibility with GNUstep DO. Its incoming value is initialized to zero.
+ *
+ * Partial providers need not formally adopt this protocol: they may implement
+ * any subset of these selectors.  NSWorkspace uses respondsToSelector: for
+ * capability discovery and falls back locally for unsupported operations.
+ */
+@protocol GSWorkspaceProvider <NSObject>
+
+- (BOOL) openFile: (NSString*)path
+  withApplication: (NSString*)application
+    andDeactivate: (BOOL)flag;
+- (BOOL) openTempFile: (NSString*)path;
+- (BOOL) performFileOperation: (NSString*)operation
+                      source: (NSString*)source
+                 destination: (NSString*)destination
+                       files: (NSArray*)files
+                         tag: (inout NSInteger*)tag;
+- (BOOL) selectFile: (NSString*)path
+  inFileViewerRootedAtPath: (NSString*)root;
+- (BOOL) launchApplication: (NSString*)application
+                 showIcon: (BOOL)showIcon
+               autolaunch: (BOOL)autolaunch;
+- (bycopy NSDictionary*) activeApplication;
+- (bycopy NSArray*) launchedApplications;
+- (int) extendPowerOffBy: (int)milliseconds;
+
+@end
+
+@interface NSWorkspace (GNUstep)
+
+/**
+ * Registers a retained provider on a dedicated, local DO connection.  Call on
+ * the main thread and run its run loop to serve requests.  Returns NO for nil,
+ * calls from other threads, or an occupied role (including a second local
+ * registration).  Providers may implement a subset of GSWorkspaceProvider.
+ *
+ * The endpoint is scoped by user and XDG_SESSION_ID, falling back to
+ * WAYLAND_DISPLAY, DISPLAY (without the screen suffix), then a headless scope.
+ * All processes in a session must inherit the same session environment.
+ * The session starts the provider; NSWorkspace never launches one itself.
+ * Calls in the provider process use local NSWorkspace fallback behavior.
+ */
++ (BOOL) registerWorkspaceProvider: (id)provider;
+
+/**
+ * Relinquishes the role only if provider is the locally registered object.
+ * Call on the main thread.  Returns NO for a different object or thread.
+ */
++ (BOOL) unregisterWorkspaceProvider: (id)provider;
+
 - (NSString*) getBestAppInRole: (NSString*)role
 		  forExtension: (NSString*)ext;
 - (NSString*) getBestIconForExtension: (NSString*)ext;

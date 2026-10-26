@@ -219,10 +219,24 @@
 	  <term>GSWorkspaceApplication</term>
 	  <desc>
           <p>
-          A string value that defaults to <code>"GWorkspace"</code>.
-          This defines the application NSWorkspace will try to
-          connect to process some operations that require an external
-          application. This is a new feature and has not been tested. 
+          Obsolete and ignored. NSWorkspace discovers a local registered
+          workspace provider instead of selecting or launching an application
+          by name. The desktop session starts its chosen provider, which calls
+          <code>[NSWorkspace registerWorkspaceProvider: provider]</code> on
+          the main thread and runs its run loop. The provider may implement
+          any subset of the GSWorkspaceProvider operations. Unsupported
+          operations use the normal NSWorkspace fallback; operations such as
+          file selection and file manipulation return NO without a provider.
+          The owner releases the role with
+          <code>[NSWorkspace unregisterWorkspaceProvider: provider]</code>.
+          Registration is exclusive and scoped to the user and XDG_SESSION_ID,
+          falling back to WAYLAND_DISPLAY, DISPLAY without its screen suffix,
+          then a per-user headless scope. Session processes must inherit the
+          same environment. Existing workspace applications must adopt the
+          registration API; being named GWorkspace no longer selects them.
+          Workspace calls from the provider process use local fallback behavior
+          to prevent recursion. DO requests have five-second request and reply
+          timeouts. A failed remote operation is not retried automatically.
           </p>
 	  </desc>
 	  <term>GSSuppressAppIcon</term>
