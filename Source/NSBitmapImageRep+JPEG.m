@@ -239,21 +239,6 @@ typedef struct
 } gs_jpeg_destination_mgr;
 typedef gs_jpeg_destination_mgr * gs_jpeg_dest_ptr;
 
-static void gs_jpeg_dest_grow (gs_jpeg_dest_ptr dest, int neededLength)
-{
-  if (neededLength > dest->capacity)
-    {
-      int newCapacity = dest->capacity * 2;
-
-      if (newCapacity < neededLength)
-        {
-          newCapacity = neededLength;
-        }
-      dest->data = (unsigned char*) realloc (dest->data, newCapacity);
-      dest->capacity = newCapacity;
-    }
-}
-
 /*
         Initialize destination.  This is called by jpeg_start_compress()
         before any data is actually written.  It must initialize
@@ -327,7 +312,7 @@ static void gs_term_destination (j_compress_ptr cinfo)
   gs_jpeg_dest_ptr dest = (gs_jpeg_dest_ptr) cinfo->dest;
 
   *dest->finalData = [[NSData alloc] initWithBytes: dest->data
-    length: dest->length];
+    length: (dest->length) - dest->pub.free_in_buffer];
 }
 
 static void gs_jpeg_memory_dest_create (j_compress_ptr cinfo, NSData** data)
@@ -768,4 +753,3 @@ static void gs_jpeg_memory_dest_destroy (j_compress_ptr cinfo)
 @end
 
 #endif /* !HAVE_LIBJPEG */
-
