@@ -2,6 +2,10 @@
 
 set -ex
 
+# NetBSD and the other BSDs ship a non-GNU make as /usr/bin/make, so allow the
+# caller to point us at GNU make. Defaults to plain "make" everywhere else.
+MAKE=${MAKE:-make}
+
 install_gnustep_make() {
     echo "::group::GNUstep Make"
     cd $DEPS_PATH
@@ -15,7 +19,7 @@ install_gnustep_make() {
       MAKE_OPTS="$MAKE_OPTS --with-runtime-abi=$RUNTIME_VERSION"
     fi
     ./configure --prefix=$INSTALL_PATH --with-library-combo=$LIBRARY_COMBO $MAKE_OPTS || cat config.log
-    make install
+    $MAKE install
 
     echo Objective-C build flags:
     $INSTALL_PATH/bin/gnustep-config --objc-flags
@@ -37,27 +41,23 @@ install_libobjc2() {
       -DGNUSTEP_INSTALL_TYPE=NONE \
       -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH \
       ../
-    make install
+    $MAKE install
     echo "::endgroup::"
 }
 
 install_libdispatch() {
     echo "::group::libdispatch"
     cd $DEPS_PATH
-    git clone -q https://github.com/swiftlang/swift-corelibs-libdispatch.git libdispatch
+    git clone -q https://github.com/swiftlang/swift-corelibs-libdispatch libdispatch
     mkdir libdispatch/build
     cd libdispatch/build
-    # -Wno-error=void-pointer-to-int-cast to work around build error in queue.c due to -Werror
     cmake \
       -DBUILD_TESTING=off \
       -DCMAKE_BUILD_TYPE=RelWithDebInfo \
       -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH \
-      -DCMAKE_C_FLAGS="-Wno-error=void-pointer-to-int-cast" \
       -DINSTALL_PRIVATE_HEADERS=1 \
-      -DBlocksRuntime_INCLUDE_DIR=$INSTALL_PATH/include \
-      -DBlocksRuntime_LIBRARIES=$INSTALL_PATH/lib/libobjc.so \
       ../
-    make install
+    $MAKE install
     echo "::endgroup::"
 }
 
@@ -68,12 +68,25 @@ install_gnustep_base() {
     git clone -q -b ${LIBS_BASE_BRANCH:-master} https://github.com/gnustep/libs-base.git
     cd libs-base
     ./configure
-    make
-    make install
+    $MAKE
+    $MAKE install
     echo "::endgroup::"
 }
 
 mkdir -p $DEPS_PATH
+
+# Allow the packages we install locally to have their pkg-config info found.
+# NB. windows uses a semicolon rather than a colon as a path separator.
+if [ x"$PKG_CONFIG_PATH" = x ]; then
+  PKG_CONFIG_PATH=$INSTALL_PATH/lib/pkgconfig
+else
+  if [ "$IS_WINDOWS_MSVC" != "true" -a "$IS_WINDOWS_MINGW" != "true" ]; then
+    PKG_PATH_SEP=":"
+  else
+    PKG_PATH_SEP=";"
+  fi
+  PKG_CONFIG_PATH=$INSTALL_PATH/lib/pkgconfig$PKG_PATH_SEP$PKG_CONFIG_PATH
+fi
 
 # Windows MSVC toolchain uses tools-windows-msvc scripts to install non-GNUstep dependencies
 if [ "$LIBRARY_COMBO" = "ng-gnu-gnu" -a "$IS_WINDOWS_MSVC" != "true" ]; then
