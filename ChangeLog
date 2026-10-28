@@ -1,3 +1,17 @@
+2026-10-26  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSThemeDrawing.m
+	(-drawTableViewBackgroundInClipRect:inView:withBackgroundColor:):
+	Paint the alternating colors of the rows into their own rects and
+	continue below the last row with stripes of the standard row
+	height, counted from the end of the last row.  The first stripe was
+	taken from -rowAtPoint:, which returns -1 below the last row, so a
+	redrawn area there was painted from row 0 and left in the plain
+	background color, and the stripes were stepped at -rowHeight, which
+	did not follow rows of different heights.
+	* Tests/gui/NSTableView/stripesBelowLastRow.m,
+	* Tests/gui/NSTableView/stripesVariableRowHeights.m: New tests.
+
 2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/GSToolbarCustomizationPalette.m
