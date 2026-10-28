@@ -178,6 +178,15 @@ static GSWindowAnimationDelegate *animationDelegate;
 - (NSView *) _borderView;
 - (NSScreen *) _screenForFrame: (NSRect)frame;
 - (void) _moveChildWindowsByOffset: (NSSize)offset;
+- (void) _updateScaleFactor;
+- (void) _updateScaleFactorFor: (int)reason;
+- (BOOL) _mayRecordScaleSwitch;
+- (void) _forgetScaleSwitches;
++ (void) _endScaleSwitchPass;
+@end
+
+@interface NSWindow ()
+- (void) _applyFrame: (NSRect)frameRect;
 @end
 
 @interface NSDrawer (GNUstepPrivate)
@@ -471,6 +480,216 @@ has blocked and waited for events.
               NSStringFromRect(frame), theScreen, (long)largest);
 
   return theScreen;
+}
+
+typedef enum {
+  GSScaleSwitchVisible,
+  GSScaleSwitchOrderIn,
+  GSScaleSwitchCreated
+} GSScaleSwitchReason;
+
+typedef struct {
+  NSUInteger     pass;
+  NSTimeInterval since;
+  unsigned       count;
+  BOOL           warned;
+} GSScaleSwitchRecord;
+
+static NSMapTable *scaleSwitchRecords = NULL;
+static NSUInteger scaleSwitchPass = 1;
+static BOOL scaleSwitchPassScheduled = NO;
+static NSWindow *scaleSwitchingWindow = nil;
+
++ (void) _endScaleSwitchPass
+{
+  scaleSwitchPass++;
+  scaleSwitchPassScheduled = NO;
+}
+
+- (void) _forgetScaleSwitches
+{
+  if (scaleSwitchRecords != NULL)
+    {
+      NSMapRemove(scaleSwitchRecords, self);
+    }
+}
+
+- (BOOL) _mayRecordScaleSwitch
+{
+  GSScaleSwitchRecord *rec;
+  NSTimeInterval      now = [NSDate timeIntervalSinceReferenceDate];
+
+  if (scaleSwitchRecords == NULL)
+    {
+      scaleSwitchRecords = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
+        NSOwnedPointerMapValueCallBacks, 16);
+    }
+  rec = NSMapGet(scaleSwitchRecords, self);
+  if (rec == NULL)
+    {
+      rec = calloc(1, sizeof(GSScaleSwitchRecord));
+      NSMapInsert(scaleSwitchRecords, self, rec);
+    }
+  if (rec->pass == scaleSwitchPass)
+    {
+      return NO;
+    }
+  if (now - rec->since > 2.0)
+    {
+      rec->since = now;
+      rec->count = 0;
+      rec->warned = NO;
+    }
+  if (rec->count >= 6)
+    {
+      if (rec->warned == NO)
+        {
+          NSLog(@"Window %d (%@) changed its scale factor %u times within "
+                @"two seconds; it keeps %g until it rests on one screen.",
+                (int)_windowNum, [self title], rec->count,
+                (double)[self userSpaceScaleFactor]);
+          rec->warned = YES;
+        }
+      return NO;
+    }
+  rec->count++;
+  rec->pass = scaleSwitchPass;
+  if (scaleSwitchPassScheduled == NO)
+    {
+      scaleSwitchPassScheduled = YES;
+      [[NSRunLoop currentRunLoop]
+        performSelector: @selector(_endScaleSwitchPass)
+                 target: [NSWindow class]
+               argument: nil
+                  order: 0
+                  modes: [NSArray arrayWithObjects: NSDefaultRunLoopMode,
+                    NSModalPanelRunLoopMode, NSEventTrackingRunLoopMode, nil]];
+    }
+  return YES;
+}
+
+- (void) _updateScaleFactor
+{
+  [self _updateScaleFactorFor: GSScaleSwitchVisible];
+}
+
+- (void) _updateScaleFactorFor: (int)reason
+{
+  NSScreen   *newScreen;
+  NSWindow   *outer;
+  CGFloat    oldFactor;
+  CGFloat    newFactor;
+  NSRect     content;
+  NSRect     frame;
+  NSSize     size;
+
+  if (_wv == nil || (_styleMask & NSUnscaledWindowMask)
+    || _windowLevel <= NSDesktopWindowLevel)
+    {
+      return;
+    }
+  if (_f.visible == NO && reason == GSScaleSwitchVisible)
+    {
+      return;
+    }
+  if (scaleSwitchingWindow == self)
+    {
+      return;
+    }
+  oldFactor = [self userSpaceScaleFactor];
+  newScreen = [self screen];
+  newFactor = [newScreen userSpaceScaleFactor];
+  if (fabs(newFactor - oldFactor) < 0.001)
+    {
+      return;
+    }
+
+  content = [_wv contentRectForFrameRect: _frame
+                               styleMask: _styleMask
+                             scaleFactor: oldFactor];
+  frame = [_wv frameRectForContentRect: content
+                             styleMask: _styleMask
+                           scaleFactor: newFactor];
+  frame.size.width = rint(NSWidth(frame));
+  frame.size.height = rint(NSHeight(frame));
+  frame.origin.x = _frame.origin.x;
+  if (reason == GSScaleSwitchCreated)
+    {
+      frame.origin.y = _frame.origin.y;
+    }
+  else
+    {
+      frame.origin.y = NSMaxY(_frame) - NSHeight(frame);
+    }
+
+  if (reason != GSScaleSwitchCreated)
+    {
+      NSEnumerator *e = [[NSScreen screens] objectEnumerator];
+      NSScreen     *s;
+      NSRect       r;
+      CGFloat      current = 0.0;
+      CGFloat      candidate;
+
+      while ((s = [e nextObject]) != nil)
+        {
+          if (fabs([s userSpaceScaleFactor] - oldFactor) < 0.001)
+            {
+              r = NSIntersectionRect(_frame, [s frame]);
+              current = MAX(current, NSWidth(r) * NSHeight(r));
+            }
+        }
+      r = NSIntersectionRect(frame, [newScreen frame]);
+      candidate = NSWidth(r) * NSHeight(r);
+      if (current > 0.0
+        && candidate <= current + 8 * MIN(NSWidth(frame), NSHeight(frame)))
+        {
+          return;
+        }
+    }
+
+  if ([self _mayRecordScaleSwitch] == NO)
+    {
+      return;
+    }
+
+  content = [_wv contentRectForFrameRect:
+                   NSMakeRect(0, 0, _minimumSize.width, _minimumSize.height)
+                               styleMask: _styleMask
+                             scaleFactor: oldFactor];
+  size = [_wv frameRectForContentRect: content
+                            styleMask: _styleMask
+                          scaleFactor: newFactor].size;
+  [self setMinSize: NSMakeSize(rint(size.width), rint(size.height))];
+  if (_maximumSize.width < 10000 && _maximumSize.height < 10000)
+    {
+      content = [_wv contentRectForFrameRect:
+                       NSMakeRect(0, 0, _maximumSize.width, _maximumSize.height)
+                                   styleMask: _styleMask
+                                 scaleFactor: oldFactor];
+      size = [_wv frameRectForContentRect: content
+                                styleMask: _styleMask
+                              scaleFactor: newFactor].size;
+      [self setMaxSize: NSMakeSize(rint(size.width), rint(size.height))];
+    }
+
+  outer = scaleSwitchingWindow;
+  scaleSwitchingWindow = self;
+  _scaleFactor = newFactor;
+  [self _applyFrame: frame];
+  [_wv layout];
+  [_wv setNeedsDisplay: YES];
+  scaleSwitchingWindow = outer;
+
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: NSWindowDidChangeBackingPropertiesNotification
+                  object: self
+                userInfo: [NSDictionary dictionaryWithObject:
+                  [NSNumber numberWithDouble: oldFactor]
+                  forKey: NSBackingPropertyOldScaleFactorKey]];
+  if (_f.visible)
+    {
+      [self display];
+    }
 }
 
 @end
@@ -906,6 +1125,7 @@ many times.
 {
   // Remove all key value bindings for this object.
   [GSKeyValueBinding unbindAllForObject: self];
+  [self _forgetScaleSwitches];
 
   DESTROY(_toolbar);
   [nc removeObserver: self];
@@ -1163,6 +1383,7 @@ many times.
   _styleMask = aStyle;
   ASSIGN(_screen, [NSScreen mainScreen]);
   _depthLimit = [_screen depth];
+  _scaleFactor = [_screen userSpaceScaleFactor];
 
   _frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
   _minimumSize = NSMakeSize(_frame.size.width - contentRect.size.width + 1,
@@ -1261,6 +1482,7 @@ many times.
     {
       ASSIGN(_screen, aScreen);
       _depthLimit = [_screen depth];
+      [self _updateScaleFactorFor: GSScaleSwitchCreated];
     }
   return self;
 }
@@ -1499,6 +1721,10 @@ titleWithRepresentedFilename(NSString *representedFilename)
   if (_styleMask & NSUnscaledWindowMask)
     {
       return 1.0;
+    }
+  else if (_scaleFactor > 0)
+    {
+      return _scaleFactor;
     }
   else if (_screen != nil)
      {
@@ -1949,6 +2175,10 @@ titleWithRepresentedFilename(NSString *representedFilename)
          titled windows are constrained. Also, and this is the tricky part,
          don't constrain if we are merely unhiding the window or if it's
          already visible and is just being reordered. */
+      if (_f.visible == NO)
+        {
+          [self _updateScaleFactorFor: GSScaleSwitchOrderIn];
+        }
       if ((_styleMask & NSTitledWindowMask)
           && [NSApp isHidden] == NO
           && _f.visible == NO)
@@ -2457,6 +2687,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
       [self _moveChildWindowsByOffset:
         NSMakeSize(frameRect.origin.x - oldOrigin.x,
                    frameRect.origin.y - oldOrigin.y)];
+      [self _updateScaleFactor];
     }
 
   if (flag)
@@ -2965,6 +3196,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
          for it. */
       [self _applyFrame: newFrame];
     }
+  [self _updateScaleFactor];
   [self display];
 
   if (_autosaveName != nil)
@@ -3277,7 +3509,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
   if (_f.is_key && _f.cursor_rects_enabled)
     {
       NSPoint loc = [self mouseLocationOutsideOfEventStream];
-      if (NSMouseInRect(loc, [_wv bounds], NO))
+      if (NSMouseInRect(loc, [_wv frame], NO))
         {
           NSEvent *e = [NSEvent mouseEventWithType: NSMouseMoved
                                           location: loc
@@ -4483,6 +4715,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                     [nc postNotificationName: NSWindowDidChangeScreenNotification
                                       object: self];
                   }
+                [self _updateScaleFactor];
               }
               break;
 
@@ -4512,6 +4745,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                 [self _processResizeEvent];
                 [nc postNotificationName: NSWindowDidResizeNotification
                                   object: self];
+                [self _updateScaleFactor];
                 break;
               }
 

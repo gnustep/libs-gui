@@ -40,6 +40,7 @@
 
 @interface NSWindow (GSWindowDecorationView)
 - (void)_clearContentView;
+- (CGFloat)_screenScaleFactor;
 @end
 
 @implementation NSWindow (GSWindowDecorationView)
@@ -49,6 +50,19 @@
 - (void)_clearContentView
 {
   _contentView = nil;
+}
+
+- (CGFloat)_screenScaleFactor
+{
+  if (!(_styleMask & NSUnscaledWindowMask))
+    {
+      return [self userSpaceScaleFactor];
+    }
+  if (_screen != nil)
+    {
+      return [_screen userSpaceScaleFactor];
+    }
+  return [[NSScreen mainScreen] userSpaceScaleFactor];
 }
 @end
 
@@ -60,6 +74,38 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 		    aRect.origin.y,
 		    aRect.size.width * factor,
 		    aRect.size.height * factor);
+}
+
+static NSRect
+ContentRectWithOffsets(NSRect aRect, NSUInteger aStyle, CGFloat factor,
+		       float l, float r, float t, float b)
+{
+  aRect.size.width -= l + r;
+  aRect.size.height -= t + b;
+  aRect.origin.x += l;
+  aRect.origin.y += b;
+
+  if (0 == (aStyle & NSUnscaledWindowMask))
+    {
+      aRect = RectWithSizeScaledByFactor(aRect, 1/factor);
+    }
+  return aRect;
+}
+
+static NSRect
+FrameRectWithOffsets(NSRect aRect, NSUInteger aStyle, CGFloat factor,
+		     float l, float r, float t, float b)
+{
+  if (0 == (aStyle & NSUnscaledWindowMask))
+    {
+      aRect = RectWithSizeScaledByFactor(aRect, factor);
+    }
+
+  aRect.size.width += l + r;
+  aRect.size.height += t + b;
+  aRect.origin.x -= l;
+  aRect.origin.y -= b;
+  return aRect;
 }
 
 + (id<GSWindowDecorator>) windowDecorator
@@ -82,49 +128,47 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   [self subclassResponsibility: _cmd];
 }
 
++ (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
+    forStyleMask: (NSUInteger)style
+     scaleFactor: (CGFloat)factor
+{
+  [self offsets: l : r : t : b forStyleMask: style];
+}
+
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
 			 styleMask: (NSUInteger)aStyle
 {
+  return [self contentRectForFrameRect: aRect
+			     styleMask: aStyle
+			   scaleFactor: [[NSScreen mainScreen] userSpaceScaleFactor]];
+}
+
++ (NSRect) contentRectForFrameRect: (NSRect)aRect
+			 styleMask: (NSUInteger)aStyle
+		       scaleFactor: (CGFloat)factor
+{
   float t = 0.0, b = 0.0, l = 0.0, r = 0.0;
 
-  [self offsets: &l : &r : &t : &b forStyleMask: aStyle];
-  aRect.size.width -= l + r;
-  aRect.size.height -= t + b;
-  aRect.origin.x += l;
-  aRect.origin.y += b;
- 
-  if (0 == (aStyle & NSUnscaledWindowMask))
-    {
-      // FIXME: This method should probably take a screen parameter
-      // rather than assuming the mainScreen
-      
-      CGFloat factor = [[NSScreen mainScreen] userSpaceScaleFactor]; 
-      aRect = RectWithSizeScaledByFactor(aRect, 1/factor);
-    }
- return aRect;
+  [self offsets: &l : &r : &t : &b forStyleMask: aStyle scaleFactor: factor];
+  return ContentRectWithOffsets(aRect, aStyle, factor, l, r, t, b);
 }
 
 + (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (NSUInteger)aStyle
 {
+  return [self frameRectForContentRect: aRect
+			     styleMask: aStyle
+			   scaleFactor: [[NSScreen mainScreen] userSpaceScaleFactor]];
+}
+
++ (NSRect) frameRectForContentRect: (NSRect)aRect
+			 styleMask: (NSUInteger)aStyle
+		       scaleFactor: (CGFloat)factor
+{
   float t = 0.0, b = 0.0, l = 0.0, r = 0.0;
 
-  [self offsets: &l : &r : &t : &b forStyleMask: aStyle];
-  if (0 == (aStyle & NSUnscaledWindowMask))
-    {
-      // FIXME: This method should probably take a screen parameter
-      // rather than assuming the mainScreen
-
-      CGFloat factor = [[NSScreen mainScreen] userSpaceScaleFactor];
-      aRect = RectWithSizeScaledByFactor(aRect, factor);
-    }
-  
-  aRect.size.width += l + r;
-  aRect.size.height += t + b;
-  aRect.origin.x -= l;
-  aRect.origin.y -= b;
-
-  return aRect;
+  [self offsets: &l : &r : &t : &b forStyleMask: aStyle scaleFactor: factor];
+  return FrameRectWithOffsets(aRect, aStyle, factor, l, r, t, b);
 }
 
 + (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle
@@ -154,9 +198,39 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
       // that is including menu, toolbar and the like.
       contentRect = [object_getClass(self) 
                         contentRectForFrameRect: frame
-                        styleMask: [w styleMask]];
+                        styleMask: [w styleMask]
+                        scaleFactor: [w _screenScaleFactor]];
     }
   return self;
+}
+
+- (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
+    forStyleMask: (NSUInteger)style
+     scaleFactor: (CGFloat)factor
+{
+  [object_getClass(self) offsets: l : r : t : b
+		    forStyleMask: style
+		     scaleFactor: factor];
+}
+
+- (NSRect) contentRectForFrameRect: (NSRect)aRect
+			 styleMask: (NSUInteger)aStyle
+		       scaleFactor: (CGFloat)factor
+{
+  float t = 0.0, b = 0.0, l = 0.0, r = 0.0;
+
+  [self offsets: &l : &r : &t : &b forStyleMask: aStyle scaleFactor: factor];
+  return ContentRectWithOffsets(aRect, aStyle, factor, l, r, t, b);
+}
+
+- (NSRect) frameRectForContentRect: (NSRect)aRect
+			 styleMask: (NSUInteger)aStyle
+		       scaleFactor: (CGFloat)factor
+{
+  float t = 0.0, b = 0.0, l = 0.0, r = 0.0;
+
+  [self offsets: &l : &r : &t : &b forStyleMask: aStyle scaleFactor: factor];
+  return FrameRectWithOffsets(aRect, aStyle, factor, l, r, t, b);
 }
 
 - (void) setHasMenu: (BOOL) flag
@@ -182,9 +256,10 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
 - (NSRect) contentRectForFrameRect: (NSRect)aRect
                          styleMask: (NSUInteger)aStyle
 {
-  NSRect content = [object_getClass(self) 
+  NSRect content = [self
                        contentRectForFrameRect: aRect
-                       styleMask: aStyle];
+                       styleMask: aStyle
+                       scaleFactor: [window _screenScaleFactor]];
   NSToolbar *tb = [_window toolbar];
 
   if ([_window menu] != nil)
@@ -225,8 +300,9 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
       aRect.size.height += [tv _heightFromLayout];
     }
 
-  return [object_getClass(self) frameRectForContentRect: aRect
-                                              styleMask: aStyle];
+  return [self frameRectForContentRect: aRect
+                                              styleMask: aStyle
+                                            scaleFactor: [window _screenScaleFactor]];
 }
 
 /* If the contentView is removed from the window we must make sure the
@@ -283,9 +359,10 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   NSView *windowContentView = [_window contentView];
 
   frame.origin = NSZeroPoint;
-  contentViewFrame = [object_getClass(self)
+  contentViewFrame = [self
                          contentRectForFrameRect: frame
-                         styleMask: [window styleMask]];
+                         styleMask: [window styleMask]
+                         scaleFactor: [window _screenScaleFactor]];
 
   if (hasMenu)
     {
@@ -367,9 +444,10 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
     }
  
   contentRect.size.height += difference;
-  windowFrame = [object_getClass(self)
+  windowFrame = [self
                     frameRectForContentRect: contentRect
-                    styleMask: [window styleMask]];
+                    styleMask: [window styleMask]
+                    scaleFactor: [window _screenScaleFactor]];
 
   // Set the local frame without changing the contents view
   windowContentFrame = windowFrame;
@@ -399,9 +477,10 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
   _autoresizes_subviews = NO;
   [super setFrame: frameRect];
 
-  contentRect = [object_getClass(self)
+  contentRect = [self
                     contentRectForFrameRect: frameRect
-                    styleMask: [window styleMask]];
+                    styleMask: [window styleMask]
+                    scaleFactor: [window _screenScaleFactor]];
 
   // Safety Check.
   [cv setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
@@ -583,6 +662,21 @@ static inline NSRect RectWithSizeScaledByFactor(NSRect aRect, CGFloat factor)
     forStyleMask: (NSUInteger)style
 {
   [GSCurrentServer() styleoffsets: l : r : t : b : style];
+}
+
+- (void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
+    forStyleMask: (NSUInteger)style
+     scaleFactor: (CGFloat)factor
+{
+  if (windowNumber != 0)
+    {
+      [GSServerForWindow(window) styleoffsets: l : r : t : b
+					      : style window: windowNumber];
+    }
+  else
+    {
+      [super offsets: l : r : t : b forStyleMask: style scaleFactor: factor];
+    }
 }
 
 + (CGFloat) minFrameWidthWithTitle: (NSString *)aTitle

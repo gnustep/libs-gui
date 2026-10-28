@@ -1,3 +1,33 @@
+2026-10-26  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSScreen.m (-userSpaceScaleFactor): When the backend
+	reports different resolutions for the screens, take each screen's
+	factor from its own resolution.  With one resolution for all
+	screens GSScaleFactor is used as before.
+	* Source/NSWindow.m (-_updateScaleFactor): New.  Keep the factor a
+	window is laid out with in _scaleFactor (formerly _reserved_1) and,
+	when the window gets a screen of another factor, convert its frame
+	so the content keeps its size in points, lay it out again and post
+	NSWindowDidChangeBackingPropertiesNotification.  Desktop windows
+	keep their factor, hidden windows switch when ordered in, and a
+	switch needs a margin of 8 pixels so a window on the edge between
+	two screens switches once.
+	(-resetCursorRects): Compare the pointer with the frame of the
+	decoration view, not its bounds.
+	* Source/GSWindowDecorationView.m
+	(+contentRectForFrameRect:styleMask:scaleFactor:,
+	+frameRectForContentRect:styleMask:scaleFactor:): New.  The
+	instance methods convert with the window's factor and its own
+	decoration offsets.
+	* Source/GSStandardWindowDecorationView.m: Use the window's factor
+	for the title bar offsets.
+	* Source/GSDisplayServer.m (-styleoffsets:::::window:): New.
+	* Source/externs.m, Headers/AppKit/NSWindow.h: Add
+	NSWindowDidChangeBackingPropertiesNotification and
+	NSBackingPropertyOldScaleFactorKey.
+	* Tests/gui/GSFakeScreens.h, Tests/gui/NSScreen/scaleFactor.m,
+	Tests/gui/NSWindow/scaleFactor.m: New tests.
+
 2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/GSToolbarCustomizationPalette.m

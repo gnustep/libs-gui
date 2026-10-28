@@ -794,6 +794,12 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
+- (void) styleoffsets: (float*) l : (float*) r : (float*) t : (float*) b
+		     : (unsigned int) style window: (int) win
+{
+  [self styleoffsets: l : r : t : b : style];
+}
+
 /** Sets the document edited flag for the window */
 - (void) docedited: (int) edited : (int) win
 {

@@ -161,6 +161,8 @@ APPKIT_EXPORT_CLASS
 - (void) flushwindowrect: (NSRect)rect : (int)win;
 - (void) styleoffsets: (float*)l : (float*)r : (float*)t : (float*)b 
                      : (unsigned int)style;
+- (void) styleoffsets: (float*)l : (float*)r : (float*)t : (float*)b
+                     : (unsigned int)style window: (int)win;
 - (void) docedited: (int) edited : (int)win;
 - (void) setinputstate: (int)state : (int)win;
 - (void) setinputfocus: (int)win;

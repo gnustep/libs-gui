@@ -339,7 +339,7 @@ PACKAGE_SCOPE
   } _f;
 @protected 
   NSToolbar     *_toolbar;
-  void          *_reserved_1;
+  CGFloat       _scaleFactor;
 }
 
 /*
@@ -1001,6 +1001,10 @@ APPKIT_EXPORT NSString *NSWindowDidBecomeMainNotification;
 APPKIT_EXPORT NSString *NSWindowDidChangeScreenNotification;
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_4, GS_API_LATEST)
 APPKIT_EXPORT NSString *NSWindowDidChangeScreenProfileNotification;
+#endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_7, GS_API_LATEST)
+APPKIT_EXPORT NSString *NSWindowDidChangeBackingPropertiesNotification;
+APPKIT_EXPORT NSString *NSBackingPropertyOldScaleFactorKey;
 #endif
 APPKIT_EXPORT NSString *NSWindowDidDeminiaturizeNotification;
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
