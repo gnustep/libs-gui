@@ -55,6 +55,8 @@
 #endif /* HAVE_LIBAVCODEC_AVCODEC_H */
 
 @class NSMutableArray;
+@class NSLock;
+@class NSRecursiveLock;
 @class NSThread;
 
 // Audio player for NSMovieView...
@@ -83,6 +85,8 @@
   AVStream *_stream;
 
   NSMutableArray *_audioPackets;
+  NSLock *_audioPacketsLock;
+  NSRecursiveLock *_stateLock;
   NSThread *_audioThread;
 
   struct GSAudioPlayerFlags {
@@ -95,6 +99,7 @@
   } _flags;
 
   int64_t _lastPosition;
+  int64_t _audioStartPTS;
 }
 
 // Initialize...
@@ -105,6 +110,7 @@
 // Decode stream...
 - (int) decodePacket: (AVPacket *)packet;
 - (void) submitPacket: (AVPacket *)packet;
+- (NSUInteger) queuedPacketCount;
 - (void) setPlaying: (BOOL)f;
 - (BOOL) isPlaying;
 - (void) start;
