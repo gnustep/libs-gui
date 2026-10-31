@@ -94,6 +94,8 @@
 #import <Foundation/NSNotificationQueue.h>
 #import <Foundation/NSDistributedNotificationCenter.h>
 #import <Foundation/NSConnection.h>
+#import <Foundation/NSPort.h>
+#import <Foundation/NSPortNameServer.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSThread.h>
@@ -129,6 +131,46 @@ static NSImage	*unknownTool = nil;
 
 static NSLock   *classLock = nil;
 static NSLock   *mlock = nil;
+
+/* Protected by classLock.  The connection retains the provider. */
+static NSConnection *workspaceProviderConnection = nil;
+
+static NSString *
+GSWorkspaceServiceName(void)
+{
+  NSDictionary *environment = [[NSProcessInfo processInfo] environment];
+  NSString *session = [environment objectForKey: @"XDG_SESSION_ID"];
+  NSString *kind = @"session";
+
+  if ([session length] == 0)
+    {
+      session = [environment objectForKey: @"WAYLAND_DISPLAY"];
+      kind = @"wayland";
+    }
+  if ([session length] == 0)
+    {
+      NSRange colon;
+      NSRange dot;
+
+      session = [environment objectForKey: @"DISPLAY"];
+      kind = @"display";
+      colon = [session rangeOfString: @":" options: NSBackwardsSearch];
+      dot = [session rangeOfString: @"." options: NSBackwardsSearch];
+      if (session != nil && colon.location != NSNotFound
+        && dot.location != NSNotFound && dot.location > colon.location)
+        {
+          session = [session substringToIndex: dot.location];
+        }
+    }
+  if ([session length] == 0)
+    {
+      session = @"headless";
+      kind = @"default";
+    }
+  return [NSString stringWithFormat: @"GNUstepWorkspace.%@.%@.%@",
+    NSUserName(), kind, session];
+}
+
 
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
 static NSString *GSWorkspacePreferencesChanged =
@@ -477,7 +519,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 - (BOOL) _launchApplication: (NSString*)appName
 		  arguments: (NSArray*)args;
 - (id) _connectApplication: (NSString*)appName;
-- (id) _workspaceApplication;
+- (id) _workspaceApplicationForSelector: (SEL)selector;
 - (NSString*) _stripPartitionSuffixFromDeviceName: (NSString*)devName;
 
 @end
@@ -972,7 +1014,7 @@ static NSDictionary		*urlPreferences = nil;
 
   NS_DURING
     {
-      if ((app = [self _workspaceApplication]) != nil)
+      if ((app = [self _workspaceApplicationForSelector: _cmd]) != nil)
 	{
 	  BOOL	result;
 
@@ -983,7 +1025,8 @@ static NSDictionary		*urlPreferences = nil;
 	}
     }
   NS_HANDLER
-    // workspace manager problem ... fall through to default code
+    /* The provider may have completed the operation before losing its reply. */
+    return NO;
   NS_ENDHANDLER
 
   if (appName == nil)
@@ -1047,7 +1090,7 @@ static NSDictionary		*urlPreferences = nil;
 
   NS_DURING
     {
-      if ((app = [self _workspaceApplication]) != nil)
+      if ((app = [self _workspaceApplicationForSelector: _cmd]) != nil)
 	{
 	  BOOL	result;
 
@@ -1056,7 +1099,8 @@ static NSDictionary		*urlPreferences = nil;
 	}
     }
   NS_HANDLER
-    // workspace manager problem ... fall through to default code
+    /* The provider may have completed the operation before losing its reply. */
+    return NO;
   NS_ENDHANDLER
 
   ext = [fullPath pathExtension];
@@ -1193,20 +1237,25 @@ static NSDictionary		*urlPreferences = nil;
 
   NS_DURING
     {
-      if ((app = [self _workspaceApplication]) != nil)
+      if ((app = [self _workspaceApplicationForSelector: _cmd]) != nil)
 	{
 	  BOOL	result;
+          NSInteger remoteTag = 0;
 
 	  result = [app performFileOperation: operation
 				      source: source
 				 destination: destination
 				       files: files
-					 tag: tag];
+					 tag: &remoteTag];
+          if (tag != NULL)
+            {
+              *tag = remoteTag;
+            }
 	  NS_VALRETURN(result);
 	}
     }
   NS_HANDLER
-    // workspace manager problem ... fall through to default code
+    // The operation may already have completed; do not retry it.
   NS_ENDHANDLER
 
   return NO;
@@ -1219,7 +1268,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   NS_DURING
     {
-      if ((app = [self _workspaceApplication]) != nil)
+      if ((app = [self _workspaceApplicationForSelector: _cmd]) != nil)
 	{
 	  BOOL	result;
 
@@ -1903,7 +1952,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
   NS_DURING
     {
-      if ((app = [self _workspaceApplication]) != nil)
+      if ((app = [self _workspaceApplicationForSelector: _cmd]) != nil)
 	{
 	  BOOL	result;
 
@@ -1914,7 +1963,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	}
     }
   NS_HANDLER
-    // workspace manager problem ... fall through to default code
+    /* The provider may have completed the operation before losing its reply. */
+    return NO;
   NS_ENDHANDLER
 
   app = [self _connectApplication: appName];
@@ -1975,7 +2025,7 @@ launchIdentifiers: (NSArray **)identifiers
 
   NS_DURING
     {
-      if ((app = [self _workspaceApplication]) != nil)
+      if ((app = [self _workspaceApplicationForSelector: _cmd]) != nil)
 	{
 	  NSDictionary	*result;
 
@@ -2003,7 +2053,7 @@ launchIdentifiers: (NSArray **)identifiers
     {
       id	app;
 
-      if ((app = [self _workspaceApplication]) != nil)
+      if ((app = [self _workspaceApplicationForSelector: _cmd]) != nil)
 	{
 	  apps = [app launchedApplications];
 	}
@@ -2426,7 +2476,7 @@ launchIdentifiers: (NSArray **)identifiers
 
   NS_DURING
     {
-      if ((app = [self _workspaceApplication]) != nil)
+      if ((app = [self _workspaceApplicationForSelector: _cmd]) != nil)
 	{
 	  int	result;
 
@@ -2475,6 +2525,78 @@ launchIdentifiers: (NSArray **)identifiers
 @end
 
 @implementation	NSWorkspace (GNUstep)
+
+/** See +registerWorkspaceProvider: in the GNUstep additions. */
++ (BOOL) registerWorkspaceProvider: (id)provider
+{
+  NSConnection *connection = nil;
+  BOOL registered = NO;
+
+  if (provider == nil || [NSThread isMainThread] == NO)
+    {
+      return NO;
+    }
+  [classLock lock];
+  if ([workspaceProviderConnection isValid])
+    {
+      [classLock unlock];
+      return NO;
+    }
+  connection = workspaceProviderConnection;
+  workspaceProviderConnection = nil;
+  [classLock unlock];
+  [connection setRootObject: nil];
+  DESTROY(connection);
+
+  NS_DURING
+    {
+      connection = [[NSConnection alloc]
+        initWithReceivePort: [NSMessagePort port] sendPort: nil];
+      [connection setRootObject: provider];
+      [connection setRequestTimeout: 5.0];
+      [connection setReplyTimeout: 5.0];
+      registered = [connection registerName: GSWorkspaceServiceName()
+        withNameServer: [NSMessagePortNameServer sharedInstance]];
+      if (registered)
+        {
+          [classLock lock];
+          workspaceProviderConnection = connection;
+          [classLock unlock];
+          connection = nil;
+        }
+    }
+  NS_HANDLER
+    registered = NO;
+  NS_ENDHANDLER
+  [connection invalidate];
+  [connection setRootObject: nil];
+  RELEASE(connection);
+  return registered;
+}
+
++ (BOOL) unregisterWorkspaceProvider: (id)provider
+{
+  NSConnection *connection;
+
+  if (provider == nil || [NSThread isMainThread] == NO)
+    {
+      return NO;
+    }
+  [classLock lock];
+  if ([workspaceProviderConnection rootObject] != provider)
+    {
+      [classLock unlock];
+      return NO;
+    }
+  connection = workspaceProviderConnection;
+  workspaceProviderConnection = nil;
+  [classLock unlock];
+  [connection invalidate];
+  [connection setRootObject: nil];
+  RELEASE(connection);
+  return YES;
+}
+
 
 /**
  * Returns the 'best' application to open a file with the specified extension
@@ -3660,74 +3782,44 @@ launchIdentifiers: (NSArray **)identifiers
   return app;
 }
 
-- (id) _workspaceApplication
+- (id) _workspaceApplicationForSelector: (SEL)selector
 {
-  static NSUserDefaults		*defs = nil;
-  static GSServicesManager	*smgr = nil;
-  NSString			*appName;
-  NSString			*myName;
-  id				app;
+  NSConnection *connection = nil;
+  id provider = nil;
+  BOOL localProvider;
 
-  if (defs == nil)
-    {
-      defs = RETAIN([NSUserDefaults standardUserDefaults]);
-    }
-  if (smgr == nil)
-    {
-      smgr = RETAIN([GSServicesManager manager]);
-    }
-  /* What Workspace application? */
-  appName = [defs stringForKey: @"GSWorkspaceApplication"];
-  if (appName == nil)
-    {
-      appName = @"GWorkspace";
-    }
-  /*
-   * If this app is the workspace app, there is no sense contacting
-   * it as it would cause recursion ... so we return nil.
-   */
-  myName = [smgr port];
-  if ([appName isEqual: myName] == YES)
+  [classLock lock];
+  localProvider = [workspaceProviderConnection isValid];
+  [classLock unlock];
+  if (localProvider)
     {
       return nil;
     }
 
-  app = [self _connectApplication: appName];
-  if (app == nil)
+  /* Resolve on every request so relinquishment and replacement are observed.
+   * Never launch an application, or retry an operation after a lost reply.
+   */
+  NS_DURING
     {
-      NSString	*host;
-
-      host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
-      if (host == nil)
-	{
-	  host = @"";
-	}
-      else
-	{
-	  NSHost	*h;
-
-	  h = [NSHost hostWithName: host];
-	  if ([h isEqual: [NSHost currentHost]] == YES)
-	    {
-	      host = @"";
-	    }
-	}
-      /**
-       * We can only launch a workspace app if we are displaying to the
-       * local host (since if we are displaying on another host we want
-       * to to talk to the workspace app on that host too).
-       */
-      if ([host isEqual: @""] == YES)
-	{
-	  if ([self _launchApplication: appName
-			     arguments: nil] == YES)
-	    {
-	      app = [self _connectApplication: appName];
-	    }
-	}
+      connection = [NSConnection
+        connectionWithRegisteredName: GSWorkspaceServiceName()
+        host: @""
+        usingNameServer: [NSMessagePortNameServer sharedInstance]];
+      [connection setRequestTimeout: 5.0];
+      [connection setReplyTimeout: 5.0];
+      provider = [connection rootProxy];
+      if ([provider respondsToSelector: selector] == NO)
+        {
+          provider = nil;
+        }
     }
-
-  return app;
+  NS_HANDLER
+    {
+      [connection invalidate];
+      provider = nil;
+    }
+  NS_ENDHANDLER
+  return provider;
 }
 
 - (NSString*) _stripPartitionSuffixFromDeviceName: (NSString*)devName
