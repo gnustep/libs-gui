@@ -37,7 +37,9 @@
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSWindow.h"
 
+#import "GNUstepGUI/GSTheme.h"
 #import "GSFastEnumeration.h"
+#import "NSViewPrivate.h"
 
 //
 // class variables
@@ -642,6 +644,57 @@ static id buttonCellClass = nil;
 {
   [(NSButtonCell *)_cell setContentTintColor: color];
   [self setNeedsDisplay: YES];
+}
+
+- (NSRect) _defaultButtonRingRect
+{
+  CGFloat outset;
+
+  if (_super_view == nil || [_window defaultButtonCell] != _cell)
+    {
+      return NSZeroRect;
+    }
+  outset = [[GSTheme theme] defaultButtonRingOutset];
+  if (outset <= 0.0)
+    {
+      return NSZeroRect;
+    }
+  return NSInsetRect([self _frameExtend], -outset, -outset);
+}
+
+- (void) _setDefaultButtonRingNeedsDisplay
+{
+  NSRect ringRect = [self _defaultButtonRingRect];
+
+  if (NSIsEmptyRect(ringRect) == NO)
+    {
+      [_super_view setNeedsDisplayInRect: ringRect];
+    }
+}
+
+- (void) _setFrameAndClearAutoresizingError: (NSRect)frameRect
+{
+  [self _setDefaultButtonRingNeedsDisplay];
+  [super _setFrameAndClearAutoresizingError: frameRect];
+  [self _setDefaultButtonRingNeedsDisplay];
+}
+
+- (void) _viewWillMoveToSuperview: (NSView *)newSuper
+{
+  [super _viewWillMoveToSuperview: newSuper];
+  [self _setDefaultButtonRingNeedsDisplay];
+}
+
+- (void) setHidden: (BOOL)flag
+{
+  [super setHidden: flag];
+  [self _setDefaultButtonRingNeedsDisplay];
+}
+
+- (void) setEnabled: (BOOL)flag
+{
+  [super setEnabled: flag];
+  [self _setDefaultButtonRingNeedsDisplay];
 }
 
 // Implement 10.7+ radio button behavior

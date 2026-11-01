@@ -1,3 +1,27 @@
+2026-11-01  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m (-defaultButtonRingOutset,
+	-drawDefaultButtonRingForCell:inView:): New methods, which let a theme
+	mark the default button outside the button's frame.  The default
+	outset of 0 leaves everything as it was.
+	* Source/NSView.m (-displayRectIgnoringOpacity:inContext:): After the
+	subviews, have the theme paint the ring in the superview of the
+	default button.  A view redrawn on its own has the ring repainted
+	over it.
+	(-removeSubview:): Redraw the ring area.
+	* Source/NSViewPrivate.h: Declare what NSButton uses.
+	* Source/NSButton.m: Redraw the ring area when the button moves,
+	resizes, is hidden or disabled, or changes its superview.
+	* Source/NSWindow.m (-setDefaultButtonCell:): Redraw the ring area of
+	the old and the new default button.
+	(-becomeKeyWindow, -resignKeyWindow): Likewise for the key state.
+	* Source/NSControl.m (-dealloc): Clear the control view of the cell,
+	which can outlive the control as the default button cell of a window.
+	* Source/NSAlert.m: Make the default button of an alert panel the
+	default button cell of the panel.
+	* Tests/gui/GSTheme/defaultButtonRing.m: New test.
+
 2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/GSToolbarCustomizationPalette.m
