@@ -142,7 +142,7 @@ APPKIT_EXPORT_CLASS
     unsigned	cacheSeparately: 1;
     unsigned	unboundedCacheDepth: 1;
     unsigned	syncLoad: 1;
-    unsigned	template: 1;
+    unsigned	isTemplate: 1;
   } _flags;
   NSMutableArray	*_reps;
   NSColor		*_color;

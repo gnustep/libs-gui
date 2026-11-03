@@ -840,12 +840,12 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) setTemplate: (BOOL)isTemplate
 {
-  _flags.template = isTemplate;
+  _flags.isTemplate = isTemplate;
 }
 
 - (BOOL) isTemplate
 {
-  return _flags.template;
+  return _flags.isTemplate;
 }
 
 // Choosing Which Image Representation to Use 
