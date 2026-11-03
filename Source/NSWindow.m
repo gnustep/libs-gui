@@ -166,6 +166,10 @@ static GSWindowAnimationDelegate *animationDelegate;
  * Category for internal methods (for use only within the NSWindow class itself
  * or with other AppKit classes.
  */
+@interface NSWindow (GSDefaultButtonRing)
+- (void) _setDefaultButtonRingNeedsDisplay;
+@end
+
 @interface NSWindow (GNUstepPrivate)
 
 + (void) _addAutodisplayedWindow: (NSWindow *)w;
@@ -1696,6 +1700,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
       [_wv setInputState: GSTitleBarKey];
       [GSServerForWindow(self) setinputfocus: _windowNum];
       [self resetCursorRects];
+      [self _setDefaultButtonRingNeedsDisplay];
       [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
       NSDebugLLog(@"NSWindow", @"%@ is now key window", [self title]);
     }
@@ -2055,6 +2060,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
           [_wv setInputState: GSTitleBarNormal];
         }
       [self discardCursorRects];
+      [self _setDefaultButtonRingNeedsDisplay];
 
       [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
     }
@@ -5567,14 +5573,21 @@ current key view.<br />
   return _defaultButtonCell;
 }
 
+- (void) _setDefaultButtonRingNeedsDisplay
+{
+  [[_defaultButtonCell controlView] _setDefaultButtonRingNeedsDisplay];
+}
+
 - (void) setDefaultButtonCell: (NSButtonCell *)aCell
 {
+  [self _setDefaultButtonRingNeedsDisplay];
   ASSIGN(_defaultButtonCell, aCell);
   _f.default_button_cell_key_disabled = NO;
 
   [aCell setKeyEquivalent: @"\r"];
   [aCell setKeyEquivalentModifierMask: 0];
   [[GSTheme theme] didSetDefaultButtonCell: aCell];
+  [self _setDefaultButtonRingNeedsDisplay];
 }
 
 - (void) disableKeyEquivalentForDefaultButtonCell

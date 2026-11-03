@@ -27,6 +27,7 @@
 #ifndef _GNUstep_H_NSViewPrivate
 #define _GNUstep_H_NSViewPrivate
 
+#import "AppKit/NSButton.h"
 #import "AppKit/NSView.h"
 #import "GSAutoLayoutEngine.h"
 
@@ -37,6 +38,17 @@
 
 @interface NSView (__NSViewPrivateMethods__)
 - (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx;
+@end
+
+@interface NSView (GSDefaultButtonRing)
+- (NSRect) _frameExtend;
+- (void) _setFrameAndClearAutoresizingError: (NSRect)frameRect;
+- (void) _viewWillMoveToSuperview: (NSView *)newSuper;
+- (void) _setDefaultButtonRingNeedsDisplay;
+@end
+
+@interface NSButton (GSDefaultButtonRing)
+- (NSRect) _defaultButtonRingRect;
 @end
 
 @interface NSView (NSConstraintBasedLayoutCorePrivateMethods)

@@ -87,6 +87,7 @@
 #import "GSAutoLayoutAnchorPrivate.h"
 #import "NSAutoresizingMaskLayoutConstraint.h"
 #import "NSViewPrivate.h"
+#import "GNUstepGUI/GSTheme.h"
 #import "NSWindowPrivate.h"
 
 @interface NSLayoutConstraint (GSPrivate)
@@ -171,6 +172,8 @@ static SEL	invalidateSel;
 
 static void	(*preImp)(NSAffineTransform*, SEL, NSAffineTransform*);
 static void	(*invalidateImp)(NSView*, SEL);
+
+static unsigned	displayDepth = 0;
 
 /*
  *	Stuff to maintain a map table so we know what views are
@@ -1056,6 +1059,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  break;
 	}
     }
+  [aView _setDefaultButtonRingNeedsDisplay];
   [self willRemoveSubview: aView];
   aView->_super_view = nil;
   [aView _viewWillMoveToWindow: nil];
@@ -2706,6 +2710,7 @@ static void autoresize(CGFloat oldContainerSize,
                           inContext: (NSGraphicsContext *)context
 {
   NSGraphicsContext *wContext;
+  NSButtonCell *defaultCell;
   BOOL flush = NO;
   BOOL subviewNeedsDisplay = NO;
 
@@ -2713,6 +2718,8 @@ static void autoresize(CGFloat oldContainerSize,
     {
       return;
     }
+
+  displayDepth++;
 
   wContext = [_window graphicsContext];
   if (context == nil)
@@ -2799,6 +2806,16 @@ static void autoresize(CGFloat oldContainerSize,
         }
     }
 
+  displayDepth--;
+  defaultCell = [_window defaultButtonCell];
+  if (defaultCell != nil && NSIsEmptyRect(aRect) == NO)
+    {
+      [self _drawDefaultButtonRing: defaultCell
+                            inRect: aRect
+                           context: context
+                             flush: flush];
+    }
+
   if (context == wContext)
     {
       if (subviewNeedsDisplay)
@@ -2813,6 +2830,46 @@ static void autoresize(CGFloat oldContainerSize,
         }
       [_window enableFlushWindow];
       [_window flushWindowIfNeeded];
+    }
+}
+
+- (void) _setDefaultButtonRingNeedsDisplay
+{
+}
+
+- (void) _drawDefaultButtonRing: (NSButtonCell *)cell
+                         inRect: (NSRect)aRect
+                        context: (NSGraphicsContext *)context
+                          flush: (BOOL)flush
+{
+  NSView *button = [cell controlView];
+  NSView *ringView = [button superview];
+  NSRect ringRect;
+
+  if (ringView == nil
+    || (ringView != self
+      && (displayDepth > 0 || [self isDescendantOf: ringView] == NO))
+    || [button isKindOfClass: [NSButton class]] == NO || [button isHidden])
+    {
+      return;
+    }
+
+  ringRect = [(NSButton *)button _defaultButtonRingRect];
+  if (NSIsEmptyRect(ringRect))
+    {
+      return;
+    }
+
+  if (ringView != self)
+    {
+      aRect = [ringView convertRect: aRect fromView: self];
+    }
+  aRect = NSIntersectionRect(aRect, ringRect);
+  if (NSIsEmptyRect(aRect) == NO)
+    {
+      [ringView _lockFocusInContext: context inRect: aRect];
+      [[GSTheme theme] drawDefaultButtonRingForCell: cell inView: ringView];
+      [ringView unlockFocusNeedsFlush: flush];
     }
 }
 
