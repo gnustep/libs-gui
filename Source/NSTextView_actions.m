@@ -12,7 +12,7 @@
    Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
 
-   Author: Daniel Böhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author: Daniel BÃ¶hringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
 
    Author: Fred Kiefer <FredKiefer@gmx.de>
@@ -515,9 +515,33 @@ static NSNumber *float_plus_one(NSNumber *cur)
 
 - (void) toggleTraditionalCharacterShape: (id)sender
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"toggleTraditionalCharacterShape:", "NSTextView");
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+  NSNumber *current;
+  int shape;
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+
+  if (aRange.length > 0)
+    current = [_textStorage attribute: NSCharacterShapeAttributeName
+			      atIndex: aRange.location
+		       effectiveRange: NULL];
+  else
+    current = [_layoutManager->_typingAttributes
+		objectForKey: NSCharacterShapeAttributeName];
+
+  shape = ([current intValue] == 1) ? 0 : 1;
+
+  [_textStorage addAttribute: NSCharacterShapeAttributeName
+		value: [NSNumber numberWithInt: shape]
+		range: aRange];
+  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: shape]
+    forKey: NSCharacterShapeAttributeName];
+  [self didChangeText];
 }
 
 

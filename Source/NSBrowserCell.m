@@ -146,9 +146,7 @@ static NSFont *_leafFont;
 {
   NSBrowserCell	*c = [super copyWithZone: zone];
 
-  _alternateImage = TEST_RETAIN (_alternateImage);
-  //c->_browsercell_is_leaf = _browsercell_is_leaf;
-  //c->_browsercell_is_loaded = _browsercell_is_loaded;
+  c->_alternateImage = TEST_RETAIN (_alternateImage);
 
   return c;
 }

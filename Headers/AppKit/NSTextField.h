@@ -52,8 +52,18 @@ APPKIT_EXPORT_CLASS
   NSText *_text_object;
 }
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
 //
-// Setting User Access to Text 
+// Creating Text Fields
+//
++ (instancetype) labelWithString: (NSString *)stringValue;
++ (instancetype) labelWithAttributedString: (NSAttributedString *)attributedStringValue;
++ (instancetype) textFieldWithString: (NSString *)stringValue;
++ (instancetype) wrappingLabelWithString: (NSString *)stringValue;
+#endif
+
+//
+// Setting User Access to Text
 //
 - (BOOL)isEditable;
 - (BOOL)isSelectable;

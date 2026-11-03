@@ -7,7 +7,7 @@
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep testcopy")
   NSBitmapImageRep *origBitmap, *copy1Bitmap, *copy2Bitmap;
 
   origBitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes: NULL
@@ -29,12 +29,12 @@ int main()
   
   copy2Bitmap = [copy1Bitmap copy];
     
-  pass([copy1Bitmap bitmapData] != [copy2Bitmap bitmapData],
+  PASS([copy1Bitmap bitmapData] != [copy2Bitmap bitmapData],
        "Copied bitmaps have a different image data pointer - could cause image data corruption.");
   
   DESTROY(copy1Bitmap);
   DESTROY(copy2Bitmap);
   DESTROY(origBitmap);
-  [arp release];
+  END_SET("NSBitmapImageRep testcopy")
   return 0;
 }

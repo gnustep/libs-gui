@@ -147,6 +147,7 @@
   if (self == [NSArrayController class])
     {
       [self exposeBinding: NSContentArrayBinding];
+      [self exposeBinding: NSContentSetBinding];
       [self exposeBinding: NSSelectionIndexesBinding];
       [self setKeys: [NSArray arrayWithObjects: NSContentBinding, NSContentObjectBinding, nil]
 	    triggerChangeNotificationsForDependentKey: @"arrangedObjects"];
@@ -157,7 +158,11 @@
 {
   if ((self = [super initWithContent: content]) != nil)
     {
+      _selection_indexes = [[NSIndexSet alloc] init];
       [self setSelectsInsertedObjects: YES];
+      [self setAvoidsEmptySelection: YES];
+      [self setPreservesSelection: YES];
+      [self setClearsFilterPredicateOnInsertion: YES];
     }
 
   return self;
@@ -314,6 +319,10 @@
 
 - (BOOL) setSelectionIndexes: (NSIndexSet*)idx
 {
+  if (idx == nil)
+    {
+      idx = [NSIndexSet indexSet];
+    }
   if ([_selection_indexes isEqual: idx])
     {
       return NO;
@@ -386,6 +395,51 @@
 {
   // We make the selection work on the arranged objects
   return [[self arrangedObjects] objectsAtIndexes: _selection_indexes];
+}
+
++ (NSSet*) keyPathsForValuesAffectingSelection
+{
+  return [NSSet setWithObjects: NSSelectionIndexesBinding,
+    NSContentBinding, nil];
+}
+
++ (NSSet*) keyPathsForValuesAffectingSelectedObjects
+{
+  return [NSSet setWithObjects: NSSelectionIndexesBinding,
+    NSContentBinding, nil];
+}
+
++ (NSSet*) keyPathsForValuesAffectingSelectionIndex
+{
+  return [NSSet setWithObject: NSSelectionIndexesBinding];
+}
+
++ (NSSet*) keyPathsForValuesAffectingCanRemove
+{
+  return [NSSet setWithObject: NSSelectionIndexesBinding];
+}
+
++ (NSSet*) keyPathsForValuesAffectingCanSelectNext
+{
+  return [NSSet setWithObjects: NSSelectionIndexesBinding,
+    NSContentBinding, nil];
+}
+
++ (NSSet*) keyPathsForValuesAffectingCanSelectPrevious
+{
+  return [NSSet setWithObjects: NSSelectionIndexesBinding,
+    NSContentBinding, nil];
+}
+
+- (id) selection
+{
+  NSArray *selected = [self selectedObjects];
+
+  if ([selected count] == 1)
+    {
+      return [selected objectAtIndex: 0];
+    }
+  return nil;
 }
 
 - (NSUInteger) selectionIndex
@@ -537,7 +591,8 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
   withKeyPath: (NSString *)keyPath
       options: (NSDictionary *)options
 {
-  if ([binding isEqual: NSContentArrayBinding])
+  if ([binding isEqual: NSContentArrayBinding]
+    || [binding isEqual: NSContentSetBinding])
     {
       GSKeyValueBinding *kvb;
 
@@ -565,6 +620,10 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
   if ([binding isEqual: NSContentArrayBinding])
     {
       return [NSArray class];
+    }
+  else if ([binding isEqual: NSContentSetBinding])
+    {
+      return [NSSet class];
     }
   else
     {
@@ -615,6 +674,8 @@ atArrangedObjectIndexes: (NSIndexSet*)idx
     {
       return nil;
     }
+
+  _selection_indexes = [[NSIndexSet alloc] init];
 
   if ([coder allowsKeyedCoding])
     {

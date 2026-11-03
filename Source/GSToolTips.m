@@ -226,6 +226,34 @@ static BOOL   isOpening = NO;
 static NSSize		offset;
 static BOOL		restoreMouseMoved;
 
+static void
+GSSyncToolTipParentWindow(NSWindow *toolTipWindow, NSWindow *ownerWindow)
+{
+  NSWindow *parentWindow = [toolTipWindow parentWindow];
+
+  if (parentWindow != nil && parentWindow != ownerWindow)
+    {
+      [parentWindow removeChildWindow: toolTipWindow];
+      parentWindow = nil;
+    }
+
+  if (ownerWindow != nil && parentWindow != ownerWindow)
+    {
+      [ownerWindow addChildWindow: toolTipWindow ordered: NSWindowAbove];
+    }
+}
+
+static void
+GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
+{
+  NSWindow *parentWindow = [toolTipWindow parentWindow];
+
+  if (parentWindow != nil)
+    {
+      [parentWindow removeChildWindow: toolTipWindow];
+    }
+}
+
 + (void) initialize
 {
   viewsMap = NSCreateMapTable(NSNonOwnedPointerMapKeyCallBacks,
@@ -567,6 +595,7 @@ static BOOL		restoreMouseMoved;
     {
       [window setFrame: NSZeroRect display: NO];
       [window orderOut:self];
+      GSDetachToolTipParentWindow(window);
     }
   if (restoreMouseMoved == YES)
     {
@@ -579,6 +608,7 @@ static BOOL		restoreMouseMoved;
 - (void) _timedOut: (NSTimer *)aTimer
 {
   CGFloat               size;
+  CGFloat               scale;
   NSString		*toolTipString;
   NSAttributedString	*toolTipText = nil;
   NSSize		textSize;
@@ -654,6 +684,13 @@ static BOOL		restoreMouseMoved;
   // Need to fudge the result just a bit due to occasionally cutoff characters...
   textSize.width += 1;
   textSize.height += 1;
+  scale = [window userSpaceScaleFactor];
+  if (scale <= 0.0)
+    {
+      scale = 1.0;
+    }
+  textSize.width *= scale;
+  textSize.height *= scale;
   
   /* Create window just off the current mouse position
    * Constrain it to be on screen, shrinking if necessary.
@@ -695,6 +732,7 @@ static BOOL		restoreMouseMoved;
   isOpening = YES;
   [(GSTTView*)([window contentView]) setText: toolTipText];
   [window setFrame: rect display: NO];
+  GSSyncToolTipParentWindow(window, [view window]);
   [window orderFront: nil];
   isOpening = NO;
 
@@ -702,4 +740,3 @@ static BOOL		restoreMouseMoved;
 }
 
 @end
-

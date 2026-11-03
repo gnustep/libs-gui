@@ -42,26 +42,26 @@ static const unsigned char validPNG[] = {
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep pngAllocationOverflow")
   NSData            *data;
   NSBitmapImageRep  *rep;
   const unsigned char *px;
 
   data = [NSData dataWithBytes: overflowPNG length: sizeof(overflowPNG)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep == nil,
+  PASS(rep == nil,
     "a PNG whose pixel-buffer size overflows is rejected, not decoded with a buffer overflow");
   [rep release];
 
   data = [NSData dataWithBytes: validPNG length: sizeof(validPNG)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep != nil && [rep pixelsWide] == 4 && [rep pixelsHigh] == 4,
+  PASS(rep != nil && [rep pixelsWide] == 4 && [rep pixelsHigh] == 4,
     "a valid PNG still decodes");
   px = [rep bitmapData];
-  pass(rep == nil || (px != NULL && px[0] == 90 && px[1] == 140 && px[2] == 200),
+  PASS(rep == nil || (px != NULL && px[0] == 90 && px[1] == 140 && px[2] == 200),
     "the valid PNG colour data is decoded correctly");
   [rep release];
 
-  [arp release];
+  END_SET("NSBitmapImageRep pngAllocationOverflow")
   return 0;
 }

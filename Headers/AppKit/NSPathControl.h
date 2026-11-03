@@ -48,6 +48,7 @@ APPKIT_EXPORT_CLASS
   NSDragOperation _localMask;
   NSDragOperation _remoteMask;
   NSTrackingRectTag _trackingTag;
+  BOOL _editable;
 }
 
 - (void) setPathStyle: (NSPathStyle)style;
@@ -86,7 +87,10 @@ APPKIT_EXPORT_CLASS
 
 - (NSString *) placeholderString;
 - (void) setPlaceholderString: (NSString *)string;
- 
+
+- (BOOL) isEditable;
+- (void) setEditable: (BOOL)flag;
+
 @end
 
 @protocol NSPathControlDelegate

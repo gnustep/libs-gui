@@ -68,7 +68,9 @@ APPKIT_EXPORT_CLASS
   struct ___vcFlags
     {
       unsigned int nib_is_loaded:1;
-      unsigned int RESERVED:31;
+      unsigned int view_did_load:1;
+      unsigned int view_is_visible:1;
+      unsigned int RESERVED:29;
     } _vcFlags;
   id                   _reserved;
 }
@@ -84,6 +86,7 @@ APPKIT_EXPORT_CLASS
 
 - (void)setView:(NSView *)aView;
 - (NSView *)view;
+- (BOOL)isViewLoaded;
 - (void)loadView;
 
 - (NSString *)nibName;
@@ -101,6 +104,9 @@ APPKIT_EXPORT_CLASS
 - (void) viewDidAppear;
 - (void) viewWillDisappear;
 - (void) viewDidDisappear;
+- (void) updateViewConstraints;
+- (void) viewWillLayout;
+- (void) viewDidLayout;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_10, GS_API_LATEST)
 - (void) dismissViewController: (NSViewController *)viewController;

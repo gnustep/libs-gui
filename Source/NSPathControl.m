@@ -79,15 +79,16 @@ static Class pathCellClass;
                                       assumeInside: YES];
 }
 
-- (instancetype) init
+- (instancetype) initWithFrame: (NSRect)frameRect
 {
-  self = [super init];
+  self = [super initWithFrame: frameRect];
   if (self != nil)
     {
       [self setPathStyle: NSPathStyleStandard];
       [self setURL: nil];
       [self setDelegate: nil];
-      [self setAllowedTypes: [NSArray arrayWithObject: NSFilenamesPboardType]];
+      ASSIGN(_pathItems, [NSArray array]);
+      _editable = YES;
     }
   return self;
 }
@@ -95,6 +96,7 @@ static Class pathCellClass;
 - (void) dealloc
 {
   [[self superview] removeTrackingRect: _trackingTag];
+  RELEASE(_pathItems);
   [super dealloc];
 }
 
@@ -162,7 +164,7 @@ static Class pathCellClass;
       [items addObject: pi];
     }
 
-  [self setPathItems: [items copy]];
+  [self setPathItems: items];
 }
 
 - (NSURL *) URL
@@ -243,6 +245,7 @@ static Class pathCellClass;
       [cell setImage: [item image]];
       [cell setURL: [item URL]];
       [array addObject: cell];
+      RELEASE(cell);
     }
 
   [self setPathComponentCells: array];
@@ -270,6 +273,16 @@ static Class pathCellClass;
 {
   [_cell setPlaceholderString: string];
   [self setNeedsDisplay];
+}
+
+- (BOOL) isEditable
+{
+  return _editable;
+}
+
+- (void) setEditable: (BOOL)flag
+{
+  _editable = flag;
 }
 
 - (NSColor *) backgroundColor

@@ -35,6 +35,16 @@
     }
 }
 
+- (instancetype) initWithFrame: (NSRect)frameRect
+{
+  self = [super initWithFrame: frameRect];
+  if (self != nil)
+    {
+      _enabled = YES;
+    }
+  return self;
+}
+
 - (void) setState: (NSControlStateValue)s
 {
   _state = s;
@@ -154,14 +164,13 @@
                             enabled: [self isEnabled]];
 }
 
-- (void) mouseDown: (NSEvent *)event
+- (void) performClick: (id)sender
 {
   if (![self isEnabled])
     {
-      [super mouseDown: event];
       return;
     }
-  
+
   if (_state == NSControlStateValueOn)
     {
       [self setState: NSControlStateValueOff];
@@ -176,6 +185,17 @@
       [self sendAction: _action
                     to: _target];
     }
+}
+
+- (void) mouseDown: (NSEvent *)event
+{
+  if (![self isEnabled])
+    {
+      [super mouseDown: event];
+      return;
+    }
+
+  [self performClick: self];
 }
 
 // Accessibility
@@ -229,6 +249,7 @@
 {
   if ((self = [super initWithCoder: coder]) != nil)
     {
+      _enabled = YES;
       if ([coder allowsKeyedCoding])
         {
           if ([coder containsValueForKey: @"NSControlContents"])

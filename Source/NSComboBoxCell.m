@@ -113,6 +113,34 @@ static NSNotificationCenter *nc;
 
 static GSComboWindow *gsWindow = nil;
 
+static void
+GSSyncComboPopupParentWindow(NSWindow *popupWindow, NSWindow *ownerWindow)
+{
+  NSWindow *parentWindow = [popupWindow parentWindow];
+
+  if (parentWindow != nil && parentWindow != ownerWindow)
+    {
+      [parentWindow removeChildWindow: popupWindow];
+      parentWindow = nil;
+    }
+
+  if (ownerWindow != nil && parentWindow != ownerWindow)
+    {
+      [ownerWindow addChildWindow: popupWindow ordered: NSWindowAbove];
+    }
+}
+
+static void
+GSDetachComboPopupParentWindow(NSWindow *popupWindow)
+{
+  NSWindow *parentWindow = [popupWindow parentWindow];
+
+  if (parentWindow != nil)
+    {
+      [parentWindow removeChildWindow: popupWindow];
+    }
+}
+
 @implementation GSComboWindow
 
 + (GSComboWindow *) defaultPopUp
@@ -368,7 +396,8 @@ static GSComboWindow *gsWindow = nil;
   [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowDidResizeNotification object: onWindow];
   // End of the code to remove
-  
+
+  GSSyncComboPopupParentWindow(self, onWindow);
   [self orderFront: self];
   [self makeFirstResponder: _tableView];
   [self runLoopWithComboBoxCell: comboBoxCell];
@@ -376,6 +405,7 @@ static GSComboWindow *gsWindow = nil;
   [nc removeObserver: self name: nil object: onWindow];
   
   [self close];
+  GSDetachComboPopupParentWindow(self);
 
   [onWindow makeFirstResponder: [_cell controlView]];
 }
@@ -654,7 +684,7 @@ static GSComboWindow *gsWindow = nil;
   //_completes = NO;
   _popUpList = [[NSMutableArray alloc] init];
   _hasVerticalScroller = YES;
-  _visibleItems = 10;
+  _visibleItems = 5;
   _intercellSpacing = NSMakeSize(3.0, 2.0);
   _itemHeight = 16;
   _selectedItem = -1;
@@ -762,7 +792,7 @@ static GSComboWindow *gsWindow = nil;
  */
 - (void) setNumberOfVisibleItems: (NSInteger)visibleItems
 {
-  if (visibleItems > 10)
+  if (visibleItems > 0)
     _visibleItems = visibleItems;
 }
 
@@ -1033,8 +1063,12 @@ static GSComboWindow *gsWindow = nil;
   else
     {
       [_popUpList removeObject: object];
+      if (_selectedItem >= (NSInteger)[_popUpList count])
+        {
+          _selectedItem = -1;
+        }
     }
-    
+
   [self reloadData];
 }
 
@@ -1053,8 +1087,12 @@ static GSComboWindow *gsWindow = nil;
   else
     {
       [_popUpList removeObjectAtIndex: index];
+      if (_selectedItem >= (NSInteger)[_popUpList count])
+        {
+          _selectedItem = -1;
+        }
     }
-    
+
   [self reloadData];
 }
 
@@ -1073,8 +1111,9 @@ static GSComboWindow *gsWindow = nil;
   else
     {
       [_popUpList removeAllObjects];
+      _selectedItem = -1;
     }
-    
+
   [self reloadData];
 }
 
@@ -1292,8 +1331,8 @@ static GSComboWindow *gsWindow = nil;
 	    return str;
         }
     }
-  
-  return substring;
+
+  return nil;
 }
 
 /** 

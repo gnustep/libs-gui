@@ -2,7 +2,7 @@
 
    <abstract>Workspace class</abstract>
 
-   Copyright (C) 1996-2016 Free Software Foundation, Inc.
+   Copyright (C) 1996-2026 Free Software Foundation, Inc.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -68,14 +68,16 @@
  * FIXME We won't get here on Solaris at all because it defines the
  * mntent struct in sys/mnttab.h instead of sys/mntent.h.
  */
+#if defined(HAVE_GETMNTENT) && defined (MNT_MEMB)
 # ifdef _PATH_MOUNTED
 #  define MOUNTED_PATH _PATH_MOUNTED
 # elif defined(MOUNTED)
 #  define MOUNTED_PATH MOUNTED
 # else
-#  define MNTTAB "/etc/mtab"
-#  warning "Mounted path file for you OS guessed to /etc/mtab";
+#  define MOUNTED_PATH "/etc/mtab"
+#  warning "Mounted path file for your OS guessed to /etc/mtab"
 # endif
+#endif
 
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSData.h>
@@ -476,6 +478,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
 		  arguments: (NSArray*)args;
 - (id) _connectApplication: (NSString*)appName;
 - (id) _workspaceApplication;
+- (NSString*) _stripPartitionSuffixFromDeviceName: (NSString*)devName;
 
 @end
 
@@ -595,6 +598,7 @@ static id GSLaunched(NSNotification *notification, BOOL active)
  *     }
  *   );
  * }
+ * </example>
  */
 @implementation	NSWorkspace
 
@@ -627,15 +631,32 @@ static NSDictionary		*urlPreferences = nil;
       NS_DURING
 	{
 	  NSFileManager	*mgr = [NSFileManager defaultManager];
+	  NSArray	*library;
 	  NSString	*service;
 	  NSData	*data;
 	  NSDictionary	*dict;
 
+	  /* Without a library directory of the user's own there is nowhere for
+	   * any of this to have been cached, which happens where the home
+	   * directory cannot be resolved.  Leave the paths unset and load
+	   * nothing: a nil path reads as unreadable, so the loads below are
+	   * skipped, and the class stays usable.
+	   */
+	  library = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+	    NSUserDomainMask, YES);
+	  if ([library count] == 0)
+	    {
+	      NSLog(@"No library directory for the user: the workspace"
+		@" preferences and the cached application list are"
+		@" unavailable.");
+	      service = nil;
+	    }
+	  else
+	    {
+	      service = [[library objectAtIndex: 0]
+		stringByAppendingPathComponent: @"Services"];
+	    }
 
-	  service = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, 
-	    NSUserDomainMask, YES) objectAtIndex: 0]
-	    stringByAppendingPathComponent: @"Services"];
-	  
 	  /*
 	   *	Load file extension preferences.
 	   */
@@ -689,7 +710,11 @@ static NSDictionary		*urlPreferences = nil;
 	}
       NS_HANDLER
 	{
-	  [localException raise];
+	  /* None of this is needed for the class to work, and raising from
+	   * +initialize leaves it half set up and hands the exception to
+	   * whichever caller happened to touch it first.  Report and carry on.
+	   */
+	  NSLog(@"Unable to read the workspace preferences: %@", localException);
 	}
       NS_ENDHANDLER
     }
@@ -739,7 +764,7 @@ static NSDictionary		*urlPreferences = nil;
   NSArray *appDirs;
   NSArray *downloadDir;
   NSArray *desktopDir;
-  NSArray *imgDir;
+  NSArray *picDir;
   NSArray *musicDir;
   NSArray *videoDir;
   NSString *sysDir;
@@ -794,7 +819,7 @@ static NSDictionary		*urlPreferences = nil;
     NSSystemDomainMask, YES);
   appDirs = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
     NSAllDomainsMask, YES);
-  imgDir = NSSearchPathForDirectoriesInDomains(NSPicturesDirectory,
+  picDir = NSSearchPathForDirectoriesInDomains(NSPicturesDirectory,
     NSUserDomainMask, YES);
   musicDir = NSSearchPathForDirectoriesInDomains(NSMusicDirectory,
     NSUserDomainMask, YES);
@@ -807,11 +832,15 @@ static NSDictionary		*urlPreferences = nil;
     {
       sysDir = [[sysAppDir objectAtIndex: 0] stringByDeletingLastPathComponent];
       if (![[sysDir lastPathComponent] isEqualToString: @"System"])
-	sysDir = nil;
+        {
+          sysDir = nil;
+        }
     }
 
   if (sysDir != nil)
-    [folderPathIconDict setObject: @"GSFolder" forKey: [sysDir stringByResolvingSymlinksInPath]];
+    {
+      [folderPathIconDict setObject: @"GSFolder" forKey: [sysDir stringByResolvingSymlinksInPath]];
+    }
 
   [folderPathIconDict setObject: @"HomeDirectory"
 			 forKey: [NSHomeDirectory() stringByResolvingSymlinksInPath]];
@@ -844,10 +873,10 @@ static NSDictionary		*urlPreferences = nil;
       [folderPathIconDict setObject: @"Desktop"
 	forKey: [[desktopDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
-  for (i = 0; i < [imgDir count]; i++)
+  for (i = 0; i < [picDir count]; i++)
     {
       [folderPathIconDict setObject: @"ImageFolder"
-	forKey: [[imgDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
+	forKey: [[picDir objectAtIndex: i] stringByResolvingSymlinksInPath]];
     }
   for (i = 0; i < [musicDir count]; i++)
     {
@@ -1324,11 +1353,13 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 
       r = NO;
       devName = [fsName lastPathComponent];
-      // This is a very crude way of removing the partition number
-      if ([devName length] > 3)
-	devName = [devName substringToIndex: 3];
+      
+      /* Extract block device name by removing partition suffix */
+      devName = [self _stripPartitionSuffixFromDeviceName: devName];
+      /* For other devices (loop, ram, sr, etc.), use as-is */
 
       devInfoPath = [@"/sys/block" stringByAppendingPathComponent:devName];
+
       devInfoPath = [devInfoPath stringByAppendingPathComponent:@"removable"];
 
       removableString = [[NSString alloc] initWithContentsOfFile:devInfoPath];
@@ -1518,7 +1549,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	   * mount point.
 	   */
 	  else if ([[fm fileAttributesAtPath:
-	    [fullPath stringByDeletingLastPathComponent]
+	    [[fullPath stringByResolvingSymlinksInPath]
+	    stringByDeletingLastPathComponent]
 	    traverseLink: YES] fileSystemNumber]
 	    != [attributes fileSystemNumber])
 	    {
@@ -3696,6 +3728,50 @@ launchIdentifiers: (NSArray **)identifiers
     }
 
   return app;
+}
+
+- (NSString*) _stripPartitionSuffixFromDeviceName: (NSString*)devName
+{
+  /* Handle various device naming schemes:
+   *   sd*, hd*, vd*, xvd* → remove trailing digits (sda1 → sda)
+   *   nvme*n*p* → remove trailing p<digits> (nvme0n1p1 → nvme0n1)
+   *   mmcblk*p* → remove trailing p<digits> (mmcblk0p1 → mmcblk0)
+   *   loop*, ram*, sr* → use as-is
+   */
+  if ([devName hasPrefix:@"nvme"] || [devName hasPrefix:@"mmcblk"])
+    {
+      /* For nvme and mmcblk devices, partition names have a 'p' separator
+       * e.g., nvme0n1p1, mmcblk0p1 */
+      NSRange pRange = [devName rangeOfString:@"p" options:NSBackwardsSearch];
+      if (pRange.location != NSNotFound)
+        {
+          /* Check if everything after 'p' is digits */
+          NSString *suffix = [devName substringFromIndex:pRange.location + 1];
+          NSCharacterSet *nonDigits = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+          if ([suffix rangeOfCharacterFromSet:nonDigits].location == NSNotFound && [suffix length] > 0)
+            {
+              /* It's a partition, strip it */
+              devName = [devName substringToIndex:pRange.location];
+            }
+        }
+    }
+  else if ([devName hasPrefix:@"sd"] || [devName hasPrefix:@"hd"] || 
+           [devName hasPrefix:@"vd"] || [devName hasPrefix:@"xvd"])
+    {
+      /* For sd/hd/vd/xvd devices, remove trailing digits (sda1 → sda) */
+      NSCharacterSet *digits = [NSCharacterSet decimalDigitCharacterSet];
+      NSInteger i = [devName length] - 1;
+      while (i >= 0 && [digits characterIsMember:[devName characterAtIndex:i]])
+        {
+          i--;
+        }
+      if (i < (NSInteger)[devName length] - 1)
+        {
+          /* Found trailing digits, strip them */
+          devName = [devName substringToIndex:i + 1];
+        }
+    }
+  return devName;
 }
 
 @end

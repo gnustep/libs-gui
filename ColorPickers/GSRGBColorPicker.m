@@ -44,7 +44,7 @@
       b = [NSBundle bundleForClass: [self class]];
 
       numFields = 3;
-      currentMode = NSColorPanelRGBModeMask;
+      currentMode = NSRGBModeColorPanel;
       maxValue = 255;
 
       r_names[0] = NSLocalizedStringFromTableInBundle(@"Red",@"StandardPicker",b,@"");

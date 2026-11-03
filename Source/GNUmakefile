@@ -111,6 +111,7 @@ NSDictionaryController.m \
 NSDockTile.m \
 NSDocument.m \
 NSDocumentController.m \
+NSDraggingItem.m \
 NSDrawer.m \
 NSEPSImageRep.m \
 NSEvent.m \
@@ -382,7 +383,7 @@ GSColorSliderCell.m \
 GSFontAssetDownloader.m \
 GSFontAssetInstaller.m
 
-ifeq ($(BUILD_MOVIE), yes)
+ifneq ($(filter yes 1,$(BUILD_MOVIE)),)
 libgnustep-gui_OBJC_FILES += GSMovieView.m
 libgnustep-gui_OBJC_FILES += GSAudioPlayer.m
 libgnustep-gui_OBJC_FILES += GSAVUtils.m
@@ -469,6 +470,7 @@ NSDiffableDataSource.h \
 NSDockTile.h \
 NSDocument.h \
 NSDocumentController.h \
+NSDraggingItem.h \
 NSDrawer.h \
 NSEPSImageRep.h \
 NSErrors.h \

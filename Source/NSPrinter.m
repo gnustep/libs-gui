@@ -414,14 +414,32 @@ static NSMutableDictionary* printerCache;
 
   result = [NSMutableDictionary dictionary];
   
-  if ([self isKey: @"DefaultResolution" 
+  if ([self isKey: @"DefaultResolution"
           inTable:@"PPD"])
     {
-      int dpi = [self intForKey: @"DefaultResolution" 
-                        inTable: @"PPD"];
+      NSString *resolution;
+      NSScanner *bits;
+      int xdpi, ydpi;
 
-      [result setObject: [NSNumber numberWithInt: dpi]
-                forKey: NSDeviceResolution];
+      /* A resolution reads '600dpi' or '600x300dpi', but the keyword also
+         takes values such as 'default' that name no resolution at all. */
+      resolution = [self stringForKey: @"DefaultResolution"
+                              inTable: @"PPD"];
+      bits = [NSScanner scannerWithString: resolution];
+
+      if ([bits scanInt: &xdpi] && xdpi > 0)
+        {
+          if (!([bits scanString: @"x"
+                   intoString: NULL]
+                && [bits scanInt: &ydpi]
+                && ydpi > 0))
+            {
+              ydpi = xdpi;
+            }
+
+          [result setObject: [NSValue valueWithSize: NSMakeSize(xdpi, ydpi)]
+                     forKey: NSDeviceResolution];
+        }
     }
 
   if ([self isKey: @"ColorDevice" 
@@ -1251,6 +1269,7 @@ static NSMutableDictionary* printerCache;
   NSString* optionKey1 = nil;
   NSString* mainKey2 = nil;
   NSString* optionKey2 = nil;
+  NSUInteger location;
 
   // UIConstraint should have no option keyword
   if (![constraint scanString: @":" 
@@ -1284,16 +1303,20 @@ static NSMutableDictionary* printerCache;
               [NSCharacterSet whitespaceAndNewlineCharacterSet]
                              intoString: &mainKey2];
                             
-  if (![constraint scanCharactersFromSet: newlineSet 
-                              intoString: NULL])
+  location = [constraint scanLocation];
+
+  if ([constraint scanCharactersFromSet: newlineSet
+                             intoString: NULL])
     {
-      [constraint scanUpToCharactersFromSet: 
-                  [NSCharacterSet whitespaceAndNewlineCharacterSet]
-                                 intoString: &optionKey2];
+      // The caller skips the rest of the line, so leave the line terminator
+      optionKey2 = @"";
+      [constraint setScanLocation: location];
     }
   else
     {
-      optionKey2 = @"";
+      [constraint scanUpToCharactersFromSet:
+                  [NSCharacterSet whitespaceAndNewlineCharacterSet]
+                                 intoString: &optionKey2];
     }
 
   // Add to table
@@ -1319,6 +1342,7 @@ static NSMutableDictionary* printerCache;
   NSString *section = nil;
   NSString *keyword = nil;
   NSString *optionKeyword = nil;
+  NSUInteger location;
 
   // Order dependency should have no option keyword
   if (![dependency scanString: @":" 
@@ -1342,19 +1366,22 @@ static NSMutableDictionary* printerCache;
               [NSCharacterSet whitespaceAndNewlineCharacterSet]
                              intoString: &keyword];
                             
-  if (![dependency scanCharactersFromSet: newlineSet 
-                              intoString: NULL])
+  location = [dependency scanLocation];
+
+  if ([dependency scanCharactersFromSet: newlineSet
+                             intoString: NULL])
+    {
+      // The caller skips the rest of the line, so leave the line terminator
+      [dependency setScanLocation: location];
+    }
+  else
     {
       // Optional keyword exists
-      [dependency scanUpToCharactersFromSet: 
+      [dependency scanUpToCharactersFromSet:
                   [NSCharacterSet whitespaceAndNewlineCharacterSet]
                                  intoString: &optionKeyword];
     }
 
-  // Go to next line of PPD file
-  [dependency scanCharactersFromSet: newlineSet 
-                         intoString: NULL];
-                         
   // Add to table
   if (optionKeyword)
     keyword = [keyword stringByAppendingFormat: @"/%@", optionKeyword];

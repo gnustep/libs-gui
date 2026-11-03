@@ -41,8 +41,6 @@
 
 int main()
 {
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  
   START_SET("NSDiffableDataSource with NSCollectionView")
     
     // Test 1: Create collection view and data source
@@ -106,6 +104,5 @@ int main()
     
   END_SET("NSDiffableDataSource with NSCollectionView")
   
-  [pool drain];
   return 0;
 }

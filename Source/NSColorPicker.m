@@ -61,7 +61,9 @@
 - (id)initWithPickerMask:(int)aMask
 	      colorPanel:(NSColorPanel *)colorPanel
 {
-  ASSIGN(_colorPanel, colorPanel);
+  /* The panel retains its pickers, so the back reference is not retained to
+     avoid a retain cycle. */
+  _colorPanel = colorPanel;
   return self;
 }
 

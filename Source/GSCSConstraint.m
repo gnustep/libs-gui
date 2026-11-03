@@ -42,8 +42,14 @@
   self = [super init];
   if (self)
     {
-      ASSIGN(_strength, strength != nil ? [strength copy]
-                                        : [GSCSStrength strengthRequired]);
+      if (strength != nil)
+        {
+          ASSIGNCOPY(_strength, strength);
+        }
+      else
+        {
+          ASSIGN(_strength, [GSCSStrength strengthRequired]);
+        }
       ASSIGN(_expression, expression);
       ASSIGN(_variable, variable);
       _type = type;
@@ -157,11 +163,12 @@ operator: (GSCSConstraintOperator) operator
         {
           [rhsExpression addVariable: lhs coefficient: -1];
         }
-      
+
+      GSCSConstraint *constraint = AUTORELEASE([[GSCSConstraint alloc]
+          initLinearInequityConstraintWithExpression: rhsExpression]);
       RELEASE(rhsExpression);
 
-      return AUTORELEASE([[GSCSConstraint alloc]
-          initLinearInequityConstraintWithExpression: rhsExpression]);
+      return constraint;
     }
 }
 

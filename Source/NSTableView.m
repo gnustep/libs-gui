@@ -175,6 +175,7 @@ typedef struct _tableViewFlags
 - (NSView*)  _renderedViewForPath: (NSIndexPath*)path;
 - (void) _setRenderedView: (NSView*)view forPath: (NSIndexPath*)path;
 - (void) _layoutViewBasedRows;
+- (void) _registerPrototypeViews: (NSArray *)prototypeViews;
 @end
 
 @interface NSTableView (SelectionHelper)
@@ -199,6 +200,8 @@ typedef struct _tableViewFlags
 - (void) _applyBindingsToCell: (NSCell *)cell
 			atRow: (NSInteger)index;
 - (NSString *) _keyPathForValueBinding;
+- (void) _setIndicatorImage: (NSImage *)image;
+- (NSImage *) _indicatorImage;
 @end
 
 /*
@@ -2045,14 +2048,15 @@ static void computeNewSelection
 - (void) _initDefaults
 {
   _isValidating     = NO;
-  _drawsGrid        = YES;
+  _gridStyleMask    = NSTableViewSolidVerticalGridLineMask | NSTableViewSolidHorizontalGridLineMask;
+  _allowsTypeSelect = YES;
   _rowHeight        = 16.0;
   _intercellSpacing = NSMakeSize (5.0, 2.0);
   ASSIGN(_selectedColumns, [NSMutableIndexSet indexSet]);
   ASSIGN(_selectedRows, [NSMutableIndexSet indexSet]);
   _allowsEmptySelection = YES;
   _allowsMultipleSelection = NO;
-  _allowsColumnSelection = YES;
+  _allowsColumnSelection = NO;
   _allowsColumnResizing = YES;
   _allowsColumnReordering = YES;
   _autoresizesAllColumnsToFit = NO;
@@ -3296,12 +3300,22 @@ byExtendingSelection: (BOOL)flag
 
 - (void) setDrawsGrid: (BOOL)flag
 {
-  _drawsGrid = flag;
+  _gridStyleMask = flag ? (NSTableViewSolidVerticalGridLineMask | NSTableViewSolidHorizontalGridLineMask) : NSTableViewGridNone;
 }
 
 - (BOOL) drawsGrid
 {
-  return _drawsGrid;
+  return (_gridStyleMask != NSTableViewGridNone);
+}
+
+- (void) setAllowsTypeSelect: (BOOL)flag
+{
+  _allowsTypeSelect = flag;
+}
+
+- (BOOL) allowsTypeSelect
+{
+  return _allowsTypeSelect;
 }
 
 - (void) setGridColor: (NSColor *)aColor
@@ -3316,13 +3330,12 @@ byExtendingSelection: (BOOL)flag
 
 - (void) setGridStyleMask: (NSTableViewGridLineStyle)gridType
 {
-  // FIXME
+  _gridStyleMask = gridType;
 }
 
 - (NSTableViewGridLineStyle) gridStyleMask
 {
-  // FIXME
-  return 0;
+  return _gridStyleMask;
 }
 
 /*
@@ -4587,7 +4600,7 @@ This method is deprecated, use -columnIndexesInRect:. */
   frameRect.size.width -= _intercellSpacing.width;
 
   // We add some space to separate the cell from the grid
-  if (_drawsGrid)
+  if (_gridStyleMask != NSTableViewGridNone)
     {
       frameRect.size.width -= 4;
       frameRect.origin.x += 2;
@@ -5525,18 +5538,13 @@ This method is deprecated, use -columnIndexesInRect:. */
 /* indicator image */
 - (NSImage *) indicatorImageInTableColumn: (NSTableColumn *)aTableColumn
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"indicatorImageInTableColumn:", "NSTableView");
-  return nil;
+  return [aTableColumn _indicatorImage];
 }
 
 - (void) setIndicatorImage: (NSImage *)anImage
 	     inTableColumn: (NSTableColumn *)aTableColumn
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"setIndicatorImage:inTableColumn:", "NSTableView");
+  [aTableColumn _setIndicatorImage: anImage];
 }
 
 /* highlighting columns */
@@ -5726,7 +5734,10 @@ This method is deprecated, use -columnIndexesInRect:. */
       number = _numberOfColumns;
       [aCoder encodeValueOfObjCType: @encode(int) at: &number];
 
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+      {
+        BOOL drawsGrid = [self drawsGrid];
+        [aCoder encodeValueOfObjCType: @encode(BOOL) at: &drawsGrid];
+      }
       rowHeight = _rowHeight;
       [aCoder encodeValueOfObjCType: @encode(float) at: &rowHeight];
       [aCoder encodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
@@ -5933,7 +5944,11 @@ This method is deprecated, use -columnIndexesInRect:. */
       _numberOfRows = number;
       [aDecoder decodeValueOfObjCType: @encode(int) at: &number];
       _numberOfColumns = number;
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
+      {
+        BOOL drawsGrid;
+        [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &drawsGrid];
+        [self setDrawsGrid: drawsGrid];
+      }
       [aDecoder decodeValueOfObjCType: @encode(float) at: &rowHeight];
       _rowHeight = rowHeight;
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
@@ -6508,7 +6523,7 @@ This method is deprecated, use -columnIndexesInRect:. */
 	  newRect.origin.x += 3;
 	  newRect.size.width -= 3;
 
-	  if (_drawsGrid)
+	  if (_gridStyleMask != NSTableViewGridNone)
 		{
 			//newRect.origin.y += 1;
 			//newRect.origin.x += 1;
@@ -6790,23 +6805,41 @@ For a more detailed explanation, -setSortDescriptors:. */
 
 - (void) _postSelectionDidChangeNotification
 {
-  NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
   GSKeyValueBinding *theBinding;
-  
-  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
-				   forObject: tb];
 
-  // If there is a binding, send the indexes back
+  /* The table view's own selectionIndexes binding (established by
+     [tableView bind: NSSelectionIndexesBinding toObject: controller ...],
+     e.g. from a nib) is registered with the table view as the source
+     object - push the new selection back through it so the bound
+     controller's selection follows user clicks. */
+  theBinding = [GSKeyValueBinding getBinding: NSSelectionIndexesBinding
+				   forObject: self];
   if (theBinding != nil)
     {
-      id observedObject = [theBinding observedObject];
+      [theBinding reverseSetValue: _selectedRows];
+    }
+  else if ([_tableColumns count] > 0)
+    {
+      /* Fallback: a selectionIndexes binding established with the observed
+	 controller itself as source, found via the first column's value
+	 binding. */
+      NSTableColumn *tb = [_tableColumns objectAtIndex: 0];
 
-      // Set the selection indexes on the controller...
-      theBinding = [GSKeyValueBinding getBinding: NSSelectionIndexesBinding
-				       forObject: observedObject];
+      theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+				       forObject: tb];
+
+      // If there is a binding, send the indexes back
       if (theBinding != nil)
 	{
-	  [theBinding reverseSetValue: _selectedRows];
+	  id observedObject = [theBinding observedObject];
+
+	  // Set the selection indexes on the controller...
+	  theBinding = [GSKeyValueBinding getBinding: NSSelectionIndexesBinding
+					   forObject: observedObject];
+	  if (theBinding != nil)
+	    {
+	      [theBinding reverseSetValue: _selectedRows];
+	    }
 	}
     }
 

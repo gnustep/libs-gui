@@ -28,15 +28,15 @@
                        constraint: (GSCSConstraint *)constraint
                      plusVariable: (GSCSVariable *)plusVariable
                     minusVariable: (GSCSVariable *)minusVariable
-                 previousConstant: (NSInteger)previousConstant
+                 previousConstant: (CGFloat)previousConstant
 {
   self = [super init];
   if (self != nil)
     {
-      _variable = variable;
-      _plusVariable = plusVariable;
-      _minusVariable = minusVariable;
-      _constraint = constraint;
+      ASSIGN(_variable, variable);
+      ASSIGN(_plusVariable, plusVariable);
+      ASSIGN(_minusVariable, minusVariable);
+      ASSIGN(_constraint, constraint);
       _previousConstant = previousConstant;
     }
 
@@ -51,6 +51,26 @@
 - (GSCSVariable*) variable
 {
   return _variable;
+}
+
+- (GSCSVariable*) plusVariable
+{
+  return _plusVariable;
+}
+
+- (GSCSVariable*) minusVariable
+{
+  return _minusVariable;
+}
+
+- (CGFloat) previousConstant
+{
+  return _previousConstant;
+}
+
+- (void) setPreviousConstant: (CGFloat)previousConstant
+{
+  _previousConstant = previousConstant;
 }
 
 - (void) dealloc

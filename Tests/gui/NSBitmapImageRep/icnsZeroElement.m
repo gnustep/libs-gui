@@ -23,7 +23,7 @@ static const unsigned char zeroSizeElementICNS[] = {
  */
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep icnsZeroElement")
   NSData            *data;
   NSBitmapImageRep  *rep;
   NSArray           *reps;
@@ -32,14 +32,14 @@ int main()
                         length: sizeof(zeroSizeElementICNS)];
 
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep == nil,
+  PASS(rep == nil,
     "an ICNS file with a zero-size element does not hang -initWithData:");
   [rep release];
 
   reps = [NSBitmapImageRep imageRepsWithData: data];
-  pass(reps != nil,
+  PASS(reps != nil,
     "an ICNS file with a zero-size element does not hang +imageRepsWithData:");
 
-  [arp release];
+  END_SET("NSBitmapImageRep icnsZeroElement")
   return 0;
 }

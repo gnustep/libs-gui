@@ -105,6 +105,74 @@ static Class textFieldCellClass;
   return self;
 }
 
++ (instancetype) labelWithString: (NSString *)stringValue
+{
+  NSTextField *field = AUTORELEASE([[self alloc] initWithFrame: NSZeroRect]);
+
+  [field setEditable: NO];
+  [field setSelectable: NO];
+  [field setBezeled: NO];
+  [field setBordered: NO];
+  [field setDrawsBackground: NO];
+  [field setAlignment: NSTextAlignmentNatural];
+  [[field cell] setLineBreakMode: NSLineBreakByClipping];
+  [field setStringValue: stringValue];
+  [field sizeToFit];
+
+  return field;
+}
+
++ (instancetype) labelWithAttributedString: (NSAttributedString *)attributedStringValue
+{
+  NSTextField *field = AUTORELEASE([[self alloc] initWithFrame: NSZeroRect]);
+
+  [field setEditable: NO];
+  [field setSelectable: NO];
+  [field setBezeled: NO];
+  [field setBordered: NO];
+  [field setDrawsBackground: NO];
+  [field setAlignment: NSTextAlignmentNatural];
+  [[field cell] setLineBreakMode: NSLineBreakByWordWrapping];
+  [field setAttributedStringValue: attributedStringValue];
+  [field sizeToFit];
+
+  return field;
+}
+
++ (instancetype) textFieldWithString: (NSString *)stringValue
+{
+  NSTextField *field = AUTORELEASE([[self alloc] initWithFrame: NSZeroRect]);
+
+  [field setEditable: YES];
+  [field setSelectable: YES];
+  [field setBezeled: YES];
+  [field setBordered: NO];
+  [field setDrawsBackground: YES];
+  [field setAlignment: NSTextAlignmentNatural];
+  [[field cell] setLineBreakMode: NSLineBreakByClipping];
+  [field setStringValue: stringValue];
+  [field sizeToFit];
+
+  return field;
+}
+
++ (instancetype) wrappingLabelWithString: (NSString *)stringValue
+{
+  NSTextField *field = AUTORELEASE([[self alloc] initWithFrame: NSZeroRect]);
+
+  [field setEditable: NO];
+  [field setSelectable: YES];
+  [field setBezeled: NO];
+  [field setBordered: NO];
+  [field setDrawsBackground: NO];
+  [field setAlignment: NSTextAlignmentNatural];
+  [[field cell] setLineBreakMode: NSLineBreakByWordWrapping];
+  [field setStringValue: stringValue];
+  [field sizeToFit];
+
+  return field;
+}
+
 - (void) dealloc
 {
   if (_delegate != nil)

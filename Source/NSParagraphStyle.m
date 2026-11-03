@@ -52,7 +52,7 @@
             _alignment = NSCenterTextAlignment;
             break;
           case NSDecimalTabStopType:
-            _alignment = NSRightTextAlignment;
+            _alignment = NSNaturalTextAlignment;
             break;
         }
     }
@@ -72,14 +72,7 @@
 	type = NSLeftTabStopType; 
 	break;
       case NSRightTextAlignment:
-	if ([options objectForKey: NSTabColumnTerminatorsAttributeName] != nil)
-	  {
-	    type = NSDecimalTabStopType;
-	  }
-	else
-	  {
-	    type = NSRightTabStopType;
-	  }
+	type = NSRightTabStopType;
 	break;
       case NSCenterTextAlignment:
 	type = NSCenterTabStopType;
@@ -223,9 +216,9 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   if (self == [NSParagraphStyle class])
     {
-      /* Set the class version to 2, as the writing direction is now 
-	 stored in the encoding */
-      [self setVersion: 3];
+      /* Version 3 stores the writing direction in the encoding.  Version 4
+	 numbers NSTextAlignment as AppKit does. */
+      [self setVersion: 4];
     }
 }
 
@@ -475,9 +468,11 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   if ([aCoder allowsKeyedCoding])
     {
-      _firstLineHeadIndent = [aCoder decodeFloatForKey: @"NSFirstLineHeadIndent"];
+      _firstLineHeadIndent
+	= [aCoder decodeFloatForKey: @"NSFirstLineHeadIndent"];
       _headIndent = [aCoder decodeFloatForKey: @"NSHeadIndent"];
-      _paragraphSpacing = [aCoder decodeFloatForKey: @"NSParagraphSpacingBefore"];
+      _paragraphSpacing
+	= [aCoder decodeFloatForKey: @"NSParagraphSpacingBefore"];
       ASSIGN(_tabStops, [aCoder decodeObjectForKey: @"NSTabStops"]);
       ASSIGN(_textLists, [aCoder decodeObjectForKey: @"NSTextLists"]);
       _baseDirection = [aCoder decodeIntForKey: @"NSWritingDirection"];
@@ -503,30 +498,39 @@ static NSParagraphStyle	*defaultStyle = nil;
        *	Tab stops don't conform to NSCoding - so we do it the long way.
        */
       [aCoder decodeValueOfObjCType: @encode(NSUInteger) at: &count];
+      /* count is read from the (untrusted) archive; could be bad!
+       */
+      if (count > 10000)
+	{
+	  RELEASE(self);
+	  [NSException raise: NSInternalInconsistencyException
+	    format: @"archive contains unreasonable number (%"PRIdPTR
+	    @") of tab stops", count];
+	}
       _tabStops = [[NSMutableArray alloc] initWithCapacity: count];
       if (count > 0)
         {
-          float *locations;
+          float		*locations;
           NSTextTabType *types;
           NSUInteger i;
 
-          /* count is read from the (untrusted) archive; allocate the scratch
-             arrays on the heap rather than as stack VLAs, which a large count
-             would overflow. */
-          locations = NSZoneMalloc(NSDefaultMallocZone(),
-                                   count * sizeof(float));
-          types = NSZoneMalloc(NSDefaultMallocZone(),
-                               count * sizeof(NSTextTabType));
-          if (locations == NULL || types == NULL)
-            {
-              if (locations != NULL)
-                NSZoneFree(NSDefaultMallocZone(), locations);
-              if (types != NULL)
-                NSZoneFree(NSDefaultMallocZone(), types);
-              [NSException raise: NSMallocException
-                          format: @"Unable to allocate tab stops"];
-            }
-
+          locations = malloc(count * sizeof(float));
+          types = malloc(count * sizeof(NSTextTabType));
+	  if (NULL == types || NULL == locations)
+	    {
+	      if (types)
+		{
+		  free(types);
+		}
+	      if (locations)
+		{
+		  free(locations);
+		}
+	      RELEASE(self);
+	      [NSException raise: NSInternalInconsistencyException
+		format: @"not enough memory to decode (%"PRIdPTR
+		@") tab stops", count];
+	    }
           [aCoder decodeArrayOfObjCType: @encode(float)
                   count: count
                   at: locations];
@@ -542,13 +546,27 @@ static NSParagraphStyle	*defaultStyle = nil;
               [_tabStops addObject: tab];
               RELEASE(tab);
             }
-          NSZoneFree(NSDefaultMallocZone(), locations);
-          NSZoneFree(NSDefaultMallocZone(), types);
+          free(locations);
+          free(types);
         }
       
       if ([aCoder versionForClassName: @"NSParagraphStyle"] >= 2)
         {
-          [aCoder decodeValueOfObjCType: @encode(NSInteger) at: &_baseDirection];
+          [aCoder decodeValueOfObjCType: @encode(NSInteger)
+				     at: &_baseDirection];
+        }
+
+      /* Before version 4 right was 1 and centre was 2. */
+      if ([aCoder versionForClassName: @"NSParagraphStyle"] < 4)
+        {
+          if (_alignment == 1)
+            {
+              _alignment = NSRightTextAlignment;
+            }
+          else if (_alignment == 2)
+            {
+              _alignment = NSCenterTextAlignment;
+            }
         }
     }
 
@@ -634,11 +652,16 @@ static NSParagraphStyle	*defaultStyle = nil;
   C(_lineHeightMultiple);
   C(_tighteningFactorForTruncation);
   C(_headerLevel);
+  C(_baseDirection);
 #undef C
 
-#define C(x) if (![x isEqualToArray: other->x]) return NO;
+/* _textBlocks is nil rather than an empty array in a style that has none,
+   so compare the pointers before sending isEqualToArray:.
+ */
+#define C(x) if ((x != other->x) && ![x isEqualToArray: other->x]) return NO;
   C(_tabStops);
   C(_textLists);
+  C(_textBlocks);
 #undef C
 
   return YES;
@@ -809,7 +832,6 @@ static NSParagraphStyle	*defaultStyle = nil;
     {
       [_tabStops removeAllObjects];
       [_tabStops addObjectsFromArray: array];
-      [_tabStops sortUsingSelector: @selector(compare:)];
     }
 }
 

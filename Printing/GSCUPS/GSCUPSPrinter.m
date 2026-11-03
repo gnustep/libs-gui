@@ -109,7 +109,18 @@ static BOOL didWarn;
 		      withHost: @"Unknown"
 		      withNote: @"Automatically Generated"];
 
-      [printer parsePPDAtPath: ppdPath];
+      /* An unreadable fallback PPD is a warning here and the printer is
+         returned without it, so the caller uses its defaults. */
+      NS_DURING
+        {
+          [printer parsePPDAtPath: ppdPath];
+        }
+      NS_HANDLER
+        {
+          NSLog(@"Could not read the fallback PPD %@: %@",
+                ppdPath, [localException reason]);
+        }
+      NS_ENDHANDLER
 
       return AUTORELEASE(printer);
     }
@@ -124,7 +135,19 @@ static BOOL didWarn;
 
   if( ppdFile )
     {
-      [printer parsePPDAtPath: [NSString stringWithCString: ppdFile]];
+      /* The PPD CUPS provides may be unreadable; an unreadable PPD is a warning
+         here and the printer is returned without it, so the caller uses its
+         defaults rather than aborting. */
+      NS_DURING
+        {
+          [printer parsePPDAtPath: [NSString stringWithCString: ppdFile]];
+        }
+      NS_HANDLER
+        {
+          NSLog(@"Could not read the PPD for printer %@: %@",
+                name, [localException reason]);
+        }
+      NS_ENDHANDLER
       unlink( ppdFile );
     }
   else

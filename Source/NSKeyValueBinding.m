@@ -28,6 +28,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <Foundation/NSNull.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
@@ -64,7 +65,18 @@
       tmp = [GSKeyValueBinding exposedBindingsForClass: class];
       if (tmp != nil)
         {
-          [exposedBindings addObjectsFromArray: tmp];
+          NSUInteger i;
+
+          /* A class may expose a binding its superclass also exposes.  */
+          for (i = 0; i < [tmp count]; i++)
+            {
+              id name = [tmp objectAtIndex: i];
+
+              if ([exposedBindings containsObject: name] == NO)
+                {
+                  [exposedBindings addObject: name];
+                }
+            }
         }
   
       class = [class superclass];
@@ -444,7 +456,7 @@ void GSBindingInvokeAction(NSString *targetKey, NSString *argumentKey,
         }
       return placeholder;
     }
-  if (value == nil)
+  if (value == nil || value == [NSNull null])
     {
       placeholder = [options objectForKey:
         NSNullPlaceholderBindingOption];

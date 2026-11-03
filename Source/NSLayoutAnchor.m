@@ -28,16 +28,36 @@
 
 #import "AppKit/NSLayoutAnchor.h"
 #import "AppKit/NSLayoutConstraint.h"
+#import "GSAutoLayoutAnchorPrivate.h"
 
 @implementation NSLayoutAnchor
+
+- (instancetype) initWithItem: (id)item attribute: (NSLayoutAttribute)attribute
+{
+  self = [super init];
+  if (self != nil)
+    {
+      _name = nil;
+      ASSIGN(_item, item);
+      _hasAmbiguousLayout = NO;
+      _constraintsAffectingLayout = [[NSMutableArray alloc] init];
+      _attribute = attribute;
+    }
+  return self;
+}
+
+- (NSLayoutAttribute) attribute
+{
+  return _attribute;
+}
 
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: 1.0
                                        constant: 0.0];
 }
@@ -45,10 +65,10 @@
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutAnchor *)anchor
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationGreaterThanOrEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: 1.0
                                        constant: 0.0];
 }
@@ -56,10 +76,10 @@
 - (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutAnchor *)anchor
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationLessThanOrEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: 1.0
                                        constant: 0.0];
 }
@@ -67,21 +87,21 @@
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: 1.0
-                                       constant: 0.0];
+                                       constant: c];
 }
 
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationGreaterThanOrEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: 1.0
                                        constant: c];
 }
@@ -89,25 +109,17 @@
 - (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutAnchor *)anchor constant: (CGFloat)c
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationLessThanOrEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: 1.0
                                        constant: c];
 }
 
 - (instancetype) init
 {
-  self = [super init];
-  if (self != nil)
-    {
-      _name = nil;
-      _item = nil;
-      _hasAmbiguousLayout = NO;
-      _constraintsAffectingLayout = [[NSMutableArray alloc] init];
-    }
-  return self;
+  return [self initWithItem: nil attribute: NSLayoutAttributeNotAnAttribute];
 }
 
 - (void) dealloc
@@ -160,10 +172,10 @@
 - (NSLayoutConstraint *) constraintEqualToConstant: (CGFloat)c
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationEqual
-                                         toItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                         toItem: nil
+                                      attribute: NSLayoutAttributeNotAnAttribute
                                      multiplier: 1.0
                                        constant: c];
 }
@@ -171,10 +183,10 @@
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToConstant: (CGFloat)c
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationGreaterThanOrEqual
-                                         toItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                         toItem: nil
+                                      attribute: NSLayoutAttributeNotAnAttribute
                                      multiplier: 1.0
                                        constant: c];
 }
@@ -182,10 +194,10 @@
 - (NSLayoutConstraint *) constraintLessThanOrEqualToConstant: (CGFloat)c
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationLessThanOrEqual
-                                         toItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                         toItem: nil
+                                      attribute: NSLayoutAttributeNotAnAttribute
                                      multiplier: 1.0
                                        constant: c];
 }
@@ -193,10 +205,10 @@
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: m
                                        constant: 0.0];
 }
@@ -204,10 +216,10 @@
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationGreaterThanOrEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: m
                                        constant: 0.0];
 }
@@ -215,10 +227,10 @@
 - (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationLessThanOrEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: m
                                        constant: 0.0];
 }
@@ -226,10 +238,10 @@
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: m
                                        constant: c];
 }
@@ -237,10 +249,10 @@
 - (NSLayoutConstraint *) constraintGreaterThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationGreaterThanOrEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: m
                                        constant: c];
 }
@@ -248,10 +260,10 @@
 - (NSLayoutConstraint *) constraintLessThanOrEqualToAnchor: (NSLayoutDimension *)anchor multiplier: (CGFloat)m constant: (CGFloat)c
 {
   return [NSLayoutConstraint constraintWithItem: _item
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: _attribute
                                       relatedBy: NSLayoutRelationLessThanOrEqual
                                          toItem: [anchor item]
-                                      attribute: NSLayoutAttributeLeft
+                                      attribute: [anchor attribute]
                                      multiplier: m
                                        constant: c];
 }

@@ -54,7 +54,7 @@ static Class pathComponentCellClass;
   RELEASE(_backgroundColor);
   RELEASE(_placeholderAttributedString);
   RELEASE(_allowedTypes);
-  RELEASE(_url);
+  RELEASE(_objectValue);
   RELEASE(_pathComponentCells);
   [super dealloc];
 }
@@ -169,6 +169,10 @@ static Class pathComponentCellClass;
 
 - (NSArray *) pathComponentCells
 {
+  if (_pathComponentCells == nil)
+    {
+      return [NSArray array];
+    }
   return _pathComponentCells;
 }
 
@@ -348,7 +352,7 @@ static Class pathComponentCellClass;
         }
     }
   
-  return [array copy];
+  return array;
 }
 
 @end

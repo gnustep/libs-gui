@@ -65,7 +65,7 @@
   _controlSize = NSRegularControlSize;
   [self setStyle: NSProgressIndicatorBarStyle];
   //_isVertical = NO;
-  //_usesThreadedAnimation = NO;
+  _usesThreadedAnimation = YES;
 
   return self;
 }

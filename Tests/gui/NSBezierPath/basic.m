@@ -13,7 +13,7 @@ static BOOL eq(double d1, double d2)
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBezierPath basic")
   id testObject;
   id testObject1;
   id testObject2;
@@ -42,7 +42,7 @@ int main()
                  @"NSBezierPath",
 		 testObjects, NO, NO);
 
-  [arp release];
+  END_SET("NSBezierPath basic")
   return 0;
 }
 

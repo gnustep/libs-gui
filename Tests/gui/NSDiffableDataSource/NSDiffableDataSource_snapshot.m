@@ -15,8 +15,6 @@
 
 int main()
 {
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  
   START_SET("NSDiffableDataSourceSnapshot basic functionality")
     
     // Test 1: Create empty snapshot
@@ -98,6 +96,5 @@ int main()
     
   END_SET("NSDiffableDataSourceSnapshot basic functionality")
   
-  [pool drain];
   return 0;
 }

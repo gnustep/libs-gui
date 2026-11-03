@@ -37,23 +37,26 @@
 
 @implementation NSRulerMarker
 
-- (id)initWithRulerView:(NSRulerView *)aRulerView
-         markerLocation:(CGFloat)location
-		  image:(NSImage *)anImage
-	    imageOrigin:(NSPoint)imageOrigin
+- (id) initWithRulerView: (NSRulerView *)aRulerView
+          markerLocation: (CGFloat)location
+		   image: (NSImage *)anImage
+	     imageOrigin: (NSPoint)imageOrigin
 {
   if (aRulerView == nil || anImage == nil)
-    [NSException raise: NSInvalidArgumentException
-		format: @"No view or image for ruler marker"];
-
-  self = [super init];
-  _isMovable = YES;
-  _isRemovable = NO;
-  _location = location;
-  _imageOrigin = imageOrigin;
-  _rulerView = aRulerView;
-  ASSIGN(_image, anImage);
-
+    {
+      RELEASE(self);
+      [NSException raise: NSInvalidArgumentException
+		  format: @"No view or image for ruler marker"];
+    }
+  if (nil != (self = [super init]))
+    {
+      _isMovable = YES;
+      _isRemovable = NO;
+      _location = location;
+      _imageOrigin = imageOrigin;
+      _rulerView = aRulerView;
+      ASSIGN(_image, anImage);
+    }
   return self;
 }
 

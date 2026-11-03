@@ -27,6 +27,7 @@
    Boston, MA 02110-1301, USA.
 */ 
 
+#import <Foundation/NSBundle.h>
 #import <Foundation/NSCoder.h>
 #import <Foundation/NSData.h>
 #import <Foundation/NSString.h>
@@ -39,11 +40,24 @@
 {
   if ((self = [super init]))
     {
-      // FIXME: Load corresponding data
-
       _colorSpaceModel = model;
     }
   return self;
+}
+
+/* Loads the named ICC profile that ships as a gui library resource under
+   ColorSpaces, so a standard colour space can report its profile data. */
+- (void) _loadICCProfileNamed: (NSString *)name
+{
+  NSBundle *bundle = [NSBundle bundleForLibrary: @"gnustep-gui"];
+  NSString *path = [bundle pathForResource: name
+                                    ofType: @"icc"
+                               inDirectory: @"ColorSpaces"];
+
+  if (path != nil)
+    {
+      ASSIGN(_iccData, [NSData dataWithContentsOfFile: path]);
+    }
 }
 
 #define COLORSPACE(model) \
@@ -79,7 +93,14 @@
 
 + (NSColorSpace *) genericRGBColorSpace
 {
-  COLORSPACE(NSRGBColorSpaceModel);
+  static NSColorSpace *csp = nil;
+
+  if (!csp)
+    {
+      csp = [[self alloc] _initWithColorSpaceModel: NSRGBColorSpaceModel];
+      [csp _loadICCProfileNamed: @"sRGB2014"];
+    }
+  return csp;
 }
 
 - (id) initWithColorSyncProfile: (void *)prof

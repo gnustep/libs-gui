@@ -16,14 +16,13 @@
 
 int main()
 {
-  NSAutoreleasePool	*arp = [NSAutoreleasePool new];
+  START_SET("NSNibLoading GNUstep basic")
+
   NSArray		**testObjects = NULL;
   BOOL 			success = NO;
   NSFileManager		*mgr = [NSFileManager defaultManager];
   NSString 		*path = [mgr currentDirectoryPath];
   NSBundle 		*bundle = [[NSBundle alloc] initWithPath: path];
-
-  START_SET("NSNibLoading GNUstep basic")
 
   NS_DURING
     {
@@ -77,6 +76,5 @@ int main()
   
   END_SET("NSNibLoading GNUstep basic")
 
-  [arp release];
   return 0;
 }

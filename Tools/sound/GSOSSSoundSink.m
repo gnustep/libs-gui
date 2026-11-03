@@ -16,9 +16,12 @@
 #import <GNUstepGUI/GSSoundSource.h>
 #import <GNUstepGUI/GSSoundSink.h>
 
+#include "PCMGain.h"
+
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include <sys/soundcard.h>
 
 
@@ -34,6 +37,10 @@
 	int channels;
 	int format;
 	int rate;
+	/* Software gain applied to samples; never the device play volume */
+	float volume;
+	void *gainBuffer;
+	size_t gainBufferSize;
 }
 @end
 
@@ -100,6 +107,10 @@ const static NSString *DefaultDevice = @"/dev/dsp";
 {
 	if (nil == (self = [super init])) { return nil; }
 
+	dev = -1;
+	volume = 1.0f;
+	gainBuffer = NULL;
+	gainBufferSize = 0;
 	channels = channelCount;
 	rate = sampleRate;
 
@@ -191,44 +202,86 @@ const static NSString *DefaultDevice = @"/dev/dsp";
 	}
 }
 
+- (void)dealloc
+{
+	[self close];
+	free(gainBuffer);
+	DESTROY(devicePath);
+	[super dealloc];
+}
+
 - (BOOL)playBytes: (void*)bytes length: (NSUInteger)length
 {
+	/* Volume fades must lower the sample amplitude itself, so scale
+	   the PCM data instead of touching the OSS play volume. */
+	void *out = bytes;
+
+	if (volume < 1.0f)
+	{
+		int bits;
+		BOOL be;
+
+		switch (format)
+		{
+			case AFMT_S8:			bits = 8;  be = NO; break;
+			case AFMT_S16_LE:		bits = 16; be = NO; break;
+			case AFMT_S16_BE:		bits = 16; be = YES; break;
+			case AFMT_S24_LE:		bits = 24; be = NO; break;
+			case AFMT_S24_BE:		bits = 24; be = YES; break;
+			case AFMT_S32_LE:		bits = 32; be = NO; break;
+			case AFMT_S32_BE:		bits = 32; be = YES; break;
+			default:
+				/* AFMT_S*_NE aliases map to a LE/BE case above on
+				   most platforms; fall back to 16-bit little-endian. */
+				bits = 16; be = NO; break;
+		}
+
+		if (gainBufferSize < length)
+		{
+			void *nb = realloc(gainBuffer, length);
+			if (nb != NULL)
+			{
+				gainBuffer = nb;
+				gainBufferSize = length;
+			}
+		}
+		if (gainBuffer != NULL)
+		{
+			PCMGainApply(bytes, length, bits, be, volume, gainBuffer);
+			out = gainBuffer;
+		}
+	}
+
 	do 
 	{
-		int written = write(dev, bytes, (size_t)length);
+		int written = write(dev, out, (size_t)length);
 		if (-1 == written)
 		{
 			return NO;
 		}
 		length -= written;
-		bytes += written;
+		out += written;
 	} while (length > 0);
 	return YES;
 }
 
-- (void)setVolume: (float)volume
+/* Software gain on the samples, not the OSS mixer */
+- (void)setVolume: (float)v
 {
-#ifdef OSS_V4
-	char channelVolue = volume * 255;
-	/* OSS uses one byte for left and one byte for right volume */
-	int vol = (channelVolue << 8) + channelVolue;
-	ioctl(dev, SNDCTL_DSP_SETPLAYVOL, &vol);
-#endif
+	if (v < 0.0f)
+	{
+		v = 0.0f;
+	}
+	else if (v > 1.0f)
+	{
+		v = 1.0f;
+	}
+	volume = v;
 }
 
 - (float)volume
 {
-#ifdef OSS_V4
-	int vol;
-	if (-1 == ioctl(dev, SNDCTL_DSP_SETPLAYVOL, &vol))
-	{
-		return 0;
-	}
-	/* Mask off the low 8 bits and scale back */
-	return ((float)(vol & 255) ) / 255;
-#else
-	return 1;
-#endif
+	return volume;
 }
 
 - (void)setPlaybackDeviceIdentifier: (NSString*)playbackDeviceIdentifier

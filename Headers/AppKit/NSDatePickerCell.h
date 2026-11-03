@@ -76,6 +76,10 @@ APPKIT_EXPORT_CLASS
   NSDatePickerMode _datePickerMode;
   NSDatePickerStyle _datePickerStyle;
   BOOL _drawsBackground;
+  NSInteger _selectedField;
+  NSInteger _typedValue;
+  NSInteger _typedDigits;
+  NSInteger _highlightedStepper;
 }
 
 - (NSColor *) backgroundColor;

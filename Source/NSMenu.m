@@ -271,10 +271,9 @@ static BOOL menuBarVisible = YES;
     {
       NSRect screenFrame = [[NSScreen mainScreen] frame];
 
-      NSRect proposedFrame = NSMakeRect(0, 
-		      			screenFrame.size.height -
-		      			[_aWindow frame].size.height +
-					screenFrame.origin.y,
+      NSRect proposedFrame = NSMakeRect(NSMinX(screenFrame),
+					NSMaxY(screenFrame) -
+					[_aWindow frame].size.height,
 					screenFrame.size.width,
 					[_aWindow frame].size.height);
       proposedFrame = [[GSTheme theme] modifyRect: proposedFrame
@@ -312,9 +311,10 @@ static BOOL menuBarVisible = YES;
       
       if ((_aWindow != nil) && ([_aWindow screen] != nil))
         {
-          NSPoint origin = NSMakePoint(0, [[_aWindow screen] visibleFrame].size.height 
-                               - [_aWindow frame].size.height);
-	  
+          NSRect  visible = [[_aWindow screen] visibleFrame];
+          NSPoint origin = NSMakePoint(NSMinX(visible),
+                               NSMaxY(visible) - [_aWindow frame].size.height);
+
           [_aWindow setFrameOrigin: origin];
           [_bWindow setFrameOrigin: origin];
         }
@@ -434,7 +434,7 @@ static BOOL menuBarVisible = YES;
  */
 - (id) init
 {
-  return [self initWithTitle: [[NSProcessInfo processInfo] processName]];
+  return [self initWithTitle: @""];
 }
 
 - (void) dealloc
@@ -2040,8 +2040,15 @@ static BOOL menuBarVisible = YES;
         {
           [[self window] setTitle: [[NSProcessInfo processInfo] processName]];
           [[self window] setLevel: NSMainMenuWindowLevel];
-          [self _setGeometry];
+          /* sizeToFit must run first so that [_aWindow frame].size.height
+           * is non-zero when _setGeometry uses it to place the bar at the
+           * top of the screen.  Without this ordering, external Menu.app
+           * mode (which never calls -display) leaves the window frame at
+           * {0,0,w,h} instead of the correct top-of-screen position,
+           * breaking the NSMouseInRect re-entry check in
+           * _trackWithEvent:startingMenuView: (step 3a). */
           [self sizeToFit];
+          [self _setGeometry];
 
           if ([NSApp isActive])
             {

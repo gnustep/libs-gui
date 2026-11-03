@@ -36,15 +36,51 @@
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 
 @class NSArray;
+@class NSMutableIndexSet;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
+enum {
+  NSToolbarItemGroupSelectionModeSelectOne = 0,
+  NSToolbarItemGroupSelectionModeSelectAny = 1,
+  NSToolbarItemGroupSelectionModeMomentary = 2
+};
+typedef NSInteger NSToolbarItemGroupSelectionMode;
+
+enum {
+  NSToolbarItemGroupControlRepresentationAutomatic = 0,
+  NSToolbarItemGroupControlRepresentationExpanded = 1,
+  NSToolbarItemGroupControlRepresentationCollapsed = 2
+};
+typedef NSInteger NSToolbarItemGroupControlRepresentation;
+#endif
 
 APPKIT_EXPORT_CLASS
 @interface NSToolbarItemGroup : NSToolbarItem
 {
 	NSArray *_subitems;
+	NSMutableIndexSet *_selectedIndexes;
+	NSInteger _selectionMode;
+	NSInteger _controlRepresentation;
+	NSInteger _selectedIndex;
 }
 
 - (void) setSubitems: (NSArray *)items;
 - (NSArray *) subitems;
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_15, GS_API_LATEST)
+- (NSToolbarItemGroupSelectionMode) selectionMode;
+- (void) setSelectionMode: (NSToolbarItemGroupSelectionMode)selectionMode;
+
+- (NSToolbarItemGroupControlRepresentation) controlRepresentation;
+- (void) setControlRepresentation:
+  (NSToolbarItemGroupControlRepresentation)controlRepresentation;
+
+- (NSInteger) selectedIndex;
+- (void) setSelectedIndex: (NSInteger)selectedIndex;
+
+- (BOOL) isSelectedAtIndex: (NSInteger)index;
+- (void) setSelected: (BOOL)selected atIndex: (NSInteger)index;
+#endif
 
 @end
 

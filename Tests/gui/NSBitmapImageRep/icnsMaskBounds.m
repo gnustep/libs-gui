@@ -230,7 +230,7 @@ static const unsigned char truncatedMaskICNS[] = {
 #endif
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep icnsMaskBounds")
 #if !defined(GS_TEST_SYSTEM_ICNS)
   NSData            *data;
   NSBitmapImageRep  *rep;
@@ -239,15 +239,15 @@ int main()
   data = [NSData dataWithBytes: truncatedMaskICNS
                         length: sizeof(truncatedMaskICNS)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep != nil && [rep pixelsWide] == 32 && [rep pixelsHigh] == 32,
+  PASS(rep != nil && [rep pixelsWide] == 32 && [rep pixelsHigh] == 32,
     "a 32x32 ICNS icon with a truncated mask decodes without a buffer overflow");
 
   px = [rep bitmapData];
-  pass(px != NULL && px[0] == 90 && px[1] == 140 && px[2] == 200,
+  PASS(px != NULL && px[0] == 90 && px[1] == 140 && px[2] == 200,
     "the icon colour data is decoded correctly");
 
   [rep release];
 #endif
-  [arp release];
+  END_SET("NSBitmapImageRep icnsMaskBounds")
   return 0;
 }

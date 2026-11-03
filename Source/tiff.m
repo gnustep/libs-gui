@@ -202,7 +202,8 @@ TiffHandleUnmap(thandle_t handle, void* data, toff_t size)
 TIFF* 
 NSTiffOpenDataRead(const char* data, long size)
 {
-  chandle_t* handle;
+  chandle_t	* handle;
+  TIFF		*result;
 
   if (tiff_error_handler_set == 0)
     {
@@ -218,18 +219,25 @@ NSTiffOpenDataRead(const char* data, long size)
   handle->outposition = 0;
   handle->size = size;
   handle->mode = 'r';
-  return TIFFClientOpen("GSTiffReadData", "r",
-			(thandle_t)handle,
-			TiffHandleRead, TiffHandleWrite,
-			TiffHandleSeek, TiffHandleClose,
-			TiffHandleSize,
-			TiffHandleMap, TiffHandleUnmap);
+  result = TIFFClientOpen("GSTiffReadData", "r",
+    (thandle_t)handle,
+    TiffHandleRead, TiffHandleWrite,
+    TiffHandleSeek, TiffHandleClose,
+    TiffHandleSize,
+    TiffHandleMap, TiffHandleUnmap);
+  if (NULL == result)
+    {
+      free(handle);
+    }
+  return result;
 }
 
 TIFF* 
 NSTiffOpenDataWrite(char **data, long *size)
 {
-  chandle_t* handle;
+  chandle_t	*handle;
+  TIFF		*result;
+
   handle = malloc(sizeof(chandle_t));
   handle->data = *data;
   handle->outdata = data;
@@ -237,12 +245,17 @@ NSTiffOpenDataWrite(char **data, long *size)
   handle->outposition = size;
   handle->size = *size;
   handle->mode = 'w';
-  return TIFFClientOpen("GSTiffWriteData", "w",
-			(thandle_t)handle,
-			TiffHandleRead, TiffHandleWrite,
-			TiffHandleSeek, TiffHandleClose,
-			TiffHandleSize,
-			TiffHandleMap, TiffHandleUnmap);
+  result = TIFFClientOpen("GSTiffWriteData", "w",
+    (thandle_t)handle,
+    TiffHandleRead, TiffHandleWrite,
+    TiffHandleSeek, TiffHandleClose,
+    TiffHandleSize,
+    TiffHandleMap, TiffHandleUnmap);
+  if (NULL == result)
+    {
+      free(handle);
+    }
+  return result;
 }
 
 int  

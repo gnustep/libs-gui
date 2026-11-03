@@ -341,6 +341,14 @@ aspell_dictionaries()
   return dictionaries;
 }
 
+- (void) dealloc
+{
+  DESTROY(dictionaries);
+  DESTROY(spellers);
+  DESTROY(documentCheckers);
+  DEALLOC
+}
+
 - (id) init
 {
   if (![super init])
@@ -518,7 +526,7 @@ int main(int argc, char** argv, char **env)
 int main(int argc, char** argv)
 #endif
 {
-  CREATE_AUTORELEASE_POOL (_pool);
+  ENTER_POOL
   NSSpellServer *aServer = [[NSSpellServer alloc] init];
   GNUSpellChecker *aSpellChecker = [[GNU_SPELL_CHECKER_CLASS alloc] init];
 
@@ -526,10 +534,14 @@ int main(int argc, char** argv)
   [aSpellChecker synchronizeLanguages];
   if ([aSpellChecker registerLanguagesWithServer: aServer])
     {
-      [aServer setDelegate: aSpellChecker];
-      NSLog(@"Spell server started and waiting.");
-      [aServer run];
-      NSLog(@"Unexpected death of spell checker");
+      if (NO == [[NSUserDefaults standardUserDefaults] boolForKey:
+	@"RegisterOnly"])
+	{
+	  [aServer setDelegate: aSpellChecker];
+	  NSLog(@"Spell server started and waiting.");
+	  [aServer run];
+	  NSLog(@"Unexpected death of spell checker");
+	}
     }
   else
     {
@@ -537,6 +549,6 @@ int main(int argc, char** argv)
     }
   RELEASE(aSpellChecker);
   RELEASE(aServer);
-  [_pool drain];
+  LEAVE_POOL
   return 0;
 }

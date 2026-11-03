@@ -44,6 +44,7 @@ APPKIT_EXPORT_CLASS
   id _item;
   BOOL _hasAmbiguousLayout;
   NSArray *_constraintsAffectingLayout;
+  NSInteger _attribute;
 }
 
 - (NSLayoutConstraint *) constraintEqualToAnchor: (NSLayoutAnchor *)anchor;

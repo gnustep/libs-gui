@@ -41,9 +41,14 @@
 #import "AppKit/NSTextAttachment.h"
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSTextStorage.h"
+#import "AppKit/NSFont.h"
 #import "GNUstepGUI/GSLayoutManager.h"
 #import "GNUstepGUI/GSHorizontalTypesetter.h"
 
+
+@interface NSFont (GSTypesetterPrivate)
+- (NSGlyph) _defaultGlyphForChar: (unichar)theChar;
+@end
 
 
 /*
@@ -96,7 +101,7 @@ cache fairly aggressively without having to worry about memory consumption.
   return shared;
 }
 
-#define CACHE_INITIAL 192
+#define CACHE_INITIAL 512
 #define CACHE_STEP 192
 
 
@@ -224,7 +229,18 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
 
   if (cacheSize < newLength)
     {
-      cacheSize = newLength;
+      /* Grow the allocation geometrically but gently (half again, rather than
+         to exactly the requested length or by doubling) so that laying out a
+         long run reallocates only a handful of times, starting from a
+         reasonably large initial block. */
+      if (cacheSize < CACHE_INITIAL)
+        {
+          cacheSize = CACHE_INITIAL;
+        }
+      while (cacheSize < newLength)
+        {
+          cacheSize += cacheSize / 2;
+        }
       glyphCache = realloc(glyphCache, sizeof(GlyphCacheEntry) * cacheSize);
     }
 
@@ -272,6 +288,18 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
 }
 
 
+/* East Asian scripts (CJK ideographs, kana and hangul) do not separate words
+   with spaces, so each such character is treated as its own word when wrapping.
+   The ranges cover the ideographic, kana and hangul Unicode blocks. */
+static inline BOOL
+GSIsEastAsianWrapCharacter(unichar c)
+{
+  return (c >= 0x2E80 && c <= 0x9FFF)   /* CJK radicals through CJK Unified Ideographs */
+      || (c >= 0xAC00 && c <= 0xD7AF)   /* Hangul Syllables */
+      || (c >= 0xF900 && c <= 0xFAFF)   /* CJK Compatibility Ideographs */
+      || (c >= 0xFF65 && c <= 0xFF9F);  /* Halfwidth Katakana */
+}
+
 /*
    Should return the first glyph on the next line, which must be <=glyphIndex and
    >=cacheBase (TODO: not enough. actually, it probably is now. the wrapping
@@ -314,9 +342,8 @@ typedef struct GSHorizontalTypesetterGlyphCacheStruct GlyphCacheEntry;
           glyphEntry->size.width = 0;
           return glyphIndex + 1 + cacheBase;
         }
-      /* Each CJK glyph should be treated as a word when wrapping word.
-         The range should work for most cases */
-      else if ((character > 0x2ff0) && (character < 0x9fff))
+      /* Each East Asian glyph is treated as a word when wrapping words. */
+      else if (GSIsEastAsianWrapCharacter(character))
          {
            glyphEntry->dontShow = NO;
            if (glyphIndex > 0)
@@ -343,6 +370,13 @@ struct GSHorizontalTypesetterLineFragmentStruct
   NSRect rect;
   CGFloat lastUsed;
   unsigned int lastGlyphIndex; /* lastGlyphIndex+1, actually */
+
+  /* Set when a truncating line break mode drops glyphs to fit: the glyph to
+     draw as the truncation indicator (0 if none), its position relative to the
+     line's baseline, and the font to draw it with. */
+  NSGlyph truncationGlyph;
+  NSPoint truncationPoint;
+  NSFont *truncationFont;
 };
 typedef struct GSHorizontalTypesetterLineFragmentStruct LineFragment;
 
@@ -926,8 +960,11 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
       if (!doesGlyphFitInLineFragment)
         {
           /* It didn't. Try to break the line. */
+          BOOL truncating = NO;
+          int truncationMode = 0; /* 1 = head, 2 = middle */
+
           switch ([currentParagraphStyle lineBreakMode])
-            { /* TODO: implement all modes */
+            {
               default:
               case NSLineBreakByCharWrapping:
                 lineFragment->lastGlyphIndex = *glyphIndex;
@@ -943,14 +980,73 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
                 break;
 
               case NSLineBreakByTruncatingHead:
+                truncationMode = 1;
+                truncating = YES;
+                /* fall through */
               case NSLineBreakByTruncatingMiddle:
+                if (truncationMode == 0)
+                  {
+                    truncationMode = 2;
+                  }
+                truncating = YES;
+                /* fall through */
               case NSLineBreakByTruncatingTail:
-                /* Pretending that these are clipping is far from prefect,
-                   but it's the closest we've got. */
+                if (truncationMode == 0)
+                  {
+                    /* Fit a truncation glyph (an ellipsis) at the end of the
+                       line, dropping the trailing glyphs it needs room for.
+                       Head and middle reposition the visible glyphs after the
+                       scan below. */
+                    NSFont *efont = glyphCache[(*glyphIndex > firstGlyphIndex)
+                      ? *glyphIndex - 1 : firstGlyphIndex].font;
+                    NSGlyph ellipsis = [efont _defaultGlyphForChar: 0x2026];
+
+                    if (ellipsis != NSNullGlyph)
+                      {
+                        CGFloat ellipsisWidth
+                          = [efont advancementForGlyph: ellipsis].width;
+                        CGFloat maxX = lineFragment->rect.size.width;
+                        int k = (int)*glyphIndex - 1;
+                        int j;
+
+                        while (k >= (int)firstGlyphIndex
+                          && glyphCache[k].position.x + glyphCache[k].size.width
+                             + ellipsisWidth > maxX)
+                          {
+                            k--;
+                          }
+                        for (j = k + 1; j < (int)*glyphIndex; j++)
+                          {
+                            glyphCache[j].dontShow = YES;
+                          }
+                        if (k >= (int)firstGlyphIndex)
+                          {
+                            lineFragment->truncationPoint.x
+                              = glyphCache[k].position.x + glyphCache[k].size.width;
+                          }
+                        else
+                          {
+                            lineFragment->truncationPoint.x
+                              = glyphCache[firstGlyphIndex].position.x;
+                          }
+                        lineFragment->truncationPoint.y = position->y;
+                        lineFragment->truncationGlyph = ellipsis;
+                        lineFragment->truncationFont = efont;
+                        truncating = YES;
+                      }
+                  }
+                /* fall through to hide the overflowing glyphs */
               case NSLineBreakByClipping:
                 /* Scan forward to the next paragraph separator and mark
                    all the glyphs up to there as not visible. */
-                glyphEntry->outsideLineFragment = YES;
+                if (truncating)
+                  {
+                    glyphEntry->dontShow = YES;
+                  }
+                else
+                  {
+                    glyphEntry->outsideLineFragment = YES;
+                  }
                 while (1)
                   {
                     (*glyphIndex)++;
@@ -985,6 +1081,97 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
 
                 lineFragment->lastGlyphIndex = *glyphIndex + 1;
                 break;
+            }
+
+          /* Head and middle truncation: the scan above cached the whole line
+             and hid its glyphs.  Show a suffix (head) or a prefix and a suffix
+             (middle), place the ellipsis, and reposition the shown suffix. */
+          if (truncationMode != 0
+            && lineFragment->lastGlyphIndex > firstGlyphIndex)
+            {
+              int first = (int)firstGlyphIndex;
+              int last = (int)lineFragment->lastGlyphIndex - 1;
+              NSFont *efont;
+              NSGlyph ellipsis;
+
+              /* Do not count a trailing newline as a visible glyph. */
+              while (last > first && glyphCache[last].glyph == NSControlGlyph)
+                last--;
+
+              efont = glyphCache[last].font;
+              ellipsis = [efont _defaultGlyphForChar: 0x2026];
+
+              if (ellipsis != NSNullGlyph)
+                {
+                  CGFloat E = [efont advancementForGlyph: ellipsis].width;
+                  CGFloat maxX = lineFragment->rect.size.width;
+                  CGFloat lineY = glyphCache[first].position.y;
+                  int p = first - 1;         /* last prefix glyph (middle) */
+                  int s;                     /* first suffix glyph shown */
+                  CGFloat suffixX;
+                  int j;
+
+                  if (truncationMode == 2)
+                    {
+                      /* Middle: keep a prefix that fits in half the room. */
+                      CGFloat pw = 0.0;
+
+                      while (p + 1 <= last
+                        && pw + glyphCache[p + 1].size.width <= (maxX - E) / 2.0)
+                        {
+                          p++;
+                          pw += glyphCache[p].size.width;
+                        }
+                    }
+
+                  /* Suffix: the trailing glyphs that fit in the room left after
+                     the prefix and the ellipsis. */
+                  {
+                    CGFloat room = maxX - E
+                      - ((p >= first)
+                         ? glyphCache[p].position.x + glyphCache[p].size.width
+                         : 0.0);
+                    CGFloat sw = 0.0;
+
+                    s = last + 1;
+                    while (s - 1 > p
+                      && sw + glyphCache[s - 1].size.width <= room)
+                      {
+                        s--;
+                        sw += glyphCache[s].size.width;
+                      }
+                    if (s > last)      /* always show at least the last glyph */
+                      s = last;
+                  }
+
+                  /* Hide everything before the shown suffix that is not part of
+                     the kept prefix. */
+                  for (j = p + 1; j < s; j++)
+                    glyphCache[j].dontShow = YES;
+
+                  /* Reposition and show the suffix after the ellipsis. */
+                  if (p >= first)
+                    suffixX = glyphCache[p].position.x + glyphCache[p].size.width + E;
+                  else
+                    suffixX = E;
+                  for (j = s; j <= last; j++)
+                    {
+                      glyphCache[j].dontShow = NO;
+                      glyphCache[j].position.x = suffixX;
+                      glyphCache[j].position.y = lineY;
+                      glyphCache[j].nominal = NO;
+                      suffixX += glyphCache[j].size.width;
+                    }
+
+                  lineFragment->truncationGlyph = ellipsis;
+                  lineFragment->truncationFont = efont;
+                  lineFragment->truncationPoint.y = lineY;
+                  if (p >= first)
+                    lineFragment->truncationPoint.x
+                      = glyphCache[p].position.x + glyphCache[p].size.width;
+                  else
+                    lineFragment->truncationPoint.x = 0.0;
+                }
             }
 
           /* We force at least one glyph into each line fragment rect. This
@@ -1169,6 +1356,7 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
                   lineFragments = realloc(lineFragments, sizeof(LineFragment) * lineFragmentCapacity);
                 }
               lineFragments[lineFragmentCount - 1].rect = rect;
+              lineFragments[lineFragmentCount - 1].truncationGlyph = NSNullGlyph;
 
               rect = [currentTextContainer lineFragmentRectForProposedRect: remain
                                                             sweepDirection: NSLineSweepRight
@@ -1269,6 +1457,16 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
         [currentLayoutManager setLineFragmentRect: lineFragment->rect
                                     forGlyphRange: NSMakeRange(cacheBase + glyphCounter, lineFragment->lastGlyphIndex - glyphCounter)
                                          usedRect: usedRect];
+        if (lineFragment->truncationGlyph != NSNullGlyph)
+          {
+            NSPoint tp = lineFragment->truncationPoint;
+
+            tp.y += baseline;
+            [currentLayoutManager setTruncationGlyph: lineFragment->truncationGlyph
+                                             atPoint: tp
+                                                font: lineFragment->truncationFont
+                                       forGlyphRange: NSMakeRange(cacheBase + glyphCounter, lineFragment->lastGlyphIndex - glyphCounter)];
+          }
         glyphPosition = glyphEntry->position;
         glyphPosition.y += baseline;
         savedGlyphCounter = glyphCounter;
@@ -1316,7 +1514,12 @@ static inline BOOL wantNewLineHeight(CGFloat height, CGFloat *lineHeight, CGFloa
   currentPoint = NSMakePoint(0, NSMaxY(lineFragments->rect));
 
   if (newParagraph)
-    return 3;
+    {
+      /* This line ended a paragraph; add its trailing spacing before the
+         next paragraph begins. */
+      currentPoint.y += [currentParagraphStyle paragraphSpacing];
+      return 3;
+    }
   else
     return 0;
 }

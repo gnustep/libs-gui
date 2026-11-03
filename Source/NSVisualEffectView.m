@@ -27,17 +27,25 @@
    Boston, MA 02110-1301, USA.
 */
 
+#import <AppKit/NSImage.h>
 #import <AppKit/NSVisualEffectView.h>
 
 @implementation NSVisualEffectView
+- (void) dealloc
+{
+  RELEASE(_maskImage);
+  [super dealloc];
+}
+
 - (NSVisualEffectMaterial) material
 {
-  return 0;
+  return _material;
 }
 
 - (void) setMaterial: (NSVisualEffectMaterial)material
 {
-  return;
+  _material = material;
+  [self setNeedsDisplay: YES];
 }
 
 - (NSInteger)interiorBackgroundStyle
@@ -47,30 +55,34 @@
 
 - (NSVisualEffectBlendingMode) blendingMode
 {
-  return 0;
+  return _blendingMode;
 }
+
 - (void) setBlendingMode: (NSVisualEffectBlendingMode) mode
 {
-  return;
+  _blendingMode = mode;
+  [self setNeedsDisplay: YES];
 }
 
 - (NSVisualEffectState) state
 {
-  return 0;
+  return _state;
 }
 
 - (void) setState: (NSVisualEffectState)state
 {
-  return;
+  _state = state;
+  [self setNeedsDisplay: YES];
 }
 
 - (NSImage *) maskImage
 {
-  return nil;
+  return _maskImage;
 }
 
 - (void) setMaskImage: (NSImage *)image
 {
-  return;
+  ASSIGN(_maskImage, image);
+  [self setNeedsDisplay: YES];
 }
 @end

@@ -33,9 +33,11 @@
 #import <AppKit/AppKitDefines.h>
 
 #import <Foundation/NSObject.h>
+#import <Foundation/NSGeometry.h>
 
 @class NSSortDescriptor;
 @class NSCell;
+@class NSImage;
 @class NSTableView;
 @class NSMutableArray;
 
@@ -74,6 +76,7 @@ APPKIT_EXPORT_CLASS
   NSString *_headerToolTip;
   NSSortDescriptor *_sortDescriptorPrototype;
   NSMutableArray *_prototypeCellViews;
+  NSImage *_indicatorImage;
 }
 /* 
  * Initializing an NSTableColumn instance 

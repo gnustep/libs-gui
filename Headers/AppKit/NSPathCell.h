@@ -52,7 +52,6 @@ APPKIT_EXPORT_CLASS
   NSAttributedString *_placeholderAttributedString;
   NSArray *_allowedTypes;
   id<NSPathCellDelegate> _delegate;
-  NSURL *_url;
   SEL _doubleAction;
   NSArray *_pathComponentCells;
   NSPathComponentCell *_clickedPathComponentCell;

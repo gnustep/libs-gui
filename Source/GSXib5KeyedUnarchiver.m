@@ -42,6 +42,7 @@
 #import "AppKit/NSBrowser.h"
 #import "AppKit/NSBrowserCell.h"
 #import "AppKit/NSButtonCell.h"
+#import "AppKit/NSDatePickerCell.h"
 #import "AppKit/NSCell.h"
 #import "AppKit/NSClipView.h"
 #import "AppKit/NSFormCell.h"
@@ -264,6 +265,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
           // 'XmlKeyToDecoderSelectorMap' variable below should contain the key to its associated decoding
           // method for cross referencing...
           XmlKeyMapTable = [NSDictionary dictionaryWithObjectsAndKeys:
+                                           @"timeIntervalSinceReferenceDate", @"NS.time",
                                            @"isSeparatorItem", @"NSIsSeparator",
                                            @"customClass", @"NSClassName",
                                            @"catalog", @"NSCatalogName",
@@ -357,6 +359,7 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                                     @"NSCellPrototype", @"NSBrFlags", @"NSNumberOfVisibleColumns",
                                     @"NSWhite", @"NSRGB", @"NSCYMK",
                                     @"NSCellFlags", @"NSCellFlags2",
+                                    @"NSDatePickerMode", @"NSDateValue",
                                     @"NSButtonFlags", @"NSButtonFlags2",
                                     @"NSUsesItemFromMenu",
                                     @"NSNormalImage", @"NSAlternateImage",
@@ -456,6 +459,10 @@ static NSArray      *XmlBoolDefaultYes  = nil;
                @"decodeTransitionStyle:", @"NSTransitionStyle",
 	       @"decodeShadowOffsetHoriz:", @"NSShadowHoriz",
 	       @"decodeShadowOffsetVert:", @"NSShadowVert",
+               @"decodeDatePickerElementsForElement:", @"NSDatePickerElements",
+               @"decodeDatePickerStyleForElement:", @"NSDatePickerType",
+               @"decodeDatePickerModeForElement:", @"NSDatePickerMode",
+               @"decodeDatePickerDateValueForElement:", @"NSDateValue",
                  nil];
           RETAIN(XmlKeyToDecoderSelectorMap);
 
@@ -1522,6 +1529,8 @@ didStartElement: (NSString*)elementName
         size = [NSFont smallSystemFontSize];
       else if (metaFont)
         NSWarnMLog(@"unknown meta font value: %@", metaFont);
+      else if ([[attributes objectForKey: @"usesAppearanceFont"] boolValue])
+        size = [NSFont systemFontSize];
     }
 
   return [NSNumber numberWithFloat: size];
@@ -2564,6 +2573,64 @@ didStartElement: (NSString*)elementName
   return object;
 }
 
+- (id) decodeDatePickerElementsForElement: (GSXibElement*)element
+{
+  GSXibElement *elements = [element elementForKey: @"datePickerElements"];
+  NSUInteger flags = 0;
+
+  if (elements == nil)
+    {
+      /* The Cocoa default: the date and the time, to the second. */
+      flags = NSYearMonthDayDatePickerElementFlag
+        | NSHourMinuteSecondDatePickerElementFlag;
+    }
+  else
+    {
+      if ([[elements attributeForKey: @"day"] boolValue])
+        flags |= NSYearMonthDayDatePickerElementFlag;
+      else if ([[elements attributeForKey: @"month"] boolValue]
+               || [[elements attributeForKey: @"year"] boolValue])
+        flags |= NSYearMonthDatePickerElementFlag;
+      if ([[elements attributeForKey: @"second"] boolValue])
+        flags |= NSHourMinuteSecondDatePickerElementFlag;
+      else if ([[elements attributeForKey: @"hour"] boolValue]
+               || [[elements attributeForKey: @"minute"] boolValue])
+        flags |= NSHourMinuteDatePickerElementFlag;
+      if ([[elements attributeForKey: @"timeZone"] boolValue])
+        flags |= NSTimeZoneDatePickerElementFlag;
+      if ([[elements attributeForKey: @"era"] boolValue])
+        flags |= NSEraDatePickerElementFlag;
+    }
+  return [NSNumber numberWithUnsignedInteger: flags];
+}
+
+- (id) decodeDatePickerStyleForElement: (GSXibElement*)element
+{
+  NSString *style = [element attributeForKey: @"datePickerStyle"];
+  NSUInteger value = NSTextFieldAndStepperDatePickerStyle;
+
+  if ([@"clockAndCalendar" isEqualToString: style])
+    value = NSClockAndCalendarDatePickerStyle;
+  else if ([@"textField" isEqualToString: style])
+    value = NSTextFieldDatePickerStyle;
+  return [NSNumber numberWithUnsignedInteger: value];
+}
+
+- (id) decodeDatePickerModeForElement: (GSXibElement*)element
+{
+  NSString *mode = [element attributeForKey: @"datePickerMode"];
+
+  return [NSNumber numberWithUnsignedInteger:
+    [@"range" isEqualToString: mode] ? NSRangeDateMode : NSSingleDateMode];
+}
+
+- (id) decodeDatePickerDateValueForElement: (GSXibElement*)element
+{
+  if ([[element attributeForKey: @"useCurrentDate"] boolValue])
+    return [NSDate date];
+  return [self decodeObjectForKey: @"date"];
+}
+
 - (id) decodeButtonFlags1ForElement: (GSXibElement*)element
 {
   NSNumber *value = nil;
@@ -3246,6 +3313,7 @@ didStartElement: (NSString*)elementName
       [runtimeAttribute setValue: visibleAtLaunch];
 
       [_flattenedProperties setElement: runtimeAttribute forKey: refID];
+      RELEASE(runtimeAttribute);
     }
 
   return object;
@@ -3575,7 +3643,15 @@ didStartElement: (NSString*)elementName
   if (hasValue == NO)
     {
       // Try reinterpreting the request...
-      if ([XmlKeyMapTable objectForKey: key])
+      if ([@"IBIsSystemFont" isEqualToString: key])
+        {
+          // A font element left on the appearance font carries no metaFont,
+          // and the appearance font is the system font.
+          hasValue  = [currentElement attributeForKey: @"metaFont"] != nil;
+          hasValue |= [[currentElement attributeForKey: @"usesAppearanceFont"]
+                        boolValue];
+        }
+      else if ([XmlKeyMapTable objectForKey: key])
         {
           hasValue = [self containsValueForKey: [XmlKeyMapTable objectForKey: key]];
         }

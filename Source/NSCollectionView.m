@@ -289,12 +289,14 @@ static NSString *_placeholderItem = nil;
 - (void) dealloc
 {
   DESTROY (_content);
+  DESTROY (_collectionViewLayout);
 
   // FIXME: Not clear if we should destroy the top-level item "itemPrototype" loaded in the nib file.
   DESTROY (itemPrototype);
 
   DESTROY (_backgroundColors);
   DESTROY (_selectionIndexes);
+  DESTROY (_selectionIndexPaths);
   DESTROY (_items);
 
   // Managing items.
@@ -324,6 +326,10 @@ static NSString *_placeholderItem = nil;
   _content = [[NSArray alloc] init];
   _items = [[NSMutableArray alloc] init];
   _selectionIndexes = [[NSIndexSet alloc] init];
+  _selectionIndexPaths = [[NSSet alloc] init];
+  _allowsEmptySelection = YES;
+  _backgroundColors = [[NSArray alloc] initWithObjects:
+    [NSColor controlBackgroundColor], nil];
   _draggingOnIndex = NSNotFound;
 
   // 10.11 variables
@@ -658,6 +664,11 @@ static NSString *_placeholderItem = nil;
   while ((index = [_selectionIndexes indexGreaterThanIndex: index]) !=
 	 NSNotFound)
     {
+      if (index >= [_items count])
+	{
+	  break;
+	}
+
       id item = [_items objectAtIndex: index];
       if ([item respondsToSelector: @selector(setSelected:)])
 	{

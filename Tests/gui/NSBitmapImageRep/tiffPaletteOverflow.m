@@ -231,24 +231,24 @@ static const unsigned char goodPalette8bppTIFF[] = {
  */
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep tiffPaletteOverflow")
   NSData            *data;
   NSBitmapImageRep  *rep;
 
   data = [NSData dataWithBytes: badPalette4bppTIFF
                         length: sizeof(badPalette4bppTIFF)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep == nil,
+  PASS(rep == nil,
     "a palette TIFF with bitsPerSample < 8 is rejected, not decoded with a buffer overflow");
   [rep release];
 
   data = [NSData dataWithBytes: goodPalette8bppTIFF
                         length: sizeof(goodPalette8bppTIFF)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep != nil && [rep pixelsWide] == 8 && [rep pixelsHigh] == 8,
+  PASS(rep != nil && [rep pixelsWide] == 8 && [rep pixelsHigh] == 8,
     "a valid 8-bit palette TIFF still decodes");
   [rep release];
 
-  [arp release];
+  END_SET("NSBitmapImageRep tiffPaletteOverflow")
   return 0;
 }

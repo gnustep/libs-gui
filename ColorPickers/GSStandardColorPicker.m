@@ -271,7 +271,7 @@
 
 - (BOOL)supportsMode:(int)mode
 {
-  return currentMode == NSRGBModeColorPanel;
+  return currentMode == mode;
 }
 
 - (NSView *)provideNewView:(BOOL)initialRequest

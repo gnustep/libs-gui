@@ -1,0 +1,29 @@
+/* NSTreeController initial-state defaults: a new controller avoids an empty
+   selection, preserves the selection, and selects inserted objects, as AppKit
+   does. */
+#include "Testing.h"
+
+#include <Foundation/NSAutoreleasePool.h>
+
+#include <AppKit/NSTreeController.h>
+
+int main()
+{
+  START_SET("NSTreeController defaults")
+  NSTreeController *tc;
+
+  tc = AUTORELEASE([[NSTreeController alloc] init]);
+
+  PASS([tc avoidsEmptySelection] == YES,
+       "default avoidsEmptySelection is YES");
+  PASS([tc preservesSelection] == YES,
+       "default preservesSelection is YES");
+  PASS([tc selectsInsertedObjects] == YES,
+       "default selectsInsertedObjects is YES");
+
+  // Break retain loop to allow this objecty to be deallocated
+  [tc setContent: nil];
+
+  END_SET("NSTreeController defaults")
+  return 0;
+}

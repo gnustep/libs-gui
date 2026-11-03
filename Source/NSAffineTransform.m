@@ -165,8 +165,6 @@ static const CGFloat pi = 3.1415926535897932384626434;
   CGFloat rotationAngle = atan2(-C, A);
 
   rotationAngle *= 180.0 / pi;
-  if (rotationAngle < 0.0)
-    rotationAngle += 360.0;
 
   return rotationAngle;
 }

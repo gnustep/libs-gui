@@ -137,6 +137,17 @@ GS_EXPORT_CLASS
  */
 - (instancetype) initWithOptions: (NSUInteger)options;
 
+/*
+ */
+- (BOOL) validateFontFile: (NSString *)fontPath
+		    error: (NSError **)error;
+
+/*
+ */
+- (BOOL) installFontAtPath: (NSString *)fontPath
+                     error: (NSError **)error;
+
+
 /**
  * Downloads and installs a font from the specified descriptor.
  * This is the main entry point for font downloading. The method

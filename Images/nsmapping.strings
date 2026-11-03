@@ -18,6 +18,7 @@ common_SwitchOff = GSSwitch;
 NSSwitch = GSSwitch;
 common_SwitchOn = GSSwitchSelected;
 NSHighlightedSwitch = GSSwitchSelected;
+common_SwitchMixed = GSSwitchMixed;
 
 common_RadioOff = GSRadio;
 NSRadioButton = GSRadio;

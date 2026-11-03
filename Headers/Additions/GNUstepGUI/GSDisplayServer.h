@@ -102,6 +102,11 @@ APPKIT_EXPORT_CLASS
 - (NSSize) resolutionForScreen: (int)screen;
 - (NSRect) boundsForScreen: (int)screen;
 - (NSWindowDepth) windowDepthForScreen: (int)screen;
+
+/** Returns the available screen depths in a nul terminated array.
+ * The memory in the array is allocated from the default malloc zone
+ * and you are responsible for freeing it.
+ */
 - (const NSWindowDepth *) availableDepthsForScreen: (int)screen;
 - (NSArray *) screenList;
 

@@ -256,6 +256,11 @@ static NSImage *unexpandable  = nil;
   return _autoResizesOutlineColumn;
 }
 
+- (BOOL) autoresizesOutlineColumn
+{
+  return _autoResizesOutlineColumn;
+}
+
 /**
  * Causes the outline column, the column containing the expand/collapse
  * gadget, to resize based on the amount of space needed by widest content.
@@ -1235,7 +1240,7 @@ static NSImage *unexpandable  = nil;
   newRect.origin.x += 3;
   newRect.size.width -= 3;
 
-  if (_drawsGrid)
+  if (_gridStyleMask != NSTableViewGridNone)
     {
       //newRect.origin.y += 1;
       //newRect.origin.x += 1;
@@ -2146,7 +2151,7 @@ Also returns the child index relative to this parent. */
 				   64);
 
   _indentationMarkerFollowsCell = YES;
-  _autoResizesOutlineColumn = NO;
+  _autoResizesOutlineColumn = YES;
   _autosaveExpandedItems = NO;
   _indentationPerLevel = 10.0;
 }

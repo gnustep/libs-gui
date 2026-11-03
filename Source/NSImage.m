@@ -46,6 +46,7 @@
 #import "AppKit/NSAffineTransform.h"
 #import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSCachedImageRep.h"
+#import "AppKit/NSCustomImageRep.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSPrintOperation.h"
@@ -386,6 +387,7 @@ static NSMutableDictionary	*nameDict = nil;
 static NSColor			*clearColor = nil;
 static Class cachedClass = 0;
 static Class bitmapClass = 0;
+static Class customClass = 0;
 // Cache for the supported file types
 static NSArray *imageUnfilteredFileTypes = nil;
 static NSArray *imageFileTypes = nil;
@@ -418,6 +420,13 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 @interface NSImage (Private)
 + (void) _clearFileTypeCaches: (NSNotification*)notif;
 + (void) _reloadCachedImages;
+- (void) _drawTemplateRep: (NSImageRep *)rep
+		  inRect: (NSRect)dstRect
+		fromRect: (NSRect)repSrcRect
+	       operation: (NSCompositingOperation)op
+		fraction: (CGFloat)delta
+	  respectFlipped: (BOOL)respectFlipped
+		   hints: (NSDictionary*)hints;
 - (BOOL) _useFromFile: (NSString *)fileName;
 - (BOOL) _loadFromData: (NSData *)data;
 - (BOOL) _loadFromFile: (NSString *)fileName;
@@ -451,6 +460,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       clearColor = RETAIN([NSColor clearColor]);
       cachedClass = [NSCachedImageRep class];
       bitmapClass = [NSBitmapImageRep class];
+      customClass = [NSCustomImageRep class];
       [[NSNotificationCenter defaultCenter]
 	addObserver: self
 	   selector: @selector(_clearFileTypeCaches:)
@@ -481,11 +491,15 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
       if ([path length] != 0) 
         {
 	  image = [[[[GSTheme theme] imageClass] alloc]
-	    initByReferencingFile: path];
+		    initByReferencingFile: path];
           if (image != nil)
             {
               [image setName: realName];
               image->_flags.archiveByName = YES;
+	      if ([realName hasSuffix: @"Template"])
+		{
+		  [image setTemplate: YES];
+		}
               AUTORELEASE(image);
             }
         }
@@ -822,6 +836,16 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (void) setFlipped: (BOOL)flag
 {
   _flags.flipDraw = flag;
+}
+
+- (void) setTemplate: (BOOL)isTemplate
+{
+  _flags.template = isTemplate;
+}
+
+- (BOOL) isTemplate
+{
+  return _flags.template;
 }
 
 // Choosing Which Image Representation to Use 
@@ -1166,11 +1190,16 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
   // Try to cache / get a cached version of the best rep
   
-  /** 
+  /**
    * We only use caching on backends that can efficiently draw a rect from the cache
    * onto the current graphics context respecting the CTM, which is currently cairo.
+   *
+   * Custom image reps draw through a delegate and can produce different output
+   * on each draw, so they must not be cached; a cache would freeze their first
+   * drawing.
    */
   if (_cacheMode != NSImageCacheNever &&
+      ![rep isKindOfClass: customClass] &&
       [ctxt supportsDrawGState])
     {
       NSCachedImageRep *cache = [self _doImageCache: rep];
@@ -1195,12 +1224,25 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   
   // FIXME: Draw background?
   
-  [rep drawInRect: dstRect
-	 fromRect: repSrcRect
-	operation: op
-	 fraction: delta
+  if ([self isTemplate])
+    {
+      [self _drawTemplateRep: rep
+		      inRect: dstRect
+		    fromRect: repSrcRect
+		   operation: op
+		    fraction: delta
+	      respectFlipped: respectFlipped
+		       hints: hints];
+    }
+  else
+    {
+      [rep drawInRect: dstRect
+	     fromRect: repSrcRect
+	    operation: op
+	     fraction: delta
        respectFlipped: respectFlipped
-	    hints: hints];
+		hints: hints];
+    }
 }
 
 - (void) addRepresentation: (NSImageRep *)imageRep
@@ -1897,6 +1939,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
       flags |= [self prefersColorMatch] ? 0x0100000 : 0;
       flags |= [self matchesOnMultipleResolution] ? 0x0080000 : 0;
       flags |= [self isFlipped] ? 0x0008000 : 0;
+      flags |= [self isTemplate] ? 0x0004000 : 0;
       flags |= [self cacheMode] << 11;
       [coder encodeInt: flags forKey: @"NSImageFlags"];
       if (_flags.sizeWasExplicitlySet)
@@ -2001,7 +2044,7 @@ static NSSize GSResolutionOfImageRep(NSImageRep *rep)
           [self setPrefersColorMatch: ((flags & 0x0100000) != 0)];
           [self setMatchesOnMultipleResolution: ((flags & 0x0080000) != 0)];
           [self setFlipped: ((flags & 0x0008000) != 0)];
-          // ALIASED ((flags & 0x0004000) != 0)
+          [self setTemplate: ((flags & 0x0004000) != 0)];
           [self setCacheMode: ((flags & 0x0001800) >> 11)];
         }
       if ([coder containsValueForKey: @"NSReps"])
@@ -2224,9 +2267,8 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 }
 
 /**
- * For all NSImage instances cached in nameDict, recompute the
- * path using +_pathForImageNamed: and if it has changed,
- * reload the image contents using the new path.
+ * For all NSImage instances cached in nameDict, recompute the path using
+ * +_pathForImageNamed: and reload the image contents using the new path.
  */
 + (void) _reloadCachedImages
 {
@@ -2241,7 +2283,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 
       //NSLog(@"Loaded image %@ from %@", name, path);
 
-      if (path != nil && ![path isEqual: image->_fileName])
+      if (path != nil)
 	{
 	  /* Reset the existing image to use the contents of
 	   * the specified file.
@@ -2250,6 +2292,66 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 	}   
     }
   [imageLock unlock];
+}
+
+- (void) _drawTemplateRep: (NSImageRep *)rep
+		  inRect: (NSRect)dstRect
+		fromRect: (NSRect)repSrcRect
+	       operation: (NSCompositingOperation)op
+		fraction: (CGFloat)delta
+	  respectFlipped: (BOOL)respectFlipped
+		   hints: (NSDictionary*)hints
+{
+  NSCachedImageRep *mask;
+  NSRect maskRect;
+  CGFloat red = 0.0;
+  CGFloat green = 0.0;
+  CGFloat blue = 0.0;
+  CGFloat alpha = 1.0;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSImageInterpolation interpolation = [ctxt imageInterpolation];
+
+  if (dstRect.size.width <= 0 || dstRect.size.height <= 0
+      || repSrcRect.size.width <= 0 || repSrcRect.size.height <= 0)
+    {
+      return;
+    }
+
+  DPScurrentrgbcolor(ctxt, &red, &green, &blue);
+  DPScurrentalpha(ctxt, &alpha);
+
+  maskRect = NSMakeRect(0, 0, repSrcRect.size.width, repSrcRect.size.height);
+  mask = [[NSCachedImageRep alloc]
+	    initWithSize: maskRect.size
+	      pixelsWide: ceil(maskRect.size.width)
+	      pixelsHigh: ceil(maskRect.size.height)
+		   depth: [[NSScreen mainScreen] depth]
+		separate: YES
+		   alpha: YES];
+
+  [[[mask window] contentView] lockFocus];
+  [[NSGraphicsContext currentContext]
+    setImageInterpolation: interpolation];
+  NSRectFillUsingOperation(maskRect, NSCompositeClear);
+  DPSsetrgbcolor(GSCurrentContext(), red, green, blue);
+  DPSsetalpha(GSCurrentContext(), alpha);
+  NSRectFill(maskRect);
+  [rep drawInRect: maskRect
+	 fromRect: repSrcRect
+	operation: NSCompositeDestinationIn
+	 fraction: 1.0
+   respectFlipped: respectFlipped
+	    hints: hints];
+  [[[mask window] contentView] unlockFocus];
+
+  [mask drawInRect: dstRect
+	  fromRect: maskRect
+	 operation: op
+	  fraction: delta
+    respectFlipped: respectFlipped
+	     hints: hints];
+
+  RELEASE(mask);
 }
 
 
@@ -2525,7 +2627,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 			   pixelsHigh: pixelsHigh
 				depth: [[NSScreen mainScreen] depth]
 			     separate: _flags.cacheSeparately
-				alpha: [rep hasAlpha]];
+				alpha: (rep == nil || [rep hasAlpha])];
           if (cacheRep == nil)
             {
               return nil;

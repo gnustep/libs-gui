@@ -64,7 +64,7 @@
   if (self == nil)
     return self;
 
-  ASSIGN(_text_color, [NSColor textColor]);
+  ASSIGN(_text_color, [NSColor controlTextColor]);
   ASSIGN(_background_color, [NSColor textBackgroundColor]);
 //  _textfieldcell_draws_background = NO;
   _action_mask = NSKeyUpMask | NSKeyDownMask;

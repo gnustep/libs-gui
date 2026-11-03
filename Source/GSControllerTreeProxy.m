@@ -33,6 +33,12 @@
 
 @implementation GSControllerTreeProxy
 
+- (void) dealloc
+{
+  RELEASE(_controller);
+  DEALLOC
+}
+
 - (instancetype) initWithContent: (id)content
 		  withController: (id)controller
 {

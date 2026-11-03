@@ -27,14 +27,8 @@
 #define _GNUstep_H_NSSegmentedCell
 
 #import <AppKit/NSActionCell.h>
+// NSSegmentedControl.h declares NSSegmentSwitchTracking (and NSSegmentStyle).
 #import <AppKit/NSSegmentedControl.h>
-
-// tracking types...
-typedef enum {
-  NSSegmentSwitchTrackingSelectOne = 0,
-  NSSegmentSwitchTrackingSelectAny = 1,
-  NSSegmentSwitchTrackingMomentary = 2 
-} NSSegmentSwitchTracking;
 
 // forward declarations
 @class NSMutableArray;

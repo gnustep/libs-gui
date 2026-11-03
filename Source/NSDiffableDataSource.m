@@ -77,15 +77,22 @@ GSDiffableDefaultSectionIdentifier()
 
 - (id) copyWithZone: (NSZone *)zone
 {
-  NSDiffableDataSourceSnapshot *copy = [[[self class] allocWithZone: zone] init];
-  NSMutableArray *copiedSections = [_sections mutableCopy];
-  NSMutableDictionary *copiedItems = [NSMutableDictionary dictionaryWithCapacity: [_itemsBySection count]];
-  NSEnumerator *sectionEnumerator = [copiedSections objectEnumerator];
-  id section = nil;
+  NSDiffableDataSourceSnapshot	*copy;
+  NSMutableDictionary 		*copiedItems;
+  NSMutableArray 		*copiedSections;
+  NSEnumerator 			*sectionEnumerator;
+  id 				section;
+
+  copy = [[[self class] allocWithZone: zone] init];
+  copiedItems = [NSMutableDictionary dictionaryWithCapacity:
+    [_itemsBySection count]];
+  copiedSections = AUTORELEASE([_sections mutableCopy]);
+  sectionEnumerator = [copiedSections objectEnumerator];
 
   while ((section = [sectionEnumerator nextObject]) != nil)
     {
       NSArray *items = [_itemsBySection objectForKey: section];
+
       if (items != nil)
 	{
 	  NSMutableArray *sectionItems = [items mutableCopy];
@@ -113,7 +120,7 @@ GSDiffableDefaultSectionIdentifier()
       return [NSArray array];
     }
 
-  return [_sections copy];
+  return AUTORELEASE([_sections copy]);
 }
 
 - (NSArray *) itemIdentifiers
@@ -130,7 +137,7 @@ GSDiffableDefaultSectionIdentifier()
     }
   END_FOR_IN(_sections);
 
-  return [result copy];
+  return AUTORELEASE([result copy]);
 }
 
 - (NSArray *) itemIdentifiersInSectionWithIdentifier: (id)sectionIdentifier
@@ -142,7 +149,7 @@ GSDiffableDefaultSectionIdentifier()
       return [NSArray array];
     }
 
-  return [items copy];
+  return AUTORELEASE([items copy]);
 }
 
 - (NSInteger) numberOfSections
@@ -425,7 +432,7 @@ GSDiffableDefaultSectionIdentifier()
     {
       _collectionView = collectionView;
       _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-      _itemProvider = RETAIN( itemProvider );
+      _itemProvider = (void*)RETAIN(itemProvider);
       _identifierToIndexPath = [[NSMutableDictionary alloc] init];
       _creatingIndexPaths = [[NSMutableSet alloc] init];
       [_collectionView setDataSource: self];
@@ -472,23 +479,14 @@ GSDiffableDefaultSectionIdentifier()
   animatingDifferences: (BOOL)animatingDifferences
 {
   DESTROY(_snapshot);
-
-  if (snapshot == nil)
-    {
-      _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-    }
-  else
-    {
-      _snapshot = [snapshot copy];
-    }
-
+  _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
   [self _rebuildIndexLookup];
   [_collectionView reloadData];
 }
 
 - (NSDiffableDataSourceSnapshot *) snapshot
 {
-  return [_snapshot copy];
+  return AUTORELEASE([_snapshot copy]);
 }
 
 - (NSIndexPath *) indexPathForItemIdentifier: (id)itemIdentifier
@@ -587,12 +585,12 @@ GSDiffableDefaultSectionIdentifier()
 
   if (result == nil)
     {
-      if (identifier == nil || _itemProvider == nil)
+      if (identifier == nil || _itemProvider == NULL)
 	{
 	  return nil;
 	}
 
-      if (_itemProvider != nil)
+      if (_itemProvider != NULL)
 	{
 	  // Mark that we're creating an item for this index path
 	  [_creatingIndexPaths addObject: indexPath];
@@ -671,7 +669,7 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
     {
       _tableView = tableView;
       _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-      _cellProvider = RETAIN(cellProvider);
+      _cellProvider = (void*)RETAIN(cellProvider);
       _identifierToIndexPath = [[NSMutableDictionary alloc] init];
       _creatingIndexPaths = [[NSMutableSet alloc] init];
       [_tableView setDataSource: self];
@@ -714,22 +712,14 @@ cancelPrefetchingForItemsAtIndexPaths: (NSArray *)indexPaths
 {
   DESTROY(_snapshot);
 
-  if (snapshot == nil)
-    {
-      _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
-    }
-  else
-    {
-      _snapshot = [snapshot copy];
-    }
-
+  _snapshot = [[NSDiffableDataSourceSnapshot alloc] init];
   [self _rebuildIndexLookup];
   [_tableView reloadData];
 }
 
 - (NSDiffableDataSourceSnapshot *) snapshot
 {
-  return [_snapshot copy];
+  return AUTORELEASE([_snapshot copy]);
 }
 
 - (NSIndexPath *) indexPathForItemIdentifier: (id)itemIdentifier
@@ -865,7 +855,7 @@ objectValueForTableColumn: (NSTableColumn *)tableColumn
       return nil;
     }
 
-  if (_cellProvider != nil)
+  if (_cellProvider != NULL)
     {
       NSView *view =
 	(NSView *)CALL_NON_NULL_BLOCK(_cellProvider,

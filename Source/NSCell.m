@@ -105,7 +105,7 @@ static NSColor *dtxtCol;
 {
   if (self == [NSCell class])
     {
-      [self setVersion: 4];
+      [self setVersion: 5];
       colorClass = [NSColor class];
       cellClass = [NSCell class];
       fontClass = [NSFont class];
@@ -1986,6 +1986,13 @@ static NSColor *dtxtCol;
   s.width += 2 * borderSize.width;
   s.height += 2 * borderSize.height;
 
+  /* Round the size up.  With a scale factor other than one the text
+     measurement comes out fractional, and a control sized to the fraction
+     has less room than the text needs, which loses the last glyph.
+   */
+  s.width = ceil(s.width);
+  s.height = ceil(s.height);
+
   return s;
 }
 
@@ -2746,6 +2753,18 @@ static NSColor *dtxtCol;
 	 we may need it to set lineBreakMode when reading old archives. */
       wraps = flag;
       decode_NSUInteger(aDecoder, &tmp_uint);
+      if (version < 5)
+        {
+          // Before these two values were swapped
+          if (tmp_uint == 1)
+            {
+              tmp_uint = NSRightTextAlignment;
+            }
+          else if (tmp_uint == 2)
+            {
+              tmp_uint = NSCenterTextAlignment;
+            }
+        }
       _cell.text_align = tmp_uint;
       decode_NSUInteger(aDecoder, &tmp_uint);
       _cell.type = tmp_uint;
@@ -2853,8 +2872,10 @@ static NSColor *dtxtCol;
       _action_mask |= NSLeftMouseUpMask;
       [aDecoder decodeValueOfObjCType: @encode(id) at: &formatter];
       [self setFormatter: formatter];
+      RELEASE(formatter);
       [aDecoder decodeValueOfObjCType: @encode(id) at: &menu];
       [self setMenu: menu];
+      RELEASE(menu);
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_represented_object];
 
       if (_formatter != nil)
@@ -2922,6 +2943,36 @@ static NSColor *dtxtCol;
 - (BOOL) usesSingleLineMode
 {
   return _cell.uses_single_line_mode;
+}
+
+- (NSRect) expansionFrameWithFrame: (NSRect)cellFrame inView: (NSView *)view
+{
+  return NSZeroRect;
+}
+
+- (void) drawWithExpansionFrame: (NSRect)cellFrame inView: (NSView *)view
+{
+  [self drawWithFrame: cellFrame inView: view];
+}
+
+- (BOOL) wantsNotificationForMarkedText
+{
+  return NO;
+}
+
+- (NSText *) fieldEditorForView: (NSView *)controlView
+{
+  return nil;
+}
+
+- (NSRect) focusRingMaskBoundsForFrame: (NSRect)cellFrame inView: (NSView *)view
+{
+  return NSZeroRect;
+}
+
+- (void) drawFocusRingMaskWithFrame: (NSRect)cellFrame inView: (NSView *)view
+{
+  NSRectFill(cellFrame);
 }
 
 @end

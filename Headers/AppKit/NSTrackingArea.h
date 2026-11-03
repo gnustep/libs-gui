@@ -38,16 +38,16 @@
  * Options pulled from Cocoa documentation.
  */ 
 enum {
-    NSTrackingMouseEnteredAndExited = 1,
-    NSTrackingMouseMoved = 2,
-    NSTrackingCursorUpdate = 4,
-    NSTrackingActiveWhenFirstResponder = 8,
-    NSTrackingActiveInKeyWindow = 16,
-    NSTrackingActiveInActiveApp = 32,
-    NSTrackingActiveAlways = 64,
-    NSTrackingAssumeInside = 128,
-    NSTrackingInVisibleRect = 256,
-    NSTrackingEnabledDuringMouseDrag = 512
+    NSTrackingMouseEnteredAndExited = 0x01,
+    NSTrackingMouseMoved = 0x02,
+    NSTrackingCursorUpdate = 0x04,
+    NSTrackingActiveWhenFirstResponder = 0x10,
+    NSTrackingActiveInKeyWindow = 0x20,
+    NSTrackingActiveInActiveApp = 0x40,
+    NSTrackingActiveAlways = 0x80,
+    NSTrackingAssumeInside = 0x100,
+    NSTrackingInVisibleRect = 0x200,
+    NSTrackingEnabledDuringMouseDrag = 0x400
 };
 typedef NSUInteger NSTrackingAreaOptions;
 

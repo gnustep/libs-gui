@@ -62,6 +62,7 @@
 #import <Foundation/NSKeyValueCoding.h>
 #import <Foundation/NSKeyValueObserving.h>
 #import <Foundation/NSNotification.h>
+#import <Foundation/NSMapTable.h>
 #import <Foundation/NSFormatter.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSString.h>
@@ -275,10 +276,10 @@ static SEL getSel;
     }
 
   _intercell = NSMakeSize(1, 1);
-  [self setAutosizesCells: YES];
+  [self setAutosizesCells: NO];
   [self setFrame: frameRect];
 
-  _tabKeyTraversesCells = YES;
+  _tabKeyTraversesCells = NO;
   [self setBackgroundColor: [NSColor controlColor]];
   [self setDrawsBackground: NO];
   [self setCellBackgroundColor: [NSColor controlColor]];
@@ -373,6 +374,7 @@ static SEL getSel;
   [_cellPrototype release];
   [_backgroundColor release];
   [_cellBackgroundColor release];
+  [_tooltipMap release];
 
   if (_delegate != nil)
     {
@@ -1267,6 +1269,10 @@ static SEL getSel;
 
   if (aCell)
     {
+      if (_mode == NSListModeMatrix)
+	{
+	  [self deselectAllCells];
+	}
       [self _selectCell: aCell atRow: row column: column];
       [self selectTextAtRow: row column: column];
     }
@@ -2680,13 +2686,28 @@ static SEL getSel;
 
 - (NSString*) toolTipForCell: (NSCell*)cell
 {
-  // FIXME
-  return @"";
+  return [(NSMapTable *)_tooltipMap objectForKey: cell];
 }
 
 - (void) setToolTip: (NSString*)toolTipString forCell: (NSCell*)cell
 {
-  // FIXME
+  if (_tooltipMap == nil)
+    {
+      _tooltipMap = [[NSMapTable alloc]
+        initWithKeyOptions: NSPointerFunctionsWeakMemory
+                              | NSPointerFunctionsObjectPointerPersonality
+              valueOptions: NSPointerFunctionsStrongMemory
+                              | NSPointerFunctionsObjectPersonality
+                  capacity: 4];
+    }
+  if (toolTipString == nil)
+    {
+      [(NSMapTable *)_tooltipMap removeObjectForKey: cell];
+    }
+  else
+    {
+      [(NSMapTable *)_tooltipMap setObject: toolTipString forKey: cell];
+    }
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
@@ -3009,6 +3030,11 @@ static SEL getSel;
  */
 - (Class) cellClass
 {
+  /* A matrix that uses a cell prototype has no cell class, as on OS X.  */
+  if (_cellPrototype != nil)
+    {
+      return Nil;
+    }
   return _cellClass;
 }
 

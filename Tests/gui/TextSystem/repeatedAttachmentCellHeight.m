@@ -38,7 +38,6 @@ static int count;
 int main(int argc, char **argv)
 {
 	unichar chars[4]={'a','b','c',NSAttachmentCharacter};
-	CREATE_AUTORELEASE_POOL(arp);
 	NSTextStorage *text;
 	NSLayoutManager *lm;
 	NSTextContainer *tc;
@@ -68,17 +67,21 @@ int main(int argc, char **argv)
 
 	[text beginEditing];
 	[text appendAttributedString:
-		[[NSAttributedString alloc] initWithString:
-			[NSString stringWithCharacters: chars length: 4]]];
+		AUTORELEASE([[NSAttributedString alloc] initWithString:
+			[NSString stringWithCharacters: chars length: 4]])];
 	[text addAttribute: NSAttachmentAttributeName
 		value: ta
 		range: NSMakeRange(3,1)];
 	[text endEditing];
-	[lm usedRectForTextContainer: tc];
+
+	/* The set had no testcase at all, so it reported nothing whether it
+	   worked or not.  MyCell exits if the frame is requested more than once,
+	   which is the stuck case; reaching here and returning is the result.  */
+	PASS_RUNS([lm usedRectForTextContainer: tc];,
+		"the layout terminates with a cell filling the line fragment height");
 
 	END_SET("TextSystem GNUstep repeatedAttachmentCellHeight");
 
-	DESTROY(arp);
 	return 0;
 }
 

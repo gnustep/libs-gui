@@ -37,7 +37,7 @@
 #import "config.h"
 #import "AppKit/NSMovieView.h"
 
-#ifdef HAVE_AVCODEC
+#ifdef HAVE_LIBAVCODEC_AVCODEC_H
 #include <ao/ao.h>
 #include <unistd.h>
 
@@ -48,9 +48,11 @@
 #include <libavutil/time.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
-#endif /* HAVE_AVCODEC */
+#endif /* HAVE_LIBAVCODEC_AVCODEC_H */
 
 @class NSImage;
+@class NSLock;
+@class NSRecursiveLock;
 @class NSTimer;
 @class NSTextField;
 @class GSAudioPlayer;
@@ -59,6 +61,8 @@ APPKIT_EXPORT_CLASS
 @interface GSMovieView : NSMovieView
 {
   NSMutableArray *_videoPackets;
+  NSLock *_videoPacketsLock;
+  NSRecursiveLock *_stateLock;
   NSThread *_videoThread;
   NSThread *_feedThread;
   NSImage *_currentFrame;
@@ -74,9 +78,14 @@ APPKIT_EXPORT_CLASS
 
   BOOL _running; // is the loop currently running...
   BOOL _started; // has the video started...
+  BOOL _reachedEOF; // has the demuxer reached end-of-file...
   int _videoStreamIndex;
   int _audioStreamIndex;
   int64_t _lastPts;
+  int64_t _videoClockStartTime;
+  int64_t _videoClockStartPTS;
+  int _frameCount;
+  NSUInteger _frameGeneration;
   CGFloat _fps;
 }
 

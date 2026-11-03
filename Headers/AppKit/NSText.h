@@ -72,10 +72,10 @@
 typedef NSInteger NSTextAlignment;
 enum {
   NSLeftTextAlignment = 0,
-  NSRightTextAlignment,
-  NSCenterTextAlignment,
-  NSJustifiedTextAlignment,
-  NSNaturalTextAlignment
+  NSCenterTextAlignment = 1,
+  NSRightTextAlignment = 2,
+  NSJustifiedTextAlignment = 3,
+  NSNaturalTextAlignment = 4
 };
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_11, GS_API_LATEST)

@@ -56,6 +56,7 @@
 #import "AppKit/NSBezierPath.h"
 #import "AppKit/NSBitmapImageRep.h"
 #import "AppKit/NSCursor.h"
+#import "AppKit/NSViewController.h"
 #import "AppKit/NSDocumentController.h"
 #import "AppKit/NSDocument.h"
 #import "AppKit/NSClipView.h"
@@ -63,6 +64,7 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSLayoutConstraint.h"
+#import "AppKit/NSLayoutGuide.h"
 #import "AppKit/NSMenu.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSPrintInfo.h"
@@ -82,9 +84,14 @@
 #import "GSFastEnumeration.h"
 #import "GSGuiPrivate.h"
 #import "GSAutoLayoutEngine.h"
-#import "NSAutoresizingMaskLayoutConstraint.h" 
+#import "GSAutoLayoutAnchorPrivate.h"
+#import "NSAutoresizingMaskLayoutConstraint.h"
 #import "NSViewPrivate.h"
 #import "NSWindowPrivate.h"
+
+@interface NSLayoutConstraint (GSPrivate)
++ (void) _installPendingConstraintsForView: (NSView *)view;
+@end
 
 /*
  * We need a fast array that can store objects without retain/release ...
@@ -108,6 +115,30 @@ NSView *viewIsPrinting = nil;
 
 const CGFloat NSViewNoInstrinsicMetric = -1;
 const CGFloat NSViewNoIntrinsicMetric = -1;
+
+/* Largest representable CGFloat.  Defined here so the library does not pull in
+   CoreFoundation for it; gated so it does not clash where CoreFoundation is
+   present. */
+#ifndef CGFLOAT_MAX
+#  include <float.h>
+#  if defined(__LP64__) && __LP64__
+#    define CGFLOAT_MAX DBL_MAX
+#  else
+#    define CGFLOAT_MAX FLT_MAX
+#  endif
+#endif
+
+/* Private NSViewController hooks used to drive a controller's appearance
+   transitions when its view moves between windows. */
+@interface NSViewController (GSViewAppearance)
++ (NSViewController *) _viewControllerForView: (NSView *)aView;
+- (void) _viewWillMoveToWindow: (NSWindow *)newWindow;
+- (void) _viewDidMoveToWindow;
+@end
+
+@interface NSView (GSPrivateVisibleRect)
+- (NSRect) _geometricVisibleRect;
+@end
 
 /**
   <p>NSView is an abstract class which provides facilities for drawing
@@ -164,6 +195,44 @@ GSGetDragTypes(NSView *obj)
   t = (NSArray*)NSMapGet(typesMap, (void*)(gsaddr)obj);
   [typesLock unlock];
   return t;
+}
+
+/*
+ * Whether outer covers inner, allowing for floating point error.  The rects
+ * compared during display have been converted through the view hierarchy,
+ * and under a user space scale factor (GSScaleFactor) through fractional
+ * coordinates, so a rect that covers another exactly on screen can miss it
+ * by something like 1e-14.  Treating that as not covered leaves the view
+ * marked as needing display for good: every later display pass draws it
+ * again on its own, over what it drew before and without its background,
+ * so anti-aliased edges and translucent fills darken with every redraw.
+ * Rounding error grows with the magnitude of the values, not with the
+ * coordinate system, so the slack is relative to the largest coordinate
+ * involved and stays independent of any scaling of the view's bounds.
+ */
+static BOOL
+GSRectCoversRect(NSRect outer, NSRect inner)
+{
+  CGFloat magnitude = 1.0;
+  CGFloat slack;
+
+  if (NSIsEmptyRect(inner))
+    {
+      return YES;
+    }
+  magnitude = MAX(magnitude, fabs(NSMinX(outer)));
+  magnitude = MAX(magnitude, fabs(NSMinY(outer)));
+  magnitude = MAX(magnitude, fabs(NSMaxX(outer)));
+  magnitude = MAX(magnitude, fabs(NSMaxY(outer)));
+  magnitude = MAX(magnitude, fabs(NSMinX(inner)));
+  magnitude = MAX(magnitude, fabs(NSMinY(inner)));
+  magnitude = MAX(magnitude, fabs(NSMaxX(inner)));
+  magnitude = MAX(magnitude, fabs(NSMaxY(inner)));
+  slack = magnitude * 1e-9;
+  return (NSMinX(inner) >= NSMinX(outer) - slack
+    && NSMinY(inner) >= NSMinY(outer) - slack
+    && NSMaxX(inner) <= NSMaxX(outer) + slack
+    && NSMaxY(inner) <= NSMaxY(outer) + slack);
 }
 
 static void
@@ -353,9 +422,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 	  if (_super_view != nil)
 	    {
-	      superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
+	      superviewsVisibleRect = [self convertRect: [_super_view _geometricVisibleRect]
 					       fromView: _super_view];
-	      
+
 	      _visibleRect = NSIntersectionRect(superviewsVisibleRect, _bounds);
 	    }
 	  else
@@ -368,7 +437,17 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) _viewDidMoveToWindow
 {
+  NSViewController *vc = [NSViewController _viewControllerForView: self];
+
   [self viewDidMoveToWindow];
+  if (vc != nil)
+    {
+      [vc _viewDidMoveToWindow];
+    }
+  if ([self window] != nil)
+    {
+      [NSLayoutConstraint _installPendingConstraintsForView: self];
+    }
   if (_rFlags.has_subviews)
     {
       NSUInteger count = [_sub_views count];
@@ -406,7 +485,16 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       return;
     }
 
-  // This call also reset _allocate_gstate, so we have 
+  {
+    NSViewController *vc = [NSViewController _viewControllerForView: self];
+
+    if (vc != nil)
+      {
+	[vc _viewWillMoveToWindow: newWindow];
+      }
+  }
+
+  // This call also reset _allocate_gstate, so we have
   // to store this value and set it again.
   // This way we keep the logic in one place.
   old_allocate_gstate = _allocate_gstate;
@@ -639,6 +727,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _needsUpdateConstraints = YES;
   _translatesAutoresizingMaskIntoConstraints = YES;
 
+  _huggingPriorities.horizontal = NSLayoutPriorityDefaultLow;
+  _huggingPriorities.vertical = NSLayoutPriorityDefaultLow;
+  _compressionPriorities.horizontal = NSLayoutPriorityDefaultHigh;
+  _compressionPriorities.vertical = NSLayoutPriorityDefaultHigh;
+
   return self;
 }
 
@@ -769,7 +862,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   TEST_RELEASE(_cursor_rects);
   TEST_RELEASE(_tracking_rects);
   TEST_RELEASE(_shadow);
-  
+  TEST_RELEASE(_layoutGuides);
+
   [self unregisterDraggedTypes];
   [self releaseGState];
 
@@ -1236,6 +1330,10 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
+      if (GSAutoLayoutEngineExists)
+        {
+          [self _autoLayoutContentViewResized];
+        }
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification
@@ -1330,6 +1428,10 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
         }
       [self resetCursorRects];
       [self resizeSubviewsWithOldSize: old_size];
+      if (GSAutoLayoutEngineExists)
+        {
+          [self _autoLayoutContentViewResized];
+        }
       if (_post_frame_changes)
         {
           [nc postNotificationName: NSViewFrameDidChangeNotification
@@ -1685,8 +1787,6 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
 - (NSRect) centerScanRect: (NSRect)aRect
 {
   NSAffineTransform	*matrix;
-  CGFloat x_org;
-  CGFloat y_org;
 
   /*
    *	Hmm - we assume that the windows coordinate system is centered on the
@@ -1701,12 +1801,10 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
       aRect.size.height = -aRect.size.height;
     }
 
-  x_org = aRect.origin.x;
-  y_org = aRect.origin.y;
   aRect.origin.x = GSRoundTowardsInfinity(aRect.origin.x);
   aRect.origin.y = [self isFlipped] ? GSRoundTowardsNegativeInfinity(aRect.origin.y) : GSRoundTowardsInfinity(aRect.origin.y);
-  aRect.size.width = GSRoundTowardsInfinity(aRect.size.width + (x_org - aRect.origin.x) / 2.0);
-  aRect.size.height = GSRoundTowardsInfinity(aRect.size.height + (y_org - aRect.origin.y) / 2.0);
+  aRect.size.width = GSRoundTowardsInfinity(aRect.size.width);
+  aRect.size.height = GSRoundTowardsInfinity(aRect.size.height);
 
   matrix = [self _matrixFromWindow];
   aRect.origin = [matrix transformPoint: aRect.origin];
@@ -1717,6 +1815,34 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
     }
 
   return aRect;
+}
+
+- (NSRect) backingAlignedRect: (NSRect)aRect
+                      options: (NSAlignmentOptions)options
+{
+  CGFloat scale = 1.0;
+
+  if (_window != nil)
+    {
+      scale = [_window backingScaleFactor];
+    }
+  if (scale <= 0.0)
+    {
+      scale = 1.0;
+    }
+
+  if (scale == 1.0)
+    {
+      return NSIntegralRectWithOptions(aRect, options);
+    }
+
+  /* Align on the backing store pixel grid: scale the rectangle into backing
+     coordinates, align it to whole pixels there, then scale it back. */
+  aRect = NSMakeRect(NSMinX(aRect) * scale, NSMinY(aRect) * scale,
+                     NSWidth(aRect) * scale, NSHeight(aRect) * scale);
+  aRect = NSIntegralRectWithOptions(aRect, options);
+  return NSMakeRect(NSMinX(aRect) / scale, NSMinY(aRect) / scale,
+                    NSWidth(aRect) / scale, NSHeight(aRect) / scale);
 }
 
 - (NSPoint) convertPoint: (NSPoint)aPoint fromView: (NSView*)aView
@@ -1810,7 +1936,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   NSAffineTransform *matrix1, *matrix2;
 
-  if (aView == self || _window == nil || (aView != nil && [aView window] == nil))
+  if (aView == self)
     {
       return aRect;
     }
@@ -1842,7 +1968,7 @@ convert_rect_using_matrices(NSRect aRect, NSAffineTransform *matrix1,
 {
   NSAffineTransform *matrix1, *matrix2;
 
-  if (aView == self || _window == nil || (aView != nil && [aView window] == nil))
+  if (aView == self)
     {
       return aRect;
     }
@@ -2082,15 +2208,13 @@ static void autoresize(CGFloat oldContainerSize,
 	     (_autoresizingMask & NSViewMaxXMargin));
 
   {
-    const BOOL flipped = (_super_view && [_super_view isFlipped]);
-
     autoresize(oldSize.height,
 	       superViewFrameSize.height,
 	       &newFrame.origin.y,
 	       &newFrame.size.height,
-	       flipped ? (_autoresizingMask & NSViewMaxYMargin) : (_autoresizingMask & NSViewMinYMargin),
+	       (_autoresizingMask & NSViewMinYMargin),
 	       (_autoresizingMask & NSViewHeightSizable),
-	       flipped ? (_autoresizingMask & NSViewMinYMargin) : (_autoresizingMask & NSViewMaxYMargin));
+	       (_autoresizingMask & NSViewMaxYMargin));
   }
 
   newFrameRounded = newFrame;
@@ -2100,7 +2224,19 @@ static void autoresize(CGFloat oldContainerSize,
    */
   if (![self isRotatedFromBase] && [self superview] != nil)
     {
-      newFrameRounded = [[self superview] centerScanRect: newFrameRounded];
+      NSView *sup = [self superview];
+      NSRect win = [sup convertRect: newFrameRounded toView: nil];
+      /* The device grid is integer coordinates in the window base system, so
+         each edge floors there. Snap first: the resize proportion and the
+         coordinate transform leave an exact edge a fraction of a ULP below an
+         integer, which a plain floor would drop a whole pixel. */
+      CGFloat minX = floor(NSMinX(win) + 1e-6);
+      CGFloat minY = floor(NSMinY(win) + 1e-6);
+      CGFloat maxX = floor(NSMaxX(win) + 1e-6);
+      CGFloat maxY = floor(NSMaxY(win) + 1e-6);
+
+      win = NSMakeRect(minX, minY, maxX - minX, maxY - minY);
+      newFrameRounded = [sup convertRect: win fromView: nil];
     }
 
   [self setFrame: newFrameRounded];
@@ -2376,7 +2512,7 @@ static void autoresize(CGFloat oldContainerSize,
 
 - (void) lockFocus
 {
-  [self lockFocusInRect: [self visibleRect]];
+  [self lockFocusInRect: [self _geometricVisibleRect]];
 }
 
 - (void) unlockFocus
@@ -2393,7 +2529,7 @@ static void autoresize(CGFloat oldContainerSize,
 {
   if ([self canDraw])
     {
-      [self _lockFocusInContext: context inRect: [self visibleRect]];
+      [self _lockFocusInContext: context inRect: [self _geometricVisibleRect]];
       return YES;
     }
   else
@@ -2447,14 +2583,14 @@ static void autoresize(CGFloat oldContainerSize,
 
 - (void) display
 {
-  [self displayRect: [self visibleRect]];
+  [self displayRect: [self _geometricVisibleRect]];
 }
 
 - (void) displayIfNeeded
 {
   if (_rFlags.needs_display == YES)
     {
-      [self displayIfNeededInRect: [self visibleRect]];
+      [self displayIfNeededInRect: [self _geometricVisibleRect]];
     }
 }
 
@@ -2462,7 +2598,7 @@ static void autoresize(CGFloat oldContainerSize,
 {
   if (_rFlags.needs_display == YES)
     {
-      [self displayIfNeededInRectIgnoringOpacity: [self visibleRect]];
+      [self displayIfNeededInRectIgnoringOpacity: [self _geometricVisibleRect]];
     }
 }
 
@@ -2587,7 +2723,7 @@ static void autoresize(CGFloat oldContainerSize,
   if (context == wContext)
     {
       NSRect neededRect;
-      NSRect visibleRect = [self visibleRect];
+      NSRect visibleRect = [self _geometricVisibleRect];
 
       flush = YES;
       [_window disableFlushWindow];
@@ -2601,7 +2737,7 @@ static void autoresize(CGFloat oldContainerSize,
        * FIXME: If the drawn rectangle cuts of a complete part of the
        * _invalidRect, we should try to reduce this.
        */
-      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
+      if (GSRectCoversRect(aRect, neededRect))
         {
           _invalidRect = NSZeroRect;
           _rFlags.needs_display = NO;
@@ -2700,7 +2836,10 @@ static void autoresize(CGFloat oldContainerSize,
 - (void) drawRect: (NSRect)rect
 {}
 
-- (NSRect) visibleRect
+/* The visible rectangle clipped to the superview chain, in the receiver's
+   coordinates.  Used for the coordinate and drawing machinery, which needs a
+   bounded rectangle even when the view has no window. */
+- (NSRect) _geometricVisibleRect
 {
   if ([self isHiddenOrHasHiddenAncestor])
     {
@@ -2712,6 +2851,19 @@ static void autoresize(CGFloat oldContainerSize,
       [self _rebuildCoordinates];
     }
   return _visibleRect;
+}
+
+- (NSRect) visibleRect
+{
+  if (_window == nil && ![self isHiddenOrHasHiddenAncestor])
+    {
+      /* AppKit reports an unbounded visible rectangle for a view that is not
+         in a window. */
+      return NSMakeRect(-CGFLOAT_MAX / 2, -CGFLOAT_MAX / 2,
+                        CGFLOAT_MAX, CGFLOAT_MAX);
+    }
+
+  return [self _geometricVisibleRect];
 }
 
 - (BOOL) wantsDefaultClipping
@@ -2947,12 +3099,36 @@ in the main thread.
 /*
  * Hidding Views
  */
+- (void) _sendViewDidUnhide: (BOOL)unhide
+{
+  NSUInteger i, count;
+
+  if (unhide)
+    [self viewDidUnhide];
+  else
+    [self viewDidHide];
+
+  count = [_sub_views count];
+  for (i = 0; i < count; i++)
+    {
+      NSView *sub = [_sub_views objectAtIndex: i];
+
+      if (![sub isHidden])
+        [sub _sendViewDidUnhide: unhide];
+    }
+}
+
 - (void) setHidden: (BOOL)flag
 {
   id view;
+  BOOL notify;
 
   if (_is_hidden == flag)
       return;
+
+  /* The view and its unhidden descendants only change effective visibility
+     when no ancestor is already hidden. */
+  notify = (_super_view == nil) || ![_super_view isHiddenOrHasHiddenAncestor];
 
   _is_hidden = flag;
 
@@ -3004,6 +3180,19 @@ in the main thread.
         }
       [self setNeedsDisplay: YES];
     }
+
+  if (notify)
+    {
+      [self _sendViewDidUnhide: (flag == NO)];
+    }
+}
+
+- (void) viewDidHide
+{
+}
+
+- (void) viewDidUnhide
+{
 }
 
 - (BOOL) isHidden
@@ -5181,20 +5370,25 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (void) layout
 {
+  NSViewController *vc = [NSViewController _viewControllerForView: self];
+  GSAutoLayoutEngine *engine;
+
+  [vc viewWillLayout];
+
   _needsLayout = NO;
 
-  GSAutoLayoutEngine *engine = [self _layoutEngine];
-  if (!engine)
+  engine = [self _layoutEngine];
+  if (engine)
     {
-      return;
+      NSArray *subviews = [self subviews];
+      FOR_IN (NSView *, subview, subviews)
+        NSRect subviewAlignmentRect =
+            [engine alignmentRectForView: subview];
+        [subview setFrame: subviewAlignmentRect];
+      END_FOR_IN (subviews);
     }
 
-  NSArray *subviews = [self subviews];
-  FOR_IN (NSView *, subview, subviews)
-    NSRect subviewAlignmentRect =
-        [engine alignmentRectForView: subview];
-    [subview setFrame: subviewAlignmentRect];
-  END_FOR_IN (subviews);
+  [vc viewDidLayout];
 }
 
 - (void) layoutSubtreeIfNeeded
@@ -5341,6 +5535,26 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
   [[self superview] setNeedsLayout: YES];
 }
 
+// When a window content view that drives Auto Layout is resized, refresh the
+// content view size in the engine and lay the constrained subtree out again.
+- (void) _autoLayoutContentViewResized
+{
+  NSWindow *window = [self window];
+  if (window == nil || [window contentView] != self)
+    {
+      return;
+    }
+  GSAutoLayoutEngine *engine = [window _layoutEngine];
+  if (engine == nil)
+    {
+      return;
+    }
+  if ([engine updateContentViewSize])
+    {
+      [self _layoutViewAndSubViews];
+    }
+}
+
 - (GSAutoLayoutEngine*) _getOrCreateLayoutEngine
 {
   if (![self window])
@@ -5368,7 +5582,16 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
   if ([self needsUpdateConstraints])
     {
-      [self updateConstraints];
+      NSViewController *vc = [NSViewController _viewControllerForView: self];
+
+      if (vc != nil)
+        {
+          [vc updateViewConstraints];
+        }
+      else
+        {
+          [self updateConstraints];
+        }
     }
 }
 
@@ -5475,6 +5698,137 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
     }
 
   return [engine constraintsForView: self];
+}
+
+@end
+
+@implementation NSView (NSConstraintBasedLayoutAnchors)
+
+- (NSLayoutXAxisAnchor *) leadingAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLeading]);
+}
+
+- (NSLayoutXAxisAnchor *) trailingAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeTrailing]);
+}
+
+- (NSLayoutXAxisAnchor *) leftAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLeft]);
+}
+
+- (NSLayoutXAxisAnchor *) rightAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeRight]);
+}
+
+- (NSLayoutXAxisAnchor *) centerXAnchor
+{
+  return AUTORELEASE([[NSLayoutXAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeCenterX]);
+}
+
+- (NSLayoutYAxisAnchor *) topAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeTop]);
+}
+
+- (NSLayoutYAxisAnchor *) bottomAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeBottom]);
+}
+
+- (NSLayoutYAxisAnchor *) centerYAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeCenterY]);
+}
+
+- (NSLayoutYAxisAnchor *) firstBaselineAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeFirstBaseline]);
+}
+
+- (NSLayoutYAxisAnchor *) lastBaselineAnchor
+{
+  return AUTORELEASE([[NSLayoutYAxisAnchor alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeLastBaseline]);
+}
+
+- (NSLayoutDimension *) widthAnchor
+{
+  return AUTORELEASE([[NSLayoutDimension alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeWidth]);
+}
+
+- (NSLayoutDimension *) heightAnchor
+{
+  return AUTORELEASE([[NSLayoutDimension alloc]
+                       initWithItem: self
+                          attribute: NSLayoutAttributeHeight]);
+}
+
+@end
+
+@implementation NSView (NSLayoutGuideSupport)
+
+- (void) addLayoutGuide: (NSLayoutGuide *)guide
+{
+  if (guide == nil)
+    {
+      return;
+    }
+
+  if (_layoutGuides == nil)
+    {
+      _layoutGuides = [[NSMutableArray alloc] init];
+    }
+
+  if (![_layoutGuides containsObject: guide])
+    {
+      [_layoutGuides addObject: guide];
+      [guide setOwningView: self];
+    }
+}
+
+- (void) removeLayoutGuide: (NSLayoutGuide *)guide
+{
+  if (guide == nil || ![_layoutGuides containsObject: guide])
+    {
+      return;
+    }
+
+  [guide setOwningView: nil];
+  [_layoutGuides removeObject: guide];
+}
+
+- (NSArray *) layoutGuides
+{
+  if (_layoutGuides == nil)
+    {
+      return [NSArray array];
+    }
+  return [NSArray arrayWithArray: _layoutGuides];
 }
 
 @end

@@ -32,6 +32,7 @@
 #import <AppKit/AppKitDefines.h>
 
 #import <AppKit/NSControl.h>
+#import <AppKit/NSDragging.h>
 
 @class NSString;
 @class NSArray;
@@ -41,9 +42,14 @@
 
 @class NSCell;
 @class NSEvent;
+@class NSImage;
 @class NSMatrix;
+@class NSPasteboard;
 @class NSScroller;
+@class NSURL;
 @class NSViewController;
+
+@protocol NSDraggingInfo;
 
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_3, GS_API_LATEST)
 enum _NSBrowserColumnResizingType
@@ -53,6 +59,15 @@ enum _NSBrowserColumnResizingType
   NSBrowserUserColumnResizing
 };
 typedef NSUInteger NSBrowserColumnResizingType;
+#endif
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+enum _NSBrowserDropOperation
+{
+  NSBrowserDropOn,
+  NSBrowserDropAbove
+};
+typedef NSUInteger NSBrowserDropOperation;
 #endif
 
 APPKIT_EXPORT_CLASS
@@ -357,6 +372,43 @@ sizeToFitWidthOfColumn: (NSInteger)column;
 canDragRowsWithIndexes: (NSIndexSet *)rowIndexes
         inColumn: (NSInteger)column
        withEvent: (NSEvent *)event;
+- (NSImage *) browser: (NSBrowser *)browser
+draggingImageForRowsWithIndexes: (NSIndexSet *)rowIndexes
+             inColumn: (NSInteger)column
+            withEvent: (NSEvent *)event
+               offset: (NSPointPointer)dragImageOffset;
+- (BOOL) browser: (NSBrowser *)browser
+writeRowsWithIndexes: (NSIndexSet *)rowIndexes
+        inColumn: (NSInteger)column
+    toPasteboard: (NSPasteboard *)pasteboard;
+- (NSArray *) browser: (NSBrowser *)browser
+namesOfPromisedFilesDroppedAtDestination: (NSURL *)dropDestination
+forDraggedRowsWithIndexes: (NSIndexSet *)rowIndexes
+             inColumn: (NSInteger)column;
+- (NSDragOperation) browser: (NSBrowser *)browser
+               validateDrop: (id <NSDraggingInfo>)info
+                proposedRow: (NSInteger *)row
+                     column: (NSInteger *)column
+              dropOperation: (NSBrowserDropOperation *)dropOperation;
+- (BOOL) browser: (NSBrowser *)browser
+      acceptDrop: (id <NSDraggingInfo>)info
+           atRow: (NSInteger)row
+          column: (NSInteger)column
+   dropOperation: (NSBrowserDropOperation)dropOperation;
+- (NSString *) browser: (NSBrowser *)browser
+typeSelectStringForRow: (NSInteger)row
+              inColumn: (NSInteger)column;
+- (BOOL) browser: (NSBrowser *)browser
+shouldTypeSelectForEvent: (NSEvent *)event
+withCurrentSearchString: (NSString *)searchString;
+- (NSInteger) browser: (NSBrowser *)browser
+nextTypeSelectMatchFromRow: (NSInteger)startRow
+                toRow: (NSInteger)endRow
+             inColumn: (NSInteger)column
+            forString: (NSString *)searchString;
+- (BOOL) browser: (NSBrowser *)browser
+shouldShowCellExpansionForRow: (NSInteger)row
+          column: (NSInteger)column;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_6, GS_API_LATEST)
 - (NSInteger) browser: (NSBrowser *)browser
@@ -381,6 +433,12 @@ previewViewControllerForLeafItem: (id)item;
 - (void) browser: (NSBrowser *)browser
 didChangeLastColumn: (NSInteger)oldLastColumn
         toColumn: (NSInteger)column;
+- (CGFloat) browser: (NSBrowser *)browser
+        heightOfRow: (NSInteger)row
+           inColumn: (NSInteger)columnIndex;
+- (NSIndexSet *) browser: (NSBrowser *)browser
+selectionIndexesForProposedSelection: (NSIndexSet *)proposedSelectionIndexes
+                inColumn: (NSInteger)column;
 #endif
 
 @end

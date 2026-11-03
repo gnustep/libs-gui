@@ -73,6 +73,9 @@
   if (self != nil)
     {
       _collapsedSections = [[NSMutableIndexSet alloc] init];
+      _minimumLineSpacing = 10.0;
+      _minimumInteritemSpacing = 10.0;
+      _itemSize = NSMakeSize(50, 50);
     }
   return self;
 }

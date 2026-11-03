@@ -36,7 +36,9 @@
 #import <Foundation/NSLock.h>
 
 #import "AppKit/NSAffineTransform.h"
+#import "AppKit/NSAttributedString.h"
 #import "AppKit/NSLayoutManager.h"
+#import "AppKit/NSParagraphStyle.h"
 #import "AppKit/NSStringDrawing.h"
 #import "AppKit/NSTextContainer.h"
 #import "AppKit/NSTextStorage.h"
@@ -305,7 +307,7 @@ static inline void prepare_string(NSString *string, NSDictionary *attributes)
   if ([string length])
     {
       [scratchTextStorage setAttributes: attributes
-			  range: NSMakeRange(0, [string length])];
+                                  range: NSMakeRange(0, [string length])];
     }
   [scratchTextStorage endEditing];
 }
@@ -513,6 +515,11 @@ static void draw_in_rect(cache_t *c, NSRect rect)
       prepare_attributed_string(self);
       c = cache_lookup(hasSize, size, YES);
       result = c->usedRect;
+      /* A paragraph head indent shifts the laid out glyphs to the right, so it
+         appears in the used rect origin.  AppKit does not fold that offset into
+         the rectangle reported by the convenience methods: the origin stays at
+         zero (the indent still moves the drawn glyphs, see draw_in_rect).  */
+      result.origin.x = 0.0;
     }
   NS_HANDLER
     {

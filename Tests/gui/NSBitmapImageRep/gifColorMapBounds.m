@@ -50,7 +50,7 @@ static const unsigned char validGIF[] = {
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep gifColorMapBounds")
 #if defined(GS_TEST_SYSTEM_GIF)
   NSData            *data;
   NSBitmapImageRep  *rep;
@@ -58,25 +58,25 @@ int main()
 
   data = [NSData dataWithBytes: noColorMapGIF length: sizeof(noColorMapGIF)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep == nil,
+  PASS(rep == nil,
     "a GIF with no colour map is rejected, not dereferenced through NULL");
   [rep release];
 
   data = [NSData dataWithBytes: outOfRangeIndexGIF
                         length: sizeof(outOfRangeIndexGIF)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep != nil && [rep pixelsWide] == 2 && [rep pixelsHigh] == 2,
+  PASS(rep != nil && [rep pixelsWide] == 2 && [rep pixelsHigh] == 2,
     "a GIF with an out-of-range palette index decodes without reading past the colour map");
   [rep release];
 
   data = [NSData dataWithBytes: validGIF length: sizeof(validGIF)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
   px = [rep bitmapData];
-  pass(rep != nil && [rep pixelsWide] == 2 && [rep pixelsHigh] == 2
+  PASS(rep != nil && [rep pixelsWide] == 2 && [rep pixelsHigh] == 2
        && px != NULL && px[0] == 90 && px[1] == 140 && px[2] == 200,
     "a valid GIF still decodes correctly");
   [rep release];
 #endif
-  [arp release];
+  END_SET("NSBitmapImageRep gifColorMapBounds")
   return 0;
 }

@@ -1151,7 +1151,7 @@ documentAttributes: (NSDictionary **)dict
           NSRange newEffRange;
           NSUInteger len = [self length];
 
-          while ((effRange.location > 0) && style && textBlocks)
+          while (effRange.location > 0)
             {
               style = [self attribute: NSParagraphStyleAttributeName
                             atIndex: effRange.location - 1
@@ -1159,16 +1159,18 @@ documentAttributes: (NSDictionary **)dict
               if (style != nil)
                 {
                   textBlocks = [style textBlocks];
-                  
+
                   if ((textBlocks != nil) && [textBlocks containsObject: block])
                     {
                       effRange.location = newEffRange.location;
                       effRange.length += newEffRange.length;
+                      continue;
                     }
                 }
+              break;
             }
 
-          while (NSMaxRange(effRange) < len && style && textBlocks) 
+          while (NSMaxRange(effRange) < len)
             {
               style = [self attribute: NSParagraphStyleAttributeName
                             atIndex: NSMaxRange(effRange)
@@ -1176,12 +1178,14 @@ documentAttributes: (NSDictionary **)dict
               if (style != nil)
                 {
                   textBlocks = [style textBlocks];
-                  
+
                   if ((textBlocks != nil) && [textBlocks containsObject: block])
                     {
                       effRange.length += newEffRange.length;
+                      continue;
                     }
                 }
+              break;
             }
 
           return effRange;
@@ -1283,7 +1287,7 @@ BOOL containsTable(NSArray *textBlocks, NSTextTable *table)
 	  NSRange newEffRange;
 	  NSUInteger len = [self length];
 	  
-	  while ((effRange.location > 0) && style && textBlocks)
+	  while (effRange.location > 0)
 	    {
 	      style = [self attribute: NSParagraphStyleAttributeName
 			      atIndex: effRange.location - 1
@@ -1291,16 +1295,18 @@ BOOL containsTable(NSArray *textBlocks, NSTextTable *table)
 	      if (style != nil)
 		{
 		  textBlocks = [style textBlocks];
-		  
+
 		  if ((textBlocks != nil) && containsTable(textBlocks, table))
                     {
                       effRange.location = newEffRange.location;
                       effRange.length += newEffRange.length;
+                      continue;
                     }
                 }
+              break;
             }
 
-          while (NSMaxRange(effRange) < len && style && textBlocks) 
+          while (NSMaxRange(effRange) < len)
             {
               style = [self attribute: NSParagraphStyleAttributeName
                             atIndex: NSMaxRange(effRange)
@@ -1308,12 +1314,14 @@ BOOL containsTable(NSArray *textBlocks, NSTextTable *table)
               if (style != nil)
                 {
                   textBlocks = [style textBlocks];
-                  
+
                   if ((textBlocks != nil) && containsTable(textBlocks, table))
                     {
                       effRange.length += newEffRange.length;
+                      continue;
                     }
                 }
+              break;
             }
 
           return effRange;
@@ -1600,8 +1608,12 @@ static NSMutableDictionary *cachedCSets = nil;
       NSCharacterSet *newSet = [descriptor objectForKey: NSFontCharacterSetAttribute];
       if ([newSet characterIsMember: uchar])
         {
-          NSString *fName = [descriptor objectForKey: NSFontFamilyAttribute];
- 
+          NSString *fName = [descriptor objectForKey: NSFontNameAttribute];
+
+          if (fName == nil)
+            {
+              fName = [descriptor objectForKey: NSFontFamilyAttribute];
+            }
           ASSIGN(lastFont, fName);
           ASSIGN(lastSet, newSet);
           return [self _substituteFontWithName: fName font: baseFont];

@@ -73,12 +73,12 @@ static Class tokenFieldCellClass;
     {
       return nil;
     }
-  
+
   // initialize...
   [_cell setTokenStyle: NSDefaultTokenStyle];
-  [_cell setCompletionDelay: [_cell defaultCompletionDelay]];
-  [_cell setTokenizingCharacterSet: [_cell defaultTokenizingCharacterSet]];
-  
+  [_cell setCompletionDelay: [[_cell class] defaultCompletionDelay]];
+  [_cell setTokenizingCharacterSet: [[_cell class] defaultTokenizingCharacterSet]];
+
   return self;
 }
 

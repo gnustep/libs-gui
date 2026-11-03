@@ -40,8 +40,27 @@ typedef enum _NSSegmentStyle {
 } NSSegmentStyle;
 #endif
 
+// tracking types...
+typedef enum {
+  NSSegmentSwitchTrackingSelectOne = 0,
+  NSSegmentSwitchTrackingSelectAny = 1,
+  NSSegmentSwitchTrackingMomentary = 2
+} NSSegmentSwitchTracking;
+
 APPKIT_EXPORT_CLASS
 @interface NSSegmentedControl : NSControl
+
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
+// Creating Segmented Controls
++ (instancetype) segmentedControlWithLabels: (NSArray *)labels
+                               trackingMode: (NSSegmentSwitchTracking)trackingMode
+                                     target: (id)target
+                                     action: (SEL)action;
++ (instancetype) segmentedControlWithImages: (NSArray *)images
+                               trackingMode: (NSSegmentSwitchTracking)trackingMode
+                                     target: (id)target
+                                     action: (SEL)action;
+#endif
 
 // Specifying number of segments...
 - (void) setSegmentCount: (NSInteger)count;
@@ -51,6 +70,10 @@ APPKIT_EXPORT_CLASS
 - (void) setSelectedSegment: (NSInteger)segment;
 - (NSInteger) selectedSegment;
 - (void) selectSegmentWithTag: (NSInteger)tag;
+
+// Specifying tracking mode...
+- (void) setTrackingMode: (NSSegmentSwitchTracking)mode;
+- (NSSegmentSwitchTracking) trackingMode;
 
 // Working with individual segments...
 - (void) setWidth: (CGFloat)width forSegment: (NSInteger)segment;

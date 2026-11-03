@@ -6,7 +6,6 @@
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
   id testObject;
   id testObject1;
   id testObject2;
@@ -28,7 +27,18 @@ int main()
   test_alloc(@"NSImage");
 
   testObject = [NSImage new];
+  [testObject setTemplate: YES];
+  PASS([testObject isTemplate], "setTemplate: round-trips through isTemplate");
+  {
+    NSImage *copy = [testObject copy];
+
+    PASS([copy isTemplate], "template state is copied");
+    RELEASE(copy);
+  }
   testObject1 = [NSImage imageNamed: @"GNUstep"];
+  PASS(![testObject1 isTemplate], "ordinary named images are not templates");
+  PASS([[NSImage imageNamed: @"NSAddTemplate"] isTemplate],
+    "named images with Template suffix are templates");
   testObject2 = [[NSImage alloc] initWithData: nil];
 
   testObjects = [NSArray arrayWithObjects: testObject, testObject1, testObject2, nil];
@@ -43,7 +53,6 @@ int main()
 
   END_SET("NSImage GNUstep basic")
 
-  [arp release];
   return 0;
 }
 

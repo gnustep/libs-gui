@@ -833,8 +833,9 @@
          allocation size wrap and the unconditional origin writes dereferenced
          the resulting NULL). */
       if (_numberOfRows < 0 || _numberOfColumns < 0
-          || (long long)_numberOfRows * (long long)_numberOfColumns > INT_MAX)
+	|| (long long)_numberOfRows * (long long)_numberOfColumns > INT_MAX)
         {
+	  AUTORELEASE(self);
           [NSException raise: NSInvalidArgumentException
             format: @"GSTable: invalid number of rows/columns (%d x %d)"
                     @" decoded from archive", _numberOfRows, _numberOfColumns];
@@ -853,9 +854,9 @@
       for (i = 0; i < _numberOfRows * _numberOfColumns; i++)
 	{
 	  _jails[i] = [aDecoder decodeObjectForKey: 
-				  [NSString stringWithFormat: @"GSJail%d",i]];
+	    [NSString stringWithFormat: @"GSJail%d",i]];
 	  _havePrisoner[i] = [aDecoder decodeBoolForKey: 
-					 [NSString stringWithFormat: @"GSHavePrisoner%d",i]];
+	    [NSString stringWithFormat: @"GSHavePrisoner%d",i]];
 	}
       
       _minXBorder = [aDecoder decodeFloatForKey: @"GSMinXBorder"];
@@ -940,6 +941,7 @@
       if (_numberOfRows < 0 || _numberOfColumns < 0
           || (long long)_numberOfRows * (long long)_numberOfColumns > INT_MAX)
         {
+	  AUTORELEASE(self);
           [NSException raise: NSInvalidArgumentException
             format: @"GSTable: invalid number of rows/columns (%d x %d)"
                     @" decoded from archive", _numberOfRows, _numberOfColumns];

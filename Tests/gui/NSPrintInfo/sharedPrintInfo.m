@@ -2,17 +2,21 @@
 copyright 2004 Alexander Malmberg <alexander@malmberg.org>
 */
 
+#include "Testing.h"
+
 #include <Foundation/NSAutoreleasePool.h>
 #include <AppKit/NSPrintInfo.h>
 
 int main(int argc, char **argv)
 {
-	CREATE_AUTORELEASE_POOL(arp);
+	START_SET("NSPrintInfo sharedPrintInfo")
 
-	/* Should run without causing any exceptions. */
-	[NSPrintInfo sharedPrintInfo];
+	/* The set had no testcase at all, so it reported nothing whether this
+	   worked or not. */
+	PASS_RUNS([NSPrintInfo sharedPrintInfo];,
+		"sharedPrintInfo runs without raising");
 
-	DESTROY(arp);
+	END_SET("NSPrintInfo sharedPrintInfo")
 	return 0;
 }
 

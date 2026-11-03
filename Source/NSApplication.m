@@ -372,6 +372,8 @@ struct _NSModalSession {
 @interface NSApplication (Private)
 - (void) _appIconInit;
 - (void) _loadAppIconImage;
+- (void) _setDockTileImage: (NSImage *)image;
+- (NSDockTile *) _dockTileIfExists;
 - (NSDictionary*) _notificationUserInfo;
 - (void) _openDocument: (NSString*)name;
 - (id) _targetForAction: (SEL)aSelector
@@ -718,6 +720,15 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSImage *imgCopy = [anImage copy];
 
+  /* A focus-locked image can have only a cached representation, which
+   * NSImage's copyWithZone: does not preserve.  Materialize its pixels. */
+  if (anImage != nil && [[imgCopy representations] count] == 0)
+    {
+      NSData *data = [anImage TIFFRepresentation];
+      RELEASE(imgCopy);
+      imgCopy = [[NSImage alloc] initWithData: data];
+    }
+
   if (imgCopy)
     {
       NSSize imageSize = [imgCopy size];
@@ -904,8 +915,8 @@ static BOOL _isAutolaunchChecked = NO;
   /* Initialize font manager.  */
   [NSFontManager sharedFontManager];
 
-  _hidden = [[NSMutableArray alloc] init];
-  _inactive = [[NSMutableArray alloc] init];
+  ASSIGN(_hidden, [NSMutableArray array]);
+  ASSIGN(_inactive, [NSMutableArray array]);
   _unhide_on_activation = YES;
   _app_is_hidden = NO;
   /* Ivar already automatically initialized to NO when the app is
@@ -979,7 +990,12 @@ static BOOL _isAutolaunchChecked = NO;
    * initialization code behaves always in the same way for this class
    * and for subclasses.
    */
-  NSAssert (NSApp == nil, _(@"[NSApplication -init] called more than once"));
+  if (NSApp != nil)
+    {
+      RELEASE(self);
+      [NSException raise: NSInternalInconsistencyException
+  		  format: _(@"[NSApplication -init] called more than once")];
+    }
 
   /*
    * The appkit should run in the main thread ... so to be sure we perform
@@ -1232,48 +1248,60 @@ static BOOL _isAutolaunchChecked = NO;
 
 - (void) dealloc
 {
-  GSDisplayServer *srv = GSServerForWindow(_app_icon_window);
+  DESTROY(_hidden);
+  DESTROY(_inactive);
 
-  if (srv == nil)
+  /* The display server is notionally owned by the NSApplication singleton
+   * so if (and only if) this is that object, we should shut it down.
+   * We destroy additional app instnces st the start of the -init process,
+   * so nothing should have been created that actually needs to be handled
+   * here.
+   */
+  if (self == NSApp)
     {
-      srv = GSCurrentServer();
+      GSDisplayServer *srv;
+
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+	removeObserver: self];
+      [nc removeObserver: self];
+
+      RELEASE(_listener);
+      RELEASE(null_event);
+      RELEASE(_current_event);
+
+      /* We may need to tidy up nested modal session structures. */
+      while (_session != 0)
+	{
+	  NSModalSession tmp = _session;
+
+	  _session = tmp->previous;
+	  NSZoneFree(NSDefaultMallocZone(), tmp);
+	}
+
+      /* Release the menus, then set them to nil so we don't try updating
+	 them after they have been deallocated.  */
+      DESTROY(_main_menu);
+      DESTROY(_windows_menu);
+
+      TEST_RELEASE(_app_icon);
+      TEST_RELEASE(_app_icon_window);
+      TEST_RELEASE(_dock_tile);
+      TEST_RELEASE(_infoPanel);
+
+      /* Destroy the default context */
+      [NSGraphicsContext setCurrentContext: nil];
+      DESTROY(_default_context);
+
+      /* Close the server */
+      srv = GSServerForWindow(_app_icon_window);
+      if (srv == nil)
+	{
+	  srv = GSCurrentServer();
+	}
+      [srv closeServer];
+      DESTROY(srv);
+      NSApp = nil;
     }
-  [[[NSWorkspace sharedWorkspace] notificationCenter]
-    removeObserver: self];
-  [nc removeObserver: self];
-
-  RELEASE(_hidden);
-  RELEASE(_inactive);
-  RELEASE(_listener);
-  RELEASE(null_event);
-  RELEASE(_current_event);
-
-  /* We may need to tidy up nested modal session structures. */
-  while (_session != 0)
-    {
-      NSModalSession tmp = _session;
-
-      _session = tmp->previous;
-      NSZoneFree(NSDefaultMallocZone(), tmp);
-    }
-
-  /* Release the menus, then set them to nil so we don't try updating
-     them after they have been deallocated.  */
-  DESTROY(_main_menu);
-  DESTROY(_windows_menu);
-
-  TEST_RELEASE(_app_icon);
-  TEST_RELEASE(_app_icon_window);
-  TEST_RELEASE(_dock_tile);
-  TEST_RELEASE(_infoPanel);
-
-  /* Destroy the default context */
-  [NSGraphicsContext setCurrentContext: nil];
-  DESTROY(_default_context);
-
-  /* Close the server */
-  [srv closeServer];
-  DESTROY(srv);
 
   [super dealloc];
 }
@@ -2424,6 +2452,26 @@ image.</p><p>See Also: -applicationIconImage</p>
   // Use a copy as we change the name and size
   ASSIGNCOPY(_app_icon, anImage);
 
+  /* -[NSImage copyWithZone:] does not copy cached representations, so an image
+     that was only drawn into (e.g. with -lockFocus, whose sole representation
+     is a cached one) copies to an image with no representations and would draw
+     nothing. Take an independent bitmap snapshot of the original in that case
+     so the icon still draws. */
+  if ([[_app_icon representations] count] == 0)
+    {
+      NSData *tiff = [anImage TIFFRepresentation];
+
+      if (tiff != nil)
+        {
+          NSImageRep *bitmap = [NSBitmapImageRep imageRepWithData: tiff];
+
+          if (bitmap != nil)
+            {
+              [_app_icon addRepresentation: bitmap];
+            }
+        }
+    }
+
   server = GSCurrentServer();
   miniWindowSize = server != 0 ? [server iconSize] : NSZeroSize;
   if (miniWindowSize.width <= 0 || miniWindowSize.height <= 0) 
@@ -2453,6 +2501,15 @@ image.</p><p>See Also: -applicationIconImage</p>
     {
       if ([current miniwindowImage] == old_app_icon)
         [current setMiniwindowImage: _app_icon];
+    }
+
+  if (_dock_tile != nil)
+    {
+      [_dock_tile display];
+    }
+  else
+    {
+      GSUpdateIconManager(_app_icon, nil);
     }
 
   DESTROY(old_app_icon);
@@ -2485,6 +2542,7 @@ image.</p><p>See Also: -applicationIconImage</p>
   if (!_dock_tile)
     {
       _dock_tile = [[NSDockTile alloc] init];
+      [_dock_tile setOwner: self];
       [_dock_tile setContentView: [_app_icon_window contentView]];
     }
   return _dock_tile;
@@ -2502,22 +2560,45 @@ image.</p><p>See Also: -applicationIconImage</p>
  */
 - (void) hide: (id)sender
 {
-#ifdef __MINGW32__
-  [self miniaturizeAll: sender];
-#else
   if (_app_is_hidden == NO)
     {
-      if (![[NSUserDefaults standardUserDefaults]
-	     boolForKey: @"GSSuppressAppIcon"])
+      NSDictionary	*info;
+      id<NSMenuItem>	menuItem;
+      BOOL		miniaturize;
+
+#ifdef __MINGW32__
+      miniaturize = YES;
+#else
+      /*Minimize all windows if there isn't an AppIcon. This isn't the
+	most elegant solution, but avoids to loss the app if the user
+	hide it. */
+      miniaturize = [[NSUserDefaults standardUserDefaults]
+		      boolForKey: @"GSSuppressAppIcon"];
+#endif
+
+      [nc postNotificationName: NSApplicationWillHideNotification
+			object: self];
+
+      menuItem = [sender isKindOfClass: [NSMenuItem class]]
+		   ? sender
+		   : [_main_menu itemWithTitle: _(@"Hide")];
+      if (menuItem)
+	{
+	  [menuItem setAction: @selector(unhide:)];
+	  [menuItem setTitle: _(@"Show")];
+	}
+
+      _app_is_hidden = YES;
+
+      if (miniaturize)
+	{
+	  [self miniaturizeAll: sender];
+	}
+      else
 	{
 	  NSArray		*windows_list;
-	  NSDictionary  	*info;
 	  NSWindow		*win;
 	  NSEnumerator  	*iter;
-          id<NSMenuItem>  	menuItem;
-
-	  [nc postNotificationName: NSApplicationWillHideNotification
-	                    object: self];
 
 	  if ([self keyWindow] != nil)
 	    {
@@ -2563,17 +2644,7 @@ image.</p><p>See Also: -applicationIconImage</p>
                   [win orderOut: self];
                 }
 	    }
-	  menuItem = [sender isKindOfClass:[NSMenuItem class]]
-		       ? sender
-		       : [_main_menu itemWithTitle:_(@"Hide")];
-	  if (menuItem)
-	    {
-	      [menuItem setAction:@selector(unhide:)];
-	      [menuItem setTitle:_(@"Show")];
-	    }
 
-	  _app_is_hidden = YES;
-	  
 	  if (YES == [[NSUserDefaults standardUserDefaults]
 		       boolForKey: @"GSSuppressAppIcon"])
 	    {
@@ -2600,25 +2671,17 @@ image.</p><p>See Also: -applicationIconImage</p>
 	   */
 	  [self deactivate];
 	  _unhide_on_activation = YES;
-	  
-	  info = [self _notificationUserInfo];
-	  [nc postNotificationName: NSApplicationDidHideNotification
-			    object: self
-		          userInfo: info];
-	  [[[NSWorkspace sharedWorkspace] notificationCenter]
-	    postNotificationName: NSApplicationDidHideNotification
-		          object: [NSWorkspace sharedWorkspace]
-		        userInfo: info];
 	}
-      else
-	{
-	  /*Minimize all windows if there isn't an AppIcon. This isn't the
-	    most elegant solution, but avoids to loss the app if the user
-	    hide it. */
-	  [self miniaturizeAll: sender];
-	}
+
+      info = [self _notificationUserInfo];
+      [nc postNotificationName: NSApplicationDidHideNotification
+			object: self
+		      userInfo: info];
+      [[[NSWorkspace sharedWorkspace] notificationCenter]
+	postNotificationName: NSApplicationDidHideNotification
+		      object: [NSWorkspace sharedWorkspace]
+		    userInfo: info];
     }
-#endif
 }
 
 /**<p>Returns whether app is currently in hidden state.</p>
@@ -2676,6 +2739,25 @@ image.</p><p>See Also: -applicationIconImage</p>
       _app_is_hidden = NO;
 
       count = [_hidden count];
+      if (count == 0)
+	{
+	  /* Nothing was ordered out, so the application was hidden by
+	     miniaturizing its windows, and they are brought back the way
+	     they were put away.  A window the user had miniaturized before
+	     the application was hidden comes back with them. */
+	  NSArray      *windows = [self windows];
+	  NSEnumerator *iter = [windows objectEnumerator];
+	  NSWindow     *win;
+
+	  while ((win = [iter nextObject]) != nil)
+	    {
+	      if ([win isMiniaturized])
+		{
+		  [win deminiaturize: self];
+		}
+	    }
+	}
+
       for (i = 0; i < count; i++)
         {
           NSWindow *win = [_hidden objectAtIndex: i];
@@ -3029,6 +3111,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 
   if (_main_menu != nil)
     {
+      if ([[_main_menu title] length] == 0)
+        {
+          [_main_menu setTitle: [[NSProcessInfo processInfo] processName]];
+        }
       [_main_menu setMain: YES];
     }
 }
@@ -3635,6 +3721,11 @@ struct _DelegateWrapper
         DESTROY(pool);
       }
 
+      /* exit() does not unwind the stack, so objects still held by pools
+         created outside this method would otherwise be deallocated from an
+         atexit handler, after parts of the runtime have been torn down.  */
+      [[NSAutoreleasePool currentPool] emptyPool];
+
       /* And finally, stop the program.  */
       exit(0);
     }
@@ -3782,7 +3873,7 @@ struct _DelegateWrapper
  */
 - (void) cancelUserAttentionRequest: (NSInteger)request
 {
-  // FIXME
+  GSCancelUserAttentionRequest(request);
 }
 
 /**
@@ -3793,7 +3884,7 @@ struct _DelegateWrapper
  */
 - (NSInteger) requestUserAttention: (NSRequestUserAttentionType)requestType
 {
-  // FIXME
+  GSRequestUserAttention(requestType);
   return 0;
 }
 
@@ -3896,6 +3987,21 @@ struct _DelegateWrapper
 
 
 @implementation	NSApplication (Private)
+
+/* Miniwindow drawing must not create a dock tile while rendering one. */
+- (NSDockTile *) _dockTileIfExists
+{
+  return _dock_tile;
+}
+
+
+- (void) _setDockTileImage: (NSImage *)image
+{
+  NSAppIconView *appIconView;
+
+  appIconView = (NSAppIconView *)[[self iconWindow] contentView];
+  [appIconView setImage: image];
+}
 
 - (void) _loadAppIconImage
 {
@@ -4393,4 +4499,3 @@ struct _DelegateWrapper
 }
 
 @end
-

@@ -85,8 +85,12 @@
     {
       return NO;
     }
-  
+
   [_dataMap setObject: data forKey: type];
+  if (![_types containsObject: type])
+    {
+      [_types addObject: type];
+    }
   return YES;
 }
 
@@ -94,8 +98,12 @@
 {
   if (![string isKindOfClass: [NSString class]])
     return NO;
-  
+
   [_dataMap setObject: string forKey: type];
+  if (![_types containsObject: type])
+    {
+      [_types addObject: type];
+    }
   return YES;
 }
 
@@ -106,6 +114,10 @@
     return NO;
 
   [_dataMap setObject: propertyList forKey: type];
+  if (![_types containsObject: type])
+    {
+      [_types addObject: type];
+    }
   return YES;
 }
 

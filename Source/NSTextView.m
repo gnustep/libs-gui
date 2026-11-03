@@ -96,6 +96,7 @@
 #import "AppKit/NSWindow.h"
 
 #import "GSGuiPrivate.h"
+#import "GSBindingHelpers.h"
 #import "GSTextFinder.h"
 #import "GSToolTips.h"
 #import "GSFastEnumeration.h"
@@ -515,6 +516,69 @@ decoded.
 
 
 /*
+The characters that are laid out inside the visible rect.  -resetCursorRects
+builds the custom cursor rects for this range alone, so anything deciding
+whether those rects have to be rebuilt must ask about the same range.  This
+uses the layout that already exists rather than forcing more.
+*/
+- (NSRange) _visibleCharacterRange
+{
+  NSPoint containerOrigin;
+  NSRect visibleRect;
+  NSRange visibleGlyphs;
+
+  if (_layoutManager == nil || _textContainer == nil)
+    {
+      return NSMakeRange(0, 0);
+    }
+
+  containerOrigin = [self textContainerOrigin];
+  visibleRect = [self visibleRect];
+  visibleRect.origin.x -= containerOrigin.x;
+  visibleRect.origin.y -= containerOrigin.y;
+
+  visibleGlyphs = [_layoutManager
+    glyphRangeForBoundingRectWithoutAdditionalLayout: visibleRect
+				     inTextContainer: _textContainer];
+  return [_layoutManager characterRangeForGlyphRange: visibleGlyphs
+					actualGlyphRange: NULL];
+}
+
+/*
+Returns YES if the visible text contains any attribute that -resetCursorRects
+turns into a custom (non-I-beam) cursor rect.  Currently that is only
+NSLinkAttributeName (the pointing-hand cursor over links); NSCursorAttributeName
+is still a FIXME in -resetCursorRects and so is intentionally not checked here.
+*/
+- (BOOL) _hasCustomCursorRegions
+{
+  NSTextStorage *storage = [self textStorage];
+  NSRange visible = [self _visibleCharacterRange];
+  NSUInteger i;
+
+  visible = NSIntersectionRange(visible,
+    NSMakeRange(0, [storage length]));
+
+  i = visible.location;
+  while (i < NSMaxRange(visible))
+    {
+      NSRange effectiveRange;
+      id linkValue = [storage attribute: NSLinkAttributeName
+				 atIndex: i
+			   longestEffectiveRange: &effectiveRange
+				 inRange: visible];
+
+      if (linkValue != nil)
+	{
+	  return YES;
+	}
+      i = NSMaxRange(effectiveRange);
+    }
+
+  return NO;
+}
+
+/*
 Called when our state needs updating due to external changes. Currently,
 this happens when layout has been invalidated, and when we are resized.
 */
@@ -526,8 +590,15 @@ this happens when layout has been invalidated, and when we are resized.
   [self updateInsertionPointStateAndRestartTimer:
     [self shouldDrawInsertionPoint]];
   [self _updateInputMethodState];
-  /* In case any sections of text with custom cursors were moved */
-  [[self window] invalidateCursorRectsForView: self];
+  /* In case any sections of text with custom cursors were moved.  Only
+     invalidate when the text actually has custom cursor regions (links);
+     for plain text the sole cursor rect is the static I-beam over the whole
+     visible rect, and rebuilding it on every layout change makes the mouse
+     cursor flicker while typing (bug #353). */
+  if ([self _hasCustomCursorRegions])
+    {
+      [[self window] invalidateCursorRectsForView: self];
+    }
 }
 
 - (void) _layoutManagerDidInvalidateLayout
@@ -618,6 +689,7 @@ static NSMenu *textViewMenu;
       [temp release];
 
       [self exposeBinding: NSEditableBinding];
+      [self exposeBinding: NSValueBinding];
     }
 }
 
@@ -766,8 +838,8 @@ If a text view is added to an empty text network, it keeps its attributes.
   _tf.allows_undo = NO;
   _tf.smart_insert_delete = YES;
   _tf.uses_find_panel = NO;
-  _tf.accepts_glyph_info = NO;
-  _tf.allows_document_background_color_change = YES;
+  _tf.accepts_glyph_info = YES;
+  _tf.allows_document_background_color_change = NO;
 
   _dragTargetLocation = NSNotFound;
 
@@ -2805,14 +2877,62 @@ TextDidEndEditing notification _without_ asking the delegate
                replacementString: [strings objectAtIndex: 0]];
 }
 
+- (void) bind: (NSString *)binding
+     toObject: (id)anObject
+  withKeyPath: (NSString *)keyPath
+      options: (NSDictionary *)options
+{
+  if ([binding isEqual: NSValueBinding])
+    {
+      GSKeyValueBinding *kvb;
+
+      [self unbind: binding];
+      kvb = [[GSKeyValueBinding alloc] initWithBinding: @"string"
+                                              withName: NSValueBinding
+                                              toObject: anObject
+                                           withKeyPath: keyPath
+                                               options: options
+                                            fromObject: self];
+      // The binding will be retained in the binding table
+      RELEASE(kvb);
+    }
+  else
+    {
+      [super bind: binding
+         toObject: anObject
+      withKeyPath: keyPath
+          options: options];
+    }
+}
+
+- (void) setValue: (id)anObject forKey: (NSString *)aKey
+{
+  /* The value binding pushes model nulls through as nil.
+     -setString: does not accept nil, so map it to the empty string. */
+  if (anObject == nil && [aKey isEqualToString: @"string"])
+    {
+      anObject = @"";
+    }
+  [super setValue: anObject forKey: aKey];
+}
+
 /*
 After each user-induced change, this method should be called.
 */
 - (void) didChangeText
 {
+  GSKeyValueBinding *theBinding;
+
   [self scrollRangeToVisible: [self selectedRange]];
   [notificationCenter postNotificationName: NSTextDidChangeNotification
     object: _notifObject];
+
+  theBinding = [GSKeyValueBinding getBinding: NSValueBinding
+                                   forObject: self];
+  if (theBinding != nil)
+    {
+      [theBinding reverseSetValueFor: @"string"];
+    }
 
   if ([_window firstResponder] != self)
     { /* Copied from -resignFirstResponder . See comment above. */
@@ -4108,17 +4228,8 @@ Figure out how the additional layout stuff is supposed to work.
       if (_layoutManager != nil && _textContainer != nil)
 	{
 	  NSInteger i;
-	  NSRange visibleGlyphs, visibleCharacters;
 	  const NSPoint containerOrigin = [self textContainerOrigin];
-
-	  NSRect visibleRectInContainerCoordinates = visibleRect;
-	  visibleRectInContainerCoordinates.origin.x -= containerOrigin.x;
-	  visibleRectInContainerCoordinates.origin.y -= containerOrigin.y;
-
-	  visibleGlyphs = [_layoutManager glyphRangeForBoundingRectWithoutAdditionalLayout: visibleRectInContainerCoordinates
-									   inTextContainer: _textContainer];
-	  visibleCharacters = [_layoutManager characterRangeForGlyphRange: visibleGlyphs
-							 actualGlyphRange: NULL];
+	  const NSRange visibleCharacters = [self _visibleCharacterRange];
 	  
 	  for (i = visibleCharacters.location; i < NSMaxRange(visibleCharacters); )
 	    {

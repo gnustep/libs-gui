@@ -30,9 +30,11 @@
 #import <Foundation/NSDebug.h>
 #import "AppKit/NSAffineTransform.h"
 #import "AppKit/NSCell.h"
+#import "AppKit/NSColor.h"
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImageCell.h"
 #import "AppKit/NSImage.h"
+#import "AppKit/NSImageView.h"
 #import "GNUstepGUI/GSTheme.h"
 #import "GSGuiPrivate.h"
 
@@ -262,6 +264,28 @@ yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
       && ![self isEnabled])
     {
       fraction = 0.5;
+    }
+
+  if ([_cell_image isTemplate])
+    {
+      NSColor *tintColor = nil;
+
+      if ([controlView respondsToSelector: @selector(contentTintColor)])
+        {
+          tintColor = [(NSImageView *)controlView contentTintColor];
+        }
+      if (tintColor != nil)
+        {
+          [tintColor set];
+        }
+      else if ([self isEnabled])
+	{
+	  [[NSColor controlTextColor] set];
+	}
+      else
+	{
+	  [[NSColor disabledControlTextColor] set];
+	}
     }
 
   // draw!

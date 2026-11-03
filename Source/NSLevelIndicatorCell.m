@@ -39,7 +39,7 @@
 
 - (id) init
 {
-  return [self initWithLevelIndicatorStyle: NSRatingLevelIndicatorStyle];
+  return [self initWithLevelIndicatorStyle: NSDiscreteCapacityLevelIndicatorStyle];
 }
 
 - (id) initWithLevelIndicatorStyle: (NSLevelIndicatorStyle)style
@@ -79,7 +79,12 @@
 
 - (NSLevelIndicatorStyle) style
 {
-  return _style; 
+  return _style;
+}
+
+- (NSLevelIndicatorStyle) levelIndicatorStyle
+{
+  return _style;
 }
 
 
@@ -166,7 +171,12 @@
                    format: @"tick mark index invalid"];
     }
 
-  return _minValue + index * (_maxValue - _minValue) / _numberOfTickMarks;
+  if (_numberOfTickMarks == 1)
+    {
+      return (_minValue + _maxValue) / 2.0;
+    }
+
+  return _minValue + index * (_maxValue - _minValue) / (_numberOfTickMarks - 1);
 }
 
 - (NSRect) rectOfTickMarkAtIndex: (NSInteger)index

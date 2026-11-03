@@ -34,10 +34,10 @@
 @implementation NSTextTableBlock
 
 - (id) initWithTable: (NSTextTable *)table
-         startingRow: (int)row
-             rowSpan: (int)rspan
-      startingColumn: (int)col
-          columnSpan: (int)cspan;
+         startingRow: (NSInteger)row
+             rowSpan: (NSInteger)rspan
+      startingColumn: (NSInteger)col
+          columnSpan: (NSInteger)cspan;
 {
   self = [super init];
   if (self == nil)
@@ -58,22 +58,22 @@
   [super dealloc];
 }
 
-- (int) columnSpan
+- (NSInteger) columnSpan
 {
   return _colSpan;
 }
 
-- (int) rowSpan
+- (NSInteger) rowSpan
 {
   return _rowSpan;
 }
 
-- (int) startingColumn
+- (NSInteger) startingColumn
 {
   return _col;
 }
 
-- (int) startingRow
+- (NSInteger) startingRow
 {
   return _row;
 }

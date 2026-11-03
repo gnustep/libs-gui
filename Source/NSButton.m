@@ -81,6 +81,79 @@ static id buttonCellClass = nil;
   buttonCellClass = classId;
 }
 
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_12, GS_API_LATEST)
++ (instancetype) buttonWithTitle: (NSString *)title
+                          target: (id)target
+                          action: (SEL)action
+{
+  NSButton *button = AUTORELEASE([[self alloc] initWithFrame: NSZeroRect]);
+
+  [button setTitle: title];
+  [button setTarget: target];
+  [button setAction: action];
+  [button sizeToFit];
+  return button;
+}
+
++ (instancetype) buttonWithImage: (NSImage *)image
+                          target: (id)target
+                          action: (SEL)action
+{
+  NSButton *button = AUTORELEASE([[self alloc] initWithFrame: NSZeroRect]);
+
+  [button setImage: image];
+  [button setImagePosition: NSImageOnly];
+  [button setTarget: target];
+  [button setAction: action];
+  [button sizeToFit];
+  return button;
+}
+
++ (instancetype) buttonWithTitle: (NSString *)title
+                           image: (NSImage *)image
+                          target: (id)target
+                          action: (SEL)action
+{
+  NSButton *button = AUTORELEASE([[self alloc] initWithFrame: NSZeroRect]);
+
+  [button setTitle: title];
+  [button setImage: image];
+  [button setImagePosition: NSImageLeft];
+  [button setTarget: target];
+  [button setAction: action];
+  [button sizeToFit];
+  return button;
+}
+
++ (instancetype) checkboxWithTitle: (NSString *)title
+                            target: (id)target
+                            action: (SEL)action
+{
+  NSButton *button = AUTORELEASE([[self alloc] initWithFrame: NSZeroRect]);
+
+  [button setTitle: title];
+  [button setTarget: target];
+  [button setAction: action];
+  [button setButtonType: NSSwitchButton];
+  [button sizeToFit];
+  return button;
+}
+
++ (instancetype) radioButtonWithTitle: (NSString *)title
+                               target: (id)target
+                               action: (SEL)action
+{
+  NSButton *button = AUTORELEASE([[self alloc] initWithFrame: NSZeroRect]);
+
+  [button setTitle: title];
+  [button setTarget: target];
+  [button setAction: action];
+  [button setButtonType: NSRadioButton];
+  [button sizeToFit];
+  return button;
+}
+#endif
+
 //
 // Instance methods
 //
@@ -547,6 +620,28 @@ static id buttonCellClass = nil;
 - (NSSound *) sound
 {
   return [_cell sound];
+}
+
+- (NSColor *) bezelColor
+{
+  return [(NSButtonCell *)_cell bezelColor];
+}
+
+- (void) setBezelColor: (NSColor *)color
+{
+  [(NSButtonCell *)_cell setBezelColor: color];
+  [self setNeedsDisplay: YES];
+}
+
+- (NSColor *) contentTintColor
+{
+  return [(NSButtonCell *)_cell contentTintColor];
+}
+
+- (void) setContentTintColor: (NSColor *)color
+{
+  [(NSButtonCell *)_cell setContentTintColor: color];
+  [self setNeedsDisplay: YES];
 }
 
 // Implement 10.7+ radio button behavior

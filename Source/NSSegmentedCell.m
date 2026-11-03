@@ -576,10 +576,16 @@
                                    roundedRight: roundedRight];
    if (label)
      {
-       NSSize textSize = [label sizeWithAttributes: [self _nonAutoreleasedTypingAttributes]];
-       NSRect textFrame = frame;
-       CGFloat x_offset = (frame.size.width - textSize.width) / 2;
+       NSDictionary	*attrs;
+       NSSize		textSize;
+       NSRect		textFrame;
+       CGFloat		x_offset;
 
+       attrs = [self _nonAutoreleasedTypingAttributes];
+       textSize = [label sizeWithAttributes: attrs];
+       RELEASE(attrs);
+       textFrame = frame;
+       x_offset = (frame.size.width - textSize.width) / 2;
        textFrame.origin.x += x_offset;
        textFrame.size.width -= x_offset;
        [self _drawText: label inFrame: textFrame];
@@ -599,6 +605,18 @@
         {
           destinationRect = [view centerScanRect: destinationRect];
         }
+
+      if ([segmentImage isTemplate])
+	{
+	  if ([self isEnabledForSegment: seg])
+	    {
+	      [[NSColor controlTextColor] set];
+	    }
+	  else
+	    {
+	      [[NSColor disabledControlTextColor] set];
+	    }
+	}
 
       [segmentImage drawInRect: destinationRect
                       fromRect: NSZeroRect
@@ -628,6 +646,53 @@
       if (frame.origin.x >= cellFrame.size.width)
         break;
     }
+}
+
+- (NSSize) cellSize
+{
+  NSDictionary *attributes = [self _nonAutoreleasedTypingAttributes];
+  NSUInteger i, count = [_items count];
+  const CGFloat hPadding = 6.0;
+  const CGFloat vPadding = 4.0;
+  const CGFloat imageTextGap = 3.0;
+  NSSize size = NSMakeSize(0.0, 0.0);
+
+  for (i = 0; i < count; i++)
+    {
+      NSSegmentItem *segment = [_items objectAtIndex: i];
+      NSString *label = [segment label];
+      NSImage *image = [segment image];
+      CGFloat content = 0.0;
+      CGFloat height = 0.0;
+      CGFloat width;
+
+      if (image != nil)
+        {
+          NSSize imageSize = [image size];
+
+          content += imageSize.width;
+          height = MAX(height, imageSize.height);
+        }
+      if (label != nil && [label length] > 0)
+        {
+          NSSize textSize = [label sizeWithAttributes: attributes];
+
+          if (image != nil)
+            content += imageTextGap;
+          content += textSize.width;
+          height = MAX(height, textSize.height);
+        }
+
+      width = [segment width];
+      if (width <= 0.0)
+        width = content + 2.0 * hPadding;
+      size.width += width;
+      size.height = MAX(size.height, height);
+    }
+
+  size.height += 2.0 * vPadding;
+  RELEASE(attributes);
+  return size;
 }
 
 // Setting the style of the segments
@@ -740,7 +805,10 @@
       NSRect frame = [segment frame];
       if(NSPointInRect(lastPoint,frame))
 	{
-	  [self setSelectedSegment: i];
+	  if (_segmentCellFlags._tracking_mode == NSSegmentSwitchTrackingSelectAny)
+	    [self setSelected: ![self isSelectedForSegment: i] forSegment: i];
+	  else
+	    [self setSelectedSegment: i];
 	  break;
 	}
     }

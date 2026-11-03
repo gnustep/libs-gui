@@ -317,7 +317,9 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
                                       toItem: secondItem
                                    attribute: secondAttribute
                                   multiplier: 1.0
-                                    constant: viewSpacingConstant];
+                                    constant: (_isVerticalOrientation
+                                                ? -viewSpacingConstant
+                                                : viewSpacingConstant)];
 
   [_constraints addObject: viewSeparatorConstraint];
 }
@@ -366,7 +368,9 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
                                       toItem: secondItem
                                    attribute: firstAttribute
                                   multiplier: 1.0
-                                    constant: viewSpacingConstant];
+                                    constant: (_isVerticalOrientation
+                                                ? -viewSpacingConstant
+                                                : viewSpacingConstant)];
   [_constraints addObject: leadingConstraintToSuperview];
 }
 
@@ -413,7 +417,9 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
                                       toItem: secondItem
                                    attribute: attribute
                                   multiplier: 1.0
-                                    constant: viewSpacingConstant];
+                                    constant: (_isVerticalOrientation
+                                                ? -viewSpacingConstant
+                                                : viewSpacingConstant)];
   [_constraints addObject: trailingConstraintToSuperview];
 }
 
@@ -550,11 +556,15 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
 - (void) parseObjectOfPredicate: (GSObjectOfPredicate *)predicate
 {
-  NSLayoutRelation relation = [self parseRelation];
-
+  NSLayoutRelation relation;
   CGFloat parsedConstant;
   NSView *predicatedView = nil;
-  BOOL scanConstantResult = [_scanner scanDouble: &parsedConstant];
+  BOOL scanConstantResult;
+  double tempDouble;
+
+  relation = [self parseRelation];
+  scanConstantResult= [_scanner scanDouble: &tempDouble];
+  parsedConstant = (CGFloat)tempDouble;
   if (!scanConstantResult)
     {
       NSString *identiferName = [self parseIdentifier];
@@ -651,11 +661,11 @@ NSInteger const GS_DEFAULT_SUPERVIEW_SPACING = 20;
 
 - (NSNumber *) parseConstant
 {
-  CGFloat constant;
+  double constant;
   BOOL scanConstantResult = [_scanner scanDouble: &constant];
   if (scanConstantResult)
     {
-      return [NSNumber numberWithFloat: constant];
+      return [NSNumber numberWithDouble: constant];
     }
 
   NSString *metricName = [self parseIdentifier];

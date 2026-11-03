@@ -33,7 +33,7 @@
   self = [super initWithFrame: frame];
   if (self != nil)
     {
-      _rowSizeStyle = NSTableViewRowSizeStyleDefault;
+      _rowSizeStyle = NSTableViewRowSizeStyleCustom;
       _backgroundStyle = NSBackgroundStyleLight;
     }
   return self;

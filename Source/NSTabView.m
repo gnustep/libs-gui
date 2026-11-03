@@ -78,7 +78,10 @@
       ASSIGN(_items, [NSMutableArray array]);
       ASSIGN(_font, [NSFont systemFontOfSize: 0]);
       _selected = nil;
-      //_truncated_label = NO;
+      _draws_background = YES;
+      _truncated_label = YES;
+      _controlSize = NSRegularControlSize;
+      _controlTint = NSDefaultControlTint;
     }
 
   return self;
@@ -421,6 +424,29 @@
 
 // Drawing.
 
+/* An item's tooltip belongs to the area its tab occupies, and that area is
+ * known only once the theme has drawn: -[NSTabViewItem drawLabel:inRect:] is
+ * what records it.  The tooltips are therefore renewed after each draw, from
+ * the rects the draw just settled.
+ */
+- (void) _updateToolTips
+{
+  NSEnumerator	*enumerator = [_items objectEnumerator];
+  NSTabViewItem	*item;
+
+  [self removeAllToolTips];
+  while ((item = [enumerator nextObject]) != nil)
+    {
+      NSString	*tip = [item toolTip];
+      NSRect	 rect = [item _tabRect];
+
+      if ([tip length] > 0 && NO == NSIsEmptyRect(rect))
+	{
+	  [self addToolTipRect: rect owner: tip userData: NULL];
+	}
+    }
+}
+
 - (void) drawRect: (NSRect)rect
 {
   // Make sure some tab is selected
@@ -433,6 +459,8 @@
 		   inView: self
 		   withItems: _items
 		   selectedItem: _selected];
+
+  [self _updateToolTips];
 }
 
 - (BOOL) isOpaque
@@ -482,30 +510,22 @@
 
 - (NSControlSize) controlSize
 {
-  // FIXME
-  return NSRegularControlSize;
+  return _controlSize;
 }
 
-/**
- * Not implemented.
- */
 - (void) setControlSize: (NSControlSize)controlSize
 {
-  // FIXME 
+  _controlSize = controlSize;
 }
 
 - (NSControlTint) controlTint
 {
-  // FIXME
-  return NSDefaultControlTint;
+  return _controlTint;
 }
 
-/**
- * Not implemented.
- */
 - (void) setControlTint: (NSControlTint)controlTint
 {
-  // FIXME 
+  _controlTint = controlTint;
 }
 
 // Coding.

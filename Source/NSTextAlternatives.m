@@ -37,10 +37,18 @@ NSString *NSTextAlternativesSelectedAlternativeStringNotification =
 - (id)initWithPrimaryString:(NSString *)primaryString
          alternativeStrings:(NSArray *)alternativeStrings
 {
+  if (primaryString == nil)
+    {
+      DESTROY(self);
+      [NSException raise: NSInvalidArgumentException
+                  format: @"Attempt to create text alternatives without a"
+        @" primary string"];
+    }
+
   if ((self = [super init]))
     {
-      _primaryString = RETAIN(primaryString);
-      _alternativeStrings = RETAIN(alternativeStrings);
+      ASSIGNCOPY(_primaryString, primaryString);
+      ASSIGNCOPY(_alternativeStrings, alternativeStrings);
     }
 
   return self;
@@ -48,12 +56,12 @@ NSString *NSTextAlternativesSelectedAlternativeStringNotification =
 
 - (NSString *)primaryString
 {
-  return [_primaryString copy];
+  return _primaryString;
 }
 
 - (NSArray *)alternativeStrings
 {
-  return [_alternativeStrings copy];
+  return _alternativeStrings;
 }
 
 - (void)noteSelectedAlternativeString:(NSString *)alternativeString

@@ -55,8 +55,15 @@ enum {
 typedef NSUInteger NSAttributeType;
 
 APPKIT_EXPORT_CLASS
-@interface NSPredicateEditorRowTemplate : NSObject {
-
+@interface NSPredicateEditorRowTemplate : NSObject <NSCoding, NSCopying> {
+  NSArray                       *_leftExpressions;
+  NSArray                       *_rightExpressions;
+  NSArray                       *_operators;
+  NSArray                       *_compoundTypes;
+  NSArray                       *_views;
+  NSAttributeType                _rightExpressionAttributeType;
+  NSComparisonPredicateModifier  _modifier;
+  NSUInteger                     _options;
 }
 
 + (NSArray *) templatesWithAttributeKeyPaths: (NSArray *)paths

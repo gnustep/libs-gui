@@ -115,7 +115,7 @@ MyView *view;
 
 int main(int argc, char **argv)
 {
-	CREATE_AUTORELEASE_POOL(arp);
+	START_SET("NSBezierPath windingCountAtPoint")
 	NSBezierPath *p=[[NSBezierPath alloc] init];
 	int i;
 	const char *str;
@@ -162,14 +162,14 @@ int main(int argc, char **argv)
 		} \
 		if (i) \
 		{ \
-			pass(NO, \
+			PASS(NO, \
 				"path '%s', %15.8e %15.8e, expected %i, got inconsistant results", \
 				str,(double)x,(double)y, \
 				e); \
 		} \
 		else \
 		{ \
-			pass(r == e, \
+			PASS(r == e, \
 				"path '%s', %15.8e %15.8e, expected %i, got %i", \
 				str,(double)x,(double)y, \
 				e,r); \
@@ -701,7 +701,7 @@ int main(int argc, char **argv)
 	}
 
 	DESTROY(p);
-	DESTROY(arp);
+	END_SET("NSBezierPath windingCountAtPoint")
 
 	return 0;
 }

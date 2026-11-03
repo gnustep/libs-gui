@@ -76,16 +76,16 @@ static const unsigned char validJPEG[] = {
 
 int main()
 {
-  NSAutoreleasePool *arp = [NSAutoreleasePool new];
+  START_SET("NSBitmapImageRep jpegAllocationOverflow")
   NSData            *data;
   NSBitmapImageRep  *rep;
 
   data = [NSData dataWithBytes: validJPEG length: sizeof(validJPEG)];
   rep = [[NSBitmapImageRep alloc] initWithData: data];
-  pass(rep != nil && [rep pixelsWide] == 8 && [rep pixelsHigh] == 8,
+  PASS(rep != nil && [rep pixelsWide] == 8 && [rep pixelsHigh] == 8,
     "a valid JPEG still decodes after the allocation size is computed safely");
   [rep release];
 
-  [arp release];
+  END_SET("NSBitmapImageRep jpegAllocationOverflow")
   return 0;
 }

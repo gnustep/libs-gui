@@ -61,8 +61,10 @@
 #import "AppKit/NSColor.h"
 #import "AppKit/NSColorList.h"
 #import "AppKit/NSCursor.h"
+#import "AppKit/NSDrawer.h"
 #import "AppKit/NSDocumentController.h"
 #import "AppKit/NSDocument.h"
+#import "AppKit/NSDockTile.h"
 #import "AppKit/NSDragging.h"
 #import "AppKit/NSEvent.h"
 #import "AppKit/NSFont.h"
@@ -86,6 +88,7 @@
 #import "GNUstepGUI/GSDisplayServer.h"
 #import "GNUstepGUI/GSWindowDecorationView.h"
 #import "GSBindingHelpers.h"
+#import "GSDockTileBadge.h"
 #import "GSGuiPrivate.h"
 #import "GSToolTips.h"
 #import "GSIconManager.h"
@@ -119,6 +122,10 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
             source: (id)sourceObject
          slideBack: (BOOL)slideFlag;
 - (void) postDragEvent: (NSEvent*)event;
+@end
+
+@interface NSApplication (DockTilePrivate)
+- (NSDockTile *) _dockTileIfExists;
 @end
 
 @interface NSView (MoveToWindow)
@@ -170,6 +177,11 @@ static GSWindowAnimationDelegate *animationDelegate;
 - (NSView *) _windowView;
 - (NSView *) _borderView;
 - (NSScreen *) _screenForFrame: (NSRect)frame;
+- (void) _moveChildWindowsByOffset: (NSSize)offset;
+@end
+
+@interface NSDrawer (GNUstepPrivate)
++ (NSArray *) _drawersForParentWindow: (NSWindow *)window;
 @end
 
 @implementation NSWindow (GNUstepPrivate)
@@ -193,6 +205,34 @@ static GSWindowAnimationDelegate *animationDelegate;
       [self displayIfNeeded];
       [self enableFlushWindow];
       [self flushWindowIfNeeded];
+    }
+}
+
+- (void) _moveChildWindowsByOffset: (NSSize)offset
+{
+  NSUInteger count;
+
+  if (offset.width == 0 && offset.height == 0)
+    {
+      return;
+    }
+
+  count = [_children count];
+  if (count == 0)
+    {
+      return;
+    }
+
+  // Iterate over all child windows.
+  NSEnumerator *en = [_children objectEnumerator];
+  NSWindow *child = nil;
+  while ((child = [en nextObject]))
+    {
+      NSRect childFrame = [child frame];
+
+      childFrame.origin.x += offset.width;
+      childFrame.origin.y += offset.height;
+      [child setFrame: childFrame display: NO];
     }
 }
 
@@ -525,6 +565,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void) drawRect: (NSRect)rect
 {
   NSSize iconSize = GSGetIconSize();
+  NSDockTile *dockTile = [NSApp _dockTileIfExists];
 
   [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
                    inView: self];
@@ -537,6 +578,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [titleCell drawWithFrame: NSMakeRect(3, iconSize.height - 13,
                                        iconSize.width - 6, 10)
                     inView: self];
+  if ([dockTile showsApplicationBadge])
+    {
+      GSDrawDockTileBadge([dockTile badgeLabel],
+	NSMakeRect(0, 0, iconSize.width, iconSize.height));
+    }
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
@@ -1128,6 +1174,7 @@ many times.
 
   _f.cursor_rects_enabled = YES;
   _f.cursor_rects_valid = NO;
+  _f.shows_resize_indicator = YES;
 
   /* Create the window view */
   cframe.origin = NSZeroPoint;
@@ -2075,7 +2122,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint
 {
-  NSRect cRect;
+  CGFloat delta;
 
   if (NSEqualPoints(topLeftPoint, NSZeroPoint) == YES)
     {
@@ -2084,9 +2131,12 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 
   [self setFrameTopLeftPoint: topLeftPoint];
-  cRect = [self contentRectForFrameRect: _frame];
-  topLeftPoint.x = NSMinX(cRect);
-  topLeftPoint.y = NSMaxY(cRect);
+
+  /* The next window in a cascade is offset down and to the right by the
+     height of a standard title bar. */
+  delta = [[GSTheme theme] titlebarHeight];
+  topLeftPoint.x += delta;
+  topLeftPoint.y -= delta;
 
   /* make sure the new point is inside the screen */
   if ([self screen])
@@ -2109,14 +2159,21 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (BOOL) showsResizeIndicator
 {
-  return ([self styleMask] & NSResizableWindowMask) ? YES : NO;
+  if (([self styleMask] & NSResizableWindowMask) == 0)
+    {
+      return NO;
+    }
+  return _f.shows_resize_indicator;
 }
 
 - (void) setShowsResizeIndicator: (BOOL)show
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-        "setShowsResizeIndicator:", "NSWindow");
+  if (_f.shows_resize_indicator == show)
+    {
+      return;
+    }
+  _f.shows_resize_indicator = show;
+  [_wv setNeedsDisplay: YES];
 }
 
 - (BOOL) preservesContentDuringLiveResize
@@ -2351,6 +2408,8 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (void) setFrame: (NSRect)frameRect display: (BOOL)flag
 {
+  NSPoint oldOrigin = _frame.origin;
+
   if (_maximumSize.width > 0 && frameRect.size.width > _maximumSize.width)
     {
       frameRect.size.width = _maximumSize.width;
@@ -2387,11 +2446,18 @@ titleWithRepresentedFilename(NSString *representedFilename)
       [nc postNotificationName: NSWindowWillMoveNotification object: self];
     }
 
-  /*
-   * Now we can tell the graphics context to do the actual resizing.
-   * We will recieve an event to tell us when the resize is done.
-   */
+   /*
+    * Backend-backed windows move child windows when the backend move event
+    * updates _frame. Deferred/one-shot windows have no backend event here,
+    * so apply the parent delta to child windows immediately.
+    */
   [self _applyFrame: frameRect];
+  if (_windowNum == 0)
+    {
+      [self _moveChildWindowsByOffset:
+        NSMakeSize(frameRect.origin.x - oldOrigin.x,
+                   frameRect.origin.y - oldOrigin.y)];
+    }
 
   if (flag)
     {
@@ -2461,6 +2527,7 @@ titleWithRepresentedFilename(NSString *representedFilename)
 - (void) setResizeIncrements: (NSSize)aSize
 {
   _increments = aSize;
+  _aspectRatio = NSZeroSize;
   if (_windowNum > 0)
     {
       [GSServerForWindow(self) setresizeincrements: aSize : _windowNum];
@@ -2469,13 +2536,13 @@ titleWithRepresentedFilename(NSString *representedFilename)
 
 - (NSSize) aspectRatio
 {
-  // FIXME: This method is missing
-  return NSMakeSize(1, 1);
+  return _aspectRatio;
 }
 
 - (void) setAspectRatio: (NSSize)ratio
 {
-  // FIXME: This method is missing
+  _aspectRatio = ratio;
+  _increments = NSZeroSize;
 }
 
 - (NSSize) contentMaxSize
@@ -2845,9 +2912,9 @@ titleWithRepresentedFilename(NSString *representedFilename)
   NSRect       oldScreenFrame = [_screen frame];
   int          screenNumber = [_screen screenNumber];
   NSRect       newScreenFrame;
-  NSRect       newFrame;
   NSEnumerator *e;
   NSScreen     *scr;
+  NSScreen     *newScreen = nil;
 
   // We need to get new screen from renewed screen list because
   // [NSScreen mainScreen] returns NSScreen object of key window and that object
@@ -2857,9 +2924,20 @@ titleWithRepresentedFilename(NSString *representedFilename)
     {
       if ([scr screenNumber] == screenNumber)
         {
-          ASSIGN(_screen, scr);
+          newScreen = scr;
           break;
         }
+    }
+  // The screen the window was on may have been removed (e.g. a monitor was
+  // disconnected). Fall back to the first available screen so the window is
+  // not left anchored to a screen that no longer exists.
+  if (newScreen == nil)
+    {
+      newScreen = [[NSScreen screens] firstObject];
+    }
+  if (newScreen != nil)
+    {
+      ASSIGN(_screen, newScreen);
     }
 
   // Do not adjust frame for mini and appicon windows - it's a WM's job.
@@ -2869,18 +2947,24 @@ titleWithRepresentedFilename(NSString *representedFilename)
     }
 
   newScreenFrame = [_screen frame];
-  newFrame = _frame;
-  // Screen Y origin change.
-  newFrame.origin.y += newScreenFrame.origin.y - oldScreenFrame.origin.y;
-  // Screen height change.
-  newFrame.origin.y += newScreenFrame.size.height - oldScreenFrame.size.height;
-  // Screen X origin change. Screen width change shouldn't affect our frame.
-  newFrame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
+  /* Skip the remap when the frame already fits the new screen:
+     it has already been realigned against it. */
+  if (NSContainsRect(newScreenFrame, _frame) == NO)
+    {
+      NSRect newFrame = _frame;
 
-  /* Call backend's `placewindow::` directly because our origin in OpenStep
-     coordinates might be unchanged and `setFrame:display:` has check
-     for it. */
-  [self _applyFrame: newFrame];
+      // Screen Y origin change.
+      newFrame.origin.y += newScreenFrame.origin.y - oldScreenFrame.origin.y;
+      // Screen height change.
+      newFrame.origin.y += newScreenFrame.size.height - oldScreenFrame.size.height;
+      // Screen X origin change. Screen width change shouldn't affect our frame.
+      newFrame.origin.x += newScreenFrame.origin.x - oldScreenFrame.origin.x;
+
+      /* Call backend's `placewindow::` directly because our origin in OpenStep
+         coordinates might be unchanged and `setFrame:display:` has check
+         for it. */
+      [self _applyFrame: newFrame];
+    }
   [self display];
 
   if (_autosaveName != nil)
@@ -3902,6 +3986,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
 	  lastPoint = [theView convertPoint: lastPoint fromView: nil];
 	  loc = [theView convertPoint: loc fromView: nil];
           [tr getObjects: rects];
+          for (i = 0; i < count; ++i)
+            {
+              RETAIN(rects[i]);
+            }
 
           for (i = 0; i < count; ++i)
             {
@@ -3985,6 +4073,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                     }
                 }
             }
+          for (i = 0; i < count; ++i)
+            {
+              RELEASE(rects[i]);
+            }
         }
     }
 
@@ -4004,10 +4096,18 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
           [sb getObjects: subs];
           for (i = 0; i < count; ++i)
             {
+              RETAIN(subs[i]);
+            }
+          for (i = 0; i < count; ++i)
+            {
               if (![subs[i] isHidden])
                 {
                   (*ctImp)(self, ctSel, subs[i], theEvent);
                 }
+            }
+          for (i = 0; i < count; ++i)
+            {
+              RELEASE(subs[i]);
             }
         }
     }
@@ -4363,6 +4463,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
             case GSAppKitWindowMoved:
               {
                 NSScreen *oldScreen = _screen;
+                NSPoint oldOrigin = _frame.origin;
 
                 _frame.origin.x = (CGFloat)[theEvent data1];
                 _frame.origin.y = (CGFloat)[theEvent data2];
@@ -4372,6 +4473,9 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                   {
                     [self saveFrameUsingName: _autosaveName];
                   }
+                [self _moveChildWindowsByOffset:
+                  NSMakeSize(_frame.origin.x - oldOrigin.x,
+                             _frame.origin.y - oldOrigin.y)];
                 [nc postNotificationName: NSWindowDidMoveNotification
                                   object: self];
                 if ([self screen] != oldScreen)
@@ -5491,18 +5595,39 @@ current key view.<br />
 - (void) addChildWindow: (NSWindow *)child
                 ordered: (NSWindowOrderingMode)place
 {
-  if (_children == nil)
+  NSInteger childWindowNumber;
+
+  if (child == nil || child == self)
     {
-      _children = [[NSMutableArray alloc] init];
+      return;
     }
-  [_children addObject: child];
+
   [child setParentWindow: self];
+  RETAIN(child);
+  [_children removeObjectIdenticalTo: child];
+  if (place == NSWindowBelow)
+    {
+      [_children insertObject: child atIndex: 0];
+    }
+  else
+    {
+      [_children addObject: child];
+    }
+  RELEASE(child);
+
+  childWindowNumber = [child windowNumber];
+  if (childWindowNumber != 0 && _windowNum != 0)
+    {
+      [child orderWindow: place relativeTo: _windowNum];
+    }
 }
 
 - (void) removeChildWindow: (NSWindow *)child
 {
-  [_children removeObject: child];
-  [child setParentWindow: nil];
+  if ([child parentWindow] == self)
+    {
+      [child setParentWindow: nil];
+    }
 }
 
 - (NSWindow *) parentWindow
@@ -5512,7 +5637,28 @@ current key view.<br />
 
 - (void) setParentWindow: (NSWindow *)window
 {
+  if (_parent == window)
+    {
+      return;
+    }
+
+  if (_parent != nil)
+    {
+      [_parent->_children removeObjectIdenticalTo: self];
+    }
   _parent = window;
+
+  if (_parent != nil)
+    {
+      if (_parent->_children == nil)
+        {
+          _parent->_children = [[NSMutableArray alloc] init];
+        }
+      if ([_parent->_children indexOfObjectIdenticalTo: self] == NSNotFound)
+        {
+          [_parent->_children addObject: self];
+        }
+    }
 
   if (_windowNum)
     {
@@ -5928,10 +6074,7 @@ current key view.<br />
 */
 - (NSArray *) drawers
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-        "drawers", "NSWindow");
-  return nil;
+  return [NSDrawer _drawersForParentWindow: self];
 }
 
 - (void *)windowRef
@@ -6147,6 +6290,7 @@ current key view.<br />
 //  _f.is_main = NO;
 //  _f.is_edited = NO;
   _f.is_released_when_closed = YES;
+  _f.shows_resize_indicator = YES;
 //  _f.is_miniaturized = NO;
 //  _f.menu_exclude = NO;
 //  _f.hides_on_deactivate = NO;

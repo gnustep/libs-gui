@@ -43,7 +43,7 @@
         return nil;
 
       numFields = 3;
-      currentMode = NSColorPanelHSBModeMask;
+      currentMode = NSHSBModeColorPanel;
 
       b = [NSBundle bundleForClass: [self class]];
       r_names[0] = NSLocalizedStringFromTableInBundle(@"Hue",@"StandardPicker",b,@"");
