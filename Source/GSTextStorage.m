@@ -73,11 +73,10 @@ static BOOL     adding;
 static inline NSUInteger
 cacheHash(NSDictionary *attrs)
 {
-  NSEnumerator *enumerator = [attrs keyEnumerator];
   NSUInteger hash = [attrs count];
   id key;
 
-  while ((key = [enumerator nextObject]) != nil)
+  for (key in attrs)
     hash += [key hash] ^ [[attrs objectForKey: key] hash];
   return hash;
 }
