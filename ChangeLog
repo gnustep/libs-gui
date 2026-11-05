@@ -1,3 +1,10 @@
+2026-11-05  Daniel Boyd <danieljboyd@icloud.com>
+
+	* Source/NSView.m (-addTrackingRect:owner:userData:assumeInside:):
+	Take the next tag from a counter instead of scanning the view's
+	rects for the highest one, which made adding n rects quadratic.
+	* Tests/gui/NSView/trackingRectTags.m: New test.
+
 2026-07-01 Michael Hupp <mrtonik@mailbox.org>
 
 	* Source/NSMenuView.m (GSMenuCross)
