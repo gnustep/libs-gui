@@ -3750,19 +3750,13 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 			     userData: (void*)data
 			 assumeInside: (BOOL)flag
 {
-  NSTrackingRectTag	t;
-  NSUInteger		i, j;
-  GSTrackingRect	*m;
-
-  t = 0;
-  j = [_tracking_rects count];
-  for (i = 0; i < j; ++i)
-    {
-      m = (GSTrackingRect*)[_tracking_rects objectAtIndex: i];
-      if ([m tag] > t)
-	t = [m tag];
-    }
-  ++t;
+  /* Scanning this view's rects for an unused tag would make adding n rects
+   * quadratic, and a tool tip is a tracking rect, so a view can have thousands.
+   * A tag need only be unique within its view; counting makes it so across all.
+   */
+  static NSTrackingRectTag	lastTag = 0;
+  GSTrackingRect		*m;
+  NSTrackingRectTag		t = ++lastTag;
 
   m = [[rectClass alloc] initWithRect: aRect
 				  tag: t
