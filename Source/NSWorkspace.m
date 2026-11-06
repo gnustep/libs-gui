@@ -926,11 +926,13 @@ static NSDictionary		*urlPreferences = nil;
       NSArray	*args = [NSArray arrayWithObject: fullPath];
       NSTask 	*task = [NSTask launchedTaskWithLaunchPath: launchPath
 					         arguments: args];
+      /* Do not wait for the tool: handlers such as xdg-open run for as
+       * long as the browser they started, which would block the calling
+       * application (and its user interface) for the whole time.
+       */
       if (task != nil)
         {
-          [task waitUntilExit];
-          if ([task terminationStatus] == 0)
-            return YES;
+          return YES;
         }
     }
 
