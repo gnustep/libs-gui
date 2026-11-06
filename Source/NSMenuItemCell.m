@@ -255,9 +255,25 @@ static NSString *commandKeyString = @"#";
   uchar = [key characterAtIndex: 0];
   if (uchar >= 0xF700)
     {
-      // FIXME: At the moment we are not able to handle function keys
-      // as key equivalent
-      return nil;
+      switch (uchar)
+        {
+        case NSHomeFunctionKey:
+          key = @"↖";
+          break;
+        case NSEndFunctionKey:
+          key = @"↘";
+          break;
+        case NSPageUpFunctionKey:
+          key = @"⇞";
+          break;
+        case NSPageDownFunctionKey:
+          key = @"⇟";
+          break;
+        default:
+          // At the moment we do not know how to handle other function keys as
+          // key equivalent.
+          return nil;
+        }
     }
 
   if ([key isEqualToString: @"\\r"])
