@@ -34,6 +34,7 @@
 #import "GSAVUtils.h"
 
 #import <Foundation/NSLock.h>
+#include <libavcodec/codec_desc.h>
 
 #define BUFFER_SIZE 2048
 
@@ -68,6 +69,8 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
     {
       _audioPacketsLock = [[NSLock alloc] init];
       _stateLock = [[NSRecursiveLock alloc] init];
+      _subtitleLock = [[NSLock alloc] init];
+      _subtitleCues = [[NSMutableArray alloc] init];
       [self reset];
     }
   return self;
@@ -76,6 +79,8 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 - (void)dealloc
 {
   [self reset];
+  DESTROY(_subtitleLock);
+  DESTROY(_subtitleCues);
   DESTROY(_audioPacketsLock);
   DESTROY(_stateLock);
   [super dealloc];
@@ -84,6 +89,7 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 - (void) reset
 {
   [self stop];
+  [self prepareSubtitlesWithFormatContext: NULL];
   [self cleanupTimeStretching];
 
   if (_audioFrame)
@@ -111,6 +117,7 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   if (_aoDev)
     {
       ao_close(_aoDev);
+      _aoDev = NULL;
     }
 
   RELEASE(_audioPackets);
@@ -121,6 +128,8 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   _audioPackets = [[NSMutableArray alloc] initWithCapacity: BUFFER_SIZE];
   _audioThread = nil;
 
+  _formatCtx = NULL;
+  _stream = NULL;
   _audioCodecCtx = NULL;
   _audioFrame = NULL;
   _swrCtx = NULL;
@@ -693,6 +702,7 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
 // Seeking methods
 - (BOOL) seekToTime: (int64_t)timestamp
 {
+  [self flushSubtitles];
   // Clear existing audio packets
   [self _clearAudioPackets];
 
@@ -836,6 +846,191 @@ GSInputChannelLayout(AVCodecContext *codecCtx)
   _flags.reachedEOF = YES;
   _lastPosition = _audioClock; // Save current position
   [self stop];
+}
+
+/* FFmpeg returns ASS events as ReadOrder,Layer,Style,Name,MarginL,MarginR,
+ * MarginV,Effect,Text. Preserve commas in Text and discard override styling.
+ */
+static NSString *
+GSSubtitleText(AVSubtitleRect *rect)
+{
+  NSString *text;
+  if (rect->text != NULL)
+    return [NSString stringWithUTF8String: rect->text];
+  if (rect->ass == NULL)
+    return nil;
+  text = [NSString stringWithUTF8String: rect->ass];
+  NSUInteger pos = 0, i;
+  for (i = 0; i < 8; i++)
+    {
+      NSRange comma = [text rangeOfString: @"," options: 0
+                                   range: NSMakeRange(pos, [text length] - pos)];
+      if (comma.location == NSNotFound)
+        return nil;
+      pos = NSMaxRange(comma);
+    }
+  text = [text substringFromIndex: pos];
+  NSMutableString *plain = [NSMutableString string];
+  BOOL override = NO;
+  for (i = 0; i < [text length]; i++)
+    {
+      unichar c = [text characterAtIndex: i];
+      if (c == '{') override = YES;
+      else if (c == '}') override = NO;
+      else if (!override) [plain appendFormat: @"%C", c];
+    }
+  [plain replaceOccurrencesOfString: @"\\N" withString: @"\n"
+                           options: 0 range: NSMakeRange(0, [plain length])];
+  [plain replaceOccurrencesOfString: @"\\n" withString: @"\n"
+                           options: 0 range: NSMakeRange(0, [plain length])];
+  [plain replaceOccurrencesOfString: @"\\h" withString: @" "
+                           options: 0 range: NSMakeRange(0, [plain length])];
+  return plain;
+}
+
+- (void) prepareSubtitlesWithFormatContext: (AVFormatContext *)formatCtx
+{
+  [_subtitleLock lock];
+  avcodec_free_context(&_subtitleCodecCtx);
+  [_subtitleCues removeAllObjects];
+  _subtitleFormatCtx = formatCtx;
+  _subtitleStreamIndex = -1;
+  [_subtitleLock unlock];
+}
+
+- (NSArray *) subtitleStreams
+{
+  NSMutableArray *tracks = [NSMutableArray array];
+  [_subtitleLock lock];
+  unsigned int i;
+  for (i = 0; _subtitleFormatCtx && i < _subtitleFormatCtx->nb_streams; i++)
+    {
+      AVStream *stream = _subtitleFormatCtx->streams[i];
+      const AVCodecDescriptor *desc = avcodec_descriptor_get(stream->codecpar->codec_id);
+      if (stream->codecpar->codec_type == AVMEDIA_TYPE_SUBTITLE && desc
+          && (desc->props & AV_CODEC_PROP_TEXT_SUB)
+          && avcodec_find_decoder(stream->codecpar->codec_id))
+        {
+          AVDictionaryEntry *language = av_dict_get(stream->metadata, "language", NULL, 0);
+          AVDictionaryEntry *title = av_dict_get(stream->metadata, "title", NULL, 0);
+          [tracks addObject: [NSDictionary dictionaryWithObjectsAndKeys:
+            [NSNumber numberWithInt: i], @"index",
+            language ? [NSString stringWithUTF8String: language->value] : @"", @"language",
+            title ? [NSString stringWithUTF8String: title->value] : @"", @"title", nil]];
+        }
+    }
+  [_subtitleLock unlock];
+  return tracks;
+}
+
+- (int) subtitleStreamIndex
+{
+  [_subtitleLock lock];
+  int index = _subtitleStreamIndex;
+  [_subtitleLock unlock];
+  return index;
+}
+
+- (BOOL) setSubtitleStreamIndex: (int)index
+{
+  AVCodecContext *context = NULL;
+  [_subtitleLock lock];
+  if (index != -1)
+    {
+      if (!_subtitleFormatCtx || index < 0 || index >= _subtitleFormatCtx->nb_streams)
+        goto failure;
+      AVStream *stream = _subtitleFormatCtx->streams[index];
+      const AVCodecDescriptor *desc = avcodec_descriptor_get(stream->codecpar->codec_id);
+      const AVCodec *codec = avcodec_find_decoder(stream->codecpar->codec_id);
+      if (stream->codecpar->codec_type != AVMEDIA_TYPE_SUBTITLE || !desc
+          || !(desc->props & AV_CODEC_PROP_TEXT_SUB) || !codec)
+        goto failure;
+      context = avcodec_alloc_context3(codec);
+      if (!context || avcodec_parameters_to_context(context, stream->codecpar) < 0)
+        goto failure;
+      context->pkt_timebase = stream->time_base;
+      if (avcodec_open2(context, codec, NULL) < 0)
+        goto failure;
+    }
+  avcodec_free_context(&_subtitleCodecCtx);
+  _subtitleCodecCtx = context;
+  _subtitleStreamIndex = index;
+  [_subtitleCues removeAllObjects];
+  [_subtitleLock unlock];
+  return YES;
+failure:
+  avcodec_free_context(&context);
+  [_subtitleLock unlock];
+  return NO;
+}
+
+- (void) flushSubtitles
+{
+  [_subtitleLock lock];
+  if (_subtitleCodecCtx) avcodec_flush_buffers(_subtitleCodecCtx);
+  [_subtitleCues removeAllObjects];
+  [_subtitleLock unlock];
+}
+
+- (void) submitSubtitlePacket: (AVPacket *)packet
+{
+  [_subtitleLock lock];
+  if (_subtitleCodecCtx && packet && packet->stream_index == _subtitleStreamIndex)
+    {
+      AVSubtitle subtitle = {0};
+      int gotSubtitle = 0;
+      AVPacket copy = *packet;
+      int result = avcodec_decode_subtitle2(_subtitleCodecCtx, &subtitle, &gotSubtitle, &copy);
+      if (result >= 0 && gotSubtitle)
+        {
+          AVRational timeBase = _subtitleFormatCtx->streams[_subtitleStreamIndex]->time_base;
+          int64_t pts = subtitle.pts;
+          if (pts == AV_NOPTS_VALUE && packet->pts != AV_NOPTS_VALUE)
+            pts = av_rescale_q(packet->pts, timeBase, AV_TIME_BASE_Q);
+          int64_t start = pts + (int64_t)subtitle.start_display_time * 1000;
+          int64_t end = pts + (int64_t)subtitle.end_display_time * 1000;
+          if (end <= start && packet->duration > 0)
+            end = pts + av_rescale_q(packet->duration, timeBase, AV_TIME_BASE_Q);
+          NSMutableArray *lines = [NSMutableArray array];
+          unsigned int i;
+          for (i = 0; i < subtitle.num_rects; i++)
+            {
+              NSString *text = GSSubtitleText(subtitle.rects[i]);
+              if ([text length]) [lines addObject: text];
+            }
+          if (pts != AV_NOPTS_VALUE && end > start && [lines count])
+            [_subtitleCues addObject: [NSDictionary dictionaryWithObjectsAndKeys:
+              [NSNumber numberWithLongLong: start], @"start",
+              [NSNumber numberWithLongLong: end], @"end",
+              [lines componentsJoinedByString: @"\n"], @"text", nil]];
+        }
+      avsubtitle_free(&subtitle);
+    }
+  [_subtitleLock unlock];
+}
+
+- (NSString *) subtitleTextAtTime: (int64_t)timestamp
+{
+  NSMutableArray *lines = [NSMutableArray array];
+  [_subtitleLock lock];
+  NSUInteger i = 0;
+  while (i < [_subtitleCues count])
+    {
+      NSDictionary *cue = [_subtitleCues objectAtIndex: i];
+      if ([[cue objectForKey: @"end"] longLongValue] <= timestamp)
+        { [_subtitleCues removeObjectAtIndex: i]; continue; }
+      if ([[cue objectForKey: @"start"] longLongValue] <= timestamp)
+        [lines addObject: [cue objectForKey: @"text"]];
+      i++;
+    }
+  NSString *text = [lines componentsJoinedByString: @"\n"];
+  [_subtitleLock unlock];
+  return text;
+}
+
+- (NSString *) currentSubtitleText
+{
+  return [self subtitleTextAtTime: [self currentPlaybackTime]];
 }
 
 @end
