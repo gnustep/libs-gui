@@ -24,6 +24,7 @@
 
 #import <Foundation/NSString.h>
 #import <Foundation/NSGeometry.h>
+#import <Foundation/NSNotification.h>
 
 #import "AppKit/NSStoryboardSegue.h"
 #import "AppKit/NSWindowController.h"
@@ -38,9 +39,58 @@
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSView.h"
 #import "AppKit/NSPopover.h"
+#import "GSStoryboardArchive.h"
+
+/* A presentation outlives the temporary segue and may outlive its source
+ * controller.  The close notification balances this object's initial retain;
+ * neither the controller nor its window needs to retain itself. */
+@interface GSStoryboardWindowPresentation : NSObject
+{
+  id _controller;
+  id _presentation;
+}
+- (id) initWithController: (id)controller presentation: (id)presentation
+       closeNotification: (NSString *)notification;
+- (void) presentationDidClose: (NSNotification *)notification;
+@end
+
+@implementation GSStoryboardWindowPresentation
+- (id) initWithController: (id)controller presentation: (id)presentation
+       closeNotification: (NSString *)notification
+{
+  if ((self = [super init]) != nil)
+    {
+      if (presentation == nil)
+        {
+          RELEASE(self);
+          return nil;
+        }
+      _controller = RETAIN(controller);
+      _presentation = RETAIN(presentation);
+      [[NSNotificationCenter defaultCenter] addObserver: self
+        selector: @selector(presentationDidClose:) name: notification
+        object: presentation];
+    }
+  return self;
+}
+
+- (void) presentationDidClose: (NSNotification *)notification
+{
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  AUTORELEASE(self); // Keep the controller alive until close dispatch finishes.
+}
+
+- (void) dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  RELEASE(_controller);
+  RELEASE(_presentation);
+  [super dealloc];
+}
+
+@end
 
 @implementation NSStoryboardSegue
-
 - (id) sourceController
 {
   return _sourceController;
@@ -63,12 +113,12 @@
 
 - (void) _setDestinationController: (id)controller
 {
-  _destinationController = controller;
+  ASSIGN(_destinationController, controller);
 }
 
 - (void) _setSourceController: (id)controller
 {
-  _sourceController = controller;
+  ASSIGN(_sourceController, controller);
 }
 
 + (instancetype) segueWithIdentifier: (NSStoryboardSegueIdentifier)identifier
@@ -107,6 +157,7 @@
   RELEASE(_kind);
   RELEASE(_relationship);
   RELEASE(_handler);
+  RELEASE(_popoverAnchorView);
   [super dealloc];
 }
 
@@ -125,12 +176,10 @@
 	}
       else if ([_relationship isEqualToString: @"splitItems"])
 	{
-	  NSView *v = [_destinationController view];
-	  NSSplitViewController *svc = (NSSplitViewController *)_sourceController;
-	  [[svc splitView] addSubview: v];
-	  NSUInteger idx = [[[svc splitView] subviews] count] - 1;
-	  NSSplitViewItem *item = [[svc splitViewItems] objectAtIndex: idx];
-	  [item setViewController: _destinationController];
+          NSSplitViewController *svc = (NSSplitViewController *)_sourceController;
+          NSSplitViewItem *item = [NSSplitViewItem
+            splitViewItemWithViewController: _destinationController];
+          [svc addSplitViewItem: item];
 	}
       else if ([_relationship isEqualToString: @"tabItems"])
 	{
@@ -159,6 +208,10 @@
     {
       if ([_destinationController isKindOfClass: [NSWindowController class]])
 	{
+          [[GSStoryboardWindowPresentation alloc]
+            initWithController: _destinationController
+            presentation: [_destinationController window]
+            closeNotification: NSWindowWillCloseNotification];
 	  [_destinationController showWindow: _sourceController];
 	}
       else
@@ -166,8 +219,13 @@
 	  NSWindow *w = [NSWindow windowWithContentViewController: _destinationController];
 	  [w setTitle: [_destinationController title]];
 	  [w center];
+          // The presentation owns this autoreleased window until close.
+          // Closing must not consume that ownership a second time.
+          [w setReleasedWhenClosed: NO];
+          [[GSStoryboardWindowPresentation alloc]
+            initWithController: _destinationController presentation: w
+            closeNotification: NSWindowWillCloseNotification];
 	  [w orderFrontRegardless];
-	  RETAIN(w);
 	}
     }
   else if ([_kind isEqualToString: @"popover"])
@@ -206,6 +264,59 @@
     {
       CALL_BLOCK_NO_ARGS(_handler);
     }
+}
+
+@end
+
+@implementation NSStoryboardSegue (GSStoryboardPrivate)
+- (void) _setKind: (NSString *)k
+{
+  ASSIGN(_kind, k);
+}
+
+- (NSString *) _kind
+{
+  return _kind;
+}
+
+- (void) _setRelationship: (NSString *)r
+{
+  ASSIGN(_relationship, r);
+}
+
+- (NSString *) _relationship
+{
+  return _relationship;
+}
+
+- (void) _setPopoverAnchorView: (id)view
+{
+  ASSIGN(_popoverAnchorView, view);
+}
+
+- (id) _popoverAnchorView
+{
+  return _popoverAnchorView;
+}
+
+- (void) _setPopoverBehavior: (NSPopoverBehavior)behavior
+{
+  _popoverBehavior = behavior;
+}
+
+- (NSPopoverBehavior) _popoverBehavior
+{
+  return _popoverBehavior;
+}
+
+- (void) _setPreferredEdge: (NSRectEdge)edge
+{
+  _preferredEdge = edge;
+}
+
+- (NSRectEdge) _preferredEdge
+{
+  return _preferredEdge;
 }
 
 @end

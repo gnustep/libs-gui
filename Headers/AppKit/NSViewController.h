@@ -64,7 +64,7 @@ APPKIT_EXPORT_CLASS
   id                   _autounbinder;
   NSString            *_designNibBundleIdentifier;
   NSMapTable          *_segueMap;
-  NSStoryboard        *_storyboard; // a weak reference to the origin storyboard.
+  NSStoryboard        *_storyboard; // the originating storyboard.
   struct ___vcFlags
     {
       unsigned int nib_is_loaded:1;

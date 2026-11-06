@@ -66,6 +66,7 @@ NSApplicationMain(int argc, const char **argv)
   NSString              *mainModelFile;
   NSString		*className;
   Class			appClass;
+  id initialStoryboardController = nil;
   CREATE_AUTORELEASE_POOL(pool);
 #if defined(LIB_FOUNDATION_LIBRARY) || defined(GS_PASS_ARGUMENTS)
   extern char		**environ;
@@ -109,7 +110,7 @@ NSApplicationMain(int argc, const char **argv)
 	    {
 	      [NSStoryboard _setMainStoryboard: storyboard];
 	      [storyboard _instantiateApplicationScene];
-	      [storyboard instantiateInitialController];
+	      initialStoryboardController = RETAIN([storyboard instantiateInitialController]);
 	    }
 	}
     }
@@ -118,6 +119,9 @@ NSApplicationMain(int argc, const char **argv)
 
   [NSApp run];
 
+  // The startup pool is drained before the run loop; own the initial scene
+  // explicitly instead of relying on a cycle in its top-level object array.
+  RELEASE(initialStoryboardController);
   DESTROY(NSApp);
 
   [pool drain];

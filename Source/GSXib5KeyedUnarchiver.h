@@ -33,6 +33,10 @@
 
 @class GSXibElement;
 
+@interface GSXibKeyedUnarchiver (GSObjectInitialization)
+- (id) initializeObject: (id)object forXib: (GSXibElement *)element;
+@end
+
 @interface GSXib5KeyedUnarchiver : GSXibKeyedUnarchiver
 {
   GSXibElement        *_IBObjectContainer;
@@ -44,6 +48,15 @@
   NSMutableDictionary *_orderedObjectsDict;
   NSArray             *_resources;
 }
+
+/* Internal parsed-input interface.  Input nodes contain XML tag names,
+ * attributes and ordered children; normalization always creates fresh records. */
+- (id) initForReadingWithElement: (GSXibElement *)element;
+- (void) readElement: (GSXibElement *)element;
+- (void) beginElement: (NSString *)name attributes: (NSDictionary *)attributes;
+- (void) endElement: (NSString *)name;
+- (void) addOrderedObject: (GSXibElement *)element;
++ (NSString *) classNameForXibTag: (NSString *)tag;
 
 - (NSRange) decodeRangeForKey: (NSString*)key;
 @end

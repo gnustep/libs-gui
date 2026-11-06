@@ -305,6 +305,8 @@
     }
 
   [_realPanel setFrame: windowFrame display: YES];
+  [[positioningView window] addChildWindow: _realPanel
+                                  ordered: NSWindowAbove];
   [_realPanel makeKeyAndOrderFront:self];
 
   NSDebugLog(@"Showing relative to in window %@",NSStringFromRect(positioningRect));
@@ -327,6 +329,12 @@
 
 - (void) windowWillClose: (NSNotification *)notification
 {
+  NSWindow *panel = [notification object];
+
+  [[panel parentWindow] removeChildWindow: panel];
+  _realPanel = nil;
+  _shown = NO;
+
   [[NSNotificationCenter defaultCenter] postNotificationName:NSPopoverWillCloseNotification
 						      object:self
 						    userInfo:nil];
