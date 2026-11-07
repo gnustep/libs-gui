@@ -4489,6 +4489,7 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
             case GSAppKitWindowResized:
               {
                 NSRect newFrame;
+                NSPoint oldOrigin = _frame.origin;
 
                 newFrame.size.width = [theEvent data1];
                 newFrame.size.height = [theEvent data2];
@@ -4500,6 +4501,9 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
                    on the delegate.
                  */
                 _frame = newFrame;
+                [self _moveChildWindowsByOffset:
+                  NSMakeSize(_frame.origin.x - oldOrigin.x,
+                             _frame.origin.y - oldOrigin.y)];
                 newFrame.origin = NSZeroPoint;
                 [_wv setFrame: newFrame];
                 [_wv setNeedsDisplay: YES];
