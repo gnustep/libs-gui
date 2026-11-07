@@ -1,3 +1,18 @@
+2026-11-05  Daniel Boyd  <danieljboyd@icloud.com>
+
+	* Source/GSTextStorage.m (cacheHash): Use fast enumeration to avoid
+	autoreleased key enumerators on every cache lookup and removal.
+
+2026-11-04  Daniel Boyd <danieljboyd@icloud.com>
+
+	* Source/GSTextStorage.m (cacheHash): Hash attribute contents rather
+	than only dictionary count, independent of key enumeration order.
+	(unCacheAttributes): Find the original key by identity if a mutable
+	value changed its hash, preserving removal of non-retained map keys.
+	* Tests/gui/NSTextStorage/attributeCache.m: Cover equality growth for
+	same-count dictionaries, values and effective ranges, mutable-hash
+	removal and attribute value lifetimes.
+
 2026-07-01 Michael Hupp <mrtonik@mailbox.org>
 
 	* Source/NSMenuView.m (GSMenuCross)

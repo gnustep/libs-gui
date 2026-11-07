@@ -68,6 +68,19 @@ static BOOL     adding;
  * the equal dictionaries to remove.
  * The solution is to require dictionaries to be identical for removal.
  */
+/* NSDictionary hashes by count, putting all same-sized attribute dictionaries
+ * in one bucket.  Combine the contents without depending on key order. */
+static inline NSUInteger
+cacheHash(NSDictionary *attrs)
+{
+  NSUInteger hash = [attrs count];
+  id key;
+
+  for (key in attrs)
+    hash += [key hash] ^ [[attrs objectForKey: key] hash];
+  return hash;
+}
+
 static inline BOOL
 cacheEqual(id A, id B)
 {
@@ -82,6 +95,7 @@ cacheEqual(id A, id B)
 #define	GSI_MAP_RETAIN_VAL(M, X)	
 #define	GSI_MAP_RELEASE_VAL(M, X)	
 #define	GSI_MAP_EQUAL(M, X,Y)	cacheEqual((X).obj, (Y).obj)
+#define GSI_MAP_HASH(M, X) cacheHash((X).obj)
 #define GSI_MAP_KTYPES	GSUNION_OBJ
 #define GSI_MAP_VTYPES	GSUNION_NSINT
 #define	GSI_MAP_NOCLEAN	1
@@ -230,25 +244,35 @@ cacheAttributes(NSDictionary *attrs)
 static void
 unCacheAttributes(NSDictionary *attrs)
 {
-  GSIMapBucket       bucket;
+  GSIMapBucket bucket;
+  GSIMapNode node = 0;
 
   ALOCK();
   adding = NO;
   bucket = GSIMapBucketForKey(&attrMap, (GSIMapKey)((id)attrs));
   if (bucket != 0)
+    node = GSIMapNodeForKeyInBucket(&attrMap,
+      bucket, (GSIMapKey)((id)attrs));
+  if (node == 0)
     {
-      GSIMapNode     node;
+      NSUInteger i;
 
-      node = GSIMapNodeForKeyInBucket(&attrMap,
-        bucket, (GSIMapKey)((id)attrs));
-      if (node != 0)
-	{
-	  if (--node->value.nsu == 0)
-	    {
-	      GSIMapRemoveNodeFromMap(&attrMap, bucket, node);
-	      GSIMapFreeNode(&attrMap, node);
-	    }
-	}
+      /* A shallow-copied value may have changed its hash since insertion.
+       * Find the original dictionary by identity before its last owner
+       * releases it: the map itself does not retain its keys. */
+      for (i = 0; i < attrMap.bucketCount; i++)
+        {
+          bucket = &attrMap.buckets[i];
+          node = GSIMapNodeForKeyInBucket(&attrMap,
+            bucket, (GSIMapKey)((id)attrs));
+          if (node != 0)
+            break;
+        }
+    }
+  if (node != 0 && --node->value.nsu == 0)
+    {
+      GSIMapRemoveNodeFromMap(&attrMap, bucket, node);
+      GSIMapFreeNode(&attrMap, node);
     }
   AUNLOCK();
 }
