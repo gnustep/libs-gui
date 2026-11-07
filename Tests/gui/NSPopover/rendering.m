@@ -14,7 +14,18 @@ main(int argc, const char **argv)
   NSRectEdge edges[] = {NSMinXEdge, NSMaxXEdge, NSMinYEdge, NSMaxYEdge};
   NSUInteger i;
 
-  [NSApplication sharedApplication];
+  /* These tests require a window server; property-only tests do not. */
+  NS_DURING
+    [NSApplication sharedApplication];
+  NS_HANDLER
+    if ([[localException name]
+      isEqualToString: @"NSWindowServerCommunicationException"])
+      {
+        SKIP("No display available for NSPopover window tests")
+      }
+    else
+      [localException raise];
+  NS_ENDHANDLER
   window = [[NSWindow alloc] initWithContentRect: NSMakeRect(200, 200, 400, 300)
                                       styleMask: NSBorderlessWindowMask
                                         backing: NSBackingStoreBuffered
