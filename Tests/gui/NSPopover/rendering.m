@@ -23,6 +23,15 @@ main(int argc, const char **argv)
       {
         SKIP("No display available for NSPopover window tests")
       }
+    else if ([[localException name]
+      isEqualToString: NSInternalInconsistencyException]
+      && [[localException reason] rangeOfString: @"backend"].location
+        != NSNotFound)
+      {
+        NSLog(@"NSPopover backend initialization failed: %@",
+          [localException reason]);
+        SKIP("GNUstep backend is unavailable for NSPopover window tests")
+      }
     else
       [localException raise];
   NS_ENDHANDLER
