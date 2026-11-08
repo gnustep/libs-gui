@@ -192,7 +192,7 @@ jobs:
           # window server can run on a runner with no physical display.
           apt-get -q -y install $APT_PACKAGES $APT_PACKAGES_clang \
             libxt-dev libxmu-dev libxft-dev libxrandr-dev libxfixes-dev libxcursor-dev \
-            xvfb
+            xvfb xauth fonts-dejavu-core
 
           # gnustep-2.2 runtime requires ld.gold or lld
           update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 10
@@ -228,7 +228,7 @@ jobs:
           # intermittently times out on a headless runner.
           gdnc &
           sleep 1
-          xvfb-run -a make check
+          GS_REQUIRE_DRAWER_DISPLAY=1 xvfb-run -a make check
 
       - name: Upload logs
         uses: actions/upload-artifact@v7

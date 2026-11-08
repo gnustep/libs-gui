@@ -1,3 +1,17 @@
+2026-11-07  Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/NSDrawer.m: Use content dimensions instead of maximum sizes
+	for drawer depth. Draw an evenly inset line border and slide the
+	container without resizing its contents. Correct edge selection,
+	offset layout, deferred parent changes, visibility and timer cleanup.
+	Restore decoded drawer registration and delegate notifications.
+	* Tests/gui/NSDrawer/geometry.m: Cover sizing, all four edges,
+	delegation, notifications, parent changes, visibility and decoding.
+	* Tests/gui/NSDrawer/render.m: Render the actual drawer on every edge
+	and check trim geometry and pixels without local golden images.
+	* .github/workflows/main.yml: Install X authentication and fonts;
+	require a working display for drawer regressions in the headless job.
+
 2026-07-01 Michael Hupp <mrtonik@mailbox.org>
 
 	* Source/NSMenuView.m (GSMenuCross)
