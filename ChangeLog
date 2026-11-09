@@ -1,3 +1,11 @@
+2026-11-06 Daniel Boyd <danieljboyd@icloud.com>
+
+	* Source/NSControl.m (-setEnabled:): Do nothing when the state is
+	already flag.  NSToolbarItem's -validate calls this after every
+	event, so every toolbar button was marked for display after every
+	event, whatever its state.
+	* Tests/gui/NSControl/setEnabledDisplay.m: New test.
+
 2026-07-01 Michael Hupp <mrtonik@mailbox.org>
 
 	* Source/NSMenuView.m (GSMenuCross)
