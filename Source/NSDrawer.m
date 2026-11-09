@@ -57,7 +57,7 @@ static NSHashTable *_drawers = nil;
   NSWindow  *_pendingParentWindow;
   NSDrawer  *_drawer;
   id         _container;
-  NSBox     *_borderBox;
+  BOOL       _hasPendingParentWindow;
   NSSize     _borderSize;
   NSTimer   *_timer;
   NSRect     _latestParentFrame;
@@ -67,6 +67,8 @@ static NSHashTable *_drawers = nil;
 
 - (NSRect) frameFromParentWindowFrameInState:(NSInteger)state;
 - (void) configureContainer: (NSRect)contentRect;
+- (void) resetContentSize: (NSSize)size;
+- (void) _resetWindowPosition;
 
 // open/close
 - (void) openOnEdge: (NSRectEdge)edge;
@@ -110,10 +112,11 @@ static NSHashTable *_drawers = nil;
 		   backing: (NSBackingStoreType)bufferingType
 		     defer: (BOOL)flag
 {
-  if(NSIsEmptyRect(contentRect))
-    {
-      contentRect = NSMakeRect(0,0,100,100);
-    }
+  /* Measure the theme's trim before reducing the window to the requested
+     content size.  A tiny initial box would clip its content to zero and
+     underestimate the trim. */
+  contentRect.size.width = MAX(100, contentRect.size.width);
+  contentRect.size.height = MAX(100, contentRect.size.height);
 
   self = [super initWithContentRect: contentRect
 			  styleMask: aStyle
@@ -130,11 +133,10 @@ static NSHashTable *_drawers = nil;
 
 - (void) configureContainer: (NSRect)contentRect
 {
-  NSRect rect = contentRect;
+  NSRect rect = NSMakeRect(0, 0, contentRect.size.width,
+                           contentRect.size.height);
   NSSize containerContentSize;
 
-  rect.origin.x += 1.0;
-  rect.origin.y -= 5.0;
   if (_container == nil)
     {
       _container = [[NSBox alloc] initWithFrame: rect];
@@ -143,9 +145,9 @@ static NSHashTable *_drawers = nil;
       
       [_container setTitle: @""];
       [_container setTitlePosition: NSNoTitle];
-      [_container setBorderType: NSBezelBorder];
+      [_container setBorderType: NSLineBorder];
       [_container setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-      [_container setContentViewMargins: NSMakeSize(2,2)];  
+      [_container setContentViewMargins: NSMakeSize(4, 4)];
     }
   else
     {
@@ -163,69 +165,46 @@ static NSHashTable *_drawers = nil;
   return _container;
 }
 
+/* Keep the content size independent of the surrounding drawer trim. */
+- (void) resetContentSize: (NSSize)size
+{
+  [self setContentSize: NSMakeSize(size.width + _borderSize.width,
+                                 size.height + _borderSize.height)];
+  [self _resetWindowPosition];
+}
+
 - (NSRect) frameFromParentWindowFrameInState: (NSInteger)state
 {
-  NSRect newFrame = [_parentWindow frame];
-  CGFloat totalOffset = [_drawer leadingOffset] + [_drawer trailingOffset];
+  NSRect parent = [_parentWindow frame];
+  NSRect content = [[_parentWindow contentView] convertRect:
+    [[_parentWindow contentView] bounds] toView: nil];
+  NSRect frame = parent;
+  NSSize size = [_drawer contentSize];
+  CGFloat leading = [_drawer leadingOffset];
+  CGFloat trailing = [_drawer trailingOffset];
   BOOL opened = (state == NSDrawerOpenState || state == NSDrawerOpeningState);
-  NSSize size = [_parentWindow frame].size;
-  NSRect windowContentRect = [[_parentWindow contentView] frame];
-  CGFloat windowHeightWithoutTitleBar = windowContentRect.origin.y + windowContentRect.size.height;
 
-  // FIXME: This should probably add the toolbar height too, if the window has a toolbar
-  [self configureContainer: windowContentRect];
-  if (_currentEdge == NSMinXEdge) // left
+  if (_currentEdge == NSMinXEdge || _currentEdge == NSMaxXEdge)
     {
-      if (opened)
-        newFrame.size.width = [_drawer maxContentSize].width + _borderSize.width;
-      else
-        newFrame.size.width = 16;
-
-      newFrame.size.height = windowHeightWithoutTitleBar - totalOffset;
-      newFrame.origin.y += [_drawer trailingOffset];
-      if (opened)
-        newFrame.origin.x -= newFrame.size.width;
+      frame.size.width = opened ? size.width + _borderSize.width : 1;
+      frame.size.height = MAX(_borderSize.height,
+                              content.size.height - leading - trailing);
+      frame.origin.y += NSMinY(content) + trailing;
+      frame.origin.x = (_currentEdge == NSMinXEdge)
+        ? NSMinX(parent) - (opened ? frame.size.width : 0)
+        : NSMaxX(parent) - (opened ? 0 : frame.size.width);
     }
-  else if (_currentEdge == NSMinYEdge) // bottom
+  else
     {
-      if (opened)
-        newFrame.size.height = [_drawer maxContentSize].height + _borderSize.height;
-      else
-        newFrame.size.height = 16;
-
-      newFrame.size.width -= totalOffset;
-      newFrame.origin.x += [_drawer leadingOffset];
-      if (opened)
-        newFrame.origin.y -= newFrame.size.height;
+      frame.size.height = opened ? size.height + _borderSize.height : 1;
+      frame.size.width = MAX(_borderSize.width,
+                             content.size.width - leading - trailing);
+      frame.origin.x += NSMinX(content) + leading;
+      frame.origin.y = (_currentEdge == NSMinYEdge)
+        ? NSMinY(parent) - (opened ? frame.size.height : 0)
+        : NSMaxY(parent) - (opened ? 0 : frame.size.height);
     }
-  else if (_currentEdge == NSMaxXEdge) // right
-    {
-      if (opened)
-        newFrame.size.width = [_drawer maxContentSize].width + _borderSize.width;
-      else
-        newFrame.size.width = 16;
-
-      newFrame.size.height = windowHeightWithoutTitleBar - totalOffset;
-      newFrame.origin.y += [_drawer trailingOffset];
-      newFrame.origin.x += size.width;
-      if (!opened)
-        newFrame.origin.x -= newFrame.size.width;
-    }
-  else if (_currentEdge == NSMaxYEdge) // top
-    {
-      if (opened)
-        newFrame.size.height = [_drawer maxContentSize].height + _borderSize.height;
-      else
-        newFrame.size.height = 16;
-
-      newFrame.size.width -= totalOffset;
-      newFrame.origin.x += [_drawer leadingOffset];
-      newFrame.origin.y += size.height; // put above the window
-      if (!opened)
-        newFrame.origin.y -= newFrame.size.height;
-    }
-
-  return newFrame;
+  return frame;
 }
 
 - (BOOL) canBecomeKeyWindow
@@ -247,6 +226,8 @@ static NSHashTable *_drawers = nil;
 - (void) startTimer
 {
   NSTimeInterval time = 0.1;
+
+  [self stopTimer];
   _timer = [NSTimer scheduledTimerWithTimeInterval: time
 					    target: self
 					  selector: @selector(_timedWindowReset)
@@ -270,7 +251,7 @@ static NSHashTable *_drawers = nil;
   [super orderOut: sender];
 }
 
-// set the _borderBox to not resize during the slide,
+// set the _container to not resize during the slide,
 // and attach it to the appropriate edge instead
 - (void) lockBorderBoxForSliding
 {
@@ -294,28 +275,28 @@ static NSHashTable *_drawers = nil;
     }  
 
   // don't resize -- just give appearance of sliding
-  [_borderBox setAutoresizingMask: resizeMask]; 
+  [_container setAutoresizingMask: resizeMask];
 }
 
 - (void) unlockBorderBoxAfterSliding
 {
-  // set the _borderBox to resize again
-  [_borderBox setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+  // set the _container to resize again
+  [_container setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 }
 
 // prepare drawer contents before sliding...
 - (void) openOnEdge: (NSRectEdge)edge
 {
-  NSRect frame = [self frameFromParentWindowFrameInState:NSDrawerOpenState];
+  NSRect frame;
 
   _currentEdge = edge;
+  frame = [self frameFromParentWindowFrameInState: NSDrawerOpenState];
   [self setFrame:frame display: YES]; // make sure it's the full (open) size before locking the borderBox
   if ([_parentWindow isVisible]) // don't order front until parent window is visible
     {
       [self lockBorderBoxForSliding];
       [self slideOpen: YES onEdge: edge];
-      [self orderFront: self];
-      [self performSelector:@selector(unlockBorderBoxAfterSliding) withObject:nil afterDelay:0.01];
+      [self unlockBorderBoxAfterSliding];
     }
   [self startTimer];
 }
@@ -336,13 +317,13 @@ static NSHashTable *_drawers = nil;
 
   frame = [self frameFromParentWindowFrameInState:NSDrawerOpenState];
   [self setFrame:frame display: YES]; // make sure it's the full (open) size again (offscreen) before unlocking
-  [self performSelector:@selector(unlockBorderBoxAfterSliding) withObject:nil afterDelay:0.01];
+  [self unlockBorderBoxAfterSliding];
 
-  if (_pendingParentWindow != nil
-    && _pendingParentWindow != _parentWindow)
+  if (_hasPendingParentWindow)
     {
       [self setParentWindow: _pendingParentWindow];
-      _pendingParentWindow = nil;
+      DESTROY(_pendingParentWindow);
+      _hasPendingParentWindow = NO;
     }
 }
 
@@ -366,6 +347,11 @@ static NSHashTable *_drawers = nil;
   CGFloat deltaH = (newFrame.size.height - frame.size.height) / count;
 
   _currentEdge = edge;
+  if (opening)
+    {
+      [self setFrame: frame display: NO];
+      [self orderFront: self];
+    }
   while (count--)
     {
       frame.origin.x += deltaX;
@@ -387,7 +373,17 @@ static NSHashTable *_drawers = nil;
 
 - (void) _resetWindowPosition
 {
-  if ([_parentWindow isVisible]) // don't set our frame until parent window is visible
+  if ([_drawer state] == NSDrawerClosedState
+      || [_drawer state] == NSDrawerClosingState)
+    return;
+
+  if (![_parentWindow isVisible] || [_parentWindow isMiniaturized])
+    {
+      [self orderOut: self];
+      return;
+    }
+
+  if ([_parentWindow isVisible])
     { 
       NSRect frame = [self frameFromParentWindowFrameInState:[_drawer state]]; 
       [self setFrame: frame display: YES];
@@ -404,7 +400,9 @@ static NSHashTable *_drawers = nil;
 - (void) _timedWindowReset
 {
   NSRect frame = [_parentWindow frame];
-  if (!NSEqualRects(frame, _latestParentFrame))
+  if (!NSEqualRects(frame, _latestParentFrame)
+      || [self isVisible] != ([_parentWindow isVisible]
+                             && ![_parentWindow isMiniaturized]))
     {
       [self _resetWindowPosition];
       _latestParentFrame = frame;
@@ -414,7 +412,8 @@ static NSHashTable *_drawers = nil;
 - (void) handleWindowClose: (NSNotification *)notification
 {
   [self stopTimer];
-  [self close];
+  [_drawer close];
+  [self orderOut: self];
 }
 
 - (void) handleWindowMiniaturize: (NSNotification *)notification
@@ -506,6 +505,7 @@ static NSHashTable *_drawers = nil;
 - (void) setPendingParentWindow: (NSWindow *)window
 {
   ASSIGN(_pendingParentWindow, window);
+  _hasPendingParentWindow = YES;
 }
 
 - (NSWindow *) pendingParentWindow
@@ -528,10 +528,11 @@ static NSHashTable *_drawers = nil;
 {
   [self stopTimer];
   RELEASE(_parentWindow);
-  RELEASE(_borderBox);
+  [nc removeObserver: self];
   TEST_RELEASE(_pendingParentWindow);
-  [super dealloc];
+  DEALLOC;
 }
+
 @end
 
 @implementation NSDrawer
@@ -593,6 +594,8 @@ static NSHashTable *_drawers = nil;
 	_currentEdge = edge;
 	_maxContentSize = NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX);
 	_minContentSize = NSZeroSize;
+	_contentSize = contentSize;
+	[_drawerWindow resetContentSize: contentSize];
 	
 	// for side drawers, top of drawer is immediately below the title bar
 	if (edge == NSMinXEdge || edge == NSMaxXEdge)
@@ -616,13 +619,16 @@ static NSHashTable *_drawers = nil;
 - (void) dealloc
 {
   [_drawers removeObject: self];
+  [_drawerWindow stopTimer];
+  [_drawerWindow orderOut: nil];
+  [_drawerWindow setDrawer: nil];
   RELEASE(_drawerWindow);
   if (_delegate != nil)
     {
       [nc removeObserver: _delegate name: nil object: self];
       _delegate = nil;
     }
-  [super dealloc];
+  DEALLOC;
 }
 
 // Opening and Closing
@@ -630,14 +636,16 @@ static NSHashTable *_drawers = nil;
 {
   NSRectEdge result = _preferredEdge;
   NSRect windowFrame = [[self parentWindow] frame];
-  NSRect screenRect = [[NSScreen mainScreen] frame];
+  NSScreen *screen = [[self parentWindow] screen];
+  NSRect screenRect = [(screen != nil ? screen : [NSScreen mainScreen])
+    visibleFrame];
   NSSize contentSize = [self contentSize];
   
   // Diffs,,,
-  CGFloat top = screenRect.size.height - (windowFrame.origin.y + windowFrame.size.height);
-  CGFloat bottom = windowFrame.origin.y;
-  CGFloat right = screenRect.size.width - (windowFrame.origin.x + windowFrame.size.width);
-  CGFloat left = windowFrame.origin.x;
+  CGFloat top = NSMaxY(screenRect) - NSMaxY(windowFrame);
+  CGFloat bottom = NSMinY(windowFrame) - NSMinY(screenRect);
+  CGFloat right = NSMaxX(screenRect) - NSMaxX(windowFrame);
+  CGFloat left = NSMinX(windowFrame) - NSMinX(screenRect);
 
   // Space left...
   CGFloat topSpace = top - contentSize.height;
@@ -725,10 +733,10 @@ static NSHashTable *_drawers = nil;
     && ![_delegate drawerShouldOpen: self])
     return;
 
+  _currentEdge = edge;
   _state = NSDrawerOpeningState;
   [nc postNotificationName: NSDrawerWillOpenNotification object: self];
 
-  _currentEdge = edge;
   [_drawerWindow openOnEdge: edge]; 
   
   _state = NSDrawerOpenState;
@@ -747,7 +755,9 @@ static NSHashTable *_drawers = nil;
 // Managing Size
 - (NSSize) contentSize
 {
-  return [[_drawerWindow contentView] frame].size;
+  if (_state == NSDrawerOpenState)
+    return [[self contentView] frame].size;
+  return _contentSize;
 }
 
 - (CGFloat) leadingOffset
@@ -776,12 +786,16 @@ static NSHashTable *_drawers = nil;
 					  toSize: size];
     }
 
-  [_drawerWindow setContentSize: size];
+  size.width = MAX(_minContentSize.width, MIN(size.width, _maxContentSize.width));
+  size.height = MAX(_minContentSize.height, MIN(size.height, _maxContentSize.height));
+  _contentSize = size;
+  [_drawerWindow resetContentSize: size];
 }
 
 - (void) setLeadingOffset: (CGFloat)offset
 {
   _leadingOffset = offset;
+  [_drawerWindow _resetWindowPosition];
 }
 
 - (void) setMaxContentSize: (NSSize)size
@@ -797,6 +811,7 @@ static NSHashTable *_drawers = nil;
 - (void) setTrailingOffset: (CGFloat)offset
 {
   _trailingOffset = offset;
+  [_drawerWindow _resetWindowPosition];
 }
 
 - (CGFloat) trailingOffset
@@ -834,7 +849,6 @@ static NSHashTable *_drawers = nil;
 - (void) setContentView: (NSView *)aView
 {
   [[_drawerWindow container] setContentView: aView];
-  [self setContentSize: [aView frame].size];
 }
 
 - (void) setParentWindow: (NSWindow *)parent
@@ -936,7 +950,7 @@ static NSHashTable *_drawers = nil;
 
 	  if ([aDecoder containsValueForKey: @"NSDelegate"])
 	    {
-	      ASSIGN(_delegate, [aDecoder decodeObjectForKey: @"NSDelegate"]);
+	      _delegate = [aDecoder decodeObjectForKey: @"NSDelegate"];
 	    }
 
 	  _leadingOffset = [aDecoder decodeFloatForKey: @"NSLeadingOffset"];
@@ -957,7 +971,7 @@ static NSHashTable *_drawers = nil;
 	  if (version == 0)
 	    {
 	      _contentSize = [aDecoder decodeSize];
-	      ASSIGN(_delegate, [aDecoder decodeObject]);
+	      _delegate = [aDecoder decodeObject];
 	      [aDecoder decodeValueOfObjCType: @encode(float)
 					   at: &_leadingOffset];
 	      _maxContentSize = [aDecoder decodeSize];
@@ -985,12 +999,16 @@ static NSHashTable *_drawers = nil;
 			 styleMask: 0
 			 backing: NSBackingStoreBuffered
 			 defer: NO];
-      [_drawerWindow setParentWindow: parentWindow];      
       [_drawerWindow setDrawer: self];
+      [_drawerWindow resetContentSize: _contentSize];
+      [_drawerWindow setParentWindow: parentWindow];
       [_drawerWindow setReleasedWhenClosed: NO];
 
       // initial state...
       _state = NSDrawerClosedState;
+      _currentEdge = _preferredEdge;
+      [self setDelegate: _delegate];
+      [_drawers addObject: self];
   
     }
   return self;
