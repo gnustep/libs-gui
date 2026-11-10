@@ -27,6 +27,11 @@
 @afourpaper
 @c %**end of header
 
+@dircategory Software libraries
+@direntry
+* GNUstepGUI: (AppKit).         GNUstep GUI Library Programming Manual.
+@end direntry
+
 @copying
 @copyright{} 2005-2006 Christopher Armstrong.
 
