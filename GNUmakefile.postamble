@@ -1,4 +1,4 @@
-# -*-makefile-*-
+# -*-makefile-gmake-*-
 #  GNUmakefile.postamble
 #
 #  Project specific makefile rules
@@ -31,7 +31,11 @@
 #
 
 # Things to do before compiling
-# before-all::
+before-all:: config.make gui.make
+ifeq ($(_have_makefiles),)
+	./configure
+	$(MAKE)
+endif
 
 # Things to do after compiling
 # after-all::
@@ -77,6 +81,7 @@ before-install:: $(DESTDIR)$(GNUSTEP_MAKEFILES)/Additional
 after-distclean::
 	rm -f config.status config.log config.cache TAGS config.make gui.make
 
+ifeq ($(_have_makefiles),yes)
 gui.make: gui.make.in Version configure
 	if [ -x config.status ]; then \
 	  ./config.status --recheck && ./config.status; \
@@ -90,6 +95,9 @@ config.make: config.make.in configure
 	else \
 	  ./configure; \
 	fi
+else
+config.make gui.make: ;
+endif
 
 # Things to do before checking
 # before-check::

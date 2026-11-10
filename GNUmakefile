@@ -45,12 +45,15 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 include ./Version
 
+_have_makefiles := $(shell test -f config.make -o -f gui.make && echo yes)
+
 # Don't build docs by default
 doc=no
 
 #
 # The list of subproject directories
 #
+ifeq ($(_have_makefiles),yes)
 SUBPROJECTS = \
 Source \
 Images \
@@ -72,6 +75,7 @@ SUBPROJECTS += $(BUILD_SOUNDS)
 
 ifeq ($(doc), yes)
 SUBPROJECTS += Documentation
+endif
 endif
 
 -include GNUmakefile.preamble
