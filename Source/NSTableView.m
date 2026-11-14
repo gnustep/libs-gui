@@ -2211,6 +2211,17 @@ static void computeNewSelection
   [aColumn setTableView: self];
   if ([[aColumn _prototypeCellViews] count] > 0)
     {
+      NSEnumerator *en = [[aColumn _prototypeCellViews] objectEnumerator];
+      NSView *view;
+
+      /* "Automatic" in Interface Builder: the column's identifier. */
+      while ((view = [en nextObject]) != nil)
+        {
+          if ([view identifier] == nil)
+            {
+              [view setIdentifier: [aColumn identifier]];
+            }
+        }
       [self _registerPrototypeViews: [aColumn _prototypeCellViews]];
     }
   [_tableColumns addObject: aColumn];
@@ -7513,6 +7524,12 @@ For a more detailed explanation, -setSortDescriptors:. */
   while ((view = [en nextObject]) != nil)
     {
       NSUserInterfaceItemIdentifier identifier = [view identifier];
+
+      if (identifier == nil)
+        {
+          NSWarnMLog(@"Ignoring a cell view prototype without an identifier");
+          continue;
+        }
       [_registeredViews setObject: view
 			   forKey: identifier];
     }
