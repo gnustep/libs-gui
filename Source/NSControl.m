@@ -123,6 +123,10 @@ static NSNotificationCenter *nc;
 - (void) dealloc
 {
   [GSKeyValueBinding unbindAllForObject: self];
+  if ([_cell controlView] == self)
+    {
+      [_cell setControlView: nil];
+    }
   RELEASE(_cell);
   [super dealloc];
 }

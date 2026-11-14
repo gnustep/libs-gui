@@ -811,6 +811,8 @@ APPKIT_EXPORT_CLASS
 - (void) setKeyEquivalent: (NSString *)key 
             forButtonCell: (NSButtonCell *)cell;
 
+- (CGFloat) defaultButtonRingOutset;
+
 /**
  * Draws a button frame and background (not its content) for the specified
  * cell and view.

@@ -1,3 +1,33 @@
+2026-11-14  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSView.m (-_drawingExtend, -_visibleDrawingRect): New
+	private methods.  A view that returns NO from -wantsDefaultClipping
+	may draw anywhere in the visible part of its superview.
+	(-lockFocus, -display, -displayRectIgnoringOpacity:inContext:)
+	(-displayIfNeededInRectIgnoringOpacity:, -setNeedsDisplay:)
+	(-setNeedsDisplayInRect:): Do not cut the rectangles of such a view
+	at its bounds, and have the superview redisplay it wherever it
+	redraws, so what it draws outside its frame is kept.
+	(-removeSubview:, -_setFrameAndClearAutoresizingError:): Redraw that
+	area when such a view leaves its superview or changes its frame.
+	* Source/NSViewPrivate.h: Declare them.
+	* Headers/Additions/GNUstepGUI/GSTheme.h,
+	* Source/GSThemeDrawing.m (-defaultButtonRingOutset): New method,
+	how far outside its frame a theme marks the default button.  The
+	default of 0 leaves everything as it was.
+	* Source/NSButton.m (-wantsDefaultClipping, -drawRect:): The default
+	button returns NO when the theme has a ring, so the ring the theme
+	draws with the button shows, and clips itself to the area being
+	redrawn.
+	* Source/NSWindow.m (-setDefaultButtonCell:, -becomeKeyWindow)
+	(-resignKeyWindow): Redraw the old and the new default button.
+	* Source/NSControl.m (-dealloc): Clear the control view of the cell,
+	which can outlive the control as the default button cell of a window.
+	* Source/NSAlert.m: Make the default button of an alert panel the
+	default button cell of the panel.
+	* Tests/gui/NSView/wantsDefaultClipping.m,
+	* Tests/gui/GSTheme/defaultButtonRing.m: New tests.
+
 2026-11-06 Daniel Boyd <danieljboyd@icloud.com>
 
 	* Source/NSControl.m (-setEnabled:): Do nothing when the state is

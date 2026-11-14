@@ -39,6 +39,12 @@
 - (void) _insertSubview: (NSView *)sv atIndex: (NSUInteger)idx;
 @end
 
+@interface NSView (GSDrawingExtend)
+- (NSRect) _frameExtend;
+- (NSRect) _drawingExtend;
+- (NSRect) _visibleDrawingRect;
+@end
+
 @interface NSView (NSConstraintBasedLayoutCorePrivateMethods)
 
 - (void) _setNeedsUpdateConstraints: (BOOL)needsUpdateConstraints;
