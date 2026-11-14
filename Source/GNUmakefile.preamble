@@ -65,14 +65,6 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers \
 ADDITIONAL_LIB_DIRS +=
 
 #
-# Sparc systems cannot load tiff files due to some problem compiling
-# this file with optimization. This includes Solaris [78] and sparc-*-linux-gnu
-#
-ifeq ($(findstring sparc, $(GNUSTEP_TARGET_CPU)), sparc)
-NSBitmapImageRep+JPEG.m_FILE_FILTER_OUT_FLAGS = -O%
-endif
-
-#
 # Flags dealing with installing and uninstalling
 #
 

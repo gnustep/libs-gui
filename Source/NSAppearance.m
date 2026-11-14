@@ -22,8 +22,10 @@
    Boston, MA 02110 USA.
 */
 
-#import <AppKit/NSAppearance.h>
 #import <Foundation/NSArchiver.h>
+#import <Foundation/NSArray.h>
+
+#import "AppKit/NSAppearance.h"
 
 NSAppearance *__currentAppearance = nil;
 

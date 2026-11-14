@@ -38,6 +38,7 @@
 #import "AppKit/NSDataLinkManager.h"
 #import "AppKit/NSDataLink.h"
 #import "AppKit/NSPasteboard.h"
+#import "AppKit/NSSelection.h"
 
 #ifdef HAVE_SYS_INOTIFY_H
 #import <sys/inotify.h>

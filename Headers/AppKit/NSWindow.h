@@ -330,11 +330,12 @@ PACKAGE_SCOPE
     unsigned is_movable_by_window_background: 1;
     unsigned allows_tooltips_when_inactive: 1;
 
-    // 4 used 28 available
+    // 5 used 27 available
     unsigned shows_toolbar_button: 1;
     unsigned autorecalculates_keyview_loop: 1;
     unsigned ignores_mouse_events: 1;
     unsigned preserves_content_during_live_resize: 1;
+    unsigned shows_resize_indicator: 1;
   } _f;
 @protected 
   NSToolbar     *_toolbar;

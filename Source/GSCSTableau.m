@@ -205,7 +205,7 @@
 
 - (void) removeRowForVariable: (GSCSVariable *)variable
 {
-  GSCSLinearExpression *expression = [_rows objectForKey: variable];
+  GSCSLinearExpression *expression = RETAIN([_rows objectForKey: variable]);
   if (expression == nil)
     {
       NSException *missingExpressionException = [NSException
@@ -224,6 +224,7 @@
     [self removeMappingFromExpressionVariable: expressionTermVariable
                                 toRowVariable: variable];
   END_FOR_IN(expressionTermVariables);
+  RELEASE(expression);
 }
 
 - (BOOL) hasRowForVariable: (GSCSVariable *)variable
@@ -457,7 +458,7 @@
 // The expression represents the exit variable, which is about to be removed from the basis. 
 // This means that the old tableau should contain the equation: exitVar = expr.
   GSCSLinearExpression *expression =
-    [self rowExpressionForVariable: exitVariable];
+    RETAIN([self rowExpressionForVariable: exitVariable]);
   [self removeRowForVariable: exitVariable];
 
   // Calculate an expression for the entry variable. 
@@ -474,6 +475,7 @@
     }
 
   [self addRowForVariable: entryVariable equalsExpression: expression];
+  RELEASE(expression);
 }
 
 - (NSString *) description

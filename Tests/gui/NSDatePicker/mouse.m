@@ -37,12 +37,24 @@
 static NSDateFormatter *fmt = nil;
 static NSWindow *window = nil;
 
+/* A click on the stepper keeps stepping while the button is held, so the
+   matching mouse up has to be waiting in the queue before the click. */
 static void
 click(NSDatePicker *dp, NSPoint inside)
 {
   NSPoint where = NSMakePoint([dp frame].origin.x + inside.x,
                               [dp frame].origin.y + inside.y);
 
+  [NSApp postEvent: [NSEvent mouseEventWithType: NSLeftMouseUp
+                                       location: where
+                                  modifierFlags: 0
+                                      timestamp: 0
+                                   windowNumber: [window windowNumber]
+                                        context: nil
+                                    eventNumber: 2
+                                     clickCount: 1
+                                       pressure: 0.0]
+           atStart: NO];
   [dp mouseDown: [NSEvent mouseEventWithType: NSLeftMouseDown
                                     location: where
                                modifierFlags: 0

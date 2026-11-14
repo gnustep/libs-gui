@@ -372,6 +372,8 @@ struct _NSModalSession {
 @interface NSApplication (Private)
 - (void) _appIconInit;
 - (void) _loadAppIconImage;
+- (void) _setDockTileImage: (NSImage *)image;
+- (NSDockTile *) _dockTileIfExists;
 - (NSDictionary*) _notificationUserInfo;
 - (void) _openDocument: (NSString*)name;
 - (id) _targetForAction: (SEL)aSelector
@@ -717,6 +719,15 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void) setImage: (NSImage *)anImage
 {
   NSImage *imgCopy = [anImage copy];
+
+  /* A focus-locked image can have only a cached representation, which
+   * NSImage's copyWithZone: does not preserve.  Materialize its pixels. */
+  if (anImage != nil && [[imgCopy representations] count] == 0)
+    {
+      NSData *data = [anImage TIFFRepresentation];
+      RELEASE(imgCopy);
+      imgCopy = [[NSImage alloc] initWithData: data];
+    }
 
   if (imgCopy)
     {
@@ -2492,9 +2503,14 @@ image.</p><p>See Also: -applicationIconImage</p>
         [current setMiniwindowImage: _app_icon];
     }
 
-  GSUpdateIconManager(_app_icon,
-    (_dock_tile != nil && [_dock_tile showsApplicationBadge])
-      ? [_dock_tile badgeLabel] : nil);
+  if (_dock_tile != nil)
+    {
+      [_dock_tile display];
+    }
+  else
+    {
+      GSUpdateIconManager(_app_icon, nil);
+    }
 
   DESTROY(old_app_icon);
 }
@@ -3095,6 +3111,10 @@ image.</p><p>See Also: -applicationIconImage</p>
 
   if (_main_menu != nil)
     {
+      if ([[_main_menu title] length] == 0)
+        {
+          [_main_menu setTitle: [[NSProcessInfo processInfo] processName]];
+        }
       [_main_menu setMain: YES];
     }
 }
@@ -3967,6 +3987,21 @@ struct _DelegateWrapper
 
 
 @implementation	NSApplication (Private)
+
+/* Miniwindow drawing must not create a dock tile while rendering one. */
+- (NSDockTile *) _dockTileIfExists
+{
+  return _dock_tile;
+}
+
+
+- (void) _setDockTileImage: (NSImage *)image
+{
+  NSAppIconView *appIconView;
+
+  appIconView = (NSAppIconView *)[[self iconWindow] contentView];
+  [appIconView setImage: image];
+}
 
 - (void) _loadAppIconImage
 {

@@ -7,6 +7,102 @@
 	the arrow until the rebuild pushed it again, so the I-beam
 	flickered on every keystroke in a text view.
 
+2026-11-06 Daniel Boyd <danieljboyd@icloud.com>
+
+	* Source/NSControl.m (-setEnabled:): Do nothing when the state is
+	already flag.  NSToolbarItem's -validate calls this after every
+	event, so every toolbar button was marked for display after every
+	event, whatever its state.
+	* Tests/gui/NSControl/setEnabledDisplay.m: New test.
+
+2026-07-01 Michael Hupp <mrtonik@mailbox.org>
+
+	* Source/NSMenuView.m (GSMenuCross)
+	(+[NSMenuView _mouseAt:aimsAtSubmenuFrame:fromApex:slack:]): New
+	point-in-triangle helper implementing Tognazzini's submenu "aim
+	triangle".
+	(-[NSMenuView _trackWithEvent:startingMenuView:]): Add an opt-in
+	directional replacement for the ad-hoc time/velocity heuristic that
+	decides when a just-opened submenu stops being protected. When the
+	GSMenuSubmenuAimTracking default is YES, keep the submenu open while the
+	pointer keeps aiming into it and switch the moment it leaves the wedge,
+	with a short park timeout (AIM_PARK_TICKS / AIM_MOVE_EPSILON) so a
+	pointer that stops over a sibling still switches. The previous behaviour
+	is preserved unchanged when the default is unset, and aim tracking is
+	confined to vertical menus so horizontal bars keep their instant switch.
+	* Headers/AppKit/NSMenuView.h: Document the new tracking mode and the
+	GSMenuSubmenuAimTracking default.
+	* Documentation/GuiUser/DefaultsSummary.gsdoc: Describe the new
+	default.
+	* Tests/gui/NSMenuView/aim_triangle.m: New regression test.
+2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSToolbarCustomizationPalette.m
+	(-[GSToolbarCustomizationView paletteItemsWithToolbarItems:]):
+	Replace an item's label with its palette label only when the
+	palette label is not empty.  -paletteLabel returns @"" rather than
+	nil when none was set, so every such item, the standard Customize,
+	Print, Colors and Fonts items among them, was shown in the palette
+	without a label.
+	* Tests/gui/NSToolbarItem/paletteItemLabel.m: New test.
+
+2026-09-30  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSToolTips.m (-_timedOut:): Multiply the measured text size
+	by the window's user space scale factor before sizing the tooltip
+	window.  The window frame is in screen units and the text was
+	measured in points, so at a scale factor other than 1 the tooltip
+	came out too small and its text was cut off.
+
+2026-09-20  Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/GSTheme.m (+initialize): Observe
+	NSUserDefaultsDidChangeNotification from the start.  +setTheme:
+	registers that observer only when the theme really changes, so an
+	application that started with the default theme never followed the
+	GSTheme default and kept its theme until it was restarted.
+	* Tests/gui/GSTheme/followsDefault.m: New test.
+
+2026-09-22 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSBitmapImageRep+JPEG.m (gs_init_destination,
+	gs_empty_output_buffer, gs_term_destination): Grow the JPEG
+	encoder's output accumulator as libjpeg actually fills it, and
+	only append the bytes really produced on termination.  The
+	accumulator was allocated with exactly one buffer's worth of
+	bytes, the same size as the scratch buffer libjpeg fills between
+	flushes; a small image's compressed stream (header tables plus
+	scan data) commonly needs more than one flush before compression
+	finishes, and gs_term_destination then unconditionally appended
+	another full buffer's worth on top, so both wrote past the end of
+	the accumulator.
+	* Tests/gui/NSBitmapImageRep/jpegEncodeDestinationOverflow.m: New
+	test.
+
+2026-10-11 Fred Kiefer <FredKiefer@gmx.de>
+
+	* configure: Regenerate with autoconfig 2.73 as the rest of the core libraries.
+	* Source/NSAppearance.m,
+	* Source/NSDataLink.m,
+	* Source/NSDataLinkManager.m,
+	* Source/NSDockTile.m:
+	* Source/NSGraphicsContext.m:
+	* Source/NSScrollView.m,
+	* Source/NSTabView.m,
+	* Source/NSTableColumn.h,
+	* Source/NSTableView.m,
+	* Source/NSWindow.m,
+	* Source/NSView.m: Fix some compiler warnings.
+
+2026-09-20 Simon Peter <probonopd@users.noreply.github.com>
+
+	* Source/NSMenuView.m (-_trackWithEvent:startingMenuView:): Carry
+	out no item when the mouse is released away from the menu.  The
+	highlight of an item whose submenu has just been attached is kept
+	while the pointer is off the menu, so a release elsewhere used to
+	carry out an item the user never chose.
+	* Tests/gui/NSMenuView/clickOutside.m: New test.
+
 2026-09-14 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Fix bug detecting filesystem mount points.
@@ -623,7 +719,7 @@
 	* Documentation/GNUmakefile.postamble:
 	Use new xxx_AGSDOC_INSTALL_BUNDLE to for relative links between
 	projects.
-	
+
 2025-05-29 Gregory John Casamento <greg.casamento@gmail.com>
 
 	* config.make.in: Add HAVE_* variables.

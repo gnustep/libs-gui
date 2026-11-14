@@ -142,7 +142,10 @@ static const CGFloat pi = 3.1415926535897932384626434;
 
 - (void) makeIdentityMatrix
 {
-  [self init];
+  static NSAffineTransformStruct identityTransform = {
+     1.0, 0.0, 0.0, 1.0, 0.0, 0.0
+  };
+  [self setTransformStruct: identityTransform];
 }
 
 - (void) setFrameOrigin: (NSPoint)point

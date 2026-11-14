@@ -79,6 +79,7 @@ APPKIT_EXPORT_CLASS
   NSInteger _selectedField;
   NSInteger _typedValue;
   NSInteger _typedDigits;
+  NSInteger _highlightedStepper;
 }
 
 - (NSColor *) backgroundColor;

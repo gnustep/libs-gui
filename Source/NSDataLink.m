@@ -368,6 +368,15 @@
   return _updateMode;
 }
 
+- (BOOL)isObject:(id)obj1 equalTo:(id)obj2
+{
+  if (obj1 == obj2)
+    return YES;
+  if (obj1 == nil || obj2 == nil)
+    return NO;
+  return [obj1 isEqual:obj2];
+}
+
 - (BOOL)isEqual:(id)object
 {
   if (self == object)
@@ -410,15 +419,6 @@
 - (NSUInteger)hash
 {
   return _linkNumber ^ _disposition ^ _updateMode ^ [_sourceFilename hash] ^ [_sourceSelection hash];
-}
-
-- (BOOL)isObject:(id)obj1 equalTo:(id)obj2
-{
-  if (obj1 == obj2)
-    return YES;
-  if (obj1 == nil || obj2 == nil)
-    return NO;
-  return [obj1 isEqual:obj2];
 }
 
 //

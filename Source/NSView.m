@@ -197,6 +197,44 @@ GSGetDragTypes(NSView *obj)
   return t;
 }
 
+/*
+ * Whether outer covers inner, allowing for floating point error.  The rects
+ * compared during display have been converted through the view hierarchy,
+ * and under a user space scale factor (GSScaleFactor) through fractional
+ * coordinates, so a rect that covers another exactly on screen can miss it
+ * by something like 1e-14.  Treating that as not covered leaves the view
+ * marked as needing display for good: every later display pass draws it
+ * again on its own, over what it drew before and without its background,
+ * so anti-aliased edges and translucent fills darken with every redraw.
+ * Rounding error grows with the magnitude of the values, not with the
+ * coordinate system, so the slack is relative to the largest coordinate
+ * involved and stays independent of any scaling of the view's bounds.
+ */
+static BOOL
+GSRectCoversRect(NSRect outer, NSRect inner)
+{
+  CGFloat magnitude = 1.0;
+  CGFloat slack;
+
+  if (NSIsEmptyRect(inner))
+    {
+      return YES;
+    }
+  magnitude = MAX(magnitude, fabs(NSMinX(outer)));
+  magnitude = MAX(magnitude, fabs(NSMinY(outer)));
+  magnitude = MAX(magnitude, fabs(NSMaxX(outer)));
+  magnitude = MAX(magnitude, fabs(NSMaxY(outer)));
+  magnitude = MAX(magnitude, fabs(NSMinX(inner)));
+  magnitude = MAX(magnitude, fabs(NSMinY(inner)));
+  magnitude = MAX(magnitude, fabs(NSMaxX(inner)));
+  magnitude = MAX(magnitude, fabs(NSMaxY(inner)));
+  slack = magnitude * 1e-9;
+  return (NSMinX(inner) >= NSMinX(outer) - slack
+    && NSMinY(inner) >= NSMinY(outer) - slack
+    && NSMaxX(inner) <= NSMaxX(outer) + slack
+    && NSMaxY(inner) <= NSMaxY(outer) + slack);
+}
+
 static void
 GSRemoveDragTypes(NSView* obj)
 {
@@ -1749,8 +1787,6 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
 - (NSRect) centerScanRect: (NSRect)aRect
 {
   NSAffineTransform	*matrix;
-  CGFloat x_org;
-  CGFloat y_org;
 
   /*
    *	Hmm - we assume that the windows coordinate system is centered on the
@@ -1765,8 +1801,6 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
       aRect.size.height = -aRect.size.height;
     }
 
-  x_org = aRect.origin.x;
-  y_org = aRect.origin.y;
   aRect.origin.x = GSRoundTowardsInfinity(aRect.origin.x);
   aRect.origin.y = [self isFlipped] ? GSRoundTowardsNegativeInfinity(aRect.origin.y) : GSRoundTowardsInfinity(aRect.origin.y);
   aRect.size.width = GSRoundTowardsInfinity(aRect.size.width);
@@ -2624,6 +2658,16 @@ static void autoresize(CGFloat oldContainerSize,
                       isect = [subview convertRect: isect fromView: self];
                       [subview displayIfNeededInRectIgnoringOpacity: isect];
                     }
+                  else if (NSIsEmptyRect(subviewFrame))
+                    {
+                      /* A subview with no area has nothing to draw, and is
+                         never reached by the line above, so it would keep
+                         itself and every view over it waiting for a display
+                         that cannot happen.  Let it settle its own flag.
+                      */
+                      [subview displayIfNeededInRectIgnoringOpacity:
+                        NSZeroRect];
+                    }
 
                   if (subview->_rFlags.needs_display)
                     {
@@ -2703,7 +2747,7 @@ static void autoresize(CGFloat oldContainerSize,
        * FIXME: If the drawn rectangle cuts of a complete part of the
        * _invalidRect, we should try to reduce this.
        */
-      if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
+      if (GSRectCoversRect(aRect, neededRect))
         {
           _invalidRect = NSZeroRect;
           _rFlags.needs_display = NO;
@@ -2750,6 +2794,17 @@ static void autoresize(CGFloat oldContainerSize,
                 {
                   isect = [subview convertRect: isect fromView: self];
                   [subview displayRectIgnoringOpacity: isect
+                                            inContext: context];
+                }
+              else if (NSIsEmptyRect(subviewFrame)
+                && subview->_rFlags.needs_display == YES)
+                {
+                  /* A subview with no area has nothing to draw and is never
+                     reached by the line above, so it would keep itself and
+                     every view over it waiting for a display that cannot
+                     happen.  Let it settle its own flag.
+                  */
+                  [subview displayRectIgnoringOpacity: NSZeroRect
                                             inContext: context];
                 }
               /*

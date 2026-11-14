@@ -31,9 +31,10 @@
 
 @implementation NSPageController
 
-- (instancetype) init
+- (instancetype) initWithNibName: (NSString *)nibNameOrNil
+                          bundle: (NSBundle *)nibBundleOrNil
 {
-  self = [super init];
+  self = [super initWithNibName: nibNameOrNil bundle: nibBundleOrNil];
   if (self != nil)
     {
       _transitionStyle = NSPageControllerTransitionStyleStackHistory;
@@ -57,6 +58,8 @@
   self = [super initWithCoder: coder];
   if (self != nil)
   {
+    _transitionStyle = NSPageControllerTransitionStyleStackHistory;
+    _arrangedObjects = [[NSMutableArray alloc] initWithCapacity: 10];
     if ([coder allowsKeyedCoding])
       {
         if ([coder containsValueForKey: @"NSTransitionStyle"])

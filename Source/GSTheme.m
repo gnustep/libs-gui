@@ -331,6 +331,13 @@ GSStringFromImageFrameStyle(NSImageFrameStyle type)
 @end
 
 @implementation	GSThemeMethod
+- (NSString*) description
+{
+  return [[super description] stringByAppendingFormat:
+    @"-[%@ %@] overrides %p with %p types '%s'",
+    NSStringFromClass(cls), NSStringFromSelector(sel),
+    old, imp, method_getTypeEncoding(mth)];
+}
 @end
 
 @implementation GSTheme
@@ -405,6 +412,11 @@ typedef	struct {
 	       selector: @selector(preferenceDidChange:)
 		   name: @"GSThemePreferenceDidChangeNotification"
 		 object: nil];
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	   selector: @selector(defaultsDidChange:)
+	       name: NSUserDefaultsDidChangeNotification
+	     object: nil];
       /* Establish the theme specified by the user defaults (if any);
        */
       [self defaultsDidChange: nil];
@@ -532,24 +544,9 @@ typedef	struct {
     }
   if (theme != theTheme)
     {
-      /*
-       * Remove any previous observers...
-       */
-      [[NSNotificationCenter defaultCenter]
-	removeObserver: self];
-
       [theTheme deactivate];
       ASSIGN (theTheme, theme);
       [theTheme activate];
-
-      /*
-       * Listen to notifications...
-       */ 
-      [[NSNotificationCenter defaultCenter]
-	addObserver: self
-	   selector: @selector(defaultsDidChange:)
-	       name: NSUserDefaultsDidChangeNotification
-	     object: nil];
     }
 }
 
@@ -631,16 +628,9 @@ typedef	struct {
 
   /* Install any overridden methods.
    */
-  if (_overrides != nil)
-    {
-      NSEnumerator	*e = [_overrides objectEnumerator];
-      GSThemeMethod	*m;
-
-      while ((m = [e nextObject]) != nil)
-	{
-	  method_setImplementation(m->mth, m->imp);
-	}
-    }
+  GS_FOR_IN(GSThemeMethod*, m, _overrides)
+    method_setImplementation(m->mth, m->imp);
+  GS_END_FOR(_overrides)
 
   /*
    * Tell subclass that basic activation is done and it can do its own.
@@ -814,16 +804,9 @@ typedef	struct {
 
   /* Remove any overridden methods.
    */
-  if (_overrides != nil)
-    {
-      NSEnumerator	*e = [_overrides objectEnumerator];
-      GSThemeMethod	*m;
-
-      while ((m = [e nextObject]) != nil)
-	{
-	  method_setImplementation(m->mth, m->old);
-	}
-    }
+  GS_FOR_IN(GSThemeMethod*, m, _overrides)
+    method_setImplementation(m->mth, m->old);
+  GS_END_FOR(_overrides)
 
   [self _revokeOwnerships];
 
@@ -1079,15 +1062,16 @@ typedef	struct {
 - (IMP) overriddenMethod: (SEL)selector for: (id)receiver
 {
   Class		cls = object_getClass(receiver);
-  NSEnumerator	*e = [_overrides objectEnumerator];
-  GSThemeMethod	*m;
 
-  while ((m = [e nextObject]) != nil)
+  while (cls != nil)
     {
-      if (m->cls == cls && sel_isEqual(selector, m->sel))
-	{
-	  return m->old;
-	}
+      GS_FOR_IN(GSThemeMethod*, m, _overrides)
+	if (m->cls == cls && sel_isEqual(selector, m->sel))
+	  {
+	    return m->old;
+	  }
+      GS_END_FOR(_overrides)
+      cls = class_getSuperclass(cls);
     }
   return (IMP)0;
 }

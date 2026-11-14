@@ -157,10 +157,15 @@ static NSNotificationCenter *nc;
 
 /**<p>Sets whether the NSControl's selected cell is enabled.
    If flag is NO, this method abort the editing. This method marks self for
-   display.</p><p>See Also: -isEnabled [NSCell-setEnabled:]</p>
+   display, unless the state is already flag, when it does nothing.</p>
+   <p>See Also: -isEnabled [NSCell-setEnabled:]</p>
  */
 - (void) setEnabled: (BOOL)flag
 {
+  if ([self isEnabled] == (flag ? YES : NO))
+    {
+      return;
+    }
   [[self selectedCell] setEnabled: flag];
   if (!flag)
     [self abortEditing];

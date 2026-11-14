@@ -2921,8 +2921,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
 	 isHorizontal: (BOOL)horizontal
 	    itemCells: (NSArray *)itemCells
 {
-  int         i = 0;
-  int         howMany = [itemCells count];
+  NSUInteger  i = 0;
+  NSUInteger  howMany = [itemCells count];
   NSMenuView *menuView = (NSMenuView *)view;
   NSRect      bounds = [view bounds];
 

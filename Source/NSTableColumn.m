@@ -67,6 +67,7 @@
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSSortDescriptor.h>
+#import "AppKit/NSImage.h"
 #import "AppKit/NSKeyValueBinding.h"
 #import "AppKit/NSTableHeaderCell.h"
 #import "AppKit/NSTableColumn.h"
