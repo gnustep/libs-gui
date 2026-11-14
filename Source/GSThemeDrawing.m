@@ -99,6 +99,11 @@
 @end
 
 @implementation	GSTheme (Drawing)
+- (CGFloat) defaultButtonRingOutset
+{
+  return 0.0;
+}
+
 - (void) setKeyEquivalent: (NSString *)key 
             forButtonCell: (NSButtonCell *)cell
 {

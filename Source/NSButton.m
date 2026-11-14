@@ -35,9 +35,12 @@
 #import "AppKit/NSButton.h"
 #import "AppKit/NSButtonCell.h"
 #import "AppKit/NSEvent.h"
+#import "AppKit/NSGraphics.h"
 #import "AppKit/NSWindow.h"
 
+#import "GNUstepGUI/GSTheme.h"
 #import "GSFastEnumeration.h"
+#import "NSViewPrivate.h"
 
 //
 // class variables
@@ -642,6 +645,44 @@ static id buttonCellClass = nil;
 {
   [(NSButtonCell *)_cell setContentTintColor: color];
   [self setNeedsDisplay: YES];
+}
+
+- (CGFloat) _defaultButtonRingOutset
+{
+  if (_window == nil || [_window defaultButtonCell] != _cell)
+    {
+      return 0.0;
+    }
+  return [[GSTheme theme] defaultButtonRingOutset];
+}
+
+- (BOOL) wantsDefaultClipping
+{
+  if ([self _defaultButtonRingOutset] > 0.0)
+    {
+      return NO;
+    }
+  return [super wantsDefaultClipping];
+}
+
+- (NSRect) _drawingExtend
+{
+  CGFloat outset = [self _defaultButtonRingOutset];
+
+  if (outset > 0.0)
+    {
+      return NSInsetRect([self _frameExtend], -outset, -outset);
+    }
+  return [super _drawingExtend];
+}
+
+- (void) drawRect: (NSRect)dirtyRect
+{
+  if ([self wantsDefaultClipping] == NO)
+    {
+      NSRectClip(dirtyRect);
+    }
+  [super drawRect: dirtyRect];
 }
 
 // Implement 10.7+ radio button behavior

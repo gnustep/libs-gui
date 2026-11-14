@@ -571,6 +571,36 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   return frame;
 }
 
+- (NSRect) _drawingExtend
+{
+  if ([self wantsDefaultClipping] || _super_view == nil)
+    {
+      return [self _frameExtend];
+    }
+  return [_super_view _geometricVisibleRect];
+}
+
+- (NSRect) _visibleDrawingRect
+{
+  NSRect rect;
+
+  if ([self wantsDefaultClipping])
+    {
+      return [self _geometricVisibleRect];
+    }
+  if ([self isHiddenOrHasHiddenAncestor])
+    {
+      return NSZeroRect;
+    }
+  if (_super_view == nil)
+    {
+      return _bounds;
+    }
+  rect = NSIntersectionRect([self _drawingExtend],
+                            [_super_view _geometricVisibleRect]);
+  return [self convertRect: rect fromView: _super_view];
+}
+
 
 - (NSString*) _subtreeDescriptionWithPrefix: (NSString*)prefix
 {
@@ -1056,6 +1086,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  break;
 	}
     }
+  if ([aView wantsDefaultClipping] == NO)
+    {
+      [self setNeedsDisplayInRect: [aView _drawingExtend]];
+    }
   [self willRemoveSubview: aView];
   aView->_super_view = nil;
   [aView _viewWillMoveToWindow: nil];
@@ -1271,8 +1305,18 @@ static NSSize _computeScale(NSSize fs, NSSize bs)
 
 - (void) _setFrameAndClearAutoresizingError: (NSRect)frameRect
 {
+  BOOL unclipped = (_super_view != nil && [self wantsDefaultClipping] == NO);
+
+  if (unclipped)
+    {
+      [_super_view setNeedsDisplayInRect: [self _drawingExtend]];
+    }
   _frame = frameRect;
   _autoresizingFrameError = NSZeroRect;
+  if (unclipped)
+    {
+      [_super_view setNeedsDisplayInRect: [self _drawingExtend]];
+    }
 }
 
 - (void) setFrame: (NSRect)frameRect
@@ -2512,7 +2556,7 @@ static void autoresize(CGFloat oldContainerSize,
 
 - (void) lockFocus
 {
-  [self lockFocusInRect: [self _geometricVisibleRect]];
+  [self lockFocusInRect: [self _visibleDrawingRect]];
 }
 
 - (void) unlockFocus
@@ -2529,7 +2573,7 @@ static void autoresize(CGFloat oldContainerSize,
 {
   if ([self canDraw])
     {
-      [self _lockFocusInContext: context inRect: [self _geometricVisibleRect]];
+      [self _lockFocusInContext: context inRect: [self _visibleDrawingRect]];
       return YES;
     }
   else
@@ -2583,14 +2627,14 @@ static void autoresize(CGFloat oldContainerSize,
 
 - (void) display
 {
-  [self displayRect: [self _geometricVisibleRect]];
+  [self displayRect: [self _visibleDrawingRect]];
 }
 
 - (void) displayIfNeeded
 {
   if (_rFlags.needs_display == YES)
     {
-      [self displayIfNeededInRect: [self _geometricVisibleRect]];
+      [self displayIfNeededInRect: [self _visibleDrawingRect]];
     }
 }
 
@@ -2598,7 +2642,7 @@ static void autoresize(CGFloat oldContainerSize,
 {
   if (_rFlags.needs_display == YES)
     {
-      [self displayIfNeededInRectIgnoringOpacity: [self _geometricVisibleRect]];
+      [self displayIfNeededInRectIgnoringOpacity: [self _visibleDrawingRect]];
     }
 }
 
@@ -2649,7 +2693,7 @@ static void autoresize(CGFloat oldContainerSize,
             {
               if (subview->_rFlags.needs_display)
                 {
-                  NSRect subviewFrame = [subview _frameExtend];
+                  NSRect subviewFrame = [subview _drawingExtend];
                   NSRect isect;
               
                   isect = NSIntersectionRect(aRect, subviewFrame);
@@ -2733,7 +2777,7 @@ static void autoresize(CGFloat oldContainerSize,
   if (context == wContext)
     {
       NSRect neededRect;
-      NSRect visibleRect = [self _geometricVisibleRect];
+      NSRect visibleRect = [self _visibleDrawingRect];
 
       flush = YES;
       [_window disableFlushWindow];
@@ -2782,7 +2826,7 @@ static void autoresize(CGFloat oldContainerSize,
           for (i = 0; i < count; ++i)
             {
               NSView *subview = array[i];
-              NSRect subviewFrame = [subview _frameExtend];
+              NSRect subviewFrame = [subview _drawingExtend];
               NSRect isect;
               
               /*
@@ -2969,7 +3013,15 @@ in the main thread.
 
   if (flag)
     {
-      [self setNeedsDisplayInRect: _bounds];
+      if ([self wantsDefaultClipping])
+        {
+          [self setNeedsDisplayInRect: _bounds];
+        }
+      else
+        {
+          [self setNeedsDisplayInRect:
+            NSUnionRect(_bounds, [self _visibleDrawingRect])];
+        }
     }
   else
     {
@@ -3015,11 +3067,21 @@ in the main thread.
   invalidRect = [v rectValue];
 
   /*
-   *	Limit to bounds, combine with old _invalidRect, and then check to see
+   *	Limit to bounds (for a view that does not want the default
+   *	clipping, to the area it may draw in), combine with old
+   *	_invalidRect, and then check to see
    *	if the result is the same as the old _invalidRect - if it isn't then
    *	set the new _invalidRect.
    */
-  invalidRect = NSIntersectionRect(invalidRect, _bounds);
+  if ([self wantsDefaultClipping])
+    {
+      invalidRect = NSIntersectionRect(invalidRect, _bounds);
+    }
+  else
+    {
+      invalidRect = NSIntersectionRect(invalidRect,
+        NSUnionRect(_bounds, [self _visibleDrawingRect]));
+    }
   invalidRect = NSUnionRect(_invalidRect, invalidRect);
   if (NSEqualRects(invalidRect, _invalidRect) == NO)
     {

@@ -875,10 +875,12 @@ setKeyEquivalent(NSButton *button)
   if (useControl(defButton))
     {
       [self makeFirstResponder: defButton];
+      [self setDefaultButtonCell: [defButton cell]];
     }
   else
     {
       [self makeFirstResponder: self];
+      [self setDefaultButtonCell: nil];
     }
   if (useControl(altButton))
     {
@@ -956,10 +958,12 @@ setKeyEquivalent(NSButton *button)
   if (useControl(defButton))
     {
       [self makeFirstResponder: defButton];
+      [self setDefaultButtonCell: [defButton cell]];
     }
   else
     {
       [self makeFirstResponder: self];
+      [self setDefaultButtonCell: nil];
     }
 
   /* a *working* nextKeyView chain:
