@@ -622,7 +622,9 @@ Private method used internally by GSLayoutManager for sanity checking.
       pos += curRange.length;
     }
 
+#ifdef GSLAYOUTMANAGER_SANITY_CHECKS
   [self _sanityChecks];
+#endif
 }
 
 /*
@@ -1216,9 +1218,11 @@ places where we switch.
   if (actualRange)
     *actualRange = range;
 
-//  printf("\n +++ range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);
+#ifdef GSLAYOUTMANAGER_SANITY_CHECKS
+  //  printf("\n +++ range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);
   [self _sanityChecks];
-//  [self _glyphDumpRuns];
+  //  [self _glyphDumpRuns];
+#endif
 
   if ((range.location == 0) && (range.length >= [_textStorage length]))
     {
@@ -1567,8 +1571,10 @@ places where we switch.
   if (actualRange)
     *actualRange = range;
 
+#ifdef GSLAYOUTMANAGER_SANITY_CHECKS
   [self _sanityChecks];
   //[self _glyphDumpRuns];
+#endif
 }
 
 
