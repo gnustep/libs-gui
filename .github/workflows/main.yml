@@ -154,8 +154,8 @@ jobs:
         with:
           name: Logs - ${{ matrix.name }}
           path: |
-            ${{ env.SRC_PATH }}/config.log
-            ${{ env.SRC_PATH }}/Tests/tests.log
+            source/config.log
+            source/Tests/tests.log
 
   ########### Linux (cairo backend, virtual display) ###########
   linux-headless:
@@ -236,5 +236,5 @@ jobs:
         with:
           name: Logs - Ubuntu x64 Clang gnustep-2.2 (headless)
           path: |
-            ${{ env.SRC_PATH }}/config.log
-            ${{ env.SRC_PATH }}/Tests/tests.log
+            source/config.log
+            source/Tests/tests.log
