@@ -86,10 +86,17 @@
   status = [NSString stringWithFormat: _(@"Spooling to printer %@."), name];
   [[self printPanel] _setStatusStringValue: status];
 
-  cupsPrintFile( [name UTF8String], 
-                 [_path UTF8String], 
-                 [_path UTF8String], 
-                 0, NULL );
+  /* A positive job ID means the spooler accepted the job, not that the
+     printer has finished printing it. */
+  if (cupsPrintFile([name UTF8String], [_path UTF8String],
+                    [_path UTF8String], 0, NULL) <= 0)
+    {
+      status = [NSString stringWithFormat:
+        _(@"Spooling to printer %@ failed: %s"), name, cupsLastErrorString()];
+      [[self printPanel] _setStatusStringValue: status];
+      NSLog(@"%@", status);
+      return NO;
+    }
   return YES;
 }
 

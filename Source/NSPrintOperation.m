@@ -704,10 +704,10 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
                   contextInfo:(void *)contextInfo
 {
   id delegate;
-  SEL didRunSelector;
+  SEL didRunSelector = NULL;
   BOOL success = NO;
   NSMutableDictionary *dict;
-  void (*didRun)(id, SEL, BOOL, id);
+  void (*didRun)(id, SEL, NSPrintOperation *, BOOL, void *);
 
   if (returnCode == NSOKButton)
     {
@@ -720,9 +720,9 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   delegate = [dict objectForKey: @"GSModalRunDelegate"];
   if (delegate != nil && didRunSelector != NULL)
     {
-      didRun = (void (*)(id, SEL, BOOL, id))[delegate methodForSelector: 
-                                                          didRunSelector];
-      didRun (delegate, didRunSelector, success, contextInfo);
+      didRun = (void (*)(id, SEL, NSPrintOperation *, BOOL, void *))
+        [delegate methodForSelector: didRunSelector];
+      didRun (delegate, didRunSelector, self, success, contextInfo);
     }
 }
 

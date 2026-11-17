@@ -116,7 +116,7 @@
   BOOL success;
   NSString *job;
   
-  success = YES;
+  success = NO;
   job = [[self printInfo] jobDisposition];
   if ([job isEqual: NSPrintPreviewJob])
     {
@@ -133,7 +133,14 @@
                         forExtension: @"ps"];
       if (preview)
         {
-          [ws openFile: _path withApplication: preview];
+          success = [ws openFile: _path withApplication: preview];
+          if (success == NO)
+            {
+              NSString *status = [NSString stringWithFormat:
+                _(@"Could not open the print preview with %@."), preview];
+              [[self printPanel] _setStatusStringValue: status];
+              NSLog(@"%@", status);
+            }
         }
       else
         {
@@ -145,13 +152,16 @@
             
 	  NS_DURING
 	    {
-	      task = AUTORELEASE([NSTask new]);
+	      task = AUTORELEASE([[NSTask alloc] init]);
 	      [task setLaunchPath: preview];
 	      [task setArguments: [NSArray arrayWithObject: _path]];
 	      [task launch];
+              /* Previewers run asynchronously; success means launched. */
+              success = YES;
 	    }
 	  NS_HANDLER
 	    {
+              success = NO;
 	      NSRunAlertPanel(_(@"Preview"),
 _(@"Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"),
 		_(@"Dismiss"), nil, nil, preview);
@@ -163,8 +173,17 @@ _(@"Problem running the preview application '%@' perhaps you need to set your NS
     {
       success = [self _deliverSpooledResult];
     }
-  else if ([job isEqual: NSPrintFaxJob])
+  else if ([job isEqual: NSPrintSaveJob])
     {
+      /* The graphics context has already written the output file. */
+      success = YES;
+    }
+  else if ([job isEqual: NSPrintCancelJob] == NO)
+    {
+      NSString *status = [NSString stringWithFormat:
+        _(@"Unsupported print job disposition: %@."), job];
+      [[self printPanel] _setStatusStringValue: status];
+      NSLog(@"%@", status);
     }
 
   /* We can't remove the temp file because the previewer might still be

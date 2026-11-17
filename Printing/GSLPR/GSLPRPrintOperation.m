@@ -117,7 +117,7 @@
       return NO;
     }
 
-  task = [NSTask new];
+  task = [[NSTask alloc] init];
   [task setLaunchPath: lprPath];
   [task setArguments: args];
   NS_DURING
@@ -128,13 +128,23 @@
   NS_HANDLER
   {
     NSString *errmsg = [NSString stringWithFormat: _(@"Spooling failed: %@"), [localException reason]];
-    NSRunAlertPanel(@"Printing Error", errmsg, @"OK", nil, nil);
+    NSRunAlertPanel(@"Printing Error", @"%@", @"OK", nil, nil, errmsg);
     status = errmsg;
     [[self printPanel] _setStatusStringValue: status];
     AUTORELEASE(task);
     return NO;
   }
   NS_ENDHANDLER
+  if ([task terminationStatus] != 0)
+    {
+      status = [NSString stringWithFormat:
+        _(@"Spooling to printer %@ failed: lpr exited with status %d."),
+        name, [task terminationStatus]];
+      [[self printPanel] _setStatusStringValue: status];
+      NSLog(@"%@", status);
+      RELEASE(task);
+      return NO;
+    }
   AUTORELEASE(task);
   return YES;
 }
