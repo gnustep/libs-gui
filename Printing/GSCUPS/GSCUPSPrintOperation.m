@@ -44,6 +44,7 @@
 #import <AppKit/NSPrintOperation.h>
 #import "GSGuiPrivate.h"
 #import "GSCUPSPrintOperation.h"
+#import "GSCUPSPrinter.h"
 #undef __BLOCKS__
 #include <cups/cups.h>
 
@@ -65,9 +66,13 @@ GSCUPSAddFeature(id feature, NSPrinter *printer, int count,
     return count;
   keyword = [feature substringToIndex: separator.location];
   choice = [feature substringFromIndex: NSMaxRange(separator)];
-  if ([choice length] == 0
-      || [[printer stringListForKey: keyword inTable: @"PPD"]
-           containsObject: choice] == NO)
+  if ([choice length] == 0)
+    return count;
+  /* IPP choices are checked by the translator below, so an unsupported
+     explicit choice fails instead of silently reverting to the default. */
+  if (!([printer respondsToSelector: @selector(_cupsSupportsIPPOption:)]
+        && [printer _cupsSupportsIPPOption: keyword])
+      && ![[printer stringListForKey: keyword inTable: @"PPD"] containsObject: choice])
     return count;
 
   return cupsAddOption([keyword UTF8String], [choice UTF8String], count,
@@ -132,6 +137,34 @@ GSCUPSAddFeature(id feature, NSPrinter *printer, int count,
   value = [dict objectForKey: NSPrintPaperName];
   if ([value isKindOfClass: [NSString class]] && [value length] > 0)
     count = cupsAddOption("PageSize", [value UTF8String], count, &options);
+
+  if ([printer respondsToSelector: @selector(_cupsTranslateOptions:error:)])
+    {
+      NSMutableDictionary *legacy = [NSMutableDictionary dictionary];
+      NSDictionary *translated;
+      NSString *error = nil, *key;
+      NSEnumerator *enumerator;
+      int i;
+
+      for (i = 0; i < count; i++)
+        [legacy setObject: [NSString stringWithUTF8String: options[i].value]
+                  forKey: [NSString stringWithUTF8String: options[i].name]];
+      translated = [printer _cupsTranslateOptions: legacy error: &error];
+      cupsFreeOptions(count, options);
+      options = NULL;
+      count = 0;
+      if (translated == nil)
+        {
+          status = [NSString stringWithFormat: _(@"Spooling to printer %@ failed: %@"), name, error];
+          [[self printPanel] _setStatusStringValue: status];
+          NSLog(@"%@", status);
+          return NO;
+        }
+      enumerator = [translated keyEnumerator];
+      while ((key = [enumerator nextObject]) != nil)
+        count = cupsAddOption([key UTF8String], [[translated objectForKey: key] UTF8String],
+                              count, &options);
+    }
 
   /* Page ranges, ordering, orientation, scaling and N-up have already been
      applied to the document by NSPrintOperation. Do not apply them again. */
