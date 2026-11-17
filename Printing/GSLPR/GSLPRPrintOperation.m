@@ -60,28 +60,6 @@
 }
 
 
-- (id)initWithView:(NSView *)aView
-         printInfo:(NSPrintInfo *)aPrintInfo
-{
-  self = [super initWithView: aView
-                   printInfo: aPrintInfo];
-  if (self == nil)
-    return nil;
-
-  _path = [NSTemporaryDirectory()
-	    stringByAppendingPathComponent: @"GSLPRPrintJob-"];
-  
-  _path = [_path stringByAppendingString: 
-		       [[NSProcessInfo processInfo] globallyUniqueString]];
-           
-  _path = [_path stringByAppendingPathExtension: @"ps"];
-  
-  RETAIN(_path);
-  
-  return self;
-}
-
-
 - (BOOL) _deliverSpooledResult
 {
   int copies;
@@ -152,7 +130,6 @@
 - (NSGraphicsContext*)createContext
 {
   NSMutableDictionary *info;
-  NSString *output;
   
   if (_context)
     {
@@ -163,12 +140,9 @@
 
   info = [[self printInfo] dictionary];
 
-  output = [info objectForKey: NSPrintSavePath];
-  if (output)
-    {
-      ASSIGN(_path, output);
-    }
-    
+  if ([self _prepareOutputFile] == NO)
+    return nil;
+
   NSDebugMLLog(@"GSPrinting", @"_path is %@", _path); 
   
   [info setObject: _path 

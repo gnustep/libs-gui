@@ -85,29 +85,6 @@ GSCUPSAddFeature(id feature, NSPrinter *printer, int count,
   return NSAllocateObject (self, 0, z);
 }
 
-- (id)initWithView:(NSView *)aView
-         printInfo:(NSPrintInfo *)aPrintInfo
-{
-  self = [super initWithView: aView
-                   printInfo: aPrintInfo];
-  if (self == nil)
-    return nil;
-
-  _path = [NSTemporaryDirectory()
-	    stringByAppendingPathComponent: @"GSCUPSPrintJob-"];
-  
-  _path = [_path stringByAppendingString: 
-		       [[NSProcessInfo processInfo] globallyUniqueString]];
-           
-  _path = [_path stringByAppendingPathExtension: @"ps"];
-  
-  RETAIN(_path);
-  
-  return self;
-}
-  
-
-
 - (BOOL) _deliverSpooledResult
 {
   NSString *name, *status;
@@ -178,7 +155,6 @@ GSCUPSAddFeature(id feature, NSPrinter *printer, int count,
 - (NSGraphicsContext*)createContext
 {
   NSMutableDictionary *info;
-  NSString *output;
   
   if (_context)
     {
@@ -189,12 +165,9 @@ GSCUPSAddFeature(id feature, NSPrinter *printer, int count,
 
   info = [[self printInfo] dictionary];
 
-  output = [info objectForKey: NSPrintSavePath];
-  if (output)
-    {
-      ASSIGN(_path, output);
-    }
-    
+  if ([self _prepareOutputFile] == NO)
+    return nil;
+
   NSDebugMLLog(@"GSPrinting", @"_path is %@", _path); 
   
   [info setObject: _path 

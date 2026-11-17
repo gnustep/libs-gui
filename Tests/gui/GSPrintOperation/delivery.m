@@ -7,6 +7,8 @@
 
 static NSMutableDictionary *printAttributes;
 static NSArray *taskArguments;
+static id launchedTask;
+static BOOL openedTemporaryFile;
 static NSString *disposition;
 static BOOL accepted;
 static BOOL useViewer;
@@ -70,6 +72,7 @@ static DeliverySettings *settings;
 - (NSString *) getBestAppInRole: (NSString *)role
                  forExtension: (NSString *)extension;
 - (BOOL) openFile: (NSString *)path withApplication: (NSString *)application;
+- (BOOL) openTempFile: (NSString *)path;
 
 @end
 
@@ -88,6 +91,13 @@ static DeliverySettings *settings;
 
 - (BOOL) openFile: (NSString *)path withApplication: (NSString *)application
 {
+  openedTemporaryFile = NO;
+  return accepted;
+}
+
+- (BOOL) openTempFile: (NSString *)path
+{
+  openedTemporaryFile = YES;
   return accepted;
 }
 
@@ -122,6 +132,7 @@ static DeliverySettings *settings;
 
 - (void) launch
 {
+  ASSIGN(launchedTask, self);
   if (launchFails)
     [NSException raise: NSInternalInconsistencyException
                 format: @"Test launch failure"];
@@ -147,6 +158,7 @@ DeliveryAlert(NSString *title, NSString *message, NSString *defaultButton,
 
 /* Rename the classes so installed printing bundles cannot interfere. */
 #define GSPrintOperation DeliveryOperation
+#define GSPrintPreviewFile DeliveryPreviewFile
 #define NSWorkspace DeliveryWorkspace
 #define NSTask DeliveryTask
 #define NSRunAlertPanel DeliveryAlert
@@ -158,6 +170,7 @@ DeliveryAlert(NSString *title, NSString *message, NSString *defaultButton,
 #undef NSTask
 #undef NSWorkspace
 #undef GSPrintOperation
+#undef GSPrintPreviewFile
 
 #ifdef __has_include
 # if __has_include(<cups/cups.h>)
@@ -262,6 +275,8 @@ DeliveryCUPSError(void)
 
 @interface TestDeliveryOperation : DeliveryOperation
 
+- (NSString *) outputPath;
+
 @end
 
 @implementation TestDeliveryOperation
@@ -282,6 +297,11 @@ DeliveryCUPSError(void)
 - (NSPrintInfo *) printInfo
 {
   return (NSPrintInfo *)settings;
+}
+
+- (NSString *) outputPath
+{
+  return _path;
 }
 
 - (NSPrintPanel *) printPanel
@@ -363,6 +383,80 @@ main(void)
   PASS([operation deliverResult] == NO, "preview launch exception fails");
   launchFails = NO;
   PASS([operation deliverResult] == YES, "preview launch succeeds");
+
+  {
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:
+      [[NSProcessInfo processInfo] globallyUniqueString]];
+    NSData *contents = [@"Print job" dataUsingEncoding: NSUTF8StringEncoding];
+    TestDeliveryOperation *previewOperation;
+
+    [operation _setOutputFile: path temporary: YES];
+    [manager createFileAtPath: path contents: contents attributes: nil];
+    disposition = NSPrintSpoolJob;
+    accepted = YES;
+    PASS([operation deliverResult] && ![manager fileExistsAtPath: path],
+         "successful spooling removes its temporary file");
+    [operation _setOutputFile: path temporary: YES];
+    [manager createFileAtPath: path contents: contents attributes: nil];
+    accepted = NO;
+    PASS(![operation deliverResult] && ![manager fileExistsAtPath: path],
+         "failed spooling removes its temporary file");
+
+    disposition = NSPrintSaveJob;
+    [operation _setOutputFile: path temporary: NO];
+    [manager createFileAtPath: path contents: contents attributes: nil];
+    PASS([operation deliverResult] && [manager fileExistsAtPath: path],
+         "explicit save files inside the temporary directory are preserved");
+    [printAttributes setObject: path forKey: NSPrintSavePath];
+    disposition = NSPrintSpoolJob;
+    PASS([operation _prepareOutputFile] && ![[operation outputPath] isEqual: path],
+         "a previous save path is not reused for spooling");
+    PASS([manager fileExistsAtPath: path], "preparing a spool job leaves the saved file intact");
+    [manager removeFileAtPath: path handler: nil];
+    [printAttributes removeAllObjects];
+    disposition = NSPrintSaveJob;
+    PASS(![operation _prepareOutputFile], "saving without a destination fails");
+
+    disposition = NSPrintPreviewJob;
+    useViewer = YES;
+    accepted = NO;
+    [operation _setOutputFile: path temporary: YES];
+    [manager createFileAtPath: path contents: contents attributes: nil];
+    PASS(![operation deliverResult] && ![manager fileExistsAtPath: path],
+         "failed workspace handoff removes its temporary file");
+    accepted = YES;
+    [operation _setOutputFile: path temporary: YES];
+    [manager createFileAtPath: path contents: contents attributes: nil];
+    PASS([operation deliverResult] && openedTemporaryFile,
+         "workspace preview uses the temporary-file ownership contract");
+    [operation _removeTemporaryOutputFile];
+    PASS([manager fileExistsAtPath: path], "workspace owns the file after successful handoff");
+    [manager removeFileAtPath: path handler: nil];
+
+    useViewer = NO;
+    launchFails = YES;
+    [operation _setOutputFile: path temporary: YES];
+    [manager createFileAtPath: path contents: contents attributes: nil];
+    PASS(![operation deliverResult] && ![manager fileExistsAtPath: path],
+         "failed preview command launch removes its temporary file");
+    launchFails = NO;
+    previewOperation = [[TestDeliveryOperation alloc] init];
+    [previewOperation _setOutputFile: path temporary: YES];
+    [manager createFileAtPath: path contents: contents attributes: nil];
+    PASS([previewOperation deliverResult], "preview command starts successfully");
+    RELEASE(previewOperation);
+    PASS([manager fileExistsAtPath: path], "preview file outlives its print operation");
+    [[NSNotificationCenter defaultCenter] postNotificationName: NSTaskDidTerminateNotification
+                                                      object: launchedTask];
+    PASS(![manager fileExistsAtPath: path], "preview file is removed when the command exits");
+
+    previewOperation = [[TestDeliveryOperation alloc] init];
+    [previewOperation _setOutputFile: path temporary: YES];
+    [manager createFileAtPath: path contents: contents attributes: nil];
+    RELEASE(previewOperation);
+    PASS(![manager fileExistsAtPath: path], "abandoned operations remove owned temporary files");
+  }
 
   lpr = [[TestLPROperation alloc] init];
   toolFound = YES;
@@ -452,6 +546,7 @@ main(void)
   RELEASE(settings);
   RELEASE(printAttributes);
   RELEASE(taskArguments);
+  RELEASE(launchedTask);
   END_SET("Print delivery results")
   return 0;
 }

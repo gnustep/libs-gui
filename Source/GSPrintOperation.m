@@ -35,8 +35,13 @@
 
 #import <Foundation/NSData.h>
 #import <Foundation/NSException.h>
+#import <Foundation/NSFileManager.h>
+#import <Foundation/NSLock.h>
+#import <Foundation/NSNotification.h>
 #import <Foundation/NSTask.h>
+#import <Foundation/NSThread.h>
 #import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSValue.h>
 #import "AppKit/NSPrintPanel.h"
 #import "AppKit/NSPrintInfo.h"
 #import "AppKit/NSView.h"
@@ -60,6 +65,83 @@
 
 
 
+
+/* A command-line previewer owns a lease independent of the print operation.
+   The observation retain is released on termination or a failed launch. */
+@interface GSPrintPreviewFile : NSObject
+{
+  NSString *path;
+  NSTask *task;
+  NSLock *lock;
+  BOOL observing;
+}
+
+- (id) initWithTask: (NSTask *)aTask path: (NSString *)aPath;
+- (void) invalidate;
+
+@end
+
+@implementation GSPrintPreviewFile
+
+- (id) initWithTask: (NSTask *)aTask path: (NSString *)aPath
+{
+  self = [super init];
+  if (self != nil)
+    {
+      ASSIGNCOPY(path, aPath);
+      ASSIGN(task, aTask);
+      lock = [[NSLock alloc] init];
+      observing = YES;
+      RETAIN(self);
+      [[NSNotificationCenter defaultCenter] addObserver: self
+        selector: @selector(taskFinished:) name: NSTaskDidTerminateNotification object: task];
+    }
+  return self;
+}
+
+- (void) invalidate
+{
+  BOOL wasObserving;
+
+  [lock lock];
+  wasObserving = observing;
+  observing = NO;
+  [lock unlock];
+  if (wasObserving)
+    {
+      [[NSNotificationCenter defaultCenter] removeObserver: self];
+      RELEASE(self);
+    }
+}
+
+- (void) taskFinished: (NSNotification *)notification
+{
+  RETAIN(self);
+  NS_DURING
+    {
+      NSFileManager *manager = [NSFileManager defaultManager];
+      if ([manager fileExistsAtPath: path]
+          && ![manager removeFileAtPath: path handler: nil])
+        NSLog(@"Could not remove print preview %@", path);
+    }
+  NS_HANDLER
+    {
+      NSLog(@"Could not remove print preview %@: %@", path, localException);
+    }
+  NS_ENDHANDLER
+  [self invalidate];
+  RELEASE(self);
+}
+
+- (void) dealloc
+{
+  RELEASE(path);
+  RELEASE(task);
+  RELEASE(lock);
+  DEALLOC;
+}
+
+@end
 
 @implementation GSPrintOperation
 
@@ -88,7 +170,9 @@
                  insideRect: [aView bounds]
                      toData: [NSMutableData data]
                   printInfo: aPrintInfo];
-                  
+  if (self == nil)
+    return nil;
+  [self _setTemporaryOutputFileWithExtension: @"ps"];
   [self setShowPanels: YES];
 
   return self;
@@ -98,6 +182,21 @@
 {
   [self subclassResponsibility: _cmd];
   return nil;
+}
+
+- (BOOL) _prepareOutputFile
+{
+  if ([[[self printInfo] jobDisposition] isEqual: NSPrintSaveJob])
+    {
+      id output = [[[self printInfo] dictionary] objectForKey: NSPrintSavePath];
+
+      if (![output isKindOfClass: [NSString class]] || [output length] == 0)
+        return NO;
+      [self _setOutputFile: output temporary: NO];
+    }
+  else if (!_flags.owns_output_file || _path == nil)
+    [self _setTemporaryOutputFileWithExtension: @"ps"];
+  return YES;
 }
 
 
@@ -118,6 +217,13 @@
   
   success = NO;
   job = [[self printInfo] jobDisposition];
+  if ([job isEqual: NSPrintPreviewJob] && ![NSThread isMainThread])
+    {
+      NSMutableDictionary *result = [NSMutableDictionary dictionary];
+      [self performSelectorOnMainThread: @selector(_deliverPreviewOnMainThread:)
+                             withObject: result waitUntilDone: YES];
+      return [[result objectForKey: @"success"] boolValue];
+    }
   if ([job isEqual: NSPrintPreviewJob])
     {
       /* Check to see if there is a GNUstep app that can preview PS files.
@@ -130,10 +236,17 @@
       [[self printPanel] _setStatusStringValue: @"Opening in previewer..."];
       
       preview = [ws getBestAppInRole: @"Viewer" 
-                        forExtension: @"ps"];
+                        forExtension: [_path pathExtension]];
       if (preview)
         {
-          success = [ws openFile: _path withApplication: preview];
+          if (_flags.owns_output_file)
+            {
+              success = [ws openTempFile: _path];
+              if (success)
+                _flags.owns_output_file = NO;
+            }
+          else
+            success = [ws openFile: _path withApplication: preview];
           if (success == NO)
             {
               NSString *status = [NSString stringWithFormat:
@@ -145,28 +258,35 @@
       else
         {
           NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
+          GSPrintPreviewFile *lease = nil;
           preview = [def objectForKey: @"NSPreviewApp"];
           
 	  if (preview == nil || [preview length] == 0)
 	    preview = @"gv";
             
+          task = AUTORELEASE([[NSTask alloc] init]);
+          [task setLaunchPath: preview];
+          [task setArguments: [NSArray arrayWithObject: _path]];
+          if (_flags.owns_output_file)
+            lease = [[GSPrintPreviewFile alloc] initWithTask: task path: _path];
 	  NS_DURING
 	    {
-	      task = AUTORELEASE([[NSTask alloc] init]);
-	      [task setLaunchPath: preview];
-	      [task setArguments: [NSArray arrayWithObject: _path]];
 	      [task launch];
               /* Previewers run asynchronously; success means launched. */
               success = YES;
+              if (lease != nil)
+                _flags.owns_output_file = NO;
 	    }
 	  NS_HANDLER
 	    {
               success = NO;
+              [lease invalidate];
 	      NSRunAlertPanel(_(@"Preview"),
 _(@"Problem running the preview application '%@' perhaps you need to set your NSPreviewApp user default"),
 		_(@"Dismiss"), nil, nil, preview);
 	    }
 	  NS_ENDHANDLER
+          RELEASE(lease);
         }
     }
   else if ([job isEqual: NSPrintSpoolJob])
@@ -186,15 +306,16 @@ _(@"Problem running the preview application '%@' perhaps you need to set your NS
       NSLog(@"%@", status);
     }
 
-  /* We can't remove the temp file because the previewer might still be
-     using it, perhaps the printer is also?
-  if (_path)
-    {
-      [[NSFileManager defaultManager] removeFileAtPath: _path
-                                               handler: nil];
-    }
-  */
+  /* Synchronous spoolers have consumed the file when they return. Successful
+     previews have transferred ownership; explicit save paths are never ours. */
+  [self _removeTemporaryOutputFile];
   return success;
+}
+
+- (void) _deliverPreviewOnMainThread: (NSMutableDictionary *)result
+{
+  [result setObject: [NSNumber numberWithBool: [self deliverResult]]
+            forKey: @"success"];
 }
 
 @end

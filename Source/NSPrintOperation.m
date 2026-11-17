@@ -42,6 +42,7 @@
 #import <Foundation/NSFileManager.h>
 #import <Foundation/NSException.h>
 #import <Foundation/NSPathUtilities.h>
+#import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSTask.h>
 #import <Foundation/NSThread.h>
 #import <Foundation/NSUserDefaults.h>
@@ -103,8 +104,11 @@ typedef struct _page_info_t {
 - (BOOL) _runOperation;
 - (void) _setupPrintInfo;
 - (void)_printOperationDidRun:(NSPrintOperation *)printOperation 
-                   returnCode:(int)returnCode
+                   returnCode:(NSInteger)returnCode
                   contextInfo:(void *)contextInfo;
+- (void) _runModalOperation: (NSValue *)context;
+- (void) _finishModalOperation: (NSDictionary *)result;
+- (void) _cleanUpAfterOperation;
 - (void) _printPaginateWithInfo: (page_info_t *)info 
                      knowsRange: (BOOL)knowsRange;
 - (NSRect) _rectForPage: (int)page info: (page_info_t *)info 
@@ -307,10 +311,12 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 - (void) dealloc
 {
+  /* Close any abandoned context before attempting to remove its output. */
+  DESTROY(_context);
+  [self _removeTemporaryOutputFile];
   RELEASE(_print_info);
   RELEASE(_view);  
   RELEASE(_data);
-  TEST_RELEASE(_context);
   TEST_RELEASE(_print_panel);  
   TEST_RELEASE(_accessory_view);  
   TEST_RELEASE(_path);  
@@ -471,9 +477,22 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 */
 - (void)cleanUpOperation
 {
-  [[self printPanel] orderOut: self];
+  [self _removeTemporaryOutputFile];
+  /* Another operation may have started while this one ran in a worker. */
+  NS_DURING
+    {
+      if ([NSPrintOperation currentOperation] == nil
+          || [NSPrintOperation currentOperation] == self)
+        [[self printPanel] orderOut: self];
+    }
+  NS_HANDLER
+    {
+      NSLog(@"Print-panel cleanup failed: %@", localException);
+    }
+  NS_ENDHANDLER
   _currentPage = 0;
-  [NSPrintOperation setCurrentOperation: nil];
+  if ([NSPrintOperation currentOperation] == self)
+    [NSPrintOperation setCurrentOperation: nil];
 }
 
 /** Called by the print operation to deliver the results of the printing
@@ -493,33 +512,42 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 */
 - (BOOL)runOperation
 {
-  BOOL result;
+  BOOL result = NO;
+  NSPrintPanel *panel = nil;
 
-  if ([self showsPrintPanel])
+  RETAIN(self);
+  NS_DURING
     {
-      NSPrintPanel *panel = [self printPanel];
-      int button;
-      
-      [panel setAccessoryView: _accessory_view];
-      [self _setupPrintInfo];
-      button = [panel runModalWithPrintInfo: _print_info];
-      [panel setAccessoryView: nil];
-
-      if (button != NSOKButton)
+      NSInteger button = NSOKButton;
+      if ([self showsPrintPanel])
         {
-          [self cleanUpOperation];
-          return NO;
+          panel = [self printPanel];
+          [panel setAccessoryView: _accessory_view];
+          [self _setupPrintInfo];
+          button = [panel runModalWithPrintInfo: _print_info];
         }
+      if (button == NSOKButton && [self _runOperation])
+        result = [self deliverResult];
     }
-
-  result = NO;
-  if ([self _runOperation])
-    result = [self deliverResult];
-  [self cleanUpOperation];
-
+  NS_HANDLER
+    {
+      result = NO;
+      NSLog(@"Printing failed: %@", localException);
+    }
+  NS_ENDHANDLER
+  NS_DURING
+    {
+      [panel setAccessoryView: nil];
+    }
+  NS_HANDLER
+    {
+      NSLog(@"Print-panel cleanup failed: %@", localException);
+    }
+  NS_ENDHANDLER
+  [self _cleanUpAfterOperation];
+  RELEASE(self);
   return result;
 }
-
 
 
 /** Run a print operation modally with respect to a window.
@@ -530,8 +558,13 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
                        contextInfo:(void *)contextInfo
 {
   NSMutableDictionary *dict;
-  NSPrintPanel *panel = [self printPanel];
+  NSPrintPanel *panel;
 
+  RETAIN(self);
+  _flags.modal_started = NO;
+  dict = [_print_info dictionary];
+  [dict removeObjectForKey: @"GSModalRunSelector"];
+  [dict removeObjectForKey: @"GSModalRunDelegate"];
   if (delegate != nil && didRunSelector != NULL)
     {
       /* Save the selector so we can use it later */
@@ -542,18 +575,43 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
                forKey: @"GSModalRunDelegate"];
     }
 
-  /* Assume we want to show the panel regardless of the value
-     of _showPanels 
-  */
-  [panel setAccessoryView: _accessory_view];
-  [self _setupPrintInfo];
-  [panel beginSheetWithPrintInfo: _print_info 
+  if ([self showsPrintPanel] == NO)
+    {
+      [self _printOperationDidRun: self returnCode: NSOKButton
+                      contextInfo: contextInfo];
+      RELEASE(self);
+      return;
+    }
+  panel = nil;
+  NS_DURING
+    {
+      panel = [self printPanel];
+      [panel setAccessoryView: _accessory_view];
+      [self _setupPrintInfo];
+      [panel beginSheetWithPrintInfo: _print_info
                   modalForWindow: docWindow 
                         delegate: self 
                   didEndSelector: 
                           @selector(_printOperationDidRun:returnCode:contextInfo:)
                       contextInfo: contextInfo];
-  [panel setAccessoryView: nil];
+    }
+  NS_HANDLER
+    {
+      NSLog(@"Could not run print panel: %@", localException);
+      if (!_flags.modal_started)
+        [self _printOperationDidRun: self returnCode: NSCancelButton contextInfo: contextInfo];
+    }
+  NS_ENDHANDLER
+  NS_DURING
+    {
+      [panel setAccessoryView: nil];
+    }
+  NS_HANDLER
+    {
+      NSLog(@"Print-panel cleanup failed: %@", localException);
+    }
+  NS_ENDHANDLER
+  RELEASE(self);
 }
 
 - (BOOL)canSpawnSeparateThread
@@ -611,6 +669,45 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 @implementation NSPrintOperation (Private)
 
+- (void) _setOutputFile: (NSString *)path temporary: (BOOL)temporary
+{
+  if (![_path isEqual: path])
+    [self _removeTemporaryOutputFile];
+  ASSIGNCOPY(_path, path);
+  _flags.owns_output_file = temporary;
+}
+
+- (void) _setTemporaryOutputFileWithExtension: (NSString *)extension
+{
+  NSString *name = [@"GSPrint-" stringByAppendingString:
+    [[NSProcessInfo processInfo] globallyUniqueString]];
+
+  [self _setOutputFile: [NSTemporaryDirectory() stringByAppendingPathComponent:
+    [name stringByAppendingPathExtension: extension]] temporary: YES];
+}
+
+- (void) _removeTemporaryOutputFile
+{
+  if (_flags.owns_output_file && _path != nil)
+    {
+      NSFileManager *manager = [NSFileManager defaultManager];
+
+      NS_DURING
+        {
+          if (![manager fileExistsAtPath: _path]
+              || [manager removeFileAtPath: _path handler: nil])
+            _flags.owns_output_file = NO;
+          else
+            NSLog(@"Could not remove temporary print file %@", _path);
+        }
+      NS_HANDLER
+        {
+          NSLog(@"Could not remove temporary print file %@: %@", _path, localException);
+        }
+      NS_ENDHANDLER
+    }
+}
+
 - (id) initWithView:(NSView *)aView
          insideRect:(NSRect)rect
              toData:(NSMutableData *)data
@@ -639,47 +736,108 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 @implementation NSPrintOperation (TrulyPrivate)
 
+- (void) _cleanUpAfterOperation
+{
+  /* Subclass or UI cleanup must not strand the thread-local operation or its
+     temporary file, even when it raises an exception. */
+  RETAIN(self);
+  NS_DURING
+    {
+      [self cleanUpOperation];
+    }
+  NS_HANDLER
+    {
+      NSLog(@"Print-operation cleanup failed: %@", localException);
+    }
+  NS_ENDHANDLER
+  [self _removeTemporaryOutputFile];
+  _currentPage = 0;
+  if ([NSPrintOperation currentOperation] == self)
+    [NSPrintOperation setCurrentOperation: nil];
+  RELEASE(self);
+}
+
+- (NSRect) _printingRect
+{
+  return _rect;
+}
+
 
 /* Private method to run the printing operation. Needs to create an
    autoreleaes pool to make sure the print context is destroyed before
    returning (which closes the print file.) */
 - (BOOL) _runOperation
 {
-  BOOL result;
+  BOOL result = NO;
+  NSException *failure = nil;
+  NSGraphicsContext *oldContext = RETAIN([NSGraphicsContext currentContext]);
   CREATE_AUTORELEASE_POOL(pool);
-  NSGraphicsContext *oldContext = [NSGraphicsContext currentContext];
 
-  [self createContext];
-  if (_context == nil)
-    return NO;
-
-  result = NO;
-  if (_page_order == NSUnknownPageOrder)
-    {
-      if ([[[_print_info dictionary] objectForKey: NSPrintReversePageOrder] 
-            boolValue] == YES)
-        _page_order = NSDescendingPageOrder;
-      else
-        _page_order = NSAscendingPageOrder;
-    }
-
-  [NSGraphicsContext setCurrentContext: _context];
   NS_DURING
     {
-      [self _print];
-      result = YES;
-      [NSGraphicsContext setCurrentContext: oldContext];
+      [self createContext];
+      if (_context != nil)
+        {
+          if (_page_order == NSUnknownPageOrder)
+            {
+              if ([[[_print_info dictionary] objectForKey: NSPrintReversePageOrder] boolValue])
+                _page_order = NSDescendingPageOrder;
+              else
+                _page_order = NSAscendingPageOrder;
+            }
+          [NSGraphicsContext setCurrentContext: _context];
+          [self _print];
+          result = YES;
+        }
     }
   NS_HANDLER
     {
-      [_view _cleanupPrinting];
-      [NSGraphicsContext setCurrentContext: oldContext];
-      NSRunAlertPanel(_(@"Error"), _(@"Printing error: %@"), 
-                      _(@"OK"), NULL, NULL, localException);
+      ASSIGN(failure, localException);
     }
   NS_ENDHANDLER
-  [self destroyContext];
+
+  if (failure != nil)
+    {
+      NS_DURING
+        {
+          [_view _cleanupPrinting];
+        }
+      NS_HANDLER
+        {
+          NSLog(@"Print-view cleanup failed: %@", localException);
+        }
+      NS_ENDHANDLER
+    }
+  [NSGraphicsContext setCurrentContext: oldContext];
+  NS_DURING
+    {
+      [self destroyContext];
+    }
+  NS_HANDLER
+    {
+      result = NO;
+      if (failure == nil)
+        ASSIGN(failure, localException);
+      DESTROY(_context);
+    }
+  NS_ENDHANDLER
   RELEASE(pool);
+  RELEASE(oldContext);
+  if (failure != nil)
+    {
+      result = NO;
+      NS_DURING
+        {
+          NSRunAlertPanel(_(@"Error"), _(@"Printing error: %@"),
+                          _(@"OK"), NULL, NULL, failure);
+        }
+      NS_HANDLER
+        {
+          NSLog(@"Printing failed: %@", failure);
+        }
+      NS_ENDHANDLER
+      RELEASE(failure);
+    }
   return result;
 }
 
@@ -700,30 +858,108 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 }
 
 - (void)_printOperationDidRun:(NSPrintOperation *)printOperation 
-                   returnCode:(int)returnCode  
+                   returnCode:(NSInteger)returnCode
                   contextInfo:(void *)contextInfo
 {
-  id delegate;
-  SEL didRunSelector = NULL;
-  BOOL success = NO;
-  NSMutableDictionary *dict;
-  void (*didRun)(id, SEL, NSPrintOperation *, BOOL, void *);
+  NSValue *context = [NSValue valueWithPointer: contextInfo];
 
-  if (returnCode == NSOKButton)
+  _flags.modal_started = YES;
+  if (returnCode != NSOKButton)
+    {
+      [self _finishModalOperation: [NSDictionary dictionaryWithObjectsAndKeys:
+        NSNUMBER(NO), @"success", context, @"context", nil]];
+    }
+  else if ([self canSpawnSeparateThread])
+    {
+      /* Prepare the panel on the caller's thread before transferring the
+         thread-local current operation to the printing worker. */
+      RETAIN(self);
+      NS_DURING
+        {
+          [[self printPanel] orderOut: self];
+          if ([NSPrintOperation currentOperation] == self)
+            [NSPrintOperation setCurrentOperation: nil];
+          [NSThread detachNewThreadSelector: @selector(_runModalOperation:)
+                                  toTarget: self withObject: context];
+        }
+      NS_HANDLER
+        {
+          NSLog(@"Could not start printing thread: %@", localException);
+          [self _finishModalOperation: [NSDictionary dictionaryWithObjectsAndKeys:
+            NSNUMBER(NO), @"success", context, @"context", nil]];
+        }
+      NS_ENDHANDLER
+      RELEASE(self);
+    }
+  else
+    [self _runModalOperation: context];
+}
+
+- (void) _runModalOperation: (NSValue *)context
+{
+  CREATE_AUTORELEASE_POOL(pool);
+  BOOL background = ![NSThread isMainThread];
+  BOOL success = NO;
+  NSDictionary *result;
+
+  RETAIN(self);
+  [NSPrintOperation setCurrentOperation: self];
+  NS_DURING
     {
       if ([self _runOperation])
         success = [self deliverResult];
     }
-  [self cleanUpOperation];
+  NS_HANDLER
+    {
+      NSLog(@"Printing failed: %@", localException);
+    }
+  NS_ENDHANDLER
+  result = [NSDictionary dictionaryWithObjectsAndKeys:
+    NSNUMBER(success), @"success", context, @"context", nil];
+  if (background)
+    {
+      [NSPrintOperation setCurrentOperation: nil];
+      [self performSelectorOnMainThread: @selector(_finishModalOperation:)
+                             withObject: result waitUntilDone: NO];
+    }
+  else
+    [self _finishModalOperation: result];
+  RELEASE(self);
+  RELEASE(pool);
+}
+
+- (void) _finishModalOperation: (NSDictionary *)result
+{
+  id delegate;
+  SEL didRunSelector = NULL;
+  BOOL success = [[result objectForKey: @"success"] boolValue];
+  void *contextInfo = [[result objectForKey: @"context"] pointerValue];
+  NSMutableDictionary *dict;
+  void (*didRun)(id, SEL, NSPrintOperation *, BOOL, void *);
+
+  RETAIN(self);
+  [self _cleanUpAfterOperation];
   dict = [_print_info dictionary];
   [[dict objectForKey: @"GSModalRunSelector"] getValue: &didRunSelector];
-  delegate = [dict objectForKey: @"GSModalRunDelegate"];
+  delegate = RETAIN([dict objectForKey: @"GSModalRunDelegate"]);
+  [dict removeObjectForKey: @"GSModalRunSelector"];
+  [dict removeObjectForKey: @"GSModalRunDelegate"];
   if (delegate != nil && didRunSelector != NULL)
     {
       didRun = (void (*)(id, SEL, NSPrintOperation *, BOOL, void *))
         [delegate methodForSelector: didRunSelector];
-      didRun (delegate, didRunSelector, self, success, contextInfo);
+      NS_DURING
+        {
+          didRun (delegate, didRunSelector, self, success, contextInfo);
+        }
+      NS_HANDLER
+        {
+          NSLog(@"Print completion callback failed: %@", localException);
+        }
+      NS_ENDHANDLER
     }
+  RELEASE(delegate);
+  RELEASE(self);
 }
 
 

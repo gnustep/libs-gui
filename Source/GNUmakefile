@@ -227,6 +227,7 @@ NSPrinter.m \
 NSPrintInfo.m \
 NSPrintOperation.m \
 NSPrintPanel.m \
+GSPrintPanelAccessory.m \
 NSProgressIndicator.m \
 NSResponder.m \
 NSRotationGestureRecognizer.m \

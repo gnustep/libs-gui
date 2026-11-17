@@ -76,7 +76,9 @@ APPKIT_EXPORT_CLASS
       unsigned int show_print_panel:1;
       unsigned int show_progress_panel:1;
       unsigned int can_spawn_separate_thread:1;
-      unsigned int RESERVED:29;
+      unsigned int owns_output_file:1;
+      unsigned int modal_started:1;
+      unsigned int RESERVED:27;
   } _flags;
   int  _currentPage;
 }
@@ -181,6 +183,9 @@ APPKIT_EXPORT_CLASS
                     didRunSelector:(SEL)didRunSelector 
                        contextInfo:(void *)contextInfo;
 - (BOOL)canSpawnSeparateThread;
+/** Allow modal printing to render and deliver on a worker thread. This does
+    not change the synchronous behavior of -runOperation. The default GNUstep
+    implementation delivers modal completion callbacks on the main thread. */
 - (void)setCanSpawnSeparateThread:(BOOL)flag;
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_2, GS_API_LATEST)
@@ -210,6 +215,11 @@ APPKIT_EXPORT_CLASS
 // and use that to interface with the native printing system.
 //
 @interface NSPrintOperation (Private)
+
+/* Output ownership is explicit; a caller-supplied path is never removed. */
+- (void) _setOutputFile: (NSString *)path temporary: (BOOL)temporary;
+- (void) _setTemporaryOutputFileWithExtension: (NSString *)extension;
+- (void) _removeTemporaryOutputFile;
 
 - (id) initWithView:(NSView *)aView
          insideRect:(NSRect)rect
