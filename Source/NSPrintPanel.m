@@ -558,7 +558,8 @@ static NSPrintPanel *shared_instance = nil;
   [CONTROL(self, NSPPStatusField) setStringValue: @"Idle" ];
 
   /* Setup copies, page range, scale */
-  [CONTROL(self, NSPPCopiesField)  setIntValue: 1];
+  [CONTROL(self, NSPPCopiesField) setIntValue:
+    MAX(1, [[dict objectForKey: NSPrintCopies] intValue])];
   [[CONTROL(self, NSPPPageRangeFrom) cellAtIndex: 0] setStringValue: @"" ];
   [[CONTROL(self, NSPPPageRangeTo) cellAtIndex: 0] setStringValue: @"" ];
   [CONTROL(self, NSPPPageChoiceMatrix) selectCellAtRow: 0 column: 0];
@@ -591,8 +592,19 @@ static NSPrintPanel *shared_instance = nil;
   /* Setup the resolution popup */
   control = CONTROL(_optionPanel, NSPPResolutionButton);
   [control removeAllItems];
-  /* FIXME: Get default from printInfo? */
   str = [printer stringForKey:@"DefaultResolution" inTable: @"PPD"];
+  {
+    id features = [dict objectForKey: NSPrintJobFeatures];
+    id saved = nil;
+
+    if ([features isKindOfClass: [NSDictionary class]])
+      saved = [features objectForKey: @"Resolution"];
+    if ([saved isKindOfClass: [NSString class]]
+        && [saved hasPrefix: @"Resolution/"]
+        && [[printer stringListForKey: @"Resolution" inTable: @"PPD"]
+             containsObject: [saved substringFromIndex: 11]])
+      str = [saved substringFromIndex: 11];
+  }
   if (str)
     {
       NSArray *list;
@@ -633,6 +645,15 @@ static NSPrintPanel *shared_instance = nil;
   control = CONTROL(_optionPanel, NSPPPaperFeedButton);
   [control removeAllItems];
   str = [printer stringForKey:@"DefaultInputSlot" inTable: @"PPD"];
+  {
+    id saved = [dict objectForKey: NSPrintPaperFeed];
+
+    if ([saved isKindOfClass: [NSString class]]
+        && [saved hasPrefix: @"InputSlot/"]
+        && [[printer stringListForKey: @"InputSlot" inTable: @"PPD"]
+             containsObject: [saved substringFromIndex: 10]])
+      str = [saved substringFromIndex: 10];
+  }
   if (str)
     {
       NSString *manual;
@@ -666,6 +687,9 @@ static NSPrintPanel *shared_instance = nil;
 	  if (display == nil)
 	    display = str;
 	  [control selectItemWithTitle: display];
+	  if ([[dict objectForKey: NSPrintPaperFeed] isEqual: NSPrintManualFeed]
+	      && manual != nil)
+	    [control selectItemAtIndex: 0];
 	}
       else
 	{
@@ -692,14 +716,18 @@ static NSPrintPanel *shared_instance = nil;
   dict = [info dictionary];
   printer = [info printer];
   features = [dict objectForKey: NSPrintJobFeatures];
+  if ([features isKindOfClass: [NSDictionary class]])
+    {
+      features = [NSMutableDictionary dictionaryWithDictionary: features];
+      [dict setObject: features forKey: NSPrintJobFeatures];
+    }
+  else
+    features = nil;
 
   /* Copies */
   control = CONTROL(self, NSPPCopiesField);
-  if ([control intValue] > 1)
-    {
-      [dict setObject: NSNUMBER([control intValue]) 
-	       forKey: NSPrintCopies];
-    }
+  [control setIntValue: MAX(1, [control intValue])];
+  [dict setObject: NSNUMBER([control intValue]) forKey: NSPrintCopies];
 
   /* Pages */
   control = CONTROL(self, NSPPPageChoiceMatrix);
@@ -780,12 +808,19 @@ static NSPrintPanel *shared_instance = nil;
       def = [printer stringForKey:@"DefaultInputSlot" inTable: @"PPD"];
       if ([sel isEqual: _(@"Manual")] == YES)
 	{
+	  if (features == nil)
+	    {
+	      features = [NSMutableDictionary dictionary];
+	      [dict setObject: features forKey: NSPrintJobFeatures];
+	    }
+	  [features removeObjectForKey: @"InputSlot"];
+	  [features removeObjectForKey: NSPrintPaperFeed];
 	  [dict setObject: NSPrintManualFeed forKey: NSPrintPaperFeed];
 	  /* FIXME: This needs to be more robust. I'm just assuming
 	     that all Manual Feed keys can be True or False (which is
 	     the case for all the ppd files that I know of). */
 	  [dict setObject: @"ManualFeed/True" forKey: NSPrintManualFeed];
-	  [features setObject: @"ManualFeed/True" forKey: NSPrintPaperFeed];
+	  [features setObject: @"ManualFeed/True" forKey: @"ManualFeed"];
 	}
       else if ([sel isEqual: def] == NO
 	       || [dict objectForKey: NSPrintPaperFeed])
@@ -795,6 +830,11 @@ static NSPrintPanel *shared_instance = nil;
 	      features = [NSMutableDictionary dictionary];
 	      [dict setObject: features forKey: NSPrintJobFeatures];
 	    }
+	  [dict removeObjectForKey: NSPrintManualFeed];
+	  [features removeObjectForKey: NSPrintPaperFeed];
+	  [features removeObjectForKey: @"ManualFeed"];
+	  if (manual)
+	    [features setObject: @"ManualFeed/False" forKey: @"ManualFeed"];
 	  sel = [@"InputSlot/" stringByAppendingString: sel];
 	  [features setObject: sel forKey: @"InputSlot"];
 	  [dict setObject: sel forKey: NSPrintPaperFeed];

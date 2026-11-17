@@ -5,6 +5,8 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+static NSMutableDictionary *printAttributes;
+static NSArray *taskArguments;
 static NSString *disposition;
 static BOOL accepted;
 static BOOL useViewer;
@@ -19,6 +21,7 @@ static int spoolCalls;
 - (id) printer;
 - (NSString *) name;
 - (NSDictionary *) dictionary;
+- (NSArray *) stringListForKey: (NSString *)key inTable: (NSString *)table;
 
 @end
 
@@ -41,7 +44,20 @@ static int spoolCalls;
 
 - (NSDictionary *) dictionary
 {
-  return [NSDictionary dictionary];
+  return printAttributes;
+}
+
+- (NSArray *) stringListForKey: (NSString *)key inTable: (NSString *)table
+{
+  if ([key isEqual: @"Resolution"])
+    return [NSArray arrayWithObjects: @"300dpi", @"600dpi", nil];
+  if ([key isEqual: @"InputSlot"])
+    return [NSArray arrayWithObjects: @"Upper", @"Lower", nil];
+  if ([key isEqual: @"ManualFeed"])
+    return [NSArray arrayWithObjects: @"True", @"False", nil];
+  if ([key isEqual: @"Duplex"])
+    return [NSArray arrayWithObjects: @"None", @"DuplexNoTumble", nil];
+  return nil;
 }
 
 @end
@@ -101,6 +117,7 @@ static DeliverySettings *settings;
 
 - (void) setArguments: (NSArray *)arguments
 {
+  ASSIGNCOPY(taskArguments, arguments);
 }
 
 - (void) launch
@@ -151,10 +168,56 @@ DeliveryAlert(NSString *title, NSString *message, NSString *defaultButton,
 #ifdef TEST_CUPS
 #include <cups/cups.h>
 
+static NSMutableDictionary *submittedOptions;
+static int optionsFreed;
+
+/* Keep the CUPS transport mocked, including option storage, so these tests
+   need headers but neither libcups nor a running server. */
+static int
+DeliveryCUPSAddOption(const char *name, const char *value, int count,
+                      cups_option_t **options)
+{
+  int i;
+
+  for (i = 0; i < count; i++)
+    if (strcmp((*options)[i].name, name) == 0)
+      break;
+  if (i == count)
+    {
+      *options = realloc(*options, (count + 1) * sizeof(cups_option_t));
+      (*options)[i].name = strdup(name);
+      (*options)[i].value = NULL;
+      count++;
+    }
+  free((*options)[i].value);
+  (*options)[i].value = strdup(value);
+  return count;
+}
+
+static void
+DeliveryCUPSFreeOptions(int count, cups_option_t *options)
+{
+  int i;
+
+  for (i = 0; i < count; i++)
+    {
+      free(options[i].name);
+      free(options[i].value);
+    }
+  free(options);
+  optionsFreed++;
+}
+
 static int
 DeliveryCUPSPrintFile(const char *name, const char *path, const char *title,
                       int count, cups_option_t *options)
 {
+  int i;
+
+  [submittedOptions removeAllObjects];
+  for (i = 0; i < count; i++)
+    [submittedOptions setObject: [NSString stringWithUTF8String: options[i].value]
+                         forKey: [NSString stringWithUTF8String: options[i].name]];
   return accepted ? 42 : 0;
 }
 
@@ -168,7 +231,11 @@ DeliveryCUPSError(void)
 #define GSCUPSPrintOperation DeliveryCUPSOperation
 #define cupsPrintFile DeliveryCUPSPrintFile
 #define cupsLastErrorString DeliveryCUPSError
+#define cupsAddOption DeliveryCUPSAddOption
+#define cupsFreeOptions DeliveryCUPSFreeOptions
 #include "../../../Printing/GSCUPS/GSCUPSPrintOperation.m"
+#undef cupsFreeOptions
+#undef cupsAddOption
 #undef cupsLastErrorString
 #undef cupsPrintFile
 #undef GSCUPSPrintOperation
@@ -264,6 +331,7 @@ main(void)
   TestLPROperation *lpr;
 
   settings = [[DeliverySettings alloc] init];
+  printAttributes = [[NSMutableDictionary alloc] init];
   operation = [[TestDeliveryOperation alloc] init];
   disposition = NSPrintSpoolJob;
   accepted = NO;
@@ -300,6 +368,13 @@ main(void)
   toolFound = YES;
   exitStatus = 0;
   PASS([lpr _deliverSpooledResult] == YES, "lpr exit zero succeeds");
+  [printAttributes setObject: [NSNumber numberWithInt: 3] forKey: NSPrintCopies];
+  PASS([lpr _deliverSpooledResult] && [taskArguments containsObject: @"-#3"],
+       "LPR submits the selected copy count");
+  [printAttributes setObject: [NSNumber numberWithInt: 1] forKey: NSPrintCopies];
+  PASS([lpr _deliverSpooledResult] && ![taskArguments containsObject: @"-#3"],
+       "LPR does not reuse the previous copy count");
+  [printAttributes removeAllObjects];
   exitStatus = 9;
   PASS([lpr _deliverSpooledResult] == NO, "lpr nonzero exit fails");
   launchFails = YES;
@@ -311,10 +386,61 @@ main(void)
   START_SET("CUPS delivery results")
 #ifdef TEST_CUPS
   TestCUPSOperation *cups = [[TestCUPSOperation alloc] init];
+  NSMutableDictionary *features = [NSMutableDictionary dictionary];
+  submittedOptions = [[NSMutableDictionary alloc] init];
   accepted = NO;
   PASS([cups _deliverSpooledResult] == NO, "CUPS job rejection fails");
   accepted = YES;
   PASS([cups _deliverSpooledResult] == YES, "CUPS job acceptance succeeds");
+  PASS([[submittedOptions objectForKey: @"copies"] isEqual: @"1"],
+       "CUPS defaults to one copy");
+  PASS(optionsFreed == 2, "CUPS options are freed on success and failure");
+
+  [printAttributes setObject: [NSNumber numberWithInt: 3] forKey: NSPrintCopies];
+  [printAttributes setObject: [NSNumber numberWithBool: YES] forKey: NSPrintMustCollate];
+  [printAttributes setObject: @"A4" forKey: NSPrintPaperName];
+  [features setObject: @"Resolution/600dpi" forKey: @"Resolution"];
+  [features setObject: @"InputSlot/Lower" forKey: @"InputSlot"];
+  [features setObject: @"Duplex/DuplexNoTumble" forKey: @"Duplex"];
+  [printAttributes setObject: features forKey: NSPrintJobFeatures];
+  [printAttributes setObject: [NSNumber numberWithInt: 4] forKey: NSPrintPagesPerSheet];
+  [printAttributes setObject: [NSNumber numberWithInt: 2] forKey: NSPrintFirstPage];
+  [printAttributes setObject: [NSNumber numberWithInt: 6] forKey: NSPrintLastPage];
+  [printAttributes setObject: [NSNumber numberWithBool: YES] forKey: NSPrintReversePageOrder];
+  [printAttributes setObject: [NSNumber numberWithDouble: 0.5] forKey: NSPrintScalingFactor];
+  [printAttributes setObject: [NSNumber numberWithInt: NSLandscapeOrientation] forKey: NSPrintOrientation];
+  PASS([cups _deliverSpooledResult], "CUPS accepts a configured job");
+  PASS([[submittedOptions objectForKey: @"copies"] isEqual: @"3"], "CUPS receives copies");
+  PASS([[submittedOptions objectForKey: @"Collate"] isEqual: @"True"], "CUPS receives collation");
+  PASS([[submittedOptions objectForKey: @"PageSize"] isEqual: @"A4"], "CUPS receives named media");
+  PASS([[submittedOptions objectForKey: @"Resolution"] isEqual: @"600dpi"], "CUPS receives resolution");
+  PASS([[submittedOptions objectForKey: @"InputSlot"] isEqual: @"Lower"], "CUPS receives paper tray");
+  PASS([[submittedOptions objectForKey: @"Duplex"] isEqual: @"DuplexNoTumble"], "CUPS receives a supported PPD feature");
+  PASS([submittedOptions count] == 6, "rendered layout settings are not forwarded");
+
+  [features setObject: @"Resolution/999dpi" forKey: @"Resolution"];
+  [features setObject: @"InputSlot/" forKey: @"InputSlot"];
+  [features setObject: @"Duplex" forKey: @"Duplex"];
+  [features setObject: [NSNumber numberWithInt: 3] forKey: @"Invalid"];
+  [features setObject: @"number-up/4" forKey: @"Layout"];
+  [printAttributes setObject: [NSNumber numberWithInt: -5] forKey: NSPrintCopies];
+  [printAttributes setObject: [NSNumber numberWithBool: NO] forKey: NSPrintMustCollate];
+  PASS([cups _deliverSpooledResult], "malformed optional features do not crash submission");
+  PASS([[submittedOptions objectForKey: @"copies"] isEqual: @"1"], "invalid copies normalize to one");
+  PASS([[submittedOptions objectForKey: @"Collate"] isEqual: @"False"], "collation can be disabled");
+  PASS([submittedOptions count] == 3, "unsupported and malformed PPD choices are excluded");
+
+  [printAttributes removeAllObjects];
+  [printAttributes setObject: NSPrintManualFeed forKey: NSPrintPaperFeed];
+  PASS([cups _deliverSpooledResult], "manual-feed job is submitted");
+  PASS([[submittedOptions objectForKey: @"ManualFeed"] isEqual: @"True"], "manual feed is translated");
+  [printAttributes setObject: @"InputSlot/Upper" forKey: NSPrintPaperFeed];
+  PASS([cups _deliverSpooledResult], "tray job is submitted");
+  PASS([[submittedOptions objectForKey: @"InputSlot"] isEqual: @"Upper"], "paper-feed reference is translated");
+  PASS([submittedOptions objectForKey: @"ManualFeed"] == nil, "options do not leak between submissions");
+  [printAttributes setObject: @"bad features" forKey: NSPrintJobFeatures];
+  PASS_RUNS([cups _deliverSpooledResult];, "malformed feature dictionary is ignored");
+  RELEASE(submittedOptions);
   RELEASE(cups);
 #else
   SKIP("CUPS development headers are unavailable");
@@ -324,6 +450,8 @@ main(void)
   RELEASE(lpr);
   RELEASE(operation);
   RELEASE(settings);
+  RELEASE(printAttributes);
+  RELEASE(taskArguments);
   END_SET("Print delivery results")
   return 0;
 }
