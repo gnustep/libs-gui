@@ -2304,6 +2304,9 @@ static void autoresize(CGFloat oldContainerSize,
              a superview so we get printed correctly */
           [self _matrixToWindow];
           [_matrixToWindow makeIdentityMatrix];
+          /* Keep both directions consistent for coordinate conversions such
+             as centerScanRect: while drawing the printed view. */
+          [_matrixFromWindow makeIdentityMatrix];
         }
       else
         {
