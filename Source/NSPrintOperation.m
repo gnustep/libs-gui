@@ -36,6 +36,7 @@
 #include <limits.h>
 #include <math.h>
 #include "config.h"
+#import <Foundation/NSArray.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSData.h>
@@ -69,9 +70,7 @@
 /*
  * When a view gets printed it may need to be split up into segments, if the 
  * views printed rectangle (after scaling) is bigger than the used area on the page.
- * In this case we set xpages and ypages to the number of segments needed per 
- * dimension. This pre-calculated value may not be accurate, as the view may 
- * adjust the rect for each printed page.
+ * Page boundaries are adjusted by the view and cached before output begins.
  * An independent concept is that multuple pages may be put on one sheet of paper.
  * This is taken care of by nup and nupScale. Here we currently only allow even 
  * values (or 1, when we don't use multiple pages). If we ever change this be 
@@ -88,13 +87,11 @@ typedef struct _page_info_t {
                                 rotated if printing Landscape */
   NSRect sheetBounds;        /* Print area of a sheet in default user space */
   NSSize paperSize;          /* Size of the paper */
-  int xpages, ypages;        /* number of page segments for the view in both dimensions */
   int first, last;           /* first and last page to print */
   double pageScale;          /* Scaling determined from page fitting */
   double printScale;         /* User specified scaling */
   double nupScale;           /* Scale required to fit nup pages on the sheet */
   int    nup;                /* Number of pages to print on a sheet */
-  double lastWidth, lastHeight; /* max. values of last printed page (scaled) */
   NSPrintingOrientation orient;
   int    pageDirection;      /* NSPrintPageDirection */
 } page_info_t;
@@ -111,12 +108,7 @@ typedef struct _page_info_t {
 - (void) _cleanUpAfterOperation;
 - (void) _printPaginateWithInfo: (page_info_t *)info 
                      knowsRange: (BOOL)knowsRange;
-- (NSRect) _rectForPage: (int)page info: (page_info_t *)info 
-                  xpage: (int *)xptr
-                  ypage: (int *)yptr;
-- (NSRect) _adjustPagesFirst: (int)first 
-                        last: (int)last
-                        info: (page_info_t *)info;
+- (NSArray *) _pageRectsWithInfo: (page_info_t *)info;
 - (void) _print;
 @end
 
@@ -985,10 +977,8 @@ scaleRect(NSRect rect, double scale)
 }
 
 /* 
- * Pagination - guess how many pages we need to print. This could be off
- * in both X and Y because of the view's ability to adjust the width and 
- * height of the printRect during printing. 
- * Also set up a bunch of other information needed for printing.
+ * Set up printable bounds, scaling and sheet layout.  Automatic page
+ * boundaries are calculated separately, after applying these settings.
  */
 - (void) _printPaginateWithInfo: (page_info_t *)info knowsRange: (BOOL)knowsRange
 {
@@ -1046,7 +1036,7 @@ scaleRect(NSRect rect, double scale)
   info->scaledBounds = scaleRect(_rect, info->printScale);
   info->pageScale = 1; // default
 
-  if (knowsRange == NO)
+  if (knowsRange == NO && !NSIsEmptyRect(_rect))
     {
       /* Now calculate page fitting to get page scale */
       if ([_print_info horizontalPagination] == NSFitPagination)
@@ -1057,14 +1047,6 @@ scaleRect(NSRect rect, double scale)
           NSHeight(info->paperBounds)/NSHeight(info->scaledBounds));
       /* Scale bounds by pageScale */
       info->scaledBounds = scaleRect(info->scaledBounds, info->pageScale);
-
-      /* Now find out how many pages */
-      info->xpages = ceil(NSWidth(info->scaledBounds)/NSWidth(info->paperBounds));
-      info->ypages = ceil(NSHeight(info->scaledBounds)/NSHeight(info->paperBounds));
-      if ([_print_info horizontalPagination] == NSClipPagination)
-        info->xpages = 1;
-      if ([_print_info verticalPagination] == NSClipPagination)
-        info->ypages = 1;
     }
 
   /*
@@ -1099,77 +1081,84 @@ scaleRect(NSRect rect, double scale)
     info->pageDirection = 0;
 }
 
-/* Our personnel method to calculate the print rect for the specified page.
-   Note, we assume this function is called in order from our first to last
-   page. The returned pageRect is in the view's coordinate system
-*/
-- (NSRect) _rectForPage: (int)page info: (page_info_t *)info 
-                  xpage: (int *)xptr
-                  ypage: (int *)yptr
+/* Compute the adjusted boundaries before selecting or ordering pages.  Width
+   and height adjustment are independent axes in the NSView pagination API. */
+- (NSArray *) _pageRectsWithInfo: (page_info_t *)info
 {
-  int xpage, ypage;
-  NSRect pageRect;
+  NSMutableArray *axes[2];
+  NSMutableArray *pages = [NSMutableArray array];
+  CGFloat scale = info->pageScale * info->printScale;
+  int axis;
+  NSUInteger outer, inner;
 
-  if (info->pageDirection == 1)
+  if (NSIsEmptyRect(_rect))
+    return pages;
+  for (axis = 0; axis < 2; axis++)
     {
-      xpage = (page - 1) / info->ypages;
-      ypage = (page - 1) % info->ypages;
-    }
-  else
-    {
-      xpage = (page - 1) % info->xpages;
-      ypage = (page - 1) / info->xpages;
-    }
-  *xptr = xpage;
-  *yptr = ypage;
-  if (xpage == 0)
-    info->lastWidth = 0;
-  if (ypage == 0)
-    info->lastHeight = 0;
-  pageRect = NSMakeRect(info->lastWidth, info->lastHeight,
-                        NSWidth(info->paperBounds), NSHeight(info->paperBounds));
-  pageRect = NSIntersectionRect(pageRect, info->scaledBounds);
-  /* Scale to view's coordinate system */
-  return scaleRect(pageRect, 1/(info->pageScale*info->printScale));
-  
-}
+      CGFloat position = axis == 0 ? NSMinX(_rect) : NSMinY(_rect);
+      CGFloat end = axis == 0 ? NSMaxX(_rect) : NSMaxY(_rect);
+      CGFloat step = (axis == 0 ? NSWidth(info->paperBounds)
+                                : NSHeight(info->paperBounds)) / scale;
+      CGFloat fraction = axis == 0 ? [_view widthAdjustLimit]
+                                    : [_view heightAdjustLimit];
+      NSPrintingPaginationMode mode = axis == 0
+        ? [_print_info horizontalPagination] : [_print_info verticalPagination];
 
-/* Let the view adjust the page rect we calculated. See assumptions for
-   _rectForPage:
-*/
-- (NSRect) _adjustPagesFirst: (int)first 
-                        last: (int)last 
-                        info: (page_info_t *)info
-{
-  int i, xpage, ypage;
-  double hlimit, wlimit;
-  NSRect pageRect = NSZeroRect; /* Silence compiler warning.  */
-  hlimit = [_view heightAdjustLimit];
-  wlimit = [_view widthAdjustLimit];
-  for (i = first; i <= last; i++)
-    {
-      CGFloat newVal, limitVal;
-      pageRect = [self _rectForPage: i info: info xpage: &xpage ypage: &ypage];
-      limitVal = NSMaxY(pageRect) - hlimit * NSHeight(pageRect);
-      [_view adjustPageHeightNew: &newVal
-                             top: NSMinY(pageRect)
-                          bottom: NSMaxY(pageRect)
-                           limit: limitVal];
-      if (newVal < NSMaxY(pageRect))
-        pageRect.size.height = MAX(newVal, limitVal) - NSMinY(pageRect);
-      limitVal = NSMaxX(pageRect) - wlimit * NSWidth(pageRect);
-      [_view adjustPageWidthNew: &newVal
-                           left: NSMinX(pageRect)
-                          right: NSMaxX(pageRect)
-                           limit: limitVal];
-      if (newVal < NSMaxX(pageRect))
-        pageRect.size.width = MAX(newVal, limitVal) - NSMinX(pageRect);
-      if (info->pageDirection == 0 || ypage == info->ypages - 1)
-        info->lastWidth = NSMaxX(pageRect)*(info->pageScale*info->printScale);
-      if (info->pageDirection == 1 || xpage == info->xpages - 1)
-        info->lastHeight = NSMaxY(pageRect)*(info->pageScale*info->printScale);
+      axes[axis] = [NSMutableArray array];
+      fraction = MAX(0, MIN(1, fraction));
+      if (!isfinite(step) || step <= 0)
+        [NSException raise: NSInvalidArgumentException
+                    format: @"Invalid printable page size or print scale"];
+      while (position < end)
+        {
+          CGFloat proposed = MIN(end, position + step);
+          CGFloat adjusted = proposed;
+          CGFloat limit = proposed - fraction * (proposed - position);
+          NSRect segment = NSZeroRect;
+
+          if (mode != NSAutoPagination)
+            adjusted = proposed;
+          else if (axis == 0)
+            [_view adjustPageWidthNew: &adjusted left: position
+                                right: proposed limit: limit];
+          else
+            [_view adjustPageHeightNew: &adjusted top: position
+                                 bottom: proposed limit: limit];
+          /* A view must not prevent pagination from making progress. */
+          if (!isfinite(adjusted) || adjusted <= position)
+            adjusted = proposed;
+          adjusted = MIN(proposed, MAX(limit, adjusted));
+          if (adjusted <= position)
+            [NSException raise: NSInvalidArgumentException
+                        format: @"Page boundary does not advance"];
+          if (axis == 0)
+            segment = NSMakeRect(position, 0, adjusted - position, 0);
+          else
+            segment = NSMakeRect(0, position, 0, adjusted - position);
+          [axes[axis] addObject: [NSValue valueWithRect: segment]];
+          position = adjusted;
+          if (mode == NSClipPagination || mode == NSFitPagination)
+            break;
+        }
     }
-  return pageRect;
+
+  if ([axes[0] count] > INT_MAX / [axes[1] count])
+    [NSException raise: NSInvalidArgumentException
+                format: @"Too many pages in print operation"];
+  for (outer = 0; outer < [axes[info->pageDirection == 1 ? 0 : 1] count]; outer++)
+    {
+      for (inner = 0; inner < [axes[info->pageDirection == 1 ? 1 : 0] count]; inner++)
+        {
+          NSRect x = [[axes[0] objectAtIndex:
+            info->pageDirection == 1 ? outer : inner] rectValue];
+          NSRect y = [[axes[1] objectAtIndex:
+            info->pageDirection == 1 ? inner : outer] rectValue];
+
+          [pages addObject: [NSValue valueWithRect:
+            NSMakeRect(x.origin.x, y.origin.y, x.size.width, y.size.height)]];
+        }
+    }
+  return pages;
 }
 
 - (void) _print
@@ -1180,6 +1169,7 @@ scaleRect(NSRect rect, double scale)
   NSMutableDictionary *dict;
   NSNumber *value;
   page_info_t info;
+  NSArray *pageRects = nil;
   
   dict = [_print_info dictionary];
 
@@ -1188,13 +1178,8 @@ scaleRect(NSRect rect, double scale)
   [self _printPaginateWithInfo: &info knowsRange: knowsPageRange];
   if (knowsPageRange == NO)
     {
-      viewPageRange = NSMakeRange(1, (info.xpages * info.ypages));
-    }
-  else
-    {
-      // These values never get used
-      info.xpages = 1;
-      info.ypages = viewPageRange.length;
+      pageRects = [self _pageRectsWithInfo: &info];
+      viewPageRange = NSMakeRange(1, [pageRects count]);
     }
 
   [dict setObject: NSNUMBER(viewPageRange.length)
@@ -1231,10 +1216,7 @@ scaleRect(NSRect rect, double scale)
     }
   [dict setObject: NSFNUMBER(info.nupScale) forKey: @"NSNupScale"];
   [dict setObject: NSNUMBER(info.first) forKey: NSPrintFirstPage];
-  if (allPages == YES && knowsPageRange == NO)
-    [dict setObject: NSNUMBER(info.first-1) forKey: NSPrintLastPage];
-  else
-    [dict setObject: NSNUMBER(info.last) forKey: NSPrintLastPage];
+  [dict setObject: NSNUMBER(info.last) forKey: NSPrintLastPage];
   NSDebugLLog(@"NSPrinting", @"Printing pages %d to %d", 
               info.first, info.last);
   NSDebugLLog(@"NSPrinting", @"Printing rect %@, scaled %@",
@@ -1252,21 +1234,6 @@ scaleRect(NSRect rect, double scale)
       dir = 1;
     }
 
-  /*
-   * FIXME: Independent of the page order we could pre-calculate the
-   * pageRects for all pages up to last (including clipping adjustment) 
-   * and use them when printing. 
-   */
-  info.lastWidth = info.lastHeight = 0;
-  if (!knowsPageRange && dir > 0 && _currentPage != 1)
-    {
-      /* Calculate page rects we aren't processing to catch up to the
-         first page we are */
-      [self _adjustPagesFirst: 1
-                         last: _currentPage - 1 
-                         info: &info];
-    }
-
   /* Print the header information */
   [_view beginDocument];
 
@@ -1282,14 +1249,7 @@ scaleRect(NSRect rect, double scale)
         }
       else
         {
-          if (dir < 0)
-            pageRect = [self _adjustPagesFirst: 1 
-                                          last: _currentPage 
-                                          info: &info];
-          else
-            pageRect = [self _adjustPagesFirst: _currentPage 
-                                          last: _currentPage 
-                                          info: &info];
+          pageRect = [[pageRects objectAtIndex: _currentPage - 1] rectValue];
         }
 
       NSDebugLLog(@"NSPrinting", @" current page %d, rect %@", 
@@ -1302,24 +1262,6 @@ scaleRect(NSRect rect, double scale)
 	     withInfo: info
 	     knowsPageRange: knowsPageRange];
              
-      // We could end up in this case for each row/column not just the lase page.
-      if (!knowsPageRange && dir > 0 && _currentPage == info.last && allPages == YES)
-        {
-          /* Check if adjust pages forced part of the bounds onto 
-             another page */
-          if (NSMaxX(pageRect) < NSMaxX(_rect) 
-              && [_print_info horizontalPagination] != NSClipPagination)
-            {
-              info.xpages++;
-            }
-          if (NSMaxY(pageRect) < NSMaxY(_rect)
-              && [_print_info verticalPagination] != NSClipPagination)
-            {
-              info.ypages++;
-            }
-          viewPageRange = NSMakeRange(1, (info.xpages * info.ypages));
-          info.last = NSMaxRange(viewPageRange) - 1;
-        }
       i++;
       _currentPage += dir;
     } /* Print each page */

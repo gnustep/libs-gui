@@ -4368,9 +4368,9 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 	    oLimit = ([self convertPoint: aPoint  toView: o]).x;
 	  }
 
-	  [o adjustPageHeightNew: &oRight
-	     top: oLeft
-	     bottom: oRight
+	  [o adjustPageWidthNew: &oRight
+	     left: oLeft
+	     right: oRight
 	     limit: oLimit];
 
 	  {
