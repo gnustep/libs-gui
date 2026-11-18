@@ -42,6 +42,8 @@
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSWindowController.h"
 
+#import "GSStoryboardArchive.h"
+
 @implementation NSViewController
 
 /* Weak association from a view back to its controller, so the view can drive
@@ -88,6 +90,7 @@ static void *viewControllerAssociationKey = &viewControllerAssociationKey;
   DESTROY(_designNibBundleIdentifier);
   [self setView: nil];
   DESTROY(_segueMap);
+  DESTROY(_storyboard);
 
   [super dealloc];
 }
@@ -314,10 +317,11 @@ static void *viewControllerAssociationKey = &viewControllerAssociationKey;
 - (void) performSegueWithIdentifier: (NSStoryboardSegueIdentifier)identifier
 			     sender: (id)sender
 {
-  NSStoryboardSegue *segue = [_segueMap objectForKey: identifier];
-  [self prepareForSegue: segue
-		 sender: sender];
-  [segue perform];
+  GSStoryboardSegueAction *action = [_segueMap objectForKey: identifier];
+  if (action == nil)
+    [NSException raise: NSInvalidArgumentException
+                format: @"No storyboard segue with identifier %@", identifier];
+  [action performWithSender: sender];
 }
 
 - (void) prepareForSegue: (NSStoryboardSegue *)segue
