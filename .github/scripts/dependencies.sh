@@ -31,6 +31,10 @@ install_libobjc2() {
     cd $DEPS_PATH
     git clone -q https://github.com/gnustep/libobjc2.git
     cd libobjc2
+    # Keep CI on the last runtime before 0fbb659 changed object_setClass to
+    # inspect the old class of libs-base's uninitialized stack strings.
+    # Remove this pin once that Base/runtime incompatibility is fixed.
+    git checkout --detach a21ae931e4c186312701d7a4a8e85204955965a6
     git submodule sync
     git submodule update --init
     mkdir build

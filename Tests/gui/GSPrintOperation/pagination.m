@@ -167,7 +167,14 @@ main(void)
   CGFloat right;
 
   START_SET("Automatic pagination")
-  [NSApplication sharedApplication];
+  NS_DURING
+    [NSApplication sharedApplication];
+  NS_HANDLER
+    if ([[localException name] isEqual: NSInternalInconsistencyException])
+      SKIP("A GUI backend and display are required");
+    [localException raise];
+  NS_ENDHANDLER
+
   checkPages(NSMakeRect(250, 350, 200, 200), 1, 0, NO, NO, 0, 0, NSAutoPagination, NSAutoPagination);
   checkPages(NSMakeRect(-250, -350, 200, 200), 1, 0, NO, NO, 0, 0, NSAutoPagination, NSAutoPagination);
   checkPages(NSMakeRect(0, 0, 200, 200), 1, 90, NO, NO, 0, 0, NSAutoPagination, NSAutoPagination);
