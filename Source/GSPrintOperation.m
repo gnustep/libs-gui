@@ -239,14 +239,14 @@
                         forExtension: [_path pathExtension]];
       if (preview)
         {
-          if (_flags.owns_output_file)
-            {
-              success = [ws openTempFile: _path];
-              if (success)
-                _flags.owns_output_file = NO;
-            }
-          else
-            success = [ws openFile: _path withApplication: preview];
+          /* openTempFile: deletes the source as soon as the receiving
+             application's open-file handler returns. Viewers such as GSPdf
+             still need it for asynchronous rendering and subsequent pages.
+             Workspace provides no document-close notification, so leave a
+             successful preview in the temporary directory for the viewer. */
+          success = [ws openFile: _path withApplication: preview];
+          if (success)
+            _flags.owns_output_file = NO;
           if (success == NO)
             {
               NSString *status = [NSString stringWithFormat:

@@ -4579,8 +4579,11 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (NSAttributedString *) pageHeader
 {
+  NSPrintOperation *operation = [NSPrintOperation currentOperation];
+  NSString *title = operation != nil ? [operation jobTitle] : [self printJobTitle];
+
   return [[[NSAttributedString alloc] initWithString: 
-		  [NSString stringWithFormat:@"%@ %@", [self printJobTitle], 
+		  [NSString stringWithFormat:@"%@ %@", title,
 			    [[NSCalendarDate calendarDate] description]]] autorelease];
 }
 
@@ -4637,7 +4640,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 		    fonts: nil
 	          forWhom: NSUserName()
 		    pages: pages
-	            title: [self printJobTitle]];
+	            title: [printOp jobTitle]];
   [self endHeaderComments];
 
   [ctxt printerProlog];

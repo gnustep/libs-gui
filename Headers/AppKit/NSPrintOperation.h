@@ -151,6 +151,10 @@ APPKIT_EXPORT_CLASS
 - (BOOL)showsProgressPanel;
 - (void)setShowsProgressPanel:(BOOL)flag;
 #endif
+#if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
+- (NSString *)jobTitle;
+- (void)setJobTitle:(NSString *)title;
+#endif
 
 #if OS_API_VERSION(GS_API_MACOSX, GS_API_LATEST)
 - (NSView *)accessoryView;

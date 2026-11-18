@@ -423,6 +423,7 @@ GSPrintLabel(NSView *parent, NSString *text, NSRect frame)
       [NSPrintOperation setCurrentOperation: nil];
       operation = [[GSPrintPanelPDFOperation alloc] initWithView: [current view]
         insideRect: [current _printingRect] toPath: path printInfo: info];
+      [operation setJobTitle: [current jobTitle]];
       if ([operation runOperation])
         pdf = [[NSPDFImageRep alloc] initWithData: [NSData dataWithContentsOfFile: path]];
     }

@@ -626,6 +626,30 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   ASSIGN(_job_style_hint, hint);
 }
 
+/** Return the custom job title, or the printing view's title. */
+- (NSString *)jobTitle
+{
+  NSString *title = [[_print_info dictionary] objectForKey: @"GSPrintJobTitle"];
+
+  return title != nil ? title : [_view printJobTitle];
+}
+
+/** Copy a custom title. Passing nil restores the printing view's title. */
+- (void)setJobTitle:(NSString *)title
+{
+  /* Keep this in the operation's private copy of the print settings to avoid
+     changing the instance layout used by printing bundles. */
+  if (title != nil)
+    {
+      NSString *copy = [title copy];
+
+      [[_print_info dictionary] setObject: copy forKey: @"GSPrintJobTitle"];
+      RELEASE(copy);
+    }
+  else
+    [[_print_info dictionary] removeObjectForKey: @"GSPrintJobTitle"];
+}
+
 //
 // Getting the NSPrintInfo Object
 //
@@ -640,10 +664,15 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
  */
 - (void)setPrintInfo:(NSPrintInfo *)aPrintInfo
 {
+  NSString *title = RETAIN([[_print_info dictionary]
+    objectForKey: @"GSPrintJobTitle"]);
+
   if (aPrintInfo == nil)
     aPrintInfo = [NSPrintInfo sharedPrintInfo];
 
   ASSIGNCOPY(_print_info, aPrintInfo);
+  [self setJobTitle: title];
+  RELEASE(title);
 }
 
 //

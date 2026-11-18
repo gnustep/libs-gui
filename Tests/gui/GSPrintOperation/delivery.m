@@ -98,6 +98,9 @@ static DeliverySettings *settings;
 - (BOOL) openTempFile: (NSString *)path
 {
   openedTemporaryFile = YES;
+  /* Model the receiving application's temporary-file handling. A lazy
+     viewer cannot read this source again after its open handler returns. */
+  [[NSFileManager defaultManager] removeFileAtPath: path handler: nil];
   return accepted;
 }
 
@@ -428,10 +431,11 @@ main(void)
     accepted = YES;
     [operation _setOutputFile: path temporary: YES];
     [manager createFileAtPath: path contents: contents attributes: nil];
-    PASS([operation deliverResult] && openedTemporaryFile,
-         "workspace preview uses the temporary-file ownership contract");
+    PASS([operation deliverResult] && !openedTemporaryFile,
+         "workspace preview opens the source without immediate deletion");
     [operation _removeTemporaryOutputFile];
-    PASS([manager fileExistsAtPath: path], "workspace owns the file after successful handoff");
+    PASS_EQUAL([NSData dataWithContentsOfFile: path], contents,
+         "preview source remains readable after successful handoff and cleanup");
     [manager removeFileAtPath: path handler: nil];
 
     useViewer = NO;
