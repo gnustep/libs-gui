@@ -1197,7 +1197,7 @@ scaleRect(NSRect rect, double scale)
       info.ypages = viewPageRange.length;
     }
 
-  [dict setObject: NSNUMBER(NSMaxRange(viewPageRange))
+  [dict setObject: NSNUMBER(viewPageRange.length)
            forKey: @"NSPrintTotalPages"];
   value = [dict objectForKey: NSPrintAllPages];
   if (value != nil)
@@ -1388,12 +1388,6 @@ scaleRect(NSRect rect, double scale)
           DPStranslate(ctxt, 0, -info.paperSize.height);
         }
       
-      if (!knowsPageRange)
-	{
-	  /* Also offset by margins */
-	  DPStranslate(ctxt, NSMinX(info.paperBounds), NSMinY(info.paperBounds));
-	}
-
       /* End page setup for multi page */
       if (info.nup != 1)
         {
@@ -1403,6 +1397,9 @@ scaleRect(NSRect rect, double scale)
     }
 
   scale = info.pageScale * info.printScale;
+  /* The view supplies a position in paper coordinates. The default
+     implementation includes margins; adding them here would double them
+     and would also displace an application's explicit placement override. */
   location = [self locationOfPrintRect: scaleRect(pageRect, scale)];
 
   /* Begin a logical page */
