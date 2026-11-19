@@ -16,6 +16,12 @@
 	* Tests/gui/GSPrintOperation/jobTitle.m: Test title handling and
 	printing a long text document across multiple pages.
 
+2026-11-15 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSLayoutManager.m: Only execute _sanityChecks when
+	GSLAYOUTMANAGER_SANITY_CHECKS is defined.
+	Idea by Daniel Boyd <danieljboyd@icloud.com>.
+
 2026-11-06 Daniel Boyd <danieljboyd@icloud.com>
 
 	* Source/NSControl.m (-setEnabled:): Do nothing when the state is
@@ -44,6 +50,7 @@
 	* Documentation/GuiUser/DefaultsSummary.gsdoc: Describe the new
 	default.
 	* Tests/gui/NSMenuView/aim_triangle.m: New regression test.
+
 2026-10-24  Simon Peter <probonopd@users.noreply.github.com>
 
 	* Source/GSToolbarCustomizationPalette.m
