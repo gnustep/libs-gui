@@ -60,28 +60,6 @@
 }
 
 
-- (id)initWithView:(NSView *)aView
-         printInfo:(NSPrintInfo *)aPrintInfo
-{
-  self = [super initWithView: aView
-                   printInfo: aPrintInfo];
-  if (self == nil)
-    return nil;
-
-  _path = [NSTemporaryDirectory()
-	    stringByAppendingPathComponent: @"GSLPRPrintJob-"];
-  
-  _path = [_path stringByAppendingString: 
-		       [[NSProcessInfo processInfo] globallyUniqueString]];
-           
-  _path = [_path stringByAppendingPathExtension: @"ps"];
-  
-  RETAIN(_path);
-  
-  return self;
-}
-
-
 - (BOOL) _deliverSpooledResult
 {
   int copies;
@@ -117,7 +95,7 @@
       return NO;
     }
 
-  task = [NSTask new];
+  task = [[NSTask alloc] init];
   [task setLaunchPath: lprPath];
   [task setArguments: args];
   NS_DURING
@@ -128,13 +106,23 @@
   NS_HANDLER
   {
     NSString *errmsg = [NSString stringWithFormat: _(@"Spooling failed: %@"), [localException reason]];
-    NSRunAlertPanel(@"Printing Error", errmsg, @"OK", nil, nil);
+    NSRunAlertPanel(@"Printing Error", @"%@", @"OK", nil, nil, errmsg);
     status = errmsg;
     [[self printPanel] _setStatusStringValue: status];
     AUTORELEASE(task);
     return NO;
   }
   NS_ENDHANDLER
+  if ([task terminationStatus] != 0)
+    {
+      status = [NSString stringWithFormat:
+        _(@"Spooling to printer %@ failed: lpr exited with status %d."),
+        name, [task terminationStatus]];
+      [[self printPanel] _setStatusStringValue: status];
+      NSLog(@"%@", status);
+      RELEASE(task);
+      return NO;
+    }
   AUTORELEASE(task);
   return YES;
 }
@@ -142,7 +130,6 @@
 - (NSGraphicsContext*)createContext
 {
   NSMutableDictionary *info;
-  NSString *output;
   
   if (_context)
     {
@@ -153,12 +140,9 @@
 
   info = [[self printInfo] dictionary];
 
-  output = [info objectForKey: NSPrintSavePath];
-  if (output)
-    {
-      ASSIGN(_path, output);
-    }
-    
+  if ([self _prepareOutputFile] == NO)
+    return nil;
+
   NSDebugMLLog(@"GSPrinting", @"_path is %@", _path); 
   
   [info setObject: _path 

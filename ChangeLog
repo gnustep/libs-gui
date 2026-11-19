@@ -1,3 +1,21 @@
+2026-11-18 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/GSPrintOperation.m: Open application previews as ordinary
+	files and preserve successful preview output for deferred page reads.
+	The temporary-file handoff deleted the source before viewers such as
+	GSPdf finished rendering it.
+	* Tests/gui/GSPrintOperation/delivery.m: Model immediate deletion by
+	the temporary-file handler and check that preview data remains readable.
+	* Headers/AppKit/NSPrintOperation.h:
+	* Source/NSPrintOperation.m: Implement jobTitle and setJobTitle:,
+	preserving the custom title when replacing print settings. Fixes an
+	unrecognized-selector exception before StepDown can print.
+	* Source/NSView.m: Use the operation title in the document prologue
+	and page header.
+	* Source/GSPrintPanelAccessory.m: Preserve the title in previews.
+	* Tests/gui/GSPrintOperation/jobTitle.m: Test title handling and
+	printing a long text document across multiple pages.
+
 2026-11-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSLayoutManager.m: Only execute _sanityChecks when
