@@ -41,26 +41,47 @@
 @implementation NSCollectionViewLayoutAttributes
 
 // Initializers
++ (instancetype) _attributesForCategory: (NSCollectionElementCategory)category
+				    kind: (NSString *)kind
+			       indexPath: (NSIndexPath *)indexPath
+{
+  NSCollectionViewLayoutAttributes *a = AUTORELEASE([[self alloc] init]);
+
+  a->_alpha = 1.0;
+  a->_representedElementCategory = category;
+  ASSIGN(a->_representedElementKind, kind);
+  [a setIndexPath: indexPath];
+  return a;
+}
+
 + (instancetype) layoutAttributesForItemWithIndexPath: (NSIndexPath *)indexPath
 {
-  return nil;
+  return [self _attributesForCategory: NSCollectionElementCategoryItem
+				 kind: nil
+			    indexPath: indexPath];
 }
 
 + (instancetype) layoutAttributesForInterItemGapBeforeIndexPath: (NSIndexPath *)indexPath
 {
-  return nil;
+  return [self _attributesForCategory: NSCollectionElementCategoryInterItemGap
+				 kind: nil
+			    indexPath: indexPath];
 }
 
 + (instancetype) layoutAttributesForSupplementaryViewOfKind: (NSCollectionViewSupplementaryElementKind)elementKind
                                               withIndexPath: (NSIndexPath *)indexPath
 {
-  return nil;
+  return [self _attributesForCategory: NSCollectionElementCategorySupplementaryView
+				 kind: elementKind
+			    indexPath: indexPath];
 }
 
 + (instancetype)layoutAttributesForDecorationViewOfKind: (NSCollectionViewDecorationElementKind)decorationViewKind
                                           withIndexPath: (NSIndexPath*)indexPath
 {
-  return nil;
+  return [self _attributesForCategory: NSCollectionElementCategoryDecorationView
+				 kind: decorationViewKind
+			    indexPath: indexPath];
 }
 
 // Properties
@@ -111,7 +132,7 @@
 
 - (void) setIndexPath: (NSIndexPath *)indexPath
 {
-  _indexPath = indexPath;
+  ASSIGN(_indexPath, indexPath);
 }
 
 - (NSInteger) zIndex
@@ -134,19 +155,27 @@
   return _representedElementKind;
 }
 
+- (void) dealloc
+{
+  RELEASE(_indexPath);
+  RELEASE(_representedElementKind);
+  [super dealloc];
+}
+
 // Copying
 - (id) copyWithZone: (NSZone *)z
 {
-  NSCollectionViewLayoutAttributes *a = [[NSCollectionViewLayoutAttributes allocWithZone: z] init];
+  NSCollectionViewLayoutAttributes *a = [[[self class] allocWithZone: z] init];
 
   [a setFrame: [self frame]];
-  [a setSize: [self size]];
   [a setAlpha: [self alpha]];
   [a setHidden: [self isHidden]];
   [a setIndexPath: [self indexPath]];
   [a setZIndex: [self zIndex]];
-  
-  return self;
+  a->_representedElementCategory = _representedElementCategory;
+  ASSIGN(a->_representedElementKind, _representedElementKind);
+
+  return a;
 }
 
 - (NSString *) description
