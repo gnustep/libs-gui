@@ -1,3 +1,11 @@
+2026-11-20 In-Ho Yi <chajath@gmail.com>
+
+	* Source/NSWindow.m (-deminiaturize:): Post
+	NSWindowDidDeminiaturizeNotification.  The miniaturized flag is
+	cleared before -makeKeyAndOrderFront:, so the call to
+	-_didDeminiaturize: never did anything and the notification was
+	not posted when deminiaturizing from the miniwindow.
+
 2026-11-15 Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSLayoutManager.m: Only execute _sanityChecks when
