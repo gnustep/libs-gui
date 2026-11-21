@@ -3380,9 +3380,14 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
       [mini orderOut: self];
     }
 
+  /* The flag has to be cleared before -makeKeyAndOrderFront:, as
+     -makeKeyWindow and -makeMainWindow refuse a miniaturized window.
+     That turns -_didDeminiaturize: into a no-op, so post the
+     notification here.  */
   _f.is_miniaturized = NO;
   [self makeKeyAndOrderFront: self];
-  [self _didDeminiaturize: sender];
+  [nc postNotificationName: NSWindowDidDeminiaturizeNotification
+		    object: self];
 }
 
 /**
