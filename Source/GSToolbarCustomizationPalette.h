@@ -30,9 +30,13 @@
 #define _GNUstep_H_GSToolbarCustomizationPalette
 
 #import <Foundation/NSObject.h>
+#import "AppKit/AppKitDefines.h"
 
 @class NSMutableArray;
 @class NSToolbar;
+@class NSString;
+
+APPKIT_EXPORT NSString *GSDefaultToolbarSetPboardType;
 
 
 @interface GSToolbarCustomizationPalette : NSObject
@@ -40,6 +44,7 @@
   id _customizationWindow;
   id _customizationView;
   id _defaultTemplateView;
+  id _defaultCaption;
   id _sizeCheckBox;
   id _displayPopup;
   id _doneButton;

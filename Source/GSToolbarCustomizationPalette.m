@@ -35,11 +35,157 @@
 #import "AppKit/NSWindow.h"
 #import "AppKit/NSToolbar.h"
 #import "AppKit/NSToolbarItem.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSGraphics.h"
+#import "AppKit/NSBitmapImageRep.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSDragging.h"
+#import "AppKit/NSEvent.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSPasteboard.h"
+#import "AppKit/NSTextField.h"
+#import "GSGuiPrivate.h"
 #import "AppKit/NSPopUpButton.h"
 #import "NSToolbarFrameworkPrivate.h"
 #import "GSToolbarCustomizationPalette.h"
 
 #define DEBUG_LEVEL @"Toolbar"
+
+NSString *GSDefaultToolbarSetPboardType = @"GSDefaultToolbarSetPboardType";
+
+static NSArray *
+GSPaletteItemsForToolbarItems(NSArray *items)
+{
+  NSMutableArray *paletteItems = [NSMutableArray array];
+  NSEnumerator *e = [items objectEnumerator];
+  NSToolbarItem *item = nil;
+
+  while ((item = [e nextObject]) != nil)
+    {
+      NSToolbarItem *newItem = [item copy];
+
+      if ([[newItem paletteLabel] length] > 0)
+        {
+          [newItem setLabel: [newItem paletteLabel]];
+        }
+      [newItem setEnabled: YES];
+      [newItem _layout];
+      [paletteItems addObject: newItem];
+      RELEASE(newItem);
+    }
+  return paletteItems;
+}
+
+@interface GSToolbarDefaultSetView : NSView
+{
+  NSArray *_items;
+  NSSize _rowSize;
+}
+- (void) setToolbarItems: (NSArray *)items;
+- (NSSize) rowSize;
+@end
+
+@implementation GSToolbarDefaultSetView
+
+- (void) dealloc
+{
+  [_items release];
+  [super dealloc];
+}
+
+- (void) setToolbarItems: (NSArray *)items
+{
+  NSEnumerator *e;
+  NSView *sub;
+  NSToolbarItem *item;
+  CGFloat x = 4.0;
+  CGFloat height = 0.0;
+
+  ASSIGN(_items, GSPaletteItemsForToolbarItems(items));
+  e = [[self subviews] objectEnumerator];
+  while ((sub = [e nextObject]) != nil)
+    {
+      [sub removeFromSuperview];
+    }
+
+  e = [_items objectEnumerator];
+  while ((item = [e nextObject]) != nil)
+    {
+      NSView *backView = [item _backView];
+      NSRect frame;
+
+      if (backView == nil)
+        {
+          continue;
+        }
+      frame = [backView frame];
+      if ([[item itemIdentifier] isEqual: NSToolbarFlexibleSpaceItemIdentifier]
+          || [[item itemIdentifier] isEqual: NSToolbarSpaceItemIdentifier])
+        {
+          frame.size.width = 24.0;
+          [item setLabel: @""];
+        }
+      frame.origin = NSMakePoint(x, 0);
+      [backView setFrame: frame];
+      [backView setAutoresizingMask: NSViewNotSizable];
+      [self addSubview: backView];
+      x += NSWidth(frame);
+      height = MAX(height, NSHeight(frame));
+    }
+  _rowSize = NSMakeSize(x + 4.0, height);
+  [self setNeedsDisplay: YES];
+}
+
+- (NSSize) rowSize
+{
+  return _rowSize;
+}
+
+- (NSView *) hitTest: (NSPoint)point
+{
+  NSView *hit = [super hitTest: point];
+
+  return (hit != nil) ? self : nil;
+}
+
+- (void) drawRect: (NSRect)rect
+{
+  [[NSColor darkGrayColor] set];
+  NSFrameRect([self bounds]);
+}
+
+- (void) mouseDown: (NSEvent *)event
+{
+  NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+  NSBitmapImageRep *rep;
+  NSImage *image;
+
+  [self lockFocus];
+  rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect: [self bounds]];
+  [self unlockFocus];
+  image = [[NSImage alloc] initWithSize: [self bounds].size];
+  [image addRepresentation: rep];
+  RELEASE(rep);
+
+  [pboard declareTypes: [NSArray arrayWithObject: GSDefaultToolbarSetPboardType]
+                 owner: nil];
+  [pboard setString: @"default" forType: GSDefaultToolbarSetPboardType];
+  [self dragImage: image
+               at: NSZeroPoint
+           offset: NSZeroSize
+            event: event
+       pasteboard: pboard
+           source: self
+        slideBack: YES];
+  RELEASE(image);
+}
+
+- (NSDragOperation) draggingSourceOperationMaskForLocal: (BOOL)isLocal
+{
+  return isLocal ? NSDragOperationCopy : NSDragOperationNone;
+}
+
+@end
 
 /* Customization View */
 @interface GSToolbarCustomizationView : NSView
@@ -69,21 +215,7 @@
    reference a toolbar. */
 - (NSArray *) paletteItemsWithToolbarItems: (NSArray *)items
 {
-  NSMutableArray *paletteItems = [NSMutableArray array];
-  NSEnumerator *e = [items objectEnumerator];
-  NSToolbarItem *item = nil;
-
-  while ((item = [e nextObject]) != nil)
-    {
-      NSToolbarItem *newItem = [item copy];
-
-      if ([[newItem paletteLabel] length] > 0)
-        [newItem setLabel: [newItem paletteLabel]];
-      [newItem setEnabled: YES];
-      [newItem _layout];
-      [paletteItems addObject: newItem];
-      RELEASE(newItem);
-    }
+  NSArray *paletteItems = GSPaletteItemsForToolbarItems(items);
 
   NSDebugLLog(DEBUG_LEVEL, @"Generated palette items %@ from toolbar items %@", 
     paletteItems, items);
@@ -245,17 +377,33 @@
   [_defaultTemplateView setAutoresizingMask:NSViewWidthSizable | NSViewMaxYMargin];
   
   {
-	NSRect dtvFrame;
-	NSRect cvFrame;
+    NSRect frame = [_defaultTemplateView frame];
+    NSView *superview = [_defaultTemplateView superview];
+    NSTextField *caption;
+    GSToolbarDefaultSetView *setView;
+    CGFloat captionHeight = 18.0;
 
-    // for now, _defaultTemplateView isn't implemented, so remove it
-	dtvFrame = [_defaultTemplateView frame];
-	[_defaultTemplateView removeFromSuperview];
-	// expand _customizationView to fill the space
-	cvFrame = [_customizationView frame];
-	cvFrame.size.height += dtvFrame.size.height;
-	cvFrame.origin.y -= dtvFrame.size.height;
-	[_customizationView setFrame:cvFrame];
+    [_defaultTemplateView removeFromSuperview];
+    caption = [[NSTextField alloc] initWithFrame:
+      NSMakeRect(NSMinX(frame) + 10, NSMaxY(frame) - captionHeight,
+                 NSWidth(frame) - 20, captionHeight)];
+    [caption setStringValue: _(@"... or drag the default set into the toolbar.")];
+    [caption setEditable: NO];
+    [caption setSelectable: NO];
+    [caption setBezeled: NO];
+    [caption setDrawsBackground: NO];
+    [caption setAutoresizingMask: NSViewWidthSizable | NSViewMaxYMargin];
+    [superview addSubview: caption];
+    _defaultCaption = caption;
+    RELEASE(caption);
+
+    setView = [[GSToolbarDefaultSetView alloc] initWithFrame:
+      NSMakeRect(NSMinX(frame) + 10, NSMinY(frame),
+                 NSWidth(frame) - 20, NSHeight(frame) - captionHeight)];
+    [setView setAutoresizingMask: NSViewWidthSizable | NSViewMaxYMargin];
+    [superview addSubview: setView];
+    _defaultTemplateView = setView;
+    RELEASE(setView);
   }
   
   [nc addObserver: self 
@@ -316,6 +464,28 @@
     }
 
   [_customizationView setToolbarItems: _allowedItems];
+  [_defaultTemplateView setToolbarItems: _defaultItems];
+
+  {
+    NSSize row = [_defaultTemplateView rowSize];
+    NSRect setFrame = [_defaultTemplateView frame];
+    NSRect captionFrame = [_defaultCaption frame];
+    NSRect winFrame = [_customizationWindow frame];
+    CGFloat dw = MAX(0.0, row.width - NSWidth(setFrame));
+    CGFloat dh = row.height - NSHeight(setFrame);
+
+    winFrame.size.width += dw;
+    winFrame.size.height += dh;
+    winFrame.origin.y -= dh;
+    [_customizationWindow setFrame: winFrame display: NO];
+
+    setFrame = [_defaultTemplateView frame];
+    setFrame.size.height = row.height;
+    [_defaultTemplateView setFrame: setFrame];
+    captionFrame = [_defaultCaption frame];
+    captionFrame.origin.y = NSMaxY(setFrame);
+    [_defaultCaption setFrame: captionFrame];
+  }
 
   /* We retain ourself to keep us alive until the palette is closed (this is 
      useful in case nobody retains us). */
