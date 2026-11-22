@@ -14,6 +14,7 @@ static BOOL accepted;
 static BOOL useViewer;
 static BOOL toolFound;
 static BOOL launchFails;
+static BOOL exitsDuringLaunch;
 static int exitStatus;
 static int spoolCalls;
 
@@ -139,6 +140,9 @@ static DeliverySettings *settings;
   if (launchFails)
     [NSException raise: NSInternalInconsistencyException
                 format: @"Test launch failure"];
+  if (exitsDuringLaunch)
+    [[NSNotificationCenter defaultCenter] postNotificationName: NSTaskDidTerminateNotification
+                                                      object: self];
 }
 
 - (void) waitUntilExit
@@ -174,6 +178,22 @@ DeliveryAlert(NSString *title, NSString *message, NSString *defaultButton,
 #undef NSWorkspace
 #undef GSPrintOperation
 #undef GSPrintPreviewFile
+
+static int previewLeasesDeallocated;
+
+@interface LifetimePreviewFile : DeliveryPreviewFile
+
+@end
+
+@implementation LifetimePreviewFile
+
+- (void) dealloc
+{
+  previewLeasesDeallocated++;
+  DEALLOC;
+}
+
+@end
 
 @interface TestDeliveryOperation : DeliveryOperation
 
@@ -251,6 +271,36 @@ main(void)
   START_SET("Print delivery results")
   TestDeliveryOperation *operation;
   TestLPROperation *lpr;
+
+  {
+    DeliveryTask *task = [[DeliveryTask alloc] init];
+    NSString *path = [NSTemporaryDirectory() stringByAppendingPathComponent:
+      [[NSProcessInfo processInfo] globallyUniqueString]];
+    LifetimePreviewFile *lease = [[LifetimePreviewFile alloc]
+      initWithTask: (NSTask *)task path: path];
+
+    RELEASE(lease);
+    PASS(previewLeasesDeallocated == 1,
+         "an unstarted preview lease releases with its caller ownership");
+    lease = [[LifetimePreviewFile alloc] initWithTask: (NSTask *)task path: path];
+    [lease startObserving];
+    [lease startObserving];
+    [lease invalidate];
+    [lease invalidate];
+    RELEASE(lease);
+    PASS(previewLeasesDeallocated == 2,
+         "repeated start and invalidation balance the observation ownership");
+    lease = [[LifetimePreviewFile alloc] initWithTask: (NSTask *)task path: path];
+    [lease startObserving];
+    RELEASE(lease);
+    PASS(previewLeasesDeallocated == 2,
+         "observation keeps the preview lease alive after its caller releases it");
+    [[NSNotificationCenter defaultCenter] postNotificationName: NSTaskDidTerminateNotification
+                                                      object: task];
+    PASS(previewLeasesDeallocated == 3,
+         "task termination releases the observation ownership");
+    RELEASE(task);
+  }
 
   settings = [[DeliverySettings alloc] init];
   printAttributes = [[NSMutableDictionary alloc] init];
@@ -353,6 +403,16 @@ main(void)
     [[NSNotificationCenter defaultCenter] postNotificationName: NSTaskDidTerminateNotification
                                                       object: launchedTask];
     PASS(![manager fileExistsAtPath: path], "preview file is removed when the command exits");
+
+    exitsDuringLaunch = YES;
+    previewOperation = [[TestDeliveryOperation alloc] init];
+    [previewOperation _setOutputFile: path temporary: YES];
+    [manager createFileAtPath: path contents: contents attributes: nil];
+    PASS([previewOperation deliverResult], "a preview command may exit during launch");
+    RELEASE(previewOperation);
+    PASS(![manager fileExistsAtPath: path],
+         "observation is active before launch so immediate exit removes the file");
+    exitsDuringLaunch = NO;
 
     previewOperation = [[TestDeliveryOperation alloc] init];
     [previewOperation _setOutputFile: path temporary: YES];

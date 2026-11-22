@@ -77,6 +77,7 @@
 }
 
 - (id) initWithTask: (NSTask *)aTask path: (NSString *)aPath;
+- (void) startObserving;
 - (void) invalidate;
 
 @end
@@ -91,12 +92,24 @@
       ASSIGNCOPY(path, aPath);
       ASSIGN(task, aTask);
       lock = [[NSLock alloc] init];
+    }
+  return self;
+}
+
+/* The caller must start observation before launching the task. This retain
+   keeps the lease alive after the caller releases its allocation ownership;
+   invalidate balances it on termination or a failed launch. */
+- (void) startObserving
+{
+  [lock lock];
+  if (!observing)
+    {
       observing = YES;
       RETAIN(self);
       [[NSNotificationCenter defaultCenter] addObserver: self
         selector: @selector(taskFinished:) name: NSTaskDidTerminateNotification object: task];
     }
-  return self;
+  [lock unlock];
 }
 
 - (void) invalidate
@@ -271,6 +284,7 @@
             lease = [[GSPrintPreviewFile alloc] initWithTask: task path: _path];
 	  NS_DURING
 	    {
+              [lease startObserving];
 	      [task launch];
               /* Previewers run asynchronously; success means launched. */
               success = YES;

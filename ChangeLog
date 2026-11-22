@@ -1,5 +1,13 @@
 2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
 
+	* Source/GSPrintOperation.m (GSPrintPreviewFile): Move observation
+	registration and its retain from initWithTask:path: to an explicit
+	startObserving method, called before launching the preview task.
+	* Tests/gui/GSPrintOperation/delivery.m: Check unstarted, invalidated
+	and asynchronously completed preview lease lifetimes.
+
+2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
+
 	* .github/workflows/main.yml: Enable ImageMagick and install its
 	Ghostscript delegate in the headless GUI test job. Allow PDF reads
 	and verify ImageMagick was configured so physical page-count tests
