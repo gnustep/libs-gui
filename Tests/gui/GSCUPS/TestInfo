@@ -1,0 +1,11 @@
+# The CUPS bundle is optional. An explicit library override also supports
+# testing with unpacked development headers without installing packages.
+if test -z "$GSCUPS_TEST_LIBS" && command -v cups-config >/dev/null 2>&1; then
+  GSCUPS_TEST_LIBS=`cups-config --libs`
+  ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS `cups-config --cflags`"
+fi
+if test -n "$GSCUPS_TEST_LIBS"; then
+  export ADDITIONAL_OBJCFLAGS="$ADDITIONAL_OBJCFLAGS -DTEST_CUPS_IPP=1"
+  export ADDITIONAL_TOOL_LIBS="$ADDITIONAL_TOOL_LIBS $GSCUPS_TEST_LIBS"
+fi
+export ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS -I../../../Source"
