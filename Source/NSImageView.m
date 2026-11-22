@@ -34,8 +34,6 @@
 #import "AppKit/NSImageView.h"
 #import "AppKit/NSMenuItem.h"
 #import "AppKit/NSPasteboard.h"
-#import "AppKit/NSPrintInfo.h"
-#import "AppKit/NSPrintOperation.h"
 #import "AppKit/NSWindow.h"
 
 /*
@@ -113,18 +111,6 @@ static Class imageCellClass;
 {
   [_cell setImage: image];
   [self updateCell: _cell];
-}
-
-- (void) print: (id)sender
-{
-  NSPrintInfo *info = AUTORELEASE([[NSPrintInfo sharedPrintInfo] copy]);
-
-  /* An image is a single page. Fit both dimensions instead of clipping its
-     right edge or splitting it vertically with the default view pagination.
-     Keep these settings local to this operation. */
-  [info setHorizontalPagination: NSFitPagination];
-  [info setVerticalPagination: NSFitPagination];
-  [[NSPrintOperation printOperationWithView: self printInfo: info] runOperation];
 }
 
 - (void) setImageAlignment: (NSImageAlignment)align

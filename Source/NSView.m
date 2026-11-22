@@ -2304,9 +2304,6 @@ static void autoresize(CGFloat oldContainerSize,
              a superview so we get printed correctly */
           [self _matrixToWindow];
           [_matrixToWindow makeIdentityMatrix];
-          /* Keep both directions consistent for coordinate conversions such
-             as centerScanRect: while drawing the printed view. */
-          [_matrixFromWindow makeIdentityMatrix];
         }
       else
         {
@@ -4392,9 +4389,9 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 	    oLimit = ([self convertPoint: aPoint  toView: o]).x;
 	  }
 
-	  [o adjustPageWidthNew: &oRight
-	     left: oLeft
-	     right: oRight
+	  [o adjustPageHeightNew: &oRight
+	     top: oLeft
+	     bottom: oRight
 	     limit: oLimit];
 
 	  {
@@ -4437,15 +4434,15 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
     bounds = [[dict objectForKey: @"NSPrintPaperBounds"] rectValue];
   else
     bounds = aRect;
-  /* Placement is in paper coordinates, including the margins, for both
-     automatic pagination and views which supply their own page rectangles. */
-  location = NSMakePoint(NSMinX(bounds), NSMaxY(bounds) - NSHeight(aRect));
+  location = NSMakePoint(0, NSHeight(bounds)-NSHeight(aRect));
+  /* FIXME:  I can't figure out how the location for a multi-page document
+     is computed. Just ignore centering? */
   if (pages == 1)
     {
       if ([printInfo isHorizontallyCentered])
-        location.x = NSMinX(bounds) + (NSWidth(bounds) - NSWidth(aRect))/2;
+        location.x = (NSWidth(bounds) - NSWidth(aRect))/2;
       if ([printInfo isVerticallyCentered])
-        location.y = NSMinY(bounds) + (NSHeight(bounds) - NSHeight(aRect))/2;
+        location.y = (NSHeight(bounds) - NSHeight(aRect))/2;
     }
 
   return location;
@@ -4600,11 +4597,8 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 
 - (NSAttributedString *) pageHeader
 {
-  NSPrintOperation *operation = [NSPrintOperation currentOperation];
-  NSString *title = operation != nil ? [operation jobTitle] : [self printJobTitle];
-
   return [[[NSAttributedString alloc] initWithString: 
-		  [NSString stringWithFormat:@"%@ %@", title,
+		  [NSString stringWithFormat:@"%@ %@", [self printJobTitle], 
 			    [[NSCalendarDate calendarDate] description]]] autorelease];
 }
 
@@ -4661,7 +4655,7 @@ static NSView* findByTag(NSView *view, NSInteger aTag, NSUInteger *level)
 		    fonts: nil
 	          forWhom: NSUserName()
 		    pages: pages
-	            title: [printOp jobTitle]];
+	            title: [self printJobTitle]];
   [self endHeaderComments];
 
   [ctxt printerProlog];

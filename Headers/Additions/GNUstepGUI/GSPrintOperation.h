@@ -53,8 +53,6 @@ APPKIT_EXPORT_CLASS
 		      printInfo:(NSPrintInfo *)aPrintInfo;
 
 - (BOOL) _deliverSpooledResult;
-- (BOOL) _prepareOutputFile;
-
 @end
 
 

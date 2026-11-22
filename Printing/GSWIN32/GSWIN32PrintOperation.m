@@ -123,6 +123,28 @@ BOOL RawDataToPrinter(LPSTR szPrinterName, LPBYTE lpData, DWORD dwCount)
   return NSAllocateObject(self, 0, zone);
 }
 
+- (id)initWithView:(NSView *)aView
+         printInfo:(NSPrintInfo *)aPrintInfo
+{
+  self = [super initWithView: aView
+                   printInfo: aPrintInfo];
+  if (self == nil)
+    return nil;
+
+  _path = [NSTemporaryDirectory()
+	    stringByAppendingPathComponent: @"GSWIN32PrintJob-"];
+  
+  _path = [_path stringByAppendingString: 
+		       [[NSProcessInfo processInfo] globallyUniqueString]];
+           
+  _path = [_path stringByAppendingPathExtension: @"ps"];
+  
+  RETAIN(_path);
+  
+  return self;
+}
+
+
 - (BOOL) _deliverSpooledResult
 {
   NSString *name = nil;
@@ -160,6 +182,7 @@ BOOL RawDataToPrinter(LPSTR szPrinterName, LPBYTE lpData, DWORD dwCount)
 - (NSGraphicsContext*)createContext
 {
   NSMutableDictionary *info;
+  NSString *output;
   
   if (_context)
     {
@@ -170,9 +193,12 @@ BOOL RawDataToPrinter(LPSTR szPrinterName, LPBYTE lpData, DWORD dwCount)
 
   info = [[self printInfo] dictionary];
 
-  if ([self _prepareOutputFile] == NO)
-    return nil;
-
+  output = [info objectForKey: NSPrintSavePath];
+  if (output)
+    {
+      ASSIGN(_path, output);
+    }
+    
   NSDebugMLLog(@"GSPrinting", @"_path is %@", _path); 
   
   [info setObject: _path 

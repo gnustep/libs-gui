@@ -161,12 +161,6 @@ APPKIT_EXPORT NSString *NSPrintFirstPage;
 APPKIT_EXPORT NSString *NSPrintHorizontalPagination;
 APPKIT_EXPORT NSString *NSPrintHorizontallyCentered;
 APPKIT_EXPORT NSString *NSPrintJobDisposition;
-/** Dictionary of printer-specific PPD option references, for example
-    <code>Resolution = "Resolution/600dpi"</code>. The CUPS printing bundle
-    forwards choices advertised by the selected printer; malformed or
-    unsupported references are ignored. Page selection, scaling, orientation,
-    page ordering and N-up layout are performed by NSPrintOperation rather
-    than forwarded as CUPS layout options. */
 APPKIT_EXPORT NSString *NSPrintJobFeatures;
 APPKIT_EXPORT NSString *NSPrintLastPage;
 APPKIT_EXPORT NSString *NSPrintLeftMargin;

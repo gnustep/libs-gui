@@ -67,10 +67,13 @@
                       toData: data
                    printInfo: aPrintInfo];
                    
-  if (self == nil)
-    return nil;
-  [self _setTemporaryOutputFileWithExtension: @"ps"];
-
+  _path = [NSTemporaryDirectory() stringByAppendingPathComponent: @"GSPrint-"];
+  
+  _path = [_path stringByAppendingString: 
+		               [[NSProcessInfo processInfo] globallyUniqueString]];
+           
+  _path = [_path stringByAppendingPathExtension: @"ps"];
+  RETAIN(_path); 
   return self;
 }
 
@@ -79,14 +82,14 @@
              toPath:(NSString *)path
           printInfo:(NSPrintInfo *)aPrintInfo
 {
+  NSMutableData *data = [NSMutableData data];
+  
   self = [super initWithView: aView	
                   insideRect: rect
-                      toData: nil
+                      toData: data
                    printInfo: aPrintInfo];
 
-  if (self == nil)
-    return nil;
-  [self _setOutputFile: path temporary: NO];
+  ASSIGN(_path, path);
 
   return self;
 }
@@ -115,16 +118,15 @@
 
 - (BOOL)deliverResult
 {
-  NSData *contents = [NSData dataWithContentsOfFile: _path];
-
-  if (contents == nil)
+  if (_data != nil && _path != nil)
     {
-      [self _removeTemporaryOutputFile];
-      return NO;
+      NSString	*eps;
+
+      eps = [NSString stringWithContentsOfFile: _path];
+      
+      [_data setData: [eps dataUsingEncoding: NSASCIIStringEncoding]];
     }
-  if (_data != nil)
-    [_data setData: contents];
-  [self _removeTemporaryOutputFile];
+
   return YES;
 }
 
@@ -134,9 +136,6 @@
 
   if (_context)
     return _context;
-
-  if (_data != nil && !_flags.owns_output_file)
-    [self _setTemporaryOutputFileWithExtension: @"ps"];
 
   info = [[self printInfo] dictionary];
   

@@ -142,9 +142,9 @@ static NSPrintInfo *sharedPrintInfo = nil;
   paperSize = [printer pageSizeForPaper: [self paperName]];
   imageableRect = [printer imageRectForPaper: [self paperName]];
   [self setRightMargin: (paperSize.width - NSMaxX(imageableRect))];
-  [self setLeftMargin: imageableRect.origin.x];
+  [self setLeftMargin: imageableRect.origin.y];
   [self setTopMargin: (paperSize.height - NSMaxY(imageableRect))];
-  [self setBottomMargin: imageableRect.origin.y];
+  [self setBottomMargin: imageableRect.origin.x];
 }
 
 //
