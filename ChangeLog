@@ -1,5 +1,12 @@
 2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
 
+	* .github/workflows/main.yml: Enable ImageMagick and install its
+	Ghostscript delegate in the headless GUI test job. Permit PDF reads
+	and verify ImageMagick support so panel previews can decode and
+	navigate the generated pages.
+
+2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
+
 	* Source/NSPrintPanel.m:
 	* Headers/AppKit/NSPrintPanel.h:
 	* Source/GSPrintPanelAccessory.h:

@@ -192,7 +192,13 @@ jobs:
           # window server can run on a runner with no physical display.
           apt-get -q -y install $APT_PACKAGES $APT_PACKAGES_clang \
             libxt-dev libxmu-dev libxft-dev libxrandr-dev libxfixes-dev libxcursor-dev \
-            xvfb
+            xvfb libmagickcore-dev ghostscript
+
+          # NSPDFImageRep uses ImageMagick and its Ghostscript delegate to
+          # decode the generated print previews. Ubuntu disables PDF in the
+          # ImageMagick policy by default; allow reading it in this test job.
+          sed -i 's/rights="none" pattern="PDF"/rights="read" pattern="PDF"/' \
+            /etc/ImageMagick-6/policy.xml
 
           # gnustep-2.2 runtime requires ld.gold or lld
           update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 10
@@ -206,7 +212,8 @@ jobs:
       - name: Build source
         run: |
           . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
-          ./configure
+          ./configure --enable-imagemagick
+          grep -q '^#define HAVE_IMAGEMAGICK 1' Headers/Additions/GNUstepGUI/config.h
           make -j$(nproc) && make install
 
       - name: Build libs-back # cairo backend, required to run the gui tests instead of skipping them
