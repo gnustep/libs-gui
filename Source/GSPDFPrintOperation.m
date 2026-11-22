@@ -66,14 +66,10 @@
                       toData: data
                    printInfo: aPrintInfo];
                    
-  _path = [NSTemporaryDirectory() stringByAppendingPathComponent: @"GSPrint-"];
-  
-  _path = [_path stringByAppendingString: 
-		               [[NSProcessInfo processInfo] globallyUniqueString]];
-           
-  _path = [_path stringByAppendingPathExtension: @"pdf"];
-  RETAIN(_path);
-                  
+  if (self == nil)
+    return nil;
+  [self _setTemporaryOutputFileWithExtension: @"pdf"];
+
   return self;
 }
 
@@ -82,14 +78,14 @@
              toPath:(NSString *)path 
           printInfo:(NSPrintInfo*)aPrintInfo
 {
-  NSMutableData *data = [NSMutableData data];
-
   self = [super initWithView: aView	
                   insideRect: rect
-                      toData: data
+                      toData: nil
                    printInfo: aPrintInfo];
 
-  ASSIGN(_path, path);
+  if (self == nil)
+    return nil;
+  [self _setOutputFile: path temporary: NO];
 
   return self;
 }
@@ -100,6 +96,9 @@
 
   if (_context)
     return _context;
+
+  if (_data != nil && !_flags.owns_output_file)
+    [self _setTemporaryOutputFileWithExtension: @"pdf"];
 
   info = [[self printInfo] dictionary];
 
@@ -117,11 +116,16 @@
 
 - (BOOL)deliverResult
 {
-  if (_data != nil && _path != nil)
+  NSData *contents = [NSData dataWithContentsOfFile: _path];
+
+  if (contents == nil)
     {
-      [_data setData: [NSData dataWithContentsOfFile: _path]];
+      [self _removeTemporaryOutputFile];
+      return NO;
     }
-  
+  if (_data != nil)
+    [_data setData: contents];
+  [self _removeTemporaryOutputFile];
   return YES;
 }
 
