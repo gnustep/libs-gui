@@ -213,7 +213,7 @@ jobs:
         run: |
           . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
           ./configure --enable-imagemagick
-          grep -q '^#define HAVE_IMAGEMAGICK 1' Source/config.h
+          grep -q '^#define HAVE_IMAGEMAGICK 1' Headers/Additions/GNUstepGUI/config.h
           make -j$(nproc) && make install
 
       - name: Build libs-back # cairo backend, required to run the gui tests instead of skipping them
