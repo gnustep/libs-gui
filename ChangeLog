@@ -1,3 +1,17 @@
+2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/NSPrintPanel.m:
+	* Headers/AppKit/NSPrintPanel.h:
+	* Source/GSPrintPanelAccessory.h:
+	* Source/GSPrintPanelAccessory.m:
+	* Source/GNUmakefile: Import print-panel controls, settings fixes,
+	accessory controllers, page setup and PDF preview from
+	printing_improvements. Copy preview job titles when supported.
+	* Source/NSPrintOperation.m: Add the private printing-rectangle
+	accessor used by panel previews.
+	* Tests/gui/NSPrintPanel/: Import panel regression tests, excluding
+	the separate background-printing regression.
+
 2026-11-20 In-Ho Yi <chajath@gmail.com>
 
 	* Source/NSWindow.m (-deminiaturize:): Post

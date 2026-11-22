@@ -124,6 +124,9 @@ APPKIT_EXPORT_CLASS
 #endif
 #if OS_API_VERSION(MAC_OS_X_VERSION_10_5, GS_API_LATEST)
 - (NSArray *) accessoryControllers;
+/** Display the controller's view and supply the active NSPrintInfo as its
+    represented object. Summary items are shown beneath the view; changes to
+    its preview-affecting key paths regenerate the embedded document preview. */
 - (void) addAccessoryController: (NSViewController < NSPrintPanelAccessorizing >*)accessoryController;
 - (void) removeAccessoryController: (NSViewController < NSPrintPanelAccessorizing >*)accessoryController;
 
@@ -131,6 +134,10 @@ APPKIT_EXPORT_CLASS
 - (void) setDefaultButtonTitle: (NSString *)defaultButtonTitle;
 
 - (NSPrintPanelOptions) options;
+/** Control the displayed print settings. GNUstep's default panel initially
+    shows copies, page range and scaling. Paper size, orientation, a separate
+    page-setup accessory and an embedded PDF preview can be enabled here.
+    Hidden controls leave application-supplied print settings unchanged. */
 - (void) setOptions: (NSPrintPanelOptions)options;
 
 - (NSString *) helpAnchor;

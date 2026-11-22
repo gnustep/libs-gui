@@ -305,6 +305,11 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
                                    printInfo: aPrintInfo];
 }
 
+- (NSRect) _printingRect
+{
+  return _rect;
+}
+
 - (void) dealloc
 {
   RELEASE(_print_info);
