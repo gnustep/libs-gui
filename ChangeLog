@@ -13,11 +13,11 @@
 	* Headers/AppKit/NSPrintOperation.h:
 	* Headers/Additions/GNUstepGUI/GSPrintOperation.h: Import shared
 	pagination, modal completion, job-title and output ownership fixes.
-	* Printing/GSCUPS/GSCUPSPrintOperation.m:
+	* Printing/GSCUPS/GSCUPSPrintOperation.m: Adapt to shared output
+	ownership only; exclude CUPS submission and option changes.
 	* Printing/GSLPR/GSLPRPrintOperation.m:
-	* Printing/GSWIN32/GSWIN32PrintOperation.m:
-	* Headers/AppKit/NSPrintInfo.h: Import delivery and settings fixes
-	using the existing printer APIs, excluding newer CUPS capabilities.
+	* Printing/GSWIN32/GSWIN32PrintOperation.m: Import delivery and
+	output ownership fixes.
 	* Tests/gui/GSPrintOperation/:
 	* Tests/gui/NSPrintInfo/margins.m:
 	* Tests/gui/NSImageView/printing.m: Import regression coverage.
@@ -2408,7 +2408,8 @@
 
 2018-01-24 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Printing/GSCUPS/GSCUPSPrintOperation.m:
+	* Printing/GSCUPS/GSCUPSPrintOperation.m: Adapt to shared output
+	ownership only; exclude CUPS submission and option changes.
 	Restore -allocWithZone: methods as this is needed to override
 	behaviour in superclass.
 
