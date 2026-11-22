@@ -1,3 +1,27 @@
+2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/NSView.m: Import printing coordinate, margin, pagination
+	and job-title corrections from printing_improvements.
+	* Source/NSImageView.m: Fit printed images to a single page.
+	* Source/NSPrintInfo.m: Correct left and bottom printer margins.
+	* Source/NSPrintPanel.m: Keep worker-thread status updates on the
+	main thread. Exclude the print-panel UI additions.
+	* Source/NSPrintOperation.m:
+	* Source/GSPrintOperation.m:
+	* Source/GSPDFPrintOperation.m:
+	* Source/GSEPSPrintOperation.m:
+	* Headers/AppKit/NSPrintOperation.h:
+	* Headers/Additions/GNUstepGUI/GSPrintOperation.h: Import shared
+	pagination, modal completion, job-title and output ownership fixes.
+	* Printing/GSCUPS/GSCUPSPrintOperation.m:
+	* Printing/GSLPR/GSLPRPrintOperation.m:
+	* Printing/GSWIN32/GSWIN32PrintOperation.m:
+	* Headers/AppKit/NSPrintInfo.h: Import delivery and settings fixes
+	using the existing printer APIs, excluding newer CUPS capabilities.
+	* Tests/gui/GSPrintOperation/:
+	* Tests/gui/NSPrintInfo/margins.m:
+	* Tests/gui/NSImageView/printing.m: Import regression coverage.
+
 2026-11-20 In-Ho Yi <chajath@gmail.com>
 
 	* Source/NSWindow.m (-deminiaturize:): Post

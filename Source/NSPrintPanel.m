@@ -35,6 +35,7 @@
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSThread.h>
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSBox.h"
 #import "AppKit/NSForm.h"
@@ -519,6 +520,12 @@ static NSPrintPanel *shared_instance = nil;
 /* Private method for NSPrintOperation */
 - (void) _setStatusStringValue: (NSString *)string
 {
+  if ([NSThread isMainThread] == NO)
+    {
+      [self performSelectorOnMainThread: _cmd withObject: string
+                         waitUntilDone: NO];
+      return;
+    }
   [CONTROL(self, NSPPStatusField) setStringValue: string ];
 }
 @end
