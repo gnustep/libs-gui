@@ -1,5 +1,12 @@
 2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
 
+	* .github/workflows/main.yml: Enable ImageMagick and install its
+	Ghostscript delegate in the headless GUI test job. Allow PDF reads
+	and verify ImageMagick was configured so physical page-count tests
+	can decode generated PDFs through NSPDFImageRep.
+
+2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
+
 	* Source/NSView.m: Import printing coordinate, margin, pagination
 	and job-title corrections from printing_improvements.
 	* Source/NSImageView.m: Fit printed images to a single page.
