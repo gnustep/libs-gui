@@ -43,4 +43,13 @@ extern NSString *GSCUPSDummyPrinterName;
 
 @end
 
+/* Private bridge between the PPD-shaped AppKit API and IPP job options. */
+@interface NSPrinter (GSCUPSOptions)
+
+- (BOOL) _cupsSupportsIPPOption: (NSString *)keyword;
+- (NSDictionary *) _cupsTranslateOptions: (NSDictionary *)options
+                                  error: (NSString **)error;
+
+@end
+
 #endif // _GNUstep_H_GSCUPSPrinter
