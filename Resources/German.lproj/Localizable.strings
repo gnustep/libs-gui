@@ -61,7 +61,7 @@ add comments above this one
 /* File: ../Source/NSPrintOperation.m:678 */
 /* File: ../Source/NSPrintPanel.m:408 */
 /* File: ../Source/NSSavePanel.m:335 */
-"OK" = "Ok";
+"OK" = "OK";
 
 /* File: ../Source/NSAlert.m:389 */
 /* File: ../Source/NSDocument.m:485 */
