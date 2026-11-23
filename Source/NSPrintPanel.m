@@ -35,6 +35,7 @@
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSThread.h>
 #import "AppKit/NSApplication.h"
 #import "AppKit/NSBox.h"
 #import "AppKit/NSForm.h"
@@ -50,6 +51,8 @@
 #import "GSGuiPrivate.h"
 #import "GNUstepGUI/GSPrinting.h"
 #import "GNUstepGUI/GSTheme.h"
+#import "GSPrintPanelAccessory.h"
+#import "AppKit/NSViewController.h"
 
 static NSPrintPanel *shared_instance = nil;
 
@@ -57,9 +60,31 @@ static NSPrintPanel *shared_instance = nil;
 
 #define CONTROL(panel, name) [[panel contentView] viewWithTag: name]
 
+static void
+GSPrintHideControl(NSView *control, BOOL hidden)
+{
+  NSView *parent = [control superview];
+
+  [control setHidden: hidden];
+  /* The archived controls have enclosing boxes with their captions. */
+  while (parent != nil && ![parent isKindOfClass: [NSBox class]])
+    parent = [parent superview];
+  [parent setHidden: hidden];
+}
+
 @interface NSPrintPanel (GSPrivate)
+
 - (void)_updateFromPrintInfo: (NSPrintInfo*)info;
 - (void)_finalWritePrintInfo: (NSPrintInfo*)info;
+
+@end
+
+@interface NSPrintPanel (GSAccessoryPrivate)
+
+- (GSPrintPanelAccessory *) _panelAccessory;
+- (void) _applyOptions;
+- (void) _previewSettingsChanged: (id)sender;
+
 @end
 
 /**
@@ -145,6 +170,8 @@ static NSPrintPanel *shared_instance = nil;
   [self setTitle: _(@"Print Panel")];
 
   _accessoryControllers = [[NSMutableArray alloc] init];
+  _options = NSPrintPanelShowsCopies | NSPrintPanelShowsPageRange
+    | NSPrintPanelShowsScaling;
 
   // self will come from a bundle, to get the panel from the GUI library 
   // we have to select that bundle explicitly
@@ -185,11 +212,29 @@ static NSPrintPanel *shared_instance = nil;
     }
   [control selectItemAtIndex: 0];
 
+  [CONTROL(self, NSPPCopiesField) setTarget: self];
+  [CONTROL(self, NSPPCopiesField) setAction: @selector(_previewSettingsChanged:)];
+  [CONTROL(self, NSPPScaleField) setTarget: self];
+  [CONTROL(self, NSPPScaleField) setAction: @selector(_previewSettingsChanged:)];
+  [CONTROL(self, NSPPLayoutButton) setTarget: self];
+  [CONTROL(self, NSPPLayoutButton) setAction: @selector(_previewSettingsChanged:)];
+  [CONTROL(self, NSPPPageRangeFrom) setTarget: self];
+  [CONTROL(self, NSPPPageRangeFrom) setAction: @selector(_previewSettingsChanged:)];
+  [CONTROL(self, NSPPPageRangeTo) setTarget: self];
+  [CONTROL(self, NSPPPageRangeTo) setAction: @selector(_previewSettingsChanged:)];
+  [CONTROL(_optionPanel, NSPPResolutionButton) setTarget: self];
+  [CONTROL(_optionPanel, NSPPResolutionButton) setAction: @selector(_previewSettingsChanged:)];
+  [CONTROL(_optionPanel, NSPPPaperFeedButton) setTarget: self];
+  [CONTROL(_optionPanel, NSPPPaperFeedButton) setAction: @selector(_previewSettingsChanged:)];
+  [self _applyOptions];
+
   return self;
 }
 
 - (void) dealloc
 {
+  [(GSPrintPanelAccessory *)[[self contentView]
+    viewWithTag: GSPrintPanelAccessoryTag] detach];
   RELEASE(_accessoryView);
   RELEASE(_savePath);
   RELEASE(_optionPanel);
@@ -209,7 +254,11 @@ static NSPrintPanel *shared_instance = nil;
  */
 - (void) setAccessoryView: (NSView *)aView
 {
+  if (_accessoryView == aView)
+    return;
+  [_accessoryView removeFromSuperview];
   ASSIGN(_accessoryView, aView);
+  [[self _panelAccessory] updateWithPrintInfo: _printInfo];
 }
 
 /** <p>Returns the accessory view for the print panel </p>
@@ -222,17 +271,28 @@ static NSPrintPanel *shared_instance = nil;
 
 - (NSArray *) accessoryControllers
 {
-  return _accessoryControllers;
+  return AUTORELEASE([_accessoryControllers copy]);
 }
 
 - (void) addAccessoryController: (NSViewController < NSPrintPanelAccessorizing >*)accessoryController
 {
+  if (accessoryController == nil
+      || [_accessoryControllers indexOfObjectIdenticalTo: accessoryController] != NSNotFound)
+    return;
   [_accessoryControllers addObject: accessoryController];
+  [[self _panelAccessory] updateWithPrintInfo: _printInfo];
 }
 
 - (void) removeAccessoryController: (NSViewController < NSPrintPanelAccessorizing >*)accessoryController
 {
+  if ([_accessoryControllers indexOfObjectIdenticalTo: accessoryController] == NSNotFound)
+    return;
+  RETAIN(accessoryController);
   [_accessoryControllers removeObjectIdenticalTo: accessoryController];
+  [[self _panelAccessory] updateWithPrintInfo: _printInfo];
+  [[accessoryController view] removeFromSuperview];
+  [accessoryController setRepresentedObject: nil];
+  RELEASE(accessoryController);
 }
 
 - (NSString *) defaultButtonTitle
@@ -257,6 +317,8 @@ static NSPrintPanel *shared_instance = nil;
 - (void) setOptions: (NSPrintPanelOptions)options
 {
   _options = options;
+  [self _applyOptions];
+  [[self _panelAccessory] updateWithPrintInfo: _printInfo];
 }
 
 - (NSString *) jobStyleHint
@@ -311,6 +373,7 @@ static NSPrintPanel *shared_instance = nil;
   ret = [NSApp runModalForWindow: self];
   [_optionPanel orderOut: self];
   DESTROY(_printInfo);
+  [[self _panelAccessory] updateWithPrintInfo: nil];
   /* Don't order ourselves out, let the NSPrintOperation do that */
   return ret;
 }
@@ -332,6 +395,7 @@ static NSPrintPanel *shared_instance = nil;
          contextInfo: contextInfo];
   [_optionPanel orderOut: self];
   DESTROY(_printInfo);
+  [[self _panelAccessory] updateWithPrintInfo: nil];
   [self orderOut: self];
 }
 
@@ -433,7 +497,7 @@ static NSPrintPanel *shared_instance = nil;
       NSLog(@"Print panel buttonAction: from unknown sender - x%p\n", sender);
     }
 
-  // FIXME
+  [self makeFirstResponder: self];
   [self _finalWritePrintInfo: _printInfo];
 
   [NSApp stopModalWithCode: (_picked == NSCancelButton) ? NSCancelButton :  NSOKButton];
@@ -466,6 +530,39 @@ static NSPrintPanel *shared_instance = nil;
       [[fromRangeForm cellAtIndex: 0] setStringValue: str];
       str = [NSString stringWithFormat: @"%lu", (unsigned long) NSMaxRange(_pages)-1];
       [[toRangeForm cellAtIndex: 0] setStringValue: str];
+    }
+  [self _previewSettingsChanged: sender];
+}
+
+- (GSPrintPanelAccessory *) _panelAccessory
+{
+  GSPrintPanelAccessory *accessory = (id)[[self contentView]
+    viewWithTag: GSPrintPanelAccessoryTag];
+
+  if (accessory == nil)
+    {
+      accessory = AUTORELEASE([[GSPrintPanelAccessory alloc] initWithPanel: self]);
+      [[self contentView] addSubview: accessory];
+    }
+  return accessory;
+}
+
+- (void) _applyOptions
+{
+  GSPrintHideControl(CONTROL(self, NSPPCopiesField), !(_options & NSPrintPanelShowsCopies));
+  GSPrintHideControl(CONTROL(self, NSPPPageChoiceMatrix), !(_options & NSPrintPanelShowsPageRange));
+  GSPrintHideControl(CONTROL(self, NSPPPageRangeFrom), !(_options & NSPrintPanelShowsPageRange));
+  GSPrintHideControl(CONTROL(self, NSPPPageRangeTo), !(_options & NSPrintPanelShowsPageRange));
+  GSPrintHideControl(CONTROL(self, NSPPScaleField),
+    !(_options & NSPrintPanelShowsScaling) || (_options & NSPrintPanelShowsPageSetupAccessory));
+}
+
+- (void) _previewSettingsChanged: (id)sender
+{
+  if (_printInfo != nil)
+    {
+      [self _finalWritePrintInfo: _printInfo];
+      [[self _panelAccessory] schedulePreview];
     }
 }
 
@@ -519,6 +616,12 @@ static NSPrintPanel *shared_instance = nil;
 /* Private method for NSPrintOperation */
 - (void) _setStatusStringValue: (NSString *)string
 {
+  if ([NSThread isMainThread] == NO)
+    {
+      [self performSelectorOnMainThread: _cmd withObject: string
+                         waitUntilDone: NO];
+      return;
+    }
   [CONTROL(self, NSPPStatusField) setStringValue: string ];
 }
 @end
@@ -558,7 +661,8 @@ static NSPrintPanel *shared_instance = nil;
   [CONTROL(self, NSPPStatusField) setStringValue: @"Idle" ];
 
   /* Setup copies, page range, scale */
-  [CONTROL(self, NSPPCopiesField)  setIntValue: 1];
+  [CONTROL(self, NSPPCopiesField) setIntValue:
+    MAX(1, [[dict objectForKey: NSPrintCopies] intValue])];
   [[CONTROL(self, NSPPPageRangeFrom) cellAtIndex: 0] setStringValue: @"" ];
   [[CONTROL(self, NSPPPageRangeTo) cellAtIndex: 0] setStringValue: @"" ];
   [CONTROL(self, NSPPPageChoiceMatrix) selectCellAtRow: 0 column: 0];
@@ -574,10 +678,19 @@ static NSPrintPanel *shared_instance = nil;
   dict = [info dictionary];
   NSDebugLLog(@"NSPrinting", 
 	      @"Update PrintInfo dictionary\n %@ \n --------------", dict);
-  _pages = NSMakeRange([[dict objectForKey: NSPrintFirstPage] intValue],
-		       [[dict objectForKey: NSPrintLastPage] intValue]);
-  if (NSMaxRange(_pages) == 0)
-    _pages = NSMakeRange(1, 0);
+  {
+    NSInteger first = MAX(1, [[dict objectForKey: NSPrintFirstPage] integerValue]);
+    NSInteger last = [[dict objectForKey: NSPrintLastPage] integerValue];
+
+    _pages = NSMakeRange(first, MAX(0, last - first + 1));
+    if ([dict objectForKey: NSPrintAllPages] != nil
+        && ![[dict objectForKey: NSPrintAllPages] boolValue])
+      {
+        [CONTROL(self, NSPPPageChoiceMatrix) selectCellAtRow: 0 column: 1];
+        [[CONTROL(self, NSPPPageRangeFrom) cellAtIndex: 0] setIntegerValue: first];
+        [[CONTROL(self, NSPPPageRangeTo) cellAtIndex: 0] setIntegerValue: MAX(first, last)];
+      }
+  }
 
   /* Setup the layout popup */
   layout = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
@@ -591,8 +704,19 @@ static NSPrintPanel *shared_instance = nil;
   /* Setup the resolution popup */
   control = CONTROL(_optionPanel, NSPPResolutionButton);
   [control removeAllItems];
-  /* FIXME: Get default from printInfo? */
   str = [printer stringForKey:@"DefaultResolution" inTable: @"PPD"];
+  {
+    id features = [dict objectForKey: NSPrintJobFeatures];
+    id saved = nil;
+
+    if ([features isKindOfClass: [NSDictionary class]])
+      saved = [features objectForKey: @"Resolution"];
+    if ([saved isKindOfClass: [NSString class]]
+        && [saved hasPrefix: @"Resolution/"]
+        && [[printer stringListForKey: @"Resolution" inTable: @"PPD"]
+             containsObject: [saved substringFromIndex: 11]])
+      str = [saved substringFromIndex: 11];
+  }
   if (str)
     {
       NSArray *list;
@@ -633,6 +757,15 @@ static NSPrintPanel *shared_instance = nil;
   control = CONTROL(_optionPanel, NSPPPaperFeedButton);
   [control removeAllItems];
   str = [printer stringForKey:@"DefaultInputSlot" inTable: @"PPD"];
+  {
+    id saved = [dict objectForKey: NSPrintPaperFeed];
+
+    if ([saved isKindOfClass: [NSString class]]
+        && [saved hasPrefix: @"InputSlot/"]
+        && [[printer stringListForKey: @"InputSlot" inTable: @"PPD"]
+             containsObject: [saved substringFromIndex: 10]])
+      str = [saved substringFromIndex: 10];
+  }
   if (str)
     {
       NSString *manual;
@@ -666,6 +799,9 @@ static NSPrintPanel *shared_instance = nil;
 	  if (display == nil)
 	    display = str;
 	  [control selectItemWithTitle: display];
+	  if ([[dict objectForKey: NSPrintPaperFeed] isEqual: NSPrintManualFeed]
+	      && manual != nil)
+	    [control selectItemAtIndex: 0];
 	}
       else
 	{
@@ -674,6 +810,8 @@ static NSPrintPanel *shared_instance = nil;
     }
   else
     [control addItemWithTitle: _(@"Unknown")];
+
+  [[self _panelAccessory] updateWithPrintInfo: info];
 }
 
 #define NSNUMBER(a) [NSNumber numberWithInt: (a)]
@@ -691,19 +829,27 @@ static NSPrintPanel *shared_instance = nil;
 
   dict = [info dictionary];
   printer = [info printer];
+  [[self _panelAccessory] writePrintInfo: info];
   features = [dict objectForKey: NSPrintJobFeatures];
+  if ([features isKindOfClass: [NSDictionary class]])
+    {
+      features = [NSMutableDictionary dictionaryWithDictionary: features];
+      [dict setObject: features forKey: NSPrintJobFeatures];
+    }
+  else
+    features = nil;
 
   /* Copies */
-  control = CONTROL(self, NSPPCopiesField);
-  if ([control intValue] > 1)
+  if (_options & NSPrintPanelShowsCopies)
     {
-      [dict setObject: NSNUMBER([control intValue]) 
-	       forKey: NSPrintCopies];
+      control = CONTROL(self, NSPPCopiesField);
+      [control setIntValue: MAX(1, [control intValue])];
+      [dict setObject: NSNUMBER([control intValue]) forKey: NSPrintCopies];
     }
 
   /* Pages */
   control = CONTROL(self, NSPPPageChoiceMatrix);
-  if ([control selectedColumn] != 0)
+  if ((_options & NSPrintPanelShowsPageRange) && [control selectedColumn] != 0)
     {
       id fromRangeForm = CONTROL(self, NSPPPageRangeFrom);
       id toRangeForm = CONTROL(self, NSPPPageRangeTo);
@@ -713,19 +859,23 @@ static NSPrintPanel *shared_instance = nil;
 	    forKey: NSPrintLastPage];
       [dict setObject: NSNUMBER(NO) forKey: NSPrintAllPages];
     }
-  else
+  else if (_options & NSPrintPanelShowsPageRange)
       [dict setObject: NSNUMBER(YES) forKey: NSPrintAllPages];
 
   /* Scale */
-  control = CONTROL(self, NSPPScaleField);
-  scale = [control doubleValue]/100.0;
-  if (scale <= 0)
-    scale = .1;
-  if (scale >= 10)
-    scale = 10;
-  [control setIntValue: (int)(scale*100)];
-  [dict setObject: [NSNumber numberWithDouble: scale]
-	   forKey: NSPrintScalingFactor];
+  if ((_options & NSPrintPanelShowsScaling)
+      && !(_options & NSPrintPanelShowsPageSetupAccessory))
+    {
+      control = CONTROL(self, NSPPScaleField);
+      scale = [control doubleValue]/100.0;
+      if (scale <= 0)
+        scale = .1;
+      if (scale >= 10)
+        scale = 10;
+      [control setIntValue: (int)(scale*100)];
+      [dict setObject: [NSNumber numberWithDouble: scale]
+              forKey: NSPrintScalingFactor];
+    }
 
   /* Layout */
   layout = [CONTROL(self, NSPPLayoutButton) indexOfSelectedItem] * 2;
@@ -780,12 +930,19 @@ static NSPrintPanel *shared_instance = nil;
       def = [printer stringForKey:@"DefaultInputSlot" inTable: @"PPD"];
       if ([sel isEqual: _(@"Manual")] == YES)
 	{
+	  if (features == nil)
+	    {
+	      features = [NSMutableDictionary dictionary];
+	      [dict setObject: features forKey: NSPrintJobFeatures];
+	    }
+	  [features removeObjectForKey: @"InputSlot"];
+	  [features removeObjectForKey: NSPrintPaperFeed];
 	  [dict setObject: NSPrintManualFeed forKey: NSPrintPaperFeed];
 	  /* FIXME: This needs to be more robust. I'm just assuming
 	     that all Manual Feed keys can be True or False (which is
 	     the case for all the ppd files that I know of). */
 	  [dict setObject: @"ManualFeed/True" forKey: NSPrintManualFeed];
-	  [features setObject: @"ManualFeed/True" forKey: NSPrintPaperFeed];
+	  [features setObject: @"ManualFeed/True" forKey: @"ManualFeed"];
 	}
       else if ([sel isEqual: def] == NO
 	       || [dict objectForKey: NSPrintPaperFeed])
@@ -795,6 +952,11 @@ static NSPrintPanel *shared_instance = nil;
 	      features = [NSMutableDictionary dictionary];
 	      [dict setObject: features forKey: NSPrintJobFeatures];
 	    }
+	  [dict removeObjectForKey: NSPrintManualFeed];
+	  [features removeObjectForKey: NSPrintPaperFeed];
+	  [features removeObjectForKey: @"ManualFeed"];
+	  if (manual)
+	    [features setObject: @"ManualFeed/False" forKey: @"ManualFeed"];
 	  sel = [@"InputSlot/" stringByAppendingString: sel];
 	  [features setObject: sel forKey: @"InputSlot"];
 	  [dict setObject: sel forKey: NSPrintPaperFeed];
