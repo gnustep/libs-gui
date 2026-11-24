@@ -530,20 +530,6 @@ AS_IF([test "x$enable_icu" = "xyes"], [
       HAVE_ICU=1)], [HAVE_ICU=0])
   fi
 
-  if test $HAVE_ICU = 0; then
-    HAVE_ICU=0;
-    AS_MESSAGE([checking for libicu (icu-config disabled)...])
-    if test "$icu_libdir" != "no"; then
-      ICU_LDFLAGS="-L$icu_libdir";
-    fi
-    saved_LDFLAGS="$LDFLAGS";
-    LDFLAGS="$LDFLAGS $LIBS $ICU_LDFLAGS -licui18n -licuuc -licudata -lm"
-    AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[HAVE_ICU=1],[HAVE_ICU=0]);
-    LDFLAGS="$saved_LDFLAGS";
-    ICU_LIBS="-licui18n -licuuc -licudata -lm" 
-  fi
-
-    
   if test $HAVE_ICU = 1; then
     AC_MSG_RESULT(yes)
     AC_CHECK_HEADERS(unicode/uchar.h unicode/ustring.h)
