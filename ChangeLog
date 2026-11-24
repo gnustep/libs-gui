@@ -1,3 +1,51 @@
+2026-11-24 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/NSPrintOperation.m (_printPaginateWithInfo:knowsRange:):
+	Calculate fit-to-page scaling from unscaled content so it does not
+	cancel the user's print scaling factor.
+	* Tests/gui/GSPrintOperation/scaling.m: Check rendered dimensions
+	and page counts with combined fit and user scaling, including
+	mixed pagination modes and custom pagination.
+
+2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/GSPrintOperation.m (GSPrintPreviewFile): Move observation
+	registration and its retain from initWithTask:path: to an explicit
+	startObserving method, called before launching the preview task.
+	* Tests/gui/GSPrintOperation/delivery.m: Check unstarted, invalidated
+	and asynchronously completed preview lease lifetimes.
+
+2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
+
+	* .github/workflows/main.yml: Enable ImageMagick and install its
+	Ghostscript delegate in the headless GUI test job. Allow PDF reads
+	and verify ImageMagick was configured so physical page-count tests
+	can decode generated PDFs through NSPDFImageRep.
+
+2026-11-22 Gregory Casamento <greg.casamento@gmail.com>
+
+	* Source/NSView.m: Import printing coordinate, margin, pagination
+	and job-title corrections from printing_improvements.
+	* Source/NSImageView.m: Fit printed images to a single page.
+	* Source/NSPrintInfo.m: Correct left and bottom printer margins.
+	* Source/NSPrintPanel.m: Keep worker-thread status updates on the
+	main thread. Exclude the print-panel UI additions.
+	* Source/NSPrintOperation.m:
+	* Source/GSPrintOperation.m:
+	* Source/GSPDFPrintOperation.m:
+	* Source/GSEPSPrintOperation.m:
+	* Headers/AppKit/NSPrintOperation.h:
+	* Headers/Additions/GNUstepGUI/GSPrintOperation.h: Import shared
+	pagination, modal completion, job-title and output ownership fixes.
+	* Printing/GSCUPS/GSCUPSPrintOperation.m: Adapt to shared output
+	ownership only; exclude CUPS submission and option changes.
+	* Printing/GSLPR/GSLPRPrintOperation.m:
+	* Printing/GSWIN32/GSWIN32PrintOperation.m: Import delivery and
+	output ownership fixes.
+	* Tests/gui/GSPrintOperation/:
+	* Tests/gui/NSPrintInfo/margins.m:
+	* Tests/gui/NSImageView/printing.m: Import regression coverage.
+
 2026-11-20 In-Ho Yi <chajath@gmail.com>
 
 	* Source/NSWindow.m (-deminiaturize:): Post
@@ -2384,7 +2432,8 @@
 
 2018-01-24 Fred Kiefer <FredKiefer@gmx.de>
 
-	* Printing/GSCUPS/GSCUPSPrintOperation.m:
+	* Printing/GSCUPS/GSCUPSPrintOperation.m: Adapt to shared output
+	ownership only; exclude CUPS submission and option changes.
 	Restore -allocWithZone: methods as this is needed to override
 	behaviour in superclass.
 
