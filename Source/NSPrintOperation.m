@@ -1061,22 +1061,20 @@ scaleRect(NSRect rect, double scale)
   [dict setObject: [NSValue valueWithRect: info->sheetBounds]
             forKey: @"NSPrintSheetBounds"];
 
-   /* Scale bounds by the user specified scaling */
-  info->scaledBounds = scaleRect(_rect, info->printScale);
   info->pageScale = 1; // default
 
   if (knowsRange == NO && !NSIsEmptyRect(_rect))
     {
-      /* Now calculate page fitting to get page scale */
+      /* Fit the unscaled content. User scaling is independent of page
+         fitting; including it here would cancel the requested scale. */
       if ([_print_info horizontalPagination] == NSFitPagination)
         info->pageScale  = info->paperBounds.size.width 
-          / NSWidth(info->scaledBounds);
+          / NSWidth(_rect);
       if ([_print_info verticalPagination] == NSFitPagination)
         info->pageScale = MIN(info->pageScale,
-          NSHeight(info->paperBounds)/NSHeight(info->scaledBounds));
-      /* Scale bounds by pageScale */
-      info->scaledBounds = scaleRect(info->scaledBounds, info->pageScale);
+          NSHeight(info->paperBounds)/NSHeight(_rect));
     }
+  info->scaledBounds = scaleRect(_rect, info->pageScale * info->printScale);
 
   /*
    * Calculate nup. If nup is an odd multiple of two, secretly change the
