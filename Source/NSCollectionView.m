@@ -1658,29 +1658,40 @@ static NSString *_placeholderItem = nil;
 - (NSCollectionViewItem *) makeItemWithIdentifier: (NSUserInterfaceItemIdentifier)identifier
 				     forIndexPath: (NSIndexPath *)indexPath
 {
-  NSCollectionViewItem *item = [_dataSource collectionView: self
-					    itemForRepresentedObjectAtIndexPath: indexPath];
+  Class cls = [[_registeredClasses objectForKey: GSNoSupplementaryElement]
+		objectForKey: identifier];
+  NSNib *nib = [[_registeredNibs objectForKey: GSNoSupplementaryElement]
+		 objectForKey: identifier];
+  NSCollectionViewItem *item = nil;
 
-  if (item != nil)
+  if (cls != Nil)
     {
+      item = AUTORELEASE([[cls alloc] init]);
       [self _instantiateWithItem: item];
+    }
+  else if (nib != nil)
+    {
+      NSArray *objects = nil;
+
+      if ([nib instantiateWithOwner: nil topLevelObjects: &objects])
+	{
+	  NSEnumerator *en = [objects objectEnumerator];
+	  id o;
+
+	  while ((o = [en nextObject]) != nil && item == nil)
+	    {
+	      if ([o isKindOfClass: [NSCollectionViewItem class]])
+		{
+		  item = o;
+		}
+	    }
+	}
     }
   else
     {
-      NSView *view = [[NSView alloc] initWithFrame: NSZeroRect];
-
-      item = AUTORELEASE([[NSCollectionViewItem alloc] init]);
-      [item setView: view];
-      RELEASE(view);
-    }
-
-  if (item != nil)
-    {
-      // Add to maps...
-      [_itemsToIndexPaths setObject: indexPath
-			     forKey: item];
-      [_indexPathsToItems setObject: item
-			     forKey: indexPath];
+      [NSException raise: NSInternalInconsistencyException
+		  format: @"No class or nib is registered for the item identifier %@",
+	identifier];
     }
 
   return item;
@@ -1718,12 +1729,12 @@ static NSString *_placeholderItem = nil;
   t = [_registeredClasses objectForKey: kind];
   if (t == nil)
     {
-      t = [NSMapTable weakToWeakObjectsMapTable];
+      t = [NSMapTable strongToStrongObjectsMapTable];
       [_registeredClasses setObject: t
 			     forKey: kind];
     }
 
-  [t setObject: viewClass forKey: [identifier copy]];
+  [t setObject: viewClass forKey: AUTORELEASE([identifier copy])];
 }
 
 - (void) registerNib: (NSNib *)nib
@@ -1735,12 +1746,12 @@ static NSString *_placeholderItem = nil;
   t = [_registeredNibs objectForKey: kind];
   if (t == nil)
     {
-      t = [NSMapTable weakToWeakObjectsMapTable];
+      t = [NSMapTable strongToStrongObjectsMapTable];
       [_registeredNibs setObject: t
 			  forKey: kind];
     }
 
-  [t setObject: nib forKey: [identifier copy]];
+  [t setObject: nib forKey: AUTORELEASE([identifier copy])];
 }
 
 /* Providing the collection view's data */
@@ -1793,10 +1804,34 @@ static NSString *_placeholderItem = nil;
 }
 
 /* Reloading Content */
+- (NSCollectionViewItem *) _itemFromDataSourceAtIndexPath: (NSIndexPath *)path
+{
+  NSCollectionViewItem *item = [_dataSource collectionView: self
+					    itemForRepresentedObjectAtIndexPath: path];
+
+  if (item != nil)
+    {
+      [self _instantiateWithItem: item];
+    }
+  else
+    {
+      NSView *view = [[NSView alloc] initWithFrame: NSZeroRect];
+
+      item = AUTORELEASE([[NSCollectionViewItem alloc] init]);
+      [item setView: view];
+      RELEASE(view);
+    }
+
+  [_itemsToIndexPaths setObject: path
+			 forKey: item];
+  [_indexPathsToItems setObject: item
+			 forKey: path];
+  return item;
+}
+
 - (void) _loadItemAtIndexPath: (NSIndexPath *)path
 {
-  NSCollectionViewItem *item = [self makeItemWithIdentifier: nil
-					       forIndexPath: path];
+  NSCollectionViewItem *item = [self _itemFromDataSourceAtIndexPath: path];
 
   NSDebugLog(@"NSCollectionView _loadItemAtIndexPath:%@ item=%@ view=%@", path, item, [item view]);
 
