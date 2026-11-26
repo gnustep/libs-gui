@@ -38,65 +38,142 @@
 #import "AppKit/NSNibLoading.h"
 #import "AppKit/NSStoryboard.h"
 #import "AppKit/NSGraphics.h"
+#import "AppKit/NSBezierPath.h"
+#import "AppKit/NSColor.h"
+#import "AppKit/NSImage.h"
+#import "AppKit/NSBitmapImageRep.h"
+#import "GNUstepGUI/GSDisplayServer.h"
 
 // Popover private classes
 
+/* The arrow is part of the panel, outside the controller's content view. */
+static const CGFloat GSPopoverArrowSize = 12.0;
+
 @interface GSPopoverView : NSView
+{
+  NSRectEdge _edge;
+}
+
+- (void) setEdge: (NSRectEdge)edge;
+- (NSRect) bodyRect;
+- (NSBezierPath *) outlinePath;
+
 @end
 
 @implementation GSPopoverView
 
-- (instancetype) initWithFrame: (NSRect)frame
+- (void) setEdge: (NSRectEdge)edge
 {
-  self = [super initWithFrame: frame];
-  if (self)
+  _edge = edge;
+  [self setNeedsDisplay: YES];
+}
+
+- (NSRect) bodyRect
+{
+  NSRect rect = [self bounds];
+
+  if (_edge == NSMinXEdge || _edge == NSMaxXEdge)
     {
-      [self setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+      rect.size.width -= GSPopoverArrowSize;
+      if (_edge == NSMaxXEdge)
+        rect.origin.x += GSPopoverArrowSize;
     }
-  return self;
+  else
+    {
+      rect.size.height -= GSPopoverArrowSize;
+      if (_edge == NSMaxYEdge)
+        rect.origin.y += GSPopoverArrowSize;
+    }
+  return rect;
+}
+
+- (BOOL) isOpaque
+{
+  return NO;
+}
+
+- (NSBezierPath *) outlinePath
+{
+  NSRect body = NSInsetRect([self bodyRect], 0.5, 0.5);
+  NSBezierPath *path = [NSBezierPath bezierPath];
+  CGFloat halfWidth = MIN(GSPopoverArrowSize,
+    MIN(NSWidth(body), NSHeight(body)) / 2);
+
+  [path moveToPoint: NSMakePoint(NSMinX(body), NSMinY(body))];
+  if (_edge == NSMaxYEdge)
+    {
+      [path lineToPoint: NSMakePoint(NSMidX(body) - halfWidth, NSMinY(body))];
+      [path lineToPoint: NSMakePoint(NSMidX(body), 0.5)];
+      [path lineToPoint: NSMakePoint(NSMidX(body) + halfWidth, NSMinY(body))];
+    }
+  [path lineToPoint: NSMakePoint(NSMaxX(body), NSMinY(body))];
+  if (_edge == NSMinXEdge)
+    {
+      [path lineToPoint: NSMakePoint(NSMaxX(body), NSMidY(body) - halfWidth)];
+      [path lineToPoint: NSMakePoint(NSMaxX([self bounds]) - 0.5, NSMidY(body))];
+      [path lineToPoint: NSMakePoint(NSMaxX(body), NSMidY(body) + halfWidth)];
+    }
+  [path lineToPoint: NSMakePoint(NSMaxX(body), NSMaxY(body))];
+  if (_edge == NSMinYEdge)
+    {
+      [path lineToPoint: NSMakePoint(NSMidX(body) + halfWidth, NSMaxY(body))];
+      [path lineToPoint: NSMakePoint(NSMidX(body), NSMaxY([self bounds]) - 0.5)];
+      [path lineToPoint: NSMakePoint(NSMidX(body) - halfWidth, NSMaxY(body))];
+    }
+  [path lineToPoint: NSMakePoint(NSMinX(body), NSMaxY(body))];
+  if (_edge == NSMaxXEdge)
+    {
+      [path lineToPoint: NSMakePoint(NSMinX(body), NSMidY(body) + halfWidth)];
+      [path lineToPoint: NSMakePoint(0.5, NSMidY(body))];
+      [path lineToPoint: NSMakePoint(NSMinX(body), NSMidY(body) - halfWidth)];
+    }
+  [path closePath];
+  [path setLineWidth: 1.0];
+  [path setLineJoinStyle: NSRoundLineJoinStyle];
+  return path;
 }
 
 - (void) drawRect: (NSRect)dirtyRect
 {
-  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge};
-  NSColor *black = [NSColor blackColor];
-  NSColor *white = [NSColor whiteColor];
-  NSColor *colors[] = {white, white, black, black};
-  NSRect bounds = [self bounds];
+  NSBezierPath *path = [self outlinePath];
 
-  [super drawRect: dirtyRect];
-  NSDrawColorTiledRects(bounds, bounds, sides, colors, 4);
+  [[NSColor clearColor] set];
+  NSRectFillUsingOperation(dirtyRect, NSCompositeCopy);
+  [[NSColor windowBackgroundColor] set];
+  [path fill];
+  [[NSColor darkGrayColor] set];
+  [path stroke];
 }
 
 @end
 
 @interface GSPopoverPanel : NSPanel
+
+- (void) setPopoverView: (NSView *)view edge: (NSRectEdge)edge;
+
 @end
 
 @implementation GSPopoverPanel
 
 - (id) initWithContentRect: (NSRect)contentRect
-		 styleMask: (NSUInteger)aStyle
-		   backing: (NSBackingStoreType)bufferingType
-		     defer: (BOOL)flag
+                 styleMask: (NSUInteger)aStyle
+                   backing: (NSBackingStoreType)bufferingType
+                     defer: (BOOL)flag
 {
   self = [super initWithContentRect: contentRect
-			  styleMask: aStyle
-			    backing: bufferingType
-			      defer: flag];
+                          styleMask: aStyle
+                            backing: bufferingType
+                              defer: flag];
   if (self)
     {
       [super setContentView: AUTORELEASE([[GSPopoverView alloc]
-					   initWithFrame: contentRect])];
-      [self setReleasedWhenClosed: YES];
+        initWithFrame: NSMakeRect(0, 0, NSWidth(contentRect),
+                                 NSHeight(contentRect))])];
+      [self setReleasedWhenClosed: NO];
+      [self setOpaque: NO];
+      [self setBackgroundColor: [NSColor clearColor]];
     }
   return self;
-}
-
-- (void) orderOut: (id)sender
-{
-  [super orderOut: sender];
-  [self close];
 }
 
 - (BOOL) canBecomeKeyWindow
@@ -109,21 +186,45 @@
   return NO;
 }
 
-- (void) setContentView: (NSView *)view
+- (void) setPopoverView: (NSView *)view edge: (NSRectEdge)edge
 {
-  [[super contentView] addSubview: view];
-}
+  GSPopoverView *decoration = (GSPopoverView *)[super contentView];
+  NSArray *children = AUTORELEASE([[decoration subviews] copy]);
+  NSUInteger i;
+  NSImage *shape;
+  NSBitmapImageRep *bitmap;
+  NSBezierPath *path;
 
-- (NSView *) contentView
-{
-  NSArray *subviews = [[super contentView] subviews];
-
-  if ([subviews count] == 0)
+  for (i = 0; i < [children count]; i++)
     {
-      return nil;
+      [[children objectAtIndex: i] removeFromSuperview];
     }
+  [decoration setEdge: edge];
+  /* Keep opaque controller views inside the one-point outline. */
+  [view setFrame: NSInsetRect([decoration bodyRect], 1.0, 1.0)];
+  [decoration addSubview: view];
 
-  return [subviews objectAtIndex: 0];
+  /* Non-composited backends need a window shape as well as clear pixels. */
+  shape = [[NSImage alloc] initWithSize: [decoration bounds].size];
+  [shape setBackgroundColor: [NSColor clearColor]];
+  [shape lockFocus];
+  [[NSColor clearColor] set];
+  NSRectFillUsingOperation([decoration bounds], NSCompositeCopy);
+  path = [decoration outlinePath];
+  [[NSColor whiteColor] set];
+  [path fill];
+  [path stroke];
+  bitmap = [[NSBitmapImageRep alloc]
+    initWithFocusedViewRect: [decoration bounds]];
+  [shape unlockFocus];
+  RELEASE(shape);
+  /* The display server needs bitmap pixels, not a cached image rep. */
+  shape = [[NSImage alloc] initWithSize: [decoration bounds].size];
+  [shape setBackgroundColor: [NSColor clearColor]];
+  [shape addRepresentation: bitmap];
+  RELEASE(bitmap);
+  [GSServerForWindow(self) restrictWindow: [self windowNumber] toImage: shape];
+  RELEASE(shape);
 }
 
 @end
@@ -139,6 +240,16 @@
       _animates = YES;
     }
   return self;
+}
+
+- (void) dealloc
+{
+  [_realPanel setDelegate: nil];
+  [[_realPanel parentWindow] removeChildWindow: _realPanel];
+  [_realPanel close];
+  DESTROY(_realPanel);
+  DESTROY(_contentViewController);
+  DEALLOC;
 }
 
 /* Properties */
@@ -244,78 +355,106 @@
 
 - (void) close
 {
+  [[_realPanel parentWindow] removeChildWindow: _realPanel];
   [_realPanel close];
   _shown = NO;
 }
 
 - (IBAction) performClose: (id)sender
 {
-  [_realPanel performClose: sender];
-  _shown = NO;
+  if ([self windowShouldClose: _realPanel])
+    [self close];
 }
 
 - (void) showRelativeToRect: (NSRect)positioningRect
 		     ofView: (NSView *)positioningView
 	      preferredEdge: (NSRectEdge)preferredEdge
 {
-  NSView *view = nil;
+  NSView *view = [_contentViewController view];
   NSRect screenRect;
   NSRect windowFrame;
-  NSRect viewFrame;
+  NSSize size;
 
-  [_contentViewController loadView];
-  view = [_contentViewController view];
-  viewFrame = [view frame];
-
-  if (!_realPanel)
+  if (positioningView == nil || [positioningView window] == nil)
     {
-      _realPanel = [[GSPopoverPanel alloc] initWithContentRect: viewFrame
-						      styleMask: NSBorderlessWindowMask
-							backing: NSBackingStoreRetained
-							  defer: NO];
+      [NSException raise: NSInvalidArgumentException
+                  format: @"The popover positioning view must have a window"];
+    }
+  if (view == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+                  format: @"The popover requires a content view"];
+    }
+  if (NSIsEmptyRect(positioningRect))
+    positioningRect = [positioningView bounds];
+  _positioningRect = positioningRect;
+  screenRect = [positioningView convertRect: positioningRect toView: nil];
+  screenRect = [[positioningView window] convertRectToScreen: screenRect];
 
-      [_realPanel setBackgroundColor: [NSColor darkGrayColor]];
-      [_realPanel setReleasedWhenClosed: YES];
+  /* The requested Y edge is in the positioning view's coordinate system. */
+  if ([positioningView isFlipped])
+    {
+      if (preferredEdge == NSMinYEdge)
+        preferredEdge = NSMaxYEdge;
+      else if (preferredEdge == NSMaxYEdge)
+        preferredEdge = NSMinYEdge;
+    }
+  size = _contentSize;
+  if (size.width <= 0)
+    size.width = NSWidth([view frame]);
+  if (size.height <= 0)
+    size.height = NSHeight([view frame]);
+  size.width += 2.0;
+  size.height += 2.0;
+  if (preferredEdge == NSMinXEdge || preferredEdge == NSMaxXEdge)
+    size.width += GSPopoverArrowSize;
+  else
+    size.height += GSPopoverArrowSize;
+  windowFrame = NSMakeRect(NSMidX(screenRect) - size.width / 2,
+                          NSMidY(screenRect) - size.height / 2,
+                          size.width, size.height);
+  switch (preferredEdge)
+    {
+      case NSMinXEdge:
+        windowFrame.origin.x = NSMinX(screenRect) - size.width;
+        break;
+      case NSMaxXEdge:
+        windowFrame.origin.x = NSMaxX(screenRect);
+        break;
+      case NSMinYEdge:
+        windowFrame.origin.y = NSMinY(screenRect) - size.height;
+        break;
+      case NSMaxYEdge:
+        windowFrame.origin.y = NSMaxY(screenRect);
+        break;
+    }
+
+  if (_realPanel == nil)
+    {
+      _realPanel = [[GSPopoverPanel alloc]
+        initWithContentRect: windowFrame
+                  styleMask: NSBorderlessWindowMask
+                    backing: NSBackingStoreBuffered
+                      defer: NO];
       [_realPanel setExcludedFromWindowsMenu: YES];
       [_realPanel setLevel: NSPopUpMenuWindowLevel];
-      [_realPanel setAutodisplay: NO];
       [_realPanel setDelegate: self];
-      [_realPanel setContentView: view];
     }
-
-  screenRect = [[positioningView window] convertRectToScreen:positioningRect];
-  windowFrame = [_realPanel frame];
-  windowFrame.origin = screenRect.origin;
-
-  if(NSMinXEdge == preferredEdge)
-    {
-      windowFrame.origin.y -= viewFrame.size.height;
-    }
-  else if(NSMaxXEdge == preferredEdge)
-    {
-      windowFrame.origin.y += viewFrame.size.height;
-    }
-  else if(NSMinYEdge == preferredEdge)
-    {
-      windowFrame.origin.x -= viewFrame.size.width;
-    }
-  else if(NSMaxYEdge == preferredEdge)
-    {
-      windowFrame.origin.x += viewFrame.size.width;
-    }
-
-  [_realPanel setFrame: windowFrame display: YES];
-  [_realPanel makeKeyAndOrderFront:self];
-
-  NSDebugLog(@"Showing relative to in window %@",NSStringFromRect(positioningRect));
-  NSDebugLog(@"Showing relative to in screen %@",NSStringFromRect(screenRect));
-
+  if ([_realPanel parentWindow] != [positioningView window])
+    [[_realPanel parentWindow] removeChildWindow: _realPanel];
+  [_realPanel setFrame: windowFrame display: NO];
+  [(GSPopoverPanel *)_realPanel setPopoverView: view edge: preferredEdge];
+  [_realPanel orderFront: self];
+  [[positioningView window] addChildWindow: _realPanel
+                                 ordered: NSWindowAbove];
   _shown = YES;
 }
 
 - (BOOL) windowShouldClose: (id)sender
 {
-  return [_delegate popoverShouldClose:self];
+  if ([_delegate respondsToSelector: @selector(popoverShouldClose:)])
+    return [_delegate popoverShouldClose: self];
+  return YES;
 }
 
 - (void) windowDidClose: (NSNotification *)notification
