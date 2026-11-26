@@ -7490,6 +7490,12 @@ For a more detailed explanation, -setSortDescriptors:. */
 - (void) registerNib: (NSNib *)nib
        forIdentifier: (NSUserInterfaceItemIdentifier)identifier
 {
+  if (identifier == nil)
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"NSTableView registerNib:forIdentifier: identifier must not be nil"]; 
+    }
+
   _viewBased = YES;
   [self _initViewBasedSupport];
   [_registeredNibs setObject: nib
@@ -7513,8 +7519,11 @@ For a more detailed explanation, -setSortDescriptors:. */
   while ((view = [en nextObject]) != nil)
     {
       NSUserInterfaceItemIdentifier identifier = [view identifier];
-      [_registeredViews setObject: view
-			   forKey: identifier];
+      if (identifier != nil)
+	{
+	  [_registeredViews setObject: view
+			       forKey: identifier];
+	}
     }
 }
 
