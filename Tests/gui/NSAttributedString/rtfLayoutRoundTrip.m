@@ -26,7 +26,21 @@ int
 main(void)
 {
   START_SET("RTF and RTFD layout round trip")
-  [NSApplication sharedApplication];
+
+  NS_DURING
+    {
+      [NSApplication sharedApplication];
+    }
+  NS_HANDLER
+    {
+      if ([[localException name]
+            isEqualToString: NSInternalInconsistencyException])
+        SKIP("It looks like GNUstep backend is not yet installed")
+      else
+        [localException raise];
+    }
+  NS_ENDHANDLER
+
   NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
     [NSValue valueWithSize: NSMakeSize(620, 840)], NSPaperSizeDocumentAttribute,
     [NSNumber numberWithDouble: 60], NSLeftMarginDocumentAttribute,
