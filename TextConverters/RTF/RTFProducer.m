@@ -40,7 +40,7 @@
 #define LEFTMARGIN @"LeftMargin"
 #define RIGHTMARGIN @"RightMargin"
 #define TOPMARGIN @"TopMargin"
-#define BUTTOMMARGIN @"ButtomMargin"
+#define BOTTOMMARGIN NSBottomMarginDocumentAttribute
 #define HYPHENATIONFACTOR @"HyphenationFactor"
 #define VIEWSIZE @"ViewSize"
 #define VIEWZOOM @"ViewZoom"
@@ -354,7 +354,7 @@
               (short)points2twips([num floatValue])];
         }
 
-      if ((num = [docDict objectForKey: BUTTOMMARGIN]))
+      if ((num = [docDict objectForKey: BOTTOMMARGIN]))
         {
           [result appendFormat: @"\\margb%d",
               (short)points2twips([num floatValue])];
@@ -527,50 +527,61 @@
       [result appendFormat: @"\\fi%d", (short)twips];
     }
 
-  // right indent
-  // this only works when doc attributes are given
+  // Nonpositive tail indents are relative to the trailing margin.
+  // Positive tail indents are measured from the leading margin instead.
   {
-    NSNumber *rightMargin, *leftMargin;
-    NSValue *paperSize;
+    CGFloat tailIndent = [paraStyle tailIndent];
 
-    paperSize = [docDict objectForKey: PAPERSIZE];
-    rightMargin = [docDict objectForKey: RIGHTMARGIN];
-    leftMargin = [docDict objectForKey: LEFTMARGIN];
-
-    if (paperSize && leftMargin && rightMargin)
+    if (tailIndent <= 0.0)
       {
-        int rightMarginTwips;
-        int leftMarginTwips;
-        int tailIndentTwips;
-        int paperWidthTwips;
+        twips = points2twips(-tailIndent);
+        if (twips != 0)
+          [result appendFormat: @"\\ri%d", twips];
+      }
+    else
+      {
+        NSValue *paperSize = [docDict objectForKey: PAPERSIZE];
+        NSNumber *leftMargin = [docDict objectForKey: LEFTMARGIN];
+        NSNumber *rightMargin = [docDict objectForKey: RIGHTMARGIN];
 
-        rightMarginTwips = points2twips([rightMargin floatValue]);
-        leftMarginTwips = points2twips([leftMargin floatValue]);
-        tailIndentTwips = points2twips([paraStyle tailIndent]);
-        paperWidthTwips = points2twips([paperSize sizeValue].width);
-
-        [result appendFormat: @"\\ri%d",
-            (short)(paperWidthTwips - rightMarginTwips
-            - leftMarginTwips - tailIndentTwips)];
+        if (paperSize && leftMargin && rightMargin)
+          {
+            CGFloat width = [paperSize sizeValue].width
+              - [leftMargin doubleValue] - [rightMargin doubleValue];
+            [result appendFormat: @"\\ri%d",
+              points2twips(width - tailIndent)];
+          }
       }
   }
-  
+
   twips = points2twips([paraStyle paragraphSpacing]);
   if (twips != 0)
     {
       [result appendFormat: @"\\sa%d", (short)twips];
     }
 
-  twips = points2twips([paraStyle minimumLineHeight]);
+  twips = points2twips([paraStyle paragraphSpacingBefore]);
   if (twips != 0)
-    {
-      [result appendFormat: @"\\sl%d", (short)twips];
-    }
+    [result appendFormat: @"\\sb%d", twips];
 
-  twips = points2twips([paraStyle maximumLineHeight]);
+  twips = points2twips([paraStyle lineSpacing]);
   if (twips != 0)
+    [result appendFormat: @"\\slleading%d", twips];
+
+  if ([paraStyle lineHeightMultiple] > 0.0)
     {
-      [result appendFormat: @"\\sl-%d", (short)twips];
+      [result appendFormat: @"\\sl%d\\slmult1",
+        (int)([paraStyle lineHeightMultiple] * 240.0)];
+    }
+  else
+    {
+      twips = points2twips([paraStyle minimumLineHeight]);
+      if (twips != 0)
+        [result appendFormat: @"\\sl%d\\slmult0", twips];
+
+      twips = points2twips([paraStyle maximumLineHeight]);
+      if (twips != 0)
+        [result appendFormat: @"\\sl-%d\\slmult0", twips];
     }
 
   switch ([paraStyle alignment])
