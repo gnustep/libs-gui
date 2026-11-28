@@ -240,7 +240,6 @@
     }
 
   [self setRate: 1.0 / 30.0];
-  [self setVolume: 1.0];
 
   _feedThread = [[NSThread alloc] initWithTarget:self selector:@selector(feed) object:nil];
   [_feedThread start];
@@ -345,7 +344,6 @@
   if (_feedThread == nil || [_feedThread isFinished])
     {
       [self setRate: 1.0];
-      [self setVolume: 1.0];
 
       // Clean up old thread reference if it finished
       if (_feedThread && [_feedThread isFinished])
