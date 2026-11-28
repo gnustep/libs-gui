@@ -219,6 +219,8 @@ static NSMapTable	*viewsMap = 0;
 static NSTimer		*timer = nil;
 static GSToolTips       *timedObject = nil;
 static NSTrackingRectTag timedTag = NSNotFound;
+static GSToolTips       *displayedObject = nil;
+static NSTrackingRectTag displayedTag = NSNotFound;
 // Having a single stored panel for tooltips greatly reduces callback interaction from MS-Windows
 static GSTTPanel	*window = nil;
 // Prevent Windows callback API from attempting to dismiss tooltip as its in the process of appearing
@@ -304,10 +306,6 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
   NSTrackingRectTag	tag;
   GSTTProvider		*provider;
 
-  if (timer != nil)
-    {
-      return -1;	// A tip is already in progress.
-    }
   aRect = NSIntersectionRect(aRect, [view bounds]);
   if (NSEqualRects(aRect, NSZeroRect))
     {
@@ -422,6 +420,11 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
   [self _endDisplay];
 }
 
+- (void) keyDown: (NSEvent *)theEvent
+{
+  [self _endDisplay];
+}
+
 - (void) mouseMoved: (NSEvent *)theEvent
 {
   NSPoint mouseLocation;
@@ -493,6 +496,7 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
     {
       if (rect->tag == tag && rect->owner == self)
 	{
+	  [self _endDisplay: tag];
 	  RELEASE((GSTTProvider*)rect->user_data);
 	  rect->user_data = 0;
 	  [view removeTrackingRect: tag];
@@ -519,6 +523,8 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
       if (toolTipTag == -1)
         {
 	  NSRect	rect;
+	  NSEnumerator		*enumerator;
+	  GSTrackingRect	*trackingRect;
 
 	  rect = [view bounds];
 	  provider = [[GSTTProvider alloc] initWithObject: string
@@ -527,6 +533,14 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
 				       owner: self
 				    userData: provider
 				assumeInside: NO];
+	  enumerator = [((NSViewPtr)view)->_tracking_rects objectEnumerator];
+	  while ((trackingRect = [enumerator nextObject]) != nil)
+	    {
+	      if (trackingRect->tag == toolTipTag)
+		{
+		  trackingRect->flags.followsBounds = 1;
+		}
+	    }
 	}
       else
         {
@@ -572,8 +586,19 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
 
 - (void) _endDisplay: (NSTrackingRectTag)tag
 {
+  BOOL	showing;
+  BOOL	pending;
+
   if (isOpening)
     return;
+  showing = (displayedObject == self
+    && (displayedTag == tag || tag == NSNotFound));
+  pending = (timer != nil && timedObject == self
+    && (timedTag == tag || tag == NSNotFound));
+  if (showing == NO && pending == NO)
+    {
+      return;
+    }
   if ([NSWindow _toolTipVisible] == self)
     {
       [NSWindow _setToolTipVisible: nil];
@@ -581,7 +606,7 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
   /* If there is currently a timer running for this object and it is the target tag,
    * cancel it. Always remove if the target tag is NSNotFound
    */
-  if (timer != nil && timedObject == self && (timedTag == tag || tag == NSNotFound))
+  if (pending)
     {
       if ([timer isValid])
 	{
@@ -591,11 +616,13 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
       timedObject = nil;
       timedTag = NSNotFound;
     }
-  if (window != nil)
+  if (showing && window != nil)
     {
       [window setFrame: NSZeroRect display: NO];
       [window orderOut:self];
       GSDetachToolTipParentWindow(window);
+      displayedObject = nil;
+      displayedTag = NSNotFound;
     }
   if (restoreMouseMoved == YES)
     {
@@ -613,6 +640,7 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
   NSAttributedString	*toolTipText = nil;
   NSSize		textSize;
   NSPoint		mouseLocation = [NSEvent mouseLocation];
+  NSTrackingRectTag	tag = timedTag;
   NSRect		visible;
   NSRect		rect;
   NSMutableDictionary	*attributes;
@@ -639,6 +667,12 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
       timedTag = NSNotFound;
     }
 
+  if (displayedObject != nil && displayedObject != self)
+    {
+      [window orderOut: self];
+      displayedObject = nil;
+      displayedTag = NSNotFound;
+    }
   if ([window isVisible])
     {
       /* Moved from one tooltip view to another ... so stop displaying
@@ -726,6 +760,18 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
       rect.origin.x = visible.origin.x;
       rect.size.width = visible.size.width;
     }
+  if (NSPointInRect(mouseLocation, NSInsetRect(rect, -2, -2)))
+    {
+      rect.origin.y = mouseLocation.y + 8;
+      if (NSMaxY(rect) > NSMaxY(visible))
+	{
+	  rect.origin.y = NSMaxY(visible) - NSHeight(rect);
+	}
+    }
+  if (NSPointInRect(mouseLocation, NSInsetRect(rect, -2, -2)))
+    {
+      rect.origin.x = mouseLocation.x - 8 - NSWidth(rect);
+    }
   offset.height = rect.origin.y - mouseLocation.y;
   offset.width = rect.origin.x - mouseLocation.x;
 
@@ -734,6 +780,9 @@ GSDetachToolTipParentWindow(NSWindow *toolTipWindow)
   [window setFrame: rect display: NO];
   GSSyncToolTipParentWindow(window, [view window]);
   [window orderFront: nil];
+  displayedObject = self;
+  displayedTag = tag;
+  [NSWindow _setToolTipVisible: self];
   isOpening = NO;
 
   RELEASE(toolTipText);
