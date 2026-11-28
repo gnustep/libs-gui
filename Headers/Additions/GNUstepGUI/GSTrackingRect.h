@@ -47,6 +47,7 @@ APPKIT_EXPORT_CLASS
     unsigned	checked:1;
     unsigned	ownerRespondsToMouseEntered:1;
     unsigned	ownerRespondsToMouseExited:1;
+    unsigned	followsBounds:1;
   } flags;
 }
 

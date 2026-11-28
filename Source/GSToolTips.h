@@ -76,6 +76,8 @@
  */
 - (void) mouseDown: (NSEvent *)theEvent;
 
+- (void) keyDown: (NSEvent *)theEvent;
+
 /** Move tooltip window with user's mouse movement.
  */
 - (void) mouseMoved: (NSEvent *)theEvent;

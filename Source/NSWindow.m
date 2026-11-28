@@ -4001,7 +4001,8 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
               BOOL last;
               BOOL now;
               GSTrackingRect *r = rects[i];
-	      NSRect tr = NSIntersectionRect(vr, r->rectangle);
+	      NSRect tr = NSIntersectionRect(vr, r->flags.followsBounds
+		? [theView bounds] : r->rectangle);
 
               if ([r isValid] == NO)
                 {
@@ -4388,6 +4389,10 @@ checkCursorRectanglesExited(NSView *theView,  NSEvent *theEvent, NSPoint lastPoi
         break;
 
       case NSKeyDown:
+	if (toolTipVisible != nil)
+	  {
+	    [toolTipVisible keyDown: theEvent];
+	  }
 	/* Always shift keyboard focus to the next and previous key view,
 	 * respectively, upon receiving Ctrl-Tab and Ctrl-Shift-Tab keyboard
 	 * events. This means that the key view loop won't get stuck in views
