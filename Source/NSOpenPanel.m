@@ -623,7 +623,24 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
    */
   if ([s isAbsolutePath] == YES)
     {
-      [self setDirectory: s];
+      BOOL isDir;
+      NSString *dir = s;
+
+      if (![[NSFileManager defaultManager] fileExistsAtPath: s
+                                               isDirectory: &isDir]
+          || !isDir)
+        {
+          dir = [s stringByDeletingLastPathComponent];
+          s = [s lastPathComponent];
+        }
+      else
+        {
+          s = @"";
+        }
+      if (![[dir stringByStandardizingPath] isEqualToString: _directory])
+        {
+          [self setDirectory: dir];
+        }
     }
 
   sLength = [s length];
