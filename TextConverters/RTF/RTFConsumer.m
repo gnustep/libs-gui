@@ -32,6 +32,7 @@
 #import "RTFConsumer.h"
 #import "RTFConsumerFunctions.h"
 #import "RTFProducer.h"
+#include <math.h>
 
 /*  we have to satisfy the scanner with a stream reading function */
 typedef struct {
@@ -73,6 +74,8 @@ readString (StringContext *ctxt)
   int script;
 
   float real_fi, real_li;
+  int lineHeight;
+  BOOL lineHeightIsMultiple;
 }
 
 - (NSFont*) currentFont;
@@ -207,6 +210,8 @@ readString (StringContext *ctxt)
   DESTROY(paragraph);
   paragraph = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   real_fi = real_li = 0.0;
+  lineHeight = 0;
+  lineHeightIsMultiple = NO;
 
   tabChanged = NO;
   changed = YES;
@@ -827,7 +832,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 #define LEFTMARGIN @"LeftMargin"
 #define RIGHTMARGIN @"RightMargin"
 #define TOPMARGIN @"TopMargin"
-#define BUTTOMMARGIN @"ButtomMargin"
+#define BOTTOMMARGIN NSBottomMarginDocumentAttribute
 
 /*
   we must implement from the rtfConsumerFunctions.h file (Supporting files)
@@ -847,6 +852,47 @@ void GSRTFgenericRTFcommand (void *ctxt, RTFcmd cmd)
   NSDebugLLog(@"RTFParser", @"encountered rtf cmd:%s", cmd.name);
   if (!cmd.isEmpty) 
     NSDebugLLog(@"RTFParser", @" argument is %d\n", cmd.parameter);
+
+  // Preserve view settings and paragraph spacing emitted by the producer.
+  if (!IGNORE && !cmd.isEmpty)
+    {
+      NSMutableDictionary *dict = DOCUMENTATTRIBUTES;
+
+      if (strcmp(cmd.name, "viewkind") == 0)
+        [dict setObject: [NSNumber numberWithInt: cmd.parameter]
+                forKey: NSViewModeDocumentAttribute];
+      else if (strcmp(cmd.name, "viewscale") == 0)
+        [dict setObject: [NSNumber numberWithInt: cmd.parameter]
+                forKey: NSViewZoomDocumentAttribute];
+      else if (strcmp(cmd.name, "slmult") == 0)
+        {
+          CTXT->lineHeightIsMultiple = (cmd.parameter != 0);
+          GSRTFlineSpace(ctxt, CTXT->lineHeight);
+        }
+      else if (strcmp(cmd.name, "slleading") == 0)
+        {
+          [PARAGRAPH setLineSpacing: twips2points(cmd.parameter)];
+          CHANGED = YES;
+        }
+      else if (strcmp(cmd.name, "sb") == 0)
+        {
+          [PARAGRAPH setParagraphSpacingBefore: twips2points(cmd.parameter)];
+          CHANGED = YES;
+        }
+      else if (strcmp(cmd.name, "vieww") == 0
+               || strcmp(cmd.name, "viewh") == 0)
+        {
+          NSValue *value = [dict objectForKey: NSViewSizeDocumentAttribute];
+          NSSize size = value ? [value sizeValue] : NSZeroSize;
+
+          if (strcmp(cmd.name, "vieww") == 0)
+            size.width = twips2points(cmd.parameter);
+          else
+            size.height = twips2points(cmd.parameter);
+          [dict setObject: [NSValue valueWithSize: size]
+                  forKey: NSViewSizeDocumentAttribute];
+        }
+    }
 }
 
 //Start: we're doing some initialization
@@ -1045,7 +1091,7 @@ void GSRTFmarginButtom (void *ctxt, int margin)
   float fmargin = twips2points(margin);
   NSMutableDictionary *dict = DOCUMENTATTRIBUTES;
 
-  [dict setObject: [NSNumber numberWithFloat: fmargin]  forKey: BUTTOMMARGIN];
+  [dict setObject: [NSNumber numberWithFloat: fmargin]  forKey: BOTTOMMARGIN];
 }
 
 void GSRTFfirstLineIndent (void *ctxt, int indent)
@@ -1093,7 +1139,7 @@ void GSRTFrightIndent (void *ctxt, int indent)
   float findent = twips2points(indent);
 
   // for attributed strings only positiv indent is allowed
-  if ((findent >= 0.0) && ([para tailIndent] != findent))
+  if ((findent >= 0.0) && ([para tailIndent] != -findent))
     {
       [para setTailIndent: -findent];
       CHANGED = YES;
@@ -1169,24 +1215,18 @@ void GSRTFspaceAbove (void *ctxt, int space)
 void GSRTFlineSpace (void *ctxt, int space)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
-  float fspace = twips2points(space);
 
-  if (space == 1000)
-    {
-      [para setMinimumLineHeight: 0.0];
-      [para setMaximumLineHeight: 0.0];
-      CHANGED = YES;
-    }
-  else if (fspace < 0.0)
-    {
-      [para setMaximumLineHeight: -fspace];
-      CHANGED = YES;
-    }
+  CTXT->lineHeight = space;
+  [para setMinimumLineHeight: 0];
+  [para setMaximumLineHeight: 0];
+  [para setLineHeightMultiple: 0];
+  if (CTXT->lineHeightIsMultiple)
+    [para setLineHeightMultiple: fabs((double)space) / 240.0];
+  else if (space < 0)
+    [para setMaximumLineHeight: -twips2points(space)];
   else
-    {
-      [para setMinimumLineHeight: fspace];
-      CHANGED = YES;
-    }
+    [para setMinimumLineHeight: twips2points(space)];
+  CHANGED = YES;
 }
 
 void GSRTFdefaultParagraph (void *ctxt)
