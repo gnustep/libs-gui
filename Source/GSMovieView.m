@@ -42,6 +42,7 @@
 #import <Foundation/NSURL.h>
 
 #import "AppKit/NSApplication.h"
+#import "AppKit/NSBezierPath.h"
 #import "AppKit/NSColor.h"
 #import "AppKit/NSFont.h"
 #import "AppKit/NSParagraphStyle.h"
@@ -50,9 +51,12 @@
 #import "AppKit/NSGraphics.h"
 #import "AppKit/NSImage.h"
 #import "AppKit/NSImageRep.h"
+#import "AppKit/NSLayoutManager.h"
 #import "AppKit/NSMovie.h"
 #import "AppKit/NSPasteboard.h"
 #import "AppKit/NSProgressIndicator.h"
+#import "AppKit/NSTextContainer.h"
+#import "AppKit/NSTextStorage.h"
 
 #import "GSMovieView.h"
 #import "GSAudioPlayer.h"
@@ -798,9 +802,46 @@
       NSRect caption = NSMakeRect(NSMinX(bounds) + inset,
         [self isFlipped] ? NSMaxY(bounds) - height - inset : NSMinY(bounds) + inset,
         MAX(1, NSWidth(bounds) - 2 * inset), height);
+      NSRect textRect = NSInsetRect(caption, inset, inset / 2);
+      NSTextStorage *storage = [[NSTextStorage alloc]
+        initWithString: subtitle attributes: attributes];
+      NSLayoutManager *layout = [[NSLayoutManager alloc] init];
+      NSTextContainer *container = [[NSTextContainer alloc]
+        initWithContainerSize: textRect.size];
+      NSBezierPath *background = [NSBezierPath bezierPath];
+      NSRange glyphs;
+      NSUInteger index;
+
+      [container setLineFragmentPadding: 0];
+      [layout addTextContainer: container];
+      [storage addLayoutManager: layout];
+      glyphs = [layout glyphRangeForTextContainer: container];
+      for (index = glyphs.location; index < NSMaxRange(glyphs);)
+        {
+          NSRange line;
+          NSRect rect = [layout lineFragmentUsedRectForGlyphAtIndex: index
+                                                   effectiveRange: &line];
+
+          if (NSWidth(rect) > 0)
+            {
+              rect.origin.x += NSMinX(textRect);
+              rect.origin.y = [self isFlipped]
+                ? NSMinY(textRect) + NSMinY(rect)
+                : NSMaxY(textRect) - NSMaxY(rect);
+              rect = NSInsetRect(rect, -inset / 2, -inset / 4);
+              [background appendBezierPathWithRect:
+                NSIntersectionRect(rect, bounds)];
+            }
+          index = NSMaxRange(line);
+        }
+      /* Fill once so padding shared by adjacent lines stays translucent. */
+      [background setWindingRule: NSNonZeroWindingRule];
       [[NSColor colorWithCalibratedWhite: 0 alpha: 0.75] set];
-      NSRectFillUsingOperation(caption, NSCompositeSourceOver);
-      [subtitle drawWithRect: NSInsetRect(caption, inset, inset / 2)
+      [background fill];
+      RELEASE(container);
+      RELEASE(layout);
+      RELEASE(storage);
+      [subtitle drawWithRect: textRect
                     options: NSStringDrawingUsesLineFragmentOrigin
                  attributes: attributes];
       RELEASE(style);
