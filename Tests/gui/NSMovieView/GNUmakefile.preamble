@@ -1,0 +1,4 @@
+# Use the same optional FFmpeg dependencies as the movie backend.
+include ../../../config.make
+subtitles_TOOL_LIBS += $(MOVIE_BASE_LIBS)
+volume_TOOL_LIBS += $(MOVIE_BASE_LIBS)
